@@ -969,14 +969,14 @@
 								<!-- mysql
 								<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" /> -->
 								
-								<!-- mssql
-								<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" /> -->
+								<!-- mssql -->
+								<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" />
 								
 								<!-- oracle -->
 								<!--<property name="dbunit.datatype" value="org.dbunit.ext.oracle.Oracle10DataTypeFactory" />-->
 								
 								<!-- h2 -->
-								<property name="dbunit.datatype" value="org.dbunit.ext.h2.H2DataTypeFactory" />
+								<!-- <property name="dbunit.datatype" value="org.dbunit.ext.h2.H2DataTypeFactory" /> -->
 								
 								<property file="src/main/resources/jeesite.properties" />
 								<sql driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}" password="${jdbc.password}" 
@@ -985,8 +985,11 @@
 									<transaction src="db/sys/jeesite_${jdbc.type}.sql"/>
 									<transaction src="db/cms/jeesite_${jdbc.type}.sql"/>
 									<transaction src="db/oa/jeesite_${jdbc.type}.sql"/>
-									<transaction src="db/gen/jeesite_${jdbc.type}.sql"/>
-									<transaction src="db/gen/example_${jdbc.type}.sql"/>
+									<!-- <transaction src="db/gen/jeesite_${jdbc.type}.sql"/>
+									<transaction src="db/gen/example_${jdbc.type}.sql"/> -->
+									<transaction src="db/gen/example_menu_${jdbc.type}.sql"/>
+									<transaction src="db/inventory/inventory_${jdbc.type}.sql"/>
+									<transaction src="db/person/person_${jdbc.type}.sql"/>
 									<transaction src="db/test/jeesite_${jdbc.type}.sql"/>
 									<transaction src="db/act/drop/activiti.${jdbc.type}.drop.engine.sql"/>
 									<transaction src="db/act/drop/activiti.${jdbc.type}.drop.history.sql"/>
