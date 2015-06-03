@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.PropertyProjectDao">
+    
+	<sql id="propertyProjectColumns">
+		a.id AS "id",
+		a.t_neighborhood_main_id AS "neighborhood.id",
+		a.t_management_company_main_id AS "managementCompany.id",
+		a.project_name AS "projectName",
+		a.project_addr AS "projectAddr",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="propertyProjectJoins">
+	</sql>
+    
+	<select id="get" resultType="PropertyProject">
+		SELECT 
+			<include refid="propertyProjectColumns"/>
+		FROM t_property_project a
+		<include refid="propertyProjectJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PropertyProject">
+		SELECT 
+			<include refid="propertyProjectColumns"/>
+		FROM t_property_project a
+		<include refid="propertyProjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="neighborhood != null and neighborhood.id != null and neighborhood.id != ''">
+				AND a.t_neighborhood_main_id = #{neighborhood.id}
+			</if>
+			<if test="managementCompany != null and managementCompany.id != null and managementCompany.id != ''">
+				AND a.t_management_company_main_id = #{managementCompany.id}
+			</if>
+			<if test="projectName != null and projectName != ''">
+				AND a.project_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{projectName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
+			</if>
+			<if test="projectAddr != null and projectAddr != ''">
+				AND a.project_addr LIKE 
+					<if test="dbName == 'oracle'">'%'||#{projectAddr}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{projectAddr}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{projectAddr},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PropertyProject">
+		SELECT 
+			<include refid="propertyProjectColumns"/>
+		FROM t_property_project a
+		<include refid="propertyProjectJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_property_project(
+			id,
+			t_neighborhood_main_id,
+			t_management_company_main_id,
+			project_name,
+			project_addr,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{neighborhood.id},
+			#{managementCompany.id},
+			#{projectName},
+			#{projectAddr},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_property_project SET 	
+			t_neighborhood_main_id = #{neighborhood.id},
+			t_management_company_main_id = #{managementCompany.id},
+			project_name = #{projectName},
+			project_addr = #{projectAddr},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_property_project SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

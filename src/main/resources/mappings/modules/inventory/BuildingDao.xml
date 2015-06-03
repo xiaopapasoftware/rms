@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.BuildingDao">
+    
+	<sql id="buildingColumns">
+		a.id AS "id",
+		a.t_property_project_main_id AS "propertyProject.id",
+		a.building_name AS "buildingName",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="buildingJoins">
+	</sql>
+    
+	<select id="get" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.t_property_project_main_id = #{propertyProject.id}
+			</if>
+			<if test="buildingName != null and buildingName != ''">
+				AND a.building_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{buildingName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{buildingName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{buildingName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Building">
+		SELECT 
+			<include refid="buildingColumns"/>
+		FROM t_building a
+		<include refid="buildingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_building(
+			id,
+			t_property_project_main_id,
+			building_name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProject.id},
+			#{buildingName},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_building SET 	
+			t_property_project_main_id = #{propertyProject.id},
+			building_name = #{buildingName},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_building SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
