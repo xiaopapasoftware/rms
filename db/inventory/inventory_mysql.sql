@@ -1,0 +1,65 @@
+/* Drop Tables */
+drop table if exists T_NEIGHBORHOOD;
+drop table if exists T_MANAGEMENT_COMPANY;
+drop table if exists T_PROPERTY_PROJECT;
+drop table if exists T_BUILDING;
+
+
+/* Create Tables */
+create table T_NEIGHBORHOOD
+(
+   ID                   varchar(64) NOT NULL,
+   NEIGHBORHOOD_NAME    varchar(100) comment '居委会名称',
+   NEIGHBORHOOD_ADDR    VARCHAR(300) comment '居委会地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '居委会';
+
+create table T_MANAGEMENT_COMPANY
+(
+   ID                   varchar(64) NOT NULL,
+   COMPANY_NAME    varchar(100) comment '物业公司名称',
+   COMPANY_ADDR    VARCHAR(300) comment '物业公司地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '物业公司';
+
+create table T_PROPERTY_PROJECT
+(
+   ID                   varchar(64) NOT NULL,
+   T_NEIGHBORHOOD_MAIN_ID      varchar(64) comment '居委会',
+   T_MANAGEMENT_COMPANY_MAIN_ID varchar(64) comment '物业公司',
+   PROJECT_NAME    varchar(100) comment '物业项目名称',
+   PROJECT_ADDR    VARCHAR(300) comment '物业项目地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '物业项目';
+
+create table T_BUILDING
+(
+   ID                   varchar(64) NOT NULL,
+   T_PROPERTY_PROJECT_MAIN_ID      varchar(64) comment '物业项目',
+   BUILDING_NAME    varchar(100) comment '楼宇名称',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '楼宇';
