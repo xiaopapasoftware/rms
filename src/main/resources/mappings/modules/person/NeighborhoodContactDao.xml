@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.NeighborhoodContactDao">
+    
+	<sql id="neighborhoodContactColumns">
+		a.id AS "id",
+		a.t_neighborhood_main_id AS "neighborhood.id",
+		a.contact_name AS "contactName",
+		a.cell_phone AS "cellPhone",
+		a.desk_phone AS "deskPhone",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="neighborhoodContactJoins">
+	</sql>
+    
+	<select id="get" resultType="NeighborhoodContact">
+		SELECT 
+			<include refid="neighborhoodContactColumns"/>
+		FROM t_neighborhood_contact a
+		<include refid="neighborhoodContactJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="NeighborhoodContact">
+		SELECT 
+			<include refid="neighborhoodContactColumns"/>
+		FROM t_neighborhood_contact a
+		<include refid="neighborhoodContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="neighborhood != null and neighborhood.id != null and neighborhood.id != ''">
+				AND a.t_neighborhood_main_id = #{neighborhood.id}
+			</if>
+			<if test="contactName != null and contactName != ''">
+				AND a.contact_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contactName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contactName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contactName},'%')</if>
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone = #{cellPhone}
+			</if>
+			<if test="deskPhone != null and deskPhone != ''">
+				AND a.desk_phone = #{deskPhone}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="NeighborhoodContact">
+		SELECT 
+			<include refid="neighborhoodContactColumns"/>
+		FROM t_neighborhood_contact a
+		<include refid="neighborhoodContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_neighborhood_contact(
+			id,
+			t_neighborhood_main_id,
+			contact_name,
+			cell_phone,
+			desk_phone,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{neighborhood.id},
+			#{contactName},
+			#{cellPhone},
+			#{deskPhone},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_neighborhood_contact SET 	
+			t_neighborhood_main_id = #{neighborhood.id},
+			contact_name = #{contactName},
+			cell_phone = #{cellPhone},
+			desk_phone = #{deskPhone},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_neighborhood_contact SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
