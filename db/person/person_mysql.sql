@@ -3,6 +3,8 @@ drop table if exists T_NEIGHBORHOOD_CONTACT;
 drop table if exists T_COMPANY_CONTACT;
 drop table if exists T_CUSTOMER;
 drop table if exists T_OWNER;
+drop table if exists T_TENANT;
+drop table if exists T_REMITTANCER;
 
 
 /* Create Tables */
@@ -71,3 +73,35 @@ create table T_OWNER
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '业主信息';
+
+/*create table T_TENANT
+(
+   ID                   varchar(64) NOT NULL,
+   NAME                 VARCHAR(100) comment '姓名',
+   SOCIAL_NUMBER				VARCHAR(100) COMMENT '身份证号',
+   CELL_PHONE           VARCHAR(100) comment '手机号',
+   DESK_PHONE           VARCHAR(100) comment '座机号',
+   ADDRESS              VARCHAR(300) comment '详细居住地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '租客信息';*/
+
+create table T_REMITTANCER
+(
+   ID                   varchar(64) NOT NULL,
+   USER_NAME            VARCHAR(100) comment '开户人姓名',
+   BANK_NAME				VARCHAR(100) COMMENT '开户行名称',
+   BANK_ACCOUNT            VARCHAR(100) comment '开户行账号',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '汇款人信息';
