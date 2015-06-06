@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,9 +19,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.inventory.entity.ManagementCompany;
+import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.ManagementCompanyService;
+import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 
 /**
@@ -33,6 +39,10 @@ public class PropertyProjectController extends BaseController {
 
 	@Autowired
 	private PropertyProjectService propertyProjectService;
+	@Autowired
+	private NeighborhoodService neighborhoodService;
+	@Autowired
+	private ManagementCompanyService managementCompanyService;
 	
 	@ModelAttribute
 	public PropertyProject get(@RequestParam(required=false) String id) {
@@ -49,6 +59,12 @@ public class PropertyProjectController extends BaseController {
 	@RequiresPermissions("inventory:propertyProject:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(PropertyProject propertyProject, HttpServletRequest request, HttpServletResponse response, Model model) {
+		List<Neighborhood> listNeighborhood = neighborhoodService.findList(new Neighborhood());
+		model.addAttribute("listNeighborhood", listNeighborhood);
+		
+		List<ManagementCompany> listManagementCompany = managementCompanyService.findList(new ManagementCompany());
+		model.addAttribute("listManagementCompany", listManagementCompany);
+		
 		Page<PropertyProject> page = propertyProjectService.findPage(new Page<PropertyProject>(request, response), propertyProject); 
 		model.addAttribute("page", page);
 		return "modules/inventory/propertyProjectList";
@@ -58,6 +74,13 @@ public class PropertyProjectController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(PropertyProject propertyProject, Model model) {
 		model.addAttribute("propertyProject", propertyProject);
+		
+		List<Neighborhood> listNeighborhood = neighborhoodService.findList(new Neighborhood());
+		model.addAttribute("listNeighborhood", listNeighborhood);
+		
+		List<ManagementCompany> listManagementCompany = managementCompanyService.findList(new ManagementCompany());
+		model.addAttribute("listManagementCompany", listManagementCompany);
+		
 		return "modules/inventory/propertyProjectForm";
 	}
 

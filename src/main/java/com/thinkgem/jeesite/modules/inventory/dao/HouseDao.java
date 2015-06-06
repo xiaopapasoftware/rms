@@ -1,18 +1,18 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.modules.person.dao;
+package com.thinkgem.jeesite.modules.inventory.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.person.entity.NeighborhoodContact;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 
 /**
- * 居委会联系人DAO接口
+ * 房屋信息DAO接口
  * @author huangsc
- * @version 2015-06-03
+ * @version 2015-06-06
  */
 @MyBatisDao
-public interface NeighborhoodContactDao extends CrudDao<NeighborhoodContact> {
+public interface HouseDao extends CrudDao<House> {
 	
 }

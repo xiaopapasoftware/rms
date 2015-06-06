@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.CompanyContactDao">
+    
+	<sql id="companyContactColumns">
+		a.id AS "id",
+		a.management_company_id AS "managementCompany.id",
+		a.contact_name AS "contactName",
+		a.cell_phone AS "cellPhone",
+		a.desk_phone AS "deskPhone",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="companyContactJoins">
+	</sql>
+    
+	<select id="get" resultType="CompanyContact">
+		SELECT 
+			<include refid="companyContactColumns"/>
+		FROM t_company_contact a
+		<include refid="companyContactJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CompanyContact">
+		SELECT 
+			<include refid="companyContactColumns"/>
+		FROM t_company_contact a
+		<include refid="companyContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="managementCompany != null and managementCompany.id != null and managementCompany.id != ''">
+				AND a.management_company_id = #{managementCompany.id}
+			</if>
+			<if test="contactName != null and contactName != ''">
+				AND a.contact_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contactName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contactName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contactName},'%')</if>
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone = #{cellPhone}
+			</if>
+			<if test="deskPhone != null and deskPhone != ''">
+				AND a.desk_phone = #{deskPhone}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CompanyContact">
+		SELECT 
+			<include refid="companyContactColumns"/>
+		FROM t_company_contact a
+		<include refid="companyContactJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_company_contact(
+			id,
+			management_company_id,
+			contact_name,
+			cell_phone,
+			desk_phone,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{managementCompany.id},
+			#{contactName},
+			#{cellPhone},
+			#{deskPhone},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_company_contact SET 	
+			management_company_id = #{managementCompany.id},
+			contact_name = #{contactName},
+			cell_phone = #{cellPhone},
+			desk_phone = #{deskPhone},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_company_contact SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

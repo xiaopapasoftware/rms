@@ -38,7 +38,6 @@
 			<div class="controls">
 				<form:select path="neighborhood.id" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:option value="s" label="s"/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
