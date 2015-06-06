@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.HouseDao">
+    
+	<sql id="houseColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.owner_id AS "owner.id",
+		a.house_no AS "houseNo",
+		a.house_floor AS "houseFloor",
+		a.house_space AS "houseSpace",
+		a.decoration_spanc AS "decorationSpanc",
+		a.house_structure AS "houseStructure",
+		a.decoration_structure AS "decorationStructure",
+		a.house_status AS "houseStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="houseJoins">
+	</sql>
+    
+	<select id="get" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="owner != null and owner.id != null and owner.id != ''">
+				AND a.owner_id = #{owner.id}
+			</if>
+			<if test="houseNo != null and houseNo != ''">
+				AND a.house_no = #{houseNo}
+			</if>
+			<if test="houseFloor != null and houseFloor != ''">
+				AND a.house_floor = #{houseFloor}
+			</if>
+			<if test="houseSpace != null and houseSpace != ''">
+				AND a.house_space = #{houseSpace}
+			</if>
+			<if test="decorationSpanc != null and decorationSpanc != ''">
+				AND a.decoration_spanc = #{decorationSpanc}
+			</if>
+			<if test="houseStructure != null and houseStructure != ''">
+				AND a.house_structure = #{houseStructure}
+			</if>
+			<if test="decorationStructure != null and decorationStructure != ''">
+				AND a.decoration_structure = #{decorationStructure}
+			</if>
+			<if test="houseStatus != null and houseStatus != ''">
+				AND a.house_status = #{houseStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="House">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house a
+		<include refid="houseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_house(
+			id,
+			property_project_id,
+			building_id,
+			owner_id,
+			house_no,
+			house_floor,
+			house_space,
+			decoration_spanc,
+			house_structure,
+			decoration_structure,
+			house_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProject.id},
+			#{building.id},
+			#{owner.id},
+			#{houseNo},
+			#{houseFloor},
+			#{houseSpace},
+			#{decorationSpanc},
+			#{houseStructure},
+			#{decorationStructure},
+			#{houseStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_house SET 	
+			property_project_id = #{propertyProject.id},
+			building_id = #{building.id},
+			owner_id = #{owner.id},
+			house_no = #{houseNo},
+			house_floor = #{houseFloor},
+			house_space = #{houseSpace},
+			decoration_spanc = #{decorationSpanc},
+			house_structure = #{houseStructure},
+			decoration_structure = #{decorationStructure},
+			house_status = #{houseStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_house SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

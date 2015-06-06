@@ -5,14 +5,14 @@ package com.thinkgem.jeesite.modules.person.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.person.entity.NeighborhoodContact;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
 
 /**
- * 居委会联系人DAO接口
+ * 业主信息DAO接口
  * @author huangsc
- * @version 2015-06-03
+ * @version 2015-06-06
  */
 @MyBatisDao
-public interface NeighborhoodContactDao extends CrudDao<NeighborhoodContact> {
+public interface OwnerDao extends CrudDao<Owner> {
 	
 }

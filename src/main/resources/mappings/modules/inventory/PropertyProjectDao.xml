@@ -13,10 +13,14 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		n.neighborhood_name as "neighborhood.neighborhoodName",
+		c.company_name as "managementCompany.companyName"
 	</sql>
 	
 	<sql id="propertyProjectJoins">
+		JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
+		JOIN t_management_company c on c.id=a.t_management_company_main_id
 	</sql>
     
 	<select id="get" resultType="PropertyProject">

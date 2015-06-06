@@ -16,7 +16,7 @@ import com.thinkgem.jeesite.modules.person.dao.NeighborhoodContactDao;
 /**
  * 居委会联系人Service
  * @author huangsc
- * @version 2015-06-02
+ * @version 2015-06-03
  */
 @Service
 @Transactional(readOnly = true)

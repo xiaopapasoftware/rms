@@ -8,36 +8,36 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
+import com.thinkgem.jeesite.modules.inventory.entity.ManagementCompany;
 
 /**
- * 居委会联系人Entity
+ * 物业公司联系人Entity
  * @author huangsc
- * @version 2015-06-03
+ * @version 2015-06-06
  */
-public class NeighborhoodContact extends DataEntity<NeighborhoodContact> {
+public class CompanyContact extends DataEntity<CompanyContact> {
 	
 	private static final long serialVersionUID = 1L;
-	private Neighborhood neighborhood;		// 居委会
+	private ManagementCompany managementCompany;		// 物业公司
 	private String contactName;		// 姓名
 	private String cellPhone;		// 手机号
 	private String deskPhone;		// 座机号
 	
-	public NeighborhoodContact() {
+	public CompanyContact() {
 		super();
 	}
 
-	public NeighborhoodContact(String id){
+	public CompanyContact(String id){
 		super(id);
 	}
 
-	@NotNull(message="居委会不能为空")
-	public Neighborhood getNeighborhood() {
-		return neighborhood;
+	@NotNull(message="物业公司不能为空")
+	public ManagementCompany getManagementCompany() {
+		return managementCompany;
 	}
 
-	public void setNeighborhood(Neighborhood neighborhood) {
-		this.neighborhood = neighborhood;
+	public void setManagementCompany(ManagementCompany managementCompany) {
+		this.managementCompany = managementCompany;
 	}
 	
 	@Length(min=1, max=100, message="姓名长度必须介于 1 和 100 之间")

@@ -25,7 +25,7 @@ import com.thinkgem.jeesite.modules.person.service.NeighborhoodContactService;
 /**
  * 居委会联系人Controller
  * @author huangsc
- * @version 2015-06-02
+ * @version 2015-06-03
  */
 @Controller
 @RequestMapping(value = "${adminPath}/person/neighborhoodContact")
