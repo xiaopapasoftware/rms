@@ -966,8 +966,8 @@
 						<configuration>
 							<target>
 								
-								<!-- mysql -->
-+								<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" />
+								<!-- mysql
+								<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" /> -->
 								
 								<!-- mssql -->
 								<!--<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" />-->
