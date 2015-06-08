@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.LeaseContractDao">
+    
+	<sql id="leaseContractColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.remittancer_id AS "remittancer.id",
+		a.contract_name AS "contractName",
+		a.effective_date AS "effectiveDate",
+		a.first_remittance_date AS "firstRemittanceDate",
+		a.remittance_date AS "remittanceDate",
+		a.expired_date AS "expiredDate",
+		a.contract_date AS "contractDate",
+		a.deposit AS "deposit",
+		a.contract_status AS "contractStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="leaseContractJoins">
+	</sql>
+    
+	<select id="get" resultType="LeaseContract">
+		SELECT 
+			<include refid="leaseContractColumns"/>
+		FROM t_lease_contract a
+		<include refid="leaseContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LeaseContract">
+		SELECT 
+			<include refid="leaseContractColumns"/>
+		FROM t_lease_contract a
+		<include refid="leaseContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_id = #{house.id}
+			</if>
+			<if test="remittancer != null and remittancer.id != null and remittancer.id != ''">
+				AND a.remittancer_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{remittancer.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{remittancer.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{remittancer.id},'%')</if>
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND a.contract_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
+			</if>
+			<if test="effectiveDate != null and effectiveDate != ''">
+				AND a.effective_date = #{effectiveDate}
+			</if>
+			<if test="firstRemittanceDate != null and firstRemittanceDate != ''">
+				AND a.first_remittance_date = #{firstRemittanceDate}
+			</if>
+			<if test="remittanceDate != null and remittanceDate != ''">
+				AND a.remittance_date = #{remittanceDate}
+			</if>
+			<if test="expiredDate != null and expiredDate != ''">
+				AND a.expired_date = #{expiredDate}
+			</if>
+			<if test="contractDate != null and contractDate != ''">
+				AND a.contract_date = #{contractDate}
+			</if>
+			<if test="deposit != null and deposit != ''">
+				AND a.deposit = #{deposit}
+			</if>
+			<if test="contractStatus != null and contractStatus != ''">
+				AND a.contract_status = #{contractStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LeaseContract">
+		SELECT 
+			<include refid="leaseContractColumns"/>
+		FROM t_lease_contract a
+		<include refid="leaseContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_lease_contract(
+			id,
+			property_project_id,
+			building_id,
+			house_id,
+			remittancer_id,
+			contract_name,
+			effective_date,
+			first_remittance_date,
+			remittance_date,
+			expired_date,
+			contract_date,
+			deposit,
+			contract_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProject.id},
+			#{building.id},
+			#{house.id},
+			#{remittancer.id},
+			#{contractName},
+			#{effectiveDate},
+			#{firstRemittanceDate},
+			#{remittanceDate},
+			#{expiredDate},
+			#{contractDate},
+			#{deposit},
+			#{contractStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_lease_contract SET 	
+			property_project_id = #{propertyProject.id},
+			building_id = #{building.id},
+			house_id = #{house.id},
+			remittancer_id = #{remittancer.id},
+			contract_name = #{contractName},
+			effective_date = #{effectiveDate},
+			first_remittance_date = #{firstRemittanceDate},
+			remittance_date = #{remittanceDate},
+			expired_date = #{expiredDate},
+			contract_date = #{contractDate},
+			deposit = #{deposit},
+			contract_status = #{contractStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_lease_contract SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -997,6 +997,7 @@
 									<transaction src="db/act/create/activiti.${jdbc.type}.create.engine.sql"/>
 									<transaction src="db/act/create/activiti.${jdbc.type}.create.history.sql"/>
 									<transaction src="db/act/create/activiti.${jdbc.type}.create.identity.sql"/>
+									<transaction src="db/contract/contract_${jdbc.type}.sql"/>
 								</sql>
 								
 								<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
