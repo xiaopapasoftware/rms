@@ -86,7 +86,7 @@
 		<div class="control-group">
 			<label class="control-label">装修建筑面积：</label>
 			<div class="controls">
-				<form:input path="decorationSpanc" htmlEscape="false" class="input-xlarge "/>
+				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

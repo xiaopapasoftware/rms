@@ -53,7 +53,7 @@
 				<form:input path="houseSpace" htmlEscape="false" class="input-medium"/>
 			</li>
 			<li><label>装修建筑面积：</label>
-				<form:input path="decorationSpanc" htmlEscape="false" class="input-medium"/>
+				<form:input path="decorationSpance" htmlEscape="false" class="input-medium"/>
 			</li>
 			<li><label>原始房屋结构：</label>
 				<form:input path="houseStructure" htmlEscape="false" maxlength="100" class="input-medium"/>
@@ -112,7 +112,7 @@
 					${house.houseSpace}
 				</td>
 				<td>
-					${house.decorationSpanc}
+					${house.decorationSpance}
 				</td>
 				<td>
 					${house.houseStructure}

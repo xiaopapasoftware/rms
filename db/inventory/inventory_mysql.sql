@@ -74,7 +74,7 @@ create table T_HOUSE
    HOUSE_NO             varchar(100) comment '房屋号',
    HOUSE_FLOOR          int comment '楼层',
    HOUSE_SPACE                float comment '原始建筑面积',
-   DECORATION_SPANC     float comment '装修建筑面积',
+   DECORATION_SPANCE     float comment '装修建筑面积',
    HOUSE_STRUCTURE   varchar(100) comment '原始房屋结构',
    DECORATION_STRUCTURE     varchar(100) comment '装修房屋结构',
    HOUSE_STATUS         varchar(100) comment '房屋状态',

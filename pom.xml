@@ -966,11 +966,11 @@
 						<configuration>
 							<target>
 								
-								<!-- mysql
-								<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" /> -->
+								<!-- mysql -->
++								<property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" />
 								
 								<!-- mssql -->
-								<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" />
+								<!--<property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" />-->
 								
 								<!-- oracle -->
 								<!--<property name="dbunit.datatype" value="org.dbunit.ext.oracle.Oracle10DataTypeFactory" />-->
