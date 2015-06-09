@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.RoomDao">
+    
+	<sql id="roomColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_no AS "house.houseNo",
+		a.room_no AS "roomNo",
+		a.meter_no AS "meterNo",
+		a.room_space AS "roomSpace",
+		a.orientation AS "orientation",
+		a.structure AS "structure",
+		a.room_status AS "roomStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="roomJoins">
+	</sql>
+    
+	<select id="get" resultType="Room">
+		SELECT 
+			<include refid="roomColumns"/>
+		FROM t_room a
+		<include refid="roomJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Room">
+		SELECT 
+			<include refid="roomColumns"/>
+		FROM t_room a
+		<include refid="roomJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.houseNo != null and house.houseNo != ''">
+				AND a.house_no = #{house.houseNo}
+			</if>
+			<if test="roomNo != null and roomNo != ''">
+				AND a.room_no = #{roomNo}
+			</if>
+			<if test="meterNo != null and meterNo != ''">
+				AND a.meter_no = #{meterNo}
+			</if>
+			<if test="roomSpace != null and roomSpace != ''">
+				AND a.room_space = #{roomSpace}
+			</if>
+			<if test="orientation != null and orientation != ''">
+				AND a.orientation = #{orientation}
+			</if>
+			<if test="structure != null and structure != ''">
+				AND a.structure = #{structure}
+			</if>
+			<if test="roomStatus != null and roomStatus != ''">
+				AND a.room_status = #{roomStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Room">
+		SELECT 
+			<include refid="roomColumns"/>
+		FROM t_room a
+		<include refid="roomJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_room(
+			id,
+			property_project_id,
+			building_id,
+			house_no,
+			room_no,
+			meter_no,
+			room_space,
+			orientation,
+			structure,
+			room_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProject.id},
+			#{building.id},
+			#{house.houseNo},
+			#{roomNo},
+			#{meterNo},
+			#{roomSpace},
+			#{orientation},
+			#{structure},
+			#{roomStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_room SET 	
+			property_project_id = #{propertyProject.id},
+			building_id = #{building.id},
+			house_no = #{house.houseNo},
+			room_no = #{roomNo},
+			meter_no = #{meterNo},
+			room_space = #{roomSpace},
+			orientation = #{orientation},
+			structure = #{structure},
+			room_status = #{roomStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_room SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
