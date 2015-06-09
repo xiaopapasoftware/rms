@@ -178,8 +178,8 @@
 		<url-pattern>/servlet/validateCodeServlet</url-pattern>
 	</servlet-mapping>
 	
-	<!-- FineReport -->
-	<!-- <servlet>
+	<!-- FineReport
+	<servlet>
 		<servlet-name>ReportServer</servlet-name>
 		<servlet-class>com.fr.web.ReportServlet</servlet-class>
 	</servlet>
