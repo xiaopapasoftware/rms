@@ -24,7 +24,7 @@ public class House extends DataEntity<House> {
 	private String houseNo;		// 房屋号
 	private Integer houseFloor;		// 楼层
 	private String houseSpace;		// 原始建筑面积
-	private String decorationSpanc;		// 装修建筑面积
+	private String decorationSpance;		// 装修建筑面积
 	private String houseStructure;		// 原始房屋结构
 	private String decorationStructure;		// 装修房屋结构
 	private String houseStatus;		// 房屋状态
@@ -90,12 +90,12 @@ public class House extends DataEntity<House> {
 		this.houseSpace = houseSpace;
 	}
 	
-	public String getDecorationSpanc() {
-		return decorationSpanc;
+	public String getDecorationSpance() {
+		return decorationSpance;
 	}
 
-	public void setDecorationSpanc(String decorationSpanc) {
-		this.decorationSpanc = decorationSpanc;
+	public void setDecorationSpance(String decorationSpance) {
+		this.decorationSpance = decorationSpance;
 	}
 	
 	@Length(min=0, max=100, message="原始房屋结构长度必须介于 0 和 100 之间")

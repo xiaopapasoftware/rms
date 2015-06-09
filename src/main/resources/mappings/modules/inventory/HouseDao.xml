@@ -10,7 +10,7 @@
 		a.house_no AS "houseNo",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
-		a.decoration_spanc AS "decorationSpanc",
+		a.decoration_spance AS "decorationSpance",
 		a.house_structure AS "houseStructure",
 		a.decoration_structure AS "decorationStructure",
 		a.house_status AS "houseStatus",
@@ -58,8 +58,8 @@
 			<if test="houseSpace != null and houseSpace != ''">
 				AND a.house_space = #{houseSpace}
 			</if>
-			<if test="decorationSpanc != null and decorationSpanc != ''">
-				AND a.decoration_spanc = #{decorationSpanc}
+			<if test="decorationSpance != null and decorationSpance != ''">
+				AND a.decoration_spance = #{decorationSpance}
 			</if>
 			<if test="houseStructure != null and houseStructure != ''">
 				AND a.house_structure = #{houseStructure}
@@ -108,7 +108,7 @@
 			house_no,
 			house_floor,
 			house_space,
-			decoration_spanc,
+			decoration_spance,
 			house_structure,
 			decoration_structure,
 			house_status,
@@ -126,7 +126,7 @@
 			#{houseNo},
 			#{houseFloor},
 			#{houseSpace},
-			#{decorationSpanc},
+			#{decorationSpance},
 			#{houseStructure},
 			#{decorationStructure},
 			#{houseStatus},
@@ -147,7 +147,7 @@
 			house_no = #{houseNo},
 			house_floor = #{houseFloor},
 			house_space = #{houseSpace},
-			decoration_spanc = #{decorationSpanc},
+			decoration_spance = #{decorationSpance},
 			house_structure = #{houseStructure},
 			decoration_structure = #{decorationStructure},
 			house_status = #{houseStatus},

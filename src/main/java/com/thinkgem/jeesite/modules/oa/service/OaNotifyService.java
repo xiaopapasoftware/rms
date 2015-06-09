@@ -72,7 +72,6 @@ public class OaNotifyService extends CrudService<OaNotifyDao, OaNotify> {
 	/**
 	 * 更新阅读状态
 	 */
-	@Transactional(readOnly = false)
 	public void updateReadFlag(OaNotify oaNotify) {
 		OaNotifyRecord oaNotifyRecord = new OaNotifyRecord(oaNotify);
 		oaNotifyRecord.setUser(oaNotifyRecord.getCurrentUser());
