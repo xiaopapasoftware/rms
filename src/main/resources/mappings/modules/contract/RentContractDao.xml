@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.RentContractDao">
+    
+	<sql id="rentContractColumns">
+		a.id AS "id",
+		a.contract_id AS "contractId",
+		a.contract_name AS "contractName",
+		a.rent_mode AS "rentMode",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.room_id AS "room.id",
+		a.user_id AS "user.id",
+		a.contract_source AS "contractSource",
+		a.parnter AS "parnter",
+		a.rental AS "rental",
+		a.start_date AS "startDate",
+		a.expired_date AS "expiredDate",
+		a.sign_date AS "signDate",
+		a.sign_type AS "signType",
+		a.has_tv AS "hasTv",
+		a.tv_fee AS "tvFee",
+		a.has_net AS "hasNet",
+		a.net_fee AS "netFee",
+		a.water_fee AS "waterFee",
+		a.service_fee AS "serviceFee",
+		a.ren_months AS "renMonths",
+		a.deposit_months AS "depositMonths",
+		a.deposit_amount AS "depositAmount",
+		a.deposit_electric_amount AS "depositElectricAmount",
+		a.has_visa AS "hasVisa",
+		a.meter_value AS "meterValue",
+		a.total_meter_value AS "totalMeterValue",
+		a.peak_meter_value AS "peakMeterValue",
+		a.flat_meter_value AS "flatMeterValue",
+		a.valley_meter_value AS "valleyMeterValue",
+		a.coal_value AS "coalValue",
+		a.water_value AS "waterValue",
+		a.remind_time AS "remindTime",
+		a.contract_status AS "contractStatus",
+		a.contract_busi_status AS "contractBusiStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u9.name AS "user.name"
+	</sql>
+	
+	<sql id="rentContractJoins">
+		LEFT JOIN sys_user u9 ON u9.id = a.user_id
+		LEFT JOIN sys_user u11 ON u11.id = a.parnter
+	</sql>
+    
+	<select id="get" resultType="RentContract">
+		SELECT 
+			<include refid="rentContractColumns"/>
+		FROM t_rent_contract a
+		<include refid="rentContractJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RentContract">
+		SELECT 
+			<include refid="rentContractColumns"/>
+		FROM t_rent_contract a
+		<include refid="rentContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND a.contract_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
+			</if>
+			<if test="rentMode != null and rentMode != ''">
+				AND a.rent_mode = #{rentMode}
+			</if>
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_id = #{house.id}
+			</if>
+			<if test="room != null and room.id != null and room.id != ''">
+				AND a.room_id = #{room.id}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="contractSource != null and contractSource != ''">
+				AND a.contract_source = #{contractSource}
+			</if>
+			<if test="rental != null and rental != ''">
+				AND a.rental = #{rental}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="expiredDate != null and expiredDate != ''">
+				AND a.expired_date = #{expiredDate}
+			</if>
+			<if test="signDate != null and signDate != ''">
+				AND a.sign_date = #{signDate}
+			</if>
+			<if test="contractStatus != null and contractStatus != ''">
+				AND a.contract_status = #{contractStatus}
+			</if>
+			<if test="contractBusiStatus != null and contractBusiStatus != ''">
+				AND a.contract_busi_status = #{contractBusiStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RentContract">
+		SELECT 
+			<include refid="rentContractColumns"/>
+		FROM t_rent_contract a
+		<include refid="rentContractJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_rent_contract(
+			id,
+			contract_id,
+			contract_name,
+			rent_mode,
+			property_project_id,
+			building_id,
+			house_id,
+			room_id,
+			user_id,
+			contract_source,
+			parnter,
+			rental,
+			start_date,
+			expired_date,
+			sign_date,
+			sign_type,
+			has_tv,
+			tv_fee,
+			has_net,
+			net_fee,
+			water_fee,
+			service_fee,
+			ren_months,
+			deposit_months,
+			deposit_amount,
+			deposit_electric_amount,
+			has_visa,
+			meter_value,
+			total_meter_value,
+			peak_meter_value,
+			flat_meter_value,
+			valley_meter_value,
+			coal_value,
+			water_value,
+			remind_time,
+			contract_status,
+			contract_busi_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{contractId},
+			#{contractName},
+			#{rentMode},
+			#{propertyProject.id},
+			#{building.id},
+			#{house.id},
+			#{room.id},
+			#{user.id},
+			#{contractSource},
+			#{parnter},
+			#{rental},
+			#{startDate},
+			#{expiredDate},
+			#{signDate},
+			#{signType},
+			#{hasTv},
+			#{tvFee},
+			#{hasNet},
+			#{netFee},
+			#{waterFee},
+			#{serviceFee},
+			#{renMonths},
+			#{depositMonths},
+			#{depositAmount},
+			#{depositElectricAmount},
+			#{hasVisa},
+			#{meterValue},
+			#{totalMeterValue},
+			#{peakMeterValue},
+			#{flatMeterValue},
+			#{valleyMeterValue},
+			#{coalValue},
+			#{waterValue},
+			#{remindTime},
+			#{contractStatus},
+			#{contractBusiStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_rent_contract SET 	
+			contract_id = #{contractId},
+			contract_name = #{contractName},
+			rent_mode = #{rentMode},
+			property_project_id = #{propertyProject.id},
+			building_id = #{building.id},
+			house_id = #{house.id},
+			room_id = #{room.id},
+			user_id = #{user.id},
+			contract_source = #{contractSource},
+			parnter = #{parnter},
+			rental = #{rental},
+			start_date = #{startDate},
+			expired_date = #{expiredDate},
+			sign_date = #{signDate},
+			sign_type = #{signType},
+			has_tv = #{hasTv},
+			tv_fee = #{tvFee},
+			has_net = #{hasNet},
+			net_fee = #{netFee},
+			water_fee = #{waterFee},
+			service_fee = #{serviceFee},
+			ren_months = #{renMonths},
+			deposit_months = #{depositMonths},
+			deposit_amount = #{depositAmount},
+			deposit_electric_amount = #{depositElectricAmount},
+			has_visa = #{hasVisa},
+			meter_value = #{meterValue},
+			total_meter_value = #{totalMeterValue},
+			peak_meter_value = #{peakMeterValue},
+			flat_meter_value = #{flatMeterValue},
+			valley_meter_value = #{valleyMeterValue},
+			coal_value = #{coalValue},
+			water_value = #{waterValue},
+			remind_time = #{remindTime},
+			contract_status = #{contractStatus},
+			contract_busi_status = #{contractBusiStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_rent_contract SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
