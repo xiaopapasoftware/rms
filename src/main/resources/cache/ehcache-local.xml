@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache updateCheck="false" name="defaultCache">
 
-	<diskStore path="../temp/jeesite/ehcache" />
+	<diskStore path="../temp/rms/ehcache" />
 
 	<!-- 默认缓存配置. -->
 	<defaultCache maxEntriesLocalHeap="100" eternal="false" timeToIdleSeconds="300" timeToLiveSeconds="600"
