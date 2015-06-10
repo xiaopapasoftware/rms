@@ -5,6 +5,7 @@ drop table if exists T_CUSTOMER;
 drop table if exists T_OWNER;
 drop table if exists T_TENANT;
 drop table if exists T_REMITTANCER;
+drop table if exists T_PARTNER;
 
 
 /* Create Tables */
@@ -105,3 +106,23 @@ create table T_REMITTANCER
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '汇款人信息';
+
+create table T_PARTNER
+(
+   ID                   varchar(64) NOT NULL,
+   PARTNER_TYPE         VARCHAR(100) comment '合作人类型',
+   PARTNER_NAME         VARCHAR(100) comment '姓名',
+   CELL_PHONE           VARCHAR(100) comment '手机号',
+   DESK_PHONE           VARCHAR(100) comment '座机号',
+   USER_NAME            VARCHAR(100) comment '开户人姓名',
+   BANK_NAME				    VARCHAR(100) COMMENT '开户行名称',
+   BANK_ACCOUNT         VARCHAR(100) comment '开户行账号',
+   COMMISSION_PERCENT   float comment '佣金百分比',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '合作人信息';

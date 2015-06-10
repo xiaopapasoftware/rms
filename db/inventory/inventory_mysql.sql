@@ -4,6 +4,7 @@ drop table if exists T_MANAGEMENT_COMPANY;
 drop table if exists T_PROPERTY_PROJECT;
 drop table if exists T_BUILDING;
 drop table if exists T_HOUSE;
+drop table if exists T_ROOM;
 
 
 /* Create Tables */
@@ -86,3 +87,24 @@ create table T_HOUSE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '房屋信息';
+
+create table T_ROOM
+(
+   ID                   varchar(64) NOT NULL,
+   PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
+   BUILDING_ID          varchar(64) comment '楼宇',
+   HOUSE_NO             varchar(100) comment '房屋号',
+   ROOM_NO              varchar(100) comment '房间号',
+   METER_NO             varchar(100) comment '电表号',
+   ROOM_SPACE           float comment '房间面积',
+   ORIENTATION          varchar(64) comment '朝向',
+   STRUCTURE            varchar(64) comment '附属结构',
+   ROOM_STATUS          varchar(100) comment '房间状态',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '房间信息';
