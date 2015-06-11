@@ -3,9 +3,12 @@
 <html>
 <head>
 	<title>${fns:getConfig('productName')}</title>
-	<meta name="decorator" content="blank"/><c:set var="tabmode" value="${empty cookie.tabmode.value ? '1' : cookie.tabmode.value}"/>
-    <c:if test="${tabmode eq '1'}"><link rel="Stylesheet" href="${ctxStatic}/jerichotab/css/jquery.jerichotab.css" />
-    <script type="text/javascript" src="${ctxStatic}/jerichotab/js/jquery.jerichotab.js"></script></c:if>
+	<meta name="decorator" content="blank"/>
+	<c:set var="tabmode" value="${empty cookie.tabmode.value ? '1' : cookie.tabmode.value}"/>
+    <c:if test="${tabmode eq '1'}"><!-- 页签模式 -->
+    	<link rel="Stylesheet" href="${ctxStatic}/jerichotab/css/jquery.jerichotab.css" />
+    	<script type="text/javascript" src="${ctxStatic}/jerichotab/js/jquery.jerichotab.js"></script>
+    </c:if>
 	<style type="text/css">
 		#main {padding:0;margin:0;} #main .container-fluid{padding:0 4px 0 6px;}
 		#header {margin:0 0 8px;position:static;} #header li {font-size:14px;_font-size:12px;}
@@ -18,10 +21,15 @@
 		$(document).ready(function() {
 			// <c:if test="${tabmode eq '1'}"> 初始化页签
 			$.fn.initJerichoTab({
-                renderTo: '#right', uniqueId: 'jerichotab',
+                renderTo: '#right', 
+                uniqueId: 'jerichotab',
                 contentCss: { 'height': $('#right').height() - tabTitleHeight },
-                tabs: [], loadOnce: true, tabWidth: 110, titleHeight: tabTitleHeight
-            });//</c:if>
+                tabs: [], 
+                loadOnce: true, 
+                tabWidth: 110, 
+                titleHeight: tabTitleHeight
+            });
+			//</c:if>
 			// 绑定菜单单击事件
 			$("#menu a.menu").click(function(){
 				// 一级菜单焦点
@@ -184,8 +192,8 @@
 					<ul id="menu" class="nav" style="*white-space:nowrap;float:none;">
 						<c:set var="firstMenu" value="true"/>
 						<c:forEach items="${fns:getMenuList()}" var="menu" varStatus="idxStatus">
-							<c:if test="${menu.parent.id eq '1'&&menu.isShow eq '1'}">
-								<li class="menu ${not empty firstMenu && firstMenu ? ' active' : ''}">
+							<c:if test="${menu.parent.id eq '1'&& menu.isShow eq '1'}">
+								<li class="menu ${not empty firstMenu && firstMenu ? 'active' : ''}">
 									<c:if test="${empty menu.href}">
 										<a class="menu" href="javascript:" data-href="${ctx}/sys/menu/tree?parentId=${menu.id}" data-id="${menu.id}"><span>${menu.name}</span></a>
 									</c:if>
@@ -198,8 +206,8 @@
 								</c:if>
 								<c:set var="firstMenu" value="false"/>
 							</c:if>
-						</c:forEach><%--
-						<shiro:hasPermission name="cms:site:select">
+						</c:forEach>
+						<%--<shiro:hasPermission name="cms:site:select">
 						<li class="dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" href="#">${fnc:getSite(fnc:getCurrentSiteId()).name}<b class="caret"></b></a>
 							<ul class="dropdown-menu">
