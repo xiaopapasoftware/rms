@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.funds.dao.InvoiceDao">
+    
+	<sql id="invoiceColumns">
+		a.id AS "id",
+		a.trading_accounts_id AS "tradingAccounts.id",
+		a.invoice_type AS "invoiceType",
+		a.invoice_no AS "invoiceNo",
+		a.invoice_title AS "invoiceTitle",
+		a.invoice_date AS "invoiceDate",
+		a.invoice_amount AS "invoiceAmount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="invoiceJoins">
+	</sql>
+    
+	<select id="get" resultType="Invoice">
+		SELECT 
+			<include refid="invoiceColumns"/>
+		FROM t_invoice a
+		<include refid="invoiceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Invoice">
+		SELECT 
+			<include refid="invoiceColumns"/>
+		FROM t_invoice a
+		<include refid="invoiceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tradingAccounts != null and tradingAccounts.id != null and tradingAccounts.id != ''">
+				AND a.trading_accounts_id = #{tradingAccounts.id}
+			</if>
+			<if test="invoiceType != null and invoiceType != ''">
+				AND a.invoice_type = #{invoiceType}
+			</if>
+			<if test="invoiceNo != null and invoiceNo != ''">
+				AND a.invoice_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{invoiceNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{invoiceNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{invoiceNo},'%')</if>
+			</if>
+			<if test="invoiceTitle != null and invoiceTitle != ''">
+				AND a.invoice_title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{invoiceTitle}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{invoiceTitle}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{invoiceTitle},'%')</if>
+			</if>
+			<if test="invoiceDate != null and invoiceDate != ''">
+				AND a.invoice_date = #{invoiceDate}
+			</if>
+			<if test="invoiceAmount != null and invoiceAmount != ''">
+				AND a.invoice_amount = #{invoiceAmount}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Invoice">
+		SELECT 
+			<include refid="invoiceColumns"/>
+		FROM t_invoice a
+		<include refid="invoiceJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_invoice(
+			id,
+			trading_accounts_id,
+			invoice_type,
+			invoice_no,
+			invoice_title,
+			invoice_date,
+			invoice_amount,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{tradingAccounts.id},
+			#{invoiceType},
+			#{invoiceNo},
+			#{invoiceTitle},
+			#{invoiceDate},
+			#{invoiceAmount},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_invoice SET 	
+			trading_accounts_id = #{tradingAccounts.id},
+			invoice_type = #{invoiceType},
+			invoice_no = #{invoiceNo},
+			invoice_title = #{invoiceTitle},
+			invoice_date = #{invoiceDate},
+			invoice_amount = #{invoiceAmount},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_invoice SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
