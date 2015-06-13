@@ -10,11 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.inventory.entity.ManagementCompany;
 import com.thinkgem.jeesite.modules.inventory.dao.ManagementCompanyDao;
+import com.thinkgem.jeesite.modules.inventory.entity.ManagementCompany;
 
 /**
  * 物业公司Service
+ * 
  * @author huangsc
  * @version 2015-06-03
  */
@@ -25,23 +26,28 @@ public class ManagementCompanyService extends CrudService<ManagementCompanyDao, 
 	public ManagementCompany get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<ManagementCompany> findList(ManagementCompany managementCompany) {
 		return super.findList(managementCompany);
 	}
-	
+
 	public Page<ManagementCompany> findPage(Page<ManagementCompany> page, ManagementCompany managementCompany) {
 		return super.findPage(page, managementCompany);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(ManagementCompany managementCompany) {
 		super.save(managementCompany);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(ManagementCompany managementCompany) {
 		super.delete(managementCompany);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<ManagementCompany> findCompanyByNameAndAddress(ManagementCompany managementCompany) {
+		return dao.findCompanyByNameAndAddress(managementCompany);
+	}
+
 }

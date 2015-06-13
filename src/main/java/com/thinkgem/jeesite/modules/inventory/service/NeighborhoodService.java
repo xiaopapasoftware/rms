@@ -48,7 +48,7 @@ public class NeighborhoodService extends CrudService<NeighborhoodDao, Neighborho
 	/**
 	 * 根据居委会名称+地址查询状态为正常/审核 的居委会数量
 	 * */
-	@Transactional(readOnly = false)
+	@Transactional(readOnly = true)
 	public List<Neighborhood> findNeighborhoodByNameAndAddress(Neighborhood neighborhood) {
 		return dao.findNeighborhoodByNameAndAddress(neighborhood);
 	}

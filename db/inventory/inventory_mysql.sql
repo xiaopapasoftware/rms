@@ -27,7 +27,7 @@ create table T_MANAGEMENT_COMPANY
 (
    ID                   varchar(64) NOT NULL,
    COMPANY_NAME    varchar(100) comment '物业公司名称',
-   COMPANY_ADDR    VARCHAR(300) comment '物业公司地址',
+   COMPANY_ADDR    VARCHAR(100) comment '物业公司地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          TIMESTAMP COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

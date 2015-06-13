@@ -6,15 +6,17 @@
 		a.id AS "id",
 		a.company_name AS "companyName",
 		a.company_addr AS "companyAddr",
-		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="managementCompanyJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="ManagementCompany">
@@ -113,4 +115,18 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findCompanyByNameAndAddress" resultType="ManagementCompany">
+		SELECT  a.id AS "id",
+			    a.company_name AS "companyName",
+				a.company_addr AS "companyAddr",
+				a.create_date AS "createDate",
+				a.update_date AS "updateDate",
+				a.remarks AS "remarks",
+				a.del_flag AS "delFlag"
+ 		FROM 	t_management_company a
+		<where>a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.company_name = #{companyName}
+			AND a.company_addr = #{companyAddr}
+		</where>
+	</select>
 </mapper>

@@ -41,7 +41,10 @@
 			<tr>
 				<th>物业公司名称</th>
 				<th>物业公司地址</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:managementCompany:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -56,7 +59,16 @@
 					${managementCompany.companyAddr}
 				</td>
 				<td>
+					<fmt:formatDate value="${managementCompany.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${managementCompany.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+					<td>
+				 	${managementCompany.createBy.loginName}
+				</td>
+				<td>
+				 	${managementCompany.updateBy.loginName}
 				</td>
 				<td>
 					${managementCompany.remarks}
