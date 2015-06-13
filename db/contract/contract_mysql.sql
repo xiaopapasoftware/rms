@@ -4,6 +4,10 @@ drop table if exists T_DEPOSIT_AGREEMENT;
 drop table if exists T_RENT_CONTRACT;
 drop table if exists T_ACCOUNTING;
 drop table if exists T_AGREEMENT_CHANGE;
+drop table if exists T_ATTACHMENT;
+drop table if exists T_LEASE_CONTRACT_DTL;
+drop table if exists T_AUDIT;
+drop table if exists T_AUDIT_HIS;
 
 
 /* Create Tables */
@@ -17,9 +21,9 @@ create table T_LEASE_CONTRACT
    CONTRACT_NAME         VARCHAR(100) comment '承租合同名称',
    EFFECTIVE_DATE       date comment '合同生效时间',
    FIRST_REMITTANCE_DATE       date comment '首次打款日期',
-   REMITTANCE_DATE      date comment '打款日期',
+   REMITTANCE_DATE      varchar(64) comment '打款日期',
    EXPIRED_DATE         date comment '合同过期时间',
-   CONTRACT_DATE         date comment '合同签订时间',
+   CONTRACT_DATE        date comment '合同签订时间',
    DEPOSIT              float comment '承租押金',
    CONTRACT_STATUS      VARCHAR(64) COMMENT '合同审核状态',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
@@ -30,6 +34,22 @@ create table T_LEASE_CONTRACT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '承租合同';
+
+create table T_LEASE_CONTRACT_DTL
+(
+   ID                   varchar(64) NOT NULL,
+   LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
+   START_DATE           date comment '起始时间',
+   END_DATE             date comment '结束时间',
+   DEPOSIT              float comment '月承租价',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '承租合同明细';
 
 create table T_DEPOSIT_AGREEMENT
 (
@@ -145,3 +165,53 @@ create table T_AGREEMENT_CHANGE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '协议变更';
+
+create table T_ATTACHMENT
+(
+	 ID                   varchar(64) NOT NULL,
+	 LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
+	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   ATTACHMENT_NAME      varchar(64) comment '附件名称',
+   ATTACHMENT_TYPE      varchar(64) comment '附件类型',
+   ATTACHMENT_PATH      varchar(4000) comment '附件地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '附件';
+
+create table T_AUDIT
+(
+	 ID                   varchar(64) NOT NULL,
+	 OBJECT_TYPE          varchar(64) comment '审核类型',
+	 OBJECT_ID            varchar(64) comment '审核对象ID',
+   NEXT_ROLE            varchar(100) comment '下一级审核角色',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '审核表';
+
+create table T_AUDIT_HIS
+(
+	 ID                   varchar(64) NOT NULL,
+	 OBJECT_TYPE          varchar(64) comment '审核类型',
+	 OBJECT_ID            varchar(64) comment '审核对象ID',
+   AUDIT_USER           varchar(100) comment '审核人',
+   AUDIT_TIME           datetime comment '审核时间',
+   AUDIT_STATUS         varchar(100) comment '审核状态',
+   AUDIT_MSG            varchar(100) comment '审核意见',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '审核历史表';
