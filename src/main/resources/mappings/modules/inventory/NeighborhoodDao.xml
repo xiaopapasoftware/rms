@@ -6,15 +6,17 @@
 		a.id AS "id",
 		a.neighborhood_name AS "neighborhoodName",
 		a.neighborhood_addr AS "neighborhoodAddr",
-		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="neighborhoodJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="Neighborhood">
@@ -113,10 +115,17 @@
 		WHERE id = #{id}
 	</update>
 	
-	<select id="findNeighborhoodByNameAndAddress" resultType="Integer">
-		SELECT count(*) FROM t_neighborhood a
-		<where>
-				a.del_flag = #{DEL_FLAG_NORMAL}
+	<select id="findNeighborhoodByNameAndAddress" resultType="Neighborhood">
+		SELECT 
+				a.id AS "id",
+				a.neighborhood_name AS "neighborhoodName",
+				a.neighborhood_addr AS "neighborhoodAddr",
+				a.create_date AS "createDate",
+				a.update_date AS "updateDate",
+				a.remarks AS "remarks",
+				a.del_flag AS "delFlag"
+ 			FROM t_neighborhood a
+		<where>a.del_flag = #{DEL_FLAG_NORMAL}
 			AND a.neighborhood_name = #{neighborhoodName}
 			AND a.neighborhood_addr = #{neighborhoodAddr}
 		</where>

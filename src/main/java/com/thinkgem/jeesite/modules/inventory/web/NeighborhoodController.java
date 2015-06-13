@@ -3,9 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,8 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
@@ -69,17 +72,32 @@ public class NeighborhoodController extends BaseController {
 		if (!beanValidator(model, neighborhood)) {
 			return form(neighborhood, model);
 		}
-		Integer counts = neighborhoodService.findNeighborhoodByNameAndAddress(neighborhood);
-		if (counts > 0) {
-			model.addAttribute("message", "居委会名称及地址已被使用，不能重复添加！");
-			model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-			return "modules/inventory/neighborhoodForm";
+		List<Neighborhood> neighborhoods = neighborhoodService.findNeighborhoodByNameAndAddress(neighborhood);
+		if (!neighborhood.getIsNewRecord()) {// 是更新
+			if (CollectionUtils.isNotEmpty(neighborhoods)) {// 只更新备注
+				Neighborhood upNeighborhood = new Neighborhood();
+				upNeighborhood.setNeighborhoodName(neighborhoods.get(0).getNeighborhoodName());
+				upNeighborhood.setNeighborhoodAddr(neighborhoods.get(0).getNeighborhoodAddr());
+				upNeighborhood.setRemarks(neighborhood.getRemarks());
+				upNeighborhood.setId(neighborhood.getId());
+				neighborhoodService.save(upNeighborhood);
+			} else {// 全部更新
+				neighborhoodService.save(neighborhood);
+			}
+			addMessage(redirectAttributes, "修改居委会成功");
+			return "redirect:" + Global.getAdminPath() + "/inventory/neighborhood/?repage";
+		} else {// 新增
+			if (CollectionUtils.isNotEmpty(neighborhoods)) {
+				model.addAttribute("message", "居委会名称及地址已被使用，不能重复添加");
+				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+				return "modules/inventory/neighborhoodForm";
+			} else {
+				neighborhoodService.save(neighborhood);
+				addMessage(redirectAttributes, "新增居委会成功");
+				return "redirect:" + Global.getAdminPath() + "/inventory/neighborhood/?repage";
+			}
 		}
-		neighborhoodService.save(neighborhood);
-		addMessage(redirectAttributes, "保存居委会成功");
-		return "redirect:" + Global.getAdminPath() + "/inventory/neighborhood/?repage";
 	}
-
 	@RequiresPermissions("inventory:neighborhood:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Neighborhood neighborhood, RedirectAttributes redirectAttributes) {

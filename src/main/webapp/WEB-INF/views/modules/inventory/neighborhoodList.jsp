@@ -47,7 +47,10 @@
 			<tr>
 				<th>居委会名称</th>
 				<th>居委会地址</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:neighborhood:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -55,14 +58,25 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="neighborhood">
 			<tr>
-				<td><a href="${ctx}/inventory/neighborhood/form?id=${neighborhood.id}">
-					${neighborhood.neighborhoodName}
-				</a></td>
+				<td>
+					<a href="${ctx}/inventory/neighborhood/form?id=${neighborhood.id}">
+						${neighborhood.neighborhoodName}
+					</a>
+				</td>
 				<td>
 					${neighborhood.neighborhoodAddr}
 				</td>
 				<td>
+					<fmt:formatDate value="${neighborhood.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${neighborhood.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${neighborhood.createBy.loginName}
+				</td>
+				<td>
+				 	${neighborhood.updateBy.loginName}
 				</td>
 				<td>
 					${neighborhood.remarks}

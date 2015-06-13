@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
@@ -16,5 +18,5 @@ import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 @MyBatisDao
 public interface NeighborhoodDao extends CrudDao<Neighborhood> {
 
-	Integer findNeighborhoodByNameAndAddress(Neighborhood neighborhood);
+	List<Neighborhood> findNeighborhoodByNameAndAddress(Neighborhood neighborhood);
 }
