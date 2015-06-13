@@ -35,7 +35,7 @@ public class Neighborhood extends DataEntity<Neighborhood> {
 		this.neighborhoodName = neighborhoodName;
 	}
 	
-	@Length(min=0, max=100, message="居委会地址长度必须介于 0 和 100 之间")
+	@Length(min=1, max=100, message="居委会地址长度必须介于 1 和 100 之间")
 	public String getNeighborhoodAddr() {
 		return neighborhoodAddr;
 	}

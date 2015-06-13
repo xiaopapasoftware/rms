@@ -113,4 +113,12 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findNeighborhoodByNameAndAddress" resultType="Integer">
+		SELECT count(*) FROM t_neighborhood a
+		<where>
+				a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.neighborhood_name = #{neighborhoodName}
+			AND a.neighborhood_addr = #{neighborhoodAddr}
+		</where>
+	</select>
 </mapper>

@@ -18,8 +18,14 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/inventory/neighborhood/">居委会列表</a></li>
-		<shiro:hasPermission name="inventory:neighborhood:edit"><li><a href="${ctx}/inventory/neighborhood/form">居委会添加</a></li></shiro:hasPermission>
+		<li class="active">
+			<a href="${ctx}/inventory/neighborhood/">居委会列表</a>
+		</li>
+		<shiro:hasPermission name="inventory:neighborhood:edit">
+			<li>
+				<a href="${ctx}/inventory/neighborhood/form">居委会添加</a>
+			</li>
+		</shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="neighborhood" action="${ctx}/inventory/neighborhood/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>

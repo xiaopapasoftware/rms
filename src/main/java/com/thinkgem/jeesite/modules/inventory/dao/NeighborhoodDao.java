@@ -9,10 +9,12 @@ import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 
 /**
  * 居委会DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-03
  */
 @MyBatisDao
 public interface NeighborhoodDao extends CrudDao<Neighborhood> {
-	
+
+	Integer findNeighborhoodByNameAndAddress(Neighborhood neighborhood);
 }

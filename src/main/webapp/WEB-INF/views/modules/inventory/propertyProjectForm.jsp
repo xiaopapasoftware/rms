@@ -27,9 +27,17 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/inventory/propertyProject/">物业项目列表</a></li>
-		<li class="active"><a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">物业项目<shiro:hasPermission name="inventory:propertyProject:edit">${not empty propertyProject.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:propertyProject:edit">查看</shiro:lacksPermission></a></li>
-	</ul><br/>
+		<li>
+			<a href="${ctx}/inventory/propertyProject/">物业项目列表</a>
+		</li>
+		<li class="active">
+			<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">物业项目
+				<shiro:hasPermission name="inventory:propertyProject:edit">${not empty propertyProject.id?'修改':'添加'}</shiro:hasPermission>
+				<shiro:lacksPermission name="inventory:propertyProject:edit">查看</shiro:lacksPermission>
+			</a>
+		</li>
+	</ul>
+	<br/>
 	<form:form id="inputForm" modelAttribute="propertyProject" action="${ctx}/inventory/propertyProject/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		

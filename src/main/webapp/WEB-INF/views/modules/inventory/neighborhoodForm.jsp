@@ -27,12 +27,19 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/inventory/neighborhood/">居委会列表</a></li>
-		<li class="active"><a href="${ctx}/inventory/neighborhood/form?id=${neighborhood.id}">居委会<shiro:hasPermission name="inventory:neighborhood:edit">${not empty neighborhood.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:neighborhood:edit">查看</shiro:lacksPermission></a></li>
-	</ul><br/>
+		<li>
+			<a href="${ctx}/inventory/neighborhood/">居委会列表</a>
+		</li>
+		<li class="active">
+			<a href="${ctx}/inventory/neighborhood/form?id=${neighborhood.id}">
+			            居委会<shiro:hasPermission name="inventory:neighborhood:edit">${not empty neighborhood.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:neighborhood:edit">查看</shiro:lacksPermission>
+			</a>
+		</li>
+	</ul>
+	<br/>
 	<form:form id="inputForm" modelAttribute="neighborhood" action="${ctx}/inventory/neighborhood/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">居委会名称：</label>
 			<div class="controls">
@@ -43,7 +50,8 @@
 		<div class="control-group">
 			<label class="control-label">居委会地址：</label>
 			<div class="controls">
-				<form:input path="neighborhoodAddr" htmlEscape="false" maxlength="100" class="input-xlarge "/>
+				<form:input path="neighborhoodAddr" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -53,7 +61,9 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="inventory:neighborhood:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="inventory:neighborhood:edit">
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

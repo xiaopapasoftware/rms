@@ -12,7 +12,7 @@ create table T_NEIGHBORHOOD
 (
    ID                   varchar(64) NOT NULL,
    NEIGHBORHOOD_NAME    varchar(100) comment '居委会名称',
-   NEIGHBORHOOD_ADDR    VARCHAR(300) comment '居委会地址',
+   NEIGHBORHOOD_ADDR    VARCHAR(100) comment '居委会地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          TIMESTAMP COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
