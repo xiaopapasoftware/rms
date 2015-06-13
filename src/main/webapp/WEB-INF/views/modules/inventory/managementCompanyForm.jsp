@@ -32,7 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="managementCompany" action="${ctx}/inventory/managementCompany/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>		
 		<div class="control-group">
 			<label class="control-label">物业公司名称：</label>
 			<div class="controls">
