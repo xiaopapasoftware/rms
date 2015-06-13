@@ -2,6 +2,8 @@
 drop table if exists T_LEASE_CONTRACT;
 drop table if exists T_DEPOSIT_AGREEMENT;
 drop table if exists T_RENT_CONTRACT;
+drop table if exists T_ACCOUNTING;
+drop table if exists T_AGREEMENT_CHANGE;
 
 
 /* Create Tables */
@@ -15,7 +17,7 @@ create table T_LEASE_CONTRACT
    CONTRACT_NAME         VARCHAR(100) comment '承租合同名称',
    EFFECTIVE_DATE       date comment '合同生效时间',
    FIRST_REMITTANCE_DATE       date comment '首次打款日期',
-   REMITTANCE_DATE      varchar(64) comment '打款日期',
+   REMITTANCE_DATE      date comment '打款日期',
    EXPIRED_DATE         date comment '合同过期时间',
    CONTRACT_DATE         date comment '合同签订时间',
    DEPOSIT              float comment '承租押金',
@@ -94,7 +96,7 @@ create table T_RENT_CONTRACT
    VALLEY_METER_VALUE         float comment '入住谷电系数',
    COAL_VALUE          float comment '入住煤表系数',
    WATER_VALUE         float comment '入住水表系数',
-   REMIND_TIME         float comment '续租提醒时间',
+   REMIND_TIME         date comment '续租提醒时间',
    CONTRACT_STATUS      VARCHAR(64) COMMENT '合同状态',
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
@@ -105,3 +107,41 @@ create table T_RENT_CONTRACT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '出租合同';
+
+
+create table T_ACCOUNTING
+(
+	 ID                   varchar(64) NOT NULL,
+	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   ACCOUNTING_TYPE      varchar(64) comment '核算类型',
+   FEE_DIRECTION        varchar(64) comment '核算费用方向',
+   FEE_TYPE             varchar(64) comment '核算费用类别',
+   FEE_AMOUNT           float comment '核算金额',
+   USER_ID              varchar(100) comment '核算人',
+   FEE_DATE             TIMESTAMP comment '核算时间',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '退租核算';
+
+create table T_AGREEMENT_CHANGE
+(
+	 ID                   varchar(64) NOT NULL,
+	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   AGREEMENT_CHANGE_NAME      varchar(64) comment '合同变更协议名称',
+   START_DATE           date comment '协议生效时间',
+   RENT_MODE            varchar(64) comment '出租方式',
+   AGREEMENT_STATUS     varchar(64) comment '协议审核状态',
+   USER_ID              varchar(100) comment '核算人',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '协议变更';

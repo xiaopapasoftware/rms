@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao">
+    
+	<sql id="tradingAccountsColumns">
+		a.id AS "id",
+		a.trade_id AS "tradeId",
+		a.trade_type AS "tradeType",
+		a.trade_direction AS "tradeDirection",
+		a.trade_mode AS "tradeMode",
+		a.trade_amount AS "tradeAmount",
+		a.trade_time AS "tradeTime",
+		a.payee_name AS "payeeName",
+		a.payee_type AS "payeeType",
+		a.trade_status AS "tradeStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="tradingAccountsJoins">
+	</sql>
+    
+	<select id="get" resultType="TradingAccounts">
+		SELECT 
+			<include refid="tradingAccountsColumns"/>
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="TradingAccounts">
+		SELECT 
+			<include refid="tradingAccountsColumns"/>
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tradeId != null and tradeId != ''">
+				AND a.trade_id = #{tradeId}
+			</if>
+			<if test="tradeType != null and tradeType != ''">
+				AND a.trade_type = #{tradeType}
+			</if>
+			<if test="tradeDirection != null and tradeDirection != ''">
+				AND a.trade_direction = #{tradeDirection}
+			</if>
+			<if test="tradeMode != null and tradeMode != ''">
+				AND a.trade_mode = #{tradeMode}
+			</if>
+			<if test="tradeAmount != null and tradeAmount != ''">
+				AND a.trade_amount = #{tradeAmount}
+			</if>
+			<if test="tradeTime != null and tradeTime != ''">
+				AND a.trade_time = #{tradeTime}
+			</if>
+			<if test="payeeName != null and payeeName != ''">
+				AND a.payee_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{payeeName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{payeeName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{payeeName},'%')</if>
+			</if>
+			<if test="payeeType != null and payeeType != ''">
+				AND a.payee_type = #{payeeType}
+			</if>
+			<if test="tradeStatus != null and tradeStatus != ''">
+				AND a.trade_status = #{tradeStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TradingAccounts">
+		SELECT 
+			<include refid="tradingAccountsColumns"/>
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_trading_accounts(
+			id,
+			trade_id,
+			trade_type,
+			trade_direction,
+			trade_mode,
+			trade_amount,
+			trade_time,
+			payee_name,
+			payee_type,
+			trade_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{tradeId},
+			#{tradeType},
+			#{tradeDirection},
+			#{tradeMode},
+			#{tradeAmount},
+			#{tradeTime},
+			#{payeeName},
+			#{payeeType},
+			#{tradeStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_trading_accounts SET 	
+			trade_id = #{tradeId},
+			trade_type = #{tradeType},
+			trade_direction = #{tradeDirection},
+			trade_mode = #{tradeMode},
+			trade_amount = #{tradeAmount},
+			trade_time = #{tradeTime},
+			payee_name = #{payeeName},
+			payee_type = #{payeeType},
+			trade_status = #{tradeStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_trading_accounts SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
