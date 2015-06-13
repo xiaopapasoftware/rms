@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.DevicesDao">
+    
+	<sql id="devicesColumns">
+		a.id AS "id",
+		a.device_id AS "deviceId",
+		a.device_name AS "deviceName",
+		a.device_model AS "deviceModel",
+		a.device_type AS "deviceType",
+		a.device_price AS "devicePrice",
+		a.device_brand AS "deviceBrand",
+		a.device_amount AS "deviceAmount",
+		a.device_status AS "deviceStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="devicesJoins">
+	</sql>
+    
+	<select id="get" resultType="Devices">
+		SELECT 
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Devices">
+		SELECT 
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="deviceId != null and deviceId != ''">
+				AND a.device_id = #{deviceId}
+			</if>
+			<if test="deviceName != null and deviceName != ''">
+				AND a.device_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceName},'%')</if>
+			</if>
+			<if test="deviceModel != null and deviceModel != ''">
+				AND a.device_model = #{deviceModel}
+			</if>
+			<if test="deviceType != null and deviceType != ''">
+				AND a.device_type = #{deviceType}
+			</if>
+			<if test="devicePrice != null and devicePrice != ''">
+				AND a.device_price = #{devicePrice}
+			</if>
+			<if test="deviceBrand != null and deviceBrand != ''">
+				AND a.device_brand LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceBrand}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceBrand}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceBrand},'%')</if>
+			</if>
+			<if test="deviceAmount != null and deviceAmount != ''">
+				AND a.device_amount = #{deviceAmount}
+			</if>
+			<if test="deviceStatus != null and deviceStatus != ''">
+				AND a.device_status = #{deviceStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Devices">
+		SELECT 
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_devices(
+			id,
+			device_id,
+			device_name,
+			device_model,
+			device_type,
+			device_price,
+			device_brand,
+			device_amount,
+			device_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{deviceId},
+			#{deviceName},
+			#{deviceModel},
+			#{deviceType},
+			#{devicePrice},
+			#{deviceBrand},
+			#{deviceAmount},
+			#{deviceStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_devices SET 	
+			device_id = #{deviceId},
+			device_name = #{deviceName},
+			device_model = #{deviceModel},
+			device_type = #{deviceType},
+			device_price = #{devicePrice},
+			device_brand = #{deviceBrand},
+			device_amount = #{deviceAmount},
+			device_status = #{deviceStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_devices SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
