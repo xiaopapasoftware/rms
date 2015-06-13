@@ -5,6 +5,7 @@ drop table if exists T_PROPERTY_PROJECT;
 drop table if exists T_BUILDING;
 drop table if exists T_HOUSE;
 drop table if exists T_ROOM;
+drop table if exists T_DEVICES;
 
 
 /* Create Tables */
@@ -108,3 +109,23 @@ create table T_ROOM
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '房间信息';
+
+create table T_DEVICES
+(
+   ID                   varchar(64) NOT NULL,
+   DEVICE_ID            varchar(64) comment '设备ID',
+   DEVICE_NAME          varchar(100) comment '设备名称',
+   DEVICE_MODEL         varchar(100) comment '设备型号',
+   DEVICE_TYPE          varchar(100) comment '设备类型',
+   DEVICE_PRICE         float comment '设备采购价格',
+   DEVICE_BRAND         varchar(64) comment '设备品牌',
+   DEVICE_AMOUNT        int comment '设备数量',
+   DEVICE_STATUS        varchar(100) comment '设备状态',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          TIMESTAMP COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '设备信息';
