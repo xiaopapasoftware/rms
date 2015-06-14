@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -36,6 +38,17 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	private Date contractDate;		// 合同签订时间
 	private Double deposit;		// 承租押金
 	private String contractStatus;		// 合同审核状态
+	
+	private String landlordId;//房东身份证
+	private String profile;//委托证明
+	private String certificate;//房产证
+	
+	private String projectName;
+	private String buildingBame;
+	private String houseNo;
+	private String remittancerName;
+	
+	List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
 	
 	public LeaseContract() {
 		super();
@@ -90,7 +103,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 		this.contractName = contractName;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="合同生效时间不能为空")
 	public Date getEffectiveDate() {
 		return effectiveDate;
@@ -100,7 +113,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 		this.effectiveDate = effectiveDate;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="首次打款日期不能为空")
 	public Date getFirstRemittanceDate() {
 		return firstRemittanceDate;
@@ -119,7 +132,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 		this.remittanceDate = remittanceDate;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="合同过期时间不能为空")
 	public Date getExpiredDate() {
 		return expiredDate;
@@ -129,7 +142,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 		this.expiredDate = expiredDate;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="合同签订时间不能为空")
 	public Date getContractDate() {
 		return contractDate;
@@ -156,5 +169,68 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	public void setContractStatus(String contractStatus) {
 		this.contractStatus = contractStatus;
 	}
-	
+
+	public String getLandlordId() {
+		return landlordId;
+	}
+
+	public void setLandlordId(String landlordId) {
+		this.landlordId = landlordId;
+	}
+
+	public String getProfile() {
+		return profile;
+	}
+
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+
+	public String getCertificate() {
+		return certificate;
+	}
+
+	public void setCertificate(String certificate) {
+		this.certificate = certificate;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public String getBuildingBame() {
+		return buildingBame;
+	}
+
+	public void setBuildingBame(String buildingBame) {
+		this.buildingBame = buildingBame;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public void setHouseNo(String houseNo) {
+		this.houseNo = houseNo;
+	}
+
+	public String getRemittancerName() {
+		return remittancerName;
+	}
+
+	public void setRemittancerName(String remittancerName) {
+		this.remittancerName = remittancerName;
+	}
+
+	public List<LeaseContractDtl> getLeaseContractDtlList() {
+		return leaseContractDtlList;
+	}
+
+	public void setLeaseContractDtlList(List<LeaseContractDtl> leaseContractDtlList) {
+		this.leaseContractDtlList = leaseContractDtlList;
+	}
 }
