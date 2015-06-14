@@ -14,6 +14,33 @@
 			$("#searchForm").submit();
         	return false;
         }
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/leaseContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
 	</script>
 </head>
 <body>
@@ -25,63 +52,63 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium">
+			<li><label style="width:100px;">物业项目：</label>
+				<form:select path="propertyProject.id" class="input-medium" style="width:177px;">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>楼宇：</label>
-				<form:select path="building.id" class="input-medium">
+			<li><label style="width:100px;">楼宇：</label>
+				<form:select path="building.id" class="input-medium" style="width:177px;">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>房屋：</label>
-				<form:select path="house.id" class="input-medium">
+			<li><label style="width:100px;">房屋：</label>
+				<form:select path="house.id" class="input-medium" style="width:177px;">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>汇款人：</label>
+			<li><label style="width:100px;">汇款人：</label>
 				<form:input path="remittancer.id" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
-			<li><label>承租合同名称：</label>
+			<li><label style="width:100px;">承租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>合同生效时间：</label>
+			<li><label style="width:100px;">合同生效时间：</label>
 				<input name="effectiveDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>首次打款日期：</label>
+			<li><label style="width:100px;">首次打款日期：</label>
 				<input name="firstRemittanceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>打款日期：</label>
-				<form:select path="remittanceDate" class="input-medium">
+			<li><label style="width:100px;">打款日期：</label>
+				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>合同过期时间：</label>
+			<li><label style="width:100px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>合同签订时间：</label>
+			<li><label style="width:100px;">合同签订时间：</label>
 				<input name="contractDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>承租押金：</label>
+			<li><label style="width:100px;">承租押金：</label>
 				<form:input path="deposit" htmlEscape="false" class="input-medium"/>
 			</li>
-			<li><label>合同审核状态：</label>
-				<form:select path="contractStatus" class="input-medium">
+			<li><label style="width:100px;">合同审核状态：</label>
+				<form:select path="contractStatus" class="input-medium" style="width:177px;">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="true"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -92,11 +119,11 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>承租合同名称</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
 				<th>房屋</th>
 				<th>汇款人</th>
-				<th>承租合同名称</th>
 				<th>合同生效时间</th>
 				<th>首次打款日期</th>
 				<th>打款日期</th>
@@ -113,40 +140,40 @@
 		<c:forEach items="${page.list}" var="leaseContract">
 			<tr>
 				<td><a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
-					${fns:getDictLabel(leaseContract.propertyProject.id, '', '')}
+					${leaseContract.contractName}
 				</a></td>
 				<td>
-					${fns:getDictLabel(leaseContract.building.id, '', '')}
+					${leaseContract.projectName}
 				</td>
 				<td>
-					${fns:getDictLabel(leaseContract.house.id, '', '')}
+					${leaseContract.buildingBame}
 				</td>
 				<td>
-					${leaseContract.remittancer.id}
+					${leaseContract.houseNo}
 				</td>
 				<td>
-					${leaseContract.contractName}
+					${leaseContract.remittancerName}
 				</td>
 				<td>
-					<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					${fns:getDictLabel(leaseContract.remittanceDate, '', '')}
+					${fns:getDictLabel(leaseContract.remittanceDate, 'remittance_date', '')}
 				</td>
 				<td>
-					<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${leaseContract.deposit}
 				</td>
 				<td>
-					${fns:getDictLabel(leaseContract.contractStatus, '', '')}
+					${fns:getDictLabel(leaseContract.contractStatus, 'contract_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${leaseContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -154,10 +181,20 @@
 				<td>
 					${leaseContract.remarks}
 				</td>
-				<shiro:hasPermission name="contract:leaseContract:edit"><td>
-    				<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
-					<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				<td>
+				<shiro:hasPermission name="contract:leaseContract:edit">
+					<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2'}">
+    					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
+    				</c:if>
+					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
+				</shiro:hasPermission>
+					<c:if test="${leaseContract.contractStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
+					</c:if>
+					<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
+						<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
+					</c:if>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>
