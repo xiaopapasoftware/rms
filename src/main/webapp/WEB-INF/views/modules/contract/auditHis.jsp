@@ -28,7 +28,7 @@
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="leaseContract">
+		<c:forEach items="${page.list}" var="auditHis">
 			<tr>
 				<td>
 					${auditHis.auditUserName}

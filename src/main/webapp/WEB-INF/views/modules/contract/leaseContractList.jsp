@@ -41,6 +41,10 @@
 			var msg = $("#auditMsg").val();
 			window.location.href="${ctx}/contract/leaseContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
 		}
+		
+		function auditHis(id) {
+			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -139,7 +143,7 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="leaseContract">
 			<tr>
-				<td><a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
+				<td><a title="查看详细" href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
 					${leaseContract.contractName}
 				</a></td>
 				<td>
@@ -188,9 +192,11 @@
     				</c:if>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
+				<shiro:hasPermission name="contract:leaseContract:audit">
 					<c:if test="${leaseContract.contractStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
 					</c:if>
+				</shiro:hasPermission>
 					<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
 						<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
 					</c:if>
