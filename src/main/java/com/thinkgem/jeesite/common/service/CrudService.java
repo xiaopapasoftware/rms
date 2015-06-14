@@ -80,6 +80,18 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 		}
 	}
 	
+	@Transactional(readOnly = false)
+	public String saveAndReturnId(T entity) {
+		if (entity.getIsNewRecord()){
+			entity.preInsert();
+			dao.insert(entity);
+		}else{
+			entity.preUpdate();
+			dao.update(entity);
+		}
+		return entity.getId();
+	}
+	
 	/**
 	 * 删除数据
 	 * @param entity
