@@ -257,7 +257,7 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:leaseContract:edit">
-				<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2'}">
+				<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2' || empty leaseContract.id}">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 				</c:if>
 			</shiro:hasPermission>
