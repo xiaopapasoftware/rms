@@ -29,6 +29,7 @@
 		FROM t_audit_his a
 		<include refid="auditHisJoins"/>
 		WHERE a.id = #{id}
+		order by a.create_date desc 
 	</select>
 	
 	<select id="findList" resultType="AuditHis">
@@ -37,7 +38,8 @@
 		FROM t_audit_his a
 		<include refid="auditHisJoins"/>
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
+			a.del_flag = #{DEL_FLAG_NORMAL} 
+			and a.object_id=#{objectId} 
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
