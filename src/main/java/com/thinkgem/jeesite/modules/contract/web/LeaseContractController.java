@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,10 +19,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.person.entity.Remittancer;
+import com.thinkgem.jeesite.modules.person.service.RemittancerService;
 
 /**
  * 承租合同Controller
@@ -33,6 +44,14 @@ public class LeaseContractController extends BaseController {
 
 	@Autowired
 	private LeaseContractService leaseContractService;
+	@Autowired
+	private PropertyProjectService propertyProjectService;
+	@Autowired
+	private BuildingService buildingService;
+	@Autowired
+	private HouseService houseService;
+	@Autowired
+	private RemittancerService remittancerService;
 	
 	@ModelAttribute
 	public LeaseContract get(@RequestParam(required=false) String id) {
@@ -51,13 +70,50 @@ public class LeaseContractController extends BaseController {
 	public String list(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<LeaseContract> page = leaseContractService.findPage(new Page<LeaseContract>(request, response), leaseContract); 
 		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		List<Building> buildingList = buildingService.findList(new Building());
+		model.addAttribute("buildingList", buildingList);
+		
+		List<House> houseList = houseService.findList(new House());
+		model.addAttribute("houseList", houseList);
+		
 		return "modules/contract/leaseContractList";
+	}
+	
+	@RequestMapping(value = "audit")
+	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		leaseContractService.audit(auditHis);
+		
+		return list(new LeaseContract(),request,response,model);
+	}
+	
+	@RequestMapping(value = "auditHis")
+	public String auditHis(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		leaseContractService.audit(auditHis);
+		
+		return "modules/contract/auditHis";
 	}
 
 	@RequiresPermissions("contract:leaseContract:view")
 	@RequestMapping(value = "form")
 	public String form(LeaseContract leaseContract, Model model) {
 		model.addAttribute("leaseContract", leaseContract);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		List<Building> buildingList = buildingService.findList(new Building());
+		model.addAttribute("buildingList", buildingList);
+		
+		List<House> houseList = houseService.findList(new House());
+		model.addAttribute("houseList", houseList);
+		
+		List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
+		model.addAttribute("remittancerList", remittancerList);
+		
 		return "modules/contract/leaseContractForm";
 	}
 
