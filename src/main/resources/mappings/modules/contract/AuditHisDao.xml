@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.AuditHisDao">
+    
+	<sql id="auditHisColumns">
+		a.id AS "id",
+		a.object_type AS "objectType",
+		a.object_id AS "objectId",
+		a.audit_user AS "auditUser",
+		a.audit_time AS "auditTime",
+		a.audit_status AS "auditStatus",
+		a.audit_msg AS "auditMsg",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u.name as auditUserName
+	</sql>
+	
+	<sql id="auditHisJoins">
+	left join sys_user u on a.audit_user=u.id 
+	</sql>
+    
+	<select id="get" resultType="AuditHis">
+		SELECT 
+			<include refid="auditHisColumns"/>
+		FROM t_audit_his a
+		<include refid="auditHisJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AuditHis">
+		SELECT 
+			<include refid="auditHisColumns"/>
+		FROM t_audit_his a
+		<include refid="auditHisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AuditHis">
+		SELECT 
+			<include refid="auditHisColumns"/>
+		FROM t_audit_his a
+		<include refid="auditHisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_audit_his(
+			id,
+			object_type,
+			object_id,
+			audit_user,
+			audit_time,
+			audit_status,
+			audit_msg,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{objectType},
+			#{objectId},
+			#{auditUser},
+			#{auditTime},
+			#{auditStatus},
+			#{auditMsg},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_audit_his SET 	
+			object_type = #{objectType},
+			object_id = #{objectId},
+			audit_user = #{auditUser},
+			audit_time = #{auditTime},
+			audit_status = #{auditStatus},
+			audit_msg = #{auditMsg},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_audit_his SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

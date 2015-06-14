@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.AttachmentDao">
+    
+	<sql id="attachmentColumns">
+		a.id AS "id",
+		a.lease_contract_id AS "leaseContractId",
+		a.rent_contract_id AS "rentContractId",
+		a.attachment_name AS "attachmentName",
+		a.attachment_type AS "attachmentType",
+		a.attachment_path AS "attachmentPath",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="attachmentJoins">
+	</sql>
+    
+	<select id="get" resultType="Attachment">
+		SELECT 
+			<include refid="attachmentColumns"/>
+		FROM t_attachment a
+		<include refid="attachmentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Attachment">
+		SELECT 
+			<include refid="attachmentColumns"/>
+		FROM t_attachment a
+		<include refid="attachmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Attachment">
+		SELECT 
+			<include refid="attachmentColumns"/>
+		FROM t_attachment a
+		<include refid="attachmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_attachment(
+			id,
+			lease_contract_id,
+			rent_contract_id,
+			attachment_name,
+			attachment_type,
+			attachment_path,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{leaseContractId},
+			#{rentContractId},
+			#{attachmentName},
+			#{attachmentType},
+			#{attachmentPath},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_attachment SET 	
+			lease_contract_id = #{leaseContractId},
+			rent_contract_id = #{rentContractId},
+			attachment_name = #{attachmentName},
+			attachment_type = #{attachmentType},
+			attachment_path = #{attachmentPath},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_attachment SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE lease_contract_id = #{leaseContractId}
+	</update>
+	
+</mapper>
