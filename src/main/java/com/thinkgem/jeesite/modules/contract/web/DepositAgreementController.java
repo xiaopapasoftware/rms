@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,10 +19,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
  * 定金协议Controller
@@ -33,6 +43,14 @@ public class DepositAgreementController extends BaseController {
 
 	@Autowired
 	private DepositAgreementService depositAgreementService;
+	@Autowired
+	private PropertyProjectService propertyProjectService;
+	@Autowired
+	private BuildingService buildingService;
+	@Autowired
+	private HouseService houseService;
+	@Autowired
+	private RoomService roomService;
 	
 	@ModelAttribute
 	public DepositAgreement get(@RequestParam(required=false) String id) {
@@ -58,6 +76,19 @@ public class DepositAgreementController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(DepositAgreement depositAgreement, Model model) {
 		model.addAttribute("depositAgreement", depositAgreement);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		List<Building> buildingList = buildingService.findList(new Building());
+		model.addAttribute("buildingList", buildingList);
+		
+		List<House> houseList = houseService.findList(new House());
+		model.addAttribute("houseList", houseList);
+		
+		List<Room> roomList = roomService.findList(new Room());
+		model.addAttribute("roomList", roomList);
+		
 		return "modules/contract/depositAgreementForm";
 	}
 

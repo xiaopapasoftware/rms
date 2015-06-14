@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
+import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -52,6 +53,8 @@ public class LeaseContractController extends BaseController {
 	private HouseService houseService;
 	@Autowired
 	private RemittancerService remittancerService;
+	@Autowired
+	private AuditHisService auditHisService;
 	
 	@ModelAttribute
 	public LeaseContract get(@RequestParam(required=false) String id) {
@@ -92,8 +95,8 @@ public class LeaseContractController extends BaseController {
 	
 	@RequestMapping(value = "auditHis")
 	public String auditHis(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
-		leaseContractService.audit(auditHis);
-		
+		Page<AuditHis> page = auditHisService.findPage(new Page<AuditHis>(request, response), auditHis);
+		model.addAttribute("page", page);
 		return "modules/contract/auditHis";
 	}
 
