@@ -73,10 +73,10 @@ public class PropertyProjectController extends BaseController {
 
 		Page<PropertyProject> page = propertyProjectService.findPage(new Page<PropertyProject>(request, response),
 				propertyProject);
+
 		model.addAttribute("page", page);
 		return "modules/inventory/propertyProjectList";
 	}
-
 	@RequiresPermissions("inventory:propertyProject:view")
 	@RequestMapping(value = "form")
 	public String form(PropertyProject propertyProject, Model model) {

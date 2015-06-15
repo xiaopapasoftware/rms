@@ -49,12 +49,12 @@ public class PropertyProjectService extends CrudService<PropertyProjectDao, Prop
 	@Transactional(readOnly = false)
 	public void save(PropertyProject propertyProject) {
 		String id = super.saveAndReturnId(propertyProject);
-		if (StringUtils.isNotEmpty(propertyProject.getPropertyPrjImgPath())) {
+		if (StringUtils.isNotEmpty(propertyProject.getAttachmentPath())) {
 			Attachment attachment = new Attachment();
 			attachment.setId(IdGen.uuid());
 			attachment.setPropertyProjectId(id);
 			attachment.setAttachmentType(FileType.PROJECT_CHART.getValue());
-			attachment.setAttachmentPath(propertyProject.getPropertyPrjImgPath());
+			attachment.setAttachmentPath(propertyProject.getAttachmentPath());
 			attachment.setCreateDate(new Date());
 			attachment.setCreateBy(UserUtils.getUser());
 			attachment.setUpdateDate(new Date());

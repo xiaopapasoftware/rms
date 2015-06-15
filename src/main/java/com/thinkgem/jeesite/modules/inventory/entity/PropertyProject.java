@@ -21,7 +21,7 @@ public class PropertyProject extends DataEntity<PropertyProject> {
 	private ManagementCompany managementCompany; // 物业公司
 	private String projectName; // 物业项目名称
 	private String projectAddr; // 物业项目地址
-	private String propertyPrjImgPath;// 物业项目图片
+	private String attachmentPath;// 物业项目图片
 
 	public PropertyProject() {
 		super();
@@ -66,11 +66,11 @@ public class PropertyProject extends DataEntity<PropertyProject> {
 	public void setProjectAddr(String projectAddr) {
 		this.projectAddr = projectAddr;
 	}
-	public String getPropertyPrjImgPath() {
-		return propertyPrjImgPath;
+	public String getAttachmentPath() {
+		return attachmentPath;
 	}
 
-	public void setPropertyPrjImgPath(String propertyPrjImgPath) {
-		this.propertyPrjImgPath = propertyPrjImgPath;
+	public void setAttachmentPath(String attachmentPath) {
+		this.attachmentPath = attachmentPath;
 	}
 }

@@ -27,13 +27,13 @@
 		<ul class="ul-form">
 			<li><label style="width:120px;">居委会：</label>
 				<form:select path="neighborhood.id" class="input-medium" style="width:195px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${listNeighborhood}" itemLabel="neighborhoodName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">物业公司：</label>
 				<form:select path="managementCompany.id" class="input-medium" style="width:195px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -52,11 +52,14 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>物业项目名称</th>
 				<th>居委会</th>
 				<th>物业公司</th>
+				<th>物业项目名称</th>
 				<th>物业项目地址</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:propertyProject:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -65,21 +68,30 @@
 		<c:forEach items="${page.list}" var="propertyProject">
 			<tr>
 				<td>
-					<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">
-					${propertyProject.projectName}
-					</a>
-				</td>
-				<td>
 					${propertyProject.neighborhood.neighborhoodName}
 				</td>
 				<td>
 					${propertyProject.managementCompany.companyName}
 				</td>
 				<td>
+					<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">
+					${propertyProject.projectName}
+					</a>
+				</td>
+				<td>
 					${propertyProject.projectAddr}
 				</td>
 				<td>
+					<fmt:formatDate value="${propertyProject.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${propertyProject.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${propertyProject.createBy.loginName}
+				</td>
+				<td>
+				 	${propertyProject.updateBy.loginName}
 				</td>
 				<td>
 					${propertyProject.remarks}
