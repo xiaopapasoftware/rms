@@ -43,7 +43,7 @@ create table T_PROPERTY_PROJECT
    T_NEIGHBORHOOD_MAIN_ID      varchar(64) comment '居委会',
    T_MANAGEMENT_COMPANY_MAIN_ID varchar(64) comment '物业公司',
    PROJECT_NAME    varchar(100) comment '物业项目名称',
-   PROJECT_ADDR    VARCHAR(300) comment '物业项目地址',
+   PROJECT_ADDR    VARCHAR(100) comment '物业项目地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

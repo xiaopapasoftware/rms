@@ -19,8 +19,8 @@
 	</sql>
 	
 	<sql id="propertyProjectJoins">
-		JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
-		JOIN t_management_company c on c.id=a.t_management_company_main_id
+		LEFT JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
+		LEFT JOIN t_management_company c on c.id=a.t_management_company_main_id
 	</sql>
     
 	<select id="get" resultType="PropertyProject">
@@ -131,4 +131,15 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findPropertyProjectByNameAndAddress" resultType="PropertyProject">
+		SELECT 
+			a.id AS "id",
+			a.project_name AS "projectName",
+			a.project_addr AS "projectAddr"
+ 			FROM t_property_project a
+		<where>a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.project_name = #{projectName}
+			AND a.project_addr = #{projectAddr}
+		</where>
+	</select>
 </mapper>

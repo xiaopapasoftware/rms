@@ -168,9 +168,13 @@ create table T_AGREEMENT_CHANGE
 
 create table T_ATTACHMENT
 (
-	 ID                   varchar(64) NOT NULL,
-	 LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
-	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   ID                   varchar(64) NOT NULL,
+   LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
+   RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   PROPERTY_PROJECT_ID	varchar(64) comment '物业项目',
+   BUILDING_ID			varchar(64) comment '楼宇',
+   HOUSE_ID				varchar(64) comment '房屋',
+   ROOM_ID				varchar(64) comment '房间',
    ATTACHMENT_NAME      varchar(64) comment '附件名称',
    ATTACHMENT_TYPE      varchar(64) comment '附件类型',
    ATTACHMENT_PATH      varchar(4000) comment '附件地址',

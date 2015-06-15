@@ -31,21 +31,18 @@
 			<a href="${ctx}/inventory/propertyProject/">物业项目列表</a>
 		</li>
 		<li class="active">
-			<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">物业项目
-				<shiro:hasPermission name="inventory:propertyProject:edit">${not empty propertyProject.id?'修改':'添加'}</shiro:hasPermission>
-				<shiro:lacksPermission name="inventory:propertyProject:edit">查看</shiro:lacksPermission>
-			</a>
+			<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">物业项目<shiro:hasPermission name="inventory:propertyProject:edit">${not empty propertyProject.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:propertyProject:edit">查看</shiro:lacksPermission></a>
 		</li>
 	</ul>
 	<br/>
 	<form:form id="inputForm" modelAttribute="propertyProject" action="${ctx}/inventory/propertyProject/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>	
 		<div class="control-group">
 			<label class="control-label">居委会：</label>
 			<div class="controls">
 				<form:select path="neighborhood.id" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${listNeighborhood}" itemLabel="neighborhoodName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -55,7 +52,7 @@
 			<label class="control-label">物业公司：</label>
 			<div class="controls">
 				<form:select path="managementCompany.id" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -71,8 +68,15 @@
 		<div class="control-group">
 			<label class="control-label">物业项目地址：</label>
 			<div class="controls">
-				<form:input path="projectAddr" htmlEscape="false" maxlength="300" class="input-xlarge required"/>
+				<form:input path="projectAddr" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">物业项目图片：</label>
+			<div class="controls">
+				<form:hidden id="propertyPrjImgPath" path="propertyPrjImgPath" htmlEscape="false" maxlength="255" class="input-xlarge"/>
+				<sys:ckfinder input="propertyPrjImgPath" type="files" uploadPath="/10" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
