@@ -9,6 +9,10 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					if($("#leaseContractDtlList").find("tr").length==0) {
+						top.$.jBox.tip('请录入承租价格.','warning');
+						return;
+					}
 					loading('正在提交，请稍等...');
 					form.submit();
 				},

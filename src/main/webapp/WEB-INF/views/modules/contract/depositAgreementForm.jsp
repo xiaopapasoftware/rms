@@ -28,7 +28,19 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
-		<li class="active"><a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议<shiro:hasPermission name="contract:depositAgreement:edit">${not empty depositAgreement.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active">
+		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议
+		<shiro:hasPermission name="contract:depositAgreement:edit">
+		<c:if test="${depositAgreement.agreementStatus=='2' || empty depositAgreement.id}">
+		${not empty depositAgreement.id?'修改':'添加'}
+		</c:if>
+		<c:if test="${depositAgreement.agreementStatus!='2'}">
+		查看
+		</c:if>
+		</shiro:hasPermission>
+		<shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission>
+		</a>
+		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -66,11 +78,10 @@
 		<div class="control-group">
 			<label class="control-label">房间：</label>
 			<div class="controls">
-				<form:select path="room.id" class="input-xlarge required">
+				<form:select path="room.id" class="input-xlarge">
 					<form:option value="" label=""/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -101,8 +112,8 @@
 			<label class="control-label">协议开始时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -110,8 +121,8 @@
 			<label class="control-label">协议结束时间：</label>
 			<div class="controls">
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -119,8 +130,8 @@
 			<label class="control-label">协议签订时间：</label>
 			<div class="controls">
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${depositAgreement.signDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${depositAgreement.signDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -142,8 +153,8 @@
 			<label class="control-label">约定合同签约时间：</label>
 			<div class="controls">
 				<input name="agreementDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -160,31 +171,17 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">定金协议审核状态：</label>
-			<div class="controls">
-				<form:select path="agreementStatus" class="input-xlarge ">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">定金协议业务状态：</label>
-			<div class="controls">
-				<form:select path="agreementBusiStatus" class="input-xlarge ">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="contract:depositAgreement:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="contract:depositAgreement:edit">
+				<c:if test="${depositAgreement.agreementStatus=='2'|| empty depositAgreement.id}">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</c:if>
+			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

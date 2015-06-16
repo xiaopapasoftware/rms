@@ -52,7 +52,8 @@
 		<li class="active"><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<shiro:hasPermission name="contract:leaseContract:edit"><li><a href="${ctx}/contract/leaseContract/form">承租合同添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/" method="post" class="breadcrumb form-search"
+		cssStyle="width:1150px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -120,7 +121,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
 		<thead>
 			<tr>
 				<th>承租合同名称</th>
@@ -192,14 +193,12 @@
     				</c:if>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
-				<shiro:hasPermission name="contract:leaseContract:audit">
-					<c:if test="${leaseContract.contractStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
-					</c:if>
-				</shiro:hasPermission>
-					<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
-						<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
-					</c:if>
+				<c:if test="${leaseContract.contractStatus=='0'}">
+					<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
+				</c:if>
+				<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
+					<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
+				</c:if>
 				</td>
 			</tr>
 		</c:forEach>
