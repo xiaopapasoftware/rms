@@ -43,6 +43,11 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	private String agreementStatus;		// 定金协议审核状态
 	private String agreementBusiStatus;		// 定金协议业务状态
 	
+	private String projectName;
+	private String buildingBame;
+	private String houseNo;
+	private String roomNo;
+	
 	public DepositAgreement() {
 		super();
 	}
@@ -78,7 +83,6 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 		this.house = house;
 	}
 	
-	@Length(min=1, max=64, message="房间长度必须介于 1 和 64 之间")
 	public Room getRoom() {
 		return room;
 	}
@@ -204,5 +208,36 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setAgreementBusiStatus(String agreementBusiStatus) {
 		this.agreementBusiStatus = agreementBusiStatus;
 	}
-	
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public String getBuildingBame() {
+		return buildingBame;
+	}
+
+	public void setBuildingBame(String buildingBame) {
+		this.buildingBame = buildingBame;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public void setHouseNo(String houseNo) {
+		this.houseNo = houseNo;
+	}
+
+	public String getRoomNo() {
+		return roomNo;
+	}
+
+	public void setRoomNo(String roomNo) {
+		this.roomNo = roomNo;
+	}	
 }
