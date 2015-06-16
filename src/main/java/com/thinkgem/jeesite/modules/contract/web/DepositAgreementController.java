@@ -69,6 +69,19 @@ public class DepositAgreementController extends BaseController {
 	public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<DepositAgreement> page = depositAgreementService.findPage(new Page<DepositAgreement>(request, response), depositAgreement); 
 		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		List<Building> buildingList = buildingService.findList(new Building());
+		model.addAttribute("buildingList", buildingList);
+		
+		List<House> houseList = houseService.findList(new House());
+		model.addAttribute("houseList", houseList);
+		
+		List<Room> roomList = roomService.findList(new Room());
+		model.addAttribute("roomList", roomList);
+		
 		return "modules/contract/depositAgreementList";
 	}
 
