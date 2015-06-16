@@ -49,23 +49,33 @@ public class PropertyProjectService extends CrudService<PropertyProjectDao, Prop
 	@Transactional(readOnly = false)
 	public void save(PropertyProject propertyProject) {
 		String id = super.saveAndReturnId(propertyProject);
-		if (StringUtils.isNotEmpty(propertyProject.getPropertyPrjImgPath())) {
-			Attachment attachment = new Attachment();
-			attachment.setId(IdGen.uuid());
-			attachment.setPropertyProjectId(id);
-			attachment.setAttachmentType(FileType.PROJECT_CHART.getValue());
-			attachment.setAttachmentPath(propertyProject.getPropertyPrjImgPath());
-			attachment.setCreateDate(new Date());
-			attachment.setCreateBy(UserUtils.getUser());
-			attachment.setUpdateDate(new Date());
-			attachment.setUpdateBy(UserUtils.getUser());
-			attachmentDao.insert(attachment);
+		if (propertyProject.getIsNewRecord()) {// 新增时，AttachmentPath有值才需要添加，无值则不需添加附件对象
+			if (StringUtils.isNotEmpty(propertyProject.getAttachmentPath())) {
+				Attachment attachment = new Attachment();
+				attachment.setId(IdGen.uuid());
+				attachment.setPropertyProjectId(id);
+				attachment.setAttachmentType(FileType.PROJECT_CHART.getValue());
+				attachment.setAttachmentPath(propertyProject.getAttachmentPath());
+				attachment.setCreateDate(new Date());
+				attachment.setCreateBy(UserUtils.getUser());
+				attachment.setUpdateDate(new Date());
+				attachment.setUpdateBy(UserUtils.getUser());
+				attachmentDao.insert(attachment);
+			}
+		} else {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
+			Attachment atta = new Attachment();
+			atta.setPropertyProjectId(propertyProject.getId());
+			atta.setAttachmentPath(propertyProject.getAttachmentPath());
+			attachmentDao.updateAttachmentPathByType(atta);
 		}
 	}
 
 	@Transactional(readOnly = false)
 	public void delete(PropertyProject propertyProject) {
 		super.delete(propertyProject);
+		Attachment atta = new Attachment();
+		atta.setPropertyProjectId(propertyProject.getId());
+		attachmentDao.delete(atta);
 	}
 
 	/**

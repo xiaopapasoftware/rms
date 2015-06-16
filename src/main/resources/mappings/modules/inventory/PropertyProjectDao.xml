@@ -8,19 +8,23 @@
 		a.t_management_company_main_id AS "managementCompany.id",
 		a.project_name AS "projectName",
 		a.project_addr AS "projectAddr",
-		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		n.neighborhood_name as "neighborhood.neighborhoodName",
-		c.company_name as "managementCompany.companyName"
+		n.neighborhood_name AS "neighborhood.neighborhoodName",
+		c.company_name AS "managementCompany.companyName",
+		atta.attachment_path AS "attachmentPath"
 	</sql>
 	
 	<sql id="propertyProjectJoins">
 		LEFT JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
 		LEFT JOIN t_management_company c on c.id=a.t_management_company_main_id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_attachment atta ON atta.property_project_id = a.id
 	</sql>
     
 	<select id="get" resultType="PropertyProject">

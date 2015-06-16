@@ -995,6 +995,7 @@
 									<transaction src="db/act/create/activiti.${jdbc.type}.create.history.sql"/>
 									<transaction src="db/act/create/activiti.${jdbc.type}.create.identity.sql"/>
 									<transaction src="db/contract/contract_${jdbc.type}.sql"/>
+									<transaction src="db/contract/test_data.sql"/>
 									<transaction src="db/funds/funds_${jdbc.type}.sql"/>
 								</sql>
 								

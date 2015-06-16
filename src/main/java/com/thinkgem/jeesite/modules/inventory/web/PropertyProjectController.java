@@ -73,10 +73,10 @@ public class PropertyProjectController extends BaseController {
 
 		Page<PropertyProject> page = propertyProjectService.findPage(new Page<PropertyProject>(request, response),
 				propertyProject);
+
 		model.addAttribute("page", page);
 		return "modules/inventory/propertyProjectList";
 	}
-
 	@RequiresPermissions("inventory:propertyProject:view")
 	@RequestMapping(value = "form")
 	public String form(PropertyProject propertyProject, Model model) {
@@ -100,8 +100,22 @@ public class PropertyProjectController extends BaseController {
 		}
 		List<PropertyProject> pps = propertyProjectService.findPropertyProjectByNameAndAddress(propertyProject);
 		if (!propertyProject.getIsNewRecord()) {// 更新
-			// TODO
-			return null;
+			if (CollectionUtils.isNotEmpty(pps)) {
+				PropertyProject upPP = new PropertyProject();
+				upPP.setId(pps.get(0).getId());
+				upPP.setProjectName(pps.get(0).getProjectName());
+				upPP.setProjectAddr(pps.get(0).getProjectAddr());
+				upPP.setAttachmentPath(StringUtils.isEmpty(propertyProject.getAttachmentPath())
+						? null
+						: propertyProject.getAttachmentPath());
+				upPP.setNeighborhood(propertyProject.getNeighborhood());
+				upPP.setManagementCompany(propertyProject.getManagementCompany());
+				propertyProjectService.save(upPP);
+			} else {
+				propertyProjectService.save(propertyProject);
+			}
+			addMessage(redirectAttributes, "修改物业项目成功");
+			return "redirect:" + Global.getAdminPath() + "/inventory/propertyProject/?repage";
 		} else {// 新增
 			if (CollectionUtils.isNotEmpty(pps)) {
 				model.addAttribute("message", "物业项目名称及地址已被使用，不能重复添加");
@@ -121,7 +135,6 @@ public class PropertyProjectController extends BaseController {
 			}
 		}
 	}
-
 	@RequiresPermissions("inventory:propertyProject:edit")
 	@RequestMapping(value = "delete")
 	public String delete(PropertyProject propertyProject, RedirectAttributes redirectAttributes) {
