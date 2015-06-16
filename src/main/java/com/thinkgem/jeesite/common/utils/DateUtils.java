@@ -4,7 +4,10 @@
 package com.thinkgem.jeesite.common.utils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -171,6 +174,35 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	
 	/**
+	 * 获取n个月之后的日期
+	 * @param date
+	 * @param addMonth
+	 * @return
+	 */
+	public static Date dateAddMonth(Date date,int addMonth) {
+		GregorianCalendar gc=new GregorianCalendar(); 
+		gc.setTime(date); 
+		gc.add(2, addMonth);
+		return gc.getTime();
+	}
+	
+	/**
+	 * 计算两个日期之间相隔的月数
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public static int getMonthSpace(Date startDate,Date endDate) {
+		Calendar startCalendar = Calendar.getInstance();
+		startCalendar.setTime(startDate);
+		
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
+        
+        return endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+	}
+	
+	/**
 	 * @param args
 	 * @throws ParseException
 	 */
@@ -179,5 +211,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(getDate("yyyy年MM月dd日 E"));
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
+		
+		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		//System.out.println(getMonthSpace(sdf.parse("2015-03-15"),sdf.parse("2015-04-30")));
+		//System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-03-31"),1)));
 	}
 }
