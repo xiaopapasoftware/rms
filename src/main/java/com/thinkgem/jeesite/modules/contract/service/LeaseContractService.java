@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -25,6 +26,8 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -45,6 +48,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	private AuditHisDao auditHisDao;
 	@Autowired
 	private LeaseContractDao leaseContractDao;
+	@Autowired
+	private PaymentTransDao paymentTransDao;
 	
 	private static final String LEASE_CONTRACT_ROLE = "lease_contract_role";//承租合同审批
 	
@@ -89,6 +94,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		saveAuditHis.setUpdateBy(UserUtils.getUser());
 		saveAuditHis.setAuditTime(new Date());
 		saveAuditHis.setAuditUser(UserUtils.getUser().getId());
+		saveAuditHis.setDelFlag("0");
 		auditHisDao.insert(saveAuditHis);
 		
 		LeaseContract leaseContract = new LeaseContract();
@@ -97,14 +103,66 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		leaseContract.setUpdateDate(new Date());
 		leaseContract.setUpdateBy(UserUtils.getUser());
 		leaseContractDao.update(leaseContract);
+		
+		//审核通过，生成款项
+		if("1".equals(auditHis.getAuditStatus())) {
+			//1.押金款项
+			Double deposit = leaseContract.getDeposit();
+			
+			PaymentTrans paymentTrans = new PaymentTrans();
+			paymentTrans.setId(IdGen.uuid());
+			paymentTrans.setTradeType("0");//承租合同
+			paymentTrans.setPaymentType("4");//房租押金
+			paymentTrans.setTransId(leaseContract.getId());
+			paymentTrans.setTradeDirection("0");//出款
+			paymentTrans.setStartDate(leaseContract.getEffectiveDate());
+			paymentTrans.setExpiredDate(leaseContract.getExpiredDate());
+			paymentTrans.setTradeAmount(deposit);
+			paymentTrans.setTransStatus("0");//未支付
+			paymentTrans.setCreateDate(new Date());
+			paymentTrans.setCreateBy(UserUtils.getUser());
+			paymentTrans.setUpdateDate(new Date());
+			paymentTrans.setUpdateBy(UserUtils.getUser());
+			paymentTrans.setDelFlag("0");
+			paymentTransDao.insert(paymentTrans);
+			
+			//2.房租款项
+			LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
+			leaseContractDtl.setLeaseContractId(leaseContract.getId());
+			List<LeaseContractDtl> list = leaseContractDtlDao.findAllList(leaseContractDtl);
+			for(LeaseContractDtl tmpLeaseContractDtl : list) {
+				//计算开始日期与结束日期之间的月数
+				int month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(),tmpLeaseContractDtl.getEndDate());
+				month = month == 0 ? month++ : month;
+				for(int i=1;i<=month;i++) {
+					paymentTrans = new PaymentTrans();
+					paymentTrans.setId(IdGen.uuid());
+					paymentTrans.setTradeType("0");//承租合同
+					paymentTrans.setPaymentType("6");//房租
+					paymentTrans.setTransId(leaseContract.getId());
+					paymentTrans.setTradeDirection("0");//出款
+					paymentTrans.setStartDate(tmpLeaseContractDtl.getStartDate());
+					Date endDate = i==month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth(tmpLeaseContractDtl.getStartDate(),i);
+					paymentTrans.setExpiredDate(endDate);
+					paymentTrans.setTradeAmount(tmpLeaseContractDtl.getDeposit());
+					paymentTrans.setTransStatus("0");//未支付
+					paymentTrans.setCreateDate(new Date());
+					paymentTrans.setCreateBy(UserUtils.getUser());
+					paymentTrans.setUpdateDate(new Date());
+					paymentTrans.setUpdateBy(UserUtils.getUser());
+					paymentTrans.setDelFlag("0");
+					paymentTransDao.insert(paymentTrans);
+				}
+			}
+		}
 	}
 	
 	@Transactional(readOnly = false)
 	public void save(LeaseContract leaseContract) {
 		leaseContract.setContractStatus("0");//待审核
 		
+		String id = super.saveAndReturnId(leaseContract);
 		if(StringUtils.isEmpty(leaseContract.getId())) {
-			String id = super.saveAndReturnId(leaseContract);
 			
 			//审核
 			Audit audit = new Audit();
@@ -116,6 +174,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			audit.setCreateBy(UserUtils.getUser());
 			audit.setUpdateDate(new Date());
 			audit.setUpdateBy(UserUtils.getUser());
+			audit.setDelFlag("0");
 			auditDao.insert(audit);
 			
 			//保存附件
@@ -129,6 +188,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -142,6 +202,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -155,6 +216,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -168,6 +230,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					leaseContractDtl.setCreateBy(UserUtils.getUser());
 					leaseContractDtl.setUpdateDate(new Date());
 					leaseContractDtl.setUpdateBy(UserUtils.getUser());
+					leaseContractDtl.setDelFlag("0");
 					leaseContractDtlDao.insert(leaseContractDtl);
 				}
 			}
@@ -195,6 +258,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -208,6 +272,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -221,6 +286,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setCreateBy(UserUtils.getUser());
 				attachment.setUpdateDate(new Date());
 				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
 				attachmentDao.insert(attachment);
 			}
 			
@@ -237,6 +303,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					leaseContractDtl.setCreateBy(UserUtils.getUser());
 					leaseContractDtl.setUpdateDate(new Date());
 					leaseContractDtl.setUpdateBy(UserUtils.getUser());
+					leaseContractDtl.setDelFlag("0");
 					leaseContractDtlDao.insert(leaseContractDtl);
 				}
 			}
