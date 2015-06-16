@@ -27,11 +27,19 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		u7.name AS "user.name"
+		u7.name AS "user.name",
+		tp.project_name as projectName,
+		tb.building_name as buildingBame,
+		th.house_no as houseNo,
+		tm.room_no as roomNo 
 	</sql>
 	
 	<sql id="depositAgreementJoins">
-		LEFT JOIN sys_user u7 ON u7.id = a.user_id
+		LEFT JOIN sys_user u7 ON u7.id = a.user_id 
+		left join t_property_project tp on a.property_project_id = tp.id 
+		left join t_building tb on a.building_id=tb.id 
+		left join t_house th on a.house_id=th.id 
+		left join t_room tm on a.room_id=tm.id 
 	</sql>
     
 	<select id="get" resultType="DepositAgreement">
