@@ -82,16 +82,11 @@ public class PropertyProjectController extends BaseController {
 	public String form(PropertyProject propertyProject, Model model) {
 
 		model.addAttribute("propertyProject", propertyProject);
-
-		List<Neighborhood> listNeighborhood = neighborhoodService.findList(new Neighborhood());
-		model.addAttribute("listNeighborhood", listNeighborhood);
-
-		List<ManagementCompany> listManagementCompany = managementCompanyService.findList(new ManagementCompany());
-		model.addAttribute("listManagementCompany", listManagementCompany);
+		model.addAttribute("listNeighborhood", neighborhoodService.findList(new Neighborhood()));
+		model.addAttribute("listManagementCompany", managementCompanyService.findList(new ManagementCompany()));
 
 		return "modules/inventory/propertyProjectForm";
 	}
-
 	@RequiresPermissions("inventory:propertyProject:edit")
 	@RequestMapping(value = "save")
 	public String save(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes) {
@@ -110,6 +105,7 @@ public class PropertyProjectController extends BaseController {
 						: propertyProject.getAttachmentPath());
 				upPP.setNeighborhood(propertyProject.getNeighborhood());
 				upPP.setManagementCompany(propertyProject.getManagementCompany());
+				upPP.setRemarks(propertyProject.getRemarks());
 				propertyProjectService.save(upPP);
 			} else {
 				propertyProjectService.save(propertyProject);
@@ -121,12 +117,9 @@ public class PropertyProjectController extends BaseController {
 				model.addAttribute("message", "物业项目名称及地址已被使用，不能重复添加");
 				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 				model.addAttribute("neighborhood", propertyProject.getNeighborhood());
-				List<Neighborhood> listNeighborhood = neighborhoodService.findList(new Neighborhood());
-				model.addAttribute("listNeighborhood", listNeighborhood);
+				model.addAttribute("listNeighborhood", neighborhoodService.findList(new Neighborhood()));
 				model.addAttribute("managementCompany", propertyProject.getManagementCompany());
-				List<ManagementCompany> listManagementCompany = managementCompanyService
-						.findList(new ManagementCompany());
-				model.addAttribute("listManagementCompany", listManagementCompany);
+				model.addAttribute("listManagementCompany", managementCompanyService.findList(new ManagementCompany()));
 				return "modules/inventory/propertyProjectForm";
 			} else {
 				propertyProjectService.save(propertyProject);
