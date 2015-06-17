@@ -45,6 +45,44 @@
 		function auditHis(id) {
 			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
 		}
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+		}
 	</script>
 </head>
 <body>
@@ -58,21 +96,19 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label style="width:100px;">物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium" style="width:177px;">
-					<form:option value="" label=""/>
+				<form:select path="propertyProject.id" class="input-medium" style="width:177px;" onchange="changeProject()">
+					<form:option value="" label="全部"/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:100px;">楼宇：</label>
-				<form:select path="building.id" class="input-medium" style="width:177px;">
-					<form:option value="" label=""/>
-					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
+				<form:select path="building.id" class="input-medium" style="width:177px;" onchange="buildingChange()">
+					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
 			<li><label style="width:100px;">房屋：</label>
 				<form:select path="house.id" class="input-medium" style="width:177px;">
-					<form:option value="" label=""/>
-					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
+					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
 			<li><label style="width:100px;">汇款人：</label>
@@ -93,7 +129,7 @@
 			</li>
 			<li><label style="width:100px;">打款日期：</label>
 				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -112,7 +148,7 @@
 			</li>
 			<li><label style="width:100px;">合同审核状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:177px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="true"/>
 				</form:select>
 			</li>
