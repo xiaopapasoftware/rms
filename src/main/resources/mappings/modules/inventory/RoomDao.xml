@@ -45,8 +45,8 @@
 			<if test="building != null and building.id != null and building.id != ''">
 				AND a.building_id = #{building.id}
 			</if>
-			<if test="house != null and house.houseNo != null and house.houseNo != ''">
-				AND a.house_no = #{house.houseNo}
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_no = #{house.id}
 			</if>
 			<if test="roomNo != null and roomNo != ''">
 				AND a.room_no = #{roomNo}
