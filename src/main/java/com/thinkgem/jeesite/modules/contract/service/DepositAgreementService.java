@@ -49,6 +49,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		
 		String id = super.saveAndReturnId(depositAgreement);
 		//生成款项
+		PaymentTrans delPaymentTrans = new PaymentTrans();
+		delPaymentTrans.setTransId(id);
+		paymentTransDao.delete(delPaymentTrans);
+		
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
 		paymentTrans.setTradeType("1");//定金协议

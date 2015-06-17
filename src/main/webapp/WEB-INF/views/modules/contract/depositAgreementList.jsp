@@ -35,19 +35,16 @@
 			<li><label style="width:120px;">楼宇：</label>
 				<form:select path="building.id" class="input-medium" style="width:200px;">
 					<form:option value="" label=""/>
-					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房屋：</label>
 				<form:select path="house.id" class="input-medium" style="width:200px;">
 					<form:option value="" label=""/>
-					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房间：</label>
 				<form:select path="room.id" class="input-medium" style="width:200px;">
 					<form:option value="" label=""/>
-					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">出租方式：</label>

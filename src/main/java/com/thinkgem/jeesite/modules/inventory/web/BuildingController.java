@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -63,6 +64,17 @@ public class BuildingController extends BaseController {
 		model.addAttribute("page", page);
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		return "modules/inventory/buildingList";
+	}
+	
+	@RequestMapping(value = {"findList", ""})
+	@ResponseBody
+	public List<Building> findList(String id) {
+		Building building = new Building();
+		PropertyProject tmpPropertyProject = new PropertyProject();
+		tmpPropertyProject.setId(id);
+		building.setPropertyProject(tmpPropertyProject);
+		List<Building> list = buildingService.findList(building); 
+		return list;
 	}
 
 	@RequiresPermissions("inventory:building:view")

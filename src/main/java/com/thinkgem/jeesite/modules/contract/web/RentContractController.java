@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,10 +19,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 
 /**
  * 出租合同Controller
@@ -33,6 +37,8 @@ public class RentContractController extends BaseController {
 
 	@Autowired
 	private RentContractService rentContractService;
+	@Autowired
+	private PropertyProjectService propertyProjectService;
 	
 	@ModelAttribute
 	public RentContract get(@RequestParam(required=false) String id) {
@@ -58,6 +64,10 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(RentContract rentContract, Model model) {
 		model.addAttribute("rentContract", rentContract);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
 		return "modules/contract/rentContractForm";
 	}
 
