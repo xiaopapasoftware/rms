@@ -160,7 +160,7 @@
 	<update id="delete">
 		UPDATE t_payment_trans SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE trans_id = #{transId}
 	</update>
 	
 </mapper>
