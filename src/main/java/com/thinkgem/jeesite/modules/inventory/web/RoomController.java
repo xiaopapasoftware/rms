@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,12 +15,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
@@ -52,6 +56,17 @@ public class RoomController extends BaseController {
 		Page<Room> page = roomService.findPage(new Page<Room>(request, response), room); 
 		model.addAttribute("page", page);
 		return "modules/inventory/roomList";
+	}
+	
+	@RequestMapping(value = {"findList", ""})
+	@ResponseBody
+	public List<Room> findList(String id) {
+		Room room = new Room();
+		House house = new House();
+		house.setHouseNo(id);
+		room.setHouse(house);
+		List<Room> list = roomService.findList(room);
+		return list;
 	}
 
 	@RequiresPermissions("inventory:room:view")
