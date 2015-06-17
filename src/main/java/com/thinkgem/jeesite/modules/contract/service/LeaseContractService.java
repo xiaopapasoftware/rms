@@ -106,6 +106,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		
 		//审核通过，生成款项
 		if("1".equals(auditHis.getAuditStatus())) {
+			PaymentTrans delPaymentTrans = new PaymentTrans();
+			delPaymentTrans.setTransId(leaseContract.getId());
+			paymentTransDao.delete(delPaymentTrans);
+			
 			//1.押金款项
 			Double deposit = leaseContract.getDeposit();
 			
