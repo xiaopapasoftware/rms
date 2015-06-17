@@ -25,11 +25,8 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
-import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
 import com.thinkgem.jeesite.modules.person.service.RemittancerService;
@@ -49,8 +46,6 @@ public class LeaseContractController extends BaseController {
 	private PropertyProjectService propertyProjectService;
 	@Autowired
 	private BuildingService buildingService;
-	@Autowired
-	private HouseService houseService;
 	@Autowired
 	private RemittancerService remittancerService;
 	@Autowired
@@ -77,12 +72,6 @@ public class LeaseContractController extends BaseController {
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 		
-		List<Building> buildingList = buildingService.findList(new Building());
-		model.addAttribute("buildingList", buildingList);
-		
-		List<House> houseList = houseService.findList(new House());
-		model.addAttribute("houseList", houseList);
-		
 		return "modules/contract/leaseContractList";
 	}
 	
@@ -107,12 +96,6 @@ public class LeaseContractController extends BaseController {
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
-		
-		List<Building> buildingList = buildingService.findList(new Building());
-		model.addAttribute("buildingList", buildingList);
-		
-		List<House> houseList = houseService.findList(new House());
-		model.addAttribute("houseList", houseList);
 		
 		List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
 		model.addAttribute("remittancerList", remittancerList);
