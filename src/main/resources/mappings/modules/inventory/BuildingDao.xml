@@ -5,16 +5,22 @@
 	<sql id="buildingColumns">
 		a.id AS "id",
 		a.t_property_project_main_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
 		a.building_name AS "buildingName",
-		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",		
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
+		atta.attachment_path AS "attachmentPath",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="buildingJoins">
+		left join t_property_project pp on pp.id = a.t_property_project_main_id
+		left join sys_user u1 on u1.id = a.create_by
+		left join sys_user u2 on u2.id = a.update_by
+		left join t_attachment atta on atta.building_id = a.id
 	</sql>
     
 	<select id="get" resultType="Building">
@@ -110,4 +116,17 @@
 		WHERE id = #{id}
 	</update>
 	
+	<select id="findBuildingByBldNameAndProProj" resultType="Building">
+		SELECT 	
+			a.id AS "id",
+			a.t_property_project_main_id AS "propertyProject.id",
+			a.building_name AS "buildingName",
+			a.del_flag AS "delFlag"
+		FROM t_building a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.t_property_project_main_id = #{propertyProject.id}
+			AND a.building_name = #{buildingName}
+		</where>
+	</select>
 </mapper>

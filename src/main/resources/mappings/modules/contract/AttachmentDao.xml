@@ -33,7 +33,8 @@
 	</select>
 	
 	<select id="findList" resultType="Attachment">
-		SELECT <include refid="attachmentColumns"/>
+		SELECT 
+		<include refid="attachmentColumns"/>
 		FROM t_attachment a 
 		<include refid="attachmentJoins"/>
 		<where>

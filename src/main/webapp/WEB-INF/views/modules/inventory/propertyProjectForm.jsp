@@ -37,7 +37,7 @@
 	<br/>
 	<form:form id="inputForm" modelAttribute="propertyProject" action="${ctx}/inventory/propertyProject/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}" type="${messageType}"/>	
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">居委会：</label>
 			<div class="controls">

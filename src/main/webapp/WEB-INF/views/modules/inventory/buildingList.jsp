@@ -27,8 +27,8 @@
 		<ul class="ul-form">
 			<li><label>物业项目：</label>
 				<form:select path="propertyProject.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>楼宇名称：</label>
@@ -44,7 +44,10 @@
 			<tr>
 				<th>物业项目</th>
 				<th>楼宇名称</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:building:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -52,14 +55,25 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="building">
 			<tr>
-				<td><a href="${ctx}/inventory/building/form?id=${building.id}">
-					${fns:getDictLabel(building.propertyProject.id, '', '')}
-				</a></td>
 				<td>
-					${building.buildingName}
+					${building.propertyProject.projectName}
+				</td>
+				<td>
+					<a href="${ctx}/inventory/building/form?id=${building.id}">
+						${building.buildingName}
+					</a>
+				</td>
+				<td>
+					<fmt:formatDate value="${building.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
 					<fmt:formatDate value="${building.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${building.createBy.loginName}
+				</td>
+				<td>
+				 	${building.updateBy.loginName}
 				</td>
 				<td>
 					${building.remarks}

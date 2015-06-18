@@ -32,13 +32,13 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="building" action="${ctx}/inventory/building/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -48,6 +48,13 @@
 			<div class="controls">
 				<form:input path="buildingName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">楼宇图片：</label>
+			<div class="controls">
+				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/11" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
