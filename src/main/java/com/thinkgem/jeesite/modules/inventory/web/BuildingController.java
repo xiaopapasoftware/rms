@@ -58,7 +58,7 @@ public class BuildingController extends BaseController {
 		return "modules/inventory/buildingList";
 	}
 	
-	@RequestMapping(value = {"findList", ""})
+	@RequestMapping(value = {"findList"})
 	@ResponseBody
 	public List<Building> findList(String id) {
 		Building building = new Building();

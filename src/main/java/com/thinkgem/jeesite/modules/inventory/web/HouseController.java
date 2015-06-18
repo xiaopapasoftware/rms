@@ -58,7 +58,7 @@ public class HouseController extends BaseController {
 		return "modules/inventory/houseList";
 	}
 	
-	@RequestMapping(value = {"findList", ""})
+	@RequestMapping(value = {"findList"})
 	@ResponseBody
 	public List<House> findList(String id) {
 		House house = new House();
