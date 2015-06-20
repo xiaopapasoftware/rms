@@ -6,7 +6,7 @@
 <html style="overflow-x: auto; overflow-y: auto;">
 <head>
 <title><sitemesh:title /></title>
-<!--  - Powered By JeeSite -->
+<!--  - Powered By 小爬爬软件工作室 -->
 <%@include file="/WEB-INF/views/include/head.jsp"%>
 <!-- Baidu tongji analytics -->
 <script>

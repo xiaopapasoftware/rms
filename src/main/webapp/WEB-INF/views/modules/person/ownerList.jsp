@@ -21,26 +21,26 @@
 		<li class="active"><a href="${ctx}/person/owner/">业主信息列表</a></li>
 		<shiro:hasPermission name="person:owner:edit"><li><a href="${ctx}/person/owner/form">业主信息添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="owner" action="${ctx}/person/owner/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="owner" action="${ctx}/person/owner/" method="post" class="breadcrumb form-search" cssStyle="width:1150px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>姓名：</label>
+			<li><label style="width:100px;">姓名：</label>
 				<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>身份证号：</label>
+			<li><label style="width:100px;">身份证号：</label>
 				<form:input path="socialNumber" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>手机号：</label>
+			<li><label style="width:100px;">手机号：</label>
 				<form:input path="cellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>座机号：</label>
+			<li><label style="width:100px;">座机号：</label>
 				<form:input path="deskPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>详细居住地址：</label>
+			<li><label style="width:100px;">详细居住地址：</label>
 				<form:input path="address" htmlEscape="false" maxlength="300" class="input-medium"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li class="btns"><label style="width:40px;"></label><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
@@ -53,7 +53,10 @@
 				<th>手机号</th>
 				<th>座机号</th>
 				<th>详细居住地址</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:owner:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -77,7 +80,16 @@
 					${owner.address}
 				</td>
 				<td>
+					<fmt:formatDate value="${owner.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${owner.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${owner.createBy.loginName}
+				</td>
+				<td>
+				 	${owner.updateBy.loginName}
 				</td>
 				<td>
 					${owner.remarks}

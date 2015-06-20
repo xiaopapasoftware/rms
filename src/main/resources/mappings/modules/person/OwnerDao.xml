@@ -9,15 +9,17 @@
 		a.cell_phone AS "cellPhone",
 		a.desk_phone AS "deskPhone",
 		a.address AS "address",
-		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="ownerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="Owner">
@@ -42,13 +44,22 @@
 					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
 			</if>
 			<if test="socialNumber != null and socialNumber != ''">
-				AND a.social_number = #{socialNumber}
+				AND a.social_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{socialNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{socialNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{socialNumber},'%')</if>
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
 			<if test="deskPhone != null and deskPhone != ''">
-				AND a.desk_phone = #{deskPhone}
+				AND a.desk_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deskPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deskPhone},'%')</if>
 			</if>
 			<if test="address != null and address != ''">
 				AND a.address LIKE 
@@ -83,6 +94,27 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findOwnersByCerNoOrMobNoOrTelNo" resultType="Owner">
+		SELECT 
+				a.id AS "id",
+				a.name AS "name",
+				a.social_number AS "socialNumber",
+				a.cell_phone AS "cellPhone",
+				a.desk_phone AS "deskPhone"
+		FROM t_owner a
+		<where>
+			<if test="socialNumber != null and socialNumber != ''">
+				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.social_number = #{socialNumber})
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.cell_phone = #{cellPhone})
+			</if>
+			<if test="deskPhone != null and deskPhone != ''">
+				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.desk_phone = #{deskPhone})
+			</if>
+		</where>	
 	</select>
 	
 	<insert id="insert">

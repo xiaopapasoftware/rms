@@ -56,7 +56,6 @@ public class Owner extends DataEntity<Owner> {
 		this.cellPhone = cellPhone;
 	}
 	
-	@Length(min=1, max=100, message="座机号长度必须介于 1 和 100 之间")
 	public String getDeskPhone() {
 		return deskPhone;
 	}
