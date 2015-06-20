@@ -8,12 +8,30 @@
 		$(document).ready(function() {
 			
 		});
+		
 		function page(n,s){
 			$("#pageNo").val(n);
 			$("#pageSize").val(s);
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
+		}
 	</script>
 </head>
 <body>
@@ -26,7 +44,7 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label>物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium">
+				<form:select path="propertyProject.id" class="input-medium" onchange="changeProject()">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -34,6 +52,7 @@
 			<li><label>楼宇：</label>
 				<form:select path="building.id" class="input-medium">
 					<form:option value="" label="请选择..."/>
+					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>业主：</label>
@@ -47,8 +66,8 @@
 			</li>
 			<li><label>房屋状态：</label>
 				<form:select path="houseStatus" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('house_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -63,13 +82,16 @@
 				<th>楼宇</th>
 				<th>业主</th>
 				<th>房屋号</th>
+				<th>房屋状态</th>
 				<th>楼层</th>
-				<th>原始建筑面积</th>
-				<th>装修建筑面积</th>
+				<th>原始建筑面积（平方米）</th>
+				<th>装修建筑面积（平方米）</th>
 				<th>原始房屋结构</th>
 				<th>装修房屋结构</th>
-				<th>房屋状态</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:house:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -77,17 +99,22 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="house">
 			<tr>
-				<td><a href="${ctx}/inventory/house/form?id=${house.id}">
-					${fns:getDictLabel(house.propertyProject.id, '', '')}
-				</a></td>
 				<td>
-					${fns:getDictLabel(house.building.id, '', '')}
+					${house.propertyProject.projectName}
 				</td>
 				<td>
-					${fns:getDictLabel(house.owner.id, '', '')}
+					${house.building.buildingName}
 				</td>
 				<td>
-					${house.houseNo}
+					${house.owner.name}
+				</td>
+				<td>
+					<a href="${ctx}/inventory/house/form?id=${house.id}">
+						${house.houseNo}
+					</a>
+				</td>
+				<td>
+					${fns:getDictLabel(house.houseStatus, 'house_status', '')}
 				</td>
 				<td>
 					${house.houseFloor}
@@ -105,10 +132,16 @@
 					${house.decorationStructure}
 				</td>
 				<td>
-					${fns:getDictLabel(house.houseStatus, '', '')}
+					<fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
 					<fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${house.createBy.loginName}
+				</td>
+				<td>
+				 	${house.updateBy.loginName}
 				</td>
 				<td>
 					${house.remarks}

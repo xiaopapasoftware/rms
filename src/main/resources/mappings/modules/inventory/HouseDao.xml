@@ -5,8 +5,11 @@
 	<sql id="houseColumns">
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
 		a.building_id AS "building.id",
+		tb.building_name AS "building.buildingName",
 		a.owner_id AS "owner.id",
+		towner.name AS "owner.name",
 		a.house_no AS "houseNo",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
@@ -15,14 +18,21 @@
 		a.decoration_structure AS "decorationStructure",
 		a.house_status AS "houseStatus",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="houseJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
+		LEFT JOIN t_building tb on tb.id = a.building_id
+		LEFT JOIN t_owner towner on towner.id = a.owner_id
 	</sql>
     
 	<select id="get" resultType="House">
@@ -50,22 +60,10 @@
 				AND a.owner_id = #{owner.id}
 			</if>
 			<if test="houseNo != null and houseNo != ''">
-				AND a.house_no = #{houseNo}
-			</if>
-			<if test="houseFloor != null and houseFloor != ''">
-				AND a.house_floor = #{houseFloor}
-			</if>
-			<if test="houseSpace != null and houseSpace != ''">
-				AND a.house_space = #{houseSpace}
-			</if>
-			<if test="decorationSpance != null and decorationSpance != ''">
-				AND a.decoration_spance = #{decorationSpance}
-			</if>
-			<if test="houseStructure != null and houseStructure != ''">
-				AND a.house_structure = #{houseStructure}
-			</if>
-			<if test="decorationStructure != null and decorationStructure != ''">
-				AND a.decoration_structure = #{decorationStructure}
+				AND a.house_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{houseNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{houseNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{houseNo},'%')</if>
 			</if>
 			<if test="houseStatus != null and houseStatus != ''">
 				AND a.house_status = #{houseStatus}

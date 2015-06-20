@@ -77,6 +77,14 @@ public class HouseController extends BaseController {
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
 
+		if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
+			PropertyProject pp = new PropertyProject();
+			pp.setId(house.getPropertyProject().getId());
+			Building bd = new Building();
+			bd.setPropertyProject(pp);
+			model.addAttribute("listBuilding", buildingService.findList(bd));
+		}
+
 		return "modules/inventory/houseList";
 	}
 
