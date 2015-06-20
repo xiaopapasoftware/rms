@@ -116,6 +116,17 @@ public class HouseController extends BaseController {
 	}
 
 	@RequiresPermissions("inventory:house:edit")
+	@RequestMapping(value = "finishDirect")
+	public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
+		House upHouse = new House();
+		upHouse.setId(house.getId());
+		upHouse.setHouseStatus(DictUtils.getDictValue("待出租可预订", "house_status", ""));
+		houseService.updateHouseStatus(upHouse);
+		addMessage(redirectAttributes, "操作成功！");
+		return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
+	}
+
+	@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "save")
 	public String save(House house, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, house)) {

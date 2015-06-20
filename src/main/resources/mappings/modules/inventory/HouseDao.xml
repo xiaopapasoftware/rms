@@ -187,4 +187,9 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateHouseStatus">
+		UPDATE t_house SET house_status = #{houseStatus}
+		WHERE id = #{id}
+	</update>
+	
 </mapper>

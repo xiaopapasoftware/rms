@@ -97,7 +97,16 @@ public class HouseService extends CrudService<HouseDao, House> {
 	/**
 	 * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
 	 * */
+	@Transactional(readOnly = true)
 	public List<House> findHourseByProPrjAndBuildingAndHouseNo(House house) {
 		return dao.findHourseByProPrjAndBuildingAndHouseNo(house);
+	}
+
+	/**
+	 * 更新房屋状态
+	 * */
+	@Transactional(readOnly = false)
+	public void updateHouseStatus(House house) {
+		dao.updateHouseStatus(house);
 	}
 }
