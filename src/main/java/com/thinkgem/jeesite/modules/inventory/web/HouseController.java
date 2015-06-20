@@ -32,6 +32,7 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 房屋信息Controller
@@ -72,10 +73,10 @@ public class HouseController extends BaseController {
 	public String list(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<House> page = houseService.findPage(new Page<House>(request, response), house);
 		model.addAttribute("page", page);
-		
+
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
-		
+
 		return "modules/inventory/houseList";
 	}
 
@@ -128,6 +129,7 @@ public class HouseController extends BaseController {
 				model.addAttribute("owner", house.getOwner());
 				return "modules/inventory/houseForm";
 			} else {
+				house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
 				houseService.save(house);
 				addMessage(redirectAttributes, "保存房屋信息成功");
 				return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
