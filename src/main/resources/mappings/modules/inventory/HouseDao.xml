@@ -24,7 +24,8 @@
 		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		atta.attachment_path AS "attachmentPath"
 	</sql>
 	
 	<sql id="houseJoins">
@@ -33,6 +34,7 @@
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		LEFT JOIN t_owner towner on towner.id = a.owner_id
+		left join t_attachment atta on atta.house_id = a.id
 	</sql>
     
 	<select id="get" resultType="House">
@@ -104,6 +106,7 @@
 			a.building_id AS "building.id",
 			a.owner_id AS "owner.id",
 			a.house_no AS "houseNo",
+			a.house_status AS "houseStatus",
 			a.house_floor AS "houseFloor",
 			a.house_space AS "houseSpace",
 			a.decoration_spance AS "decorationSpance",
@@ -169,7 +172,9 @@
 			decoration_spance = #{decorationSpance},
 			house_structure = #{houseStructure},
 			decoration_structure = #{decorationStructure},
-			house_status = #{houseStatus},
+			<if test="houseStatus != null and houseStatus != ''">
+			 	house_status = #{houseStatus},
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

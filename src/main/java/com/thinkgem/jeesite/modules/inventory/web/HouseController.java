@@ -84,7 +84,6 @@ public class HouseController extends BaseController {
 			bd.setPropertyProject(pp);
 			model.addAttribute("listBuilding", buildingService.findList(bd));
 		}
-
 		return "modules/inventory/houseList";
 	}
 
@@ -104,6 +103,13 @@ public class HouseController extends BaseController {
 	public String form(House house, Model model) {
 
 		model.addAttribute("house", house);
+		if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
+			PropertyProject pp = new PropertyProject();
+			pp.setId(house.getPropertyProject().getId());
+			Building bd = new Building();
+			bd.setPropertyProject(pp);
+			model.addAttribute("listBuilding", buildingService.findList(bd));
+		}
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
 		return "modules/inventory/houseForm";
@@ -117,7 +123,27 @@ public class HouseController extends BaseController {
 		}
 		List<House> houses = houseService.findHourseByProPrjAndBuildingAndHouseNo(house);
 		if (!house.getIsNewRecord()) {// 更新
-			return null;
+			if (CollectionUtils.isNotEmpty(houses)) {
+				House upHouse = new House();
+				upHouse.setId(houses.get(0).getId());
+				upHouse.setHouseStatus(houses.get(0).getHouseStatus());
+				upHouse.setPropertyProject(house.getPropertyProject());
+				upHouse.setBuilding(house.getBuilding());
+				upHouse.setOwner(house.getOwner());
+				upHouse.setHouseNo(house.getHouseNo());
+				upHouse.setAttachmentPath(house.getAttachmentPath());
+				upHouse.setDecorationSpance(house.getDecorationSpance());
+				upHouse.setDecorationStructure(house.getDecorationStructure());
+				upHouse.setHouseFloor(house.getHouseFloor());
+				upHouse.setHouseSpace(house.getHouseSpace());
+				upHouse.setHouseStructure(house.getHouseStructure());
+				upHouse.setRemarks(house.getRemarks());
+				houseService.save(upHouse);
+			} else {
+				houseService.save(house);
+			}
+			addMessage(redirectAttributes, "修改房屋信息成功");
+			return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
 		} else {// 新增
 			if (CollectionUtils.isNotEmpty(houses)) {
 				model.addAttribute("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");

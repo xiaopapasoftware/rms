@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.inventory.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,9 +64,29 @@ public class HouseService extends CrudService<HouseDao, House> {
 				attachmentDao.insert(attachment);
 			}
 		} else {// 修改
-
+			// 先查询原先该房屋下是否有附件，有的话则直接更新。
+			Attachment attachment = new Attachment();
+			attachment.setHouseId(house.getId());
+			List<Attachment> attachmentList = attachmentDao.findList(attachment);
+			String id = super.saveAndReturnId(house);
+			if (CollectionUtils.isNotEmpty(attachmentList)) {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
+				Attachment atta = new Attachment();
+				atta.setHouseId(id);
+				atta.setAttachmentPath(house.getAttachmentPath());
+				attachmentDao.updateAttachmentPathByType(atta);
+			} else {// 新增附件
+				Attachment toAddattachment = new Attachment();
+				toAddattachment.setId(IdGen.uuid());
+				toAddattachment.setHouseId(id);
+				toAddattachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
+				toAddattachment.setAttachmentPath(house.getAttachmentPath());
+				toAddattachment.setCreateDate(new Date());
+				toAddattachment.setCreateBy(UserUtils.getUser());
+				toAddattachment.setUpdateDate(new Date());
+				toAddattachment.setUpdateBy(UserUtils.getUser());
+				attachmentDao.insert(toAddattachment);
+			}
 		}
-
 	}
 
 	@Transactional(readOnly = false)
