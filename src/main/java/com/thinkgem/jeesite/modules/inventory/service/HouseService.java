@@ -3,18 +3,27 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
+import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 房屋信息Service
+ * 
  * @author huangsc
  * @version 2015-06-06
  */
@@ -22,26 +31,52 @@ import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 @Transactional(readOnly = true)
 public class HouseService extends CrudService<HouseDao, House> {
 
+	@Autowired
+	private AttachmentDao attachmentDao;
+
 	public House get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<House> findList(House house) {
 		return super.findList(house);
 	}
-	
+
 	public Page<House> findPage(Page<House> page, House house) {
 		return super.findPage(page, house);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(House house) {
-		super.save(house);
+		if (house.getIsNewRecord()) {// 新增
+			String id = super.saveAndReturnId(house);
+			if (StringUtils.isNotEmpty(house.getAttachmentPath())) {
+				Attachment attachment = new Attachment();
+				attachment.setId(IdGen.uuid());
+				attachment.setHouseId(id);
+				attachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
+				attachment.setAttachmentPath(house.getAttachmentPath());
+				attachment.setCreateDate(new Date());
+				attachment.setCreateBy(UserUtils.getUser());
+				attachment.setUpdateDate(new Date());
+				attachment.setUpdateBy(UserUtils.getUser());
+				attachmentDao.insert(attachment);
+			}
+		} else {// 修改
+
+		}
+
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(House house) {
 		super.delete(house);
 	}
-	
+
+	/**
+	 * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
+	 * */
+	public List<House> findHourseByProPrjAndBuildingAndHouseNo(House house) {
+		return dao.findHourseByProPrjAndBuildingAndHouseNo(house);
+	}
 }

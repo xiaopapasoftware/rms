@@ -99,6 +99,27 @@
 		</choose>
 	</select>
 	
+	<select id="findHourseByProPrjAndBuildingAndHouseNo" resultType="House">
+		SELECT 
+		 	a.id AS "id",
+			a.property_project_id AS "propertyProject.id",
+			a.building_id AS "building.id",
+			a.owner_id AS "owner.id",
+			a.house_no AS "houseNo",
+			a.house_floor AS "houseFloor",
+			a.house_space AS "houseSpace",
+			a.decoration_spance AS "decorationSpance",
+			a.house_structure AS "houseStructure",
+			a.decoration_structure AS "decorationStructure"
+		FROM t_house a	
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.property_project_id = #{propertyProject.id}
+			AND a.building_id = #{building.id}
+			AND a.house_no = #{houseNo}
+		</where>		
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_house(
 			id,

@@ -23,6 +23,23 @@
 				}
 			});
 		});
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
+		}
 	</script>
 </head>
 <body>
@@ -32,23 +49,23 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="house" action="${ctx}/inventory/house/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
-				<form:select path="propertyProject.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -57,8 +74,8 @@
 			<label class="control-label">业主：</label>
 			<div class="controls">
 				<form:select path="owner.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listOwner}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -78,15 +95,15 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">原始建筑面积：</label>
+			<label class="control-label">原始建筑面积（平方米）：</label>
 			<div class="controls">
-				<form:input path="houseSpace" htmlEscape="false" class="input-xlarge "/>
+				<form:input path="houseSpace" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">装修建筑面积：</label>
+			<label class="control-label">装修建筑面积（平方米）：</label>
 			<div class="controls">
-				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge "/>
+				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -102,13 +119,10 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">房屋状态：</label>
+			<label class="control-label">房屋图片：</label>
 			<div class="controls">
-				<form:select path="houseStatus" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/12" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

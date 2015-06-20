@@ -27,39 +27,23 @@
 		<ul class="ul-form">
 			<li><label>物业项目：</label>
 				<form:select path="propertyProject.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>楼宇：</label>
 				<form:select path="building.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
 				</form:select>
 			</li>
 			<li><label>业主：</label>
 				<form:select path="owner.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listOwner}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>房屋号：</label>
 				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>楼层：</label>
-				<form:input path="houseFloor" htmlEscape="false" maxlength="11" class="input-medium"/>
-			</li>
-			<li><label>原始建筑面积：</label>
-				<form:input path="houseSpace" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>装修建筑面积：</label>
-				<form:input path="decorationSpance" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>原始房屋结构：</label>
-				<form:input path="houseStructure" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>装修房屋结构：</label>
-				<form:input path="decorationStructure" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>房屋状态：</label>
 				<form:select path="houseStatus" class="input-medium">
