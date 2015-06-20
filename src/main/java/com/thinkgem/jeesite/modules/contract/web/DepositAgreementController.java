@@ -21,10 +21,17 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
  * 定金协议Controller
@@ -39,6 +46,12 @@ public class DepositAgreementController extends BaseController {
 	private DepositAgreementService depositAgreementService;
 	@Autowired
 	private PropertyProjectService propertyProjectService;
+	@Autowired
+	private BuildingService buildingService;
+	@Autowired
+	private HouseService houseService;
+	@Autowired
+	private RoomService roomServie;
 	
 	@ModelAttribute
 	public DepositAgreement get(@RequestParam(required=false) String id) {
@@ -61,6 +74,33 @@ public class DepositAgreementController extends BaseController {
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 		
+		if(null != depositAgreement.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(depositAgreement.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != depositAgreement.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(depositAgreement.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != depositAgreement.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(depositAgreement.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
 		return "modules/contract/depositAgreementList";
 	}
 
@@ -71,6 +111,33 @@ public class DepositAgreementController extends BaseController {
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
+		
+		if(null != depositAgreement.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(depositAgreement.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != depositAgreement.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(depositAgreement.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != depositAgreement.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(depositAgreement.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
 		
 		return "modules/contract/depositAgreementForm";
 	}
@@ -84,6 +151,23 @@ public class DepositAgreementController extends BaseController {
 		depositAgreementService.save(depositAgreement);
 		addMessage(redirectAttributes, "保存定金协议成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/depositAgreement/?repage";
+	}
+	
+	@RequestMapping(value = "audit")
+	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		depositAgreementService.audit(auditHis);
+		
+		return list(new DepositAgreement(),request,response,model);
+	}
+	
+	/**
+	 * 转违约
+	 */
+	@RequestMapping(value = "breakContract")
+	public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
+		depositAgreementService.breakContract(depositAgreement);
+		
+		return list(new DepositAgreement(),request,response,model);
 	}
 	
 	@RequiresPermissions("contract:depositAgreement:edit")

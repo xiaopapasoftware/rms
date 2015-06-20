@@ -23,6 +23,69 @@
 				}
 			});
 		});
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'></option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'></option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+		}
+		
+		function houseChange() {
+			var room = $("[id='house.id']").val();
+			var html = "<option value='' selected='selected'></option>";
+			if("" != room) {
+				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
+					}
+					$("[id='room.id']").html(html);
+				});
+			} else {
+				$("[id='room.id']").html(html);
+			}
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+		}
 	</script>
 </head>
 <body>
@@ -48,7 +111,7 @@
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
-				<form:select path="propertyProject.id" class="input-xlarge required">
+				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
 					<form:option value="" label=""/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -58,7 +121,7 @@
 		<div class="control-group">
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
-				<form:select path="building.id" class="input-xlarge required">
+				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
 					<form:option value="" label=""/>
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -68,7 +131,7 @@
 		<div class="control-group">
 			<label class="control-label">房屋：</label>
 			<div class="controls">
-				<form:select path="house.id" class="input-xlarge required">
+				<form:select path="house.id" class="input-xlarge required" onchange="houseChange()">
 					<form:option value="" label=""/>
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>

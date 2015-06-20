@@ -14,49 +14,76 @@
 			$("#searchForm").submit();
         	return false;
         }
+		function register() {
+			var transIds = $("input[name='transIds']:checked").length;
+			var check = true;
+			if(transIds < 1) {
+				top.$.jBox.tip('请选择款项.','warning');
+				return;
+			} else if(transIds>1){
+				for(var i=1;i<transIds;i++) {
+					if($("input[name='transIds']:checked").eq(i).attr("transId") != $("input[name='transIds']:checked").eq(i-1).attr("transId")) {
+						check = false;
+						break;
+					}
+				}
+			}
+			if(check) {
+				var transId=new Array();
+				for(var i=0;i<transIds;i++) {
+					transId.push($("input[name='transIds']:checked").eq(i).val());
+				}
+				window.location.href="${ctx}/funds/tradingAccounts/form?transIds="+transId.join(",")+"&tradeId="+$("input[name='transIds']:checked").eq(0).attr("transId");
+			} else {
+				top.$.jBox.tip('勾选的款项来自不同的合同,不能一并到账登记.','warning');
+			}
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/paymentTrans/">款项交易列表</a></li>
-		<shiro:hasPermission name="funds:paymentTrans:edit"><li><a href="${ctx}/funds/paymentTrans/form">款项交易添加</a></li></shiro:hasPermission>
+		<shiro:hasPermission name="funds:paymentTrans:edit">
+			<li><a href="javascript:void(0);" onclick="register()">到账登记</a></li>
+		</shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search"
+		cssStyle="width:1145px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>交易类型：</label>
-				<form:select path="tradeType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">交易类型：</label>
+				<form:select path="tradeType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>款项类型：</label>
-				<form:select path="paymentType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">款项类型：</label>
+				<form:select path="paymentType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>交易对象：</label>
-				<form:input path="transId" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:120px;">交易对象：</label>
+				<form:input path="transId" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
 			</li>
-			<li><label>交易款项方向：</label>
-				<form:select path="tradeDirection" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">交易款项方向：</label>
+				<form:select path="tradeDirection" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>交易款项开始时间：</label>
+			<li><label style="width:120px;">交易款项开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
 			</li>
-			<li><label>交易款项到期时间：</label>
+			<li><label style="width:120px;">交易款项到期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
 			</li>
-			<li><label>应该交易金额：</label>
+			<!--<li><label>应该交易金额：</label>
 				<form:input path="tradeAmount" htmlEscape="false" class="input-medium"/>
 			</li>
 			<li><label>实际交易金额：</label>
@@ -64,11 +91,11 @@
 			</li>
 			<li><label>剩余交易金额：</label>
 				<form:input path="lastAmount" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>交易款项状态：</label>
-				<form:select path="transStatus" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			</li>-->
+			<li><label style="width:120px;">交易款项状态：</label>
+				<form:select path="transStatus" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trade_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -76,12 +103,12 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
 		<thead>
 			<tr>
+				<th width="15"></th>
 				<th>交易类型</th>
 				<th>款项类型</th>
-				<th>交易对象</th>
 				<th>交易款项方向</th>
 				<th>交易款项开始时间</th>
 				<th>交易款项到期时间</th>
@@ -91,29 +118,28 @@
 				<th>交易款项状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="funds:paymentTrans:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="paymentTrans">
 			<tr>
-				<td><a href="${ctx}/funds/paymentTrans/form?id=${paymentTrans.id}">
-					${fns:getDictLabel(paymentTrans.tradeType, '', '')}
-				</a></td>
 				<td>
-					${fns:getDictLabel(paymentTrans.paymentType, '', '')}
+					<input ${paymentTrans.transStatus!='0' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" type="checkbox" value="${paymentTrans.id}"/>
 				</td>
 				<td>
-					${paymentTrans.transId}
+					${fns:getDictLabel(paymentTrans.tradeType, 'trans_type', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(paymentTrans.tradeDirection, '', '')}
+					${fns:getDictLabel(paymentTrans.paymentType, 'payment_type', '')}
 				</td>
 				<td>
-					<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					${fns:getDictLabel(paymentTrans.tradeDirection, 'fee_dirction', '')}
 				</td>
 				<td>
-					<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${paymentTrans.tradeAmount}
@@ -125,7 +151,7 @@
 					${paymentTrans.lastAmount}
 				</td>
 				<td>
-					${fns:getDictLabel(paymentTrans.transStatus, '', '')}
+					${fns:getDictLabel(paymentTrans.transStatus, 'trade_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${paymentTrans.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -133,10 +159,6 @@
 				<td>
 					${paymentTrans.remarks}
 				</td>
-				<shiro:hasPermission name="funds:paymentTrans:edit"><td>
-    				<a href="${ctx}/funds/paymentTrans/form?id=${paymentTrans.id}">修改</a>
-					<a href="${ctx}/funds/paymentTrans/delete?id=${paymentTrans.id}" onclick="return confirmx('确认要删除该款项交易吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

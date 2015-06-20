@@ -74,14 +74,6 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	
 	@Transactional(readOnly = false)
 	public void audit(AuditHis auditHis) {
-		//审核
-		Audit audit = new Audit();
-		audit.setObjectId(auditHis.getObjectId());
-		audit.setNextRole("");
-		audit.setUpdateDate(new Date());
-		audit.setUpdateBy(UserUtils.getUser());
-		auditDao.update(audit);
-		
 		AuditHis saveAuditHis = new AuditHis();
 		saveAuditHis.setId(IdGen.uuid());
 		saveAuditHis.setObjectType("0");//承租合同
@@ -106,6 +98,14 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		
 		//审核通过，生成款项
 		if("1".equals(auditHis.getAuditStatus())) {
+			//审核
+			Audit audit = new Audit();
+			audit.setObjectId(auditHis.getObjectId());
+			audit.setNextRole("");
+			audit.setUpdateDate(new Date());
+			audit.setUpdateBy(UserUtils.getUser());
+			auditDao.update(audit);
+			
 			PaymentTrans delPaymentTrans = new PaymentTrans();
 			delPaymentTrans.setTransId(leaseContract.getId());
 			paymentTransDao.delete(delPaymentTrans);

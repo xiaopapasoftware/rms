@@ -25,8 +25,11 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
 import com.thinkgem.jeesite.modules.person.service.RemittancerService;
@@ -50,6 +53,8 @@ public class LeaseContractController extends BaseController {
 	private RemittancerService remittancerService;
 	@Autowired
 	private AuditHisService auditHisService;
+	@Autowired
+	private HouseService houseService;
 	
 	@ModelAttribute
 	public LeaseContract get(@RequestParam(required=false) String id) {
@@ -71,6 +76,24 @@ public class LeaseContractController extends BaseController {
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
+		
+		if(null != leaseContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(leaseContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != leaseContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(leaseContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
 		
 		return "modules/contract/leaseContractList";
 	}
@@ -96,6 +119,24 @@ public class LeaseContractController extends BaseController {
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
+		
+		if(null != leaseContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(leaseContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != leaseContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(leaseContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
 		
 		List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
 		model.addAttribute("remittancerList", remittancerList);

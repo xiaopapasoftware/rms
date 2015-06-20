@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,9 +19,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 
 /**
@@ -33,6 +38,8 @@ public class TradingAccountsController extends BaseController {
 
 	@Autowired
 	private TradingAccountsService tradingAccountsService;
+	@Autowired
+	private PaymentTransService paymentTransService;
 	
 	@ModelAttribute
 	public TradingAccounts get(@RequestParam(required=false) String id) {
@@ -57,8 +64,36 @@ public class TradingAccountsController extends BaseController {
 	@RequiresPermissions("funds:tradingAccounts:view")
 	@RequestMapping(value = "form")
 	public String form(TradingAccounts tradingAccounts, Model model) {
+		String[] tradeId = tradingAccounts.getTransIds().split(",");
+		double amount=0;
+		String tradeType = "";
+		for(int i=0;i<tradeId.length;i++) {
+			PaymentTrans paymentTrans = paymentTransService.get(tradeId[i]);
+			if("0".equals(paymentTrans.getTradeDirection()))//应出
+				amount -= paymentTrans.getTradeAmount();
+			else
+				amount += paymentTrans.getTradeAmount();
+			tradeType = paymentTrans.getTradeType();
+		}
+		tradingAccounts.setTradeAmount(amount);
+		tradingAccounts.setTradeDirection(amount>0?"1":"0");
+		tradingAccounts.setTradeType(tradeType);
 		model.addAttribute("tradingAccounts", tradingAccounts);
 		return "modules/funds/tradingAccountsForm";
+	}
+	
+	@RequestMapping(value = "findOne")
+	public String findOne(TradingAccounts tradingAccounts, Model model) {
+		tradingAccounts = tradingAccountsService.get(tradingAccounts);
+		model.addAttribute("tradingAccounts", tradingAccounts);
+		return "modules/funds/tradingAccountsEdit";
+	}
+	
+	@RequestMapping(value = "audit")
+	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		tradingAccountsService.audit(auditHis);
+		
+		return list(new TradingAccounts(),request,response,model);
 	}
 
 	@RequiresPermissions("funds:tradingAccounts:edit")
@@ -67,9 +102,11 @@ public class TradingAccountsController extends BaseController {
 		if (!beanValidator(model, tradingAccounts)){
 			return form(tradingAccounts, model);
 		}
+		tradingAccounts.setTradeTime(new Date());
+		tradingAccounts.setTradeStatus("0");//待审核
 		tradingAccountsService.save(tradingAccounts);
 		addMessage(redirectAttributes, "保存账务交易成功");
-		return "redirect:"+Global.getAdminPath()+"/funds/tradingAccounts/?repage";
+		return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
 	}
 	
 	@RequiresPermissions("funds:tradingAccounts:edit")

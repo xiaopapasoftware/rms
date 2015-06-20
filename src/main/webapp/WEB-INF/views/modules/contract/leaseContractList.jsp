@@ -104,11 +104,13 @@
 			<li><label style="width:100px;">楼宇：</label>
 				<form:select path="building.id" class="input-medium" style="width:177px;" onchange="buildingChange()">
 					<form:option value="" label="全部"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:100px;">房屋：</label>
 				<form:select path="house.id" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:100px;">汇款人：</label>

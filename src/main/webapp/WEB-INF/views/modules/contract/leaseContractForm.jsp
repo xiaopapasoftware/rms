@@ -131,6 +131,7 @@
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
 					<form:option value="" label=""/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -140,6 +141,7 @@
 			<div class="controls">
 				<form:select path="house.id" class="input-xlarge required">
 					<form:option value="" label=""/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>

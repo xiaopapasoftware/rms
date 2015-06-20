@@ -26,7 +26,7 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 	private Date expiredDate;		// 交易款项到期时间
 	private Double tradeAmount;		// 应该交易金额
 	private Double transAmount;		// 实际交易金额
-	private String lastAmount;		// 剩余交易金额
+	private Double lastAmount;		// 剩余交易金额
 	private String transStatus;		// 交易款项状态
 	
 	public PaymentTrans() {
@@ -111,11 +111,11 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 		this.transAmount = transAmount;
 	}
 	
-	public String getLastAmount() {
+	public Double getLastAmount() {
 		return lastAmount;
 	}
 
-	public void setLastAmount(String lastAmount) {
+	public void setLastAmount(Double lastAmount) {
 		this.lastAmount = lastAmount;
 	}
 	

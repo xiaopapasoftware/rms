@@ -14,59 +14,87 @@
 			$("#searchForm").submit();
         	return false;
         }
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/funds/tradingAccounts/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
+		
+		function auditHis(id) {
+			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/tradingAccounts/">账务交易列表</a></li>
-		<shiro:hasPermission name="funds:tradingAccounts:edit"><li><a href="${ctx}/funds/tradingAccounts/form">账务交易添加</a></li></shiro:hasPermission>
+		<shiro:hasPermission name="funds:tradingAccounts:edit"><li><a href="${ctx}/funds/tradingAccounts/findOne">账务交易添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/" method="post" class="breadcrumb form-search"
+		cssStyle="width:1145px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>账务交易对象：</label>
-				<form:input path="tradeId" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:120px;">账务交易对象：</label>
+				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
 			</li>
-			<li><label>账务交易类型：</label>
-				<form:select path="tradeType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">账务交易类型：</label>
+				<form:select path="tradeType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>账务交易方向：</label>
-				<form:select path="tradeDirection" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">账务交易方向：</label>
+				<form:select path="tradeDirection" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>交易方式：</label>
-				<form:select path="tradeMode" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">交易方式：</label>
+				<form:select path="tradeMode" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>交易金额：</label>
-				<form:input path="tradeAmount" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>交易时间：</label>
+			<li><label style="width:120px;">交易时间：</label>
 				<input name="tradeTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${tradingAccounts.tradeTime}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${tradingAccounts.tradeTime}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
 			</li>
-			<li><label>收款人名称：</label>
-				<form:input path="payeeName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:120px;">收款人名称：</label>
+				<form:input path="payeeName" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
 			</li>
-			<li><label>收款人类型：</label>
-				<form:select path="payeeType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">收款人类型：</label>
+				<form:select path="payeeType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('receive_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>账务状态：</label>
-				<form:select path="tradeStatus" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">账务状态：</label>
+				<form:select path="tradeStatus" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -74,7 +102,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
 		<thead>
 			<tr>
 				<th>账务交易对象</th>
@@ -94,17 +122,17 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="tradingAccounts">
 			<tr>
-				<td><a href="${ctx}/funds/tradingAccounts/form?id=${tradingAccounts.id}">
-					${tradingAccounts.tradeId}
-				</a></td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.tradeType, '', '')}
+					${tradingAccounts.tradeName}
 				</td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.tradeDirection, '', '')}
+					${fns:getDictLabel(tradingAccounts.tradeType, 'trans_type', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.tradeMode, '', '')}
+					${fns:getDictLabel(tradingAccounts.tradeDirection, 'trans_dirction', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(tradingAccounts.tradeMode, 'trans_mode', '')}
 				</td>
 				<td>
 					${tradingAccounts.tradeAmount}
@@ -116,10 +144,10 @@
 					${tradingAccounts.payeeName}
 				</td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.payeeType, '', '')}
+					${fns:getDictLabel(tradingAccounts.payeeType, 'receive_type', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.tradeStatus, '', '')}
+					${fns:getDictLabel(tradingAccounts.tradeStatus, 'contract_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${tradingAccounts.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -127,10 +155,18 @@
 				<td>
 					${tradingAccounts.remarks}
 				</td>
-				<shiro:hasPermission name="funds:tradingAccounts:edit"><td>
+				<td>
+				<!--<shiro:hasPermission name="funds:tradingAccounts:edit">
     				<a href="${ctx}/funds/tradingAccounts/form?id=${tradingAccounts.id}">修改</a>
 					<a href="${ctx}/funds/tradingAccounts/delete?id=${tradingAccounts.id}" onclick="return confirmx('确认要删除该账务交易吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>-->
+					<c:if test="${tradingAccounts.tradeStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+					</c:if>
+					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2'}">
+						<a href="javascript:void(0);" onclick="auditHis('${tradingAccounts.id}')">审核记录</a>
+					</c:if>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

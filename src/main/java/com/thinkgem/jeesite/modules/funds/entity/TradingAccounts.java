@@ -28,6 +28,10 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	private String payeeType;		// 收款人类型
 	private String tradeStatus;		// 账务状态
 	
+	private String transIds;
+	
+	private String tradeName;
+	
 	public TradingAccounts() {
 		super();
 	}
@@ -82,7 +86,6 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	}
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="交易时间不能为空")
 	public Date getTradeTime() {
 		return tradeTime;
 	}
@@ -91,7 +94,6 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 		this.tradeTime = tradeTime;
 	}
 	
-	@Length(min=1, max=100, message="收款人名称长度必须介于 1 和 100 之间")
 	public String getPayeeName() {
 		return payeeName;
 	}
@@ -100,7 +102,6 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 		this.payeeName = payeeName;
 	}
 	
-	@Length(min=1, max=64, message="收款人类型长度必须介于 1 和 64 之间")
 	public String getPayeeType() {
 		return payeeType;
 	}
@@ -117,5 +118,20 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	public void setTradeStatus(String tradeStatus) {
 		this.tradeStatus = tradeStatus;
 	}
-	
+
+	public String getTransIds() {
+		return transIds;
+	}
+
+	public void setTransIds(String transIds) {
+		this.transIds = transIds;
+	}
+
+	public String getTradeName() {
+		return tradeName;
+	}
+
+	public void setTradeName(String tradeName) {
+		this.tradeName = tradeName;
+	}	
 }

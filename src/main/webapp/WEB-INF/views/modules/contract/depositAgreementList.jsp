@@ -14,6 +14,101 @@
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function houseChange() {
+			var room = $("[id='house.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != room) {
+				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
+					}
+					$("[id='room.id']").html(html);
+				});
+			} else {
+				$("[id='room.id']").html(html);
+			}
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/depositAgreement/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
+		
+		function auditHis(id) {
+			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -27,29 +122,29 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form" style="width:1200px;">
 			<li><label style="width:120px;">物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+				<form:select path="propertyProject.id" class="input-medium" style="width:200px;" onchange="changeProject()">
+					<form:option value="" label="全部"/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">楼宇：</label>
-				<form:select path="building.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+				<form:select path="building.id" class="input-medium" style="width:200px;" onchange="buildingChange()">
+					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房屋：</label>
-				<form:select path="house.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+				<form:select path="house.id" class="input-medium" style="width:200px;" onchange="houseChange()">
+					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房间：</label>
 				<form:select path="room.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">出租方式：</label>
 				<form:select path="rentMode" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -182,7 +277,7 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="contract:depositAgreement:edit">
-						<c:if test="${depositAgreement.agreementStatus=='1' || depositAgreement.agreementStatus=='2'}">
+						<c:if test="${epositAgreement.agreementStatus=='2'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
 	    				</c:if>
 						<!--<a href="${ctx}/contract/depositAgreement/delete?id=${depositAgreement.id}" onclick="return confirmx('确认要删除该定金协议吗？', this.href)">删除</a>-->
@@ -190,7 +285,10 @@
 					<c:if test="${depositAgreement.agreementStatus=='1'}">
 						<a href="javascript:void(0);" onclick="toAudit('${depositAgreement.id}')">审核</a>
 					</c:if>
-					<c:if test="${depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='3'}">
+					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
+						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
+					</c:if>
+					<c:if test="${depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">
 						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a>
 					</c:if>
 				</td>

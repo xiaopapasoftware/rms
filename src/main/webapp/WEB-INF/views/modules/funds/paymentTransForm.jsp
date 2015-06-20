@@ -28,22 +28,25 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/funds/paymentTrans/">款项交易列表</a></li>
-		<li class="active"><a href="${ctx}/funds/paymentTrans/form?id=${paymentTrans.id}">款项交易<shiro:hasPermission name="funds:paymentTrans:edit">${not empty paymentTrans.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="funds:paymentTrans:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active">
+			<a href="javascript:void(0);">到账登记</a>
+		</li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="tradeId"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
 			<label class="control-label">交易类型：</label>
 			<div class="controls">
 				<form:select path="tradeType" class="input-xlarge required">
 					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!--<div class="control-group">
 			<label class="control-label">款项类型：</label>
 			<div class="controls">
 				<form:select path="paymentType" class="input-xlarge required">
@@ -52,14 +55,14 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
-		<div class="control-group">
+		</div>-->
+		<!--<div class="control-group">
 			<label class="control-label">交易对象：</label>
 			<div class="controls">
 				<form:input path="transId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
+		</div>-->
 		<div class="control-group">
 			<label class="control-label">交易款项方向：</label>
 			<div class="controls">
@@ -109,7 +112,7 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!--<div class="control-group">
 			<label class="control-label">交易款项状态：</label>
 			<div class="controls">
 				<form:select path="transStatus" class="input-xlarge required">
@@ -118,7 +121,7 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
+		</div>-->
 		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">

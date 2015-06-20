@@ -18,10 +18,12 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		case when a.trade_type=1 then ta.agreement_name else "" end tradeName
 	</sql>
 	
 	<sql id="tradingAccountsJoins">
+	left join t_deposit_agreement ta on a.trade_id=ta.id 
 	</sql>
     
 	<select id="get" resultType="TradingAccounts">
@@ -68,6 +70,9 @@
 			</if>
 			<if test="tradeStatus != null and tradeStatus != ''">
 				AND a.trade_status = #{tradeStatus}
+			</if>
+			<if test="tradeName != null and tradeName != ''">
+				AND ta.agreement_name like concat('%',#{tradeName},'%')
 			</if>
 		</where>
 		<choose>
