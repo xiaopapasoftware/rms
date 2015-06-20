@@ -32,7 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="owner" action="${ctx}/person/owner/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>	
 		<div class="control-group">
 			<label class="control-label">姓名：</label>
 			<div class="controls">
@@ -57,20 +57,19 @@
 		<div class="control-group">
 			<label class="control-label">座机号：</label>
 			<div class="controls">
-				<form:input path="deskPhone" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="deskPhone" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">详细居住地址：</label>
 			<div class="controls">
-				<form:input path="address" htmlEscape="false" maxlength="300" class="input-xlarge "/>
+				<form:input path="address" htmlEscape="false" maxlength="300" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
-				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
+				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge"/>
 			</div>
 		</div>
 		<div class="form-actions">
