@@ -3,18 +3,27 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
+import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 房间信息Service
+ * 
  * @author huangsc
  * @version 2015-06-09
  */
@@ -22,26 +31,50 @@ import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 @Transactional(readOnly = true)
 public class RoomService extends CrudService<RoomDao, Room> {
 
+	@Autowired
+	private AttachmentDao attachmentDao;
+
 	public Room get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<Room> findList(Room room) {
 		return super.findList(room);
 	}
-	
+
 	public Page<Room> findPage(Page<Room> page, Room room) {
 		return super.findPage(page, room);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(Room room) {
+		if (room.getIsNewRecord()) {// 新增
+			String id = super.saveAndReturnId(room);
+			if (StringUtils.isNotEmpty(room.getAttachmentPath())) {
+				Attachment attachment = new Attachment();
+				attachment.setId(IdGen.uuid());
+				attachment.setRoomId(id);
+				attachment.setAttachmentType(FileType.ROOM_MAP.getValue());
+				attachment.setAttachmentPath(room.getAttachmentPath());
+				attachment.setCreateDate(new Date());
+				attachment.setCreateBy(UserUtils.getUser());
+				attachment.setUpdateDate(new Date());
+				attachment.setUpdateBy(UserUtils.getUser());
+				attachmentDao.insert(attachment);
+			}
+		} else {// 更新
+
+		}
 		super.save(room);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(Room room) {
 		super.delete(room);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room) {
+		return dao.findRoomByPrjAndBldAndHouNoAndRomNo(room);
+	}
 }
