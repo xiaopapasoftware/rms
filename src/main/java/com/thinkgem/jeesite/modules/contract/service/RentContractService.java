@@ -36,6 +36,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	
 	@Transactional(readOnly = false)
 	public void save(RentContract rentContract) {
+		rentContract.setContractBusiStatus("0");//有效
 		super.save(rentContract);
 	}
 	
