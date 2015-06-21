@@ -23,8 +23,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
  * 出租合同Controller
@@ -39,6 +45,12 @@ public class RentContractController extends BaseController {
 	private RentContractService rentContractService;
 	@Autowired
 	private PropertyProjectService propertyProjectService;
+	@Autowired
+	private BuildingService buildingService;
+	@Autowired
+	private HouseService houseService;
+	@Autowired
+	private RoomService roomServie;
 	
 	@ModelAttribute
 	public RentContract get(@RequestParam(required=false) String id) {
@@ -57,6 +69,37 @@ public class RentContractController extends BaseController {
 	public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract); 
 		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
 		return "modules/contract/rentContractList";
 	}
 
@@ -68,13 +111,40 @@ public class RentContractController extends BaseController {
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
 		return "modules/contract/rentContractForm";
 	}
 
 	@RequiresPermissions("contract:rentContract:edit")
 	@RequestMapping(value = "save")
 	public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, rentContract)){
+		if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())){
 			return form(rentContract, model);
 		}
 		rentContractService.save(rentContract);
