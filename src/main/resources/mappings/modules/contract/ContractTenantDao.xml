@@ -4,8 +4,10 @@
     
 	<sql id="contractTenantColumns">
 		a.id AS "id",
+		a.deposit_agreement_id AS "depositAgreementId",
 		a.contract_id AS "contractId",
 		a.tenant_id AS "tenantId",
+		a.lease_contract_id AS "leaseContractId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -64,8 +66,10 @@
 	<insert id="insert">
 		INSERT INTO t_contract_tenant(
 			id,
+			deposit_agreement_id,
 			contract_id,
 			tenant_id,
+			lease_contract_id,
 			create_by,
 			create_date,
 			update_by,
@@ -74,8 +78,10 @@
 			del_flag
 		) VALUES (
 			#{id},
+			#{depositAgreementId},
 			#{contractId},
 			#{tenantId},
+			#{leaseContractId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -87,8 +93,10 @@
 	
 	<update id="update">
 		UPDATE t_contract_tenant SET 	
+			deposit_agreement_id = #{depositAgreementId},
 			contract_id = #{contractId},
 			tenant_id = #{tenantId},
+			lease_contract_id = #{leaseContractId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -98,7 +106,7 @@
 	<update id="delete">
 		UPDATE t_contract_tenant SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE tenant_id = #{tenantId}
 	</update>
 	
 </mapper>

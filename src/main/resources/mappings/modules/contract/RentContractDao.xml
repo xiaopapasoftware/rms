@@ -50,7 +50,8 @@
 		tp.project_name as projectName,
 		tb.building_name as buildingBame,
 		th.house_no as houseNo,
-		tm.room_no as roomNo 
+		tm.room_no as roomNo,
+		a.charge_type as chargeType 
 	</sql>
 	
 	<sql id="rentContractJoins">
@@ -198,7 +199,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			charge_type
 		) VALUES (
 			#{id},
 			#{contractId},
@@ -242,7 +244,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{chargeType}
 		)
 	</insert>
 	
@@ -286,7 +289,8 @@
 			contract_busi_status = #{contractBusiStatus},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			charge_type = #{chargeType}
 		WHERE id = #{id}
 	</update>
 	
