@@ -6,7 +6,7 @@
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		a.building_id AS "building.id",
-		a.house_no AS "house.houseNo",
+		a.house_id AS "house.id",
 		a.room_no AS "roomNo",
 		a.meter_no AS "meterNo",
 		a.room_space AS "roomSpace",
@@ -46,7 +46,7 @@
 				AND a.building_id = #{building.id}
 			</if>
 			<if test="house != null and house.id != null and house.id != ''">
-				AND a.house_no = #{house.id}
+				AND a.house_id = #{house.id}
 			</if>
 			<if test="roomNo != null and roomNo != ''">
 				AND a.room_no = #{roomNo}
@@ -77,6 +77,23 @@
 		</choose>
 	</select>
 	
+	<select id="findRoomByPrjAndBldAndHouNoAndRomNo" resultType="Room">
+		SELECT
+				a.id AS "id",
+				a.property_project_id AS "propertyProject.id",
+				a.building_id AS "building.id",
+				a.house_id AS "house.id",
+				a.room_no AS "roomNo",
+				a.room_status AS "roomStatus",
+				a.del_flag AS "delFlag"
+		FROM t_room a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+			  AND a.property_project_id = #{propertyProject.id}
+			  AND a.building_id = #{building.id}
+			  AND a.house_id = #{house.id}
+			  AND a.room_no = #{roomNo}
+	</select>
+	
 	<select id="findAllList" resultType="Room">
 		SELECT 
 			<include refid="roomColumns"/>
@@ -100,7 +117,7 @@
 			id,
 			property_project_id,
 			building_id,
-			house_no,
+			house_id,
 			room_no,
 			meter_no,
 			room_space,
@@ -117,7 +134,7 @@
 			#{id},
 			#{propertyProject.id},
 			#{building.id},
-			#{house.houseNo},
+			#{house.id},
 			#{roomNo},
 			#{meterNo},
 			#{roomSpace},
@@ -137,7 +154,7 @@
 		UPDATE t_room SET 	
 			property_project_id = #{propertyProject.id},
 			building_id = #{building.id},
-			house_no = #{house.houseNo},
+			house_id = #{house.id},
 			room_no = #{roomNo},
 			meter_no = #{meterNo},
 			room_space = #{roomSpace},

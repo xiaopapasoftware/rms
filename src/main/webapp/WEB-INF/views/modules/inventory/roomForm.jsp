@@ -23,6 +23,44 @@
 				}
 			});
 		});
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+		}
 	</script>
 </head>
 <body>
@@ -32,13 +70,13 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="room" action="${ctx}/inventory/room/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
-				<form:select path="propertyProject.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -46,9 +84,9 @@
 		<div class="control-group">
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
-				<form:select path="building.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -56,52 +94,49 @@
 		<div class="control-group">
 			<label class="control-label">房屋号：</label>
 			<div class="controls">
-				<form:select path="house.houseNo" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="house.id" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listHouse}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">房间号：</label>
+			<label class="control-label">房间号（0:公共区域）：</label>
 			<div class="controls">
 				<form:input path="roomNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">电表号：</label>
+			<label class="control-label">智能电表号：</label>
 			<div class="controls">
-				<form:input path="meterNo" htmlEscape="false" maxlength="100" class="input-xlarge "/>
+				<form:input path="meterNo" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房间面积：</label>
 			<div class="controls">
-				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">朝向：</label>
 			<div class="controls">
-				<form:checkboxes path="orientation" items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+				<form:checkboxes path="orientationList" items="${listOrientation}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">附属结构：</label>
 			<div class="controls">
-				<form:checkboxes path="structure" items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+				<form:checkboxes path="structureList" items="${listStructure}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">房间状态：</label>
+			<label class="control-label">房间图片：</label>
 			<div class="controls">
-				<form:select path="roomStatus" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/13" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

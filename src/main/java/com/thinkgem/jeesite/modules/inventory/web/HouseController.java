@@ -165,17 +165,14 @@ public class HouseController extends BaseController {
 				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 
 				model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-				model.addAttribute("propertyProject", house.getPropertyProject());
 
 				PropertyProject pp = new PropertyProject();
 				pp.setId(house.getPropertyProject().getId());
 				Building bd = new Building();
 				bd.setPropertyProject(pp);
 				model.addAttribute("listBuilding", buildingService.findList(bd));
-				model.addAttribute("building", house.getBuilding());
 
 				model.addAttribute("listOwner", ownerService.findList(new Owner()));
-				model.addAttribute("owner", house.getOwner());
 				return "modules/inventory/houseForm";
 			} else {
 				house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
