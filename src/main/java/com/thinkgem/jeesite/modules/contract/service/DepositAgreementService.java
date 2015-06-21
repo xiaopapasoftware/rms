@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,12 +16,16 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
+import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.person.dao.TenantDao;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -39,6 +44,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	private AuditDao auditDao;
 	@Autowired
 	private AuditHisDao auditHisDao;
+	@Autowired
+	private ContractTenantDao contractTenantDao;
+	@Autowired
+	private TenantDao tenantDao;
 	
 	private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";//定金协议审批
 	
@@ -52,6 +61,18 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	
 	public Page<DepositAgreement> findPage(Page<DepositAgreement> page, DepositAgreement depositAgreement) {
 		return super.findPage(page, depositAgreement);
+	}
+	
+	public List<Tenant> findTenant(DepositAgreement depositAgreement) {
+		List<Tenant> tenantList = new ArrayList<Tenant>();
+		ContractTenant contractTenant = new ContractTenant();
+		contractTenant.setDepositAgreementId(depositAgreement.getId());
+		List<ContractTenant> list = contractTenantDao.findAllList(contractTenant);
+		for(ContractTenant tmpContractTenant : list) {
+			Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
+			tenantList.add(tenant);
+		}
+		return tenantList;
 	}
 	
 	@Transactional(readOnly = false)
@@ -114,12 +135,13 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			audit.setUpdateBy(UserUtils.getUser());
 			auditDao.update(audit);
 			
-			DepositAgreement depositAgreement = depositAgreementDao.get(auditHis.getObjectId());
-			depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"3":auditHis.getAuditStatus());//2:内容审核拒绝 3:内容审核通过到账收据待审核
-			depositAgreement.setUpdateDate(new Date());
-			depositAgreement.setUpdateBy(UserUtils.getUser());
-			depositAgreementDao.update(depositAgreement);
 		}
+		
+		DepositAgreement depositAgreement = depositAgreementDao.get(auditHis.getObjectId());
+		depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"3":auditHis.getAuditStatus());//2:内容审核拒绝 3:内容审核通过到账收据待审核
+		depositAgreement.setUpdateDate(new Date());
+		depositAgreement.setUpdateBy(UserUtils.getUser());
+		depositAgreementDao.update(depositAgreement);
 	}
 	
 	@Transactional(readOnly = false)
@@ -156,6 +178,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		Audit audit = new Audit();
 		audit.setId(IdGen.uuid());
 		audit.setObjectId(id);
+		auditDao.delete(audit);
 		audit.setObjectType("1");//预约定金
 		audit.setNextRole(DEPOSIT_AGREEMENT_ROLE);
 		audit.setCreateDate(new Date());
@@ -164,6 +187,23 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		audit.setUpdateBy(UserUtils.getUser());
 		audit.setDelFlag("0");
 		auditDao.insert(audit);
+		
+		/*合同租客关联信息*/
+		List<Tenant> list = depositAgreement.getTenantList();
+		if(null != list && list.size()>0) {
+			for(Tenant tenant : list) {
+				ContractTenant contractTenant = new ContractTenant();
+				contractTenant.setId(IdGen.uuid());
+				contractTenant.setTenantId(tenant.getId());
+				contractTenant.setDepositAgreementId(id);
+				contractTenant.setCreateDate(new Date());
+				contractTenant.setCreateBy(UserUtils.getUser());
+				contractTenant.setUpdateDate(new Date());
+				contractTenant.setUpdateBy(UserUtils.getUser());
+				contractTenant.setDelFlag("0");
+				contractTenantDao.insert(contractTenant);
+			}
+		}
 	}
 	
 	@Transactional(readOnly = false)
