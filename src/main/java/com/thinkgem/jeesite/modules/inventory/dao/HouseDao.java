@@ -25,5 +25,5 @@ public interface HouseDao extends CrudDao<House> {
 	/**
 	 * 更新房屋状态
 	 * */
-	void updateHouseStatus(House house);
+	int updateHouseStatus(House house);
 }

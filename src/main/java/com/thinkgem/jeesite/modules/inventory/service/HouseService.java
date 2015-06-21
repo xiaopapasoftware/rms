@@ -106,7 +106,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	 * 更新房屋状态
 	 * */
 	@Transactional(readOnly = false)
-	public void updateHouseStatus(House house) {
-		dao.updateHouseStatus(house);
+	public int updateHouseStatus(House house) {
+		return dao.updateHouseStatus(house);
 	}
 }
