@@ -8,6 +8,7 @@ drop table if exists T_ATTACHMENT;
 drop table if exists T_LEASE_CONTRACT_DTL;
 drop table if exists T_AUDIT;
 drop table if exists T_AUDIT_HIS;
+drop table if exists T_CONTRACT_TENANT;
 
 
 /* Create Tables */
@@ -79,6 +80,20 @@ create table T_DEPOSIT_AGREEMENT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '定金协议';
+
+create table T_CONTRACT_TENANT
+(
+	 ID                   varchar(64) NOT NULL,
+	 CONTRACT_ID          varchar(64) NOT NULL,
+	 TENANT_ID            varchar(64) NOT NULL,
+	 CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '合同租客关联信息';
 
 create table T_RENT_CONTRACT
 (
