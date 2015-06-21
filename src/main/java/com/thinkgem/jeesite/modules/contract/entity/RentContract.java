@@ -58,9 +58,16 @@ public class RentContract extends DataEntity<RentContract> {
 	private Double valleyMeterValue;		// 入住谷电系数
 	private Double coalValue;		// 入住煤表系数
 	private Double waterValue;		// 入住水表系数
-	private Double remindTime;		// 续租提醒时间
+	private Date remindTime;		// 续租提醒时间
 	private String contractStatus;		// 合同状态
 	private String contractBusiStatus;		// 合同业务状态
+	
+	private String projectName;
+	private String buildingBame;
+	private String houseNo;
+	private String roomNo;
+	
+	private String validatorFlag;
 	
 	public RentContract() {
 		super();
@@ -354,11 +361,11 @@ public class RentContract extends DataEntity<RentContract> {
 		this.waterValue = waterValue;
 	}
 	
-	public Double getRemindTime() {
+	public Date getRemindTime() {
 		return remindTime;
 	}
 
-	public void setRemindTime(Double remindTime) {
+	public void setRemindTime(Date remindTime) {
 		this.remindTime = remindTime;
 	}
 	
@@ -379,5 +386,44 @@ public class RentContract extends DataEntity<RentContract> {
 	public void setContractBusiStatus(String contractBusiStatus) {
 		this.contractBusiStatus = contractBusiStatus;
 	}
-	
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public String getBuildingBame() {
+		return buildingBame;
+	}
+
+	public void setBuildingBame(String buildingBame) {
+		this.buildingBame = buildingBame;
+	}
+
+	public String getHouseNo() {
+		return houseNo;
+	}
+
+	public void setHouseNo(String houseNo) {
+		this.houseNo = houseNo;
+	}
+
+	public String getRoomNo() {
+		return roomNo;
+	}
+
+	public void setRoomNo(String roomNo) {
+		this.roomNo = roomNo;
+	}
+
+	public String getValidatorFlag() {
+		return validatorFlag;
+	}
+
+	public void setValidatorFlag(String validatorFlag) {
+		this.validatorFlag = validatorFlag;
+	}	
 }
