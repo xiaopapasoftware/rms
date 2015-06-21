@@ -50,7 +50,6 @@ public class Tenant extends DataEntity<Tenant> {
 		super(id);
 	}
 
-	@NotNull(message="定金协议不能为空")
 	public DepositAgreement getDepositAgreement() {
 		return depositAgreement;
 	}
@@ -59,7 +58,6 @@ public class Tenant extends DataEntity<Tenant> {
 		this.depositAgreement = depositAgreement;
 	}
 	
-	@NotNull(message="承租合同不能为空")
 	public LeaseContract getLeaseContract() {
 		return leaseContract;
 	}
@@ -68,7 +66,6 @@ public class Tenant extends DataEntity<Tenant> {
 		this.leaseContract = leaseContract;
 	}
 	
-	@NotNull(message="出租合同不能为空")
 	public RentContract getRentContract() {
 		return rentContract;
 	}

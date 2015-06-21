@@ -14,6 +14,68 @@
 			$("#searchForm").submit();
         	return false;
         }
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function houseChange() {
+			var room = $("[id='house.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != room) {
+				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
+					}
+					$("[id='room.id']").html(html);
+				});
+			} else {
+				$("[id='room.id']").html(html);
+			}
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
 	</script>
 </head>
 <body>
@@ -39,27 +101,27 @@
 				</form:select>
 			</li>
 			<li><label style="width:120px;">物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="propertyProject.id" class="input-medium" style="width:200px;" onchange="changeProject()">
+					<form:option value="" label="全部"/>
+					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">楼宇：</label>
-				<form:select path="building.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="building.id" class="input-medium" style="width:200px;" onchange="buildingChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房屋：</label>
-				<form:select path="house.id" class="input-medium" style="width:210px;">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="house.id" class="input-medium" style="width:210px;" onchange="houseChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房间：</label>
 				<form:select path="room.id" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="全部"/>
+					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">销售：</label>
@@ -68,8 +130,8 @@
 			</li>
 			<li><label style="width:120px;">合同来源：</label>
 				<form:select path="contractSource" class="input-medium" style="width:210px;">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">月租金：</label>
@@ -78,27 +140,27 @@
 			<li><label style="width:120px;">合同生效时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd、',isShowClear:false});" style="width:186px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:186px;"/>
 			</li>
 			<li><label style="width:120px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd、"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd、',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同签订时间：</label>
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd、"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd、',isShowClear:false});" style="width:186px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:186px;"/>
 			</li>
 			<li><label style="width:120px;">合同状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:200px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('rent_contract_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">合同业务状态：</label>
 				<form:select path="contractBusiStatus" class="input-medium" style="width:210px;">
-					<form:option value="" label=""/>
+					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('rent_contract_busi_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -145,22 +207,22 @@
 					${fns:getDictLabel(rentContract.rentMode, 'rent_mode', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.propertyProject.id, '', '')}
+					${rentContract.projectName}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.building.id, '', '')}
+					${rentContract.buildingBame}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.house.id, '', '')}
+					${rentContract.houseNo}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.room.id, '', '')}
+					${rentContract.roomNo}
 				</td>
 				<td>
 					${rentContract.user.name}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.contractSource, '', '')}
+					${fns:getDictLabel(rentContract.contractSource, 'contract_source', '')}
 				</td>
 				<td>
 					${rentContract.rental}
@@ -175,10 +237,10 @@
 					<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.contractStatus, '', '')}
+					${fns:getDictLabel(rentContract.contractStatus, 'rent_contract_status', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(rentContract.contractBusiStatus, '', '')}
+					${fns:getDictLabel(rentContract.contractBusiStatus, 'rent_contract_busi_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

@@ -997,6 +997,15 @@
 									<transaction src="db/contract/contract_${jdbc.type}.sql"/>
 									<transaction src="db/contract/test_data.sql"/>
 									<transaction src="db/funds/funds_${jdbc.type}.sql"/>
+									<transaction src="db/sys/sys_dict.sql"/>
+									<transaction src="db/sys/sys_area.sql"/>
+									<transaction src="db/sys/sys_office.sql"/>
+									<transaction src="db/sys/sys_menu.sql"/>
+									<transaction src="db/sys/sys_role.sql"/>
+									<transaction src="db/sys/sys_role_menu.sql"/>
+									<transaction src="db/sys/sys_role_office.sql"/>
+									<transaction src="db/sys/sys_user.sql"/>
+									<transaction src="db/sys/sys_user_role.sql"/>
 								</sql>
 								
 								<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
@@ -1011,7 +1020,7 @@
 										<property name="datatypeFactory" value="${dbunit.datatype}" />
 									</dbconfig>
 									<classpath refid="maven.test.classpath" />
-									<operation type="INSERT" src="db/sys/jeesite_data.xls" format="xls" transaction="true"/>
+									<!--<operation type="INSERT" src="db/sys/jeesite_data.xls" format="xls" transaction="true"/>-->
 									<operation type="INSERT" src="db/cms/jeesite_data.xls" format="xls" transaction="true"/>
 									
 								</dbunit>
@@ -1023,16 +1032,4 @@
 			</build>
 		</profile>
 	</profiles>
-	
-	<!-- 开发者信息 -->
-	<developers>  
-		<developer>
-			<id>thinkgem</id>
-			<name>WangZhen</name>
-			<email>thinkgem at 163.com</email>
-			<roles><role>Project lead</role></roles>
-			<timezone>+8</timezone>
-		</developer>
-	</developers>
-	
 </project>

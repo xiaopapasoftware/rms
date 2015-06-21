@@ -7,6 +7,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			//$("#name").focus();
+		});
+		
+		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -22,7 +25,13 @@
 					}
 				}
 			});
-		});
+		}
+		
+		function saveData() {
+			$("#contractStatus").val("0");
+			$("#validatorFlag").val("0");
+			$("#inputForm").submit();
+		}
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
@@ -95,6 +104,8 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="contractStatus" value="1"/>
+		<form:hidden path="validatorFlag" value="1"/>
 		<sys:message content="${message}"/>		
 		<!-- <div class="control-group">
 			<label class="control-label">原出租合同：</label>
@@ -134,6 +145,7 @@
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
 					<form:option value="" label=""/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -143,6 +155,7 @@
 			<div class="controls">
 				<form:select path="house.id" class="input-xlarge required" onchange="houseChange()">
 					<form:option value="" label=""/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -152,6 +165,7 @@
 			<div class="controls">
 				<form:select path="room.id" class="input-xlarge">
 					<form:option value="" label=""/>
+					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</div>
 		</div>
@@ -376,7 +390,10 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="contract:rentContract:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="contract:rentContract:edit">
+				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>
