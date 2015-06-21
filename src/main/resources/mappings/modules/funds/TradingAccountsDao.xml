@@ -19,11 +19,14 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		case when a.trade_type=1 then ta.agreement_name else "" end tradeName
+		case when a.trade_type=1 then ta.agreement_name 
+		when a.trade_type=3 then tc.contract_name
+		else "" end tradeName 
 	</sql>
 	
 	<sql id="tradingAccountsJoins">
 	left join t_deposit_agreement ta on a.trade_id=ta.id 
+	left join t_rent_contract tc on a.trade_id=tc.id 
 	</sql>
     
 	<select id="get" resultType="TradingAccounts">

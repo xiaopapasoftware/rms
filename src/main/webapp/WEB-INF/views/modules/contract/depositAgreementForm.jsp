@@ -86,6 +86,14 @@
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
 		}
+		
+		function rentModeChange() {
+			if($("#rentMode").val()=="0") {
+				$("[id='room.id']").attr("disabled","disabled");
+			} else {
+				$("[id='room.id']").removeAttr("disabled");
+			}
+		}
 	</script>
 </head>
 <body>
@@ -97,7 +105,7 @@
 		<c:if test="${depositAgreement.agreementStatus=='2' || empty depositAgreement.id}">
 		${not empty depositAgreement.id?'修改':'添加'}
 		</c:if>
-		<c:if test="${depositAgreement.agreementStatus!='2'}">
+		<c:if test="${depositAgreement.agreementStatus!='2' && not empty depositAgreement.id}">
 		查看
 		</c:if>
 		</shiro:hasPermission>
@@ -108,6 +116,16 @@
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
+		<div class="control-group">
+			<label class="control-label">出租方式：</label>
+			<div class="controls">
+				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
+					<form:option value="" label=""/>
+					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
@@ -148,20 +166,21 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">出租方式：</label>
-			<div class="controls">
-				<form:select path="rentMode" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">销售：</label>
 			<div class="controls">
 				<sys:treeselect id="user" name="user.id" value="${depositAgreement.user.id}" labelName="user.name" labelValue="${depositAgreement.user.name}"
 					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">承租人：</label>
+			<div class="controls">
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

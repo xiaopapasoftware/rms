@@ -71,14 +71,7 @@
 				AND a.trans_status = #{transStatus}
 			</if>
 		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+		ORDER BY start_date,payment_type
 	</select>
 	
 	<select id="findAllList" resultType="PaymentTrans">
@@ -89,14 +82,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+		ORDER BY start_date,payment_type
 	</select>
 	
 	<insert id="insert">

@@ -10,6 +10,7 @@
 		});
 		
 		function submitData() {
+			$("#agreementBusiStatus").val("2");
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -99,14 +100,20 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
-		<li class="active"><a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">出租合同<shiro:hasPermission name="contract:rentContract:edit">${not empty rentContract.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
+		<li>
+		<shiro:hasPermission name="contract:depositAgreement:edit">
+		<a href="${ctx}/contract/depositAgreement/form">定金协议添加</a>
+		</shiro:hasPermission>
+		</li>
+		<li class="active"><a href="javascript:void(0);">出租合同添加</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="contractStatus" value="1"/>
 		<form:hidden path="validatorFlag" value="1"/>
-		<form:hidden path="saveSource" value="0"/>
+		<form:hidden path="saveSource" value="1"/>
+		<form:hidden path="agreementBusiStatus" value=""/><!--2:已转合同-->
 		<sys:message content="${message}"/>		
 		<!-- <div class="control-group">
 			<label class="control-label">原出租合同：</label>
