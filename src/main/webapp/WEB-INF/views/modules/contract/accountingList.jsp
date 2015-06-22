@@ -19,54 +19,48 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/contract/accounting/">退租核算列表</a></li>
-		<shiro:hasPermission name="contract:accounting:edit"><li><a href="${ctx}/contract/accounting/form">退租核算添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="accounting" action="${ctx}/contract/accounting/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="accounting" action="${ctx}/contract/accounting/" method="post" class="breadcrumb form-search"
+		cssStyle="width:1215px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>出租合同：</label>
-				<form:select path="rentContract.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">出租合同：</label>
+				<form:input path="rentContractName" htmlEscape="false" class="input-medium" style="width:195px;"/>
+			</li>
+			<li><label style="width:120px;">核算类型：</label>
+				<form:select path="accountingType" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('accounting_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>核算类型：</label>
-				<form:select path="accountingType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">核算费用方向：</label>
+				<form:select path="feeDirection" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>核算费用方向：</label>
-				<form:select path="feeDirection" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">核算费用类别：</label>
+				<form:select path="feeType" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>核算费用类别：</label>
-				<form:select path="feeType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>核算金额：</label>
-				<form:input path="feeAmount" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>核算人：</label>
+			<li><label style="width:120px;">核算人：</label>
 				<sys:treeselect id="user" name="user.id" value="${accounting.user.id}" labelName="user.name" labelValue="${accounting.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true"/>
+					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true" cssStyle="width:150px;"/>
 			</li>
-			<li><label>核算时间：</label>
+			<li><label style="width:120px;">核算时间：</label>
 				<input name="feeDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${accounting.feeDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${accounting.feeDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:192px;"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1250px;">
 		<thead>
 			<tr>
 				<th>出租合同</th>
@@ -76,7 +70,6 @@
 				<th>核算金额</th>
 				<th>核算人</th>
 				<th>核算时间</th>
-				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="contract:accounting:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -84,17 +77,17 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="accounting">
 			<tr>
-				<td><a href="${ctx}/contract/accounting/form?id=${accounting.id}">
-					${fns:getDictLabel(accounting.rentContract.id, '', '')}
-				</a></td>
 				<td>
-					${fns:getDictLabel(accounting.accountingType, '', '')}
+					${accounting.rentContractName}
 				</td>
 				<td>
-					${fns:getDictLabel(accounting.feeDirection, '', '')}
+					${fns:getDictLabel(accounting.accountingType, 'accounting_type', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(accounting.feeType, '', '')}
+					${fns:getDictLabel(accounting.feeDirection, 'fee_dirction', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(accounting.feeType, 'fee_type', '')}
 				</td>
 				<td>
 					${accounting.feeAmount}
@@ -106,14 +99,12 @@
 					<fmt:formatDate value="${accounting.feeDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
-					<fmt:formatDate value="${accounting.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
 					${accounting.remarks}
 				</td>
 				<shiro:hasPermission name="contract:accounting:edit"><td>
-    				<a href="${ctx}/contract/accounting/form?id=${accounting.id}">修改</a>
-					<a href="${ctx}/contract/accounting/delete?id=${accounting.id}" onclick="return confirmx('确认要删除该退租核算吗？', this.href)">删除</a>
+					<c:if test="${accounting.contractBusiStatus=='4' || accounting.contractBusiStatus=='6'}">
+    					<a href="${ctx}/contract/accounting/form?id=${accounting.id}">修改</a>
+    				</c:if>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

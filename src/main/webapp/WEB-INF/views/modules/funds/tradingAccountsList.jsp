@@ -160,7 +160,13 @@
     				<a href="${ctx}/funds/tradingAccounts/form?id=${tradingAccounts.id}">修改</a>
 					<a href="${ctx}/funds/tradingAccounts/delete?id=${tradingAccounts.id}" onclick="return confirmx('确认要删除该账务交易吗？', this.href)">删除</a>
 				</shiro:hasPermission>-->
-					<c:if test="${tradingAccounts.tradeStatus=='0'}">
+					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+					</c:if>
+					<c:if test="${tradingAccounts.tradeType=='3' && tradingAccounts.transStatus=='4' && tradingAccounts.tradeStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+					</c:if>
+					<c:if test="${tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
 					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2'}">

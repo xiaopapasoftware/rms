@@ -95,6 +95,16 @@
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
 		}
+		
+		function rentModeChange() {
+			if($("#rentMode").val()=="0") {
+				$("[id='room.id']").attr("disabled","disabled");
+				$("[id='room.id']").val("");
+				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			} else {
+				$("[id='room.id']").removeAttr("disabled");
+			}
+		}
 	</script>
 </head>
 <body>
@@ -124,7 +134,7 @@
 		<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
-				<form:select path="rentMode" class="input-xlarge required">
+				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
 					<form:option value="" label=""/>
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>

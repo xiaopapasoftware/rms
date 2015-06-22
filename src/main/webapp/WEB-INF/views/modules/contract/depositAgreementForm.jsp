@@ -90,6 +90,8 @@
 		function rentModeChange() {
 			if($("#rentMode").val()=="0") {
 				$("[id='room.id']").attr("disabled","disabled");
+				$("[id='room.id']").val("");
+				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
 			} else {
 				$("[id='room.id']").removeAttr("disabled");
 			}

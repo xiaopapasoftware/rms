@@ -65,7 +65,7 @@
 				</form:select>
 			</li>
 			<li><label style="width:120px;">交易对象：</label>
-				<form:input path="transId" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
+				<form:input path="transName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
 			</li>
 			<li><label style="width:120px;">交易款项方向：</label>
 				<form:select path="tradeDirection" class="input-medium" style="width:200px;">
@@ -107,6 +107,7 @@
 		<thead>
 			<tr>
 				<th width="15"></th>
+				<th>交易对象</th>
 				<th>交易类型</th>
 				<th>款项类型</th>
 				<th>交易款项方向</th>
@@ -125,6 +126,9 @@
 			<tr>
 				<td>
 					<input ${paymentTrans.transStatus!='0' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" type="checkbox" value="${paymentTrans.id}"/>
+				</td>
+				<td>
+					${paymentTrans.transName}
 				</td>
 				<td>
 					${fns:getDictLabel(paymentTrans.tradeType, 'trans_type', '')}
