@@ -100,6 +100,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
+		} else if("7".equals(tradingAccounts.getTradeType())) {//正常退租
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"8":"6");//8:正常退租 6:退租款项审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
 		}
 	}
 	
@@ -141,6 +147,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		} else if("3".equals(tradeType)) {//新签合同
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setContractStatus("2");//到账收据完成合同内容待审核
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
+		} else if("7".equals(tradeType)) {//正常退租
+			RentContract rentContract = rentContractDao.get(tradeId);
+			rentContract.setContractBusiStatus("5");//退租款项待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
