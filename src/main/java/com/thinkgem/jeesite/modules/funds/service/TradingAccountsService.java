@@ -16,9 +16,11 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
+import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
@@ -46,6 +48,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	private AuditHisDao auditHisDao;
 	@Autowired
 	private TradingAccountsDao tradingAccountsDao;
+	@Autowired
+	private RentContractDao rentContractDao;
 	
 	private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";//账务审批
 	
@@ -78,20 +82,24 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		saveAuditHis.setDelFlag("0");
 		auditHisDao.insert(saveAuditHis);
 		
-		if("1".equals(auditHis.getAuditStatus())) {
-			TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
-			tradingAccounts.setUpdateDate(new Date());
-			tradingAccounts.setUpdateBy(UserUtils.getUser());
-			tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
-			tradingAccountsDao.update(tradingAccounts);
-			
-			if("1".equals(tradingAccounts.getTradeType())) {//定金协议
-				DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
-				depositAgreement.setAgreementStatus("5");//到账收据审核通过
-				depositAgreement.setUpdateBy(UserUtils.getUser());
-				depositAgreement.setUpdateDate(new Date());
-				depositAgreementDao.update(depositAgreement);
-			}
+		TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
+		tradingAccounts.setUpdateDate(new Date());
+		tradingAccounts.setUpdateBy(UserUtils.getUser());
+		tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
+		tradingAccountsDao.update(tradingAccounts);
+		
+		if("1".equals(tradingAccounts.getTradeType())) {//定金协议
+			DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
+			depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"5":"4");//5:到账收据审核通过 4:到账收据审核拒绝
+			depositAgreement.setUpdateBy(UserUtils.getUser());
+			depositAgreement.setUpdateDate(new Date());
+			depositAgreementDao.update(depositAgreement);
+		} else if("3".equals(tradingAccounts.getTradeType())) {//新签合同
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractStatus("1".equals(auditHis.getAuditStatus())?"6":"5");//6:到账收据审核通过 5:到账收据审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
 		}
 	}
 	
@@ -103,12 +111,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		String[] transIds = tradingAccounts.getTransIds().split(",");
 		for(int i=0;i<transIds.length;i++) {
 			PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
-			if(tradingAccounts.getTradeAmount().equals(paymentTrans.getTradeAmount()))
-				paymentTrans.setTransStatus("2");//完全到账登记
-			else
-				paymentTrans.setTransStatus("1");//部分到账登记
-			paymentTrans.setTransAmount(tradingAccounts.getTradeAmount());//实际交易金额
-			paymentTrans.setLastAmount(paymentTrans.getTradeAmount()-paymentTrans.getTransAmount());//剩余交易金额
+			paymentTrans.setTransStatus("2");//完全到账登记
+			paymentTrans.setTransAmount(paymentTrans.getTradeAmount());//实际交易金额
+			paymentTrans.setLastAmount(0D);//剩余交易金额
 			paymentTransService.save(paymentTrans);
 			
 			/*款项账务关联*/
@@ -133,6 +138,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
 			depositAgreementDao.update(depositAgreement);
+		} else if("3".equals(tradeType)) {//新签合同
+			RentContract rentContract = rentContractDao.get(tradeId);
+			rentContract.setContractStatus("2");//到账收据完成合同内容待审核
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
 		}
 		
 		//审核

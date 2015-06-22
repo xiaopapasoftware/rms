@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
@@ -31,6 +32,8 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
  * 出租合同Controller
@@ -51,6 +54,8 @@ public class RentContractController extends BaseController {
 	private HouseService houseService;
 	@Autowired
 	private RoomService roomServie;
+	@Autowired
+	private TenantService tenantService;
 	
 	@ModelAttribute
 	public RentContract get(@RequestParam(required=false) String id) {
@@ -102,6 +107,13 @@ public class RentContractController extends BaseController {
 		
 		return "modules/contract/rentContractList";
 	}
+	
+	@RequestMapping(value = "audit")
+	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		rentContractService.audit(auditHis);
+		
+		return list(new RentContract(),request,response,model);
+	}
 
 	@RequiresPermissions("contract:rentContract:view")
 	@RequestMapping(value = "form")
@@ -110,6 +122,11 @@ public class RentContractController extends BaseController {
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
+		
+		if(null != rentContract && !StringUtils.isBlank(rentContract.getId())) {
+			rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
+			rentContract.setTenantList(rentContractService.findTenant(rentContract));
+		}
 		
 		if(null != rentContract.getPropertyProject()) {
 			Building building = new Building();
@@ -138,6 +155,9 @@ public class RentContractController extends BaseController {
 			model.addAttribute("roomList", roomList);
 		}
 		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
 		return "modules/contract/rentContractForm";
 	}
 
@@ -149,6 +169,30 @@ public class RentContractController extends BaseController {
 		}
 		rentContractService.save(rentContract);
 		addMessage(redirectAttributes, "保存出租合同成功");
+		
+		if("1".equals(rentContract.getSaveSource()))
+			return "redirect:"+Global.getAdminPath()+"/contract/depositAgreement/?repage";
+		else
+			return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "returnContract")
+	public String returnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		rentContractService.returnContract(rentContract);
+		addMessage(redirectAttributes, "正常退租成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "toReturnCheck")
+	public String toReturnCheck(RentContract rentContract) {
+		//rentContractService.returnCheck(rentContract);
+		return "modules/contract/rentContractCheck";
+	}
+	
+	@RequestMapping(value = "returnCheck")
+	public String returnCheck(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		rentContractService.returnCheck(rentContract);
+		addMessage(redirectAttributes, "正常退租核算成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
 	}
 	

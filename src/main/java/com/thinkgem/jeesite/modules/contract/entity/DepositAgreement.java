@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +17,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
@@ -47,6 +50,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	private String buildingBame;
 	private String houseNo;
 	private String roomNo;
+	
+	private List<Tenant> tenantList = new ArrayList<Tenant>();
 	
 	public DepositAgreement() {
 		super();
@@ -239,5 +244,13 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
 	public void setRoomNo(String roomNo) {
 		this.roomNo = roomNo;
-	}	
+	}
+
+	public List<Tenant> getTenantList() {
+		return tenantList;
+	}
+
+	public void setTenantList(List<Tenant> tenantList) {
+		this.tenantList = tenantList;
+	}
 }

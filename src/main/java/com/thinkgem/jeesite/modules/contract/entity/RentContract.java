@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +17,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
@@ -68,6 +71,13 @@ public class RentContract extends DataEntity<RentContract> {
 	private String roomNo;
 	
 	private String validatorFlag;
+	
+	private List<Tenant> tenantList = new ArrayList<Tenant>();//承租人
+	private List<Tenant> liveList = new ArrayList<Tenant>();//入住人
+	
+	private String chargeType;
+	
+	private String saveSource;
 	
 	public RentContract() {
 		super();
@@ -425,5 +435,37 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setValidatorFlag(String validatorFlag) {
 		this.validatorFlag = validatorFlag;
-	}	
+	}
+
+	public List<Tenant> getTenantList() {
+		return tenantList;
+	}
+
+	public void setTenantList(List<Tenant> tenantList) {
+		this.tenantList = tenantList;
+	}
+
+	public List<Tenant> getLiveList() {
+		return liveList;
+	}
+
+	public void setLiveList(List<Tenant> liveList) {
+		this.liveList = liveList;
+	}
+
+	public String getChargeType() {
+		return chargeType;
+	}
+
+	public void setChargeType(String chargeType) {
+		this.chargeType = chargeType;
+	}
+
+	public String getSaveSource() {
+		return saveSource;
+	}
+
+	public void setSaveSource(String saveSource) {
+		this.saveSource = saveSource;
+	}
 }

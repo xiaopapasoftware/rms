@@ -100,7 +100,7 @@
 	<update id="delete">
 		UPDATE t_audit SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE object_id = #{id}
 	</update>
 	
 </mapper>

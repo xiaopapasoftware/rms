@@ -84,8 +84,10 @@ create table T_DEPOSIT_AGREEMENT
 create table T_CONTRACT_TENANT
 (
 	 ID                   varchar(64) NOT NULL,
-	 CONTRACT_ID          varchar(64) NOT NULL,
-	 TENANT_ID            varchar(64) NOT NULL,
+	 DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '定金协议',
+	 CONTRACT_ID          varchar(64) comment '出租合同',	
+	 LEASE_CONTRACT_ID    varchar(64) comment '承租合同',	
+	 TENANT_ID            varchar(64) comment '租客',
 	 CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -134,6 +136,7 @@ create table T_RENT_CONTRACT
    REMIND_TIME         date comment '续租提醒时间',
    CONTRACT_STATUS      VARCHAR(64) COMMENT '合同状态',
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
+   CHARGE_TYPE          VARCHAR(64) COMMENT '付费方式',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

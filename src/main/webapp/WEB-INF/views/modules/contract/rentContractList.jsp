@@ -76,6 +76,37 @@
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
 		}
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/rentContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
+		
+		function auditHis(id) {
+			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -84,7 +115,7 @@
 		<shiro:hasPermission name="contract:rentContract:edit"><li><a href="${ctx}/contract/rentContract/form">出租合同添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1145px;">
+		cssStyle="width:1275px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -169,7 +200,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1310px;">
 		<thead>
 			<tr>
 				<!--<th>原出租合同</th>-->
@@ -249,8 +280,22 @@
 					${rentContract.remarks}
 				</td>
 				<shiro:hasPermission name="contract:rentContract:edit"><td>
-    				<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
-					<a href="${ctx}/contract/rentContract/delete?id=${rentContract.id}" onclick="return confirmx('确认要删除该出租合同吗？', this.href)">删除</a>
+					<c:if test="${rentContract.contractStatus=='3'}">
+    					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='2'}">
+    					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}')">审核</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
+    					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗？', this.href)">正常退租</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
+    					<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗？', this.href)">正常退租核算</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
+    					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>
+					</c:if>
+					<!--<a href="${ctx}/contract/rentContract/delete?id=${rentContract.id}" onclick="return confirmx('确认要删除该出租合同吗？', this.href)">删除</a>-->
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

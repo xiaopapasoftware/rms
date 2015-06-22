@@ -117,7 +117,7 @@
 		<shiro:hasPermission name="contract:depositAgreement:edit"><li><a href="${ctx}/contract/depositAgreement/form">定金协议添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1335px;">
+		cssStyle="width:1415px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form" style="width:1200px;">
@@ -198,7 +198,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1370px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1450px;">
 		<thead>
 			<tr>
 				<th>定金协议名称</th>
@@ -218,7 +218,7 @@
 				<th>定金协议业务状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
-				<th width="115">操作</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -287,6 +287,9 @@
 					</c:if>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
+					</c:if>
+					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
+						<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>
 					</c:if>
 					<c:if test="${depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">
 						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a>

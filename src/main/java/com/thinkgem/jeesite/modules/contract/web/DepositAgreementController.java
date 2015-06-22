@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -32,6 +33,8 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
  * 定金协议Controller
@@ -52,6 +55,8 @@ public class DepositAgreementController extends BaseController {
 	private HouseService houseService;
 	@Autowired
 	private RoomService roomServie;
+	@Autowired
+	private TenantService tenantService;
 	
 	@ModelAttribute
 	public DepositAgreement get(@RequestParam(required=false) String id) {
@@ -109,6 +114,10 @@ public class DepositAgreementController extends BaseController {
 	public String form(DepositAgreement depositAgreement, Model model) {
 		model.addAttribute("depositAgreement", depositAgreement);
 		
+		if(null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
+			depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
+		}
+		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 		
@@ -139,6 +148,9 @@ public class DepositAgreementController extends BaseController {
 			model.addAttribute("roomList", roomList);
 		}
 		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
 		return "modules/contract/depositAgreementForm";
 	}
 
@@ -168,6 +180,66 @@ public class DepositAgreementController extends BaseController {
 		depositAgreementService.breakContract(depositAgreement);
 		
 		return list(new DepositAgreement(),request,response,model);
+	}
+	
+	/**
+	 * 转合同
+	 */
+	@RequestMapping(value = "intoContract")
+	public String intoContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
+		depositAgreement = depositAgreementService.get(depositAgreement.getId());
+		
+		if(null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
+			depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
+		}
+		
+		RentContract rentContract = new RentContract();
+		rentContract.setRentMode(depositAgreement.getRentMode());
+		rentContract.setPropertyProject(depositAgreement.getPropertyProject());
+		rentContract.setBuilding(depositAgreement.getBuilding());
+		rentContract.setHouse(depositAgreement.getHouse());
+		rentContract.setRoom(depositAgreement.getRoom());
+		rentContract.setUser(depositAgreement.getUser());
+		rentContract.setTenantList(depositAgreement.getTenantList());
+		rentContract.setRental(depositAgreement.getHousingRent());
+		rentContract.setRenMonths(depositAgreement.getRenMonths());
+		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
+		model.addAttribute("rentContract", rentContract);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
+		return "modules/contract/rentContractAdd";
 	}
 	
 	@RequiresPermissions("contract:depositAgreement:edit")
