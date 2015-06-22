@@ -5,18 +5,24 @@
 	<sql id="companyContactColumns">
 		a.id AS "id",
 		a.management_company_id AS "managementCompany.id",
+		tmc.company_name AS "managementCompany.companyName",
 		a.contact_name AS "contactName",
 		a.cell_phone AS "cellPhone",
 		a.desk_phone AS "deskPhone",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="companyContactJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_management_company tmc ON tmc.id = a.management_company_id
 	</sql>
     
 	<select id="get" resultType="CompanyContact">
@@ -44,10 +50,17 @@
 					<if test="dbName == 'mysql'">concat('%',#{contactName},'%')</if>
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
+					
 			</if>
 			<if test="deskPhone != null and deskPhone != ''">
-				AND a.desk_phone = #{deskPhone}
+				AND a.desk_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deskPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deskPhone},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -76,6 +89,22 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findCompanyContactByCompAndTel" resultType="CompanyContact">
+		SELECT 
+				a.id AS "id",
+				a.management_company_id AS "managementCompany.id",
+				a.contact_name AS "contactName",
+				a.cell_phone AS "cellPhone",
+				a.desk_phone AS "deskPhone",
+				a.del_flag AS "delFlag"
+		from    t_company_contact	a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.management_company_id = #{managementCompany.id}
+			AND a.cell_phone = #{cellPhone}
+		</where>
 	</select>
 	
 	<insert id="insert">

@@ -33,7 +33,7 @@
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		LEFT JOIN t_house th on th.id = a.house_id
-		left join t_attachment atta on atta.house_id = a.id
+		left join t_attachment atta on atta.room_id = a.id
 	</sql>
     
 	<select id="get" resultType="Room">
@@ -163,7 +163,9 @@
 			room_space = #{roomSpace},
 			orientation = #{orientation},
 			structure = #{structure},
-			room_status = #{roomStatus},
+			<if test="roomStatus != null and roomStatus != ''">
+			    room_status = #{roomStatus},
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -176,4 +178,8 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateRoomStatus">
+		UPDATE t_room SET room_status = #{roomStatus}
+		WHERE del_flag = #{DEL_FLAG_NORMAL} and id = #{id}
+	</update>
 </mapper>

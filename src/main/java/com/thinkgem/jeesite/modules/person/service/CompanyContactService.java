@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.person.dao.CompanyContactDao;
 
 /**
  * 物业公司联系人Service
+ * 
  * @author huangsc
  * @version 2015-06-06
  */
@@ -25,23 +26,28 @@ public class CompanyContactService extends CrudService<CompanyContactDao, Compan
 	public CompanyContact get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<CompanyContact> findList(CompanyContact companyContact) {
 		return super.findList(companyContact);
 	}
-	
+
 	public Page<CompanyContact> findPage(Page<CompanyContact> page, CompanyContact companyContact) {
 		return super.findPage(page, companyContact);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(CompanyContact companyContact) {
 		super.save(companyContact);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(CompanyContact companyContact) {
 		super.delete(companyContact);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<CompanyContact> findCompanyContactByCompAndTel(CompanyContact companyContact) {
+		return dao.findCompanyContactByCompAndTel(companyContact);
+	}
+
 }

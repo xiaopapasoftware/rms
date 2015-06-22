@@ -27,8 +27,8 @@
 		<ul class="ul-form">
 			<li><label>物业公司：</label>
 				<form:select path="managementCompany.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>姓名：</label>
@@ -52,7 +52,10 @@
 				<th>姓名</th>
 				<th>手机号</th>
 				<th>座机号</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:companyContact:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -60,11 +63,11 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="companyContact">
 			<tr>
-				<td><a href="${ctx}/person/companyContact/form?id=${companyContact.id}">
-					${fns:getDictLabel(companyContact.managementCompany.id, '', '')}
-				</a></td>
 				<td>
-					${companyContact.contactName}
+					${companyContact.managementCompany.companyName}
+				</td>
+				<td><a href="${ctx}/person/companyContact/form?id=${companyContact.id}">
+					${companyContact.contactName}</a>
 				</td>
 				<td>
 					${companyContact.cellPhone}
@@ -73,7 +76,16 @@
 					${companyContact.deskPhone}
 				</td>
 				<td>
+					<fmt:formatDate value="${companyContact.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${companyContact.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${companyContact.createBy.loginName}
+				</td>
+				<td>
+				 	${companyContact.updateBy.loginName}
 				</td>
 				<td>
 					${companyContact.remarks}

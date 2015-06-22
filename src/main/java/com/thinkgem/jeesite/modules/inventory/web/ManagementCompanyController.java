@@ -109,7 +109,7 @@ public class ManagementCompanyController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(ManagementCompany managementCompany, RedirectAttributes redirectAttributes) {
 		managementCompanyService.delete(managementCompany);
-		addMessage(redirectAttributes, "删除物业公司成功");
+		addMessage(redirectAttributes, "删除物业公司及其所有联系人成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/managementCompany/?repage";
 	}
 

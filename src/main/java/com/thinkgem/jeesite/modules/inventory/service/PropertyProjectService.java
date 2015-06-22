@@ -19,6 +19,7 @@ import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.PropertyProjectDao;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -31,6 +32,9 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class PropertyProjectService extends CrudService<PropertyProjectDao, PropertyProject> {
+
+	@Autowired
+	private BuildingService buildingService;
 
 	@Autowired
 	private AttachmentDao attachmentDao;
@@ -95,8 +99,17 @@ public class PropertyProjectService extends CrudService<PropertyProjectDao, Prop
 		Attachment atta = new Attachment();
 		atta.setPropertyProjectId(propertyProject.getId());
 		attachmentDao.delete(atta);
-	}
 
+		Building bld = new Building();
+		bld.setPropertyProject(propertyProject);
+		List<Building> buildings = buildingService.findList(bld);
+		if (CollectionUtils.isNotEmpty(buildings)) {
+			for (Building b : buildings) {
+				buildingService.delete(b);
+			}
+		}
+
+	}
 	/**
 	 * 根据物业名称+地址查询状态为正常/审核的物业项目数量
 	 * */

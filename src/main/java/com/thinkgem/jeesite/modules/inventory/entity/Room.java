@@ -24,7 +24,7 @@ public class Room extends DataEntity<Room> {
 	private static final long serialVersionUID = 1L;
 	private PropertyProject propertyProject; // 物业项目
 	private Building building; // 楼宇
-	private House house; // 房屋号
+	private House house; // 房屋
 	private String roomNo; // 房间号
 	private String meterNo; // 电表号
 	private String roomSpace; // 房间面积

@@ -132,7 +132,7 @@ public class PropertyProjectController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(PropertyProject propertyProject, RedirectAttributes redirectAttributes) {
 		propertyProjectService.delete(propertyProject);
-		addMessage(redirectAttributes, "删除物业项目成功");
+		addMessage(redirectAttributes, "删除物业项目和图片及其楼宇和图片、房屋和图片、房间和图片成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/propertyProject/?repage";
 	}
 
