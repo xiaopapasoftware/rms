@@ -20,8 +20,12 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		case when a.trade_type=1 then ta.agreement_name 
-		when a.trade_type=3 then tc.contract_name
-		else "" end tradeName 
+		when a.trade_type=3 or a.trade_type=7 then tc.contract_name
+		else "" end tradeName, 
+		case when a.trade_type=1 then ta.agreement_status 
+		when a.trade_type=3 or a.trade_type=7 then tc.contract_status 
+		else "" end transStatus,
+		tc.contract_busi_status as transBusiStatus
 	</sql>
 	
 	<sql id="tradingAccountsJoins">
@@ -38,6 +42,7 @@
 	</select>
 	
 	<select id="findList" resultType="TradingAccounts">
+	  select * from(
 		SELECT 
 			<include refid="tradingAccountsColumns"/>
 		FROM t_trading_accounts a
@@ -74,9 +79,6 @@
 			<if test="tradeStatus != null and tradeStatus != ''">
 				AND a.trade_status = #{tradeStatus}
 			</if>
-			<if test="tradeName != null and tradeName != ''">
-				AND ta.agreement_name like concat('%',#{tradeName},'%')
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -86,6 +88,12 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	  ) t 
+	  <where>
+	  	<if test="tradeName != null and tradeName != ''">
+			AND t.tradeName like concat('%',#{tradeName},'%')
+		</if>
+	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="TradingAccounts">

@@ -19,10 +19,15 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		case when a.trade_type=1 then ta.agreement_name 
+		when a.trade_type=3 or a.trade_type=7 then tc.contract_name
+		else "" end transName 
 	</sql>
 	
 	<sql id="paymentTransJoins">
+	left join t_deposit_agreement ta on a.trans_id=ta.id 
+	left join t_rent_contract tc on a.trans_id=tc.id 
 	</sql>
     
 	<select id="get" resultType="PaymentTrans">
@@ -34,6 +39,7 @@
 	</select>
 	
 	<select id="findList" resultType="PaymentTrans">
+	  select * from(
 		SELECT 
 			<include refid="paymentTransColumns"/>
 		FROM t_payment_trans a
@@ -71,7 +77,13 @@
 				AND a.trans_status = #{transStatus}
 			</if>
 		</where>
-		ORDER BY start_date,payment_type
+		ORDER BY a.start_date,a.payment_type
+	  ) t 
+	  <where>
+	  	<if test="transName != null and transName != ''">
+			AND t.transName like concat('%',#{transName},'%')
+		</if>
+	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="PaymentTrans">
@@ -82,7 +94,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
-		ORDER BY start_date,payment_type
+		ORDER BY a.start_date,a.payment_type
 	</select>
 	
 	<insert id="insert">
@@ -146,7 +158,12 @@
 	<update id="delete">
 		UPDATE t_payment_trans SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE trans_id = #{transId}
+		<where>
+			trans_id = #{transId}
+			<if test="tradeType != null and tradeType != ''">
+				and trade_type = #{tradeType}
+			</if>
+		</where>
 	</update>
 	
 </mapper>
