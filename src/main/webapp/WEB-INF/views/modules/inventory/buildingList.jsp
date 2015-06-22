@@ -80,7 +80,7 @@
 				</td>
 				<shiro:hasPermission name="inventory:building:edit"><td>
     				<a href="${ctx}/inventory/building/form?id=${building.id}">修改</a>
-					<a href="${ctx}/inventory/building/delete?id=${building.id}" onclick="return confirmx('确认要删除该楼宇吗？', this.href)">删除</a>
+					<a href="${ctx}/inventory/building/delete?id=${building.id}" onclick="return confirmx('确认要删除该楼宇和图片及其所有房屋和图片、房间和图片吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

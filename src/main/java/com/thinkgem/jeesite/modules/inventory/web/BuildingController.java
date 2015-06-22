@@ -126,7 +126,7 @@ public class BuildingController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(Building building, RedirectAttributes redirectAttributes) {
 		buildingService.delete(building);
-		addMessage(redirectAttributes, "删除楼宇成功");
+		addMessage(redirectAttributes, "删除楼宇和图片及其房屋和图片、房间和图片成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
 	}
 

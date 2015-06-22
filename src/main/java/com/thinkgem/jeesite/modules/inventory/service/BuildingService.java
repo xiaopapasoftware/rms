@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.BuildingDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -31,6 +32,9 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class BuildingService extends CrudService<BuildingDao, Building> {
+
+	@Autowired
+	private HouseService houseService;
 
 	@Autowired
 	private AttachmentDao attachmentDao;
@@ -92,8 +96,20 @@ public class BuildingService extends CrudService<BuildingDao, Building> {
 	@Transactional(readOnly = false)
 	public void delete(Building building) {
 		super.delete(building);
-	}
+		Attachment atta = new Attachment();
+		atta.setBuildingId(building.getId());
+		attachmentDao.delete(atta);
 
+		House h = new House();
+		h.setBuilding(building);
+		List<House> houses = houseService.findList(h);
+		if (CollectionUtils.isNotEmpty(houses)) {
+			for (House h2 : houses) {
+				houseService.delete(h2);
+			}
+		}
+
+	}
 	@Transactional(readOnly = true)
 	public List<Building> findBuildingByBldNameAndProProj(Building building) {
 		return dao.findBuildingByBldNameAndProProj(building);
