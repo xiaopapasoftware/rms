@@ -79,6 +79,11 @@ public class RentContract extends DataEntity<RentContract> {
 	
 	private String saveSource;
 	
+	private String breakDown;
+	
+	private List<Accounting> accountList = new ArrayList<Accounting>();
+	private List<Accounting> outAccountList = new ArrayList<Accounting>();
+	
 	public RentContract() {
 		super();
 	}
@@ -467,5 +472,29 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setSaveSource(String saveSource) {
 		this.saveSource = saveSource;
+	}
+
+	public String getBreakDown() {
+		return breakDown;
+	}
+
+	public void setBreakDown(String breakDown) {
+		this.breakDown = breakDown;
+	}
+
+	public List<Accounting> getAccountList() {
+		return accountList;
+	}
+
+	public void setAccountList(List<Accounting> accountList) {
+		this.accountList = accountList;
+	}
+
+	public List<Accounting> getOutAccountList() {
+		return outAccountList;
+	}
+
+	public void setOutAccountList(List<Accounting> outAccountList) {
+		this.outAccountList = outAccountList;
 	}
 }

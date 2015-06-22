@@ -22,12 +22,15 @@ public class Accounting extends DataEntity<Accounting> {
 	
 	private static final long serialVersionUID = 1L;
 	private RentContract rentContract;		// 出租合同
+	private String rentContractName;
 	private String accountingType;		// 核算类型
 	private String feeDirection;		// 核算费用方向
 	private String feeType;		// 核算费用类别
 	private Double feeAmount;		// 核算金额
 	private User user;		// 核算人
 	private Date feeDate;		// 核算时间
+	
+	private String contractBusiStatus;
 	
 	public Accounting() {
 		super();
@@ -100,5 +103,20 @@ public class Accounting extends DataEntity<Accounting> {
 	public void setFeeDate(Date feeDate) {
 		this.feeDate = feeDate;
 	}
-	
+
+	public String getRentContractName() {
+		return rentContractName;
+	}
+
+	public void setRentContractName(String rentContractName) {
+		this.rentContractName = rentContractName;
+	}
+
+	public String getContractBusiStatus() {
+		return contractBusiStatus;
+	}
+
+	public void setContractBusiStatus(String contractBusiStatus) {
+		this.contractBusiStatus = contractBusiStatus;
+	}
 }

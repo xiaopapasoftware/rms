@@ -48,7 +48,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	private String houseNo;
 	private String remittancerName;
 	
-	List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
+	private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
 	
 	public LeaseContract() {
 		super();
