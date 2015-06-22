@@ -14,6 +14,45 @@
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>请选择...</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+		}
+		
 	</script>
 </head>
 <body>
@@ -26,42 +65,30 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label>物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="propertyProject.id" class="input-medium" onchange="changeProject()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>楼宇：</label>
-				<form:select path="building.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="building.id" class="input-medium" onchange="buildingChange()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>房屋号：</label>
-				<form:select path="house.houseNo" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="house.id" class="input-medium">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listHouse}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>房间号：</label>
 				<form:input path="roomNo" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label>电表号：</label>
-				<form:input path="meterNo" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>房间面积：</label>
-				<form:input path="roomSpace" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>朝向：</label>
-				<form:checkboxes path="orientation" items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-			</li>
-			<li><label>附属结构：</label>
-				<form:checkboxes path="structure" items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-			</li>
 			<li><label>房间状态：</label>
 				<form:select path="roomStatus" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('room_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -76,12 +103,15 @@
 				<th>楼宇</th>
 				<th>房屋号</th>
 				<th>房间号</th>
+				<th>房间状态</th>
 				<th>电表号</th>
-				<th>房间面积</th>
+				<th>房间面积（平方米）</th>
 				<th>朝向</th>
 				<th>附属结构</th>
-				<th>房间状态</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="inventory:room:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -89,39 +119,24 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="room">
 			<tr>
-				<td><a href="${ctx}/inventory/room/form?id=${room.id}">
-					${fns:getDictLabel(room.propertyProject.id, '', '')}
-				</a></td>
+				<td>${room.propertyProject.projectName}</td>
+				<td>${room.building.buildingName}</td>
+				<td>${room.house.houseNo}</td>
+				<td><a href="${ctx}/inventory/room/form?id=${room.id}"></a>${room.roomNo}</td>
+				<td>${fns:getDictLabel(room.roomStatus, 'room_status', '')}</td>
+				<td>${room.meterNo}</td>
+				<td>${room.roomSpace}</td>
 				<td>
-					${fns:getDictLabel(room.building.id, '', '')}
+					${fns:getDictLabels(room.orientation, 'orientation', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(room.house.houseNo, '', '')}
+					${fns:getDictLabels(room.structure, 'structure', '')}
 				</td>
-				<td>
-					${room.roomNo}
-				</td>
-				<td>
-					${room.meterNo}
-				</td>
-				<td>
-					${room.roomSpace}
-				</td>
-				<td>
-					${fns:getDictLabel(room.orientation, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(room.structure, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(room.roomStatus, '', '')}
-				</td>
-				<td>
-					<fmt:formatDate value="${room.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${room.remarks}
-				</td>
+				<td><fmt:formatDate value="${room.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+				<td><fmt:formatDate value="${room.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+				<td>${room.createBy.loginName}</td>
+				<td>${room.updateBy.loginName}</td>
+				<td>${room.remarks}</td>
 				<shiro:hasPermission name="inventory:room:edit"><td>
     				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
 					<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间信息吗？', this.href)">删除</a>

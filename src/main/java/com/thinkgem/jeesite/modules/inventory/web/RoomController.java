@@ -74,6 +74,25 @@ public class RoomController extends BaseController {
 	public String list(Room room, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Room> page = roomService.findPage(new Page<Room>(request, response), room);
 		model.addAttribute("page", page);
+
+		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+
+		if (room.getPropertyProject() != null && StringUtils.isNotEmpty(room.getPropertyProject().getId())) {
+			PropertyProject pp = new PropertyProject();
+			pp.setId(room.getPropertyProject().getId());
+			Building bd = new Building();
+			bd.setPropertyProject(pp);
+			model.addAttribute("listBuilding", buildingService.findList(bd));
+		}
+
+		if (room.getBuilding() != null && StringUtils.isNotEmpty(room.getBuilding().getId())) {
+			Building bd = new Building();
+			bd.setId(room.getBuilding().getId());
+			House h = new House();
+			h.setBuilding(bd);
+			model.addAttribute("listHouse", houseService.findList(h));
+		}
+
 		return "modules/inventory/roomList";
 	}
 

@@ -5,8 +5,11 @@
 	<sql id="roomColumns">
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
 		a.building_id AS "building.id",
+		tb.building_name AS "building.buildingName",
 		a.house_id AS "house.id",
+		th.house_no AS "house.houseNo",
 		a.room_no AS "roomNo",
 		a.meter_no AS "meterNo",
 		a.room_space AS "roomSpace",
@@ -14,14 +17,23 @@
 		a.structure AS "structure",
 		a.room_status AS "roomStatus",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		atta.attachment_path AS "attachmentPath"
 	</sql>
 	
 	<sql id="roomJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
+		LEFT JOIN t_building tb on tb.id = a.building_id
+		LEFT JOIN t_house th on th.id = a.house_id
+		left join t_attachment atta on atta.house_id = a.id
 	</sql>
     
 	<select id="get" resultType="Room">
@@ -49,19 +61,10 @@
 				AND a.house_id = #{house.id}
 			</if>
 			<if test="roomNo != null and roomNo != ''">
-				AND a.room_no = #{roomNo}
-			</if>
-			<if test="meterNo != null and meterNo != ''">
-				AND a.meter_no = #{meterNo}
-			</if>
-			<if test="roomSpace != null and roomSpace != ''">
-				AND a.room_space = #{roomSpace}
-			</if>
-			<if test="orientation != null and orientation != ''">
-				AND a.orientation = #{orientation}
-			</if>
-			<if test="structure != null and structure != ''">
-				AND a.structure = #{structure}
+				AND a.room_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{roomNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{roomNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{roomNo},'%')</if>
 			</if>
 			<if test="roomStatus != null and roomStatus != ''">
 				AND a.room_status = #{roomStatus}

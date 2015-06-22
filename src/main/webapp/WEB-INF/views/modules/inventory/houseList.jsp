@@ -59,35 +59,42 @@
 		<input id="pageSize" name="pageSize" type="hidden"
 			value="${page.pageSize}" />
 		<ul class="ul-form">
-			<li><label>物业项目：</label> <form:select path="propertyProject.id"
-					class="input-medium" onchange="changeProject()">
+			<li>
+				<label>物业项目：</label>
+				<form:select path="propertyProject.id" class="input-medium" onchange="changeProject()">
 					<form:option value="" label="请选择..." />
-					<form:options items="${listPropertyProject}"
-						itemLabel="projectName" itemValue="id" htmlEscape="false" />
-				</form:select></li>
-			<li><label>楼宇：</label> <form:select path="building.id"
-					class="input-medium">
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false" />
+				</form:select>
+			</li>
+			<li>
+				<label>楼宇：</label> 
+				<form:select path="building.id" class="input-medium">
 					<form:option value="" label="请选择..." />
-					<form:options items="${listBuilding}" itemLabel="buildingName"
-						itemValue="id" htmlEscape="false" />
-				</form:select></li>
-			<li><label>业主：</label> <form:select path="owner.id"
-					class="input-medium">
+					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false" />
+				</form:select>
+			</li>
+			<li>
+				<label>业主：</label> 
+				<form:select path="owner.id" class="input-medium">
 					<form:option value="" label="请选择..." />
-					<form:options items="${listOwner}" itemLabel="name" itemValue="id"
-						htmlEscape="false" />
-				</form:select></li>
-			<li><label>房屋号：</label> <form:input path="houseNo"
-					htmlEscape="false" maxlength="100" class="input-medium" /></li>
-			<li><label>房屋状态：</label> <form:select path="houseStatus"
-					class="input-medium">
+					<form:options items="${listOwner}" itemLabel="name" itemValue="id" htmlEscape="false" />
+				</form:select>
+			</li>
+			<li>
+				<label>房屋号：</label> 
+				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>房屋状态：</label> 
+				<form:select path="houseStatus" class="input-medium">
 					<form:option value="" label="请选择..." />
-					<form:options items="${fns:getDictList('house_status')}"
-						itemLabel="label" itemValue="value" htmlEscape="false" />
-				</form:select></li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary"
-				type="submit" value="查询" /></li>
-			<li class="clearfix"></li>
+					<form:options items="${fns:getDictList('house_status')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+				</form:select>
+			</li>
+			<li class="btns">
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
+				<li class="clearfix">
+			</li>
 		</ul>
 	</form:form>
 	<sys:message content="${message}" />
