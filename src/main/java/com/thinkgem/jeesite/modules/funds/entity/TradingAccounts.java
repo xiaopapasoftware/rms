@@ -32,6 +32,9 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	
 	private String tradeName;
 	
+	private String transStatus;
+	private String transBusiStatus;
+	
 	public TradingAccounts() {
 		super();
 	}
@@ -133,5 +136,21 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 
 	public void setTradeName(String tradeName) {
 		this.tradeName = tradeName;
+	}
+
+	public String getTransStatus() {
+		return transStatus;
+	}
+
+	public void setTransStatus(String transStatus) {
+		this.transStatus = transStatus;
+	}
+
+	public String getTransBusiStatus() {
+		return transBusiStatus;
+	}
+
+	public void setTransBusiStatus(String transBusiStatus) {
+		this.transBusiStatus = transBusiStatus;
 	}	
 }

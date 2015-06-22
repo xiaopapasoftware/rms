@@ -21,6 +21,7 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 	private String tradeType;		// 交易类型
 	private String paymentType;		// 款项类型
 	private String transId;		// 交易对象
+	private String transName;
 	private String tradeDirection;		// 交易款项方向
 	private Date startDate;		// 交易款项开始时间
 	private Date expiredDate;		// 交易款项到期时间
@@ -127,5 +128,12 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 	public void setTransStatus(String transStatus) {
 		this.transStatus = transStatus;
 	}
-	
+
+	public String getTransName() {
+		return transName;
+	}
+
+	public void setTransName(String transName) {
+		this.transName = transName;
+	}
 }
