@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -184,8 +186,22 @@ public class RentContractController extends BaseController {
 	}
 	
 	@RequestMapping(value = "toReturnCheck")
-	public String toReturnCheck(RentContract rentContract) {
-		//rentContractService.returnCheck(rentContract);
+	public String toReturnCheck(RentContract rentContract,Model model) {
+		rentContract = rentContractService.get(rentContract.getId());
+		
+		List<Accounting> outAccountList = new ArrayList<Accounting>();
+		Accounting accounting = new Accounting();
+		accounting.setFeeType("2");//水电费押金
+		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		outAccountList.add(accounting);
+		accounting = new Accounting();
+		accounting.setFeeType("4");//房租押金
+		accounting.setFeeAmount(rentContract.getDepositAmount()*rentContract.getDepositMonths());
+		outAccountList.add(accounting);
+		
+		model.addAttribute("outAccountList", outAccountList);
+		model.addAttribute("outAccountSize", outAccountList.size());
+		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
 	}
 	
