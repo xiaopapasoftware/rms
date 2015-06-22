@@ -83,7 +83,7 @@
 				</td>
 				<shiro:hasPermission name="inventory:neighborhood:edit"><td>
     				<a href="${ctx}/inventory/neighborhood/form?id=${neighborhood.id}">修改</a>
-					<a href="${ctx}/inventory/neighborhood/delete?id=${neighborhood.id}" onclick="return confirmx('确认要删除该居委会吗？', this.href)">删除</a>
+					<a href="${ctx}/inventory/neighborhood/delete?id=${neighborhood.id}" onclick="return confirmx('确认要删除该居委会及所有的居委会联系人吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

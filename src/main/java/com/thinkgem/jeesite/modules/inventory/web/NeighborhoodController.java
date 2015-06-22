@@ -102,7 +102,7 @@ public class NeighborhoodController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(Neighborhood neighborhood, RedirectAttributes redirectAttributes) {
 		neighborhoodService.delete(neighborhood);
-		addMessage(redirectAttributes, "删除居委会成功");
+		addMessage(redirectAttributes, "删除居委会及所有的居委会联系人成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/neighborhood/?repage";
 	}
 
