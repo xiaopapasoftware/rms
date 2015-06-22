@@ -105,7 +105,7 @@
 				<th>房间号</th>
 				<th>房间状态</th>
 				<th>电表号</th>
-				<th>房间面积（平方米）</th>
+				<th>房间面积(平方米)</th>
 				<th>朝向</th>
 				<th>附属结构</th>
 				<th>创建时间</th>
@@ -139,7 +139,7 @@
 				<td>${room.remarks}</td>
 				<shiro:hasPermission name="inventory:room:edit"><td>
     				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
-					<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间信息吗？', this.href)">删除</a>
+					<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

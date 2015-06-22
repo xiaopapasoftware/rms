@@ -188,7 +188,7 @@ public class HouseController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(House house, RedirectAttributes redirectAttributes) {
 		houseService.delete(house);
-		addMessage(redirectAttributes, "删除房屋信息成功");
+		addMessage(redirectAttributes, "删除房屋、房间及其图片信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
 	}
 

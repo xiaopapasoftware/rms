@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.inventory.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,14 +64,37 @@ public class RoomService extends CrudService<RoomDao, Room> {
 				attachmentDao.insert(attachment);
 			}
 		} else {// 更新
-
+			// 先查询原先该房间下是否有附件，有的话则直接更新。
+			Attachment attachment = new Attachment();
+			attachment.setRoomId(room.getId());
+			List<Attachment> attachmentList = attachmentDao.findList(attachment);
+			String id = super.saveAndReturnId(room);
+			if (CollectionUtils.isNotEmpty(attachmentList)) {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
+				Attachment atta = new Attachment();
+				atta.setRoomId(id);
+				atta.setAttachmentPath(room.getAttachmentPath());
+				attachmentDao.updateAttachmentPathByType(atta);
+			} else {// 修改时，新增附件
+				Attachment toAddattachment = new Attachment();
+				toAddattachment.setId(IdGen.uuid());
+				toAddattachment.setRoomId(id);
+				toAddattachment.setAttachmentType(FileType.ROOM_MAP.getValue());
+				toAddattachment.setAttachmentPath(room.getAttachmentPath());
+				toAddattachment.setCreateDate(new Date());
+				toAddattachment.setCreateBy(UserUtils.getUser());
+				toAddattachment.setUpdateDate(new Date());
+				toAddattachment.setUpdateBy(UserUtils.getUser());
+				attachmentDao.insert(toAddattachment);
+			}
 		}
-		super.save(room);
 	}
 
 	@Transactional(readOnly = false)
 	public void delete(Room room) {
 		super.delete(room);
+		Attachment atta = new Attachment();
+		atta.setRoomId(room.getId());
+		attachmentDao.delete(atta);
 	}
 
 	@Transactional(readOnly = true)

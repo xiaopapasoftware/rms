@@ -19,6 +19,7 @@ import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -31,6 +32,9 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class HouseService extends CrudService<HouseDao, House> {
+
+	@Autowired
+	private RoomService roomService;
 
 	@Autowired
 	private AttachmentDao attachmentDao;
@@ -91,9 +95,21 @@ public class HouseService extends CrudService<HouseDao, House> {
 
 	@Transactional(readOnly = false)
 	public void delete(House house) {
-		super.delete(house);
-	}
 
+		super.delete(house);
+		Attachment atta = new Attachment();
+		atta.setHouseId(house.getId());
+		attachmentDao.delete(atta);
+
+		Room r = new Room();
+		r.setHouse(house);
+		List<Room> rooms = roomService.findList(r);
+		if (CollectionUtils.isNotEmpty(rooms)) {
+			for (Room ro : rooms) {
+				roomService.delete(ro);
+			}
+		}
+	}
 	/**
 	 * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
 	 * */

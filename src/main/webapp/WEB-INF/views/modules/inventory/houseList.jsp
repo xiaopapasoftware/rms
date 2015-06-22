@@ -36,9 +36,11 @@
 		function finishDirect(houseId){
 			$.get("${ctx}/inventory/house/finishDirect?id=" + houseId, function(data){
 				if("SUCCESS" == data){
-					alert("操作成功！");
+					showTip("操作成功！",'','','');
+					alertx("操作成功！");
 				}else{
-					alert("操作失败！");
+					showTip("操作失败！",'','','');
+					alertx("操作失败！");
 				}
 				$("#searchForm").submit();
 			});
@@ -108,8 +110,8 @@
 				<th>房屋号</th>
 				<th>房屋状态</th>
 				<th>楼层</th>
-				<th>原始建筑面积（平方米）</th>
-				<th>装修建筑面积（平方米）</th>
+				<th>原始建筑面积(平方米)</th>
+				<th>装修建筑面积(平方米)</th>
 				<th>原始房屋结构</th>
 				<th>装修房屋结构</th>
 				<th>创建时间</th>
@@ -147,7 +149,7 @@
 					<shiro:hasPermission name="inventory:house:edit">
 						<td><a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
 							<a href="${ctx}/inventory/house/delete?id=${house.id}"
-							onclick="return confirmx('确认要删除该房屋信息吗？', this.href)">删除</a> <c:if
+							onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a> <c:if
 								test="${house.houseStatus eq '0'}">
 								<a href="#" onclick="finishDirect('${house.id}');">装修完成</a>
 							</c:if></td>
