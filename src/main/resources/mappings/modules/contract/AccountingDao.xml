@@ -17,11 +17,14 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		u7.name AS "user.name"
+		u7.name AS "user.name",
+		c.contract_name as rentContractName,
+		c.contract_busi_status as contractBusiStatus
 	</sql>
 	
 	<sql id="accountingJoins">
-		LEFT JOIN sys_user u7 ON u7.id = a.user_id
+		LEFT JOIN sys_user u7 ON u7.id = a.user_id 
+		left join t_rent_contract c on a.rent_contract_id=c.id 
 	</sql>
     
 	<select id="get" resultType="Accounting">
@@ -39,8 +42,8 @@
 		<include refid="accountingJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="rentContract != null and rentContract.id != null and rentContract.id != ''">
-				AND a.rent_contract_id = #{rentContract.id}
+			<if test="rentContractName != null and rentContractName != ''">
+				AND c.contract_name like concat('%',#{rentContractName},'%')
 			</if>
 			<if test="accountingType != null and accountingType != ''">
 				AND a.accounting_type = #{accountingType}
@@ -58,7 +61,7 @@
 				AND a.user_id = #{user.id}
 			</if>
 			<if test="feeDate != null and feeDate != ''">
-				AND a.fee_date = #{feeDate}
+				AND date_format(a.fee_date,'%Y-%m-%d') = date_format(#{feeDate},'%Y-%m-%d')
 			</if>
 		</where>
 		<choose>
