@@ -119,11 +119,8 @@ public class HouseController extends BaseController {
 	@RequestMapping(value = "finishDirect")
 	@ResponseBody
 	public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
-		House upHouse = new House();
-		upHouse.setId(house.getId());
-		upHouse.setHouseStatus(DictUtils.getDictValue("待出租可预订", "house_status", ""));
-		int i = houseService.updateHouseStatus(upHouse);
-		if (i == 1) {
+		int i = houseService.updateHouseStatus(house);
+		if (i > 0) {
 			return "SUCCESS";
 		} else {
 			return "FAIL";

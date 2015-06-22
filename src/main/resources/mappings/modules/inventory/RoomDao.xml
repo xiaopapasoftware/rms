@@ -178,4 +178,8 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateRoomStatus">
+		UPDATE t_room SET room_status = #{roomStatus}
+		WHERE del_flag = #{DEL_FLAG_NORMAL} and id = #{id}
+	</update>
 </mapper>

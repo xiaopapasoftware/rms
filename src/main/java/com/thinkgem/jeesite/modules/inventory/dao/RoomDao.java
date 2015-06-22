@@ -22,4 +22,9 @@ public interface RoomDao extends CrudDao<Room> {
 	 * 根据物业项目ID+楼宇ID+房屋ID+房间号 查询房间信息
 	 * */
 	List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room);
+
+	/**
+	 * 更新房间状态
+	 * */
+	int updateRoomStatus(Room room);
 }

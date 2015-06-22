@@ -36,10 +36,8 @@
 		function finishDirect(houseId){
 			$.get("${ctx}/inventory/house/finishDirect?id=" + houseId, function(data){
 				if("SUCCESS" == data){
-					showTip("操作成功！",'','','');
 					alertx("操作成功！");
 				}else{
-					showTip("操作失败！",'','','');
 					alertx("操作失败！");
 				}
 				$("#searchForm").submit();

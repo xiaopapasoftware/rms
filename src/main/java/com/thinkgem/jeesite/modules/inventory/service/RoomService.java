@@ -101,4 +101,12 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	public List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room) {
 		return dao.findRoomByPrjAndBldAndHouNoAndRomNo(room);
 	}
+
+	/**
+	 * 更新房间状态
+	 * */
+	@Transactional(readOnly = false)
+	public int updateRoomStatus(Room room) {
+		return dao.updateRoomStatus(room);
+	}
 }
