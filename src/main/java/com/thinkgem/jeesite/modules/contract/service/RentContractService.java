@@ -15,10 +15,12 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
+import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
@@ -49,6 +51,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	private AuditHisDao auditHisDao;
 	@Autowired
 	private RentContractDao rentContractDao;
+	@Autowired
+	private AccountingDao accountingDao;
 	
 	private static final String RENT_CONTRACT_ROLE = "rent_contract_role";//新签合同审批
 	
@@ -140,6 +144,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	 */
 	@Transactional(readOnly = false)
 	public void returnCheck(RentContract rentContract) {
+		List<Accounting> accountList = rentContract.getAccountList();
+		List<Accounting> outAccountList = rentContract.getOutAccountList();
+		
 		rentContract = rentContractDao.get(rentContract.getId());
 		rentContract.setContractBusiStatus("4");//退租核算完成到账收据待登记
 		rentContract.setUpdateBy(UserUtils.getUser());
@@ -147,6 +154,75 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		this.rentContractDao.update(rentContract);
 		
 		/*款项*/
+		for(Accounting accounting : accountList) {
+			PaymentTrans paymentTrans = new PaymentTrans();
+			paymentTrans.setId(IdGen.uuid());
+			paymentTrans.setTradeType("7");//正常退租
+			paymentTrans.setPaymentType(accounting.getFeeType());
+			paymentTrans.setTransId(rentContract.getId());
+			paymentTrans.setTradeDirection("1");//收款
+			paymentTrans.setStartDate(rentContract.getExpiredDate());
+			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+			paymentTrans.setTradeAmount(accounting.getFeeAmount());
+			paymentTrans.setLastAmount(accounting.getFeeAmount());
+			paymentTrans.setTransAmount(0D);
+			paymentTrans.setTransStatus("0");//未到账登记
+			paymentTrans.setCreateDate(new Date());
+			paymentTrans.setCreateBy(UserUtils.getUser());
+			paymentTrans.setUpdateDate(new Date());
+			paymentTrans.setUpdateBy(UserUtils.getUser());
+			paymentTrans.setDelFlag("0");
+			paymentTransDao.insert(paymentTrans);
+			
+			/*核算记录*/
+			accounting.setId(IdGen.uuid());
+			accounting.setRentContract(rentContract);
+			accounting.setAccountingType("1");//正常退租核算
+			accounting.setFeeDirection("1");//应收
+			accounting.setUser(UserUtils.getUser());
+			accounting.setFeeDate(new Date());
+			accounting.setCreateDate(new Date());
+			accounting.setCreateBy(UserUtils.getUser());
+			accounting.setUpdateDate(new Date());
+			accounting.setUpdateBy(UserUtils.getUser());
+			accounting.setDelFlag("0");
+			accountingDao.insert(accounting);
+		}
+		
+		for(Accounting accounting : outAccountList) {
+			PaymentTrans paymentTrans = new PaymentTrans();
+			paymentTrans.setId(IdGen.uuid());
+			paymentTrans.setTradeType("7");//正常退租
+			paymentTrans.setPaymentType(accounting.getFeeType());
+			paymentTrans.setTransId(rentContract.getId());
+			paymentTrans.setTradeDirection("0");//出款
+			paymentTrans.setStartDate(rentContract.getExpiredDate());
+			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+			paymentTrans.setTradeAmount(accounting.getFeeAmount());
+			paymentTrans.setLastAmount(accounting.getFeeAmount());
+			paymentTrans.setTransAmount(0D);
+			paymentTrans.setTransStatus("0");//未到账登记
+			paymentTrans.setCreateDate(new Date());
+			paymentTrans.setCreateBy(UserUtils.getUser());
+			paymentTrans.setUpdateDate(new Date());
+			paymentTrans.setUpdateBy(UserUtils.getUser());
+			paymentTrans.setDelFlag("0");
+			paymentTransDao.insert(paymentTrans);
+			
+			/*核算记录*/
+			accounting.setId(IdGen.uuid());
+			accounting.setRentContract(rentContract);
+			accounting.setAccountingType("1");//正常退租核算
+			accounting.setFeeDirection("0");//应出
+			accounting.setUser(UserUtils.getUser());
+			accounting.setFeeDate(new Date());
+			accounting.setCreateDate(new Date());
+			accounting.setCreateBy(UserUtils.getUser());
+			accounting.setUpdateDate(new Date());
+			accounting.setUpdateBy(UserUtils.getUser());
+			accounting.setDelFlag("0");
+			accountingDao.insert(accounting);
+		}
 	}
 	
 	@Transactional(readOnly = false)
@@ -198,6 +274,31 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setDelFlag("0");
 			paymentTransDao.insert(paymentTrans);
 			
+			/*生成合同期内所有的房租款项*/
+			int month = DateUtils.getMonthSpace(rentContract.getStartDate(),rentContract.getExpiredDate());//合同总月数
+			int transMonth = month-rentContract.getRenMonths();
+			for(int i=0;i<transMonth;i++) {
+				paymentTrans = new PaymentTrans();
+				paymentTrans.setId(IdGen.uuid());
+				paymentTrans.setTradeType("3");//新签合同
+				paymentTrans.setPaymentType("6");//房租金额
+				paymentTrans.setTransId(id);
+				paymentTrans.setTradeDirection("1");//收款
+				paymentTrans.setStartDate(DateUtils.dateAddMonth(rentContract.getStartDate(),i+rentContract.getRenMonths()));
+				paymentTrans.setExpiredDate(DateUtils.dateAddMonth(rentContract.getStartDate(),i+1+rentContract.getRenMonths()));
+				paymentTrans.setTradeAmount(rentContract.getRental());
+				paymentTrans.setLastAmount(rentContract.getRental());
+				paymentTrans.setTransAmount(0D);
+				paymentTrans.setTransStatus("0");//未到账登记
+				paymentTrans.setCreateDate(new Date());
+				paymentTrans.setCreateBy(UserUtils.getUser());
+				paymentTrans.setUpdateDate(new Date());
+				paymentTrans.setUpdateBy(UserUtils.getUser());
+				paymentTrans.setDelFlag("0");
+				paymentTransDao.insert(paymentTrans);
+			}
+			
+			/*押款项*/
 			for(int i=0;i<rentContract.getRenMonths();i++) {
 				paymentTrans = new PaymentTrans();
 				paymentTrans.setId(IdGen.uuid());
