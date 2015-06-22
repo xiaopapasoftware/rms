@@ -27,8 +27,8 @@
 		<ul class="ul-form">
 			<li><label>居委会：</label>
 				<form:select path="neighborhood.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listNeighborhood}" itemLabel="neighborhoodName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>姓名：</label>
@@ -52,7 +52,10 @@
 				<th>姓名</th>
 				<th>手机号</th>
 				<th>座机号</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:neighborhoodContact:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -60,11 +63,13 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="neighborhoodContact">
 			<tr>
-				<td><a href="${ctx}/person/neighborhoodContact/form?id=${neighborhoodContact.id}">
-					${fns:getDictLabel(neighborhoodContact.neighborhood.id, '', '')}
-				</a></td>
 				<td>
-					${neighborhoodContact.contactName}
+					${neighborhoodContact.neighborhood.neighborhoodName}
+				</td>
+				<td>
+					<a href="${ctx}/person/neighborhoodContact/form?id=${neighborhoodContact.id}">
+						${neighborhoodContact.contactName}
+					</a>
 				</td>
 				<td>
 					${neighborhoodContact.cellPhone}
@@ -73,7 +78,16 @@
 					${neighborhoodContact.deskPhone}
 				</td>
 				<td>
+					<fmt:formatDate value="${neighborhoodContact.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${neighborhoodContact.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${neighborhoodContact.createBy.loginName}
+				</td>
+				<td>
+				 	${neighborhoodContact.updateBy.loginName}
 				</td>
 				<td>
 					${neighborhoodContact.remarks}
