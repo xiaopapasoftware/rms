@@ -5,19 +5,25 @@
 	<sql id="customerColumns">
 		a.id AS "id",
 		a.user_id AS "user.id",
+		su.name AS "user.name",
 		a.contact_name AS "contactName",
 		a.gender AS "gender",
 		a.cell_phone AS "cellPhone",
 		a.is_tenant AS "isTenant",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="customerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user su ON su.id = a.user_id
 	</sql>
     
 	<select id="get" resultType="Customer">
@@ -48,7 +54,10 @@
 				AND a.gender = #{gender}
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
 			<if test="isTenant != null and isTenant != ''">
 				AND a.is_tenant = #{isTenant}
@@ -80,6 +89,23 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findCustomerByTelNo" resultType="Customer">
+		SELECT 
+				a.id AS "id",
+				a.user_id AS "user.id",
+				a.contact_name AS "contactName",
+				a.gender AS "gender",
+				a.cell_phone AS "cellPhone",
+				a.is_tenant AS "isTenant",
+				a.del_flag AS "delFlag"
+		FROM t_customer a
+		WHERE
+			 a.del_flag = #{DEL_FLAG_NORMAL}
+			 <if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone = #{cellPhone}
+			</if>
 	</select>
 	
 	<insert id="insert">
@@ -118,7 +144,9 @@
 			contact_name = #{contactName},
 			gender = #{gender},
 			cell_phone = #{cellPhone},
-			is_tenant = #{isTenant},
+		 	<if test="isTenant != null and isTenant != ''">
+				is_tenant = #{isTenant},
+			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

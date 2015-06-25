@@ -34,16 +34,6 @@
 		<form:hidden path="id"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
-			<label class="control-label">销售：</label>
-			<div class="controls">
-				<form:select path="user.id" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">姓名：</label>
 			<div class="controls">
 				<form:input path="contactName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
@@ -54,8 +44,8 @@
 			<label class="control-label">性别：</label>
 			<div class="controls">
 				<form:select path="gender" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -68,11 +58,11 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">是否转租客：</label>
+			<label class="control-label">销售：</label>
 			<div class="controls">
-				<form:select path="isTenant" class="input-xlarge ">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="user.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</div>
 		</div>

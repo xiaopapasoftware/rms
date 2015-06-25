@@ -3,9 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.person.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,10 +22,12 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 客户信息Controller
@@ -57,6 +62,7 @@ public class CustomerController extends BaseController {
 	public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
 		model.addAttribute("page", page);
+		model.addAttribute("listUser", systemService.findUser(new User()));
 		return "modules/person/customerList";
 	}
 
@@ -74,9 +80,37 @@ public class CustomerController extends BaseController {
 		if (!beanValidator(model, customer)) {
 			return form(customer, model);
 		}
-		customerService.save(customer);
-		addMessage(redirectAttributes, "保存客户信息成功");
-		return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
+		List<Customer> customers = customerService.findCustomerByTelNo(customer);
+		if (!customer.getIsNewRecord()) {// 是更新
+			if (CollectionUtils.isNotEmpty(customers)) {
+				Customer upCustomer = new Customer();
+				upCustomer.setId(customers.get(0).getId());
+				upCustomer.setCellPhone(customer.getCellPhone());
+				upCustomer.setContactName(customer.getContactName());
+				upCustomer.setGender(customer.getGender());
+				upCustomer.setIsTenant(customers.get(0).getIsTenant());
+				upCustomer.setRemarks(customer.getRemarks());
+				upCustomer.setUser(customer.getUser());
+				customerService.save(customer);
+			} else {
+				customerService.save(customer);
+			}
+			addMessage(redirectAttributes, "修改客户信息成功");
+			return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
+		} else {// 新增
+			if (CollectionUtils.isNotEmpty(customers)) {
+				model.addAttribute("message", "客户手机号已被占用，不能重复添加");
+				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+				model.addAttribute("listUser", systemService.findUser(new User()));
+				return "modules/person/customerForm";
+			} else {
+				customer.setIsTenant(DictUtils.getDictValue("否", "yes_no", ""));
+				customerService.save(customer);
+				addMessage(redirectAttributes, "保存客户信息成功");
+				return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
+			}
+		}
+
 	}
 
 	@RequiresPermissions("person:customer:edit")
