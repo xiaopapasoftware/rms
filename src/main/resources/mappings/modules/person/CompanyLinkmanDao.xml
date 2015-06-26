@@ -5,19 +5,25 @@
 	<sql id="companyLinkmanColumns">
 		a.id AS "id",
 		a.company_id AS "company.id",
+		tc.company_name AS "company.companyName",
 		a.person_name AS "personName",
 		a.cell_phone AS "cellPhone",
 		a.tell_phone AS "tellPhone",
 		a.email AS "email",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="companyLinkmanJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+	 	LEFT JOIN t_company tc ON tc.id = a.company_id
 	</sql>
     
 	<select id="get" resultType="CompanyLinkman">
@@ -45,13 +51,22 @@
 					<if test="dbName == 'mysql'">concat('%',#{personName},'%')</if>
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
 			<if test="tellPhone != null and tellPhone != ''">
-				AND a.tell_phone = #{tellPhone}
+				AND a.tell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tellPhone},'%')</if>
 			</if>
 			<if test="email != null and email != ''">
-				AND a.email = #{email}
+				AND a.email LIKE 
+					<if test="dbName == 'oracle'">'%'||#{email}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{email}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{email},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -81,6 +96,25 @@
 			</otherwise>
 		</choose>
 	</select>
+	
+	<select id="findCompLinkMansByCompAndTelNo" resultType="CompanyLinkman">
+		SELECT	
+		a.id AS "id",
+		a.company_id AS "company.id",
+		a.person_name AS "personName",
+		a.cell_phone AS "cellPhone",
+		a.tell_phone AS "tellPhone",
+		a.email AS "email",
+		a.del_flag AS "delFlag"
+	FROM t_company_linkman a
+	<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.company_id = #{company.id}
+			AND a.cell_phone = #{cellPhone}
+	</where>
+	</select>
+	
+	
 	
 	<insert id="insert">
 		INSERT INTO t_company_linkman(

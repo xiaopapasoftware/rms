@@ -120,7 +120,7 @@
 				</td>
 				<shiro:hasPermission name="person:company:edit"><td>
     				<a href="${ctx}/person/company/form?id=${company.id}">修改</a>
-					<a href="${ctx}/person/company/delete?id=${company.id}" onclick="return confirmx('确认要删除该企业信息吗？', this.href)">删除</a>
+					<a href="${ctx}/person/company/delete?id=${company.id}" onclick="return confirmx('确认要删除该企业及其联系人信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

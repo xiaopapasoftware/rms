@@ -32,13 +32,13 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="companyLinkman" action="${ctx}/person/companyLinkman/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">企业：</label>
 			<div class="controls">
 				<form:select path="company.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -66,7 +66,7 @@
 		<div class="control-group">
 			<label class="control-label">邮箱：</label>
 			<div class="controls">
-				<form:input path="email" htmlEscape="false" maxlength="100" class="input-xlarge "/>
+				<form:input path="email" htmlEscape="false" maxlength="100" class="input-xlarge email"/>
 			</div>
 		</div>
 		<div class="control-group">
