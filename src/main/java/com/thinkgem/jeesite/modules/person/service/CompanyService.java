@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.person.dao.CompanyDao;
 
 /**
  * 企业信息Service
+ * 
  * @author huangsc
  * @version 2015-06-13
  */
@@ -25,23 +26,28 @@ public class CompanyService extends CrudService<CompanyDao, Company> {
 	public Company get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<Company> findList(Company company) {
 		return super.findList(company);
 	}
-	
+
 	public Page<Company> findPage(Page<Company> page, Company company) {
 		return super.findPage(page, company);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(Company company) {
 		super.save(company);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(Company company) {
 		super.delete(company);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<Company> findCompanyByIdTypeAndVal(Company company) {
+		return dao.findCompanyByIdTypeAndVal(company);
+	}
+
 }
