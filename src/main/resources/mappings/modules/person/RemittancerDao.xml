@@ -8,14 +8,18 @@
 		a.bank_name AS "bankName",
 		a.bank_account AS "bankAccount",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="remittancerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="Remittancer">
@@ -33,8 +37,11 @@
 		<include refid="remittancerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="beginUserName != null and endUserName != null and beginUserName != '' and endUserName != ''">
-				AND a.user_name BETWEEN #{beginUserName} AND #{endUserName}
+			<if test="userName != null and userName != ''">
+				AND a.user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userName},'%')</if>
 			</if>
 			<if test="bankName != null and bankName != ''">
 				AND a.bank_name LIKE 
@@ -43,7 +50,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{bankName},'%')</if>
 			</if>
 			<if test="bankAccount != null and bankAccount != ''">
-				AND a.bank_account = #{bankAccount}
+				AND a.bank_account LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankAccount}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankAccount}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankAccount},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -72,6 +82,21 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findRemittancersByBankNameAndNo" resultType="Remittancer">
+		SELECT 
+				a.id AS "id",
+				a.user_name AS "userName",
+				a.bank_name AS "bankName",
+				a.bank_account AS "bankAccount",
+				a.del_flag AS "delFlag"
+		FROM t_remittancer a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.bank_name = #{bankName}
+			AND a.bank_account = #{bankAccount}
+		</where>
 	</select>
 	
 	<insert id="insert">
