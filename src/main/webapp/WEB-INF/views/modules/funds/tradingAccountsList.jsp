@@ -51,8 +51,7 @@
 		<li class="active"><a href="${ctx}/funds/tradingAccounts/">账务交易列表</a></li>
 		<shiro:hasPermission name="funds:tradingAccounts:edit"><li><a href="${ctx}/funds/tradingAccounts/findOne">账务交易添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1145px;">
+	<form:form id="searchForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -102,7 +101,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>账务交易对象</th>
