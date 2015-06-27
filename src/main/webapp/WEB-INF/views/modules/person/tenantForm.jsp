@@ -32,23 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="tenant" action="${ctx}/person/tenant/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
-		<div class="control-group">
-			<label class="control-label">租客类型：</label>
-			<div class="controls">
-				<form:select path="tenantType" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('tenant_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">企业：</label>
-			<div class="controls">
-				<form:input path="companyId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div>
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">姓名：</label>
 			<div class="controls">
@@ -60,8 +44,18 @@
 			<label class="control-label">性别：</label>
 			<div class="controls">
 				<form:select path="gender" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">租客类型：</label>
+			<div class="controls">
+				<form:select path="tenantType" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('tenant_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -70,7 +64,7 @@
 			<label class="control-label">证件类型：</label>
 			<div class="controls">
 				<form:select path="idType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('id_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -84,9 +78,16 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">手机号码：</label>
+			<div class="controls">
+				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">出生日期：</label>
 			<div class="controls">
-				<input name="birthday" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
+				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate "
 					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</div>
@@ -95,22 +96,24 @@
 			<label class="control-label">学历：</label>
 			<div class="controls">
 				<form:select path="degrees" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('degrees')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">手机号码：</label>
+			<label class="control-label">所属企业：</label>
 			<div class="controls">
-				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:select path="company.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">电子邮箱：</label>
 			<div class="controls">
-				<form:input path="email" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:input path="email" htmlEscape="false" maxlength="64" class="input-xlarge email"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -123,6 +126,15 @@
 			<label class="control-label">职位：</label>
 			<div class="controls">
 				<form:input path="position" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">跟进销售：</label>
+			<div class="controls">
+				<form:select path="user.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">

@@ -27,8 +27,8 @@
 		<ul class="ul-form">
 			<li><label>企业：</label>
 				<form:select path="company.id" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>姓名：</label>
@@ -56,7 +56,10 @@
 				<th>手机号码</th>
 				<th>座机号码</th>
 				<th>邮箱</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:companyLinkman:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -64,11 +67,11 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="companyLinkman">
 			<tr>
-				<td><a href="${ctx}/person/companyLinkman/form?id=${companyLinkman.id}">
-					${fns:getDictLabel(companyLinkman.company.id, '', '')}
-				</a></td>
 				<td>
-					${companyLinkman.personName}
+					${companyLinkman.company.companyName}
+				</td>
+				<td><a href="${ctx}/person/companyLinkman/form?id=${companyLinkman.id}">
+					${companyLinkman.personName}</a>
 				</td>
 				<td>
 					${companyLinkman.cellPhone}
@@ -80,7 +83,16 @@
 					${companyLinkman.email}
 				</td>
 				<td>
+					<fmt:formatDate value="${companyLinkman.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${companyLinkman.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${companyLinkman.createBy.loginName}
+				</td>
+				<td>
+				 	${companyLinkman.updateBy.loginName}
 				</td>
 				<td>
 					${companyLinkman.remarks}

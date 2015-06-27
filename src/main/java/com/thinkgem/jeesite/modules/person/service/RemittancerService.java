@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.person.dao.RemittancerDao;
 
 /**
  * 汇款人信息Service
+ * 
  * @author huangsc
  * @version 2015-06-06
  */
@@ -25,23 +26,28 @@ public class RemittancerService extends CrudService<RemittancerDao, Remittancer>
 	public Remittancer get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<Remittancer> findList(Remittancer remittancer) {
 		return super.findList(remittancer);
 	}
-	
+
 	public Page<Remittancer> findPage(Page<Remittancer> page, Remittancer remittancer) {
 		return super.findPage(page, remittancer);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(Remittancer remittancer) {
 		super.save(remittancer);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(Remittancer remittancer) {
 		super.delete(remittancer);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<Remittancer> findRemittancersByBankNameAndNo(Remittancer remittancer) {
+		return dao.findRemittancersByBankNameAndNo(remittancer);
+	}
+
 }

@@ -41,55 +41,48 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">企业证件类型：</label>
+			<div class="controls">
+				<form:select path="idType" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('comp_idtype')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">企业证件号码：</label>
+			<div class="controls">
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">企业电话：</label>
 			<div class="controls">
-				<form:input path="tellPhone" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">证件类型：</label>
-			<div class="controls">
-				<form:select path="idType" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">证件号码：</label>
-			<div class="controls">
-				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="tellPhone" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">企业注册地址：</label>
 			<div class="controls">
-				<form:input path="companyAdress" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="companyAdress" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">企业营业地址：</label>
 			<div class="controls">
-				<form:input path="businessAdress" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="businessAdress" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">开户行名称：</label>
 			<div class="controls">
-				<form:input path="bankName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="bankName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">开户行账号：</label>
 			<div class="controls">
-				<form:input path="bankAccount" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="bankAccount" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">

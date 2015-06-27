@@ -13,14 +13,18 @@
 		a.bank_name AS "bankName",
 		a.bank_account AS "bankAccount",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="companyJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="Company">
@@ -44,9 +48,6 @@
 					<if test="dbName == 'mssql'">'%'+#{companyName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{companyName},'%')</if>
 			</if>
-			<if test="tellPhone != null and tellPhone != ''">
-				AND a.tell_phone = #{tellPhone}
-			</if>
 			<if test="idType != null and idType != ''">
 				AND a.id_type = #{idType}
 			</if>
@@ -55,6 +56,12 @@
 					<if test="dbName == 'oracle'">'%'||#{idNo}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{idNo}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{idNo},'%')</if>
+			</if>
+			<if test="tellPhone != null and tellPhone != ''">
+					AND a.tell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tellPhone},'%')</if>
 			</if>
 			<if test="companyAdress != null and companyAdress != ''">
 				AND a.company_adress LIKE 
@@ -107,6 +114,26 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findCompanyByIdTypeAndVal" resultType="Company">
+		SELECT 
+				a.id AS "id",
+				a.company_name AS "companyName",
+				a.tell_phone AS "tellPhone",
+				a.id_type AS "idType",
+				a.id_no AS "idNo",
+				a.company_adress AS "companyAdress",
+				a.business_adress AS "businessAdress",
+				a.bank_name AS "bankName",
+				a.bank_account AS "bankAccount",
+				a.del_flag AS "delFlag"
+		FROM t_company a
+		<where>
+				a.del_flag = #{DEL_FLAG_NORMAL}
+				AND a.id_type = #{idType}
+				AND a.id_no = #{idNo}
+		</where>
 	</select>
 	
 	<insert id="insert">

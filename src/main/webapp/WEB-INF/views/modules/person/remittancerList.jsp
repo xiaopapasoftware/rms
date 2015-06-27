@@ -45,7 +45,10 @@
 				<th>开户人姓名</th>
 				<th>开户行名称</th>
 				<th>开户行账号</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:remittancer:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -63,7 +66,16 @@
 					${remittancer.bankAccount}
 				</td>
 				<td>
+					<fmt:formatDate value="${remittancer.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${remittancer.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${remittancer.createBy.loginName}
+				</td>
+				<td>
+				 	${remittancer.updateBy.loginName}
 				</td>
 				<td>
 					${remittancer.remarks}

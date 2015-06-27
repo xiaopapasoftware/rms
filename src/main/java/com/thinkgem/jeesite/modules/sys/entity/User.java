@@ -40,7 +40,7 @@ public class User extends DataEntity<User> {
 	private String mobile;	// 手机
 	private String userType;// 用户类型
 	private String loginIp;	// 最后登陆IP
-	private Date loginDate;	// 最后登陆日期
+	private Date   loginDate;	// 最后登陆日期
 	private String loginFlag;	// 是否允许登陆
 	private String photo;	// 头像
 
