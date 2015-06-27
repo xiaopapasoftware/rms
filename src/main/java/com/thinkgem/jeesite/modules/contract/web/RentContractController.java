@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,9 +22,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
+import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -178,11 +182,56 @@ public class RentContractController extends BaseController {
 			return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
 	}
 	
+	@RequestMapping(value = "saveAdditional")
+	public String saveAdditional(AgreementChange agreementChange, Model model, RedirectAttributes redirectAttributes) {
+		if (!beanValidator(model, agreementChange)){
+			RentContract rentContract = new RentContract();
+			rentContract.setId(agreementChange.getContractId());
+			return changeContract(rentContract, model);
+		}
+		rentContractService.saveAdditional(agreementChange);
+		addMessage(redirectAttributes, "保存变更协议成功");
+		
+		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
 	@RequestMapping(value = "returnContract")
 	public String returnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
 		rentContractService.returnContract(rentContract);
 		addMessage(redirectAttributes, "正常退租成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "earlyReturnContract")
+	public String earlyReturnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		rentContractService.earylReturnContract(rentContract);
+		addMessage(redirectAttributes, "提前退租成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "lateReturnContract")
+	public String lateReturnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		rentContractService.lateReturnContract(rentContract);
+		addMessage(redirectAttributes, "逾期退租成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "specialReturnContract")
+	public String specialReturnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		rentContractService.lateReturnContract(rentContract);
+		addMessage(redirectAttributes, "特殊退租成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	}
+	
+	@RequestMapping(value = "changeContract")
+	public String changeContract(RentContract rentContract,Model model) {
+		AgreementChange agreementChange = new AgreementChange();
+		agreementChange.setContractId(rentContract.getId());
+		model.addAttribute("agreementChange", agreementChange);
+		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		return "modules/contract/additionalContract";
 	}
 	
 	@RequestMapping(value = "toReturnCheck")
@@ -201,14 +250,135 @@ public class RentContractController extends BaseController {
 		
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
+		rentContract.setTradeType("7");//正常退租
+		model.addAttribute("rentContract", rentContract);
+		return "modules/contract/rentContractCheck";
+	}
+	
+	@RequestMapping(value = "toEarlyReturnCheck")
+	public String toEarylReturnCheck(RentContract rentContract,Model model) {
+		rentContract = rentContractService.get(rentContract.getId());
+		
+		List<Accounting> outAccountList = new ArrayList<Accounting>();
+		Accounting accounting = new Accounting();
+		accounting.setFeeType("2");//水电费押金
+		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		outAccountList.add(accounting);
+		
+		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(),new Date());//入住天数
+		
+		double dailyRental = rentContract.getRental()*12/365/30;//每天房租租金
+		double tental = dates * dailyRental;
+		BigDecimal bigDecimal = new BigDecimal(tental);  
+		tental = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();  
+		double surplus = rentContract.getDepositAmount()*rentContract.getDepositMonths()-tental;//剩余房租
+		accounting = new Accounting();
+		accounting.setFeeType("7");//提前应退房租
+		accounting.setFeeAmount(surplus);
+		outAccountList.add(accounting);
+		
+		if("0".equals(rentContract.getChargeType()) && null != rentContract.getTvFee()) {//预付
+			double dailyTvFee = rentContract.getTvFee()*12/365/30;//每天电视费
+			double tvfee = dates * dailyTvFee;
+			bigDecimal = new BigDecimal(tvfee);  
+			tvfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			double surplusTvFee = rentContract.getTvFee()-tvfee;
+			accounting = new Accounting();
+			accounting.setFeeType("19");//有线电视费剩余金额
+			accounting.setFeeAmount(surplusTvFee);
+			outAccountList.add(accounting);
+			
+			double dailyNetFee = rentContract.getNetFee()*12/365/30;//每天宽带费
+			double netfee = dates * dailyNetFee;
+			bigDecimal = new BigDecimal(netfee);  
+			netfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			double surplusNetFee = rentContract.getNetFee()-netfee;
+			accounting = new Accounting();
+			accounting.setFeeType("21");//宽带费剩余金额
+			accounting.setFeeAmount(surplusNetFee);
+			outAccountList.add(accounting);
+			
+			double dailyServiceFee = rentContract.getServiceFee()*12/365/30;//每天服务费
+			double serviceFee = dates * dailyServiceFee;
+			bigDecimal = new BigDecimal(serviceFee);  
+			serviceFee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+			double surplusServiceFee = rentContract.getServiceFee()-serviceFee;
+			accounting = new Accounting();
+			accounting.setFeeType("23");//服务费剩余金额
+			accounting.setFeeAmount(surplusServiceFee);
+			outAccountList.add(accounting);
+		}
+		
+		model.addAttribute("outAccountList", outAccountList);
+		model.addAttribute("outAccountSize", outAccountList.size());
+		rentContract.setTradeType("6");//提前退租
+		model.addAttribute("rentContract", rentContract);
+		return "modules/contract/rentContractCheck";
+	}
+	
+	@RequestMapping(value = "toLateReturnCheck")
+	public String toLateReturnCheck(RentContract rentContract,Model model) {
+		rentContract = rentContractService.get(rentContract.getId());
+		
+		List<Accounting> accountList = new ArrayList<Accounting>();
+		
+		List<Accounting> outAccountList = new ArrayList<Accounting>();
+		Accounting accounting = new Accounting();
+		accounting.setFeeType("2");//水电费押金
+		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		outAccountList.add(accounting);
+		
+		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(),new Date());//逾期天数
+		
+		double dailyRental = rentContract.getRental()*12/365/30;//每天房租租金
+		double tental = (dates<0?0:dates) * dailyRental;
+		BigDecimal bigDecimal = new BigDecimal(tental);  
+		tental = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue();  
+		accounting = new Accounting();
+		accounting.setFeeType("8");//逾赔房租
+		accounting.setFeeAmount(tental);
+		if(tental>0)
+			accountList.add(accounting);
+		
+		model.addAttribute("outAccountList", outAccountList);
+		model.addAttribute("outAccountSize", outAccountList.size());
+		model.addAttribute("accountList", accountList);
+		model.addAttribute("accountSize", accountList.size());
+		rentContract.setTradeType("8");//逾期退租
+		model.addAttribute("rentContract", rentContract);
+		return "modules/contract/rentContractCheck";
+	}
+	
+	@RequestMapping(value = "toSpecialReturnCheck")
+	public String toSpecialReturnCheck(RentContract rentContract,Model model) {
+		rentContract = rentContractService.get(rentContract.getId());
+		
+		List<Accounting> accountList = new ArrayList<Accounting>();
+		
+		List<Accounting> outAccountList = new ArrayList<Accounting>();
+		Accounting accounting = new Accounting();
+		accounting.setFeeType("2");//水电费押金
+		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		outAccountList.add(accounting);
+		
+		accounting = new Accounting();
+		accounting.setFeeType("4");//房租押金
+		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		outAccountList.add(accounting);
+		
+		model.addAttribute("outAccountList", outAccountList);
+		model.addAttribute("outAccountSize", outAccountList.size());
+		model.addAttribute("accountList", accountList);
+		model.addAttribute("accountSize", accountList.size());
+		rentContract.setTradeType("9");//特殊退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
 	}
 	
 	@RequestMapping(value = "returnCheck")
 	public String returnCheck(RentContract rentContract,RedirectAttributes redirectAttributes) {
-		rentContractService.returnCheck(rentContract);
-		addMessage(redirectAttributes, "正常退租核算成功");
+		rentContractService.returnCheck(rentContract,rentContract.getTradeType());
+		addMessage(redirectAttributes, "退租核算成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
 	}
 	
