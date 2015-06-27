@@ -13,14 +13,18 @@
 		a.bank_account AS "bankAccount",
 		a.commission_percent AS "commissionPercent",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="partnerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="Partner">
@@ -38,9 +42,6 @@
 		<include refid="partnerJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="partnerType != null and partnerType != ''">
-				AND a.partner_type = #{partnerType}
-			</if>
 			<if test="partnerName != null and partnerName != ''">
 				AND a.partner_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{partnerName}||'%'</if>
@@ -48,10 +49,19 @@
 					<if test="dbName == 'mysql'">concat('%',#{partnerName},'%')</if>
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
 			<if test="deskPhone != null and deskPhone != ''">
-				AND a.desk_phone = #{deskPhone}
+				AND a.desk_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deskPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deskPhone},'%')</if>
+			</if>
+			<if test="partnerType != null and partnerType != ''">
+				AND a.partner_type = #{partnerType}
 			</if>
 			<if test="userName != null and userName != ''">
 				AND a.user_name LIKE 
@@ -66,10 +76,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{bankName},'%')</if>
 			</if>
 			<if test="bankAccount != null and bankAccount != ''">
-				AND a.bank_account = #{bankAccount}
-			</if>
-			<if test="commissionPercent != null and commissionPercent != ''">
-				AND a.commission_percent = #{commissionPercent}
+				AND a.bank_account LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankAccount}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankAccount}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankAccount},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -98,6 +108,26 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findPartnersByCellNoAndType" resultType="Partner">
+		SELECT 
+				a.id AS "id",
+				a.partner_type AS "partnerType",
+				a.partner_name AS "partnerName",
+				a.cell_phone AS "cellPhone",
+				a.desk_phone AS "deskPhone",
+				a.user_name AS "userName",
+				a.bank_name AS "bankName",
+				a.bank_account AS "bankAccount",
+				a.commission_percent AS "commissionPercent",
+				a.del_flag AS "delFlag"
+		FROM t_partner a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.partner_type = #{partnerType}
+			AND a.cell_phone = #{cellPhone}
+		</where>
 	</select>
 	
 	<insert id="insert">
