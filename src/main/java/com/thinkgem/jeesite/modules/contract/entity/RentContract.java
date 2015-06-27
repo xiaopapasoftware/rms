@@ -84,6 +84,8 @@ public class RentContract extends DataEntity<RentContract> {
 	private List<Accounting> accountList = new ArrayList<Accounting>();
 	private List<Accounting> outAccountList = new ArrayList<Accounting>();
 	
+	private String tradeType;
+	
 	public RentContract() {
 		super();
 	}
@@ -496,5 +498,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setOutAccountList(List<Accounting> outAccountList) {
 		this.outAccountList = outAccountList;
+	}
+
+	public String getTradeType() {
+		return tradeType;
+	}
+
+	public void setTradeType(String tradeType) {
+		this.tradeType = tradeType;
 	}
 }
