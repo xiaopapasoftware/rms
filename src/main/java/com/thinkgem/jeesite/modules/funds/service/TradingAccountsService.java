@@ -106,6 +106,24 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
+		} else if("6".equals(tradingAccounts.getTradeType())) {//提前退租
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"7":"6");//7:提前退租 6:退租款项审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
+		} else if("8".equals(tradingAccounts.getTradeType())) {//逾期退租
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"9":"6");//9:逾期退租 6:退租款项审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
+		} else if("9".equals(tradingAccounts.getTradeType())) {//特殊退租
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"16":"6");//16:特殊退租 6:退租款项审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
 		}
 	}
 	
@@ -150,7 +168,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
-		} else if("7".equals(tradeType)) {//正常退租
+		} else if("7".equals(tradeType)||"8".equals(tradeType)||"6".equals(tradeType)||"9".equals(tradeType)) {
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setContractBusiStatus("5");//退租款项待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
