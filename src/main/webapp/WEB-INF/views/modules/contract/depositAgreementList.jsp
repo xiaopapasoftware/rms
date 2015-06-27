@@ -116,11 +116,10 @@
 		<li class="active"><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
 		<shiro:hasPermission name="contract:depositAgreement:edit"><li><a href="${ctx}/contract/depositAgreement/form">定金协议添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1415px;">
+	<form:form id="searchForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-		<ul class="ul-form" style="width:1200px;">
+		<ul class="ul-form">
 			<li><label style="width:120px;">物业项目：</label>
 				<form:select path="propertyProject.id" class="input-medium" style="width:200px;" onchange="changeProject()">
 					<form:option value="" label="全部"/>
@@ -198,7 +197,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1450px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>定金协议名称</th>

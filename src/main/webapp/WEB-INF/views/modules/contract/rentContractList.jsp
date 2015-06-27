@@ -114,8 +114,7 @@
 		<li class="active"><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
 		<shiro:hasPermission name="contract:rentContract:edit"><li><a href="${ctx}/contract/rentContract/form">出租合同添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1275px;">
+	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -123,7 +122,7 @@
 				<form:input path="contractId" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li> -->
 			<li><label style="width:120px;">合同名称：</label>
-				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
+				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
 			</li>
 			<li><label style="width:120px;">出租方式：</label>
 				<form:select path="rentMode" class="input-medium" style="width:210px;">
@@ -132,13 +131,13 @@
 				</form:select>
 			</li>
 			<li><label style="width:120px;">物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium" style="width:200px;" onchange="changeProject()">
+				<form:select path="propertyProject.id" class="input-medium" style="width:210px;" onchange="changeProject()">
 					<form:option value="" label="全部"/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">楼宇：</label>
-				<form:select path="building.id" class="input-medium" style="width:200px;" onchange="buildingChange()">
+				<form:select path="building.id" class="input-medium" style="width:210px;" onchange="buildingChange()">
 					<form:option value="" label="全部"/>
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -150,14 +149,14 @@
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房间：</label>
-				<form:select path="room.id" class="input-medium" style="width:200px;">
+				<form:select path="room.id" class="input-medium" style="width:210px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">销售：</label>
 				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true" cssStyle="width:140px;"/>
+					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true" cssStyle="width:150px;"/>
 			</li>
 			<li><label style="width:120px;">合同来源：</label>
 				<form:select path="contractSource" class="input-medium" style="width:210px;">
@@ -166,12 +165,12 @@
 				</form:select>
 			</li>
 			<li><label style="width:120px;">月租金：</label>
-				<form:input path="rental" htmlEscape="false" class="input-medium" style="width:185px;"/>
+				<form:input path="rental" htmlEscape="false" class="input-medium" style="width:195px;"/>
 			</li>
 			<li><label style="width:120px;">合同生效时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:186px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
@@ -181,10 +180,10 @@
 			<li><label style="width:120px;">合同签订时间：</label>
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd、"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:186px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同状态：</label>
-				<form:select path="contractStatus" class="input-medium" style="width:200px;">
+				<form:select path="contractStatus" class="input-medium" style="width:210px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('rent_contract_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
@@ -200,7 +199,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1310px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<!--<th>原出租合同</th>-->
@@ -287,15 +286,28 @@
     					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}')">审核</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
-    					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗？', this.href)">正常退租</a>
+    					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
+    					<a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要提前退租吗?', this.href)">提前退租</a>
+    					<a href="${ctx}/contract/rentContract/lateReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租吗?', this.href)">逾期退租</a>
+    					<a href="${ctx}/contract/rentContract/specialReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租吗?', this.href)">特殊退租</a>
+    					<a href="${ctx}/contract/rentContract/changeContract?id=${rentContract.id}" onclick="return confirmx('确认要协议变更吗?', this.href)">协议变更</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
-    					<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗？', this.href)">正常退租核算</a>
+    					<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗?', this.href)">正常退租核算</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='1'}">
+    					<a href="${ctx}/contract/rentContract/toEarlyReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要提前退租核算吗?', this.href)">提前退租核算</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='3'}">
+    					<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租核算吗?', this.href)">逾期退租核算</a>
+					</c:if>
+					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='10'}">
+    					<a href="${ctx}/contract/rentContract/toSpecialReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租核算吗?', this.href)">特殊退租核算</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
     					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>
 					</c:if>
-					<!--<a href="${ctx}/contract/rentContract/delete?id=${rentContract.id}" onclick="return confirmx('确认要删除该出租合同吗？', this.href)">删除</a>-->
+					<!--<a href="${ctx}/contract/rentContract/delete?id=${rentContract.id}" onclick="return confirmx('确认要删除该出租合同吗?', this.href)">删除</a>-->
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

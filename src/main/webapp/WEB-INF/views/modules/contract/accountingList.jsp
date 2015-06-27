@@ -20,8 +20,7 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/contract/accounting/">退租核算列表</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="accounting" action="${ctx}/contract/accounting/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1215px;">
+	<form:form id="searchForm" modelAttribute="accounting" action="${ctx}/contract/accounting/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -60,7 +59,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1250px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>出租合同</th>
