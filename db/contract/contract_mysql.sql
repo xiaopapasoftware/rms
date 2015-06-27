@@ -87,6 +87,7 @@ create table T_CONTRACT_TENANT
 	 DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '定金协议',
 	 CONTRACT_ID          varchar(64) comment '出租合同',	
 	 LEASE_CONTRACT_ID    varchar(64) comment '承租合同',	
+	 AGREEMENT_CHANGE_ID  varchar(64) comment '变更协议',	
 	 TENANT_ID            varchar(64) comment '租客',
 	 CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
