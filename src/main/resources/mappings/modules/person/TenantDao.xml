@@ -4,15 +4,13 @@
     
 	<sql id="tenantColumns">
 		a.id AS "id",
-		a.deposit_agreement_id AS "depositAgreement.id",
-		a.lease_contract_id AS "leaseContract.id",
-		a.rent_contract AS "rentContract.id",
-		a.lease_contract_change_id AS "leaseContractChangeId",
-		a.rent_contract_change_id AS "rentContractChangeId",
-		a.tenant_type AS "tenantType",
-		a.company_id AS "companyId",
+		a.user_id AS "user.id",
+		su.name AS "user.name",
+		a.company_id AS "company.id",
+		tc.company_name AS "company.companyName",
 		a.tenant_name AS "tenantName",
 		a.gender AS "gender",
+		a.tenant_type AS "tenantType",
 		a.id_type AS "idType",
 		a.id_no AS "idNo",
 		a.birthday AS "birthday",
@@ -22,14 +20,20 @@
 		a.house_register AS "houseRegister",
 		a.position AS "position",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
 	
 	<sql id="tenantJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user su ON su.id = a.user_id
+		LEFT JOIN t_company tc ON tc.id = a.company_id
 	</sql>
     
 	<select id="get" resultType="Tenant">
@@ -47,26 +51,11 @@
 		<include refid="tenantJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="depositAgreement != null and depositAgreement.id != null and depositAgreement.id != ''">
-				AND a.deposit_agreement_id = #{depositAgreement.id}
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
 			</if>
-			<if test="leaseContract != null and leaseContract.id != null and leaseContract.id != ''">
-				AND a.lease_contract_id = #{leaseContract.id}
-			</if>
-			<if test="rentContract != null and rentContract.id != null and rentContract.id != ''">
-				AND a.rent_contract = #{rentContract.id}
-			</if>
-			<if test="leaseContractChangeId != null and leaseContractChangeId != ''">
-				AND a.lease_contract_change_id = #{leaseContractChangeId}
-			</if>
-			<if test="rentContractChangeId != null and rentContractChangeId != ''">
-				AND a.rent_contract_change_id = #{rentContractChangeId}
-			</if>
-			<if test="tenantType != null and tenantType != ''">
-				AND a.tenant_type = #{tenantType}
-			</if>
-			<if test="companyId != null and companyId != ''">
-				AND a.company_id = #{companyId}
+			<if test="company != null and company.id != null and company.id != ''">
+				AND a.company_id = #{company.id}
 			</if>
 			<if test="tenantName != null and tenantName != ''">
 				AND a.tenant_name LIKE 
@@ -76,6 +65,9 @@
 			</if>
 			<if test="gender != null and gender != ''">
 				AND a.gender = #{gender}
+			</if>
+			<if test="tenantType != null and tenantType != ''">
+				AND a.tenant_type = #{tenantType}
 			</if>
 			<if test="idType != null and idType != ''">
 				AND a.id_type = #{idType}
@@ -93,7 +85,10 @@
 				AND a.degrees = #{degrees}
 			</if>
 			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
 			<if test="email != null and email != ''">
 				AND a.email LIKE 
@@ -108,7 +103,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{houseRegister},'%')</if>
 			</if>
 			<if test="position != null and position != ''">
-				AND a.position = #{position}
+				AND a.position LIKE 
+					<if test="dbName == 'oracle'">'%'||#{position}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{position}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{position},'%')</if>
 			</if>
 		</where>
 		<choose>
@@ -139,18 +137,39 @@
 		</choose>
 	</select>
 	
+	<select id="findTenantByIdTypeAndNo" resultType="Tenant">
+		SELECT 
+						a.id AS "id",
+						a.user_id AS "user.id",
+						a.company_id AS "company.id",
+						a.tenant_name AS "tenantName",
+						a.gender AS "gender",
+						a.tenant_type AS "tenantType",
+						a.id_type AS "idType",
+						a.id_no AS "idNo",
+						a.birthday AS "birthday",
+						a.degrees AS "degrees",
+						a.cell_phone AS "cellPhone",
+						a.email AS "email",
+						a.house_register AS "houseRegister",
+						a.position AS "position",
+						a.del_flag AS "delFlag"
+		FROM t_tenant a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.id_type = #{idType}
+			AND a.id_no = #{idNo} 
+		</where>
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_tenant(
 			id,
-			deposit_agreement_id,
-			lease_contract_id,
-			rent_contract,
-			lease_contract_change_id,
-			rent_contract_change_id,
-			tenant_type,
+			user_id,
 			company_id,
 			tenant_name,
 			gender,
+			tenant_type,
 			id_type,
 			id_no,
 			birthday,
@@ -167,15 +186,11 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{depositAgreement.id},
-			#{leaseContract.id},
-			#{rentContract.id},
-			#{leaseContractChangeId},
-			#{rentContractChangeId},
-			#{tenantType},
-			#{companyId},
+			#{user.id},
+			#{company.id},
 			#{tenantName},
 			#{gender},
+			#{tenantType},
 			#{idType},
 			#{idNo},
 			#{birthday},
@@ -194,16 +209,12 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE t_tenant SET 	
-			deposit_agreement_id = #{depositAgreement.id},
-			lease_contract_id = #{leaseContract.id},
-			rent_contract = #{rentContract.id},
-			lease_contract_change_id = #{leaseContractChangeId},
-			rent_contract_change_id = #{rentContractChangeId},
-			tenant_type = #{tenantType},
-			company_id = #{companyId},
+		UPDATE t_tenant SET
+			user_id = #{user.id},
+			company_id = #{company.id},
 			tenant_name = #{tenantName},
 			gender = #{gender},
+			tenant_type = #{tenantType},
 			id_type = #{idType},
 			id_no = #{idNo},
 			birthday = #{birthday},

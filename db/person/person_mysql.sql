@@ -46,9 +46,9 @@ create table T_COMPANY_CONTACT
 create table T_CUSTOMER
 (
    ID                   varchar(64) NOT NULL,
-   USER_ID      varchar(64) comment '销售',
+   USER_ID      		varchar(64) comment '销售',
    CONTACT_NAME         VARCHAR(100) comment '姓名',
-   GENDER								VARCHAR(2) COMMENT '性别',
+   GENDER				VARCHAR(2) COMMENT '性别',
    CELL_PHONE           VARCHAR(100) comment '手机号',
    IS_TENANT            VARCHAR(2) comment '是否转租客',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
@@ -80,15 +80,11 @@ create table T_OWNER
 create table T_TENANT
 (
    ID                   varchar(64) NOT NULL,
-   DEPOSIT_AGREEMENT_ID VARCHAR(100) comment '定金协议',
-   LEASE_CONTRACT_ID  	VARCHAR(100) COMMENT '承租合同',
-   RENT_CONTRACT        VARCHAR(100) comment '出租合同',
-   LEASE_CONTRACT_CHANGE_ID  VARCHAR(100) comment '承租合同变更协议',
-   RENT_CONTRACT_CHANGE_ID   VARCHAR(300) comment '出租合同变更协议',
-   TENANT_TYPE          VARCHAR(64) COMMENT '租客类型',
-   COMPANY_ID           VARCHAR(64) COMMENT '企业',
+   USER_ID      		varchar(64) comment '销售ID',
+   COMPANY_ID			varchar(64) comment '企业ID',
    TENANT_NAME          VARCHAR(100) COMMENT '姓名',
    GENDER               VARCHAR(100) COMMENT '性别',
+   TENANT_TYPE          VARCHAR(64) COMMENT '租客类型',
    ID_TYPE              VARCHAR(100) COMMENT '证件类型',
    ID_NO                VARCHAR(100) COMMENT '证件号码',
    BIRTHDAY             date COMMENT '出生日期',

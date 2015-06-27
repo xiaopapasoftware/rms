@@ -25,72 +25,69 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>定金协议：</label>
-				<form:input path="depositAgreement.id" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">姓名：</label>
+				<form:input path="tenantName" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>承租合同：</label>
-				<form:input path="leaseContract.id" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>出租合同：</label>
-				<form:input path="rentContract.id" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>承租合同变更协议：</label>
-				<form:input path="leaseContractChangeId" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>出租合同变更协议：</label>
-				<form:input path="rentContractChangeId" htmlEscape="false" maxlength="300" class="input-medium"/>
-			</li>
-			<li><label>租客类型：</label>
-				<form:select path="tenantType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:100px;">性别：</label>
+				<form:select path="gender" class="input-medium" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>企业：</label>
-				<form:input path="companyId" htmlEscape="false" maxlength="64" class="input-medium"/>
-			</li>
-			<li><label>姓名：</label>
-				<form:input path="tenantName" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>性别：</label>
-				<form:select path="gender" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:100px;">租客类型：</label>
+				<form:select path="tenantType" class="input-medium" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('tenant_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>证件类型：</label>
-				<form:select path="idType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:100px;">证件类型：</label>
+				<form:select path="idType" class="input-medium" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('id_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>证件号码：</label>
-				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">证件号码：</label>
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>出生日期：</label>
-				<input name="birthday" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+			<li><label style="width:100px;">手机号码：</label>
+				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>学历：</label>
-				<form:select path="degrees" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:100px;">出生日期：</label>
+				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:177px;"/>
+			</li>
+			<li><label style="width:100px;">学历：</label>
+				<form:select path="degrees" class="input-medium" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('degrees')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>手机号码：</label>
-				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:100px;">所属企业：</label>
+				<form:select path="company.id" class="input-xlarge" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
+				</form:select>
 			</li>
-			<li><label>电子邮箱：</label>
-				<form:input path="email" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:100px;">电子邮箱：</label>
+				<form:input path="email" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>户籍所在地：</label>
-				<form:input path="houseRegister" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:100px;">户籍所在地：</label>
+				<form:input path="houseRegister" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>职位：</label>
-				<form:input path="position" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:100px;">职位：</label>
+				<form:input path="position" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li><label style="width:100px;">跟进销售：</label>
+				<form:select path="user.id" class="input-xlarge" style="width:177px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li class="btns">
+				<label style="width:100px;"></label>
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" style="width:135px;"/>
+			</li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
@@ -98,15 +95,10 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>定金协议</th>
-				<th>承租合同</th>
-				<th>出租合同</th>
-				<th>承租合同变更协议</th>
-				<th>出租合同变更协议</th>
-				<th>租客类型</th>
-				<th>企业</th>
 				<th>姓名</th>
 				<th>性别</th>
+				<th>租客类型</th>
+				<th>所属企业</th>
 				<th>证件类型</th>
 				<th>证件号码</th>
 				<th>出生日期</th>
@@ -115,7 +107,11 @@
 				<th>电子邮箱</th>
 				<th>户籍所在地</th>
 				<th>职位</th>
-				<th>更新时间</th>
+				<th>跟进销售</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:tenant:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -124,43 +120,28 @@
 		<c:forEach items="${page.list}" var="tenant">
 			<tr>
 				<td><a href="${ctx}/person/tenant/form?id=${tenant.id}">
-					${tenant.depositAgreement.id}
+					 ${tenant.tenantName}
 				</a></td>
 				<td>
-					${tenant.leaseContract.id}
+					 ${fns:getDictLabel(tenant.gender, 'sex', '')}
 				</td>
 				<td>
-					${tenant.rentContract.id}
+					 ${fns:getDictLabel(tenant.tenantType, 'tenant_type', '')}
 				</td>
 				<td>
-					${tenant.leaseContractChangeId}
+					${tenant.company.companyName}
 				</td>
 				<td>
-					${tenant.rentContractChangeId}
-				</td>
-				<td>
-					${fns:getDictLabel(tenant.tenantType, '', '')}
-				</td>
-				<td>
-					${tenant.companyId}
-				</td>
-				<td>
-					${tenant.tenantName}
-				</td>
-				<td>
-					${fns:getDictLabel(tenant.gender, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(tenant.idType, '', '')}
+					${fns:getDictLabel(tenant.idType, 'id_type', '')}
 				</td>
 				<td>
 					${tenant.idNo}
 				</td>
 				<td>
-					<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					${fns:getDictLabel(tenant.degrees, '', '')}
+					 ${fns:getDictLabel(tenant.degrees, 'degrees', '')}
 				</td>
 				<td>
 					${tenant.cellPhone}
@@ -175,7 +156,19 @@
 					${tenant.position}
 				</td>
 				<td>
+					${tenant.user.name}
+				</td>
+				<td>
+					<fmt:formatDate value="${tenant.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${tenant.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${tenant.createBy.loginName}
+				</td>
+				<td>
+				 	${tenant.updateBy.loginName}
 				</td>
 				<td>
 					${tenant.remarks}

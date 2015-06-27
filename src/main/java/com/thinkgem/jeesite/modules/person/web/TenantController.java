@@ -3,9 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.person.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,13 +20,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 
 /**
  * 租客信息Controller
+ * 
  * @author huangsc
  * @version 2015-06-13
  */
@@ -32,25 +41,33 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 public class TenantController extends BaseController {
 
 	@Autowired
+	private CompanyService companyService;
+
+	@Autowired
+	private SystemService systemService;
+
+	@Autowired
 	private TenantService tenantService;
-	
+
 	@ModelAttribute
-	public Tenant get(@RequestParam(required=false) String id) {
+	public Tenant get(@RequestParam(required = false) String id) {
 		Tenant entity = null;
-		if (StringUtils.isNotBlank(id)){
+		if (StringUtils.isNotBlank(id)) {
 			entity = tenantService.get(id);
 		}
-		if (entity == null){
+		if (entity == null) {
 			entity = new Tenant();
 		}
 		return entity;
 	}
-	
+
 	@RequiresPermissions("person:tenant:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant); 
+		Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
 		model.addAttribute("page", page);
+		model.addAttribute("listUser", systemService.findUser(new User()));
+		model.addAttribute("listCompany", companyService.findList(new Company()));
 		return "modules/person/tenantList";
 	}
 
@@ -58,26 +75,47 @@ public class TenantController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(Tenant tenant, Model model) {
 		model.addAttribute("tenant", tenant);
+		model.addAttribute("listUser", systemService.findUser(new User()));
+		model.addAttribute("listCompany", companyService.findList(new Company()));
 		return "modules/person/tenantForm";
 	}
 
 	@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "save")
 	public String save(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, tenant)){
+		if (!beanValidator(model, tenant)) {
 			return form(tenant, model);
 		}
-		tenantService.save(tenant);
-		addMessage(redirectAttributes, "保存租客信息成功");
-		return "redirect:"+Global.getAdminPath()+"/person/tenant/?repage";
+		List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);
+		if (!tenant.getIsNewRecord()) {// 是更新
+			if (CollectionUtils.isNotEmpty(tenants)) {
+				tenant.setId(tenants.get(0).getId());
+			}
+			tenantService.save(tenant);
+			addMessage(redirectAttributes, "修改租客信息成功");
+			return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
+
+		} else {// 是新增
+			if (CollectionUtils.isNotEmpty(tenants)) {
+				model.addAttribute("message", "该证件类型租客的证件号码已被占用，不能重复添加");
+				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+				model.addAttribute("listCompany", companyService.findList(new Company()));
+				model.addAttribute("listUser", systemService.findUser(new User()));
+				return "modules/person/tenantForm";
+			} else {
+				tenantService.save(tenant);
+				addMessage(redirectAttributes, "保存租客信息成功");
+				return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
+			}
+		}
 	}
-	
+
 	@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Tenant tenant, RedirectAttributes redirectAttributes) {
 		tenantService.delete(tenant);
 		addMessage(redirectAttributes, "删除租客信息成功");
-		return "redirect:"+Global.getAdminPath()+"/person/tenant/?repage";
+		return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
 	}
 
 }
