@@ -35,6 +35,18 @@
 		<include refid="roomDevicesJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProjectId != null and propertyProjectId != ''">
+				AND a.property_project_id = #{propertyProjectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				AND a.building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				AND a.house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				AND a.room_id = #{roomId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
