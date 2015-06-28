@@ -59,6 +59,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	private AgreementChangeDao agreementChangeDao;
 	
 	private static final String RENT_CONTRACT_ROLE = "rent_contract_role";//新签合同审批
+	private static final String CHANGE_AGREEMENT_ROLE = "change_agreement_role";//变更协议审批
 	
 	public RentContract get(String id) {
 		return super.get(id);
@@ -311,7 +312,23 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			}
 		}
 		
+		String id = IdGen.uuid();
+		agreementChange.setId(id);
+		agreementChange.setAgreementStatus("0");//待审核
 		agreementChangeDao.insert(agreementChange);
+		
+		//审核
+		Audit audit = new Audit();
+		audit.setId(IdGen.uuid());
+		audit.setObjectId(id);
+		audit.setObjectType("0");//变更协议
+		audit.setNextRole(CHANGE_AGREEMENT_ROLE);
+		audit.setCreateDate(new Date());
+		audit.setCreateBy(UserUtils.getUser());
+		audit.setUpdateDate(new Date());
+		audit.setUpdateBy(UserUtils.getUser());
+		audit.setDelFlag("0");
+		auditDao.insert(audit);
 	}
 	
 	@Transactional(readOnly = false)
