@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.modules.inventory.web;
+package com.thinkgem.jeesite.modules.device.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +19,8 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.inventory.entity.Devices;
-import com.thinkgem.jeesite.modules.inventory.service.DevicesService;
+import com.thinkgem.jeesite.modules.device.entity.Devices;
+import com.thinkgem.jeesite.modules.device.service.DevicesService;
 
 /**
  * 设备信息Controller
