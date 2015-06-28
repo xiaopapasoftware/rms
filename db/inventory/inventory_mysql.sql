@@ -129,3 +129,38 @@ create table T_DEVICES
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '设备信息';
+
+create table t_room_devices
+(
+	ID                   varchar(64) NOT NULL,
+	PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
+  BUILDING_ID          varchar(64) comment '楼宇',
+  HOUSE_ID             varchar(64) comment '房屋',
+  ROOM_ID              varchar(64) comment '房间 0代表公共区域',
+  DEVICE_ID            varchar(64) comment '设备ID',
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+  primary key (ID)
+) comment = '房屋设备关联信息';
+
+create table T_DEVICES_HIS
+(
+   ID                   varchar(64) NOT NULL,
+   PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
+   BUILDING_ID          varchar(64) comment '楼宇',
+   HOUSE_ID             varchar(64) comment '房屋',
+   ROOM_ID              varchar(64) comment '房间 0代表公共区域',
+   OPER_TYPE            varchar(64) comment '行为（添加0/删除1）',
+   DEVICE_ID            varchar(64) comment '设备ID',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '设备变更信息';
