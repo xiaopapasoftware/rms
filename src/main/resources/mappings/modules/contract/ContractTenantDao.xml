@@ -13,7 +13,8 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.agreement_change_id as agreementChangeId
 	</sql>
 	
 	<sql id="contractTenantJoins">
@@ -75,7 +76,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			agreement_change_id
 		) VALUES (
 			#{id},
 			#{depositAgreementId},
@@ -87,7 +89,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{agreementChangeId}
 		)
 	</insert>
 	
@@ -99,7 +102,8 @@
 			lease_contract_id = #{leaseContractId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			agreement_change_id = #{agreementChangeId}
 		WHERE id = #{id}
 	</update>
 	

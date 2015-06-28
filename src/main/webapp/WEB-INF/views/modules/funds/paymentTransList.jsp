@@ -47,8 +47,7 @@
 			<li><a href="javascript:void(0);" onclick="register()">到账登记</a></li>
 		</shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1145px;">
+	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -103,7 +102,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th width="15"></th>

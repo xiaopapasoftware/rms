@@ -63,6 +63,7 @@
 	</ul>
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/returnCheck" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="tradeType"/>
 		<div class="control-group">
 			<label class="control-label">房屋是否损坏：</label>
 			<div class="controls">
@@ -82,6 +83,27 @@
 						</tr>
 					</thead>
 					<tbody id="accountList">
+						<c:forEach items="${accountList}" var="outItem" varStatus="status">
+						<tr id="accountList${status.index}">
+							<td class="hide">
+								<input id="accountList${status.index}_id" name="accountList[${status.index}].id" type="hidden"/>
+								<input id="accountList${status.index}_delFlag" name="accountList[${status.index}].delFlag" type="hidden" value="0"/>
+							</td>
+							<td>
+								<select id="accountList${status.index}_feeType" name="accountList[${status.index}].feeType" class="required" style="width:220px;">
+									<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'fee_type', '')}</option>
+								</select>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<input id="accountList${status.index}_feeAmount" name="accountList[${status.index}].feeAmount" type="text" value="${outItem.feeAmount}" maxlength="255" class="input-small required number"/>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td class="text-center" width="10">
+								<span class="close" onclick="delRow(this, '#accountList${status.index}')" title="删除">&times;</span>
+							</td>
+						</tr>
+						</c:forEach>
 					</tbody>
 					<tfoot>
 						<tr><td colspan="4"><a href="javascript:" onclick="addRow('#accountList', accountRowIdx, accountTpl);accountRowIdx = accountRowIdx + 1;" class="btn">新增</a></td></tr>
@@ -112,7 +134,7 @@
 						</tr>//-->
 					</script>
 				<script type="text/javascript">
-					var accountRowIdx = 0, accountTpl = $("#accountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
+					var accountRowIdx = ${accountSize}, accountTpl = $("#accountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 					$(document).ready(function() {
 						var data = ${fns:toJson(rentContract.accountList)};
 						for (var i=0; i<data.length; i++){

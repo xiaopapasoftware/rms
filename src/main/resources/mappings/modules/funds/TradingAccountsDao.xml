@@ -20,10 +20,10 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		case when a.trade_type=1 then ta.agreement_name 
-		when a.trade_type=3 or a.trade_type=7 then tc.contract_name
+		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 then tc.contract_name
 		else "" end tradeName, 
 		case when a.trade_type=1 then ta.agreement_status 
-		when a.trade_type=3 or a.trade_type=7 then tc.contract_status 
+		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 then tc.contract_status 
 		else "" end transStatus,
 		tc.contract_busi_status as transBusiStatus
 	</sql>

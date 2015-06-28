@@ -83,17 +83,18 @@ create table T_DEPOSIT_AGREEMENT
 
 create table T_CONTRACT_TENANT
 (
- 	ID                   varchar(64) NOT NULL,
- 	DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '定金协议',
- 	CONTRACT_ID          varchar(64) comment '出租合同',	
- 	LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
- 	TENANT_ID            varchar(64) comment '租客',
- 	CREATE_BY            VARCHAR(64) COMMENT '创建者',
-	CREATE_DATE          DATETIME 	 COMMENT '创建时间',
-	UPDATE_BY            VARCHAR(64) COMMENT '更新者',
-	UPDATE_DATE          TIMESTAMP 	 COMMENT '更新时间',
-	REMARKS              VARCHAR(255) COMMENT '备注信息',
-	DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+	 ID                   varchar(64) NOT NULL,
+	 DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '定金协议',
+	 CONTRACT_ID          varchar(64) comment '出租合同',	
+	 LEASE_CONTRACT_ID    varchar(64) comment '承租合同',	
+	 AGREEMENT_CHANGE_ID  varchar(64) comment '变更协议',	
+	 TENANT_ID            varchar(64) comment '租客',
+	 CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '合同租客关联信息';
 

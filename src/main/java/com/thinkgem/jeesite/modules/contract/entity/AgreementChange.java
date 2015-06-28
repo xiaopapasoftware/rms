@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
@@ -27,6 +30,11 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	private String rentMode;		// 出租方式
 	private String agreementStatus;		// 协议审核状态
 	private User user;		// 核算人
+	
+	private String contractId;
+	
+	private List<Tenant> tenantList = new ArrayList<Tenant>();//承租人
+	private List<Tenant> liveList = new ArrayList<Tenant>();//入住人
 	
 	public AgreementChange() {
 		super();
@@ -90,5 +98,28 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+	public String getContractId() {
+		return contractId;
+	}
+
+	public void setContractId(String contractId) {
+		this.contractId = contractId;
+	}
+
+	public List<Tenant> getTenantList() {
+		return tenantList;
+	}
+
+	public void setTenantList(List<Tenant> tenantList) {
+		this.tenantList = tenantList;
+	}
+
+	public List<Tenant> getLiveList() {
+		return liveList;
+	}
+
+	public void setLiveList(List<Tenant> liveList) {
+		this.liveList = liveList;
+	}
 }
