@@ -292,6 +292,7 @@
     					<a href="${ctx}/contract/rentContract/specialReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租吗?', this.href)">特殊退租</a>
     					<a href="${ctx}/contract/rentContract/changeContract?id=${rentContract.id}" onclick="return confirmx('确认要协议变更吗?', this.href)">协议变更</a>
     					<a href="${ctx}/contract/rentContract/renewContract?id=${rentContract.id}" onclick="return confirmx('确认要人工续签吗?', this.href)">人工续签</a>
+    					<a href="${ctx}/contract/rentContract/autoRenewContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期自动续签吗?', this.href)">逾期自动续签</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
     					<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗?', this.href)">正常退租核算</a>

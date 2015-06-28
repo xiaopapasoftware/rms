@@ -117,6 +117,8 @@
 		<form:hidden path="contractStatus" value="1"/>
 		<form:hidden path="validatorFlag" value="1"/>
 		<form:hidden path="saveSource" value="0"/>
+		<form:hidden path="contractId"/>
+		<form:hidden path="signType"/>
 		<sys:message content="${message}"/>		
 		<!-- <div class="control-group">
 			<label class="control-label">原出租合同：</label>
