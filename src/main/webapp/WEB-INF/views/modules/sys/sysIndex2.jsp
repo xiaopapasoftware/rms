@@ -143,7 +143,7 @@
 	<div id="main">
 		<div id="header" class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
-				<div class="brand"><span id="productName">${fns:getConfig('productName')}</span></div>
+				<div class="brand"><span id="productName"><!-- ${fns:getConfig('productName')} --></span></div>
 				<ul id="userControl" class="nav pull-right">
 					<%--<li><a href="${pageContext.request.contextPath}${fns:getFrontPath()}/index-${fnc:getCurrentSiteId()}.html" target="_blank" title="访问网站主页"><i class="icon-home"></i></a></li>--%>
 					<li id="themeSwitch" class="dropdown">
@@ -216,7 +216,7 @@
 				</div>
 			</div>
 		    <div id="footer" class="row-fluid">
-	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')}<!--  - Powered By <a href="https://github.com/thinkgem/jeesite" target="_blank">JeeSite</a> ${fns:getConfig('version')} -->
+	            Copyright &copy; 2015-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
 			</div>
 		</div>
 	</div>
