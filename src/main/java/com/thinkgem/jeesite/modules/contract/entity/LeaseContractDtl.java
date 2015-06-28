@@ -13,29 +13,32 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
  * 承租合同明细Entity
+ * 
  * @author huangsc
  * @version 2015-06-14
  */
 public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
-	
+
 	private static final long serialVersionUID = 1L;
-	private String leaseContractId;		// 承租合同
-	private Date startDate;		// 起始时间
-	private Date endDate;		// 结束时间
-	private Double deposit;		// 月承租价
-	
+	private String leaseContractId; // 承租合同
+	private Date startDate; // 起始时间
+	private Date endDate; // 结束时间
+	private Double deposit; // 月承租价
+
+	@SuppressWarnings("unused")
 	private String startDateStr;
+	@SuppressWarnings("unused")
 	private String endDateStr;
-	
+
 	public LeaseContractDtl() {
 		super();
 	}
 
-	public LeaseContractDtl(String id){
+	public LeaseContractDtl(String id) {
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="承租合同长度必须介于 0 和 64 之间")
+	@Length(min = 0, max = 64, message = "承租合同长度必须介于 0 和 64 之间")
 	public String getLeaseContractId() {
 		return leaseContractId;
 	}
@@ -43,7 +46,7 @@ public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
 	public void setLeaseContractId(String leaseContractId) {
 		this.leaseContractId = leaseContractId;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	public Date getStartDate() {
 		return startDate;
@@ -52,7 +55,7 @@ public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	public Date getEndDate() {
 		return endDate;
@@ -61,7 +64,7 @@ public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
+
 	public Double getDeposit() {
 		return deposit;
 	}
@@ -79,5 +82,5 @@ public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(this.endDate);
 	}
-	
+
 }
