@@ -58,7 +58,7 @@
 			<label class="control-label">设备类型：</label>
 			<div class="controls">
 				<form:select path="deviceType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -89,7 +89,7 @@
 			<label class="control-label">设备状态：</label>
 			<div class="controls">
 				<form:select path="deviceStatus" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>

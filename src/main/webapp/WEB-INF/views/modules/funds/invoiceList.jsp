@@ -30,7 +30,7 @@
 			</li>
 			<li><label>开票类型：</label>
 				<form:select path="invoiceType" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>

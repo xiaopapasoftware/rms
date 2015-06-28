@@ -95,7 +95,7 @@
 			<label class="control-label">性别：</label>
 			<div class="controls">
 				<form:select path="sex" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>

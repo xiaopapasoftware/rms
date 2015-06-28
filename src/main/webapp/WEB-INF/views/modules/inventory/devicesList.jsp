@@ -36,7 +36,7 @@
 			</li>
 			<li><label>设备类型：</label>
 				<form:select path="deviceType" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -51,7 +51,7 @@
 			</li>
 			<li><label>设备状态：</label>
 				<form:select path="deviceStatus" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>

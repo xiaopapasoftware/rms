@@ -132,7 +132,7 @@
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -142,7 +142,7 @@
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -152,7 +152,7 @@
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -162,7 +162,7 @@
 			<label class="control-label">房屋：</label>
 			<div class="controls">
 				<form:select path="house.id" class="input-xlarge required" onchange="houseChange()">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -172,7 +172,7 @@
 			<label class="control-label">房间：</label>
 			<div class="controls">
 				<form:select path="room.id" class="input-xlarge">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</div>
@@ -188,7 +188,7 @@
 			<label class="control-label">合同来源：</label>
 			<div class="controls">
 				<form:select path="contractSource" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -200,7 +200,7 @@
 				<%-- <sys:treeselect id="parnter" name="parnter" value="${rentContract.parnter}" labelName="" labelValue="${rentContract.}"
 					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/> --%>
 				<form:select path="parnter" class="input-xlarge">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 				</form:select>
 			</div>
 		</div>
@@ -244,7 +244,7 @@
 			<label class="control-label">付费方式：</label>
 			<div class="controls">
 				<form:select path="chargeType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('charge_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -281,7 +281,7 @@
 			<label class="control-label">合同签订类型：</label>
 			<div class="controls">
 				<form:select path="signType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('contract_sign_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -291,7 +291,7 @@
 			<label class="control-label">是否开通有线电视：</label>
 			<div class="controls">
 				<form:select path="hasTv" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
@@ -306,7 +306,7 @@
 			<label class="control-label">是否开通宽带：</label>
 			<div class="controls">
 				<form:select path="hasNet" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
@@ -354,7 +354,7 @@
 			<label class="control-label">是否需办理居住证及落户：</label>
 			<div class="controls">
 				<form:select path="hasVisa" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
@@ -413,7 +413,7 @@
 			<label class="control-label">合同状态：</label>
 			<div class="controls">
 				<form:select path="contractStatus" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>
@@ -422,7 +422,7 @@
 			<label class="control-label">合同业务状态：</label>
 			<div class="controls">
 				<form:select path="contractBusiStatus" class="input-xlarge ">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>

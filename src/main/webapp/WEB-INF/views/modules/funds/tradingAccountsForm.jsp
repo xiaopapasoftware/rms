@@ -41,7 +41,7 @@
 			<label class="control-label">账务交易类型：</label>
 			<div class="controls">
 				<form:select path="tradeType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -51,7 +51,7 @@
 			<label class="control-label">账务交易方向：</label>
 			<div class="controls">
 				<form:select path="tradeDirection" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -61,7 +61,7 @@
 			<label class="control-label">交易方式：</label>
 			<div class="controls">
 				<form:select path="tradeMode" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -84,7 +84,7 @@
 			<label class="control-label">收款人类型：</label>
 			<div class="controls">
 				<form:select path="payeeType" class="input-xlarge">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('receive_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</div>

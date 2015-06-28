@@ -27,7 +27,7 @@
 		<ul class="ul-form">
 			<li><label>出租合同：</label>
 				<form:select path="rentContract.id" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
@@ -41,13 +41,13 @@
 			</li>
 			<li><label>出租方式：</label>
 				<form:select path="rentMode" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>协议审核状态：</label>
 				<form:select path="agreementStatus" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
