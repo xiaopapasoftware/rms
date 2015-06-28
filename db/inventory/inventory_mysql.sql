@@ -6,6 +6,8 @@ drop table if exists T_BUILDING;
 drop table if exists T_HOUSE;
 drop table if exists T_ROOM;
 drop table if exists T_DEVICES;
+drop table if exists t_room_devices;
+drop table if exists T_DEVICES_HIS;
 
 
 /* Create Tables */
