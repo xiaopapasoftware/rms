@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.modules.inventory.entity;
+package com.thinkgem.jeesite.modules.device.entity;
 
 import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;

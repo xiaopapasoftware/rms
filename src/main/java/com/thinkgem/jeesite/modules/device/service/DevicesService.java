@@ -1,7 +1,7 @@
 /**
  * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
-package com.thinkgem.jeesite.modules.inventory.service;
+package com.thinkgem.jeesite.modules.device.service;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.inventory.entity.Devices;
-import com.thinkgem.jeesite.modules.inventory.dao.DevicesDao;
+import com.thinkgem.jeesite.modules.device.dao.DevicesDao;
+import com.thinkgem.jeesite.modules.device.entity.Devices;
 
 /**
  * 设备信息Service
