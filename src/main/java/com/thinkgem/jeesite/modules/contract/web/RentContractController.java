@@ -166,6 +166,50 @@ public class RentContractController extends BaseController {
 		
 		return "modules/contract/rentContractForm";
 	}
+	
+	@RequestMapping(value = "renewContract")
+	public String renewContract(RentContract rentContract, Model model) {
+		rentContract = rentContractService.get(rentContract.getId());
+		model.addAttribute("rentContract", rentContract);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
+		rentContract.setTenantList(rentContractService.findTenant(rentContract));
+		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
+		return "modules/contract/rentContractForm";
+	}
 
 	@RequiresPermissions("contract:rentContract:edit")
 	@RequestMapping(value = "save")
