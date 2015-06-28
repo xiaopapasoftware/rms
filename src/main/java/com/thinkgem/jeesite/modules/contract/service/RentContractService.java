@@ -344,7 +344,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType("3");//新签合同
+			String tradeType = "";
+			if("0".equals(rentContract.getSignType()))
+				tradeType="3";//新签合同
+			else if("1".equals(rentContract.getSignType()))
+				tradeType="4";//正常人工续签
+			else if("2".equals(rentContract.getSignType()))
+				tradeType="5";//逾期自动续签
+			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("2");//水电费押金
 			paymentTrans.setTransId(id);
 			paymentTrans.setTradeDirection("1");//收款
@@ -363,7 +370,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			
 			paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType("3");//新签合同
+			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("4");//房租押金
 			paymentTrans.setTransId(id);
 			paymentTrans.setTradeDirection("1");//收款
@@ -386,7 +393,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			for(int i=0;i<transMonth;i++) {
 				paymentTrans = new PaymentTrans();
 				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType("3");//新签合同
+				paymentTrans.setTradeType(tradeType);
 				paymentTrans.setPaymentType("6");//房租金额
 				paymentTrans.setTransId(id);
 				paymentTrans.setTradeDirection("1");//收款
@@ -408,7 +415,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			for(int i=0;i<rentContract.getRenMonths();i++) {
 				paymentTrans = new PaymentTrans();
 				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType("3");//新签合同
+				paymentTrans.setTradeType(tradeType);
 				paymentTrans.setPaymentType("6");//房租金额
 				paymentTrans.setTransId(id);
 				paymentTrans.setTradeDirection("1");//收款
@@ -428,7 +435,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				if("0".equals(rentContract.getChargeType())) {//预付
 					paymentTrans = new PaymentTrans();
 					paymentTrans.setId(IdGen.uuid());
-					paymentTrans.setTradeType("3");//新签合同
+					paymentTrans.setTradeType(tradeType);
 					paymentTrans.setPaymentType("14");//水费金额
 					paymentTrans.setTransId(id);
 					paymentTrans.setTradeDirection("1");//收款
@@ -448,7 +455,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					if("1".equals(rentContract.getHasTv())) {
 						paymentTrans = new PaymentTrans();
 						paymentTrans.setId(IdGen.uuid());
-						paymentTrans.setTradeType("3");//新签合同
+						paymentTrans.setTradeType(tradeType);
 						paymentTrans.setPaymentType("18");//有线电视费
 						paymentTrans.setTransId(id);
 						paymentTrans.setTradeDirection("1");//收款
@@ -469,7 +476,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					if("1".equals(rentContract.getHasNet())) {
 						paymentTrans = new PaymentTrans();
 						paymentTrans.setId(IdGen.uuid());
-						paymentTrans.setTradeType("3");//新签合同
+						paymentTrans.setTradeType(tradeType);
 						paymentTrans.setPaymentType("20");//宽带费
 						paymentTrans.setTransId(id);
 						paymentTrans.setTradeDirection("1");//收款
@@ -490,7 +497,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					if(null != rentContract.getServiceFee()) {
 						paymentTrans = new PaymentTrans();
 						paymentTrans.setId(IdGen.uuid());
-						paymentTrans.setTradeType("3");//新签合同
+						paymentTrans.setTradeType(tradeType);
 						paymentTrans.setPaymentType("22");//服务费
 						paymentTrans.setTransId(id);
 						paymentTrans.setTradeDirection("1");//收款
@@ -515,7 +522,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			audit.setId(IdGen.uuid());
 			audit.setObjectId(id);
 			auditDao.delete(audit);
-			audit.setObjectType("3");//新签合同
+			paymentTrans.setTradeType(tradeType);
 			audit.setNextRole(RENT_CONTRACT_ROLE);
 			audit.setCreateDate(new Date());
 			audit.setCreateBy(UserUtils.getUser());
