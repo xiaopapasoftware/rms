@@ -124,6 +124,7 @@ public class RentContractController extends BaseController {
 	@RequiresPermissions("contract:rentContract:view")
 	@RequestMapping(value = "form")
 	public String form(RentContract rentContract, Model model) {
+		rentContract.setSignType("0");//新签
 		model.addAttribute("rentContract", rentContract);
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -169,7 +170,20 @@ public class RentContractController extends BaseController {
 	
 	@RequestMapping(value = "renewContract")
 	public String renewContract(RentContract rentContract, Model model) {
-		rentContract = rentContractService.get(rentContract.getId());
+		String contractId = rentContract.getId();
+		rentContract = rentContractService.get(contractId);
+		rentContract.setId(null);
+		rentContract.setContractId(contractId);
+		rentContract.setSignType("1");//正常续签
+		rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
+		rentContract.setDepositElectricAmount(null);
+		rentContract.setDepositAmount(null);
+		rentContract.setRental(null);
+		rentContract.setRenMonths(null);
+		rentContract.setDepositMonths(null);
+		rentContract.setStartDate(null);
+		rentContract.setExpiredDate(null);
+		rentContract.setSignDate(null);
 		model.addAttribute("rentContract", rentContract);
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
