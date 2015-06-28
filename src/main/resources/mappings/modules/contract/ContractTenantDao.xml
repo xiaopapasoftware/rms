@@ -14,7 +14,7 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		a.agreement_change_id as agreementChangeId
+		a.agreement_change_id as "agreementChangeId"
 	</sql>
 	
 	<sql id="contractTenantJoins">
