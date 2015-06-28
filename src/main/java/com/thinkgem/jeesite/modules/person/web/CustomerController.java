@@ -23,8 +23,12 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
@@ -44,6 +48,12 @@ public class CustomerController extends BaseController {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@Autowired
+	private CompanyService companyService;
+
+	@Autowired
+	private TenantService tenantService;
 
 	@ModelAttribute
 	public Customer get(@RequestParam(required = false) String id) {
@@ -119,6 +129,46 @@ public class CustomerController extends BaseController {
 		customerService.delete(customer);
 		addMessage(redirectAttributes, "删除客户信息成功");
 		return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
+	}
+
+	/**
+	 * 由用户转为租客
+	 */
+	@RequiresPermissions("person:customer:edit")
+	@RequestMapping(value = "convertToTenant")
+	public String convertToTenant(Customer customer, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
+		Tenant tenant = new Tenant();
+		tenant.setCellPhone(customer.getCellPhone());
+		tenant.setTenantName(customer.getContactName());
+		tenant.setGender(customer.getGender());
+		tenant.setRemarks(customer.getRemarks());
+		tenant.setUser(customer.getUser());
+		tenant.setCustomerId(customer.getId());
+		model.addAttribute("tenant", tenant);
+		model.addAttribute("listUser", systemService.findUser(new User()));
+		model.addAttribute("listCompany", companyService.findList(new Company()));
+		return "modules/person/tenantAdd";
+	}
+
+	/**
+	 * 客户转租客，保存租客信息。
+	 * */
+	@RequiresPermissions("person:customer:edit")
+	@RequestMapping(value = "saveTenant")
+	public String saveTenant(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
+		List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);
+		if (CollectionUtils.isNotEmpty(tenants)) {
+			model.addAttribute("message", "该证件类型租客的证件号码已被占用，不能重复添加");
+			model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+			model.addAttribute("listCompany", companyService.findList(new Company()));
+			model.addAttribute("listUser", systemService.findUser(new User()));
+			return "modules/person/tenantAdd";
+		} else {
+			tenantService.saveAndUpdateCusStat(tenant);
+			addMessage(redirectAttributes, "保存租客信息成功");
+			return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
+		}
 	}
 
 }

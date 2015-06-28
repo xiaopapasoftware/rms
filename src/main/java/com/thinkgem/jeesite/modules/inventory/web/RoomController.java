@@ -102,7 +102,7 @@ public class RoomController extends BaseController {
 	public List<Room> findList(String id) {
 		Room room = new Room();
 		House house = new House();
-		house.setHouseNo(id);
+		house.setId(id);
 		room.setHouse(house);
 		List<Room> list = roomService.findList(room);
 		return list;

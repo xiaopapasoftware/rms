@@ -139,7 +139,7 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE t_customer SET 	
+		UPDATE t_customer SET
 			user_id = #{user.id},
 			contact_name = #{contactName},
 			gender = #{gender},
@@ -156,6 +156,11 @@
 	<update id="delete">
 		UPDATE t_customer SET 
 			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateCustomerTransStat">
+		UPDATE t_customer SET is_tenant = #{isTenant}
 		WHERE id = #{id}
 	</update>
 	

@@ -50,4 +50,11 @@ public class CustomerService extends CrudService<CustomerDao, Customer> {
 		return dao.findCustomerByTelNo(customer);
 	}
 
+	/**
+	 * 更新客户是否转化为租客的状态
+	 * */
+	@Transactional(readOnly = false)
+	public void updateCustomerTransStat(Customer customer) {
+		dao.updateCustomerTransStat(customer);
+	}
 }

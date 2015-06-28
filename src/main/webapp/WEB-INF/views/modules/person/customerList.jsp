@@ -107,7 +107,7 @@
     				<a href="${ctx}/person/customer/form?id=${customer.id}">修改</a>
 					<a href="${ctx}/person/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户信息吗？', this.href)">删除</a>
 					<c:if test="${customer.isTenant eq '0'}">
-						<a href="${ctx}/person/tenant/form?id=${customer.id}">转租客</a>
+						<a href="${ctx}/person/customer/convertToTenant?id=${customer.id}" onclick="return confirmx('确认要转为租客吗?', this.href)">转租客</a>
 					</c:if>
 				</td></shiro:hasPermission>
 			</tr>
