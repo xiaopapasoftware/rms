@@ -28,7 +28,7 @@ import com.thinkgem.jeesite.modules.device.service.DevicesService;
  * @version 2015-06-13
  */
 @Controller
-@RequestMapping(value = "${adminPath}/inventory/devices")
+@RequestMapping(value = "${adminPath}/device/devices")
 public class DevicesController extends BaseController {
 
 	@Autowired
@@ -46,22 +46,22 @@ public class DevicesController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("inventory:devices:view")
+	@RequiresPermissions("device:devices:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices); 
 		model.addAttribute("page", page);
-		return "modules/inventory/devicesList";
+		return "modules/device/devicesList";
 	}
 
-	@RequiresPermissions("inventory:devices:view")
+	@RequiresPermissions("device:devices:view")
 	@RequestMapping(value = "form")
 	public String form(Devices devices, Model model) {
 		model.addAttribute("devices", devices);
-		return "modules/inventory/devicesForm";
+		return "modules/device/devicesForm";
 	}
 
-	@RequiresPermissions("inventory:devices:edit")
+	@RequiresPermissions("device:devices:edit")
 	@RequestMapping(value = "save")
 	public String save(Devices devices, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, devices)){
@@ -69,15 +69,15 @@ public class DevicesController extends BaseController {
 		}
 		devicesService.save(devices);
 		addMessage(redirectAttributes, "保存设备信息成功");
-		return "redirect:"+Global.getAdminPath()+"/inventory/devices/?repage";
+		return "redirect:"+Global.getAdminPath()+"/device/devices/?repage";
 	}
 	
-	@RequiresPermissions("inventory:devices:edit")
+	@RequiresPermissions("device:devices:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Devices devices, RedirectAttributes redirectAttributes) {
 		devicesService.delete(devices);
 		addMessage(redirectAttributes, "删除设备信息成功");
-		return "redirect:"+Global.getAdminPath()+"/inventory/devices/?repage";
+		return "redirect:"+Global.getAdminPath()+"/device/devices/?repage";
 	}
 
 }
