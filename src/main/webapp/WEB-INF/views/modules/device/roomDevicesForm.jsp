@@ -36,25 +36,37 @@
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
-				<form:input path="propertyProjectId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:select path="propertyProjectId" class="input-xlarge ">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
-				<form:input path="buildingId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:select path="buildingId" class="input-xlarge ">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房屋：</label>
 			<div class="controls">
-				<form:input path="houseId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:select path="houseId" class="input-xlarge ">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房间 0代表公共区域：</label>
 			<div class="controls">
-				<form:input path="roomId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:select path="roomId" class="input-xlarge ">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">

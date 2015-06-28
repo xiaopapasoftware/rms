@@ -25,6 +25,30 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
+			<li><label>物业项目：</label>
+				<form:select path="propertyProjectId" class="input-medium">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>楼宇：</label>
+				<form:select path="buildingId" class="input-medium">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>房屋：</label>
+				<form:select path="houseId" class="input-medium">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label>房间 0代表公共区域：</label>
+				<form:select path="roomId" class="input-medium">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -33,6 +57,10 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>物业项目</th>
+				<th>楼宇</th>
+				<th>房屋</th>
+				<th>房间 0代表公共区域</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="device:roomDevices:edit"><th>操作</th></shiro:hasPermission>
@@ -42,8 +70,20 @@
 		<c:forEach items="${page.list}" var="roomDevices">
 			<tr>
 				<td><a href="${ctx}/device/roomDevices/form?id=${roomDevices.id}">
-					<fmt:formatDate value="${roomDevices.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					${fns:getDictLabel(roomDevices.propertyProjectId, '', '')}
 				</a></td>
+				<td>
+					${fns:getDictLabel(roomDevices.buildingId, '', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(roomDevices.houseId, '', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(roomDevices.roomId, '', '')}
+				</td>
+				<td>
+					<fmt:formatDate value="${roomDevices.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
 				<td>
 					${roomDevices.remarks}
 				</td>

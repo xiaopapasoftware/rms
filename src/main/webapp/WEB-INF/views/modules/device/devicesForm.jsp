@@ -27,10 +27,10 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/inventory/devices/">设备信息列表</a></li>
-		<li class="active"><a href="${ctx}/inventory/devices/form?id=${devices.id}">设备信息<shiro:hasPermission name="inventory:devices:edit">${not empty devices.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:devices:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/device/devices/">设备信息列表</a></li>
+		<li class="active"><a href="${ctx}/device/devices/form?id=${devices.id}">设备信息<shiro:hasPermission name="device:devices:edit">${not empty devices.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="device:devices:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="devices" action="${ctx}/inventory/devices/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="devices" action="${ctx}/device/devices/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
@@ -102,7 +102,7 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="inventory:devices:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="device:devices:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>
