@@ -224,6 +224,58 @@ public class RentContractController extends BaseController {
 		
 		return "modules/contract/rentContractForm";
 	}
+	
+	@RequestMapping(value = "autoRenewContract")
+	public String autoRenewContract(RentContract rentContract, Model model) {
+		String contractId = rentContract.getId();
+		rentContract = rentContractService.get(contractId);
+		rentContract.setId(null);
+		rentContract.setContractId(contractId);
+		rentContract.setSignType("2");//逾租续签
+		rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
+		rentContract.setStartDate(null);
+		rentContract.setExpiredDate(null);
+		rentContract.setSignDate(null);
+		model.addAttribute("rentContract", rentContract);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
+		rentContract.setTenantList(rentContractService.findTenant(rentContract));
+		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
+		return "modules/contract/rentContractForm";
+	}
 
 	@RequiresPermissions("contract:rentContract:edit")
 	@RequestMapping(value = "save")
