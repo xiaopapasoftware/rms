@@ -14,46 +14,69 @@
 			$("#searchForm").submit();
         	return false;
         }
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/agreementChange/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
+		
+		function auditHis(id) {
+			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/contract/agreementChange/">协议变更列表</a></li>
-		<shiro:hasPermission name="contract:agreementChange:edit"><li><a href="${ctx}/contract/agreementChange/form">协议变更添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="agreementChange" action="${ctx}/contract/agreementChange/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>出租合同：</label>
-				<form:select path="rentContract.id" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+			<li><label style="width:120px;">出租合同：</label>
+				<form:input path="rentContractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
-			<li><label>合同变更协议名称：</label>
-				<form:input path="agreementChangeName" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:120px;">合同变更协议名称：</label>
+				<form:input path="agreementChangeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
-			<li><label>协议生效时间：</label>
+			<li><label style="width:120px;">协议生效时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
-			<li><label>出租方式：</label>
-				<form:select path="rentMode" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">出租方式：</label>
+				<form:select path="rentMode" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>协议审核状态：</label>
-				<form:select path="agreementStatus" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:120px;">协议审核状态：</label>
+				<form:select path="agreementStatus" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
-			</li>
-			<li><label>核算人：</label>
-				<sys:treeselect id="user" name="user.id" value="${agreementChange.user.id}" labelName="user.name" labelValue="${agreementChange.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
@@ -63,12 +86,12 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>出租合同</th>
 				<th>合同变更协议名称</th>
+				<th>出租合同</th>
 				<th>协议生效时间</th>
 				<th>出租方式</th>
 				<th>协议审核状态</th>
-				<th>核算人</th>
+				<th>申请人</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="contract:agreementChange:edit"><th>操作</th></shiro:hasPermission>
@@ -77,23 +100,25 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="agreementChange">
 			<tr>
-				<td><a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">
-					${fns:getDictLabel(agreementChange.rentContract.id, '', '')}
-				</a></td>
 				<td>
+					<a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">
 					${agreementChange.agreementChangeName}
+					</a>
 				</td>
 				<td>
-					<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					${agreementChange.rentContractName}
 				</td>
 				<td>
-					${fns:getDictLabel(agreementChange.rentMode, '', '')}
+					<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					${fns:getDictLabel(agreementChange.agreementStatus, '', '')}
+					${fns:getDictLabel(agreementChange.rentMode, 'rent_mode', '')}
 				</td>
 				<td>
-					${agreementChange.user.name}
+					${fns:getDictLabel(agreementChange.agreementStatus, 'contract_status', '')}
+				</td>
+				<td>
+					${agreementChange.createUserName}
 				</td>
 				<td>
 					<fmt:formatDate value="${agreementChange.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -101,10 +126,19 @@
 				<td>
 					${agreementChange.remarks}
 				</td>
-				<shiro:hasPermission name="contract:agreementChange:edit"><td>
-    				<a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">修改</a>
-					<a href="${ctx}/contract/agreementChange/delete?id=${agreementChange.id}" onclick="return confirmx('确认要删除该协议变更吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				<td>
+					<shiro:hasPermission name="contract:agreementChange:edit">
+					<c:if test="${agreementChange.agreementStatus=='0'||agreementChange.agreementStatus=='2'}">
+	   					<a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">修改</a>
+					</c:if>
+					</shiro:hasPermission>
+					<c:if test="${agreementChange.agreementStatus=='0'}">
+	   					<a href="javascript:void(0);" onclick="toAudit('${agreementChange.id}')">审核</a>
+					</c:if>
+					<c:if test="${agreementChange.agreementStatus=='1'||agreementChange.agreementStatus=='2'}">
+	   					<a href="javascript:void(0);" onclick="auditHis('${agreementChange.id}')">审核记录</a>
+					</c:if>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>
