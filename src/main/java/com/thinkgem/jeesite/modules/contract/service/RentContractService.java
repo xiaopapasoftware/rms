@@ -270,6 +270,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	
 	@Transactional(readOnly = false)
 	public void saveAdditional(AgreementChange agreementChange) {
+		String id = IdGen.uuid();
+		
 		agreementChange.setAgreementStatus("0");//待审核
 		agreementChange.setCreateDate(new Date());
 		agreementChange.setCreateBy(UserUtils.getUser());
@@ -279,7 +281,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		
 		/*合同租客关联信息*/
 		ContractTenant delContractTenant = new ContractTenant();
-		delContractTenant.setTenantId(agreementChange.getContractId());
+		delContractTenant.setContractId(id);
 		contractTenantDao.delete(delContractTenant);
 		List<Tenant> list = agreementChange.getTenantList();//承租人
 		if(null != list && list.size()>0) {
@@ -287,7 +289,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				ContractTenant contractTenant = new ContractTenant();
 				contractTenant.setId(IdGen.uuid());
 				contractTenant.setTenantId(tenant.getId());
-				contractTenant.setLeaseContractId(agreementChange.getContractId());
+				contractTenant.setLeaseContractId(id);
 				contractTenant.setCreateDate(new Date());
 				contractTenant.setCreateBy(UserUtils.getUser());
 				contractTenant.setUpdateDate(new Date());
@@ -302,7 +304,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				ContractTenant contractTenant = new ContractTenant();
 				contractTenant.setId(IdGen.uuid());
 				contractTenant.setTenantId(tenant.getId());
-				contractTenant.setContractId(agreementChange.getContractId());
+				contractTenant.setContractId(id);
 				contractTenant.setCreateDate(new Date());
 				contractTenant.setCreateBy(UserUtils.getUser());
 				contractTenant.setUpdateDate(new Date());
@@ -312,9 +314,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			}
 		}
 		
-		String id = IdGen.uuid();
 		agreementChange.setId(id);
 		agreementChange.setAgreementStatus("0");//待审核
+		agreementChange.setRentContract(rentContractDao.get(agreementChange.getContractId()));
 		agreementChangeDao.insert(agreementChange);
 		
 		//审核
