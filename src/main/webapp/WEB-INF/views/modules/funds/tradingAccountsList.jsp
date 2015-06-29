@@ -49,7 +49,6 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/tradingAccounts/">账务交易列表</a></li>
-		<shiro:hasPermission name="funds:tradingAccounts:edit"><li><a href="${ctx}/funds/tradingAccounts/findOne">账务交易添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -162,7 +161,7 @@
 					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
-					<c:if test="${tradingAccounts.tradeType=='3' && tradingAccounts.transStatus=='4' && tradingAccounts.tradeStatus=='0'}">
+					<c:if test="${tradingAccounts.tradeType=='3' && ((tradingAccounts.transStatus=='4'||tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
 					<c:if test="${tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
