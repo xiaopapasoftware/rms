@@ -32,20 +32,14 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="invoice" action="${ctx}/funds/invoice/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="tradingAccountsId"/>
 		<sys:message content="${message}"/>		
-		<div class="control-group">
-			<label class="control-label">账务交易：</label>
-			<div class="controls">
-				<form:input path="tradingAccounts.id" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
 		<div class="control-group">
 			<label class="control-label">开票类型：</label>
 			<div class="controls">
 				<form:select path="invoiceType" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('invoice_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -67,8 +61,8 @@
 			<label class="control-label">开票日期：</label>
 			<div class="controls">
 				<input name="invoiceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${invoice.invoiceDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${invoice.invoiceDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
