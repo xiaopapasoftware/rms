@@ -69,7 +69,7 @@ public class InvoiceController extends BaseController {
 		}
 		invoiceService.save(invoice);
 		addMessage(redirectAttributes, "保存发票信息成功");
-		return "redirect:"+Global.getAdminPath()+"/funds/invoice/?repage";
+		return "redirect:"+Global.getAdminPath()+"/funds/tradingAccounts/?repage";
 	}
 	
 	@RequiresPermissions("funds:invoice:edit")
