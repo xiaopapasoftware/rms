@@ -5,13 +5,16 @@ package com.thinkgem.jeesite.modules.funds.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.funds.entity.Invoice;
 import com.thinkgem.jeesite.modules.funds.dao.InvoiceDao;
+import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
+import com.thinkgem.jeesite.modules.funds.entity.Invoice;
+import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 
 /**
  * 发票信息Service
@@ -21,6 +24,8 @@ import com.thinkgem.jeesite.modules.funds.dao.InvoiceDao;
 @Service
 @Transactional(readOnly = true)
 public class InvoiceService extends CrudService<InvoiceDao, Invoice> {
+	@Autowired
+	private TradingAccountsDao tradingAccountsDao;
 
 	public Invoice get(String id) {
 		return super.get(id);
@@ -36,7 +41,12 @@ public class InvoiceService extends CrudService<InvoiceDao, Invoice> {
 	
 	@Transactional(readOnly = false)
 	public void save(Invoice invoice) {
+		TradingAccounts tradingAccounts = tradingAccountsDao.get(invoice.getTradingAccountsId());
+		invoice.setTradingAccounts(tradingAccounts);
 		super.save(invoice);
+		
+		tradingAccounts.setTradeStatus("3");//发票已开
+		tradingAccountsDao.update(tradingAccounts);
 	}
 	
 	@Transactional(readOnly = false)

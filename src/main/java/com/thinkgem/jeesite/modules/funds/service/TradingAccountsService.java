@@ -22,9 +22,11 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
+import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -50,6 +52,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	private TradingAccountsDao tradingAccountsDao;
 	@Autowired
 	private RentContractDao rentContractDao;
+	@Autowired
+	private ReceiptDao receiptDao;
 	
 	private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";//账务审批
 	
@@ -193,6 +197,18 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		audit.setUpdateBy(UserUtils.getUser());
 		audit.setDelFlag("0");
 		auditDao.insert(audit);
+		
+		/*收据*/
+		for(Receipt receipt : tradingAccounts.getReceiptList()) {
+			receipt.setId(IdGen.uuid());
+			receipt.setTradingAccounts(tradingAccounts);
+			receipt.setCreateDate(new Date());
+			receipt.setCreateBy(UserUtils.getUser());
+			receipt.setUpdateDate(new Date());
+			receipt.setUpdateBy(UserUtils.getUser());
+			receipt.setDelFlag("0");
+			receiptDao.insert(receipt);
+		}
 	}
 	
 	@Transactional(readOnly = false)
