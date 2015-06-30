@@ -3,11 +3,15 @@
  */
 package com.thinkgem.jeesite.modules.funds.entity;
 
-import org.hibernate.validator.constraints.Length;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
@@ -34,6 +38,8 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	
 	private String transStatus;
 	private String transBusiStatus;
+	
+	private List<Receipt> receiptList = new ArrayList<Receipt>();
 	
 	public TradingAccounts() {
 		super();
@@ -152,5 +158,13 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 
 	public void setTransBusiStatus(String transBusiStatus) {
 		this.transBusiStatus = transBusiStatus;
-	}	
+	}
+
+	public List<Receipt> getReceiptList() {
+		return receiptList;
+	}
+
+	public void setReceiptList(List<Receipt> receiptList) {
+		this.receiptList = receiptList;
+	}
 }

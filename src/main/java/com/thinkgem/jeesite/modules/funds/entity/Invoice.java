@@ -27,6 +27,8 @@ public class Invoice extends DataEntity<Invoice> {
 	private Date invoiceDate;		// 开票日期
 	private Double invoiceAmount;		// 发票金额
 	
+	private String tradingAccountsId;
+	
 	public Invoice() {
 		super();
 	}
@@ -35,7 +37,6 @@ public class Invoice extends DataEntity<Invoice> {
 		super(id);
 	}
 
-	@NotNull(message="账务交易不能为空")
 	public TradingAccounts getTradingAccounts() {
 		return tradingAccounts;
 	}
@@ -71,7 +72,7 @@ public class Invoice extends DataEntity<Invoice> {
 		this.invoiceTitle = invoiceTitle;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="开票日期不能为空")
 	public Date getInvoiceDate() {
 		return invoiceDate;
@@ -89,5 +90,12 @@ public class Invoice extends DataEntity<Invoice> {
 	public void setInvoiceAmount(Double invoiceAmount) {
 		this.invoiceAmount = invoiceAmount;
 	}
-	
+
+	public String getTradingAccountsId() {
+		return tradingAccountsId;
+	}
+
+	public void setTradingAccountsId(String tradingAccountsId) {
+		this.tradingAccountsId = tradingAccountsId;
+	}
 }
