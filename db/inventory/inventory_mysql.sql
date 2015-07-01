@@ -115,7 +115,8 @@ create table T_ROOM
 create table T_DEVICES
 (
    ID                   varchar(64) NOT NULL,
-   DEVICE_ID            varchar(64) comment '设备ID',
+   DEVICE_ID            varchar(64) comment '设备编号',
+   DISTR_SERL_NUM		varchar(64) comment '设备分配序号',
    DEVICE_NAME          varchar(100) comment '设备名称',
    DEVICE_MODEL         varchar(100) comment '设备型号',
    DEVICE_TYPE          varchar(100) comment '设备类型',
