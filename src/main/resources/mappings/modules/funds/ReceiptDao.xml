@@ -13,10 +13,13 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		ta.trade_type as "tradeType",
+		ta.trade_id as "trade_id"
 	</sql>
 	
 	<sql id="receiptJoins">
+	left join t_trading_accounts ta on a.trading_accounts_id=ta.id 
 	</sql>
     
 	<select id="get" resultType="Receipt">
@@ -28,6 +31,9 @@
 	</select>
 	
 	<select id="findList" resultType="Receipt">
+		select t.*,case when t.tradeType=1 then ta.agreement_name 
+		when t.tradeType=3 or t.tradeType=7 or t.tradeType=6 or t.tradeType=8 then tc.contract_name
+		else "" end tradeName from(
 		SELECT 
 			<include refid="receiptColumns"/>
 		FROM t_receipt a
@@ -58,6 +64,13 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+		) t left join t_deposit_agreement ta on t.trade_id=ta.id 
+	left join t_rent_contract tc on t.trade_id=tc.id 
+	  <where>
+	  	<if test="tradeName != null and tradeName != ''">
+			AND t.tradeName like concat('%',#{tradeName},'%')
+		</if>
+	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="Receipt">

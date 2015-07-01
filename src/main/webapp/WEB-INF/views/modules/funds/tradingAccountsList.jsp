@@ -69,12 +69,6 @@
 					<form:options items="${fns:getDictList('trans_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">交易方式：</label>
-				<form:select path="tradeMode" class="input-medium" style="width:200px;">
-					<form:option value="" label="全部"/>
-					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li><label style="width:120px;">交易时间：</label>
 				<input name="tradeTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${tradingAccounts.tradeTime}" pattern="yyyy-MM-dd"/>"
@@ -92,7 +86,7 @@
 			<li><label style="width:120px;">账务状态：</label>
 				<form:select path="tradeStatus" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
-					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('trading_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -106,7 +100,6 @@
 				<th>账务交易对象</th>
 				<th>账务交易类型</th>
 				<th>账务交易方向</th>
-				<th>交易方式</th>
 				<th>交易金额</th>
 				<th>交易时间</th>
 				<th>收款人名称</th>
@@ -128,9 +121,6 @@
 				</td>
 				<td>
 					${fns:getDictLabel(tradingAccounts.tradeDirection, 'trans_dirction', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(tradingAccounts.tradeMode, 'trans_mode', '')}
 				</td>
 				<td>
 					${tradingAccounts.tradeAmount}
@@ -167,7 +157,10 @@
 					<c:if test="${tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
-					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2'}">
+					<c:if test="${tradingAccounts.tradeStatus=='1'}">
+						<a href="${ctx}/funds/invoice/form?tradingAccountsId=${tradingAccounts.id}">开具发票</a>
+					</c:if>
+					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
 						<a href="javascript:void(0);" onclick="auditHis('${tradingAccounts.id}')">审核记录</a>
 					</c:if>
 				</td>

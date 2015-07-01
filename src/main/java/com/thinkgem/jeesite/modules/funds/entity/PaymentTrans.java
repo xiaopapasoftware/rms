@@ -4,8 +4,11 @@
 package com.thinkgem.jeesite.modules.funds.entity;
 
 import org.hibernate.validator.constraints.Length;
+
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
