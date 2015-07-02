@@ -79,13 +79,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">设备数量：</label>
-			<div class="controls">
-				<form:input path="deviceAmount" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">设备分配序号：</label>
 			<div class="controls">
 				<form:input path="distrSerlNum" htmlEscape="false" maxlength="64" class="input-xlarge"/>

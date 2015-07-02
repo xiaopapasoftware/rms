@@ -3,9 +3,12 @@
  */
 package com.thinkgem.jeesite.modules.device.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,15 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.device.entity.Devices;
 import com.thinkgem.jeesite.modules.device.entity.RoomDevices;
+import com.thinkgem.jeesite.modules.device.service.DevicesService;
 import com.thinkgem.jeesite.modules.device.service.RoomDevicesService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 房屋设备关联信息Controller
@@ -43,6 +50,9 @@ public class RoomDevicesController extends BaseController {
 
 	@Autowired
 	private PropertyProjectService propertyProjectService;
+
+	@Autowired
+	private DevicesService devicesService;
 
 	@ModelAttribute
 	public RoomDevices get(@RequestParam(required = false) String id) {
@@ -112,6 +122,21 @@ public class RoomDevicesController extends BaseController {
 
 		rd.setPropertyProjectId(rm.getPropertyProject().getId());
 		rd.setProjectName(rm.getPropertyProject().getProjectName());
+
+		List<Devices> roomedDevices = Lists.newArrayList();
+		RoomDevices rds = new RoomDevices();
+		rds.setRoomId(roomId);
+		List<RoomDevices> rdList = roomDevicesService.findList(rds);
+		if (CollectionUtils.isNotEmpty(rdList)) {
+			for (RoomDevices tempRD : rdList) {
+				if (StringUtils.isNotEmpty(tempRD.getDeviceId())) {
+					Devices d = devicesService.get(tempRD.getDeviceId());
+					d.setDeviceTypeDesc(DictUtils.getDictLabel(d.getDeviceType(), "device_type", d.getDeviceType()));
+					roomedDevices.add(d);
+				}
+			}
+		}
+		rd.setRoomedDevices(roomedDevices);
 
 		model.addAttribute("room", rm);
 		model.addAttribute("roomDevices", rd);

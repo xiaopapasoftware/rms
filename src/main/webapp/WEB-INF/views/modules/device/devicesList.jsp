@@ -66,7 +66,6 @@
 				<th>设备类型</th>
 				<th>设备采购价格</th>
 				<th>设备品牌</th>
-				<th>设备数量</th>
 				<th>设备状态</th>
 				<th>设备分配序号</th>
 				<th>创建时间</th>
@@ -97,9 +96,6 @@
 				</td>
 				<td>
 					${devices.deviceBrand}
-				</td>
-				<td>
-					${devices.deviceAmount}
 				</td>
 				<td>
 					${fns:getDictLabel(devices.deviceStatus, 'device_status', '')}

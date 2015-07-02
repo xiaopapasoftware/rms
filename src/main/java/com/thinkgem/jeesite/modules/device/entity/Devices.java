@@ -21,9 +21,9 @@ public class Devices extends DataEntity<Devices> {
 	private String deviceName; // 设备名称
 	private String deviceModel; // 设备型号
 	private String deviceType; // 设备类型
+	private String deviceTypeDesc; // 设备类型描述
 	private Double devicePrice; // 设备采购价格
 	private String deviceBrand; // 设备品牌
-	private Integer deviceAmount; // 设备数量
 	private String deviceStatus; // 设备状态
 	private String distrSerlNum; // 设备分配序号
 
@@ -79,7 +79,13 @@ public class Devices extends DataEntity<Devices> {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
+	public String getDeviceTypeDesc() {
+		return deviceTypeDesc;
+	}
 
+	public void setDeviceTypeDesc(String deviceTypeDesc) {
+		this.deviceTypeDesc = deviceTypeDesc;
+	}
 	@NotNull(message = "设备采购价格不能为空")
 	public Double getDevicePrice() {
 		return devicePrice;
@@ -96,15 +102,6 @@ public class Devices extends DataEntity<Devices> {
 
 	public void setDeviceBrand(String deviceBrand) {
 		this.deviceBrand = deviceBrand;
-	}
-
-	@NotNull(message = "设备数量不能为空")
-	public Integer getDeviceAmount() {
-		return deviceAmount;
-	}
-
-	public void setDeviceAmount(Integer deviceAmount) {
-		this.deviceAmount = deviceAmount;
 	}
 
 	@Length(min = 1, max = 100, message = "设备状态长度必须介于 1 和 100 之间")

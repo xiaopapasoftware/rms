@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.device.entity;
 
+import java.util.List;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -32,6 +34,8 @@ public class RoomDevices extends DataEntity<RoomDevices> {
 	private Room room;
 
 	private String deviceId; // 设备ID
+
+	private List<Devices> roomedDevices;// 房间的所有设备列表信息
 
 	public RoomDevices() {
 		super();
@@ -103,5 +107,11 @@ public class RoomDevices extends DataEntity<RoomDevices> {
 	}
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+	public List<Devices> getRoomedDevices() {
+		return roomedDevices;
+	}
+	public void setRoomedDevices(List<Devices> roomedDevices) {
+		this.roomedDevices = roomedDevices;
 	}
 }
