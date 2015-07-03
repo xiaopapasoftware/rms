@@ -64,7 +64,7 @@
 				}
 				return true;
 			};
-			$.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',850,400,{buttons:{'确定':'1','关闭':'0'},submit:submit});
+			$.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',900,450,{buttons:{'确定':'1','关闭':'0'},submit:submit});
 		}
 	</script>
 </head>
