@@ -32,9 +32,9 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="devices" action="${ctx}/device/devices/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
-			<label class="control-label">设备ID：</label>
+			<label class="control-label">设备编号：</label>
 			<div class="controls">
 				<form:input path="deviceId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -59,7 +59,7 @@
 			<div class="controls">
 				<form:select path="deviceType" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('device_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -79,20 +79,9 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">设备数量：</label>
+			<label class="control-label">设备分配序号：</label>
 			<div class="controls">
-				<form:input path="deviceAmount" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">设备状态：</label>
-			<div class="controls">
-				<form:select path="deviceStatus" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="distrSerlNum" htmlEscape="false" maxlength="64" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">

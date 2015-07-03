@@ -216,8 +216,8 @@ public class RoomController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 			}
 		}
-
 	}
+	
 	@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Room room, RedirectAttributes redirectAttributes) {

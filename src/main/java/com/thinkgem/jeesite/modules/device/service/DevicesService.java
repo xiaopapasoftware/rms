@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.device.entity.Devices;
 
 /**
  * 设备信息Service
+ * 
  * @author huangsc
  * @version 2015-06-13
  */
@@ -25,23 +26,27 @@ public class DevicesService extends CrudService<DevicesDao, Devices> {
 	public Devices get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<Devices> findList(Devices devices) {
 		return super.findList(devices);
 	}
-	
+
 	public Page<Devices> findPage(Page<Devices> page, Devices devices) {
 		return super.findPage(page, devices);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(Devices devices) {
 		super.save(devices);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(Devices devices) {
 		super.delete(devices);
 	}
-	
+
+	@Transactional(readOnly = true)
+	public List<Devices> findExistedDevices(Devices devices) {
+		return dao.findExistedDevices(devices);
+	}
 }
