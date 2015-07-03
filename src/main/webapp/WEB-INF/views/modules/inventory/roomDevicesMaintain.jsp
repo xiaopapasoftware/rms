@@ -150,39 +150,44 @@
 					</shiro:hasPermission>
 				</table>
 				<script type="text/template" id="roomDevicesDtlTpl">
-						<tr id="roomDevicesDtlList{{idx}}">
-							<td class="hide">
-								<input id="roomDevicesDtlList{{idx}}_id" name="roomDevicesDtlList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
-								<input id="roomDevicesDtlList{{idx}}_delFlag" name="roomDevicesDtlList[{{idx}}].delFlag" type="hidden" value="0"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_deviceBrand" name="roomDevicesDtlList[{{idx}}].deviceBrand" type="text" readonly="readonly" value="{{row.deviceBrand}}" class="input-medium"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_deviceTypeDesc" name="roomDevicesDtlList[{{idx}}].deviceTypeDesc" type="text" readonly="readonly" value="{{row.deviceTypeDesc}}" class="input-medium"/>
-								<input id="roomDevicesDtlList{{idx}}_deviceType" name="roomDevicesDtlList[{{idx}}].deviceType" type="text" readonly="readonly" value="{{row.deviceType}}" class="input-medium hide"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_deviceName" name="roomDevicesDtlList[{{idx}}].deviceName" type="text" readonly="readonly" value="{{row.deviceName}}" class="input-medium"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_deviceId" name="roomDevicesDtlList[{{idx}}].deviceId" type="text" readonly="readonly" value="{{row.deviceId}}" class="input-medium"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_deviceModel" name="roomDevicesDtlList[{{idx}}].deviceModel" type="text" readonly="readonly" value="{{row.deviceModel}}" class="input-medium"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_devicePrice" name="roomDevicesDtlList[{{idx}}].devicePrice" type="text" readonly="readonly" value="{{row.devicePrice}}" class="input-medium"/>
-							</td>
-							<td>
-								<input id="roomDevicesDtlList{{idx}}_distrSerlNum" name="roomDevicesDtlList[{{idx}}].distrSerlNum" type="text" value="{{row.distrSerlNum}}" class="input-medium required "/><span class="help-inline"><font color="red">*</font></span>
-							</td>
-						<shiro:hasPermission name="device:roomDevices:edit">
-							<td class="text-center" width="10">
-								{{#delBtn}}<span class="close" onclick="delRow(this, '#roomDevicesDtlList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
-							</td>
-						</shiro:hasPermission>
-						</tr>
+				   <tr id="roomDevicesDtlList{{idx}}">
+					 <td class="hide">
+						 <input id="roomDevicesDtlList{{idx}}_id" name="roomDevicesDtlList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
+						 <input id="roomDevicesDtlList{{idx}}_delFlag" name="roomDevicesDtlList[{{idx}}].delFlag" type="hidden" value="0"/>
+				     </td>
+					 <td>
+						 <input id="roomDevicesDtlList{{idx}}_deviceBrand" name="roomDevicesDtlList[{{idx}}].deviceBrand" type="text" readonly="readonly" value="{{row.deviceBrand}}" class="input-medium"/>
+				     </td>
+					 <td>
+					     <input id="roomDevicesDtlList{{idx}}_deviceTypeDesc" name="roomDevicesDtlList[{{idx}}].deviceTypeDesc" type="text" readonly="readonly" value="{{row.deviceTypeDesc}}" class="input-medium"/>
+						 <input id="roomDevicesDtlList{{idx}}_deviceType" name="roomDevicesDtlList[{{idx}}].deviceType" type="text" readonly="readonly" value="{{row.deviceType}}" class="input-medium hide"/>
+					 </td>
+				     <td>
+						 <input id="roomDevicesDtlList{{idx}}_deviceName" name="roomDevicesDtlList[{{idx}}].deviceName" type="text" readonly="readonly" value="{{row.deviceName}}" class="input-medium"/>
+					 </td>
+					 <td>
+						 <input id="roomDevicesDtlList{{idx}}_deviceId" name="roomDevicesDtlList[{{idx}}].deviceId" type="text" readonly="readonly" value="{{row.deviceId}}" class="input-medium"/>
+					 </td>
+					 <td>
+					     <input id="roomDevicesDtlList{{idx}}_deviceModel" name="roomDevicesDtlList[{{idx}}].deviceModel" type="text" readonly="readonly" value="{{row.deviceModel}}" class="input-medium"/>
+					 </td>
+					 <td>
+						 <input id="roomDevicesDtlList{{idx}}_devicePrice" name="roomDevicesDtlList[{{idx}}].devicePrice" type="text" readonly="readonly" value="{{row.devicePrice}}" class="input-medium"/>
+					 </td>
+					 <td>
+						 <input id="roomDevicesDtlList{{idx}}_distrSerlNum" name="roomDevicesDtlList[{{idx}}].distrSerlNum" type="text" value="{{row.distrSerlNum}}" class="input-medium required"/>
+						 <span class="help-inline"><font color="red">*</font></span>
+					 </td>
+					 <shiro:hasPermission name="device:roomDevices:edit">
+					 <td class="text-center" width="10">
+						{{#delBtn}}
+							<span class="close" onclick="delRow(this, '#roomDevicesDtlList{{idx}}')" title="删除">
+								&times;
+							</span>
+						{{/delBtn}}
+				     </td>
+				    </shiro:hasPermission>
+				</tr>
 				</script>
 				<script type="text/javascript">
 					var roomDevicesDtlRowIdx = 0;
@@ -197,38 +202,6 @@
 				</script>
 			</div>
 		</div>
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-				
 		<div class="form-actions">
 			<shiro:hasPermission name="device:roomDevices:edit">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
