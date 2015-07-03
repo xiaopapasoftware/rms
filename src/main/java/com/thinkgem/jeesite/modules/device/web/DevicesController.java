@@ -58,6 +58,13 @@ public class DevicesController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/device/devicesList";
 	}
+	
+	@RequestMapping(value = {"deviceDialog", ""})
+	public String deviceDialog(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices);
+		model.addAttribute("page", page);
+		return "modules/device/deviceDialog";
+	}
 
 	@RequiresPermissions("device:devices:view")
 	@RequestMapping(value = "form")

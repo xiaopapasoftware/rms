@@ -54,6 +54,18 @@
 				$(obj).parent().parent().removeClass("error");
 			}
 		}
+		
+		function addDialog(obj) {
+			var submit = function(v,h,f) {
+				if(v=='1') {
+					//console.log($("#deviceId").val());
+				} else {
+					alert('close');
+				}
+				return true;
+			};
+			$.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',850,400,{buttons:{'确定':'1','关闭':'0'},submit:submit});
+		}
 	</script>
 </head>
 <body>
@@ -143,7 +155,8 @@
 						<tfoot>
 							<tr>
 								<td colspan="8">
-									<a href="javascript:" onclick="addRow('#roomDevicesDtlList', roomDevicesDtlRowIdx, roomDevicesDtlTpl);roomDevicesDtlRowIdx = roomDevicesDtlRowIdx + 1;" class="btn">新增</a>
+									<!--<a href="javascript:" onclick="addRow('#roomDevicesDtlList', roomDevicesDtlRowIdx, roomDevicesDtlTpl);roomDevicesDtlRowIdx = roomDevicesDtlRowIdx + 1;" class="btn">新增</a>-->
+									<a href="javascript:" onclick="addDialog(roomDevicesDtlRowIdx);" class="btn">新增</a>
 								</td>
 							</tr>
 						</tfoot>
