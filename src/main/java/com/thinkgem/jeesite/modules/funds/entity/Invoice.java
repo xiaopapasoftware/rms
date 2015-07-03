@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 
 /**
  * 发票信息Entity
@@ -29,6 +30,9 @@ public class Invoice extends DataEntity<Invoice> {
 	
 	private String tradingAccountsId;
 	
+	private String tradeName;
+	private String tradeType;
+	
 	public Invoice() {
 		super();
 	}
@@ -46,6 +50,7 @@ public class Invoice extends DataEntity<Invoice> {
 	}
 	
 	@Length(min=1, max=64, message="开票类型长度必须介于 1 和 64 之间")
+	@ExcelField(title="开票类型", type=0, align=2, sort=20, dictType="invoice_type")
 	public String getInvoiceType() {
 		return invoiceType;
 	}
@@ -55,6 +60,7 @@ public class Invoice extends DataEntity<Invoice> {
 	}
 	
 	@Length(min=1, max=64, message="发票号码长度必须介于 1 和 64 之间")
+	@ExcelField(title="发票号码", type=0, align=2, sort=25)
 	public String getInvoiceNo() {
 		return invoiceNo;
 	}
@@ -64,6 +70,7 @@ public class Invoice extends DataEntity<Invoice> {
 	}
 	
 	@Length(min=0, max=64, message="发票抬头长度必须介于 0 和 64 之间")
+	@ExcelField(title="发票抬头", type=0, align=2, sort=30)
 	public String getInvoiceTitle() {
 		return invoiceTitle;
 	}
@@ -74,6 +81,7 @@ public class Invoice extends DataEntity<Invoice> {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="开票日期不能为空")
+	@ExcelField(title="开票日期", type=0, align=1, sort=40)
 	public Date getInvoiceDate() {
 		return invoiceDate;
 	}
@@ -83,6 +91,7 @@ public class Invoice extends DataEntity<Invoice> {
 	}
 	
 	@NotNull(message="发票金额不能为空")
+	@ExcelField(title="发票金额", type=0, align=2, sort=50)
 	public Double getInvoiceAmount() {
 		return invoiceAmount;
 	}
@@ -97,5 +106,21 @@ public class Invoice extends DataEntity<Invoice> {
 
 	public void setTradingAccountsId(String tradingAccountsId) {
 		this.tradingAccountsId = tradingAccountsId;
+	}
+
+	public String getTradeName() {
+		return tradeName;
+	}
+
+	public void setTradeName(String tradeName) {
+		this.tradeName = tradeName;
+	}
+
+	public String getTradeType() {
+		return tradeType;
+	}
+
+	public void setTradeType(String tradeType) {
+		this.tradeType = tradeType;
 	}
 }

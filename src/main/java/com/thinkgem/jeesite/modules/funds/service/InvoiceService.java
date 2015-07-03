@@ -45,8 +45,10 @@ public class InvoiceService extends CrudService<InvoiceDao, Invoice> {
 		invoice.setTradingAccounts(tradingAccounts);
 		super.save(invoice);
 		
-		tradingAccounts.setTradeStatus("3");//发票已开
-		tradingAccountsDao.update(tradingAccounts);
+		if(null != tradingAccounts) {
+			tradingAccounts.setTradeStatus("3");//发票已开
+			tradingAccountsDao.update(tradingAccounts);
+		}
 	}
 	
 	@Transactional(readOnly = false)
