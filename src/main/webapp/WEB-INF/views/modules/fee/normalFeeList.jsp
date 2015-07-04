@@ -18,43 +18,33 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/fee/normalFee/">一般费用结算列表</a></li>
-		<shiro:hasPermission name="fee:normalFee:edit"><li><a href="${ctx}/fee/normalFee/form">一般费用结算添加</a></li></shiro:hasPermission>
+		<li class="active"><a href="#">${normalFee.type}费管理列表</a></li>
+		<li><a href="${ctx}/fee/normalFee/form?type=${normalFee.type}&feeType=${normalFee.feeType}">${normalFee.type}费充值</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="normalFee" action="${ctx}/fee/normalFee/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
+		<form:hidden path="feeType"/>
+		<form:hidden path="type"/>
 		<ul class="ul-form">
-			<li><label>出租合同：</label>
-				<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:120px;">出租合同：</label>
+				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
-			<li><label>费用类型：</label>
-				<form:select path="feeType" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>结算类型：</label>
-				<form:select path="settleType" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li><label>电费缴纳开始时间：</label>
+			<li><label style="width:120px;">电费缴纳开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>电费缴纳开始时间：</label>
+			<li><label style="width:120px;">电费缴纳开始时间：</label>
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label>表系数：</label>
-				<form:input path="meterValue" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>金额：</label>
-				<form:input path="personFee" htmlEscape="false" class="input-medium"/>
+			<li><label style="width:120px;">结算状态：</label>
+				<form:select path="settleStatus" class="input-medium" style="width:210px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('settle_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>

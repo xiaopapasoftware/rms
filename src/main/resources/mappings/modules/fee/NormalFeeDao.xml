@@ -16,10 +16,13 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.settle_status AS "settleStatus",
+		tc.contract_name as "contractName"
 	</sql>
 	
 	<sql id="normalFeeJoins">
+	left join t_rent_contract tc on a.rent_contract_id=tc.id 
 	</sql>
     
 	<select id="get" resultType="NormalFee">
@@ -57,6 +60,9 @@
 			</if>
 			<if test="personFee != null and personFee != ''">
 				AND a.person_fee = #{personFee}
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND tc.contract_name like concat('%',#{contractName},'%')
 			</if>
 		</where>
 		<choose>
@@ -102,7 +108,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			settle_status
 		) VALUES (
 			#{id},
 			#{rentContractId},
@@ -117,7 +124,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{settleStatus}
 		)
 	</insert>
 	

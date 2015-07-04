@@ -18,21 +18,15 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/fee/electricFee/">电费结算列表</a></li>
-		<shiro:hasPermission name="fee:electricFee:edit"><li><a href="${ctx}/fee/electricFee/form">电费结算添加</a></li></shiro:hasPermission>
+		<li class="active"><a href="${ctx}/fee/electricFee/">电费管理列表</a></li>
+		<li><a href="${ctx}/fee/electricFee/form">电费充值</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="electricFee" action="${ctx}/fee/electricFee/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label style="width:120px;">出租合同：</label>
-				<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
-			</li>
-			<li><label style="width:120px;">结算类型：</label>
-				<form:select path="settleType" class="input-medium" style="width:210px;">
-					<form:option value="" label="全部"/>
-					<form:options items="${fns:getDictList('electric_settle_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
 			<li><label style="width:120px;">电费缴纳开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
@@ -64,7 +58,6 @@
 				<th>电费缴纳开始时间</th>
 				<th>入住电表系数</th>
 				<th>自用金额</th>
-				<th>分摊金额</th>
 				<th>结算状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
@@ -73,9 +66,9 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="electricFee">
 			<tr>
-				<td><a href="${ctx}/fee/electricFee/form?id=${electricFee.id}">
-					${electricFee.rentContractId}
-				</a></td>
+				<td>
+					${electricFee.contractName}
+				</td>
 				<td>
 					${fns:getDictLabel(electricFee.settleType, 'electric_settle_type', '')}
 				</td>
@@ -90,9 +83,6 @@
 				</td>
 				<td>
 					${electricFee.personFee}
-				</td>
-				<td>
-					${electricFee.mulitiFee}
 				</td>
 				<td>
 					${fns:getDictLabel(electricFee.settleStatus, 'settle_status', '')}

@@ -110,9 +110,10 @@
 	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/rentContractDialogList" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
+		<form:hidden path="contractStatus"/>
 		<ul class="ul-form">
 			<!-- <li><label>原出租合同：</label>
 				<form:input path="contractId" htmlEscape="false" maxlength="64" class="input-medium"/>

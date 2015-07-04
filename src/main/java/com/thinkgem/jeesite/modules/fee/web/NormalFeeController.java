@@ -6,7 +6,6 @@ package com.thinkgem.jeesite.modules.fee.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.fee.entity.NormalFee;
 import com.thinkgem.jeesite.modules.fee.service.NormalFeeService;
 
@@ -46,22 +45,36 @@ public class NormalFeeController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("fee:normalFee:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(NormalFee normalFee, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<NormalFee> page = normalFeeService.findPage(new Page<NormalFee>(request, response), normalFee); 
 		model.addAttribute("page", page);
+		String feeType="",type = "";
+		if("water".equals(normalFee.getType())) {
+			feeType = "0";
+			type = "水";
+		} else if("gas".equals(normalFee.getType())) {
+			feeType = "1";
+			type = "燃气";
+		} else if("net".equals(normalFee.getType())) {
+			feeType = "1";
+			type = "宽带";
+		} else if("tv".equals(normalFee.getType())) {
+			feeType = "3";
+			type = "有线电视";
+		}
+		normalFee.setFeeType(feeType);
+		normalFee.setType(type);
+		model.addAttribute("normalFee", normalFee);
 		return "modules/fee/normalFeeList";
 	}
 
-	@RequiresPermissions("fee:normalFee:view")
 	@RequestMapping(value = "form")
 	public String form(NormalFee normalFee, Model model) {
 		model.addAttribute("normalFee", normalFee);
 		return "modules/fee/normalFeeForm";
 	}
 
-	@RequiresPermissions("fee:normalFee:edit")
 	@RequestMapping(value = "save")
 	public String save(NormalFee normalFee, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, normalFee)){
@@ -72,7 +85,6 @@ public class NormalFeeController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/fee/normalFee/?repage";
 	}
 	
-	@RequiresPermissions("fee:normalFee:edit")
 	@RequestMapping(value = "delete")
 	public String delete(NormalFee normalFee, RedirectAttributes redirectAttributes) {
 		normalFeeService.delete(normalFee);
