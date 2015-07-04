@@ -27,45 +27,47 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/fee/normalFee/">一般费用结算列表</a></li>
-		<li class="active"><a href="${ctx}/fee/normalFee/form?id=${normalFee.id}">一般费用结算<shiro:hasPermission name="fee:normalFee:edit">${not empty normalFee.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="fee:normalFee:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/fee/normalFee/">${normalFee.type}费管理列表</a></li>
+		<li class="active"><a href="#">${normalFee.type}费充值</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="normalFee" action="${ctx}/fee/normalFee/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="feeType"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
-				<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<!--<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>-->
+				<div class="input-append">
+					<input id="rentContractId" name="rentContractId" class="" type="hidden" value="">
+					<input id="contractName" readonly="readonly" type="text" value="" data-msg-required="" class="" style="">
+					<a id="rentContractButton" href="javascript:" class="btn  " style="">&nbsp;<i class="icon-search"></i>&nbsp;</a>&nbsp;&nbsp;
+				</div>
 				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">费用类型：</label>
-			<div class="controls">
-				<form:select path="feeType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">结算类型：</label>
-			<div class="controls">
-				<form:select path="settleType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<script type="text/javascript">
+				$("#rentContractButton, #contractName").click(function(){
+				if ($("#rentContractButton").hasClass("disabled")){
+					return true;
+				}
+				top.$.jBox.open("iframe:${ctx}/contract/rentContract/rentContractDialog", "选择合同", 1000, 520, {
+					buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
+						if (v=="ok"){
+							var checkedId = h.find("iframe")[0].contentWindow.$("input[name='rentContractId']:checked");
+							$("#rentContractId").val($(checkedId).val());
+							$("#contractName").val($(checkedId).attr("attr-name"));
+						}
+					}
+				});
+				});
+				</script>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">电费缴纳开始时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -73,21 +75,23 @@
 			<label class="control-label">电费缴纳开始时间：</label>
 			<div class="controls">
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">表系数：</label>
 			<div class="controls">
-				<form:input path="meterValue" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="meterValue" htmlEscape="false" class="input-xlarge  number required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">金额：</label>
 			<div class="controls">
-				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

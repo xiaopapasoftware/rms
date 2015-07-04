@@ -35,7 +35,7 @@
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
@@ -60,7 +60,7 @@
 		
 		function buildingChange() {
 			var building = $("[id='building.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {

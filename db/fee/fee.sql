@@ -34,6 +34,7 @@ create table t_normal_fee
    END_DATE             date comment '电费缴纳开始时间',
    METER_VALUE          float comment '表系数',
    PERSON_FEE           float comment '金额',
+   SETTLE_STATUS        varchar(64) comment '结算状态',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

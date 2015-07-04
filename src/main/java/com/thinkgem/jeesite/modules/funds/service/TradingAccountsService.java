@@ -104,7 +104,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setContractStatus("1".equals(auditHis.getAuditStatus())?"6":"5");//6:到账收据审核通过 5:到账收据审核拒绝
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if(!"6".equals(rentContract.getContractStatus()))
+			if("6".equals(rentContract.getContractStatus()))
 				rentContractDao.update(rentContract);
 		} else if("7".equals(tradingAccounts.getTradeType())) {//正常退租
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());

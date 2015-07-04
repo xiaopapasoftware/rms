@@ -9,6 +9,10 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					if(""==$("#contractName").val()) {
+						top.$.jBox.tip('请选择合同.','warning');
+						return;
+					}
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
@@ -27,8 +31,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/fee/electricFee/">电费结算列表</a></li>
-		<li class="active"><a href="${ctx}/fee/electricFee/form?id=${electricFee.id}">电费结算<shiro:hasPermission name="fee:electricFee:edit">${not empty electricFee.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="fee:electricFee:edit">查看</shiro:lacksPermission></a></li>
+		<li><a href="${ctx}/fee/electricFee/">电费管理列表</a></li>
+		<li class="active"><a href="${ctx}/fee/electricFee/form?id=${electricFee.id}">电费充值</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="electricFee" action="${ctx}/fee/electricFee/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -65,8 +69,7 @@
 			<label class="control-label">结算类型：</label>
 			<div class="controls">
 				<form:select path="settleType" class="input-xlarge required">
-					<form:option value="" label="请选择"/>
-					<form:options items="${fns:getDictList('electric_settle_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="2" label="电费充值"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
@@ -92,20 +95,15 @@
 		<div class="control-group">
 			<label class="control-label">入住电表系数：</label>
 			<div class="controls">
-				<form:input path="meterValue" htmlEscape="false" class="input-xlarge required"/>
+				<form:input path="meterValue" htmlEscape="false" class="input-xlarge required number"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">自用金额：</label>
 			<div class="controls">
-				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">分摊金额：</label>
-			<div class="controls">
-				<form:input path="mulitiFee" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

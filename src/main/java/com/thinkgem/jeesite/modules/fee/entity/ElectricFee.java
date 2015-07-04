@@ -27,6 +27,8 @@ public class ElectricFee extends DataEntity<ElectricFee> {
 	private Double mulitiFee;		// 分摊金额
 	private String settleStatus;		// 结算状态
 	
+	private String contractName;
+	
 	public ElectricFee() {
 		super();
 	}
@@ -105,5 +107,12 @@ public class ElectricFee extends DataEntity<ElectricFee> {
 	public void setSettleStatus(String settleStatus) {
 		this.settleStatus = settleStatus;
 	}
-	
+
+	public String getContractName() {
+		return contractName;
+	}
+
+	public void setContractName(String contractName) {
+		this.contractName = contractName;
+	}
 }

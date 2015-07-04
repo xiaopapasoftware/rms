@@ -4,8 +4,11 @@
 package com.thinkgem.jeesite.modules.fee.entity;
 
 import org.hibernate.validator.constraints.Length;
+
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotNull;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -25,6 +28,10 @@ public class NormalFee extends DataEntity<NormalFee> {
 	private Date endDate;		// 电费缴纳开始时间
 	private Double meterValue;		// 表系数
 	private Double personFee;		// 金额
+	private String settleStatus;		// 结算状态
+	
+	private String type;
+	private String contractName;
 	
 	public NormalFee() {
 		super();
@@ -96,5 +103,28 @@ public class NormalFee extends DataEntity<NormalFee> {
 	public void setPersonFee(Double personFee) {
 		this.personFee = personFee;
 	}
-	
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getContractName() {
+		return contractName;
+	}
+
+	public void setContractName(String contractName) {
+		this.contractName = contractName;
+	}
+
+	public String getSettleStatus() {
+		return settleStatus;
+	}
+
+	public void setSettleStatus(String settleStatus) {
+		this.settleStatus = settleStatus;
+	}	
 }

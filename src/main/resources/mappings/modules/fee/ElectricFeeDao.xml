@@ -17,10 +17,12 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		tc.contract_name as "contractName"
 	</sql>
 	
 	<sql id="electricFeeJoins">
+	left join t_rent_contract tc on a.rent_contract_id=tc.id 
 	</sql>
     
 	<select id="get" resultType="ElectricFee">
@@ -61,6 +63,9 @@
 			</if>
 			<if test="settleStatus != null and settleStatus != ''">
 				AND a.settle_status = #{settleStatus}
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND tc.contract_name like concat('%',#{contractName},'%')
 			</if>
 		</where>
 		<choose>
