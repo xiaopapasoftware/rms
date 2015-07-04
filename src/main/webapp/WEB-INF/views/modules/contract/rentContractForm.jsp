@@ -81,7 +81,7 @@
 		
 		function houseChange() {
 			var room = $("[id='house.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != room) {
 				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
 					for(var i=0;i<data.length;i++) {
