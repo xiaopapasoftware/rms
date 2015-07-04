@@ -59,7 +59,7 @@ public class DevicesController extends BaseController {
 		return "modules/device/devicesList";
 	}
 	
-	@RequestMapping(value = {"deviceDialog", ""})
+	@RequestMapping(value = {"deviceDialog"})
 	public String deviceDialog(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices);
 		model.addAttribute("page", page);
