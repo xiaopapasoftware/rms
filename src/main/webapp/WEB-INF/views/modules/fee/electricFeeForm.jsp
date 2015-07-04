@@ -36,8 +36,29 @@
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
-				<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+				<!--<form:input path="rentContractId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>-->
+				<div class="input-append">
+					<input id="rentContractId" name="rentContractId" class="" type="hidden" value="">
+					<input id="contractName" readonly="readonly" type="text" value="" data-msg-required="" class="" style="">
+					<a id="rentContractButton" href="javascript:" class="btn  " style="">&nbsp;<i class="icon-search"></i>&nbsp;</a>&nbsp;&nbsp;
+				</div>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<script type="text/javascript">
+				$("#rentContractButton, #contractName").click(function(){
+				if ($("#rentContractButton").hasClass("disabled")){
+					return true;
+				}
+				top.$.jBox.open("iframe:${ctx}/contract/rentContract/rentContractDialog", "选择合同", 1000, 520, {
+					buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
+						if (v=="ok"){
+							var checkedId = h.find("iframe")[0].contentWindow.$("input[name='rentContractId']:checked");
+							$("#rentContractId").val($(checkedId).val());
+							$("#contractName").val($(checkedId).attr("attr-name"));
+						}
+					}
+				});
+				});
+				</script>
 			</div>
 		</div>
 		<div class="control-group">

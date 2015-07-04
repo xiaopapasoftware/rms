@@ -114,6 +114,44 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractList";
 	}
 	
+	@RequestMapping(value = {"rentContractDialog"})
+	public String rentContractDialog(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract); 
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		if(null != rentContract.getPropertyProject()) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(rentContract.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if(null != rentContract.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(rentContract.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		if(null != rentContract.getRoom()) {
+			Room room = new Room();
+			House house = new House();
+			house.setId(rentContract.getRoom().getId());
+			room.setHouse(house);
+			List<Room> roomList = roomServie.findList(room);
+			model.addAttribute("roomList", roomList);
+		}
+		
+		return "modules/contract/rentContractDialog";
+	}
+	
 	@RequestMapping(value = "audit")
 	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 		rentContractService.audit(auditHis);
