@@ -35,7 +35,7 @@
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
@@ -47,20 +47,20 @@
 				$("[id='building.id']").html(html);
 			}
 			$("[id='building.id']").val("");
-			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='house.id']").html(html);
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function buildingChange() {
 			var building = $("[id='building.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
@@ -72,11 +72,11 @@
 				$("[id='house.id']").html(html);
 			}
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function houseChange() {
@@ -93,14 +93,14 @@
 				$("[id='room.id']").html(html);
 			}
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function rentModeChange() {
 			if($("#rentMode").val()=="0") {
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
-				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 			} else {
 				$("[id='room.id']").removeAttr("disabled");
 			}
