@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao">
+    
+	<sql id="electricFeeColumns">
+		a.id AS "id",
+		a.rent_contract_id AS "rentContractId",
+		a.settle_type AS "settleType",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.meter_value AS "meterValue",
+		a.person_fee AS "personFee",
+		a.muliti_fee AS "mulitiFee",
+		a.settle_status AS "settleStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="electricFeeJoins">
+	</sql>
+    
+	<select id="get" resultType="ElectricFee">
+		SELECT 
+			<include refid="electricFeeColumns"/>
+		FROM t_electric_fee a
+		<include refid="electricFeeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ElectricFee">
+		SELECT 
+			<include refid="electricFeeColumns"/>
+		FROM t_electric_fee a
+		<include refid="electricFeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="rentContractId != null and rentContractId != ''">
+				AND a.rent_contract_id = #{rentContractId}
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="meterValue != null and meterValue != ''">
+				AND a.meter_value = #{meterValue}
+			</if>
+			<if test="personFee != null and personFee != ''">
+				AND a.person_fee = #{personFee}
+			</if>
+			<if test="mulitiFee != null and mulitiFee != ''">
+				AND a.muliti_fee = #{mulitiFee}
+			</if>
+			<if test="settleStatus != null and settleStatus != ''">
+				AND a.settle_status = #{settleStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ElectricFee">
+		SELECT 
+			<include refid="electricFeeColumns"/>
+		FROM t_electric_fee a
+		<include refid="electricFeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_electric_fee(
+			id,
+			rent_contract_id,
+			settle_type,
+			start_date,
+			end_date,
+			meter_value,
+			person_fee,
+			muliti_fee,
+			settle_status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{rentContractId},
+			#{settleType},
+			#{startDate},
+			#{endDate},
+			#{meterValue},
+			#{personFee},
+			#{mulitiFee},
+			#{settleStatus},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_electric_fee SET 	
+			rent_contract_id = #{rentContractId},
+			settle_type = #{settleType},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			meter_value = #{meterValue},
+			person_fee = #{personFee},
+			muliti_fee = #{mulitiFee},
+			settle_status = #{settleStatus},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_electric_fee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -58,13 +58,14 @@
 		function addDialog(obj) {
 			var submit = function(v,h,f) {
 				if(v=='1') {
-					//console.log($("#deviceId").val());
-				} else {
-					alert('close');
+					var checkedIds = h.find("iframe")[0].contentWindow.$("input[name='deviceId']:checked");
+					$(checkedIds).each(function(){
+						alert($(this).val());
+					});
 				}
 				return true;
 			};
-			$.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',850,400,{buttons:{'确定':'1','关闭':'0'},submit:submit});
+			var top = $.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',850,400,{buttons:{'确定':'1','关闭':'0'},submit:submit});
 		}
 	</script>
 </head>

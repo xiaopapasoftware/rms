@@ -41,7 +41,7 @@
 		<c:forEach items="${page.list}" var="devices">
 			<tr>
 				<td>
-					<input id="deviceId" name="deviceId" type="checkbox" value="${devices.id}"/>
+					<input name="deviceId" type="checkbox" value="${devices.id}"/>
 				</td>
 				<td><a href="${ctx}/device/devices/form?id=${devices.id}">
 					${devices.deviceId}
