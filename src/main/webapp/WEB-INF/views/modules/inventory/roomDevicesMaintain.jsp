@@ -56,17 +56,34 @@
 		}
 		
 		function addDialog(obj) {
-			var submit = function(v,h,f) {
-				if(v=='1') {
-					var checkedIds = h.find("iframe")[0].contentWindow.$("input[name='deviceId']:checked");
-					$(checkedIds).each(function(){
-						alert($(this).val());
-					});
-				}
-				return true;
-			};
-			$.jBox.open("iframe:${ctx}/device/devices/deviceDialog",'设备信息',900,450,{buttons:{'确定':'1','关闭':'0'},submit:submit});
-		}
+			top.$.jBox.open("iframe:${ctx}/device/devices/deviceDialog", "选择设备", 1000, 520, {
+				buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
+					if (v=="ok"){//点了确定后
+						var checkedRadio = h.find("iframe")[0].contentWindow.$("input[name='selectedDeviceRadio']:checked");
+						if($(checkedRadio).val() == "undefined" || $(checkedRadio).val() == null || $(checkedRadio).val() == ""){//没有任何数据选中
+							$("#roomDevicesDtlList"+ obj).remove();
+						}else{//选中了数据
+							var serNum = $(checkedRadio).attr("attr-distrSerlNum");
+							if(serNum == "undefined" || serNum == null || serNum == ""){
+								serNum = $("#projectName").val() + "-" + $("#buildingName").val() + "-" + $("#houseNo").val() + "-" + $("#roomNo").val() + "-" + (obj+1);
+							}
+							//把选中的设备状态变更为“出库已分配”,分配序号也一并更新
+							//$.post("${ctx}/device/devices/updateDevicesStatus",{id: $(checkedRadio).val(), serNum: serNum},function(){});
+							$("#roomDevicesDtlList"+ obj +"_deviceBrand").val($(checkedRadio).attr("attr-deviceBrand"));
+							$("#roomDevicesDtlList"+ obj +"_deviceType").val($(checkedRadio).attr("attr-deviceType"));
+							$("#roomDevicesDtlList"+ obj +"_deviceTypeDesc").val($(checkedRadio).attr("attr-deviceTypeDesc"));
+							$("#roomDevicesDtlList"+ obj +"_deviceName").val($(checkedRadio).attr("attr-deviceName"));
+							$("#roomDevicesDtlList"+ obj +"_deviceId").val($(checkedRadio).attr("attr-deviceId"));
+							$("#roomDevicesDtlList"+ obj +"_deviceModel").val($(checkedRadio).attr("attr-deviceModel"));
+							$("#roomDevicesDtlList"+ obj +"_devicePrice").val($(checkedRadio).attr("attr-devicePrice"));
+							$("#roomDevicesDtlList"+ obj +"_distrSerlNum").val(serNum);
+					   }
+					} else{//点了关闭后
+						$("#roomDevicesDtlList"+ obj).remove();
+					}
+				},persistent:true,showClose: false
+			});
+ 		}
 	</script>
 </head>
 <body>
@@ -156,8 +173,7 @@
 						<tfoot>
 							<tr>
 								<td colspan="8">
-									<!--<a href="javascript:" onclick="addRow('#roomDevicesDtlList', roomDevicesDtlRowIdx, roomDevicesDtlTpl);roomDevicesDtlRowIdx = roomDevicesDtlRowIdx + 1;" class="btn">新增</a>-->
-									<a href="javascript:" onclick="addDialog(roomDevicesDtlRowIdx);" class="btn">新增</a>
+									<a href="javascript:" onclick="addRow('#roomDevicesDtlList', roomDevicesDtlRowIdx, roomDevicesDtlTpl);roomDevicesDtlRowIdx = roomDevicesDtlRowIdx + 1;addDialog(roomDevicesDtlRowIdx-1);" class="btn">新增</a>
 								</td>
 							</tr>
 						</tfoot>

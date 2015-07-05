@@ -47,15 +47,15 @@
 				$("[id='building.id']").html(html);
 			}
 			$("[id='building.id']").val("");
-			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='house.id']").html(html);
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function buildingChange() {
@@ -72,11 +72,11 @@
 				$("[id='house.id']").html(html);
 			}
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function houseChange() {
@@ -93,14 +93,14 @@
 				$("[id='room.id']").html(html);
 			}
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 		}
 		
 		function rentModeChange() {
 			if($("#rentMode").val()=="0") {
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
-				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 			} else {
 				$("[id='room.id']").removeAttr("disabled");
 			}

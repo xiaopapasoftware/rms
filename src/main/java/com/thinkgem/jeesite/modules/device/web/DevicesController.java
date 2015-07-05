@@ -58,9 +58,10 @@ public class DevicesController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/device/devicesList";
 	}
-	
+
 	@RequestMapping(value = {"deviceDialog"})
 	public String deviceDialog(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
+		devices.setDeviceStatus("0");
 		Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices);
 		model.addAttribute("page", page);
 		return "modules/device/deviceDialog";
@@ -99,7 +100,6 @@ public class DevicesController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/device/devices/?repage";
 			}
 		}
-
 	}
 
 	@RequiresPermissions("device:devices:edit")
@@ -108,6 +108,15 @@ public class DevicesController extends BaseController {
 		devicesService.delete(devices);
 		addMessage(redirectAttributes, "删除设备信息成功");
 		return "redirect:" + Global.getAdminPath() + "/device/devices/?repage";
+	}
+
+	@RequestMapping(value = "updateDevicesStatus")
+	public void updateDevicesStatus(String id, String serNum) {
+		Devices upDevices = new Devices();
+		upDevices.setId(id);
+		upDevices.setDeviceStatus("1");// 更改为出库已分配
+		upDevices.setDistrSerlNum(serNum);
+		devicesService.updateDevicesStatus(upDevices);
 	}
 
 }

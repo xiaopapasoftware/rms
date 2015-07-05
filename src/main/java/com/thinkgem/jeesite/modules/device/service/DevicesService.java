@@ -49,4 +49,9 @@ public class DevicesService extends CrudService<DevicesDao, Devices> {
 	public List<Devices> findExistedDevices(Devices devices) {
 		return dao.findExistedDevices(devices);
 	}
+
+	@Transactional(readOnly = false)
+	public void updateDevicesStatus(Devices devices) {
+		dao.updateDevicesStatus(devices);
+	}
 }

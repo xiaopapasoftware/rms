@@ -65,7 +65,10 @@
 		<c:forEach items="${page.list}" var="devices">
 			<tr>
 				<td>
-					<input name="deviceId" type="checkbox" value="${devices.id}"/>
+					<input type="radio" name="selectedDeviceRadio" value="${devices.id}" attr-deviceBrand="${devices.deviceBrand}"
+						attr-deviceType="${devices.deviceType}" attr-deviceTypeDesc="${fns:getDictLabel(devices.deviceType, 'device_type', '')}"
+						attr-deviceName="${devices.deviceName}" attr-deviceId="${devices.deviceId}" attr-deviceModel="${devices.deviceModel}"
+						attr-devicePrice="${devices.devicePrice}" attr-distrSerlNum="${devices.distrSerlNum}"/>
 				</td>
 				<td>
 					${devices.deviceId}

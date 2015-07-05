@@ -183,6 +183,15 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateDevicesStatus">
+		UPDATE t_devices SET 	
+			device_status = #{deviceStatus},
+			distr_serl_num = #{distrSerlNum},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
 	<update id="delete">
 		UPDATE t_devices SET 
 			del_flag = #{DEL_FLAG_DELETE}
