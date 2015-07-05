@@ -50,16 +50,16 @@ public class NormalFeeController extends BaseController {
 		Page<NormalFee> page = normalFeeService.findPage(new Page<NormalFee>(request, response), normalFee); 
 		model.addAttribute("page", page);
 		String feeType="",type = "";
-		if("water".equals(normalFee.getType())) {
+		if("water".equals(normalFee.getType())||"0".equals(normalFee.getType())) {
 			feeType = "0";
 			type = "水";
-		} else if("gas".equals(normalFee.getType())) {
+		} else if("gas".equals(normalFee.getType())||"1".equals(normalFee.getType())) {
 			feeType = "1";
 			type = "燃气";
-		} else if("net".equals(normalFee.getType())) {
-			feeType = "1";
+		} else if("net".equals(normalFee.getType())||"2".equals(normalFee.getType())) {
+			feeType = "2";
 			type = "宽带";
-		} else if("tv".equals(normalFee.getType())) {
+		} else if("tv".equals(normalFee.getType())||"3".equals(normalFee.getType())) {
 			feeType = "3";
 			type = "有线电视";
 		}
