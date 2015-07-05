@@ -230,7 +230,7 @@
 				</div>
 			</div>
 		    <div id="footer" class="row-fluid">
-	            Copyright &copy; 2015-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
+	            Copyright &copy; 2015 ${fns:getConfig('productName')} - Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
 			</div>
 		</div>
 	</div>

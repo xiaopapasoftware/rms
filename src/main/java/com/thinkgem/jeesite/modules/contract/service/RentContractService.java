@@ -29,6 +29,10 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
+import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -57,6 +61,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	private AccountingDao accountingDao;
 	@Autowired
 	private AgreementChangeDao agreementChangeDao;
+	@Autowired
+	private HouseDao houseDao;
+	@Autowired
+	private RoomDao roomDao;
 	
 	private static final String RENT_CONTRACT_ROLE = "rent_contract_role";//新签合同审批
 	private static final String CHANGE_AGREEMENT_ROLE = "change_agreement_role";//变更协议审批
@@ -91,6 +99,22 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			audit.setUpdateBy(UserUtils.getUser());
 			auditDao.update(audit);
 			
+		} else {
+			/*更新房屋/房间状态*/
+			RentContract rentContract = this.rentContractDao.get(auditHis.getObjectId());
+			if("0".equals(rentContract.getRentMode())) {//整租
+				House house = houseDao.get(rentContract.getHouse().getId());
+				house.setHouseStatus("1");//待出租可预订
+				house.setCreateBy(UserUtils.getUser());
+				house.setUpdateDate(new Date());
+				houseDao.update(house);
+			} else {//单间
+				Room room = roomDao.get(rentContract.getRoom().getId());
+				room.setRoomStatus("1");//待出租可预订
+				room.setCreateBy(UserUtils.getUser());
+				room.setUpdateDate(new Date());
+				roomDao.update(room);
+			}
 		}
 		
 		RentContract rentContract = rentContractDao.get(auditHis.getObjectId());
@@ -142,6 +166,27 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		rentContract.setUpdateBy(UserUtils.getUser());
 		rentContract.setUpdateDate(new Date());
 		this.rentContractDao.update(rentContract);
+		
+		/*更新房屋/房间状态*/
+		if("0".equals(rentContract.getRentMode())) {//整租
+			House house = houseDao.get(rentContract.getHouse().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				house.setHouseStatus("6");//已损坏
+			else 
+				house.setHouseStatus("5");//已退待租
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(rentContract.getRoom().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				room.setRoomStatus("5");//已损坏
+			else 
+				room.setRoomStatus("4");//已退租可预订
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
+		}
 	}
 	
 	/**
@@ -154,6 +199,27 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		rentContract.setUpdateBy(UserUtils.getUser());
 		rentContract.setUpdateDate(new Date());
 		this.rentContractDao.update(rentContract);
+		
+		/*更新房屋/房间状态*/
+		if("0".equals(rentContract.getRentMode())) {//整租
+			House house = houseDao.get(rentContract.getHouse().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				house.setHouseStatus("6");//已损坏
+			else 
+				house.setHouseStatus("5");//已退待租
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(rentContract.getRoom().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				room.setRoomStatus("5");//已损坏
+			else 
+				room.setRoomStatus("4");//已退租可预订
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
+		}
 	}
 	
 	/**
@@ -166,6 +232,27 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		rentContract.setUpdateBy(UserUtils.getUser());
 		rentContract.setUpdateDate(new Date());
 		this.rentContractDao.update(rentContract);
+		
+		/*更新房屋/房间状态*/
+		if("0".equals(rentContract.getRentMode())) {//整租
+			House house = houseDao.get(rentContract.getHouse().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				house.setHouseStatus("6");//已损坏
+			else 
+				house.setHouseStatus("5");//已退待租
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(rentContract.getRoom().getId());
+			if("1".equals(rentContract.getBreakDown()))
+				room.setRoomStatus("5");//已损坏
+			else 
+				room.setRoomStatus("4");//已退租可预订
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
+		}
 	}
 	
 	/**
@@ -567,6 +654,21 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				contractTenant.setDelFlag("0");
 				contractTenantDao.insert(contractTenant);
 			}
+		}
+		
+		/*更新房屋/房间状态*/
+		if("0".equals(rentContract.getRentMode())) {//整租
+			House house = houseDao.get(rentContract.getHouse().getId());
+			house.setHouseStatus("2");//已预定
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(rentContract.getRoom().getId());
+			room.setRoomStatus("2");//已预定
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
 		}
 	}
 	

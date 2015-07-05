@@ -69,6 +69,9 @@
 			<if test="roomStatus != null and roomStatus != ''">
 				AND a.room_status = #{roomStatus}
 			</if>
+			<if test="choose=='1'">
+				and a.room_status not in('0','2','3','5') 
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

@@ -104,6 +104,7 @@ public class RoomController extends BaseController {
 		House house = new House();
 		house.setId(id);
 		room.setHouse(house);
+		room.setChoose("1");//过滤不可用
 		List<Room> list = roomService.findList(room);
 		return list;
 	}

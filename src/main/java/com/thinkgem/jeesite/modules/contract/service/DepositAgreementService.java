@@ -24,6 +24,10 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
+import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -48,6 +52,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	private ContractTenantDao contractTenantDao;
 	@Autowired
 	private TenantDao tenantDao;
+	@Autowired
+	private HouseDao houseDao;
+	@Autowired
+	private RoomDao roomDao;
 	
 	private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";//定金协议审批
 	
@@ -105,8 +113,20 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		depositAgreement.setUpdateBy(UserUtils.getUser());
 		depositAgreementDao.update(depositAgreement);
 		
-		//TODO:
 		/*3.更新房屋/房间状态*/
+		if("0".equals(depositAgreement.getRentMode())) {//整租
+			House house = houseDao.get(depositAgreement.getHouse().getId());
+			house.setHouseStatus("1");//待出租可预订
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(depositAgreement.getRoom().getId());
+			room.setRoomStatus("1");//待出租可预订
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
+		}
 	}
 	
 	@Transactional(readOnly = false)
@@ -135,6 +155,22 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			audit.setUpdateBy(UserUtils.getUser());
 			auditDao.update(audit);
 			
+		} else {
+			/*更新房屋/房间状态*/
+			DepositAgreement depositAgreement = this.depositAgreementDao.get(auditHis.getObjectId());
+			if("0".equals(depositAgreement.getRentMode())) {//整租
+				House house = houseDao.get(depositAgreement.getHouse().getId());
+				house.setHouseStatus("1");//待出租可预订
+				house.setCreateBy(UserUtils.getUser());
+				house.setUpdateDate(new Date());
+				houseDao.update(house);
+			} else {//单间
+				Room room = roomDao.get(depositAgreement.getRoom().getId());
+				room.setRoomStatus("1");//待出租可预订
+				room.setCreateBy(UserUtils.getUser());
+				room.setUpdateDate(new Date());
+				roomDao.update(room);
+			}
 		}
 		
 		DepositAgreement depositAgreement = depositAgreementDao.get(auditHis.getObjectId());
@@ -203,6 +239,21 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 				contractTenant.setDelFlag("0");
 				contractTenantDao.insert(contractTenant);
 			}
+		}
+		
+		/*更新房屋/房间状态*/
+		if("0".equals(depositAgreement.getRentMode())) {//整租
+			House house = houseDao.get(depositAgreement.getHouse().getId());
+			house.setHouseStatus("2");//已预定
+			house.setCreateBy(UserUtils.getUser());
+			house.setUpdateDate(new Date());
+			houseDao.update(house);
+		} else {//单间
+			Room room = roomDao.get(depositAgreement.getRoom().getId());
+			room.setRoomStatus("2");//已预定
+			room.setCreateBy(UserUtils.getUser());
+			room.setUpdateDate(new Date());
+			roomDao.update(room);
 		}
 	}
 	
