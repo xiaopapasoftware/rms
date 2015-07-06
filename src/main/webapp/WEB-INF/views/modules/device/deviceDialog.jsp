@@ -6,7 +6,8 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+			$("tr[attr-devicesChooseFlag='1']").addClass("error");
+			$("tr[attr-devicesChooseFlag='1'] td:nth-child(1)").find("INPUT[type = 'radio']").attr("disabled",true); 
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
@@ -63,7 +64,7 @@
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="devices">
-			<tr>
+			<tr attr-devicesChooseFlag="${devices.devicesChooseFlag}">
 				<td>
 					<input type="radio" name="selectedDeviceRadio" value="${devices.id}" attr-deviceBrand="${devices.deviceBrand}"
 						attr-deviceType="${devices.deviceType}" attr-deviceTypeDesc="${fns:getDictLabel(devices.deviceType, 'device_type', '')}"

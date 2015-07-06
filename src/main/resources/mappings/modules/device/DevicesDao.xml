@@ -11,6 +11,7 @@
 		a.device_price AS "devicePrice",
 		a.device_brand AS "deviceBrand",
 		a.device_status AS "deviceStatus",
+		a.devices_choose_flag AS "devicesChooseFlag",
 		a.distr_serl_num AS "distrSerlNum",
 		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
@@ -72,6 +73,9 @@
 			<if test="deviceStatus != null and deviceStatus != ''">
 				AND a.device_status = #{deviceStatus}
 			</if>
+			<if test="devicesChooseFlag != null and devicesChooseFlag != ''">
+				AND a.devices_choose_flag = #{devicesChooseFlag}
+			</if>
 			<if test="distrSerlNum != null and distrSerlNum != ''">
 				AND a.distr_serl_num LIKE 
 					<if test="dbName == 'oracle'">'%'||#{distrSerlNum}||'%'</if>
@@ -117,6 +121,7 @@
 				a.device_price AS "devicePrice",
 				a.device_brand AS "deviceBrand",
 				a.device_status AS "deviceStatus",
+				a.devices_choose_flag AS "devicesChooseFlag",
 				a.distr_serl_num AS "distrSerlNum",
 				a.del_flag AS "delFlag"
 		FROM t_devices a
@@ -141,6 +146,7 @@
 			device_price,
 			device_brand,
 			device_status,
+			devices_choose_flag,
 			distr_serl_num,
 			create_by,
 			create_date,
@@ -157,6 +163,7 @@
 			#{devicePrice},
 			#{deviceBrand},
 			#{deviceStatus},
+			#{devicesChooseFlag},
 			#{distrSerlNum},
 			#{createBy.id},
 			#{createDate},
@@ -176,6 +183,7 @@
 			device_price = #{devicePrice},
 			device_brand = #{deviceBrand},
 			device_status = #{deviceStatus},
+			devices_choose_flag = #{devicesChooseFlag},
 			distr_serl_num = #{distrSerlNum},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
@@ -190,6 +198,14 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="updateDevicesChooseFlag">
+		UPDATE t_devices SET
+			devices_choose_flag = #{devicesChooseFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}	
 	</update>
 	
 	<update id="delete">

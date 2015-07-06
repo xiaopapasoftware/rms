@@ -123,6 +123,7 @@ create table T_DEVICES
    DEVICE_PRICE         float comment '设备采购价格',
    DEVICE_BRAND         varchar(64) comment '设备品牌',
    DEVICE_STATUS        varchar(100) comment '设备状态',
+   DEVICES_CHOOSE_FLAG	varchar(16) comment '设备分配状态', 
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.device.web;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -25,6 +27,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.device.entity.Devices;
 import com.thinkgem.jeesite.modules.device.service.DevicesService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 设备信息Controller
@@ -94,6 +97,7 @@ public class DevicesController extends BaseController {
 				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 				return "modules/device/devicesForm";
 			} else {
+				devices.setDevicesChooseFlag("0");// 设备初始设置状态为“未设置”
 				devices.setDeviceStatus("0");// 设备初始状态为“入库未分配”
 				devicesService.save(devices);
 				addMessage(redirectAttributes, "保存设备信息成功");
@@ -111,12 +115,26 @@ public class DevicesController extends BaseController {
 	}
 
 	@RequestMapping(value = "updateDevicesStatus")
-	public void updateDevicesStatus(String id, String serNum) {
+	@ResponseBody
+	public void updateDevicesStatus(String id, String serNum, String status) {
 		Devices upDevices = new Devices();
 		upDevices.setId(id);
-		upDevices.setDeviceStatus("1");// 更改为出库已分配
+		upDevices.setDeviceStatus(status);// 更改为出库已分配
 		upDevices.setDistrSerlNum(serNum);
+		upDevices.setUpdateBy(UserUtils.getUser());
+		upDevices.setUpdateDate(new Date());
 		devicesService.updateDevicesStatus(upDevices);
+	}
+
+	@RequestMapping(value = "updateDevicesChooseFlag")
+	@ResponseBody
+	public void updateDevicesChooseFlag(String id, String status) {
+		Devices upDevices = new Devices();
+		upDevices.setId(id);
+		upDevices.setDevicesChooseFlag(status);// 更改为已设置状态
+		upDevices.setUpdateBy(UserUtils.getUser());
+		upDevices.setUpdateDate(new Date());
+		devicesService.updateDevicesChooseFlag(upDevices);
 	}
 
 }

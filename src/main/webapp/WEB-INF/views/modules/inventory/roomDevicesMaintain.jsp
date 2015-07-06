@@ -5,6 +5,7 @@
 	<title>房间设备维护管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
+	
 		$(document).ready(function() {
 			//$("#name").focus();
 			$("#inputForm").validate({
@@ -15,7 +16,7 @@
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
 					$("#messageBox").text("输入有误，请先更正。");
-					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
+					if(element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
 						error.appendTo(element.parent().parent());
 					} else {
 						error.insertAfter(element);
@@ -23,6 +24,7 @@
 				}
 			});
 		});
+		
 		function addRow(list, idx, tpl, row){
 			$(list).append(Mustache.render(tpl, {
 				idx: idx, delBtn: true, row: row
@@ -39,16 +41,19 @@
 				}
 			});
 		}
+		
 		function delRow(obj, prefix){
-			var id = $(prefix+"_id");
 			var delFlag = $(prefix+"_delFlag");
-			if (id.val() == ""){
+			var manualSetFlag = $(prefix+"_manualSetFlag").val();
+			if (manualSetFlag == "1"){
+				var id = $(prefix+"_id");
 				$(obj).parent().parent().remove();
-			}else if(delFlag.val() == "0"){
+				$.post("${ctx}/device/devices/updateDevicesChooseFlag",{id:id.val(),status:"0"},function(){});//更新为未设置状态
+			}else if(delFlag.val() == "0" && manualSetFlag == "0"){
 				delFlag.val("1");
 				$(obj).html("&divide;").attr("title", "撤销删除");
 				$(obj).parent().parent().addClass("error");
-			}else if(delFlag.val() == "1"){
+			}else if(delFlag.val() == "1" && manualSetFlag == "0"){
 				delFlag.val("0");
 				$(obj).html("&times;").attr("title", "删除");
 				$(obj).parent().parent().removeClass("error");
@@ -67,8 +72,9 @@
 							if(serNum == "undefined" || serNum == null || serNum == ""){
 								serNum = $("#projectName").val() + "-" + $("#buildingName").val() + "-" + $("#houseNo").val() + "-" + $("#roomNo").val() + "-" + (obj+1);
 							}
-							//把选中的设备状态变更为“出库已分配”,分配序号也一并更新
-							//$.post("${ctx}/device/devices/updateDevicesStatus",{id: $(checkedRadio).val(), serNum: serNum},function(){});
+							//把选中的设备设置状态变更为“已设置”
+							$.post("${ctx}/device/devices/updateDevicesChooseFlag",{id: $(checkedRadio).val(),status:"1"},function(){});
+							$("#roomDevicesDtlList"+ obj +"_id").val($(checkedRadio).val());
 							$("#roomDevicesDtlList"+ obj +"_deviceBrand").val($(checkedRadio).attr("attr-deviceBrand"));
 							$("#roomDevicesDtlList"+ obj +"_deviceType").val($(checkedRadio).attr("attr-deviceType"));
 							$("#roomDevicesDtlList"+ obj +"_deviceTypeDesc").val($(checkedRadio).attr("attr-deviceTypeDesc"));
@@ -77,6 +83,7 @@
 							$("#roomDevicesDtlList"+ obj +"_deviceModel").val($(checkedRadio).attr("attr-deviceModel"));
 							$("#roomDevicesDtlList"+ obj +"_devicePrice").val($(checkedRadio).attr("attr-devicePrice"));
 							$("#roomDevicesDtlList"+ obj +"_distrSerlNum").val(serNum);
+							$("#roomDevicesDtlList"+ obj +"_manualSetFlag").val("1");//已经手动设置
 					   }
 					} else{//点了关闭后
 						$("#roomDevicesDtlList"+ obj).remove();
@@ -162,6 +169,7 @@
 							<th>设备型号</th>
 							<th>设备采购价格</th>
 							<th>设备分配序号</th>
+							<th class="hide"></th>
 							<shiro:hasPermission name="device:roomDevices:edit">
 								<th width="10">操作</th>
 							</shiro:hasPermission>
@@ -207,6 +215,9 @@
 					 <td>
 						 <input id="roomDevicesDtlList{{idx}}_distrSerlNum" name="roomDevicesDtlList[{{idx}}].distrSerlNum" type="text" value="{{row.distrSerlNum}}" class="input-medium required"/>
 						 <span class="help-inline"><font color="red">*</font></span>
+					 </td>
+					 <td class="hide">
+						 <input id="roomDevicesDtlList{{idx}}_manualSetFlag" name="roomDevicesDtlList[{{idx}}].manualSetFlag" value="0" type="hidden"/>
 					 </td>
 					 <shiro:hasPermission name="device:roomDevices:edit">
 					 <td class="text-center" width="10">

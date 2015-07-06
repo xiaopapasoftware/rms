@@ -22,9 +22,14 @@ public interface DevicesDao extends CrudDao<Devices> {
 	 * 查询是否有 设备编号 + 设备名称 ＋ 设备型号 ＋ 设备类型 ＋ 设备品牌 设备状态！=已报废4 一致的设备信息
 	 * */
 	List<Devices> findExistedDevices(Devices devices);
-	
+
 	/**
 	 * 更新设备状态
 	 * */
 	void updateDevicesStatus(Devices devices);
+
+	/**
+	 * 更新设备是否被设置的状态
+	 * */
+	void updateDevicesChooseFlag(Devices devices);
 }

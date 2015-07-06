@@ -54,4 +54,9 @@ public class DevicesService extends CrudService<DevicesDao, Devices> {
 	public void updateDevicesStatus(Devices devices) {
 		dao.updateDevicesStatus(devices);
 	}
+
+	@Transactional(readOnly = false)
+	public void updateDevicesChooseFlag(Devices devices) {
+		dao.updateDevicesChooseFlag(devices);
+	}
 }

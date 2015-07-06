@@ -26,6 +26,7 @@ public class Devices extends DataEntity<Devices> {
 	private String deviceBrand; // 设备品牌
 	private String deviceStatus; // 设备状态
 	private String distrSerlNum; // 设备分配序号
+	private String devicesChooseFlag; // 设备分配状态，默认为0未分配，1为已分配。
 
 	public Devices() {
 		super();
@@ -113,4 +114,10 @@ public class Devices extends DataEntity<Devices> {
 		this.deviceStatus = deviceStatus;
 	}
 
+	public String getDevicesChooseFlag() {
+		return devicesChooseFlag;
+	}
+	public void setDevicesChooseFlag(String devicesChooseFlag) {
+		this.devicesChooseFlag = devicesChooseFlag;
+	}
 }
