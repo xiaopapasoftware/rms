@@ -27,6 +27,7 @@ public class Devices extends DataEntity<Devices> {
 	private String deviceStatus; // 设备状态
 	private String distrSerlNum; // 设备分配序号
 	private String devicesChooseFlag; // 设备分配状态，默认为0未分配，1为已分配。
+	private String manualSetFlag;// 手动选择了设备后，做的标识
 
 	public Devices() {
 		super();
@@ -119,5 +120,13 @@ public class Devices extends DataEntity<Devices> {
 	}
 	public void setDevicesChooseFlag(String devicesChooseFlag) {
 		this.devicesChooseFlag = devicesChooseFlag;
+	}
+
+	public String getManualSetFlag() {
+		return manualSetFlag;
+	}
+
+	public void setManualSetFlag(String manualSetFlag) {
+		this.manualSetFlag = manualSetFlag;
 	}
 }

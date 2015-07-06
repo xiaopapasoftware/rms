@@ -7,7 +7,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("tr[attr-devicesChooseFlag='1']").addClass("error");
-			$("tr[attr-devicesChooseFlag='1'] td:nth-child(1)").find("INPUT[type = 'radio']").attr("disabled",true); 
+			//$("tr[attr-devicesChooseFlag='1'] td:nth-child(1)").find("INPUT[type = 'radio']").attr("disabled",true); 
 		});
 		function page(n,s){
 			$("#pageNo").val(n);

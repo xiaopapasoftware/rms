@@ -87,11 +87,28 @@ public class RoomDevicesController extends BaseController {
 		if (!beanValidator(model, roomDevices)) {
 			return form(roomDevices, model);
 		}
-		roomDevicesService.save(roomDevices);
-		addMessage(redirectAttributes, "保存房屋设备关联信息成功");
-		return "redirect:" + Global.getAdminPath() + "/device/roomDevices/?repage";
+		List<Devices> addeDevices = Lists.newArrayList();// 所有后来添加的设备
+		List<Devices> deletedDevices = Lists.newArrayList();// 所有本次要删除的设备
+		List<Devices> allDevices = roomDevices.getRoomDevicesDtlList();
+		if (CollectionUtils.isNotEmpty(allDevices)) {
+			for (Devices d : allDevices) {
+				if ("1".equals(d.getManualSetFlag()) && StringUtils.isNotEmpty(d.getId())) {// 全部为手动添加的数据
+					addeDevices.add(d);
+				}
+				if ("0".equals(d.getManualSetFlag()) && StringUtils.isNotEmpty(d.getId()) && "1".equals(d.getDelFlag())) {// 全部要删除的数据
+					deletedDevices.add(d);
+				}
+			}
+		}
+		if (CollectionUtils.isNotEmpty(addeDevices)) {
+			roomDevicesService.addRoomDevices(roomDevices, addeDevices);
+		}
+		if (CollectionUtils.isNotEmpty(deletedDevices)) {
+			roomDevicesService.deleteRoomDevices(roomDevices, deletedDevices);
+		}
+		addMessage(redirectAttributes, "房间设备配备成功");
+		return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 	}
-
 	@RequiresPermissions("device:roomDevices:edit")
 	@RequestMapping(value = "delete")
 	public String delete(RoomDevices roomDevices, RedirectAttributes redirectAttributes) {
@@ -136,7 +153,7 @@ public class RoomDevicesController extends BaseController {
 				}
 			}
 		}
-		rd.setRoomedDevices(roomedDevices);
+		rd.setRoomDevicesDtlList(roomedDevices);
 
 		model.addAttribute("room", rm);
 		model.addAttribute("roomDevices", rd);

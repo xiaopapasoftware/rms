@@ -110,8 +110,13 @@
 			</shiro:lacksPermission>
 		</li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="roomDevices" action="${ctx}/inventory/room/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="roomDevices" action="${ctx}/device/roomDevices/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="propertyProjectId"/>
+		<form:hidden path="buildingId"/>
+		<form:hidden path="houseId"/>
+		<form:hidden path="roomId"/>
+
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
@@ -234,7 +239,7 @@
 					var roomDevicesDtlRowIdx = 0;
 					var roomDevicesDtlTpl = $("#roomDevicesDtlTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 					$(document).ready(function() {
-						var data = ${fns:toJson(roomDevices.roomedDevices)};
+						var data = ${fns:toJson(roomDevices.roomDevicesDtlList)};
 						for (var i=0; i<data.length; i++){
 							addRow('#roomDevicesDtlList', roomDevicesDtlRowIdx, roomDevicesDtlTpl, data[i]);
 							roomDevicesDtlRowIdx = roomDevicesDtlRowIdx + 1;
