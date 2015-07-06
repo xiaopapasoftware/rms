@@ -120,9 +120,12 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE t_room_devices SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		UPDATE t_room_devices SET  del_flag = #{DEL_FLAG_DELETE}
+		WHERE   property_project_id = #{propertyProjectId}
+		and 	building_id = #{buildingId}
+		and		house_id = #{houseId}
+		and		room_id = #{roomId}
+		and 	device_id = #{deviceId}
 	</update>
 	
 </mapper>

@@ -1010,22 +1010,6 @@
 								</sql>
 								
 								<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
-								
-								<!-- mysql、mssql、h2 -->
-								<dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}" password="${jdbc.password}">
-								
-								<!-- oracle -->
-								<!--<dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}" password="${jdbc.password}" schema="${jdbc.username}" >-->
-									
-									<dbconfig>
-										<property name="datatypeFactory" value="${dbunit.datatype}" />
-									</dbconfig>
-									<classpath refid="maven.test.classpath" />
-									<!--<operation type="INSERT" src="db/sys/jeesite_data.xls" format="xls" transaction="true"/>-->
-									<operation type="INSERT" src="db/cms/jeesite_data.xls" format="xls" transaction="true"/>
-									
-								</dbunit>
-								
 							</target>
 						</configuration>
 					</plugin>
