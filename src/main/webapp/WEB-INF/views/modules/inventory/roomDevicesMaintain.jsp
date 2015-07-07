@@ -102,12 +102,7 @@
 			<a href="${ctx}/inventory/room/form?id=${room.id}">房间信息<shiro:hasPermission name="inventory:room:edit">${not empty room.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="inventory:room:edit">查看</shiro:lacksPermission></a>
 		</li>
 		<li class="active">
-			<shiro:hasPermission name="device:roomDevices:edit">
-						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">房间设备维护</a>
-			</shiro:hasPermission>
-			<shiro:lacksPermission name="device:roomDevices:edit">
-				<a href="${ctx}/device/roomDevices/viewDevices?roomId=${room.id}">房间设备查看</a>
-			</shiro:lacksPermission>
+			<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备<shiro:hasPermission name="device:roomDevices:edit">维护</shiro:hasPermission><shiro:lacksPermission name="device:roomDevices:edit">查看</shiro:lacksPermission></a>
 		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="roomDevices" action="${ctx}/device/roomDevices/save" method="post" class="form-horizontal">

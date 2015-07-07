@@ -14,45 +14,108 @@
 			$("#searchForm").submit();
         	return false;
         }
+		
+		function changeProject() {
+			var project = $("[id='propertyProject.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != project) {
+				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+					}
+					$("[id='building.id']").html(html);
+				});
+			} else {
+				$("[id='building.id']").html(html);
+			}
+			$("[id='building.id']").val("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='house.id']").html(html);
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function buildingChange() {
+			var building = $("[id='building.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != building) {
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+					}
+					$("[id='house.id']").html(html);
+				});
+			} else {
+				$("[id='house.id']").html(html);
+			}
+			$("[id='house.id']").val("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+			
+			$("[id='room.id']").html(html);
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
+		
+		function houseChange() {
+			var room = $("[id='house.id']").val();
+			var html = "<option value='' selected='selected'>全部</option>";
+			if("" != room) {
+				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+					for(var i=0;i<data.length;i++) {
+						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
+					}
+					$("[id='room.id']").html(html);
+				});
+			} else {
+				$("[id='room.id']").html(html);
+			}
+			$("[id='room.id']").val("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/device/devicesHis/">设备变更信息列表</a></li>
-		<shiro:hasPermission name="device:devicesHis:edit"><li><a href="${ctx}/device/devicesHis/form">设备变更信息添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="devicesHis" action="${ctx}/device/devicesHis/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>物业项目：</label>
-				<form:select path="propertyProjectId" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li>
+				<label>物业项目：</label>
+				<form:select path="propertyProject.id" class="input-medium" onchange="changeProject()">
+					<form:option value="" label="全部"/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label>楼宇：</label>
-				<form:select path="buildingId" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="building.id" class="input-medium" onchange="buildingChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>房屋：</label>
-				<form:select path="houseId" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label>房屋号：</label>
+				<form:select path="house.id" class="input-medium" onchange="houseChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>房间 0代表公共区域：</label>
-				<form:select path="roomId" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label>房间号：</label>
+				<form:select path="room.id" class="input-medium">
+					<form:option value="" label="全部"/>
+					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>行为（添加0/删除1）：</label>
+			<li><label>操作类型：</label>
 				<form:select path="operType" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('roomDevices_oper_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -65,42 +128,41 @@
 			<tr>
 				<th>物业项目</th>
 				<th>楼宇</th>
-				<th>房屋</th>
-				<th>房间 0代表公共区域</th>
-				<th>行为（添加0/删除1）</th>
-				<th>更新时间</th>
-				<th>备注信息</th>
-				<shiro:hasPermission name="device:devicesHis:edit"><th>操作</th></shiro:hasPermission>
+				<th>房屋号</th>
+				<th>房间号</th>
+				<th>操作类型</th>
+				<th>设备品牌</th>
+				<th>设备类型</th>
+				<th>设备名称</th>
+				<th>设备编号</th>
+				<th>设备型号</th>
+				<th>设备采购价格</th>
+				<th>设备分配序号</th>
+				<th>操作时间</th>
+				<th>操作人</th>
 			</tr>
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="devicesHis">
 			<tr>
-				<td><a href="${ctx}/device/devicesHis/form?id=${devicesHis.id}">
-					${fns:getDictLabel(devicesHis.propertyProjectId, '', '')}
-				</a></td>
+				<td>${devicesHis.propertyProject.projectName}</td>
+				<td>${devicesHis.building.buildingName}</td>
+				<td>${devicesHis.house.houseNo}</td>
+				<td>${devicesHis.room.roomNo}</td>
+				<td>${fns:getDictLabel(devicesHis.operType, 'roomDevices_oper_type', '')}</td>
+				<td>${devicesHis.devices.deviceBrand}</td>
+				<td>${fns:getDictLabel(devicesHis.devices.deviceType, 'device_type', '')}</td>
+				<td>${devicesHis.devices.deviceName}</td>
+				<td>${devicesHis.devices.deviceId}</td>
+				<td>${devicesHis.devices.deviceModel}</td>
+				<td>${devicesHis.devices.devicePrice}</td>
+				<td>${devicesHis.devices.distrSerlNum}</td>
 				<td>
-					${fns:getDictLabel(devicesHis.buildingId, '', '')}
+					<fmt:formatDate value="${devicesHis.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
-					${fns:getDictLabel(devicesHis.houseId, '', '')}
+				 	${devicesHis.createBy.loginName}
 				</td>
-				<td>
-					${fns:getDictLabel(devicesHis.roomId, '', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(devicesHis.operType, '', '')}
-				</td>
-				<td>
-					<fmt:formatDate value="${devicesHis.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${devicesHis.remarks}
-				</td>
-				<shiro:hasPermission name="device:devicesHis:edit"><td>
-    				<a href="${ctx}/device/devicesHis/form?id=${devicesHis.id}">修改</a>
-					<a href="${ctx}/device/devicesHis/delete?id=${devicesHis.id}" onclick="return confirmx('确认要删除该设备变更信息吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

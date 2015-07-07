@@ -6,7 +6,7 @@
 <meta name="decorator" content="default" />
 <script type="text/javascript">
 		$(document).ready(function() {
-			
+		
 		});
 		
 		function page(n,s){
@@ -128,29 +128,29 @@
 					<td>${house.propertyProject.projectName}</td>
 					<td>${house.building.buildingName}</td>
 					<td>${house.owner.name}</td>
-					<td><a href="${ctx}/inventory/house/form?id=${house.id}">
-							${house.houseNo} </a></td>
-					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}
-					</td>
+					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
+					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>
 					<td>${house.houseFloor}</td>
 					<td>${house.houseSpace}</td>
 					<td>${house.decorationSpance}</td>
 					<td>${house.houseStructure}</td>
 					<td>${house.decorationStructure}</td>
-					<td><fmt:formatDate value="${house.createDate}"
-							pattern="yyyy-MM-dd HH:mm:ss" /></td>
-					<td><fmt:formatDate value="${house.updateDate}"
-							pattern="yyyy-MM-dd HH:mm:ss" /></td>
+					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>
 					<td>${house.updateBy.loginName}</td>
 					<td>${house.remarks}</td>
 					<shiro:hasPermission name="inventory:house:edit">
-						<td><a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
-							<a href="${ctx}/inventory/house/delete?id=${house.id}"
-							onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a> <c:if
-								test="${house.houseStatus eq '0'}">
+						<td>
+							<a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
+							<a href="${ctx}/inventory/house/delete?id=${house.id}" onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a>
+							<c:if test="${house.houseStatus eq '0'}">
 								<a href="#" onclick="finishDirect('${house.id}');">装修完成</a>
-							</c:if></td>
+							</c:if>
+						</td>
+					</shiro:hasPermission>
+				 	<shiro:hasPermission name="device:roomDevices:view">
+					 	<td><a href="${ctx}/device/roomDevices/viewHouseDevices?houseId=${house.id}">查看设备</a></td>
 					</shiro:hasPermission>
 				</tr>
 			</c:forEach>

@@ -142,12 +142,7 @@
 	    				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
 						<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
 					</shiro:hasPermission>
-					<shiro:hasPermission name="device:roomDevices:edit">
-						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备维护</a>
-					</shiro:hasPermission>
-					<shiro:lacksPermission name="device:roomDevices:edit">
-						<a href="${ctx}/device/roomDevices/viewDevices?roomId=${room.id}">设备查看</a>
-					</shiro:lacksPermission>
+					<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备<shiro:hasPermission name="device:roomDevices:edit">维护</shiro:hasPermission><shiro:lacksPermission name="device:roomDevices:edit">查看</shiro:lacksPermission></a>
 				</td>
 			</tr>
 		</c:forEach>
