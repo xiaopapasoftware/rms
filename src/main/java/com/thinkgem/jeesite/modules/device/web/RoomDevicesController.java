@@ -27,7 +27,9 @@ import com.thinkgem.jeesite.modules.device.entity.Devices;
 import com.thinkgem.jeesite.modules.device.entity.RoomDevices;
 import com.thinkgem.jeesite.modules.device.service.DevicesService;
 import com.thinkgem.jeesite.modules.device.service.RoomDevicesService;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
@@ -53,6 +55,9 @@ public class RoomDevicesController extends BaseController {
 
 	@Autowired
 	private DevicesService devicesService;
+
+	@Autowired
+	private HouseService houseService;
 
 	@ModelAttribute
 	public RoomDevices get(@RequestParam(required = false) String id) {
@@ -120,7 +125,7 @@ public class RoomDevicesController extends BaseController {
 	/**
 	 * 房间设备维护
 	 * */
-	@RequiresPermissions("device:roomDevices:edit")
+	@RequiresPermissions("device:roomDevices:view")
 	@RequestMapping(value = "maintainDevices")
 	public String maintainDevices(RoomDevices roomDevices, RedirectAttributes redirectAttributes, Model model) {
 		RoomDevices rd = new RoomDevices();
@@ -160,13 +165,43 @@ public class RoomDevicesController extends BaseController {
 
 		return "modules/inventory/roomDevicesMaintain";
 	}
-	/**
-	 * 房间设备查看
-	 * */
-	@RequestMapping(value = "viewDevices")
-	public String viewDevices(RoomDevices roomDevices, Model model) {
-		// TODO
-		return "modules/inventory/roomDevicesMaintain";
-	}
 
+	/**
+	 * 房屋设备查看
+	 * */
+	@RequiresPermissions("device:roomDevices:view")
+	@RequestMapping(value = "viewHouseDevices")
+	public String viewHouseDevices(RoomDevices roomDevices, Model model) {
+		String houseId = roomDevices.getHouseId();
+		House house = houseService.get(houseId);
+		RoomDevices rd = new RoomDevices();
+
+		rd.setHouseId(house.getId());
+		rd.setHouseNo(house.getHouseNo());
+
+		rd.setBuildingId(house.getBuilding().getId());
+		rd.setBuildingName(house.getBuilding().getBuildingName());
+
+		rd.setPropertyProjectId(house.getPropertyProject().getId());
+		rd.setProjectName(house.getPropertyProject().getProjectName());
+
+		List<Devices> roomedDevices = Lists.newArrayList();
+		RoomDevices rds = new RoomDevices();
+		rds.setHouseId(houseId);
+		List<RoomDevices> rdList = roomDevicesService.findList(rds);
+		if (CollectionUtils.isNotEmpty(rdList)) {
+			for (RoomDevices tempRD : rdList) {
+				if (StringUtils.isNotEmpty(tempRD.getDeviceId())) {
+					Devices d = devicesService.get(tempRD.getDeviceId());
+					d.setDeviceTypeDesc(DictUtils.getDictLabel(d.getDeviceType(), "device_type", d.getDeviceType()));
+					roomedDevices.add(d);
+				}
+			}
+		}
+		rd.setRoomDevicesDtlList(roomedDevices);
+		model.addAttribute("roomDevices", rd);
+		model.addAttribute("house", house);
+		
+		return "modules/inventory/houseDevicesView";
+	}
 }
