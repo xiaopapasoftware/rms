@@ -149,7 +149,7 @@
 							</c:if>
 						</td>
 					</shiro:hasPermission>
-				 	<shiro:hasPermission name="device:roomDevices:view">-->
+				 	<shiro:hasPermission name="device:roomDevices:view">
 					 	<td><a href="${ctx}/device/roomDevices/viewHouseDevices?houseId=${house.id}">查看设备</a></td>
 					</shiro:hasPermission>
 				</tr>
