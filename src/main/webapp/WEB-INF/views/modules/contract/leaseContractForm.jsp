@@ -10,7 +10,7 @@
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#leaseContractDtlList").find("tr").length==0) {
-						top.$.jBox.tip('请录入承租价格.','warning');
+						top.$.jBox.tip('请录入月承租价格.','warning');
 						return;
 					}
 					loading('正在提交，请稍等...');
@@ -238,7 +238,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-				<label class="control-label">承租价格：</label>
+				<label class="control-label">月承租价格：</label>
 				<div class="controls">
 					<table id="contentTable" class="table table-striped table-bordered table-condensed">
 						<thead>
@@ -246,7 +246,7 @@
 								<th class="hide"></th>
 								<th>开始日期</th>
 								<th>结束日期</th>
-								<th>承租价格</th>
+								<th>月承租价格</th>
 								<shiro:hasPermission name="contract:leaseContract:edit"><th width="10">&nbsp;</th></shiro:hasPermission>
 							</tr>
 						</thead>
