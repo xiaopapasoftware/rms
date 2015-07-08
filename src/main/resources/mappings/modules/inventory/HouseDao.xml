@@ -70,7 +70,7 @@
 			<if test="houseStatus != null and houseStatus != ''">
 				AND a.house_status = #{houseStatus}
 			</if>
-			<if test="choose=='1'">
+			<if test="choose != null and choose != ''">
 				and a.house_status not in('0','2','4','6') 
 			</if>
 		</where>

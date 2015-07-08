@@ -94,18 +94,20 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		
 		if("1".equals(tradingAccounts.getTradeType())) {//定金协议
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
-			depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"5":"4");//5:到账收据审核通过 4:到账收据审核拒绝
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
-			if(!"5".equals(depositAgreement.getAgreementStatus()))
+			if(!"5".equals(depositAgreement.getAgreementStatus())) {
+				depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"5":"4");//5:到账收据审核通过 4:到账收据审核拒绝
 				depositAgreementDao.update(depositAgreement);
+			}
 		} else if("3".equals(tradingAccounts.getTradeType())) {//新签合同
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-			rentContract.setContractStatus("1".equals(auditHis.getAuditStatus())?"6":"5");//6:到账收据审核通过 5:到账收据审核拒绝
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if("6".equals(rentContract.getContractStatus()))
+			if(!"6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractStatus("1".equals(auditHis.getAuditStatus())?"6":"5");//6:到账收据审核通过 5:到账收据审核拒绝
 				rentContractDao.update(rentContract);
+			}
 		} else if("7".equals(tradingAccounts.getTradeType())) {//正常退租
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"8":"6");//8:正常退租 6:退租款项审核拒绝

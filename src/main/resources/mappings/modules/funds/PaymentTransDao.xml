@@ -23,13 +23,15 @@
 		case when a.trade_type=1 then ta.agreement_name 
 		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 
 		or a.trade_type=11 
-		then tc.contract_name
+		then tc.contract_name 
+		when a.trade_type=0 then tl.contract_name 
 		else "" end transName 
 	</sql>
 	
 	<sql id="paymentTransJoins">
 	left join t_deposit_agreement ta on a.trans_id=ta.id 
 	left join t_rent_contract tc on a.trans_id=tc.id 
+	left join t_lease_contract tl on a.trans_id=tl.id 
 	</sql>
     
 	<select id="get" resultType="PaymentTrans">

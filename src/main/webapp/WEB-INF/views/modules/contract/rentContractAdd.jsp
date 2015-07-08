@@ -63,7 +63,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != building) {
-				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
 					}
@@ -84,7 +84,7 @@
 			var room = $("[id='house.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != room) {
-				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+				$.get("${ctx}/inventory/room/findList?id=" + room+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
 					}
@@ -113,7 +113,7 @@
 		<form:hidden path="contractStatus" value="1"/>
 		<form:hidden path="validatorFlag" value="1"/>
 		<form:hidden path="saveSource" value="1"/>
-		<form:hidden path="agreementBusiStatus" value=""/><!--2:已转合同-->
+		<form:hidden path="contractId"/>
 		<sys:message content="${message}"/>		
 		<!-- <div class="control-group">
 			<label class="control-label">原出租合同：</label>

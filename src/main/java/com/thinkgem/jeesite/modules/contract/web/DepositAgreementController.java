@@ -142,7 +142,7 @@ public class DepositAgreementController extends BaseController {
 		if(null != depositAgreement.getRoom()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(depositAgreement.getRoom().getId());
+			house.setId(depositAgreement.getHouse().getId());
 			room.setHouse(house);
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);
@@ -204,6 +204,7 @@ public class DepositAgreementController extends BaseController {
 		rentContract.setRental(depositAgreement.getHousingRent());
 		rentContract.setRenMonths(depositAgreement.getRenMonths());
 		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
+		rentContract.setContractId(depositAgreement.getId());
 		model.addAttribute("rentContract", rentContract);
 		
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -230,7 +231,7 @@ public class DepositAgreementController extends BaseController {
 		if(null != rentContract.getRoom()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(rentContract.getRoom().getId());
+			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);

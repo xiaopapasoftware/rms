@@ -58,7 +58,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		if(null != leaseContract) {
 			LeaseContractDtl deaseContractDtl = new LeaseContractDtl();
 			deaseContractDtl.setLeaseContractId(id);
-			List<LeaseContractDtl> leaseContractDtlList = leaseContractDtlDao.findAllList(deaseContractDtl);
+			deaseContractDtl.setDelFlag("0");
+			List<LeaseContractDtl> leaseContractDtlList = leaseContractDtlDao.findList(deaseContractDtl);
 			leaseContract.setLeaseContractDtlList(leaseContractDtlList);
 		}
 		return leaseContract;
@@ -122,6 +123,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			paymentTrans.setStartDate(leaseContract.getEffectiveDate());
 			paymentTrans.setExpiredDate(leaseContract.getExpiredDate());
 			paymentTrans.setTradeAmount(deposit);
+			paymentTrans.setTransAmount(0d);
+			paymentTrans.setLastAmount(deposit);
 			paymentTrans.setTransStatus("0");//未支付
 			paymentTrans.setCreateDate(new Date());
 			paymentTrans.setCreateBy(UserUtils.getUser());
@@ -133,11 +136,12 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			//2.房租款项
 			LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
 			leaseContractDtl.setLeaseContractId(leaseContract.getId());
-			List<LeaseContractDtl> list = leaseContractDtlDao.findAllList(leaseContractDtl);
+			leaseContractDtl.setDelFlag("0");
+			List<LeaseContractDtl> list = leaseContractDtlDao.findList(leaseContractDtl);
 			for(LeaseContractDtl tmpLeaseContractDtl : list) {
 				//计算开始日期与结束日期之间的月数
 				int month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(),tmpLeaseContractDtl.getEndDate());
-				month = month == 0 ? month++ : month;
+				month = (month == 0 ? month++ : month);
 				for(int i=1;i<=month;i++) {
 					paymentTrans = new PaymentTrans();
 					paymentTrans.setId(IdGen.uuid());
@@ -145,10 +149,13 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					paymentTrans.setPaymentType("6");//房租
 					paymentTrans.setTransId(leaseContract.getId());
 					paymentTrans.setTradeDirection("0");//出款
-					paymentTrans.setStartDate(tmpLeaseContractDtl.getStartDate());
+					Date startDate = i==1 ? tmpLeaseContractDtl.getStartDate() : DateUtils.dateAddMonth(tmpLeaseContractDtl.getStartDate(),i-1);
+					paymentTrans.setStartDate(startDate);
 					Date endDate = i==month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth(tmpLeaseContractDtl.getStartDate(),i);
 					paymentTrans.setExpiredDate(endDate);
 					paymentTrans.setTradeAmount(tmpLeaseContractDtl.getDeposit());
+					paymentTrans.setTransAmount(0d);
+					paymentTrans.setLastAmount(tmpLeaseContractDtl.getDeposit());
 					paymentTrans.setTransStatus("0");//未支付
 					paymentTrans.setCreateDate(new Date());
 					paymentTrans.setCreateBy(UserUtils.getUser());
@@ -224,6 +231,20 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachmentDao.insert(attachment);
 			}
 			
+			if(!StringUtils.isBlank(leaseContract.getRelocation())) {
+				Attachment attachment = new Attachment();
+				attachment.setId(IdGen.uuid());
+				attachment.setLeaseContractId(id);
+				attachment.setAttachmentType(FileType.HOUSE_AGREEMENT_CERTIFICATE.getValue());
+				attachment.setAttachmentPath(leaseContract.getCertificate());
+				attachment.setCreateDate(new Date());
+				attachment.setCreateBy(UserUtils.getUser());
+				attachment.setUpdateDate(new Date());
+				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
+				attachmentDao.insert(attachment);
+			}
+			
 			//承租合同明细
 			List<LeaseContractDtl> leaseContractDtlList = leaseContract.getLeaseContractDtlList();
 			if(null != leaseContractDtlList && leaseContractDtlList.size() > 0) {
@@ -285,6 +306,20 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				attachment.setId(IdGen.uuid());
 				attachment.setLeaseContractId(leaseContract.getId());
 				attachment.setAttachmentType(FileType.HOUSE_CERTIFICATE.getValue());
+				attachment.setAttachmentPath(leaseContract.getCertificate());
+				attachment.setCreateDate(new Date());
+				attachment.setCreateBy(UserUtils.getUser());
+				attachment.setUpdateDate(new Date());
+				attachment.setUpdateBy(UserUtils.getUser());
+				attachment.setDelFlag("0");
+				attachmentDao.insert(attachment);
+			}
+			
+			if(!StringUtils.isBlank(leaseContract.getRelocation())) {
+				attachment = new Attachment();
+				attachment.setId(IdGen.uuid());
+				attachment.setLeaseContractId(id);
+				attachment.setAttachmentType(FileType.HOUSE_AGREEMENT_CERTIFICATE.getValue());
 				attachment.setAttachmentPath(leaseContract.getCertificate());
 				attachment.setCreateDate(new Date());
 				attachment.setCreateBy(UserUtils.getUser());

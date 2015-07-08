@@ -89,12 +89,10 @@ public class HouseController extends BaseController {
 
 	@RequestMapping(value = {"findList"})
 	@ResponseBody
-	public List<House> findList(String id) {
+	public List<House> findList(Building building) {
 		House house = new House();
-		Building building = new Building();
-		building.setId(id);
 		house.setBuilding(building);
-		house.setChoose("1");//过滤不可用
+		house.setChoose(building.getChoose());//过滤不可用
 		List<House> list = houseService.findList(house);
 		return list;
 	}

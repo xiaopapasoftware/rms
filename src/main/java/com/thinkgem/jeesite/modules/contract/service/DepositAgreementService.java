@@ -183,7 +183,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	@Transactional(readOnly = false)
 	public void save(DepositAgreement depositAgreement) {
 		depositAgreement.setAgreementStatus("0");//录入完成到账收据待登记
-		depositAgreement.setAgreementBusiStatus("0");//待转合同
+		//depositAgreement.setAgreementBusiStatus("0");//待转合同
 		
 		String id = super.saveAndReturnId(depositAgreement);
 		//生成款项

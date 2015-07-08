@@ -9,6 +9,10 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					if($("#rentMode").val()!="0") {
+						top.$.jBox.tip('请选择房间.','warning');
+						return;
+					}
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
@@ -53,7 +57,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
-				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
 					}
@@ -74,7 +78,7 @@
 			var room = $("[id='house.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != room) {
-				$.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+				$.get("${ctx}/inventory/room/findList?id=" + room+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
 					}
@@ -193,7 +197,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">协议开始时间：</label>
+			<label class="control-label">合同开始时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
@@ -202,7 +206,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">协议结束时间：</label>
+			<label class="control-label">合同结束时间：</label>
 			<div class="controls">
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd"/>"

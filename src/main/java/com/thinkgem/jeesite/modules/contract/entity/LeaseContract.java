@@ -42,11 +42,14 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	private String landlordId;//房东身份证
 	private String profile;//委托证明
 	private String certificate;//房产证
+	private String relocation;//动迁协议
 	
 	private String projectName;
 	private String buildingBame;
 	private String houseNo;
 	private String remittancerName;
+	
+	private String type;
 	
 	private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
 	
@@ -232,5 +235,21 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 
 	public void setLeaseContractDtlList(List<LeaseContractDtl> leaseContractDtlList) {
 		this.leaseContractDtlList = leaseContractDtlList;
+	}
+
+	public String getRelocation() {
+		return relocation;
+	}
+
+	public void setRelocation(String relocation) {
+		this.relocation = relocation;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

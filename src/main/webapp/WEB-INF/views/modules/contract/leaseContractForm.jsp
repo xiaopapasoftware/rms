@@ -84,7 +84,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != building) {
-				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
 					}
@@ -102,7 +102,7 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<li class="active">
-			<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">承租合同
+			<a href="#">承租合同
 			<shiro:hasPermission name="contract:leaseContract:edit">
 				<c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">
 					${not empty leaseContract.id?'修改':'添加'}
@@ -115,6 +115,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="type"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
@@ -235,6 +236,13 @@
 			<div class="controls">
 				<form:hidden id="certificate" path="certificate" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="certificate" type="files" uploadPath="/2" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">动迁协议：</label>
+			<div class="controls">
+				<form:hidden id="relocation" path="relocation" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="relocation" type="files" uploadPath="/3" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

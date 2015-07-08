@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
@@ -149,6 +150,30 @@ public class LeaseContractController extends BaseController {
 	public String save(LeaseContract leaseContract, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, leaseContract)){
 			return form(leaseContract, model);
+		}
+		LeaseContract tmpLeaseContract = new LeaseContract();
+		tmpLeaseContract.setPropertyProject(leaseContract.getPropertyProject());
+		tmpLeaseContract.setBuilding(leaseContract.getBuilding());
+		tmpLeaseContract.setHouse(leaseContract.getHouse());
+		tmpLeaseContract.setDelFlag("0");
+		List<LeaseContract> list = leaseContractService.findList(tmpLeaseContract);
+		if(null != list && list.size()>0) {
+			tmpLeaseContract = list.get(0);
+			if("0".equals(tmpLeaseContract.getContractStatus()) || "1".equals(tmpLeaseContract.getContractStatus())) {
+				if("add".equals(leaseContract.getType())) {
+					model.addAttribute("message", "该房屋已签承租合同");
+					model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+					return form(leaseContract, model);
+				} else {
+					if(!leaseContract.getPropertyProject().getId().equals(tmpLeaseContract.getPropertyProject().getId())
+							|| !leaseContract.getBuilding().getId().equals(tmpLeaseContract.getBuilding().getId())
+							|| !leaseContract.getHouse().getId().equals(tmpLeaseContract.getHouse().getId())) {					
+						model.addAttribute("message", "该房屋已签承租合同");
+						model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+						return form(leaseContract, model);
+					}
+				}
+			}
 		}
 		leaseContractService.save(leaseContract);
 		addMessage(redirectAttributes, "保存承租合同成功");

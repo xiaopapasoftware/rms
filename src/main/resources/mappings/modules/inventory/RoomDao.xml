@@ -69,7 +69,7 @@
 			<if test="roomStatus != null and roomStatus != ''">
 				AND a.room_status = #{roomStatus}
 			</if>
-			<if test="choose=='1'">
+			<if test="choose !=null and choose != ''">
 				and a.room_status not in('0','2','3','5') 
 			</if>
 		</where>

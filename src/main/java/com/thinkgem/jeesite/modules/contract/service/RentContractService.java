@@ -20,12 +20,14 @@ import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
+import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
+import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -65,6 +67,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	private HouseDao houseDao;
 	@Autowired
 	private RoomDao roomDao;
+	@Autowired
+	private DepositAgreementDao depositAgreementDao;
 	
 	private static final String RENT_CONTRACT_ROLE = "rent_contract_role";//新签合同审批
 	private static final String CHANGE_AGREEMENT_ROLE = "change_agreement_role";//变更协议审批
@@ -110,10 +114,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				houseDao.update(house);
 			} else {//单间
 				Room room = roomDao.get(rentContract.getRoom().getId());
-				room.setRoomStatus("1");//待出租可预订
-				room.setCreateBy(UserUtils.getUser());
-				room.setUpdateDate(new Date());
-				roomDao.update(room);
+				if(null != room) {
+					room.setRoomStatus("1");//待出租可预订
+					room.setCreateBy(UserUtils.getUser());
+					room.setUpdateDate(new Date());
+					roomDao.update(room);
+				}
 			}
 		}
 		
@@ -669,6 +675,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			room.setCreateBy(UserUtils.getUser());
 			room.setUpdateDate(new Date());
 			roomDao.update(room);
+		}
+		
+		if("1".equals(rentContract.getSaveSource())) {//定金协议转合同
+			DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getContractId());
+			depositAgreement.setAgreementBusiStatus("2");//已转合同
+			depositAgreement.setCreateBy(UserUtils.getUser());
+			depositAgreement.setUpdateDate(new Date());
+			depositAgreementDao.update(depositAgreement);
 		}
 	}
 	

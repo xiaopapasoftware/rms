@@ -147,14 +147,14 @@
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">销售：</label>
+			<!-- <li><label style="width:120px;">销售：</label>
 				<sys:treeselect id="user" name="user.id" value="${depositAgreement.user.id}" labelName="user.name" labelValue="${depositAgreement.user.name}"
 					title="用户" url="/sys/office/treeData?type=3" cssClass="input-small" allowClear="true" notAllowSelectParent="true" cssStyle="width:140px;"/>
-			</li>
+			</li> -->
 			<li><label style="width:120px;">定金协议名称：</label>
 				<form:input path="agreementName" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
 			</li>
-			<li><label style="width:120px;">协议开始时间：</label>
+			<!-- <li><label style="width:120px;">协议开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
@@ -179,7 +179,7 @@
 				<input name="agreementDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
+			</li> -->
 			<li><label style="width:120px;">定金协议审核状态：</label>
 				<form:select path="agreementStatus" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -207,8 +207,8 @@
 				<th>房间</th>
 				<th>出租方式</th>
 				<!--<th>销售</th>-->
-				<th>协议开始时间</th>
-				<th>协议结束时间</th>
+				<th>合同开始时间</th>
+				<th>合同结束时间</th>
 				<th>协议签订时间</th>
 				<th>首付房租月数</th>
 				<th>房租押金月数</th>
@@ -269,7 +269,7 @@
 					${fns:getDictLabel(depositAgreement.agreementBusiStatus, 'deposit_agreement_busi_status', '')}
 				</td>
 				<td>
-					<fmt:formatDate value="${depositAgreement.updateDate}" pattern="yyyy-MM-dd"/>
+					<fmt:formatDate value="${depositAgreement.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
 					${depositAgreement.remarks}
@@ -281,9 +281,11 @@
 	    				</c:if>
 						<!--<a href="${ctx}/contract/depositAgreement/delete?id=${depositAgreement.id}" onclick="return confirmx('确认要删除该定金协议吗？', this.href)">删除</a>-->
 					</shiro:hasPermission>
+					<shiro:hasPermission name="contract:depositAgreement:audit">
 					<c:if test="${depositAgreement.agreementStatus=='1'}">
 						<a href="javascript:void(0);" onclick="toAudit('${depositAgreement.id}')">审核</a>
 					</c:if>
+					</shiro:hasPermission>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
 					</c:if>
