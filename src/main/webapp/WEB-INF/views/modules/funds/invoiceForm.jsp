@@ -33,7 +33,7 @@
 	<form:form id="inputForm" modelAttribute="invoice" action="${ctx}/funds/invoice/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="tradingAccountsId"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">开票类型：</label>
 			<div class="controls">

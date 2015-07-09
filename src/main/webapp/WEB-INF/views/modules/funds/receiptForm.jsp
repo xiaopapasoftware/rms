@@ -32,7 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="receipt" action="${ctx}/funds/receipt/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">账务交易：</label>
 			<div class="controls">

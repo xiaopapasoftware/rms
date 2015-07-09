@@ -72,7 +72,7 @@
 					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">交易款项开始时间：</label>
+			<!--<li><label style="width:120px;">交易款项开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
@@ -81,7 +81,7 @@
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
+			</li>-->
 			<!--<li><label>应该交易金额：</label>
 				<form:input path="tradeAmount" htmlEscape="false" class="input-medium"/>
 			</li>

@@ -32,7 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="accounting" action="${ctx}/contract/accounting/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">核算费用方向：</label>
 			<div class="controls">

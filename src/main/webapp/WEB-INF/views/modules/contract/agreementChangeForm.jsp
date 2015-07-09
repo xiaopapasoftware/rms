@@ -40,7 +40,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="agreementChange" action="${ctx}/contract/agreementChange/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
 			<div class="controls">

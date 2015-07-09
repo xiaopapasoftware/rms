@@ -112,7 +112,7 @@
 	<update id="delete">
 		UPDATE t_lease_contract_dtl SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE lease_contract_id = #{leaseContractId}
+		WHERE id = #{id}
 	</update>
 	
 </mapper>

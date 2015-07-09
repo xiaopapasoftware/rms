@@ -35,7 +35,7 @@
 	<form:form id="inputForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="tradeId"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">交易类型：</label>
 			<div class="controls">

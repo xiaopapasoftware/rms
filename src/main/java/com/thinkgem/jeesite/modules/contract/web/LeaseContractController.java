@@ -37,6 +37,7 @@ import com.thinkgem.jeesite.modules.person.service.RemittancerService;
 
 /**
  * 承租合同Controller
+ * 
  * @author huangsc
  * @version 2015-06-06
  */
@@ -56,29 +57,32 @@ public class LeaseContractController extends BaseController {
 	private AuditHisService auditHisService;
 	@Autowired
 	private HouseService houseService;
-	
+
 	@ModelAttribute
-	public LeaseContract get(@RequestParam(required=false) String id) {
+	public LeaseContract get(@RequestParam(required = false) String id) {
 		LeaseContract entity = null;
-		if (StringUtils.isNotBlank(id)){
+		if (StringUtils.isNotBlank(id)) {
 			entity = leaseContractService.get(id);
 		}
-		if (entity == null){
+		if (entity == null) {
 			entity = new LeaseContract();
 		}
 		return entity;
 	}
-	
+
 	@RequiresPermissions("contract:leaseContract:view")
 	@RequestMapping(value = {"list", ""})
-	public String list(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<LeaseContract> page = leaseContractService.findPage(new Page<LeaseContract>(request, response), leaseContract); 
+	public String list(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
+		Page<LeaseContract> page = leaseContractService.findPage(new Page<LeaseContract>(request, response),
+				leaseContract);
 		model.addAttribute("page", page);
-		
+
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
-		
-		if(null != leaseContract.getPropertyProject()) {
+
+		if (null != leaseContract.getPropertyProject()
+				&& StringUtils.isNotEmpty(leaseContract.getPropertyProject().getId())) {
 			Building building = new Building();
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(leaseContract.getPropertyProject().getId());
@@ -86,8 +90,8 @@ public class LeaseContractController extends BaseController {
 			List<Building> buildingList = buildingService.findList(building);
 			model.addAttribute("buildingList", buildingList);
 		}
-		
-		if(null != leaseContract.getBuilding()) {
+
+		if (null != leaseContract.getBuilding() && StringUtils.isNotEmpty(leaseContract.getBuilding().getId())) {
 			House house = new House();
 			Building building = new Building();
 			building.setId(leaseContract.getBuilding().getId());
@@ -95,17 +99,17 @@ public class LeaseContractController extends BaseController {
 			List<House> houseList = houseService.findList(house);
 			model.addAttribute("houseList", houseList);
 		}
-		
+
 		return "modules/contract/leaseContractList";
 	}
-	
+
 	@RequestMapping(value = "audit")
 	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 		leaseContractService.audit(auditHis);
-		
-		return list(new LeaseContract(),request,response,model);
+
+		return list(new LeaseContract(), request, response, model);
 	}
-	
+
 	@RequestMapping(value = "auditHis")
 	public String auditHis(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<AuditHis> page = auditHisService.findPage(new Page<AuditHis>(request, response), auditHis);
@@ -117,11 +121,11 @@ public class LeaseContractController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(LeaseContract leaseContract, Model model) {
 		model.addAttribute("leaseContract", leaseContract);
-		
+
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
-		
-		if(null != leaseContract.getPropertyProject()) {
+
+		if (null != leaseContract.getPropertyProject()) {
 			Building building = new Building();
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(leaseContract.getPropertyProject().getId());
@@ -129,8 +133,7 @@ public class LeaseContractController extends BaseController {
 			List<Building> buildingList = buildingService.findList(building);
 			model.addAttribute("buildingList", buildingList);
 		}
-		
-		if(null != leaseContract.getBuilding()) {
+		if (null != leaseContract.getBuilding()) {
 			House house = new House();
 			Building building = new Building();
 			building.setId(leaseContract.getBuilding().getId());
@@ -138,17 +141,15 @@ public class LeaseContractController extends BaseController {
 			List<House> houseList = houseService.findList(house);
 			model.addAttribute("houseList", houseList);
 		}
-		
 		List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
 		model.addAttribute("remittancerList", remittancerList);
-		
 		return "modules/contract/leaseContractForm";
 	}
 
 	@RequiresPermissions("contract:leaseContract:edit")
 	@RequestMapping(value = "save")
 	public String save(LeaseContract leaseContract, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, leaseContract)){
+		if (!beanValidator(model, leaseContract)) {
 			return form(leaseContract, model);
 		}
 		LeaseContract tmpLeaseContract = new LeaseContract();
@@ -157,17 +158,18 @@ public class LeaseContractController extends BaseController {
 		tmpLeaseContract.setHouse(leaseContract.getHouse());
 		tmpLeaseContract.setDelFlag("0");
 		List<LeaseContract> list = leaseContractService.findList(tmpLeaseContract);
-		if(null != list && list.size()>0) {
+		if (null != list && list.size() > 0) {
 			tmpLeaseContract = list.get(0);
-			if("0".equals(tmpLeaseContract.getContractStatus()) || "1".equals(tmpLeaseContract.getContractStatus())) {
-				if("add".equals(leaseContract.getType())) {
+			if ("0".equals(tmpLeaseContract.getContractStatus()) || "1".equals(tmpLeaseContract.getContractStatus())) {
+				if ("add".equals(leaseContract.getType())) {
 					model.addAttribute("message", "该房屋已签承租合同");
 					model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 					return form(leaseContract, model);
 				} else {
-					if(!leaseContract.getPropertyProject().getId().equals(tmpLeaseContract.getPropertyProject().getId())
+					if (!leaseContract.getPropertyProject().getId()
+							.equals(tmpLeaseContract.getPropertyProject().getId())
 							|| !leaseContract.getBuilding().getId().equals(tmpLeaseContract.getBuilding().getId())
-							|| !leaseContract.getHouse().getId().equals(tmpLeaseContract.getHouse().getId())) {					
+							|| !leaseContract.getHouse().getId().equals(tmpLeaseContract.getHouse().getId())) {
 						model.addAttribute("message", "该房屋已签承租合同");
 						model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 						return form(leaseContract, model);
@@ -177,15 +179,15 @@ public class LeaseContractController extends BaseController {
 		}
 		leaseContractService.save(leaseContract);
 		addMessage(redirectAttributes, "保存承租合同成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/leaseContract/?repage";
+		return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
 	}
-	
+
 	@RequiresPermissions("contract:leaseContract:edit")
 	@RequestMapping(value = "delete")
 	public String delete(LeaseContract leaseContract, RedirectAttributes redirectAttributes) {
 		leaseContractService.delete(leaseContract);
 		addMessage(redirectAttributes, "删除承租合同成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/leaseContract/?repage";
+		return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
 	}
 
 }

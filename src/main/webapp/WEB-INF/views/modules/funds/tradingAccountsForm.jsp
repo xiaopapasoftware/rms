@@ -71,7 +71,7 @@
 		<form:hidden path="id"/>
 		<form:hidden path="tradeId"/>
 		<form:hidden path="transIds"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">账务交易类型：</label>
 			<div class="controls">

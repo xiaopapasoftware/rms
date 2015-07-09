@@ -116,7 +116,7 @@
 	<form:form id="inputForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="type"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">

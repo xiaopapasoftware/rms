@@ -121,7 +121,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">

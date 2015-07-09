@@ -119,7 +119,7 @@
 		<form:hidden path="saveSource" value="0"/>
 		<form:hidden path="contractId"/>
 		<form:hidden path="signType"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<!-- <div class="control-group">
 			<label class="control-label">原出租合同：</label>
 			<div class="controls">

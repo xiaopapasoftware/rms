@@ -67,35 +67,14 @@
 			<if test="house != null and house.id != null and house.id != ''">
 				AND a.house_id = #{house.id}
 			</if>
-			<if test="remittancer != null and remittancer.userName != null and remittancer.userName != ''">
-				AND tr.user_name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{remittancer.id}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{remittancer.id}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{remittancer.userName},'%')</if>
-			</if>
 			<if test="contractName != null and contractName != ''">
 				AND a.contract_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
 			</if>
-			<if test="effectiveDate != null and effectiveDate != ''">
-				AND a.effective_date = #{effectiveDate}
-			</if>
-			<if test="firstRemittanceDate != null and firstRemittanceDate != ''">
-				AND a.first_remittance_date = #{firstRemittanceDate}
-			</if>
 			<if test="remittanceDate != null and remittanceDate != ''">
 				AND a.remittance_date = #{remittanceDate}
-			</if>
-			<if test="expiredDate != null and expiredDate != ''">
-				AND a.expired_date = #{expiredDate}
-			</if>
-			<if test="contractDate != null and contractDate != ''">
-				AND a.contract_date = #{contractDate}
-			</if>
-			<if test="deposit != null and deposit != ''">
-				AND a.deposit = #{deposit}
 			</if>
 			<if test="contractStatus != null and contractStatus != ''">
 				AND a.contract_status = #{contractStatus}
