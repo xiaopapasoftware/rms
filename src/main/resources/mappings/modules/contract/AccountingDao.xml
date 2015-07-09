@@ -63,6 +63,9 @@
 			<if test="feeDate != null and feeDate != ''">
 				AND date_format(a.fee_date,'%Y-%m-%d') = date_format(#{feeDate},'%Y-%m-%d')
 			</if>
+			<if test="rentContractId != null and rentContractId != ''">
+				and c.id=#{rentContractId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

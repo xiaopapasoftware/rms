@@ -166,25 +166,34 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		
 		if("1".equals(tradeType)) {//预约定金
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
-			depositAgreement.setAgreementStatus("1");//到账收据登记完成内容待审核
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
-			if(!"5".equals(depositAgreement.getAgreementStatus()))
+			if(!"5".equals(depositAgreement.getAgreementStatus())) {
+				depositAgreement.setAgreementStatus("1");//到账收据登记完成内容待审核
 				depositAgreementDao.update(depositAgreement);
+			}
 		} else if("3".equals(tradeType)) {//新签合同
 			RentContract rentContract = rentContractDao.get(tradeId);
-			rentContract.setContractStatus("2");//到账收据完成合同内容待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if(!"6".equals(rentContract.getContractStatus()))
+			if(!"6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractStatus("2");//到账收据完成合同内容待审核
 				rentContractDao.update(rentContract);
-		} else if("7".equals(tradeType)||"8".equals(tradeType)||"6".equals(tradeType)||"9".equals(tradeType)) {
+			}
+		} else if("7".equals(tradeType)||"8".equals(tradeType)||"6".equals(tradeType)) {
 			RentContract rentContract = rentContractDao.get(tradeId);
-			rentContract.setContractBusiStatus("5");//退租款项待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if(!"6".equals(rentContract.getContractStatus()))
+			if(!"6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractBusiStatus("5");//退租款项待审核
 				rentContractDao.update(rentContract);
+			}
+		} else if("9".equals(tradeType)) {//特殊退租
+			RentContract rentContract = rentContractDao.get(tradeId);
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContract.setContractBusiStatus("11");//特殊退租结算待审核
+			rentContractDao.update(rentContract);
 		}
 		
 		//审核

@@ -23,7 +23,9 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -56,6 +58,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	private HouseDao houseDao;
 	@Autowired
 	private RoomDao roomDao;
+	@Autowired
+	private TradingAccountsDao tradingAccountsDao;
 	
 	private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";//定金协议审批
 	
@@ -161,15 +165,29 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			if("0".equals(depositAgreement.getRentMode())) {//整租
 				House house = houseDao.get(depositAgreement.getHouse().getId());
 				house.setHouseStatus("1");//待出租可预订
-				house.setCreateBy(UserUtils.getUser());
+				house.setUpdateBy(UserUtils.getUser());
 				house.setUpdateDate(new Date());
 				houseDao.update(house);
 			} else {//单间
 				Room room = roomDao.get(depositAgreement.getRoom().getId());
 				room.setRoomStatus("1");//待出租可预订
-				room.setCreateBy(UserUtils.getUser());
+				room.setUpdateBy(UserUtils.getUser());
 				room.setUpdateDate(new Date());
 				roomDao.update(room);
+			}
+			
+			/*删除账务交易*/
+			TradingAccounts tradingAccounts = new TradingAccounts();
+			tradingAccounts.setTradeId(auditHis.getObjectId());
+			tradingAccounts.setTradeStatus("0");//待审核
+			List<TradingAccounts> list = tradingAccountsDao.findList(tradingAccounts);
+			if(null != list && list.size()>0) {
+				for(TradingAccounts tmpTradingAccounts:list) {
+				tmpTradingAccounts.setUpdateBy(UserUtils.getUser());
+				tmpTradingAccounts.setUpdateDate(new Date());
+				tmpTradingAccounts.setDelFlag("1");
+				tradingAccountsDao.delete(tradingAccounts);
+				}
 			}
 		}
 		

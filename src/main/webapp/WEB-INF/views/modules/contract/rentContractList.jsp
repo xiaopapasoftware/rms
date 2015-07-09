@@ -76,7 +76,7 @@
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
 		}
-		function toAudit(id) {
+		function toAudit(id,type) {
 			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
 			var content = {
 		    	state1:{
@@ -87,9 +87,9 @@
 				    	if (v == 0) {
 				        	return true; // close the window
 				        } else if(v==1){
-				        	saveAudit(id,'1');
+				        	saveAudit(id,'1',type);
 				        } else if(v==2){
-				        	saveAudit(id,'2');
+				        	saveAudit(id,'2',type);
 				        }
 				        return false;
 				    }
@@ -98,10 +98,10 @@
 			$.jBox.open(content,"审核",350,220,{});
 		}
 		
-		function saveAudit(id,status) {
+		function saveAudit(id,status,type) {
 			loading('正在提交，请稍等...');
 			var msg = $("#auditMsg").val();
-			window.location.href="${ctx}/contract/rentContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+			window.location.href="${ctx}/contract/rentContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status+"&type="+type;
 		}
 		
 		function auditHis(id) {
@@ -283,7 +283,7 @@
     					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='2'}">
-    					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}')">审核</a>
+    					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}','1')">审核</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
@@ -303,8 +303,8 @@
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='3'}">
     					<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租核算吗?', this.href)">逾期退租核算</a>
 					</c:if>
-					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='10'}">
-    					<a href="${ctx}/contract/rentContract/toSpecialReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租核算吗?', this.href)">特殊退租核算</a>
+					<c:if test="${rentContract.contractBusiStatus=='17'}">
+    					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}','2')">审核</a>
 					</c:if>
 					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
     					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>

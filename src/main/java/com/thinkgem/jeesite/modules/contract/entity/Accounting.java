@@ -32,6 +32,8 @@ public class Accounting extends DataEntity<Accounting> {
 	
 	private String contractBusiStatus;
 	
+	private String rentContractId;
+	
 	public Accounting() {
 		super();
 	}
@@ -118,5 +120,13 @@ public class Accounting extends DataEntity<Accounting> {
 
 	public void setContractBusiStatus(String contractBusiStatus) {
 		this.contractBusiStatus = contractBusiStatus;
+	}
+
+	public String getRentContractId() {
+		return rentContractId;
+	}
+
+	public void setRentContractId(String rentContractId) {
+		this.rentContractId = rentContractId;
 	}
 }

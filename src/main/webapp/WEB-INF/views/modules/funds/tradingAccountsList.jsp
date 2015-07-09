@@ -135,7 +135,7 @@
 					${fns:getDictLabel(tradingAccounts.payeeType, 'receive_type', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(tradingAccounts.tradeStatus, 'contract_status', '')}
+					${fns:getDictLabel(tradingAccounts.tradeStatus, 'trading_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${tradingAccounts.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

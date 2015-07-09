@@ -67,7 +67,7 @@
 		<div class="control-group">
 			<label class="control-label">房屋是否损坏：</label>
 			<div class="controls">
-				<form:checkbox path="breakDown" value="1"/>
+				&nbsp;<input type="checkbox" name="breakDown" value="1"/>
 			</div>
 		</div>
 		<div class="control-group">

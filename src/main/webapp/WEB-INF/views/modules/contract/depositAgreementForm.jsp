@@ -9,7 +9,7 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					if($("#rentMode").val()!="0") {
+					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
 					}
@@ -249,7 +249,8 @@
 		<div class="control-group">
 			<label class="control-label">定金金额：</label>
 			<div class="controls">
-				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

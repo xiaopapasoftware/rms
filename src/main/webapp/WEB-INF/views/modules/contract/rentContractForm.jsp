@@ -12,6 +12,10 @@
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
+						top.$.jBox.tip('请选择房间.','warning');
+						return;
+					}
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
@@ -110,7 +114,19 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
-		<li class="active"><a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">出租合同<shiro:hasPermission name="contract:rentContract:edit">${not empty rentContract.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active">
+		<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">出租合同
+		<shiro:hasPermission name="contract:rentContract:edit">
+		<c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'}">
+			修改
+		</c:if>
+		<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='3'}">
+			${not empty rentContract.id?'查看':'添加'}
+		</c:if>
+		</shiro:hasPermission>
+		<shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission>
+		</a>
+		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -440,8 +456,14 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:rentContract:edit">
+				<c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'}">
 				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+				</c:if>
+				<c:if test="${empty rentContract.id}">
+				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+				</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>

@@ -235,7 +235,7 @@ public class RentContractController extends BaseController {
 		if(null != rentContract.getRoom()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(rentContract.getRoom().getId());
+			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);
@@ -406,10 +406,10 @@ public class RentContractController extends BaseController {
 	}
 	
 	@RequestMapping(value = "specialReturnContract")
-	public String specialReturnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
-		rentContractService.lateReturnContract(rentContract);
-		addMessage(redirectAttributes, "特殊退租成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+	public String specialReturnContract(RentContract rentContract,Model model,RedirectAttributes redirectAttributes) {
+		//rentContractService.lateReturnContract(rentContract);
+		//addMessage(redirectAttributes, "特殊退租成功");
+		return toSpecialReturnCheck(rentContract,model);
 	}
 	
 	@RequestMapping(value = "changeContract")
@@ -439,6 +439,7 @@ public class RentContractController extends BaseController {
 		
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
+		model.addAttribute("accountSize", 0);
 		rentContract.setTradeType("7");//正常退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
@@ -500,6 +501,7 @@ public class RentContractController extends BaseController {
 		
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
+		model.addAttribute("accountSize", 0);
 		rentContract.setTradeType("6");//提前退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
