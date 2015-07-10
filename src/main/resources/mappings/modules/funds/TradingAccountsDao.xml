@@ -7,9 +7,7 @@
 		a.trade_id AS "tradeId",
 		a.trade_type AS "tradeType",
 		a.trade_direction AS "tradeDirection",
-		a.trade_mode AS "tradeMode",
 		a.trade_amount AS "tradeAmount",
-		a.trade_time AS "tradeTime",
 		a.payee_name AS "payeeName",
 		a.payee_type AS "payeeType",
 		a.trade_status AS "tradeStatus",
@@ -19,19 +17,31 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		case when a.trade_type=1 then ta.agreement_name 
-		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 
-		or a.trade_type=11 or a.trade_type=9 then tc.contract_name 
-		else "" end tradeName, 
-		case when a.trade_type=1 then ta.agreement_status 
-		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 then tc.contract_status 
-		else "" end transStatus,
+		case 
+		    when a.trade_type=0 
+				then tlc.contract_name
+			when a.trade_type=1 
+				then ta.agreement_name 
+			when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 or a.trade_type=11 or a.trade_type=9 
+				then tc.contract_name 
+			else "" 
+		end tradeName, 
+		case 
+			when a.trade_type=0 
+				then tlc.contract_status
+			when a.trade_type=1 
+				then ta.agreement_status 
+			when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 
+				then tc.contract_status 
+			else "" 
+		end transStatus,
 		tc.contract_busi_status as transBusiStatus
 	</sql>
 	
 	<sql id="tradingAccountsJoins">
-	left join t_deposit_agreement ta on a.trade_id=ta.id 
-	left join t_rent_contract tc on a.trade_id=tc.id 
+		left join t_deposit_agreement ta on a.trade_id=ta.id
+		left join t_rent_contract tc on a.trade_id=tc.id
+		left join t_lease_contract tlc on a.trade_id = tlc.id
 	</sql>
     
 	<select id="get" resultType="TradingAccounts">
@@ -58,24 +68,6 @@
 			</if>
 			<if test="tradeDirection != null and tradeDirection != ''">
 				AND a.trade_direction = #{tradeDirection}
-			</if>
-			<if test="tradeMode != null and tradeMode != ''">
-				AND a.trade_mode = #{tradeMode}
-			</if>
-			<if test="tradeAmount != null and tradeAmount != ''">
-				AND a.trade_amount = #{tradeAmount}
-			</if>
-			<if test="tradeTime != null and tradeTime != ''">
-				AND a.trade_time = #{tradeTime}
-			</if>
-			<if test="payeeName != null and payeeName != ''">
-				AND a.payee_name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{payeeName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{payeeName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{payeeName},'%')</if>
-			</if>
-			<if test="payeeType != null and payeeType != ''">
-				AND a.payee_type = #{payeeType}
 			</if>
 			<if test="tradeStatus != null and tradeStatus != ''">
 				AND a.trade_status = #{tradeStatus}
@@ -121,9 +113,7 @@
 			trade_id,
 			trade_type,
 			trade_direction,
-			trade_mode,
 			trade_amount,
-			trade_time,
 			payee_name,
 			payee_type,
 			trade_status,
@@ -138,9 +128,7 @@
 			#{tradeId},
 			#{tradeType},
 			#{tradeDirection},
-			#{tradeMode},
 			#{tradeAmount},
-			#{tradeTime},
 			#{payeeName},
 			#{payeeType},
 			#{tradeStatus},
@@ -158,9 +146,7 @@
 			trade_id = #{tradeId},
 			trade_type = #{tradeType},
 			trade_direction = #{tradeDirection},
-			trade_mode = #{tradeMode},
 			trade_amount = #{tradeAmount},
-			trade_time = #{tradeTime},
 			payee_name = #{payeeName},
 			payee_type = #{payeeType},
 			trade_status = #{tradeStatus},

@@ -20,18 +20,21 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		case when a.trade_type=1 then ta.agreement_name 
-		when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 
-		or a.trade_type=11 or a.trade_type=9 
-		then tc.contract_name 
-		when a.trade_type=0 then tl.contract_name 
-		else "" end transName 
+		case 
+			when a.trade_type=1 
+				then ta.agreement_name 
+			when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 or a.trade_type=11 or a.trade_type=9 
+				then tc.contract_name 
+			when a.trade_type=0 
+				then tl.contract_name 
+			else "" 
+		end transName 
 	</sql>
 	
 	<sql id="paymentTransJoins">
-	left join t_deposit_agreement ta on a.trans_id=ta.id 
-	left join t_rent_contract tc on a.trans_id=tc.id 
-	left join t_lease_contract tl on a.trans_id=tl.id 
+		left join t_deposit_agreement ta on a.trans_id=ta.id 
+		left join t_rent_contract tc on a.trans_id=tc.id 
+		left join t_lease_contract tl on a.trans_id=tl.id 
 	</sql>
     
 	<select id="get" resultType="PaymentTrans">
@@ -61,21 +64,6 @@
 			</if>
 			<if test="tradeDirection != null and tradeDirection != ''">
 				AND a.trade_direction = #{tradeDirection}
-			</if>
-			<if test="startDate != null and startDate != ''">
-				AND a.start_date = #{startDate}
-			</if>
-			<if test="expiredDate != null and expiredDate != ''">
-				AND a.expired_date = #{expiredDate}
-			</if>
-			<if test="tradeAmount != null and tradeAmount != ''">
-				AND a.trade_amount = #{tradeAmount}
-			</if>
-			<if test="transAmount != null and transAmount != ''">
-				AND a.trans_amount = #{transAmount}
-			</if>
-			<if test="lastAmount != null and lastAmount != ''">
-				AND a.last_amount = #{lastAmount}
 			</if>
 			<if test="transStatus != null and transStatus != ''">
 				AND a.trans_status = #{transStatus}

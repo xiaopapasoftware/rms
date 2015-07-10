@@ -33,7 +33,8 @@
 				for(var i=0;i<transIds;i++) {
 					transId.push($("input[name='transIds']:checked").eq(i).val());
 				}
-				window.location.href="${ctx}/funds/tradingAccounts/form?transIds="+transId.join(",")+"&tradeId="+$("input[name='transIds']:checked").eq(0).attr("transId");
+				window.location.href="${ctx}/funds/tradingAccounts/form?transIds="+transId.join(",")+"&tradeId="+$("input[name='transIds']:checked").eq(0).attr("transId")
+						+"&tradeName="+$("input[name='transIds']:checked").eq(0).attr("transName");
 			} else {
 				top.$.jBox.tip('勾选的款项来自不同的合同,不能一并到账登记.','warning');
 			}
@@ -51,6 +52,9 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
+			<li><label style="width:120px;">交易对象：</label>
+				<form:input path="transName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
+			</li>
 			<li><label style="width:120px;">交易类型：</label>
 				<form:select path="tradeType" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -63,34 +67,12 @@
 					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">交易对象：</label>
-				<form:input path="transName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
-			</li>
 			<li><label style="width:120px;">交易款项方向：</label>
 				<form:select path="tradeDirection" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<!--<li><label style="width:120px;">交易款项开始时间：</label>
-				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
-			<li><label style="width:120px;">交易款项到期时间：</label>
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>-->
-			<!--<li><label>应该交易金额：</label>
-				<form:input path="tradeAmount" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>实际交易金额：</label>
-				<form:input path="transAmount" htmlEscape="false" class="input-medium"/>
-			</li>
-			<li><label>剩余交易金额：</label>
-				<form:input path="lastAmount" htmlEscape="false" class="input-medium"/>
-			</li>-->
 			<li><label style="width:120px;">交易款项状态：</label>
 				<form:select path="transStatus" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -124,7 +106,7 @@
 		<c:forEach items="${page.list}" var="paymentTrans">
 			<tr>
 				<td>
-					<input ${paymentTrans.transStatus!='0' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" type="checkbox" value="${paymentTrans.id}"/>
+					<input ${paymentTrans.transStatus!='0' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" transName="${paymentTrans.transName}" type="checkbox" value="${paymentTrans.id}"/>
 				</td>
 				<td>
 					${paymentTrans.transName}

@@ -41,6 +41,15 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">账务交易方式：</label>
+			<div class="controls">
+				<form:select path="tradeMode" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">收据号码：</label>
 			<div class="controls">
 				<form:input path="receiptNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>

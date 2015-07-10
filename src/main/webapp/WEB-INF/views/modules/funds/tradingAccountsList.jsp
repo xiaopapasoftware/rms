@@ -69,20 +69,6 @@
 					<form:options items="${fns:getDictList('trans_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">交易时间：</label>
-				<input name="tradeTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${tradingAccounts.tradeTime}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
-			<li><label style="width:120px;">收款人名称：</label>
-				<form:input path="payeeName" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
-			</li>
-			<li><label style="width:120px;">收款人类型：</label>
-				<form:select path="payeeType" class="input-medium" style="width:200px;">
-					<form:option value="" label="全部"/>
-					<form:options items="${fns:getDictList('receive_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</li>
 			<li><label style="width:120px;">账务状态：</label>
 				<form:select path="tradeStatus" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -101,7 +87,6 @@
 				<th>账务交易类型</th>
 				<th>账务交易方向</th>
 				<th>交易金额</th>
-				<th>交易时间</th>
 				<th>收款人名称</th>
 				<th>收款人类型</th>
 				<th>账务状态</th>
@@ -126,9 +111,6 @@
 					${tradingAccounts.tradeAmount}
 				</td>
 				<td>
-					<fmt:formatDate value="${tradingAccounts.tradeTime}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
 					${tradingAccounts.payeeName}
 				</td>
 				<td>
@@ -148,6 +130,9 @@
     				<a href="${ctx}/funds/tradingAccounts/form?id=${tradingAccounts.id}">修改</a>
 					<a href="${ctx}/funds/tradingAccounts/delete?id=${tradingAccounts.id}" onclick="return confirmx('确认要删除该账务交易吗？', this.href)">删除</a>
 				</shiro:hasPermission>-->
+					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+					</c:if>-->
 					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>

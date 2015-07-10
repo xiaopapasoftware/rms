@@ -23,8 +23,8 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 	private static final long serialVersionUID = 1L;
 	private String tradeType;		// 交易类型
 	private String paymentType;		// 款项类型
-	private String transId;		// 交易对象
-	private String transName;
+	private String transId;			// 交易对象
+	private String transName;		// 交易对象名称
 	private String tradeDirection;		// 交易款项方向
 	private Date startDate;		// 交易款项开始时间
 	private Date expiredDate;		// 交易款项到期时间

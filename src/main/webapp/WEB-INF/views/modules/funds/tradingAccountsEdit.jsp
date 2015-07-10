@@ -57,7 +57,7 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!-- <div class="control-group">
 			<label class="control-label">交易方式：</label>
 			<div class="controls">
 				<form:select path="tradeMode" class="input-xlarge required">
@@ -66,7 +66,7 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
+		</div> -->
 		<div class="control-group">
 			<label class="control-label">交易金额：</label>
 			<div class="controls">

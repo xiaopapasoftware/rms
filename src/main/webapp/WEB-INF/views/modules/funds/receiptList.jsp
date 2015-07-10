@@ -33,6 +33,12 @@
 					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label style="width:120px;">账务交易方式：</label>
+				<form:select path="tradeMode" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label style="width:120px;">收据号码：</label>
 				<form:input path="receiptNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
 			</li>
@@ -54,6 +60,7 @@
 			<tr>
 				<th>账务交易对象</th>
 				<th>账务交易类型</th>
+				<th>账务交易方式</th>
 				<th>收据号码</th>
 				<th>收据日期</th>
 				<th>收据金额</th>
@@ -69,6 +76,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(receipt.tradeType, 'trans_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(receipt.tradeMode, 'trans_mode', '')}
 				</td>
 				<td>
 					${receipt.receiptNo}

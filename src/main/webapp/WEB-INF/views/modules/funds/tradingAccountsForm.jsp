@@ -73,30 +73,29 @@
 		<form:hidden path="transIds"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
+			<label class="control-label">账务交易对象：</label>
+			<div class="controls">
+				<form:input path="tradeName" htmlEscape="false" class="input-xlarge" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">账务交易类型：</label>
 			<div class="controls">
-				<form:select path="tradeType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="tradeTypeDesc" htmlEscape="false" class="input-xlarge" readonly="true"/>
+				<form:hidden path="tradeType" htmlEscape="false" class="input-xlarge" readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">账务交易方向：</label>
 			<div class="controls">
-				<form:select path="tradeDirection" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="tradeDirectionDesc" htmlEscape="false" class="input-xlarge" readonly="true"/>
+				<form:hidden path="tradeDirection" htmlEscape="false" class="input-xlarge" readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">交易金额：</label>
+			<label class="control-label">账务交易总金额：</label>
 			<div class="controls">
-				<form:input path="tradeAmount" htmlEscape="false" class="input-xlarge required number"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="tradeAmount" htmlEscape="false" readonly="true" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -123,7 +122,7 @@
 								<th class="hide"></th>
 								<th>交易方式</th>
 								<th>收据号码</th>
-								<th>收据日期</th>
+								<th>交易日期</th>
 								<th>收据金额</th>
 								<th>备注</th>
 								<th width="10">&nbsp;</th>
