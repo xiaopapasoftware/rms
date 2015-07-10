@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,14 +19,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 账务交易Controller
@@ -77,8 +82,8 @@ public class TradingAccountsController extends BaseController {
 				amount += paymentTrans.getTradeAmount();
 			tradeType = paymentTrans.getTradeType();
 		}
-		tradingAccounts.setTradeAmount(amount);
 		tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
+		tradingAccounts.setTradeAmount(Math.abs(amount));
 		tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(),
 				"trans_dirction", ""));
 		tradingAccounts.setTradeType(tradeType);
@@ -106,6 +111,28 @@ public class TradingAccountsController extends BaseController {
 		if (!beanValidator(model, tradingAccounts)) {
 			return form(tradingAccounts, model);
 		}
+		
+		/*检查所有款项的金额是否够*/
+		double amount = 0;
+		for (Receipt receipt : tradingAccounts.getReceiptList()) {
+			amount += receipt.getReceiptAmount();
+		}
+		
+		double tradeAmount = 0;
+		String[] transIds = tradingAccounts.getTransIds().split(",");
+		for (int i = 0; i < transIds.length; i++) {
+			PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
+			if ("0".equals(paymentTrans.getTradeDirection()))// 应出
+				tradeAmount -= paymentTrans.getTradeAmount();
+			else
+				tradeAmount += paymentTrans.getTradeAmount();
+		}
+		
+		if(Math.abs(amount) != Math.abs(tradeAmount)) {
+			addMessage(redirectAttributes, "账务交易总金额与收据总金额不相等,请重新到账.");
+			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+		}
+		
 		tradingAccounts.setTradeStatus("0");// 待审核
 		tradingAccountsService.save(tradingAccounts);
 		addMessage(redirectAttributes, "保存账务交易成功");

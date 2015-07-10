@@ -142,6 +142,9 @@
 					<c:if test="${tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
+					<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+					</c:if>
 					<c:if test="${tradingAccounts.tradeStatus=='1'}">
 						<a href="${ctx}/funds/invoice/form?tradingAccountsId=${tradingAccounts.id}">开具发票</a>
 					</c:if>

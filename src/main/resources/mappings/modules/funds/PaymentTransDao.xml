@@ -23,11 +23,9 @@
 		case 
 			when a.trade_type=1 
 				then ta.agreement_name 
-			when a.trade_type=3 or a.trade_type=7 or a.trade_type=6 or a.trade_type=8 or a.trade_type=11 or a.trade_type=9 
-				then tc.contract_name 
 			when a.trade_type=0 
 				then tl.contract_name 
-			else "" 
+			else tc.contract_name 
 		end transName 
 	</sql>
 	
@@ -154,6 +152,9 @@
 			trans_id = #{transId}
 			<if test="tradeType != null and tradeType != ''">
 				and trade_type = #{tradeType}
+			</if>
+			<if test="transStatus != null and transStatus != ''">
+				and trans_status = #{transStatus}
 			</if>
 		</where>
 	</update>

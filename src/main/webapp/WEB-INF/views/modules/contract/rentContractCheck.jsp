@@ -64,6 +64,7 @@
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/returnCheck" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="tradeType"/>
+		<form:hidden path="isSpecial"/>
 		<div class="control-group">
 			<label class="control-label">房屋是否损坏：</label>
 			<div class="controls">

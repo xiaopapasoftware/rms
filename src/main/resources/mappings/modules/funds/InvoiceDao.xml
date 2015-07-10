@@ -34,8 +34,7 @@
 	
 	<select id="findList" resultType="Invoice">
 		select t.*,case when t.tradeType=1 then ta.agreement_name 
-		when t.tradeType=3 or t.tradeType=7 or t.tradeType=6 or t.tradeType=8 then tc.contract_name
-		else "" end tradeName from(
+		else tc.contract_name end tradeName from(
 		SELECT 
 			<include refid="invoiceColumns"/>
 		FROM t_invoice a

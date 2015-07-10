@@ -28,9 +28,11 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.entity.Invoice;
 import com.thinkgem.jeesite.modules.funds.service.InvoiceService;
-import com.thinkgem.jeesite.modules.sys.service.SystemService;
+import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 发票信息Controller
@@ -43,6 +45,8 @@ public class InvoiceController extends BaseController {
 
 	@Autowired
 	private InvoiceService invoiceService;
+	@Autowired
+	private RentContractService rentContractService;
 	
 	@ModelAttribute
 	public Invoice get(@RequestParam(required=false) String id) {
@@ -113,7 +117,8 @@ public class InvoiceController extends BaseController {
 			List<Invoice> list = ei.getDataList(Invoice.class);
 			for (Invoice invoice : list){
 				if(StringUtils.isEmpty(invoice.getInvoiceNo()) || StringUtils.isEmpty(invoice.getInvoiceType())
-						||null == invoice.getInvoiceDate()||null == invoice.getInvoiceAmount()) continue;
+						||null == invoice.getInvoiceDate()||null == invoice.getInvoiceAmount()
+						||null == invoice.getTradeType()) continue;
 				try{
 					List<Invoice> resList = null;
 					if(!StringUtils.isEmpty(invoice.getInvoiceNo())) {

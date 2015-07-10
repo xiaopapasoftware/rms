@@ -287,7 +287,7 @@
 					</c:if>
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
-    					<a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要提前退租吗?', this.href)">提前退租</a>
+    					<a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要提前退租吗,提前退租将删除未到账款项?', this.href)">提前退租</a>
     					<a href="${ctx}/contract/rentContract/lateReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租吗?', this.href)">逾期退租</a>
     					<a href="${ctx}/contract/rentContract/specialReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租吗?', this.href)">特殊退租</a>
     					<a href="${ctx}/contract/rentContract/changeContract?id=${rentContract.id}" onclick="return confirmx('确认要协议变更吗?', this.href)">协议变更</a>

@@ -30,6 +30,8 @@ import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -62,6 +64,8 @@ public class RentContractController extends BaseController {
 	private RoomService roomServie;
 	@Autowired
 	private TenantService tenantService;
+	@Autowired
+	private PaymentTransService paymentTransService;
 	
 	@ModelAttribute
 	public RentContract get(@RequestParam(required=false) String id) {
@@ -228,7 +232,10 @@ public class RentContractController extends BaseController {
 			Building building = new Building();
 			building.setId(rentContract.getBuilding().getId());
 			house.setBuilding(building);
+			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
+			if("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
 		
@@ -237,7 +244,10 @@ public class RentContractController extends BaseController {
 			House house = new House();
 			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
+			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
+			if(null != rentContract.getRoom())
+				roomList.add(roomServie.get(rentContract.getRoom()));
 			model.addAttribute("roomList", roomList);
 		}
 		
@@ -285,16 +295,22 @@ public class RentContractController extends BaseController {
 			Building building = new Building();
 			building.setId(rentContract.getBuilding().getId());
 			house.setBuilding(building);
+			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
+			if("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
 		
 		if(null != rentContract.getRoom()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(rentContract.getRoom().getId());
+			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
+			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
+			if(null != rentContract.getRoom())
+				roomList.add(roomServie.get(rentContract.getRoom()));
 			model.addAttribute("roomList", roomList);
 		}
 		
@@ -337,16 +353,22 @@ public class RentContractController extends BaseController {
 			Building building = new Building();
 			building.setId(rentContract.getBuilding().getId());
 			house.setBuilding(building);
+			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
+			if("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
 		
 		if(null != rentContract.getRoom()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(rentContract.getRoom().getId());
+			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
+			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
+			if(null != rentContract.getRoom())
+				roomList.add(roomServie.get(rentContract.getRoom()));
 			model.addAttribute("roomList", roomList);
 		}
 		
@@ -386,6 +408,16 @@ public class RentContractController extends BaseController {
 	
 	@RequestMapping(value = "returnContract")
 	public String returnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		/*检查款项是否都入账*/
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setTransId(rentContract.getId());
+		paymentTrans.setTransStatus("0");//未到账登记
+		paymentTrans.setDelFlag("0");
+		List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
+		if(null != list && list.size()>0) {
+			addMessage(redirectAttributes, "有款项未到账,不能正常退租.");
+			return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+		}
 		rentContractService.returnContract(rentContract);
 		addMessage(redirectAttributes, "正常退租成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
@@ -400,6 +432,17 @@ public class RentContractController extends BaseController {
 	
 	@RequestMapping(value = "lateReturnContract")
 	public String lateReturnContract(RentContract rentContract,RedirectAttributes redirectAttributes) {
+		/*检查款项是否都入账*/
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setTransId(rentContract.getId());
+		paymentTrans.setTransStatus("0");//未到账登记
+		paymentTrans.setDelFlag("0");
+		List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
+		if(null != list && list.size()>0) {
+			addMessage(redirectAttributes, "有款项未到账,不能逾期退租.");
+			return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
+		}
+		
 		rentContractService.lateReturnContract(rentContract);
 		addMessage(redirectAttributes, "逾期退租成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
@@ -409,6 +452,7 @@ public class RentContractController extends BaseController {
 	public String specialReturnContract(RentContract rentContract,Model model,RedirectAttributes redirectAttributes) {
 		//rentContractService.lateReturnContract(rentContract);
 		//addMessage(redirectAttributes, "特殊退租成功");
+		rentContract.setIsSpecial("1");
 		return toSpecialReturnCheck(rentContract,model);
 	}
 	
@@ -446,7 +490,7 @@ public class RentContractController extends BaseController {
 	}
 	
 	@RequestMapping(value = "toEarlyReturnCheck")
-	public String toEarylReturnCheck(RentContract rentContract,Model model) {
+	public String toEarlyReturnCheck(RentContract rentContract,Model model) {
 		rentContract = rentContractService.get(rentContract.getId());
 		
 		List<Accounting> outAccountList = new ArrayList<Accounting>();
@@ -467,36 +511,43 @@ public class RentContractController extends BaseController {
 		accounting.setFeeAmount(surplus);
 		outAccountList.add(accounting);
 		
-		if("0".equals(rentContract.getChargeType()) && null != rentContract.getTvFee()) {//预付
-			double dailyTvFee = rentContract.getTvFee()*12/365/30;//每天电视费
-			double tvfee = dates * dailyTvFee;
-			bigDecimal = new BigDecimal(tvfee);  
-			tvfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
-			double surplusTvFee = rentContract.getTvFee()-tvfee;
-			accounting = new Accounting();
-			accounting.setFeeType("19");//有线电视费剩余金额
-			accounting.setFeeAmount(surplusTvFee);
-			outAccountList.add(accounting);
+		if("0".equals(rentContract.getChargeType())) {//预付
 			
-			double dailyNetFee = rentContract.getNetFee()*12/365/30;//每天宽带费
-			double netfee = dates * dailyNetFee;
-			bigDecimal = new BigDecimal(netfee);  
-			netfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
-			double surplusNetFee = rentContract.getNetFee()-netfee;
-			accounting = new Accounting();
-			accounting.setFeeType("21");//宽带费剩余金额
-			accounting.setFeeAmount(surplusNetFee);
-			outAccountList.add(accounting);
+			if(null != rentContract.getTvFee()) {
+				double dailyTvFee = rentContract.getTvFee()*12/365/30;//每天电视费
+				double tvfee = dates * dailyTvFee;
+				bigDecimal = new BigDecimal(tvfee);  
+				tvfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+				double surplusTvFee = rentContract.getTvFee()-tvfee;
+				accounting = new Accounting();
+				accounting.setFeeType("19");//有线电视费剩余金额
+				accounting.setFeeAmount(surplusTvFee);
+				outAccountList.add(accounting);
+			}
 			
-			double dailyServiceFee = rentContract.getServiceFee()*12/365/30;//每天服务费
-			double serviceFee = dates * dailyServiceFee;
-			bigDecimal = new BigDecimal(serviceFee);  
-			serviceFee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
-			double surplusServiceFee = rentContract.getServiceFee()-serviceFee;
-			accounting = new Accounting();
-			accounting.setFeeType("23");//服务费剩余金额
-			accounting.setFeeAmount(surplusServiceFee);
-			outAccountList.add(accounting);
+			if(null != rentContract.getNetFee()) {
+				double dailyNetFee = rentContract.getNetFee()*12/365/30;//每天宽带费
+				double netfee = dates * dailyNetFee;
+				bigDecimal = new BigDecimal(netfee);  
+				netfee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+				double surplusNetFee = rentContract.getNetFee()-netfee;
+				accounting = new Accounting();
+				accounting.setFeeType("21");//宽带费剩余金额
+				accounting.setFeeAmount(surplusNetFee);
+				outAccountList.add(accounting);
+			}
+			
+			if(null != rentContract.getServiceFee()) {
+				double dailyServiceFee = rentContract.getServiceFee()*12/365/30;//每天服务费
+				double serviceFee = dates * dailyServiceFee;
+				bigDecimal = new BigDecimal(serviceFee);  
+				serviceFee = bigDecimal.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); 
+				double surplusServiceFee = rentContract.getServiceFee()-serviceFee;
+				accounting = new Accounting();
+				accounting.setFeeType("23");//服务费剩余金额
+				accounting.setFeeAmount(surplusServiceFee);
+				outAccountList.add(accounting);
+			}
 		}
 		
 		model.addAttribute("outAccountList", outAccountList);
@@ -542,7 +593,9 @@ public class RentContractController extends BaseController {
 	
 	@RequestMapping(value = "toSpecialReturnCheck")
 	public String toSpecialReturnCheck(RentContract rentContract,Model model) {
+		String isSpecial = rentContract.getIsSpecial();
 		rentContract = rentContractService.get(rentContract.getId());
+		rentContract.setIsSpecial(isSpecial);
 		
 		List<Accounting> accountList = new ArrayList<Accounting>();
 		
@@ -569,7 +622,10 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "returnCheck")
 	public String returnCheck(RentContract rentContract,RedirectAttributes redirectAttributes) {
 		rentContractService.returnCheck(rentContract,rentContract.getTradeType());
-		addMessage(redirectAttributes, "退租核算成功");
+		if(!StringUtils.isBlank(rentContract.getIsSpecial()))
+			addMessage(redirectAttributes, "特殊退租成功");
+		else
+			addMessage(redirectAttributes, "退租核算成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/rentContract/?repage";
 	}
 	

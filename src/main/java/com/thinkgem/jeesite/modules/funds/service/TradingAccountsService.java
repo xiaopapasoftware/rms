@@ -194,7 +194,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				depositAgreement.setAgreementStatus("1");// 到账收据登记完成内容待审核
 				depositAgreementDao.update(depositAgreement);
 			}
-		} else if ("3".equals(tradeType)) {// 新签合同
+		} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
@@ -206,7 +206,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if (!"6".equals(rentContract.getContractStatus())) {
+			if ("6".equals(rentContract.getContractStatus())) {
 				rentContract.setContractBusiStatus("5");// 退租款项待审核
 				rentContractDao.update(rentContract);
 			}

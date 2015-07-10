@@ -33,8 +33,7 @@
 	
 	<select id="findList" resultType="Receipt">
 		select t.*,case when t.tradeType=1 then ta.agreement_name 
-		when t.tradeType=3 or t.tradeType=7 or t.tradeType=6 or t.tradeType=8 then tc.contract_name
-		else "" end tradeName from(
+		else tc.contract_name end tradeName from(
 		SELECT 
 			<include refid="receiptColumns"/>
 		FROM t_receipt a
@@ -141,7 +140,7 @@
 	<update id="delete">
 		UPDATE t_receipt SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE trading_accounts_id = #{tradingAccounts.id}
 	</update>
 	
 </mapper>

@@ -86,6 +86,8 @@ public class RentContract extends DataEntity<RentContract> {
 	
 	private String tradeType;
 	
+	private String isSpecial;
+	
 	public RentContract() {
 		super();
 	}
@@ -148,7 +150,6 @@ public class RentContract extends DataEntity<RentContract> {
 		this.house = house;
 	}
 	
-	@NotNull(message="房间不能为空")
 	public Room getRoom() {
 		return room;
 	}
@@ -506,5 +507,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setTradeType(String tradeType) {
 		this.tradeType = tradeType;
+	}
+
+	public String getIsSpecial() {
+		return isSpecial;
+	}
+
+	public void setIsSpecial(String isSpecial) {
+		this.isSpecial = isSpecial;
 	}
 }
