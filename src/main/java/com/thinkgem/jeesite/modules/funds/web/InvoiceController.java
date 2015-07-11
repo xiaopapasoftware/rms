@@ -28,11 +28,12 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.Invoice;
+import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.InvoiceService;
-import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 发票信息Controller
@@ -46,7 +47,9 @@ public class InvoiceController extends BaseController {
 	@Autowired
 	private InvoiceService invoiceService;
 	@Autowired
-	private RentContractService rentContractService;
+	private RentContractDao rentContractDao;
+	@Autowired
+	private TradingAccountsDao tradingAccountsDao;
 	
 	@ModelAttribute
 	public Invoice get(@RequestParam(required=false) String id) {
@@ -118,7 +121,8 @@ public class InvoiceController extends BaseController {
 			for (Invoice invoice : list){
 				if(StringUtils.isEmpty(invoice.getInvoiceNo()) || StringUtils.isEmpty(invoice.getInvoiceType())
 						||null == invoice.getInvoiceDate()||null == invoice.getInvoiceAmount()
-						||null == invoice.getTradeType()) continue;
+						||null == invoice.getTradeType()
+						||null == invoice.getTradeName()||null==invoice.getTradeType()) continue;
 				try{
 					List<Invoice> resList = null;
 					if(!StringUtils.isEmpty(invoice.getInvoiceNo())) {
@@ -127,6 +131,23 @@ public class InvoiceController extends BaseController {
 						resList = this.invoiceService.findList(tmpInvoice);
 					}
 					if (null == resList || resList.size() < 1){
+						/*根据合同查找账务交易*/
+						RentContract rentContract = new RentContract();
+						rentContract.setName(invoice.getTradeName());
+						rentContract.setDelFlag("0");
+						List<RentContract> listRentContract = rentContractDao.findList(rentContract);
+						if(null != listRentContract && listRentContract.size()>0) {
+							rentContract = listRentContract.get(0);
+							
+							TradingAccounts tradingAccounts = new TradingAccounts();
+							tradingAccounts.setDelFlag("0");
+							tradingAccounts.setTradeId(rentContract.getId());
+							List<TradingAccounts> tradeList = this.tradingAccountsDao.findList(tradingAccounts);
+							
+							if(null != tradeList && tradeList.size()>0) {
+								invoice.setTradingAccountsId(tradeList.get(0).getId());
+							}
+						}
 						invoiceService.save(invoice);
 						successNum++;
 					}else{

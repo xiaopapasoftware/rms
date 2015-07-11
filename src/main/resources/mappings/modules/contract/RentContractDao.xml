@@ -88,6 +88,9 @@
 					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
 			</if>
+			<if test="name != null and name != ''">
+				AND a.contract_name = #{name}
+			</if>
 			<if test="rentMode != null and rentMode != ''">
 				AND a.rent_mode = #{rentMode}
 			</if>

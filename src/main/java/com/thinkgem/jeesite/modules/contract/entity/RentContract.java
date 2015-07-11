@@ -88,6 +88,8 @@ public class RentContract extends DataEntity<RentContract> {
 	
 	private String isSpecial;
 	
+	private String name;
+	
 	public RentContract() {
 		super();
 	}
@@ -515,5 +517,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setIsSpecial(String isSpecial) {
 		this.isSpecial = isSpecial;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
