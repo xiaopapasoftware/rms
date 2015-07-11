@@ -139,6 +139,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateDate(new Date());
 			if (!"6".equals(rentContract.getContractStatus())) {
 				rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "6" : "5");
+				if("1".equals(auditHis.getAuditStatus()))
+					rentContract.setContractBusiStatus("0");//有效
 				rentContractDao.update(rentContract);
 			}
 		} else if ("7".equals(tradingAccounts.getTradeType())) {
