@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.cmd.SetExecutionVariablesCmd;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -214,6 +215,8 @@ public class DepositAgreementController extends BaseController {
 		rentContract.setRenMonths(depositAgreement.getRenMonths());
 		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
 		rentContract.setContractId(depositAgreement.getId());
+		rentContract.setStartDate(depositAgreement.getStartDate());
+		rentContract.setExpiredDate(depositAgreement.getExpiredDate());
 		model.addAttribute("rentContract", rentContract);
 
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
