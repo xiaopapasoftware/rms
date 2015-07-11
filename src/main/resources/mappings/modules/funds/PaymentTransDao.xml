@@ -23,7 +23,7 @@
 		case 
 			when a.trade_type=1 
 				then ta.agreement_name 
-			when a.trade_type=0 
+			when a.trade_type=0
 				then tl.contract_name 
 			else tc.contract_name 
 		end transName 
