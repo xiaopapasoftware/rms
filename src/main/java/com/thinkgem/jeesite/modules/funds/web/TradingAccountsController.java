@@ -3,6 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -86,6 +89,16 @@ public class TradingAccountsController extends BaseController {
 		tradingAccounts.setTradeTypeDesc(DictUtils.getDictLabel(tradingAccounts.getTradeType(), "trans_type", ""));
 		model.addAttribute("tradingAccounts", tradingAccounts);
 		return "modules/funds/tradingAccountsForm";
+	}
+	
+	@RequestMapping(value = "edit")
+	public String edit(TradingAccounts tradingAccounts, Model model) {
+		tradingAccounts = tradingAccountsService.get(tradingAccounts.getId());
+		List<Receipt> receiptList = new ArrayList<Receipt>();
+		receiptList = tradingAccountsService.findReceiptList(tradingAccounts);
+		tradingAccounts.setReceiptList(receiptList);
+		model.addAttribute("tradingAccounts", tradingAccounts);
+		return "modules/funds/tradingAccountsEdit";
 	}
 
 	@RequestMapping(value = "findOne")

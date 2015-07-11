@@ -55,7 +55,7 @@ public class Receipt extends DataEntity<Receipt> {
 		this.receiptNo = receiptNo;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="收据日期不能为空")
 	public Date getReceiptDate() {
 		return receiptDate;

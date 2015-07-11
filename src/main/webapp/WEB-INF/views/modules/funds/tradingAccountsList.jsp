@@ -127,8 +127,9 @@
 				</td>
 				<td>
 				<!--<shiro:hasPermission name="funds:tradingAccounts:edit">
-    				<a href="${ctx}/funds/tradingAccounts/form?id=${tradingAccounts.id}">修改</a>
-					<a href="${ctx}/funds/tradingAccounts/delete?id=${tradingAccounts.id}" onclick="return confirmx('确认要删除该账务交易吗？', this.href)">删除</a>
+					<c:if test="${tradingAccounts.tradeStatus=='2'}">
+    					<a href="${ctx}/funds/tradingAccounts/edit?id=${tradingAccounts.id}">修改</a>
+    				</c:if>
 				</shiro:hasPermission>-->
 					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>

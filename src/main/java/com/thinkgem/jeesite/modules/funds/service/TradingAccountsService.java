@@ -80,6 +80,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	public List<TradingAccounts> findList(TradingAccounts tradingAccounts) {
 		return super.findList(tradingAccounts);
 	}
+	
+	public List<Receipt> findReceiptList(TradingAccounts tradingAccounts) {
+		Receipt receipt = new Receipt();
+		receipt.setTradingAccounts(tradingAccounts);
+		return receiptDao.findList(receipt);
+	}
 
 	public Page<TradingAccounts> findPage(Page<TradingAccounts> page, TradingAccounts tradingAccounts) {
 		return super.findPage(page, tradingAccounts);
