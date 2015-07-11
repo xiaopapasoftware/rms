@@ -214,6 +214,8 @@ public class DepositAgreementController extends BaseController {
 		rentContract.setRenMonths(depositAgreement.getRenMonths());
 		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
 		rentContract.setContractId(depositAgreement.getId());
+		rentContract.setStartDate(depositAgreement.getStartDate());
+		rentContract.setExpiredDate(depositAgreement.getExpiredDate());
 		model.addAttribute("rentContract", rentContract);
 
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
