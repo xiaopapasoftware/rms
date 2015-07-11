@@ -225,7 +225,7 @@
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
-					<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2'}">
+					<c:if test="${leaseContract.contractStatus=='2'}">
     					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
     				</c:if>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->

@@ -254,7 +254,7 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="contract:depositAgreement:edit">
-						<c:if test="${epositAgreement.agreementStatus=='2'}">
+						<c:if test="${depositAgreement.agreementStatus=='2'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
 	    				</c:if>
 						<!--<a href="${ctx}/contract/depositAgreement/delete?id=${depositAgreement.id}" onclick="return confirmx('确认要删除该定金协议吗？', this.href)">删除</a>-->
