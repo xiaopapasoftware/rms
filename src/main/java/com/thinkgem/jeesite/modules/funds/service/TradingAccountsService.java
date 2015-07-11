@@ -22,7 +22,12 @@ import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.dao.NormalFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.NormalFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
@@ -59,6 +64,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	private ReceiptDao receiptDao;
 	@Autowired
 	private LeaseContractDao leaseContractDao;
+	@Autowired
+	private PaymentTransDao paymentTransDao;
+	@Autowired
+	private ElectricFeeDao electricFeeDao;
+	@Autowired
+	private NormalFeeDao normalFeeDao;
 
 	private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";// 账务审批
 
@@ -117,7 +128,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "5" : "4");
 				depositAgreementDao.update(depositAgreement);
 			}
-		} else if ("3".equals(tradingAccounts.getTradeType())) {
+		} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType()) || "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
 			// 新签合同 6:到账收据审核通过 5:到账收据审核拒绝
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 			rentContract.setUpdateBy(UserUtils.getUser());
@@ -154,6 +165,44 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
+		} else if ("10".equals(tradingAccounts.getTradeType())||"11".equals(tradingAccounts.getTradeType())) {//电费缴纳、电费充值
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setDelFlag("0");
+			paymentTrade.setTradeId(tradingAccounts.getId());
+			List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+			
+			/*更新充值记录*/
+			for(PaymentTrade tmpPaymentTrade : list) {
+				PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+				ElectricFee electricFee = new ElectricFee();
+				electricFee.setPaymentTransId(paymentTrans.getId());
+				electricFee.setDelFlag("0");
+				electricFee = electricFeeDao.get(electricFee);
+				if(null != electricFee) {
+					electricFee.setSettleStatus("1".equals(auditHis.getAuditStatus()) ? "3" : "2");//3:审核通过 2:审核拒绝
+					electricFeeDao.update(electricFee);
+				}
+			}
+		} else if ("12".equals(tradingAccounts.getTradeType())||"13".equals(tradingAccounts.getTradeType())
+				||"14".equals(tradingAccounts.getTradeType())||"15".equals(tradingAccounts.getTradeType())) {
+			//水费缴纳、燃气费缴纳、有线费缴纳、宽带费缴纳
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setDelFlag("0");
+			paymentTrade.setTradeId(tradingAccounts.getId());
+			List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+			
+			/*更新充值记录*/
+			for(PaymentTrade tmpPaymentTrade : list) {
+				PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+				NormalFee normalFee = new NormalFee();
+				normalFee.setPaymentTransId(paymentTrans.getId());
+				normalFee.setDelFlag("0");
+				normalFee = normalFeeDao.get(normalFee);
+				if(null != normalFee) {
+					normalFee.setSettleStatus("1".equals(auditHis.getAuditStatus()) ? "3" : "2");//3:审核通过 2:审核拒绝
+					normalFeeDao.update(normalFee);
+				}
+			}
 		}
 	}
 

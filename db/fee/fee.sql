@@ -8,6 +8,7 @@ create table t_electric_fee
 (
    ID                   varchar(64) NOT NULL,
    RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   PAYMENTTRANS_ID      varchar(64) comment '款项',
    SETTLE_TYPE          varchar(64) comment '结算类型',
    START_DATE           date comment '电费缴纳开始时间',
    END_DATE             date comment '电费缴纳开始时间',
@@ -28,6 +29,7 @@ create table t_normal_fee
 (
    ID                   varchar(64) NOT NULL,
    RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   PAYMENTTRANS_ID      varchar(64) comment '款项',
    FEE_TYPE             varchar(64) comment '费用类型',
    SETTLE_TYPE          varchar(64) comment '结算类型',
    START_DATE           date comment '电费缴纳开始时间',

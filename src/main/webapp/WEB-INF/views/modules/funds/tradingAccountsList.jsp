@@ -136,7 +136,7 @@
 					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
-					<c:if test="${tradingAccounts.tradeType=='3' && ((tradingAccounts.transStatus=='4'||tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
+					<c:if test="${(tradingAccounts.tradeType!='1') && ((tradingAccounts.transStatus=='4'||tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
 					<c:if test="${tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">

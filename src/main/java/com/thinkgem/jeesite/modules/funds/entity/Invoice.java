@@ -116,7 +116,7 @@ public class Invoice extends DataEntity<Invoice> {
 		this.tradeName = tradeName;
 	}
 
-	@ExcelField(title="账务交易类型", type=0, align=2, sort=2, dictType="trans_type")
+	//@ExcelField(title="账务交易类型", type=0, align=2, sort=2, dictType="trans_type")
 	public String getTradeType() {
 		return tradeType;
 	}

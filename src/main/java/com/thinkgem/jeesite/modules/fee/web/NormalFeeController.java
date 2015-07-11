@@ -47,8 +47,6 @@ public class NormalFeeController extends BaseController {
 	
 	@RequestMapping(value = {"list", ""})
 	public String list(NormalFee normalFee, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<NormalFee> page = normalFeeService.findPage(new Page<NormalFee>(request, response), normalFee); 
-		model.addAttribute("page", page);
 		String feeType="",type = "";
 		if("water".equals(normalFee.getType())||"0".equals(normalFee.getType())) {
 			feeType = "0";
@@ -65,6 +63,8 @@ public class NormalFeeController extends BaseController {
 		}
 		normalFee.setFeeType(feeType);
 		normalFee.setType(type);
+		Page<NormalFee> page = normalFeeService.findPage(new Page<NormalFee>(request, response), normalFee); 
+		model.addAttribute("page", page);
 		model.addAttribute("normalFee", normalFee);
 		return "modules/fee/normalFeeList";
 	}
@@ -76,13 +76,14 @@ public class NormalFeeController extends BaseController {
 	}
 
 	@RequestMapping(value = "save")
-	public String save(NormalFee normalFee, Model model, RedirectAttributes redirectAttributes) {
+	public String save(NormalFee normalFee, Model model, RedirectAttributes redirectAttributes,
+			HttpServletRequest request, HttpServletResponse response) {
 		if (!beanValidator(model, normalFee)){
 			return form(normalFee, model);
 		}
 		normalFeeService.save(normalFee);
 		addMessage(redirectAttributes, "保存一般费用结算成功");
-		return "redirect:"+Global.getAdminPath()+"/fee/normalFee/?repage";
+		return this.list(normalFee, request, response, model);
 	}
 	
 	@RequestMapping(value = "delete")

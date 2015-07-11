@@ -44,9 +44,6 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	
 	@Transactional(readOnly = false)
 	public void save(ElectricFee electricFee) {
-		electricFee.setSettleStatus("1");//结算待审核
-		super.save(electricFee);
-		
 		/*生成款项*/
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
@@ -57,15 +54,20 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		paymentTrans.setStartDate(new Date());
 		paymentTrans.setExpiredDate(new Date());
 		paymentTrans.setTradeAmount(electricFee.getPersonFee());
-		paymentTrans.setLastAmount(0D);
-		paymentTrans.setTransAmount(electricFee.getPersonFee());
-		paymentTrans.setTransStatus("2");//完全到账登记
+		paymentTrans.setLastAmount(electricFee.getPersonFee());
+		paymentTrans.setTransAmount(0D);
+		paymentTrans.setTransStatus("0");//未到账登记
 		paymentTrans.setCreateDate(new Date());
 		paymentTrans.setCreateBy(UserUtils.getUser());
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
 		paymentTransDao.insert(paymentTrans);
+		
+		electricFee.setPaymentTransId(paymentTrans.getId());
+		electricFee.setSettleStatus("1");//结算待审核
+		super.save(electricFee);
+		
 	}
 	
 	@Transactional(readOnly = false)

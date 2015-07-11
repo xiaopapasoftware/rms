@@ -33,6 +33,8 @@ public class NormalFee extends DataEntity<NormalFee> {
 	private String type;
 	private String contractName;
 	
+	private String paymentTransId;//款项
+	
 	public NormalFee() {
 		super();
 	}
@@ -126,5 +128,13 @@ public class NormalFee extends DataEntity<NormalFee> {
 
 	public void setSettleStatus(String settleStatus) {
 		this.settleStatus = settleStatus;
+	}
+
+	public String getPaymentTransId() {
+		return paymentTransId;
+	}
+
+	public void setPaymentTransId(String paymentTransId) {
+		this.paymentTransId = paymentTransId;
 	}	
 }

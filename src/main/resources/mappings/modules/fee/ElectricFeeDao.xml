@@ -18,7 +18,8 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		tc.contract_name as "contractName"
+		tc.contract_name as "contractName",
+		a.paymenttrans_id as "paymentTransId"
 	</sql>
 	
 	<sql id="electricFeeJoins">
@@ -30,7 +31,7 @@
 			<include refid="electricFeeColumns"/>
 		FROM t_electric_fee a
 		<include refid="electricFeeJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.paymenttrans_id = #{paymentTransId}
 	</select>
 	
 	<select id="findList" resultType="ElectricFee">
@@ -66,6 +67,9 @@
 			</if>
 			<if test="contractName != null and contractName != ''">
 				AND tc.contract_name like concat('%',#{contractName},'%')
+			</if>
+			<if test="paymentTransId != null and paymentTransId != ''">
+				AND a.paymenttrans_id = #{paymentTransId}
 			</if>
 		</where>
 		<choose>
@@ -112,7 +116,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			paymenttrans_id
 		) VALUES (
 			#{id},
 			#{rentContractId},
@@ -128,7 +133,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{paymentTransId}
 		)
 	</insert>
 	

@@ -44,9 +44,6 @@ public class NormalFeeService extends CrudService<NormalFeeDao, NormalFee> {
 	
 	@Transactional(readOnly = false)
 	public void save(NormalFee normalFee) {
-		normalFee.setSettleStatus("1");//结算待审核
-		super.save(normalFee);
-		
 		/*生成款项*/
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
@@ -71,15 +68,20 @@ public class NormalFeeService extends CrudService<NormalFeeDao, NormalFee> {
 		paymentTrans.setStartDate(new Date());
 		paymentTrans.setExpiredDate(new Date());
 		paymentTrans.setTradeAmount(normalFee.getPersonFee());
-		paymentTrans.setLastAmount(0D);
-		paymentTrans.setTransAmount(normalFee.getPersonFee());
-		paymentTrans.setTransStatus("2");//完全到账登记
+		paymentTrans.setLastAmount(normalFee.getPersonFee());
+		paymentTrans.setTransAmount(0D);
+		paymentTrans.setTransStatus("0");//未到账登记
 		paymentTrans.setCreateDate(new Date());
 		paymentTrans.setCreateBy(UserUtils.getUser());
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
 		paymentTransDao.insert(paymentTrans);
+		
+		normalFee.setSettleType(tradeTyp);
+		normalFee.setPaymentTransId(paymentTrans.getId());
+		normalFee.setSettleStatus("1");//结算待审核
+		super.save(normalFee);
 	}
 	
 	@Transactional(readOnly = false)

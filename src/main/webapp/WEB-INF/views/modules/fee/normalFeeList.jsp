@@ -55,40 +55,35 @@
 		<thead>
 			<tr>
 				<th>出租合同</th>
-				<th>费用类型</th>
 				<th>结算类型</th>
-				<th>电费缴纳开始时间</th>
-				<th>电费缴纳开始时间</th>
-				<th>表系数</th>
+				<th>${normalFee.type}费缴纳开始时间</th>
+				<th>${normalFee.type}费缴纳开始时间</th>
 				<th>金额</th>
+				<th>结算状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="fee:normalFee:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="normalFee">
 			<tr>
-				<td><a href="${ctx}/fee/normalFee/form?id=${normalFee.id}">
-					${normalFee.rentContractId}
-				</a></td>
 				<td>
-					${fns:getDictLabel(normalFee.feeType, '', '')}
+					${normalFee.contractName}
 				</td>
 				<td>
-					${fns:getDictLabel(normalFee.settleType, '', '')}
+					${fns:getDictLabel(normalFee.settleType, 'trans_type', '')}
 				</td>
 				<td>
-					<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
-					<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
-				</td>
-				<td>
-					${normalFee.meterValue}
+					<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${normalFee.personFee}
+				</td>
+				<td>
+					${fns:getDictLabel(normalFee.settleStatus, 'settle_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${normalFee.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -96,10 +91,6 @@
 				<td>
 					${normalFee.remarks}
 				</td>
-				<shiro:hasPermission name="fee:normalFee:edit"><td>
-    				<a href="${ctx}/fee/normalFee/form?id=${normalFee.id}">修改</a>
-					<a href="${ctx}/fee/normalFee/delete?id=${normalFee.id}" onclick="return confirmx('确认要删除该一般费用结算吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

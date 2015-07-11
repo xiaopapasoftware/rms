@@ -33,6 +33,7 @@
 	<form:form id="inputForm" modelAttribute="normalFee" action="${ctx}/fee/normalFee/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="feeType"/>
+		<form:hidden path="type"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
@@ -77,13 +78,6 @@
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">表系数：</label>
-			<div class="controls">
-				<form:input path="meterValue" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

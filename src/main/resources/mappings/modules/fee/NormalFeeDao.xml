@@ -18,7 +18,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		a.settle_status AS "settleStatus",
-		tc.contract_name as "contractName"
+		tc.contract_name as "contractName",
+		a.paymenttrans_id as "paymentTransId"
 	</sql>
 	
 	<sql id="normalFeeJoins">
@@ -30,7 +31,7 @@
 			<include refid="normalFeeColumns"/>
 		FROM t_normal_fee a
 		<include refid="normalFeeJoins"/>
-		WHERE a.id = #{id}
+		WHERE a.paymenttrans_id = #{paymentTransId}
 	</select>
 	
 	<select id="findList" resultType="NormalFee">
@@ -63,6 +64,9 @@
 			</if>
 			<if test="contractName != null and contractName != ''">
 				AND tc.contract_name like concat('%',#{contractName},'%')
+			</if>
+			<if test="paymentTransId != null and paymentTransId != ''">
+				AND a.paymenttrans_id = #{paymentTransId}
 			</if>
 		</where>
 		<choose>
@@ -109,7 +113,8 @@
 			update_date,
 			remarks,
 			del_flag,
-			settle_status
+			settle_status,
+			paymenttrans_id
 		) VALUES (
 			#{id},
 			#{rentContractId},
@@ -125,7 +130,8 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{settleStatus}
+			#{settleStatus},
+			#{paymentTransId}
 		)
 	</insert>
 	
@@ -140,7 +146,8 @@
 			person_fee = #{personFee},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			settle_status = #{settleStatus}
 		WHERE id = #{id}
 	</update>
 	
