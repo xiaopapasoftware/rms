@@ -106,17 +106,7 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
 		<li class="active">
-		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议
-		<shiro:hasPermission name="contract:depositAgreement:edit">
-		<c:if test="${depositAgreement.agreementStatus=='2' || empty depositAgreement.id}">
-		${not empty depositAgreement.id?'修改':'添加'}
-		</c:if>
-		<c:if test="${depositAgreement.agreementStatus!='2' && not empty depositAgreement.id}">
-		查看
-		</c:if>
-		</shiro:hasPermission>
-		<shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission>
-		</a>
+		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议<shiro:hasPermission name="contract:depositAgreement:edit"><c:if test="${depositAgreement.agreementStatus=='2' || empty depositAgreement.id}">${not empty depositAgreement.id?'修改':'添加'}</c:if><c:if test="${depositAgreement.agreementStatus!='2' && not empty depositAgreement.id}">查看</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission></a>
 		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
@@ -169,24 +159,6 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">销售：</label>
-			<div class="controls">
-				<sys:treeselect id="user" name="user.id" value="${depositAgreement.user.id}" labelName="user.name" labelValue="${depositAgreement.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租人：</label>
-			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -256,7 +228,24 @@
 		<div class="control-group">
 			<label class="control-label">房屋租金：</label>
 			<div class="controls">
-				<form:input path="housingRent" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="housingRent" htmlEscape="false" class="input-xlarge required number"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">销售：</label>
+			<div class="controls">
+				<sys:treeselect id="user" name="user.id" value="${depositAgreement.user.id}" labelName="user.name" labelValue="${depositAgreement.user.name}"
+					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">承租人：</label>
+			<div class="controls">
+				<form:select path="tenantList" class="input-xlarge" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
