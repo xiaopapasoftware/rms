@@ -16,6 +16,8 @@ create table t_electric_fee
    PERSON_FEE           float comment '自用金额',
    MULITI_FEE           float comment '分摊金额',
    SETTLE_STATUS        varchar(64) comment '结算状态',
+   CHARGE_STATUS        varchar(64) comment '充值状态',
+   CHARGE_ID            varchar(64) comment '充值ID',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

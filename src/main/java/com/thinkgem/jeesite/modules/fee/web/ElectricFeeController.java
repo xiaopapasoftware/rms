@@ -13,12 +13,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 
@@ -68,7 +69,7 @@ public class ElectricFeeController extends BaseController {
 			return form(electricFee, model);
 		}
 		electricFeeService.save(electricFee);
-		addMessage(redirectAttributes, "保存电费结算成功");
+		addMessage(redirectAttributes, "电费充值成功");
 		return "redirect:"+Global.getAdminPath()+"/fee/electricFee/?repage";
 	}
 	
@@ -80,4 +81,15 @@ public class ElectricFeeController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/fee/electricFee/?repage";
 	}
 
+	@RequestMapping(value = {"getMeterValue"})
+	@ResponseBody
+	public String getMeterValue(String rentContractId) {
+		return electricFeeService.getMeterValue(rentContractId);
+	}
+	
+	@RequestMapping(value = {"getFee"})
+	@ResponseBody
+	public String getFee(String rentContractId) {
+		return electricFeeService.getMeterFee(rentContractId);
+	}
 }
