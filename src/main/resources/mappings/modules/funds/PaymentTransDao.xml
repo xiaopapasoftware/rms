@@ -21,7 +21,7 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		case 
-			when a.trade_type=1 
+			when a.trade_type=1 or a.trade_type=2 
 				then ta.agreement_name 
 			when a.trade_type=0
 				then tl.contract_name 
