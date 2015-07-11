@@ -187,7 +187,6 @@ public class DepositAgreementController extends BaseController {
 	public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request,
 			HttpServletResponse response, Model model) {
 		depositAgreementService.breakContract(depositAgreement);
-
 		return list(new DepositAgreement(), request, response, model);
 	}
 

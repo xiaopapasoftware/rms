@@ -264,10 +264,10 @@
 						<a href="javascript:void(0);" onclick="toAudit('${depositAgreement.id}')">审核</a>
 					</c:if>
 					</shiro:hasPermission>
-					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus==null}">
+					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
 					</c:if>
-					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus==null}">
+					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>
 					</c:if>
 					<c:if test="${depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">

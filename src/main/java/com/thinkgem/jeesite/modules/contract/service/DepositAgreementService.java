@@ -94,7 +94,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		/*1.生成款项*/
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
-		paymentTrans.setTradeType("1");//定金协议
+		paymentTrans.setTradeType("2");//定金转违约
 		paymentTrans.setPaymentType("1");//定金违约金
 		paymentTrans.setTransId(depositAgreement.getId());
 		paymentTrans.setTradeDirection("1");//收款
