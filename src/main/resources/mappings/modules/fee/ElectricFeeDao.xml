@@ -19,7 +19,9 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		tc.contract_name as "contractName",
-		a.paymenttrans_id as "paymentTransId"
+		a.paymenttrans_id as "paymentTransId",
+		a.charge_status as "chargeStatus",
+		a.charge_id as "chargeId"
 	</sql>
 	
 	<sql id="electricFeeJoins">
@@ -71,6 +73,12 @@
 			<if test="paymentTransId != null and paymentTransId != ''">
 				AND a.paymenttrans_id = #{paymentTransId}
 			</if>
+			<if test="chargeStatus != null and chargeStatus != ''">
+				AND a.charge_status = #{chargeStatus}
+			</if>
+			<if test="chargeId != null and chargeId != ''">
+				AND a.charge_id = #{chargeId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -117,7 +125,9 @@
 			update_date,
 			remarks,
 			del_flag,
-			paymenttrans_id
+			paymenttrans_id,
+			charge_status,
+			charge_id
 		) VALUES (
 			#{id},
 			#{rentContractId},
@@ -134,7 +144,9 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{paymentTransId}
+			#{paymentTransId},
+			#{chargeStatus},
+			#{chargeId}
 		)
 	</insert>
 	
@@ -150,7 +162,9 @@
 			settle_status = #{settleStatus},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			charge_status = #{chargeStatus},
+			charge_id = #{chargeId}
 		WHERE id = #{id}
 	</update>
 	

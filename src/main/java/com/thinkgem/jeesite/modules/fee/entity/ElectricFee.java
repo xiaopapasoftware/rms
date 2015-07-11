@@ -31,6 +31,9 @@ public class ElectricFee extends DataEntity<ElectricFee> {
 	
 	private String paymentTransId;//款项
 	
+	private String chargeStatus;
+	private String chargeId;
+	
 	public ElectricFee() {
 		super();
 	}
@@ -124,5 +127,21 @@ public class ElectricFee extends DataEntity<ElectricFee> {
 
 	public void setPaymentTransId(String paymentTransId) {
 		this.paymentTransId = paymentTransId;
+	}
+
+	public String getChargeStatus() {
+		return chargeStatus;
+	}
+
+	public void setChargeStatus(String chargeStatus) {
+		this.chargeStatus = chargeStatus;
+	}
+
+	public String getChargeId() {
+		return chargeId;
+	}
+
+	public void setChargeId(String chargeId) {
+		this.chargeId = chargeId;
 	}
 }

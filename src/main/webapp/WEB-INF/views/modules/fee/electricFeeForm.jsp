@@ -27,6 +27,28 @@
 				}
 			});
 		});
+		
+		function getMeterValue() {
+			if(""==$("#contractName").val()) {
+				top.$.jBox.tip('请选择合同.','warning');
+				return;
+			}
+			var rentContractId = $("#rentContractId").val();
+			$.get("${ctx}/fee/electricFee/getMeterValue?rentContractId="+rentContractId, function(data){
+				$("#meterValue").val(data);
+			});
+		}
+		
+		function getMeterFee() {
+			if(""==$("#contractName").val()) {
+				top.$.jBox.tip('请选择合同.','warning');
+				return;
+			}
+			var rentContractId = $("#rentContractId").val();
+			$.get("${ctx}/fee/electricFee/getFee?rentContractId="+rentContractId, function(data){
+				$("#personFee").val(data);
+			});
+		}
 	</script>
 </head>
 <body>
@@ -97,6 +119,7 @@
 			<div class="controls">
 				<form:input path="meterValue" htmlEscape="false" class="input-xlarge required number"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="javascript:getMeterValue();">查看电表读数</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -104,6 +127,7 @@
 			<div class="controls">
 				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="javascript:getMeterFee();">查看电表余额</a>
 			</div>
 		</div>
 		<div class="control-group">

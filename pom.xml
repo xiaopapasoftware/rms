@@ -254,7 +254,7 @@
 			<version>${mysql.driver.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc14</artifactId>
 			<version>${oracle.driver.version}</version>
@@ -265,7 +265,7 @@
 			<artifactId>jtds</artifactId>
 			<version>${mssql.driver.version}</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency>-->
 		<!-- PERSISTENCE end -->
 		
 		<!-- WEB begin -->
@@ -1005,7 +1005,7 @@
 									<transaction src="db/sys/sys_role_menu.sql"/>
 									<transaction src="db/sys/sys_role_office.sql"/>
 									<transaction src="db/sys/sys_user.sql"/>
-									<transaction src="db/sys/sys_user_role.sql"/>
+									<!--<transaction src="db/sys/sys_user_role.sql"/>-->
 									<transaction src="db/fee/fee.sql"/>
 								</sql>
 								

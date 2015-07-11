@@ -82,7 +82,7 @@ public class NormalFeeController extends BaseController {
 			return form(normalFee, model);
 		}
 		normalFeeService.save(normalFee);
-		addMessage(redirectAttributes, "保存一般费用结算成功");
+		addMessage(redirectAttributes, "充值成功");
 		return this.list(normalFee, request, response, model);
 	}
 	
