@@ -115,12 +115,6 @@
 		<form:hidden path="saveSource" value="1"/>
 		<form:hidden path="contractId"/>
 		<sys:message content="${message}"/>		
-		<!-- <div class="control-group">
-			<label class="control-label">原出租合同：</label>
-			<div class="controls">
-				<form:input path="contractId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div> -->
 		<div class="control-group">
 			<label class="control-label">合同名称：</label>
 			<div class="controls">

@@ -213,7 +213,7 @@ public class DepositAgreementController extends BaseController {
 		rentContract.setRental(depositAgreement.getHousingRent());
 		rentContract.setRenMonths(depositAgreement.getRenMonths());
 		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
-		rentContract.setContractId(depositAgreement.getId());
+		rentContract.setAgreementId(depositAgreement.getId());
 		rentContract.setStartDate(depositAgreement.getStartDate());
 		rentContract.setExpiredDate(depositAgreement.getExpiredDate());
 		model.addAttribute("rentContract", rentContract);
