@@ -276,22 +276,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">合作人：</label>
-			<div class="controls">
-				<form:select path="partner.id" class="input-xlarge">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">销售：</label>
-			<div class="controls">
-				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
 				<form:select path="tenantList" class="input-xlarge required" multiple="true">
@@ -311,6 +295,22 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合作人：</label>
+			<div class="controls">
+				<form:select path="partner.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">销售：</label>
+			<div class="controls">
+				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
+					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
 			</div>
 		</div>
 		<div class="control-group">
