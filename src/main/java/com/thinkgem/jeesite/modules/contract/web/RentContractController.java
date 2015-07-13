@@ -621,7 +621,7 @@ public class RentContractController extends BaseController {
 
 		accounting = new Accounting();
 		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		accounting.setFeeAmount(rentContract.getDepositAmount()*rentContract.getDepositMonths());
 		outAccountList.add(accounting);
 
 		model.addAttribute("outAccountList", outAccountList);
