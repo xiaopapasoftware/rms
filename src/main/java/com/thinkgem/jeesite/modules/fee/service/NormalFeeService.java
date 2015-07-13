@@ -76,7 +76,8 @@ public class NormalFeeService extends CrudService<NormalFeeDao, NormalFee> {
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
-		paymentTransDao.insert(paymentTrans);
+		if(0!=paymentTrans.getTradeAmount())
+			paymentTransDao.insert(paymentTrans);
 		
 		normalFee.setSettleType(tradeTyp);
 		normalFee.setPaymentTransId(paymentTrans.getId());

@@ -589,7 +589,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			paymentTransDao.insert(paymentTrans);
+			if(0!=paymentTrans.getTradeAmount())
+				paymentTransDao.insert(paymentTrans);
 
 			/* 生成合同期内所有的房租款项 */
 			int month = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());// 合同总月数
@@ -614,7 +615,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				paymentTransDao.insert(paymentTrans);
+				if(0!=paymentTrans.getTradeAmount())
+					paymentTransDao.insert(paymentTrans);
 			}
 
 			/* 押款项 */
@@ -636,7 +638,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				paymentTransDao.insert(paymentTrans);
+				if(0!=paymentTrans.getTradeAmount())
+					paymentTransDao.insert(paymentTrans);
 
 				if ("0".equals(rentContract.getChargeType())) {// 预付
 
@@ -658,7 +661,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						paymentTransDao.insert(paymentTrans);
+						if(0!=paymentTrans.getTradeAmount())
+							paymentTransDao.insert(paymentTrans);
 					}
 
 					if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee()
@@ -680,7 +684,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						paymentTransDao.insert(paymentTrans);
+						if(0!=paymentTrans.getTradeAmount())
+							paymentTransDao.insert(paymentTrans);
 					}
 
 					if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee()
@@ -702,7 +707,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						paymentTransDao.insert(paymentTrans);
+						if(0!=paymentTrans.getTradeAmount())
+							paymentTransDao.insert(paymentTrans);
 					}
 
 					if (null != rentContract.getServiceFee() && 0 != rentContract.getServiceFee()) {
@@ -723,7 +729,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						paymentTransDao.insert(paymentTrans);
+						if(0!=paymentTrans.getTradeAmount())
+							paymentTransDao.insert(paymentTrans);
 					}
 				}
 			}

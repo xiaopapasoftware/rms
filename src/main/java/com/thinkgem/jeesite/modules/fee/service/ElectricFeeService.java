@@ -86,7 +86,8 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
-		paymentTransDao.insert(paymentTrans);
+		if(0!=paymentTrans.getTradeAmount())
+			paymentTransDao.insert(paymentTrans);
 		
 		/*智能电表充值*/
 		String id = "";
