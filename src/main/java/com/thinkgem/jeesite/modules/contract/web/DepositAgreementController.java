@@ -203,23 +203,23 @@ public class DepositAgreementController extends BaseController {
 		}
 
 		RentContract rentContract = new RentContract();
+		rentContract.setContractName(depositAgreement.getAgreementName());
 		rentContract.setRentMode(depositAgreement.getRentMode());
 		rentContract.setPropertyProject(depositAgreement.getPropertyProject());
 		rentContract.setBuilding(depositAgreement.getBuilding());
 		rentContract.setHouse(depositAgreement.getHouse());
 		rentContract.setRoom(depositAgreement.getRoom());
-		rentContract.setUser(depositAgreement.getUser());
-		rentContract.setTenantList(depositAgreement.getTenantList());
 		rentContract.setRental(depositAgreement.getHousingRent());
 		rentContract.setRenMonths(depositAgreement.getRenMonths());
 		rentContract.setDepositMonths(depositAgreement.getDepositMonths());
-		rentContract.setAgreementId(depositAgreement.getId());
 		rentContract.setStartDate(depositAgreement.getStartDate());
 		rentContract.setExpiredDate(depositAgreement.getExpiredDate());
+		rentContract.setSignDate(depositAgreement.getAgreementDate());
+		rentContract.setUser(depositAgreement.getUser());
+		rentContract.setTenantList(depositAgreement.getTenantList());
+		rentContract.setRemarks(depositAgreement.getRemarks());
+		rentContract.setAgreementId(depositAgreement.getId());
 		model.addAttribute("rentContract", rentContract);
-
-		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-		model.addAttribute("projectList", projectList);
 
 		if (null != rentContract.getPropertyProject()) {
 			Building building = new Building();
@@ -248,9 +248,8 @@ public class DepositAgreementController extends BaseController {
 			model.addAttribute("roomList", roomList);
 		}
 
-		List<Tenant> tenantList = tenantService.findList(new Tenant());
-		model.addAttribute("tenantList", tenantList);
-
+		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
+		model.addAttribute("tenantList", tenantService.findList(new Tenant()));
 		return "modules/contract/rentContractAdd";
 	}
 

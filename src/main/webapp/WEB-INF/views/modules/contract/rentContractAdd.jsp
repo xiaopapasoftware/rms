@@ -96,6 +96,16 @@
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
 		}
+		
+		function rentModeChange() {
+			if($("#rentMode").val()=="0") {
+				$("[id='room.id']").attr("disabled","disabled");
+				$("[id='room.id']").val("");
+				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			} else {
+				$("[id='room.id']").removeAttr("disabled");
+			}
+		}
 	</script>
 </head>
 <body>
@@ -114,7 +124,17 @@
 		<form:hidden path="validatorFlag" value="1"/>
 		<form:hidden path="saveSource" value="1"/>
 		<form:hidden path="contractId"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
+		<div class="control-group">
+			<label class="control-label">合同来源：</label>
+			<div class="controls">
+				<form:select path="contractSource" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">合同名称：</label>
 			<div class="controls">
@@ -125,7 +145,7 @@
 		<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
-				<form:select path="rentMode" class="input-xlarge required">
+				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
@@ -172,55 +192,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">销售：</label>
-			<div class="controls">
-				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">合同来源：</label>
-			<div class="controls">
-				<form:select path="contractSource" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">合作人：</label>
-			<div class="controls">
-				<%-- <sys:treeselect id="parnter" name="parnter" value="${rentContract.parnter}" labelName="" labelValue="${rentContract.}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/> --%>
-				<form:select path="parnter" class="input-xlarge">
-					<form:option value="" label="请选择..."/>
-				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租人：</label>
-			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">入住人：</label>
-			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">月租金：</label>
 			<div class="controls">
 				<form:input path="rental" htmlEscape="false" class="input-xlarge required number"/>
@@ -231,6 +202,27 @@
 			<label class="control-label">房租押金金额：</label>
 			<div class="controls">
 				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge  number required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">首付房租月数：</label>
+			<div class="controls">
+				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">房租押金月数：</label>
+			<div class="controls">
+				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">水电押金金额：</label>
+			<div class="controls">
+				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -271,16 +263,53 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<!--<div class="control-group">
-			<label class="control-label">合同签订类型：</label>
+		<div class="control-group">
+			<label class="control-label">续租提醒时间：</label>
 			<div class="controls">
-				<form:select path="signType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('contract_sign_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<input name="remindTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+					value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">承租人：</label>
+			<div class="controls">
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>-->
+		</div>
+		<div class="control-group">
+			<label class="control-label">入住人：</label>
+			<div class="controls">
+				<form:select path="liveList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合作人：</label>
+			<div class="controls">
+				<form:select path="partner.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">销售：</label>
+			<div class="controls">
+				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
+					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
+			</div>
+		</div>
 		<div class="control-group">
 			<label class="control-label">是否开通有线电视：</label>
 			<div class="controls">
@@ -321,27 +350,6 @@
 			<label class="control-label">服务费比例(%)：</label>
 			<div class="controls">
 				<form:input path="serviceFee" htmlEscape="false" class="input-xlarge  number"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">首付房租月数：</label>
-			<div class="controls">
-				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">房租押金月数：</label>
-			<div class="controls">
-				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">水电押金金额：</label>
-			<div class="controls">
-				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -395,32 +403,6 @@
 				<form:input path="waterValue" htmlEscape="false" class="input-xlarge  number"/>
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label">续租提醒时间：</label>
-			<div class="controls">
-				<input name="remindTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</div>
-		</div>
-		<!--<div class="control-group">
-			<label class="control-label">合同状态：</label>
-			<div class="controls">
-				<form:select path="contractStatus" class="input-xlarge ">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">合同业务状态：</label>
-			<div class="controls">
-				<form:select path="contractBusiStatus" class="input-xlarge ">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-			</div>
-		</div>-->
 		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
