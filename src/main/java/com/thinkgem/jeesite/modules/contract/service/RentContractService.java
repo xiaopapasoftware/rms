@@ -140,7 +140,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					paymentTrans.setUpdateDate(new Date());
 					paymentTrans.setUpdateBy(UserUtils.getUser());
 					paymentTrans.setDelFlag("0");
-					paymentTransDao.insert(paymentTrans);
+					if(0!=tmpAccounting.getFeeAmount())
+						paymentTransDao.insert(paymentTrans);
 				}
 			}
 		} else {
@@ -374,7 +375,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				paymentTransDao.insert(paymentTrans);
+				if(0!=accounting.getFeeAmount())
+					paymentTransDao.insert(paymentTrans);
 			}
 			
 			/*核算记录*/
@@ -418,7 +420,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				paymentTransDao.insert(paymentTrans);
+				if(0!=accounting.getFeeAmount())
+					paymentTransDao.insert(paymentTrans);
 			}
 			
 			/*核算记录*/
@@ -565,7 +568,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			paymentTransDao.insert(paymentTrans);
+			if(0!=rentContract.getDepositElectricAmount())
+				paymentTransDao.insert(paymentTrans);
 			
 			paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());

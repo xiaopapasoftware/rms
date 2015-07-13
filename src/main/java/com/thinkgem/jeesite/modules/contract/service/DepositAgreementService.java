@@ -109,7 +109,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
-		paymentTransDao.insert(paymentTrans);
+		if(0!=depositAgreement.getDepositAmount())
+			paymentTransDao.insert(paymentTrans);
 		
 		/*2.更新定金协议*/
 		depositAgreement.setAgreementBusiStatus("1");//已转违约
@@ -226,7 +227,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		paymentTrans.setUpdateDate(new Date());
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setDelFlag("0");
-		paymentTransDao.insert(paymentTrans);
+		if(0!=depositAgreement.getDepositAmount())
+			paymentTransDao.insert(paymentTrans);
 		
 		//审核
 		Audit audit = new Audit();
