@@ -74,7 +74,8 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			paymentTransDao.insert(paymentTrans);
+			if(0!=saveAccounting.getFeeAmount())
+				paymentTransDao.insert(paymentTrans);
 		}
 	}
 	

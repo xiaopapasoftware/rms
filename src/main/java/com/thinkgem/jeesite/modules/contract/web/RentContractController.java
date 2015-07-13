@@ -511,7 +511,7 @@ public class RentContractController extends BaseController {
 		double tental = dates * dailyRental;
 		BigDecimal bigDecimal = new BigDecimal(tental);
 		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-		double surplus = rentContract.getDepositAmount() * rentContract.getDepositMonths() - tental;// 剩余房租
+		double surplus = rentContract.getRental() * rentContract.getDepositMonths() - tental;// 剩余房租
 		accounting = new Accounting();
 		accounting.setFeeType("7");// 提前应退房租
 		accounting.setFeeAmount(surplus);
@@ -555,10 +555,18 @@ public class RentContractController extends BaseController {
 				outAccountList.add(accounting);
 			}
 		}
+		
+		List<Accounting> accountList = new ArrayList<Accounting>();
+		accounting = new Accounting();
+		accounting.setFeeType("9");//早退违约金
+		accounting.setFeeAmount(rentContract.getDepositMonths()*rentContract.getDepositAmount());
+		accountList.add(accounting);
+		
+		model.addAttribute("accountList", accountList);
+		model.addAttribute("accountSize", accountList.size());
 
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
-		model.addAttribute("accountSize", 0);
 		rentContract.setTradeType("6");// 提前退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";

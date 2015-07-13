@@ -54,8 +54,8 @@ create table T_LEASE_CONTRACT_DTL
 
 create table T_DEPOSIT_AGREEMENT
 (
-   ID                   varchar(64) NOT NULL,
-   PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
+	 ID                   varchar(64) NOT NULL,
+	 PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
    BUILDING_ID          varchar(64) comment '楼宇',
    HOUSE_ID             varchar(64) comment '房屋',
    ROOM_ID              varchar(64) comment '房间',
