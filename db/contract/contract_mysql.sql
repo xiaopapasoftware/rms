@@ -100,17 +100,18 @@ create table T_CONTRACT_TENANT
 
 create table T_RENT_CONTRACT
 (
-	 ID                   varchar(64) NOT NULL,
-	 CONTRACT_ID          varchar(64) comment '原出租合同',
-	 CONTRACT_NAME        varchar(100) comment '合同名称',
+   ID                   varchar(64) NOT NULL,
+   AGREEMENT_ID			varchar(64) comment '原定金协议',
+   CONTRACT_ID          varchar(64) comment '原出租合同',
+   CONTRACT_NAME        varchar(100) comment '合同名称',
    RENT_MODE            varchar(64) comment '出租方式',
    PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
    BUILDING_ID          varchar(64) comment '楼宇',
    HOUSE_ID             varchar(64) comment '房屋',
    ROOM_ID              varchar(64) comment '房间',
    USER_ID              varchar(64) comment '销售',
+   PARTNER_ID           varchar(64) comment '合作人',
    CONTRACT_SOURCE      varchar(64) comment '合同来源',
-   PARNTER              varchar(64) comment '合作人',
    RENTAL               float comment '月租金',
    START_DATE           date comment '合同生效时间',
    EXPIRED_DATE         date comment '合同过期时间',
