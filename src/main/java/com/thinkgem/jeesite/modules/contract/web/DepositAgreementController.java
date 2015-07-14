@@ -201,7 +201,6 @@ public class DepositAgreementController extends BaseController {
 		if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
 			depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
 		}
-
 		RentContract rentContract = new RentContract();
 		rentContract.setContractName(depositAgreement.getAgreementName());
 		rentContract.setRentMode(depositAgreement.getRentMode());

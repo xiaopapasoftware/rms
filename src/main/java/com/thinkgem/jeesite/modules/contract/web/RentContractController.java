@@ -392,7 +392,6 @@ public class RentContractController extends BaseController {
 		}
 		rentContractService.save(rentContract);
 		addMessage(redirectAttributes, "保存出租合同成功");
-
 		if ("1".equals(rentContract.getSaveSource()))
 			return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 		else
