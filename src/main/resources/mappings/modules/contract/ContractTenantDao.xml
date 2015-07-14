@@ -35,6 +35,18 @@
 		<include refid="contractTenantJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				AND a.deposit_agreement_id = #{depositAgreementId}
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+				AND a.agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

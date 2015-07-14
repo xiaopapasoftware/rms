@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.funds.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,15 +21,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 账务交易Controller
@@ -44,6 +49,8 @@ public class TradingAccountsController extends BaseController {
 	private TradingAccountsService tradingAccountsService;
 	@Autowired
 	private PaymentTransService paymentTransService;
+	@Autowired
+	private ReceiptService receiptService;
 
 	@ModelAttribute
 	public TradingAccounts get(@RequestParam(required = false) String id) {
@@ -122,7 +129,7 @@ public class TradingAccountsController extends BaseController {
 		}
 		
 		/*检查所有款项的金额是否够*/
-		double amount = 0;
+		/*double amount = 0;
 		for (Receipt receipt : tradingAccounts.getReceiptList()) {
 			amount += receipt.getReceiptAmount();
 		}
@@ -140,6 +147,29 @@ public class TradingAccountsController extends BaseController {
 		if(Math.abs(amount) != Math.abs(tradeAmount)) {
 			addMessage(redirectAttributes, "账务交易总金额与收据总金额不相等,请重新到账.");
 			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+		}*/
+		
+		/*校验收据编号重复*/
+		boolean check = true;
+		String receiptNo = "";
+		if(null != tradingAccounts.getReceiptList()) {
+			for (Receipt receipt : tradingAccounts.getReceiptList()) {
+				Receipt tmpReceipt = new Receipt();
+				tmpReceipt.setReceiptNo(receipt.getReceiptNo());
+				tmpReceipt.setDelFlag("0");
+				List<Receipt> list = receiptService.findList(tmpReceipt);
+				if(null != list && list.size()>0) {
+					receiptNo = receipt.getReceiptNo();
+					check = false;
+					break;
+				}
+			}
+		}
+		
+		if(!check) {
+			model.addAttribute("message", "收据编号:"+receiptNo+"已存在.");
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			return form(tradingAccounts,model);
 		}
 		
 		tradingAccounts.setTradeStatus("0");// 待审核

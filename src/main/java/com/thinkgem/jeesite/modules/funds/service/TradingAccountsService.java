@@ -295,16 +295,18 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		auditDao.insert(audit);
 
 		/* 收据 */
-		for (Receipt receipt : tradingAccounts.getReceiptList()) {
-			receipt.setId(IdGen.uuid());
-			receipt.setTradingAccounts(tradingAccounts);
-			receipt.setReceiptDate(new Date());
-			receipt.setCreateDate(new Date());
-			receipt.setCreateBy(UserUtils.getUser());
-			receipt.setUpdateDate(new Date());
-			receipt.setUpdateBy(UserUtils.getUser());
-			receipt.setDelFlag("0");
-			receiptDao.insert(receipt);
+		if(null != tradingAccounts.getReceiptList()) {
+			for (Receipt receipt : tradingAccounts.getReceiptList()) {
+				receipt.setId(IdGen.uuid());
+				receipt.setTradingAccounts(tradingAccounts);
+				receipt.setReceiptDate(new Date());
+				receipt.setCreateDate(new Date());
+				receipt.setCreateBy(UserUtils.getUser());
+				receipt.setUpdateDate(new Date());
+				receipt.setUpdateBy(UserUtils.getUser());
+				receipt.setDelFlag("0");
+				receiptDao.insert(receipt);
+			}
 		}
 	}
 

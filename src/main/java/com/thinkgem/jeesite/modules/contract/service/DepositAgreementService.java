@@ -79,7 +79,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		List<Tenant> tenantList = new ArrayList<Tenant>();
 		ContractTenant contractTenant = new ContractTenant();
 		contractTenant.setDepositAgreementId(depositAgreement.getId());
-		List<ContractTenant> list = contractTenantDao.findAllList(contractTenant);
+		List<ContractTenant> list = contractTenantDao.findList(contractTenant);
 		for(ContractTenant tmpContractTenant : list) {
 			Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
 			tenantList.add(tenant);

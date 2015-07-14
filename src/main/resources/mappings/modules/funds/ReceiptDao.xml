@@ -44,10 +44,7 @@
 				AND a.trading_accounts_id = #{tradingAccounts.id}
 			</if>
 			<if test="receiptNo != null and receiptNo != ''">
-				AND a.receipt_no LIKE 
-					<if test="dbName == 'oracle'">'%'||#{receiptNo}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{receiptNo}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{receiptNo},'%')</if>
+				AND a.receipt_no =  #{receiptNo} 
 			</if>
 			<if test="receiptDate != null and receiptDate != ''">
 				AND a.receipt_date = #{receiptDate}

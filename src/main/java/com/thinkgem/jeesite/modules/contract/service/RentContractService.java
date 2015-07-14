@@ -205,8 +205,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	public List<Tenant> findTenant(RentContract rentContract) {
 		List<Tenant> tenantList = new ArrayList<Tenant>();
 		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.setLeaseContractId(rentContract.getId());
-		List<ContractTenant> list = contractTenantDao.findAllList(contractTenant);
+		contractTenant.setContractId(rentContract.getId());
+		List<ContractTenant> list = contractTenantDao.findList(contractTenant);
 		for (ContractTenant tmpContractTenant : list) {
 			Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
 			tenantList.add(tenant);
@@ -218,7 +218,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		List<Tenant> tenantList = new ArrayList<Tenant>();
 		ContractTenant contractTenant = new ContractTenant();
 		contractTenant.setContractId(rentContract.getId());
-		List<ContractTenant> list = contractTenantDao.findAllList(contractTenant);
+		List<ContractTenant> list = contractTenantDao.findList(contractTenant);
 		for (ContractTenant tmpContractTenant : list) {
 			Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
 			tenantList.add(tenant);

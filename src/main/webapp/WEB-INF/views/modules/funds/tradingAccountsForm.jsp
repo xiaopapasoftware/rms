@@ -9,10 +9,10 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					if($("#receiptList").find("tr").length==0) {
+					/*if($("#receiptList").find("tr").length==0) {
 						top.$.jBox.tip('请录入收据信息.','warning');
 						return;
-					}
+					}*/
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
@@ -121,9 +121,9 @@
 							<tr>
 								<th class="hide"></th>
 								<th>交易方式</th>
+								<th>收据金额</th>
 								<th>收据号码</th>
 								<th>交易日期</th>
-								<th>收据金额</th>
 								<th>备注</th>
 								<th width="10">&nbsp;</th>
 							</tr>
@@ -150,15 +150,15 @@
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>
+								<input id="receiptList{{idx}}_receiptAmount" name="receiptList[{{idx}}].receiptAmount" type="text" value="{{row.receiptAmount}}" maxlength="255" class="input-small required number"/>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
 								<input id="receiptList{{idx}}_receiptNo" name="receiptList[{{idx}}].receiptNo" type="text" value="{{row.receiptNo}}" maxlength="255" class="input-small required"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>
 								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required" style="width:100px;"/>
-								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td>
-								<input id="receiptList{{idx}}_receiptAmount" name="receiptList[{{idx}}].receiptAmount" type="text" value="{{row.receiptAmount}}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>

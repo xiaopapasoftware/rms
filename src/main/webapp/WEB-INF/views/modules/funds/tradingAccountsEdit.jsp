@@ -9,10 +9,10 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					if($("#receiptList").find("tr").length==0) {
+					/*if($("#receiptList").find("tr").length==0) {
 						top.$.jBox.tip('请录入收据信息.','warning');
 						return;
-					}
+					}*/
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
