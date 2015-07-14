@@ -146,6 +146,28 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">承租人：</label>
+			<div class="controls">
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">入住人：</label>
+			<div class="controls">
+				<form:select path="liveList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
@@ -272,28 +294,6 @@
 				<input name="remindTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租人：</label>
-			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">入住人：</label>
-			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
