@@ -38,6 +38,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
@@ -63,6 +64,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != building) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
@@ -84,6 +86,7 @@
 			var room = $("[id='house.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != room) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/room/findList?id=" + room+"&choose=1", function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";

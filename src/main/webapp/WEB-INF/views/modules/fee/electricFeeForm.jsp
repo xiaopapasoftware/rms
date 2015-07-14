@@ -34,6 +34,7 @@
 				return;
 			}
 			var rentContractId = $("#rentContractId").val();
+			$.ajaxSetup({ cache: false });
 			$.get("${ctx}/fee/electricFee/getMeterValue?rentContractId="+rentContractId, function(data){
 				$("#meterValue").val(data);
 			});
@@ -45,6 +46,7 @@
 				return;
 			}
 			var rentContractId = $("#rentContractId").val();
+			$.ajaxSetup({ cache: false });
 			$.get("${ctx}/fee/electricFee/getFee?rentContractId="+rentContractId, function(data){
 				$("#personFee").val(data);
 			});
