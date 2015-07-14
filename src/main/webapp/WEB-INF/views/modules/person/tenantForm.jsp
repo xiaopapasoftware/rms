@@ -23,6 +23,45 @@
 				}
 			});
 		});
+		
+		function showBirthday(){
+			var idType = $("#idType").val();
+			var idNo = $("#idNo").val();
+			if(idType == "0" && idNo!=null && idNo != "" && idNo != undefined){
+				var birthdayValue;
+				var gender;
+				var genderDesc;
+				if(15==idNo.length){ //15位身份证号码
+				 	birthdayValue = idNo.charAt(6)+idNo.charAt(7);
+					if(parseInt(birthdayValue)<10){
+					 	birthdayValue = '20'+birthdayValue;
+					}else{
+					 	birthdayValue = '19'+birthdayValue;
+					}
+					birthdayValue=birthdayValue+'-'+idNo.charAt(8)+idNo.charAt(9)+'-'+idNo.charAt(10)+idNo.charAt(11);
+					if(parseInt(idNo.charAt(14)/2)*2!=idNo.charAt(14)){
+						gender='1';
+						genderDesc='男';
+					} else{
+						gender='2';
+						genderDesc='女';
+					}
+				}
+				if(18==idNo.length){ //18位身份证号码
+				   birthdayValue=idNo.charAt(6)+idNo.charAt(7)+idNo.charAt(8)+idNo.charAt(9)+'-'+idNo.charAt(10)+idNo.charAt(11)+'-'+idNo.charAt(12)+idNo.charAt(13);
+				   if(parseInt(idNo.charAt(16)/2)*2!=idNo.charAt(16)){
+						gender='1';
+						genderDesc='男';
+					} else{
+						gender='2';
+						genderDesc='女';
+					}
+				}
+				$("input[name=birthday]").val(birthdayValue);
+				$("[id='gender']").val(gender);
+				$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html(genderDesc);
+			}
+		}
 	</script>
 </head>
 <body>
@@ -41,6 +80,23 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">证件类型：</label>
+			<div class="controls">
+				<form:select path="idType" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('id_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">证件号码：</label>
+			<div class="controls">
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-xlarge required" onblur="showBirthday()"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">性别：</label>
 			<div class="controls">
 				<form:select path="gender" class="input-xlarge required">
@@ -48,6 +104,14 @@
 					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出生日期：</label>
+			<div class="controls">
+				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate "
+					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -61,35 +125,10 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">证件类型：</label>
-			<div class="controls">
-				<form:select path="idType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('id_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">证件号码：</label>
-			<div class="controls">
-				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">手机号码：</label>
 			<div class="controls">
 				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">出生日期：</label>
-			<div class="controls">
-				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate "
-					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="control-group">
