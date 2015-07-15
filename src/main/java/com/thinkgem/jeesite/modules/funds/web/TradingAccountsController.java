@@ -152,30 +152,45 @@ public class TradingAccountsController extends BaseController {
 		/*校验收据编号重复*/
 		boolean check = true;
 		String receiptNo = "";
+		List<String> receiptNoList = new ArrayList<String>();
 		if(null != tradingAccounts.getReceiptList()) {
 			for (Receipt receipt : tradingAccounts.getReceiptList()) {
 				Receipt tmpReceipt = new Receipt();
 				tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 				tmpReceipt.setDelFlag("0");
 				List<Receipt> list = receiptService.findList(tmpReceipt);
-				if(null != list && list.size()>0) {
-					receiptNo = receipt.getReceiptNo();
-					check = false;
-					break;
+				if((null != list && list.size()>0) || receiptNoList.contains(receipt.getReceiptNo())) {
+					for(Receipt tReceipt : list) {
+						if(receipt.getReceiptNo().equals(tReceipt.getReceiptNo()) && !tReceipt.getTradingAccounts().getId().equals(tradingAccounts.getId())) {
+							receiptNo = receipt.getReceiptNo();
+							check = false;
+							break;
+						}
+					}
 				}
+				if(!check) break;
+				receiptNoList.add(receipt.getReceiptNo());
 			}
 		}
 		
 		if(!check) {
 			model.addAttribute("message", "收据编号:"+receiptNo+"已存在.");
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-			return form(tradingAccounts,model);
+			if(StringUtils.isEmpty(tradingAccounts.getId())) {
+				return form(tradingAccounts,model);
+			} else {
+				return "modules/funds/tradingAccountsForm";
+			}
 		}
 		
 		tradingAccounts.setTradeStatus("0");// 待审核
 		tradingAccountsService.save(tradingAccounts);
 		addMessage(redirectAttributes, "保存账务交易成功");
-		return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+		if(StringUtils.isBlank(tradingAccounts.getId())) {
+			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+		} else {
+			return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
+		}
 	}
 
 	@RequiresPermissions("funds:tradingAccounts:edit")

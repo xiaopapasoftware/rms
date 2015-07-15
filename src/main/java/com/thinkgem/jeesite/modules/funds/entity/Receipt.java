@@ -29,6 +29,8 @@ public class Receipt extends DataEntity<Receipt> {
 	private String tradeName;
 	private String tradeType;
 	
+	private String paymentType;
+	
 	public Receipt() {
 		super();
 	}
@@ -96,5 +98,13 @@ public class Receipt extends DataEntity<Receipt> {
 
 	public void setTradeType(String tradeType) {
 		this.tradeType = tradeType;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
 	}
 }
