@@ -99,13 +99,13 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">收款人名称：</label>
+			<label class="control-label">交易对象名称：</label>
 			<div class="controls">
 				<form:input path="payeeName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">收款人类型：</label>
+			<label class="control-label">交易对象类型：</label>
 			<div class="controls">
 				<form:select path="payeeType" class="input-xlarge">
 					<form:option value="" label="请选择..."/>

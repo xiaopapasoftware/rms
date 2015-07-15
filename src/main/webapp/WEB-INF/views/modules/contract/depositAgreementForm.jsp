@@ -181,6 +181,16 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">承租人：</label>
+			<div class="controls">
+				<form:select path="tenantList" class="input-xlarge" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">合同开始时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
@@ -249,16 +259,6 @@
 			<div class="controls">
 				<sys:treeselect id="user" name="user.id" value="${depositAgreement.user.id}" labelName="user.name" labelValue="${depositAgreement.user.name}"
 					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租人：</label>
-			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
 			</div>
 		</div>
 		<div class="control-group">
