@@ -16,7 +16,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		ta.trade_type as "tradeType",
-		ta.trade_id as "trade_id"
+		ta.trade_id as "trade_id",
+		a.payment_type as "paymentType"
 	</sql>
 	
 	<sql id="receiptJoins">
@@ -32,6 +33,7 @@
 	</select>
 	
 	<select id="findList" resultType="Receipt">
+	  select * from(
 		select t.*,case when t.tradeType=1 then ta.agreement_name 
 		else tc.contract_name end tradeName from(
 		SELECT 
@@ -65,10 +67,10 @@
 			</otherwise>
 		</choose>
 		) t left join t_deposit_agreement ta on t.trade_id=ta.id 
-			left join t_rent_contract tc on t.trade_id=tc.id 
+			left join t_rent_contract tc on t.trade_id=tc.id) tt 
 	  <where>
 	  	<if test="tradeName != null and tradeName != ''">
-			AND t.tradeName like concat('%',#{tradeName},'%')
+			AND tt.tradeName like concat('%',#{tradeName},'%')
 		</if>
 	  </where>
 	</select>
@@ -104,7 +106,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			payment_type
 		) VALUES (
 			#{id},
 			#{tradingAccounts.id},
@@ -117,7 +120,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{paymentType}
 		)
 	</insert>
 	

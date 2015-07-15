@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.funds.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -225,25 +226,29 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		String id = super.saveAndReturnId(tradingAccounts);
 
 		/* 更新款项状态 */
-		String[] transIds = tradingAccounts.getTransIds().split(",");
-		for (int i = 0; i < transIds.length; i++) {
-			PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
-			paymentTrans.setTransStatus("2");// 完全到账登记
-			paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
-			paymentTrans.setLastAmount(0D);// 剩余交易金额
-			paymentTransService.save(paymentTrans);
-
-			/* 款项账务关联 */
-			PaymentTrade paymentTrade = new PaymentTrade();
-			paymentTrade.setTradeId(id);
-			paymentTrade.setTransId(paymentTrans.getId());
-			paymentTrade.setId(IdGen.uuid());
-			paymentTrade.setCreateDate(new Date());
-			paymentTrade.setCreateBy(UserUtils.getUser());
-			paymentTrade.setUpdateDate(new Date());
-			paymentTrade.setUpdateBy(UserUtils.getUser());
-			paymentTrade.setDelFlag("0");
-			paymentTradeDao.insert(paymentTrade);
+		if(!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
+			String[] transIds = tradingAccounts.getTransIds().split(",");
+			for (int i = 0; i < transIds.length; i++) {
+				PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
+				paymentTrans.setTransStatus("2");// 完全到账登记
+				paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
+				paymentTrans.setLastAmount(0D);// 剩余交易金额
+				paymentTransService.save(paymentTrans);
+	
+				/* 款项账务关联 */
+				PaymentTrade paymentTrade = new PaymentTrade();
+				paymentTrade.setTradeId(id);
+				paymentTradeDao.delete(paymentTrade);
+				
+				paymentTrade.setTransId(paymentTrans.getId());
+				paymentTrade.setId(IdGen.uuid());
+				paymentTrade.setCreateDate(new Date());
+				paymentTrade.setCreateBy(UserUtils.getUser());
+				paymentTrade.setUpdateDate(new Date());
+				paymentTrade.setUpdateBy(UserUtils.getUser());
+				paymentTrade.setDelFlag("0");
+				paymentTradeDao.insert(paymentTrade);
+			}
 		}
 
 		String tradeId = tradingAccounts.getTradeId();
@@ -296,6 +301,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 
 		/* 收据 */
 		if(null != tradingAccounts.getReceiptList()) {
+			Receipt delReceipt = new Receipt();
+			TradingAccounts delTradingAccounts = new TradingAccounts();
+			delTradingAccounts.setId(id);
+			delReceipt.setTradingAccounts(delTradingAccounts);
+			receiptDao.delete(delReceipt);
+			
 			for (Receipt receipt : tradingAccounts.getReceiptList()) {
 				receipt.setId(IdGen.uuid());
 				receipt.setTradingAccounts(tradingAccounts);

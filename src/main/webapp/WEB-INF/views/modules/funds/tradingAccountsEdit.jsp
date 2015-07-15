@@ -62,9 +62,9 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/funds/paymentTrans/">款项交易列表</a></li>
+		<li><a href="${ctx}/funds/tradingAccounts/">账务交易列表</a></li>
 		<li class="active">
-			<a href="javascript:void(0);">款项交易修改</a>
+			<a href="javascript:void(0);">账务交易修改</a>
 		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/save" method="post" class="form-horizontal">
@@ -102,13 +102,13 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">交易对象名称：</label>
+			<label class="control-label">交易方名称：</label>
 			<div class="controls">
 				<form:input path="payeeName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">交易对象类型：</label>
+			<label class="control-label">交易方类型：</label>
 			<div class="controls">
 				<form:select path="payeeType" class="input-xlarge">
 					<form:option value="" label="请选择..."/>
@@ -124,9 +124,10 @@
 							<tr>
 								<th class="hide"></th>
 								<th>交易方式</th>
+								<th>款项类型</th>
+								<th>收据金额</th>
 								<th>收据号码</th>
 								<th>交易日期</th>
-								<th>收据金额</th>
 								<th>备注</th>
 								<th width="10">&nbsp;</th>
 							</tr>
@@ -144,13 +145,25 @@
 								<input id="receiptList{{idx}}_delFlag" name="receiptList[{{idx}}].delFlag" type="hidden" value="0"/>
 							</td>
 							<td>
-								<select id="receiptList{{idx}}_tradeMode" name="receiptList[{{idx}}].tradeMode" class="required" style="width:100px;">
+								<select data-value="{{row.tradeMode}}" id="receiptList{{idx}}_tradeMode" name="receiptList[{{idx}}].tradeMode" class="required" style="width:100px;">
 									<option value="">请选择</option>
 									<c:forEach items="${fns:getDictList('trans_mode')}" var="item">
-											<option value="${item.value}" selected="selected">${row.tradeMode==item.value}${item.label}</option>
-										
+										<option value="${item.value}">${item.label}</option>
 									</c:forEach>
 								</select>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<select data-value="{{row.paymentType}}" id="receiptList{{idx}}_paymentType" name="receiptList[{{idx}}].paymentType" class="required" style="width:100px;">
+									<option value="">请选择</option>
+									<c:forEach items="${fns:getDictList('payment_type')}" var="item">
+										<option value="${item.value}">${item.label}</option>
+									</c:forEach>
+								</select>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<input id="receiptList{{idx}}_receiptAmount" name="receiptList[{{idx}}].receiptAmount" type="text" value="{{row.receiptAmount}}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>
@@ -159,10 +172,6 @@
 							</td>
 							<td>
 								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required" style="width:100px;"/>
-								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td>
-								<input id="receiptList{{idx}}_receiptAmount" name="receiptList[{{idx}}].receiptAmount" type="text" value="{{row.receiptAmount}}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>

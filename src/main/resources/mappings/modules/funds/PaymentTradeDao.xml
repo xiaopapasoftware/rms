@@ -104,7 +104,7 @@
 	<update id="delete">
 		UPDATE t_payment_trade SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE trade_id = #{tradeId}
 	</update>
 	
 </mapper>
