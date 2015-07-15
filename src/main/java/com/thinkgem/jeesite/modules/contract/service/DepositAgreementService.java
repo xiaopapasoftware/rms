@@ -245,6 +245,9 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		auditDao.insert(audit);
 		
 		/*合同租客关联信息*/
+		ContractTenant delTenant = new ContractTenant();
+		delTenant.setDepositAgreementId(id);
+		contractTenantDao.delete(delTenant);
 		List<Tenant> list = depositAgreement.getTenantList();
 		if(null != list && list.size()>0) {
 			for(Tenant tenant : list) {

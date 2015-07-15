@@ -141,7 +141,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					paymentTrans.setUpdateDate(new Date());
 					paymentTrans.setUpdateBy(UserUtils.getUser());
 					paymentTrans.setDelFlag("0");
-					if(0!=tmpAccounting.getFeeAmount())
+					if (0 != tmpAccounting.getFeeAmount())
 						paymentTransDao.insert(paymentTrans);
 				}
 			}
@@ -205,7 +205,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	public List<Tenant> findTenant(RentContract rentContract) {
 		List<Tenant> tenantList = new ArrayList<Tenant>();
 		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.setContractId(rentContract.getId());
+		contractTenant.setLeaseContractId(rentContract.getId());
 		List<ContractTenant> list = contractTenantDao.findList(contractTenant);
 		for (ContractTenant tmpContractTenant : list) {
 			Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
@@ -378,7 +378,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				if(0!=accounting.getFeeAmount())
+				if (0 != accounting.getFeeAmount())
 					paymentTransDao.insert(paymentTrans);
 			}
 
@@ -423,7 +423,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				if(0!=accounting.getFeeAmount())
+				if (0 != accounting.getFeeAmount())
 					paymentTransDao.insert(paymentTrans);
 			}
 
@@ -539,7 +539,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	@Transactional(readOnly = false)
 	public void save(RentContract rentContract) {
 		String id = super.saveAndReturnId(rentContract);
-		if ("1".equals(rentContract.getValidatorFlag())) {//正常保存，而非暂存
+		if ("1".equals(rentContract.getValidatorFlag())) {// 正常保存，而非暂存
 			// 款项
 			PaymentTrans delPaymentTrans = new PaymentTrans();
 			delPaymentTrans.setTransId(id);
@@ -569,9 +569,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			if(0!=rentContract.getDepositElectricAmount())
+			if (0 != rentContract.getDepositElectricAmount())
 				paymentTransDao.insert(paymentTrans);
-			
+
 			paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
 			paymentTrans.setTradeType(tradeType);
@@ -589,7 +589,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			if(0!=paymentTrans.getTradeAmount())
+			if (0 != paymentTrans.getTradeAmount())
 				paymentTransDao.insert(paymentTrans);
 
 			/* 生成合同期内所有的房租款项 */
@@ -615,7 +615,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				if(0!=paymentTrans.getTradeAmount())
+				if (0 != paymentTrans.getTradeAmount())
 					paymentTransDao.insert(paymentTrans);
 			}
 
@@ -638,7 +638,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setUpdateDate(new Date());
 				paymentTrans.setUpdateBy(UserUtils.getUser());
 				paymentTrans.setDelFlag("0");
-				if(0!=paymentTrans.getTradeAmount())
+				if (0 != paymentTrans.getTradeAmount())
 					paymentTransDao.insert(paymentTrans);
 
 				if ("0".equals(rentContract.getChargeType())) {// 预付
@@ -661,7 +661,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						if(0!=paymentTrans.getTradeAmount())
+						if (0 != paymentTrans.getTradeAmount())
 							paymentTransDao.insert(paymentTrans);
 					}
 
@@ -684,7 +684,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						if(0!=paymentTrans.getTradeAmount())
+						if (0 != paymentTrans.getTradeAmount())
 							paymentTransDao.insert(paymentTrans);
 					}
 
@@ -707,7 +707,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						if(0!=paymentTrans.getTradeAmount())
+						if (0 != paymentTrans.getTradeAmount())
 							paymentTransDao.insert(paymentTrans);
 					}
 
@@ -729,7 +729,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 						paymentTrans.setUpdateDate(new Date());
 						paymentTrans.setUpdateBy(UserUtils.getUser());
 						paymentTrans.setDelFlag("0");
-						if(0!=paymentTrans.getTradeAmount())
+						if (0 != paymentTrans.getTradeAmount())
 							paymentTransDao.insert(paymentTrans);
 					}
 				}
@@ -752,7 +752,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
 		/* 合同租客关联信息 */
 		ContractTenant delContractTenant = new ContractTenant();
-		delContractTenant.setTenantId(id);
+		delContractTenant.setLeaseContractId(id);
 		contractTenantDao.delete(delContractTenant);
 		List<Tenant> list = rentContract.getTenantList();// 承租人
 		if (null != list && list.size() > 0) {
@@ -769,6 +769,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				contractTenantDao.insert(contractTenant);
 			}
 		}
+
+		ContractTenant delContractTenant2 = new ContractTenant();
+		delContractTenant2.setContractId(id);
+		contractTenantDao.delete(delContractTenant2);
 		list = rentContract.getLiveList();// 入住人
 		if (null != list && list.size() > 0) {
 			for (Tenant tenant : list) {

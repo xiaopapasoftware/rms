@@ -57,9 +57,16 @@
 						genderDesc='女';
 					}
 				}
-				$("input[name=birthday]").val(birthdayValue);
-				$("[id='gender']").val(gender);
-				$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html(genderDesc);
+				if(birthdayValue!=null && birthdayValue != "" && birthdayValue != undefined
+				 	&& gender!=null && gender != "" && gender != undefined){
+					$("input[name=birthday]").val(birthdayValue);
+					$("[id='gender']").val(gender);
+					$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html(genderDesc);
+				}else{
+					$("input[name=birthday]").val("");
+					$("[id='gender']").val("");
+					$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html("请选择...");
+				}
 			}
 		}
 	</script>

@@ -122,7 +122,20 @@
 	<update id="delete">
 		UPDATE t_contract_tenant SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE tenant_id = #{tenantId}
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tenantId != null and tenantId != ''">
+				and tenant_id = #{tenantId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				and deposit_agreement_id =  #{depositAgreementId}
+			</if>
+			<if test="contractId != null and contractId != ''">
+				and contract_id = #{contractId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				and lease_contract_id = #{leaseContractId}
+			</if>
 	</update>
 	
 </mapper>
