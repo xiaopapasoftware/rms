@@ -6,7 +6,11 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#deviceId, #deviceName  , #deviceModel  , #devicePrice , #deviceBrand, #distrSerlNum").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');

@@ -6,6 +6,12 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #houseStructure, #decorationStructure").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){

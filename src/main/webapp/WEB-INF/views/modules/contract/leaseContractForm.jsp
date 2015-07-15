@@ -6,7 +6,16 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#contractName, #deposit").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			$("input[name$='Date']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#leaseContractDtlList").find("tr").length==0) {
@@ -86,7 +95,7 @@
 			var html = "<option value='' selected='selected'></option>";
 			if("" != building) {
 				$.ajaxSetup({ cache: false });
-				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
+				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
 					}
