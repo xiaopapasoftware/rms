@@ -6,7 +6,16 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#agreementName, #renMonths  , #depositMonths  , #depositAmount , #housingRent ,#userName").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			$("input[name$='Date']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
@@ -199,6 +208,15 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">约定合同签约时间：</label>
+			<div class="controls">
+				<input name="agreementDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">首付房租月数：</label>
 			<div class="controls">
 				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
@@ -209,15 +227,6 @@
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
 				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">约定合同签约时间：</label>
-			<div class="controls">
-				<input name="agreementDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
