@@ -18,10 +18,9 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
-import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -126,7 +125,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	public int updateHouseStatus(House house) {
 		House upHouse = new House();
 		upHouse.setId(house.getId());
-		upHouse.setHouseStatus(DictUtils.getDictValue("待出租可预订", "house_status", ""));
+		upHouse.setHouseStatus("1");
 		int updHouseCount = dao.updateHouseStatus(upHouse);
 		int roomCounts = 0;
 		if (updHouseCount > 0) {
@@ -135,7 +134,6 @@ public class HouseService extends CrudService<HouseDao, House> {
 			List<Room> listRoom = roomService.findList(m);
 			if (CollectionUtils.isNotEmpty(listRoom)) {
 				for (Room m1 : listRoom) {
-					m1.setRoomStatus(DictUtils.getDictValue("待出租可预订", "room_status", ""));
 					int roomUpCount = roomService.updateRoomStatus(m1);
 					roomCounts = roomCounts + roomUpCount;
 				}

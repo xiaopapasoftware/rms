@@ -107,6 +107,7 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	 * */
 	@Transactional(readOnly = false)
 	public int updateRoomStatus(Room room) {
+		room.setRoomStatus("1");
 		return dao.updateRoomStatus(room);
 	}
 }

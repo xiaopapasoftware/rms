@@ -102,7 +102,7 @@ public class RoomController extends BaseController {
 	public List<Room> findList(House house) {
 		Room room = new Room();
 		room.setHouse(house);
-		room.setChoose(house.getChoose());//过滤不可用
+		room.setChoose(house.getChoose());// 过滤不可用
 		List<Room> list = roomService.findList(room);
 		return list;
 	}
@@ -140,6 +140,18 @@ public class RoomController extends BaseController {
 			room.setStructureList(convertToDictListFromSelVal(room.getStructure()));
 		}
 		return "modules/inventory/roomForm";
+	}
+
+	@RequiresPermissions("inventory:room:edit")
+	@RequestMapping(value = "finishDirect")
+	@ResponseBody
+	public String finishDirect(Room room, Model model, RedirectAttributes redirectAttributes) {
+		int i = roomService.updateRoomStatus(room);
+		if (i > 0) {
+			return "SUCCESS";
+		} else {
+			return "FAIL";
+		}
 	}
 
 	@RequiresPermissions("inventory:room:edit")
@@ -216,7 +228,7 @@ public class RoomController extends BaseController {
 			}
 		}
 	}
-	
+
 	@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Room room, RedirectAttributes redirectAttributes) {

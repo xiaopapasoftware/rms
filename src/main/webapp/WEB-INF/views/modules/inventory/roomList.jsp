@@ -55,6 +55,17 @@
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 		}
 		
+		function finishDirect(roomId){
+			$.get("${ctx}/inventory/room/finishDirect?id=" + roomId, function(data){
+				if("SUCCESS" == data){
+					alertx("操作成功！");
+				}else{
+					alertx("操作失败！");
+				}
+				$("#searchForm").submit();
+			});
+		}
+		
 	</script>
 </head>
 <body>
@@ -143,6 +154,9 @@
 					<shiro:hasPermission name="inventory:room:edit">
 	    				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
 						<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
+						<c:if test="${room.roomStatus eq '0'}">
+								<a href="#" onclick="finishDirect('${room.id}');">装修完成</a>
+						</c:if>
 					</shiro:hasPermission>
 					<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备<shiro:hasPermission name="device:roomDevices:edit">维护</shiro:hasPermission><shiro:lacksPermission name="device:roomDevices:edit">查看</shiro:lacksPermission></a>
 				</td>
