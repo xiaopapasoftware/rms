@@ -152,8 +152,10 @@ public class DepositAgreementController extends BaseController {
 			room.setHouse(house);
 			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
-			if (null != depositAgreement.getRoom())
-				roomList.add(roomServie.get(depositAgreement.getRoom()));
+			if (null != depositAgreement.getRoom()) {
+				Room rm = roomServie.get(depositAgreement.getRoom());
+				if(null != rm) roomList.add(rm);
+			}
 			model.addAttribute("roomList", roomList);
 		}
 
