@@ -92,7 +92,7 @@ public class HouseController extends BaseController {
 	public List<House> findList(Building building) {
 		House house = new House();
 		house.setBuilding(building);
-		house.setChoose(building.getChoose());//过滤不可用
+		house.setChoose(building.getChoose());// 过滤不可用
 		List<House> list = houseService.findList(house);
 		return list;
 	}
@@ -183,8 +183,15 @@ public class HouseController extends BaseController {
 	@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "delete")
 	public String delete(House house, RedirectAttributes redirectAttributes) {
-		houseService.delete(house);
-		addMessage(redirectAttributes, "删除房屋、房间及其图片信息成功");
+		House queryhouse = houseService.get(house);
+		String houseStatus = queryhouse.getHouseStatus();
+		// 2已预定 3部分出租 4完全出租
+		if ("2".equals(houseStatus) || "3".equals(houseStatus) || "4".equals(houseStatus)) {
+			addMessage(redirectAttributes, "房屋已预定或已出租，不能删除！");
+		} else {
+			houseService.delete(house);
+			addMessage(redirectAttributes, "删除房屋、房间及其图片信息成功");
+		}
 		return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
 	}
 

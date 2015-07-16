@@ -23,6 +23,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
+import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
@@ -48,6 +50,9 @@ public class TenantController extends BaseController {
 
 	@Autowired
 	private TenantService tenantService;
+
+	@Autowired
+	private ContractTenantDao contractTenantDao;
 
 	@ModelAttribute
 	public Tenant get(@RequestParam(required = false) String id) {
@@ -113,8 +118,15 @@ public class TenantController extends BaseController {
 	@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Tenant tenant, RedirectAttributes redirectAttributes) {
-		tenantService.delete(tenant);
-		addMessage(redirectAttributes, "删除租客信息成功");
+		ContractTenant ct = new ContractTenant();
+		ct.setTenantId(tenant.getId());
+		List<ContractTenant> cts = contractTenantDao.findList(ct);
+		if (CollectionUtils.isNotEmpty(cts)) {
+			addMessage(redirectAttributes, "租客已预付定金或生成合同，不能删除");
+		} else {
+			tenantService.delete(tenant);
+			addMessage(redirectAttributes, "删除租客信息成功");
+		}
 		return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
 	}
 

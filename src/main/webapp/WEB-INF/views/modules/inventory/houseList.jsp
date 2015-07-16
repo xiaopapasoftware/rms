@@ -98,7 +98,7 @@
 			</li>
 		</ul>
 	</form:form>
-	<sys:message content="${message}" />
+	<sys:message content="${message}" type="${messageType}"/>
 	<table id="contentTable"
 		class="table table-striped table-bordered table-condensed">
 		<thead>

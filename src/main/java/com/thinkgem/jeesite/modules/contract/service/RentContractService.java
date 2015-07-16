@@ -808,6 +808,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				room.setUpdateDate(new Date());
 				roomDao.update(room);
 			}
+			//TODO 同时更新该房间所属房屋的状态
 		}
 
 		if ("1".equals(rentContract.getSaveSource())) {// 定金协议转合同

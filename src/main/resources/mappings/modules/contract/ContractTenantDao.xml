@@ -47,6 +47,9 @@
 			<if test="leaseContractId != null and leaseContractId != ''">
 				AND a.lease_contract_id = #{leaseContractId}
 			</if>
+			<if test="tenantId != null and tenantId != ''">
+				AND a.tenant_id = #{tenantId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
