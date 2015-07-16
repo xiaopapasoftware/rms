@@ -4,7 +4,6 @@
 package com.thinkgem.jeesite.modules.funds.web;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -33,7 +31,6 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 账务交易Controller
@@ -97,7 +94,7 @@ public class TradingAccountsController extends BaseController {
 		model.addAttribute("tradingAccounts", tradingAccounts);
 		return "modules/funds/tradingAccountsForm";
 	}
-	
+
 	@RequestMapping(value = "edit")
 	public String edit(TradingAccounts tradingAccounts, Model model) {
 		tradingAccounts = tradingAccountsService.get(tradingAccounts.getId());
@@ -127,66 +124,47 @@ public class TradingAccountsController extends BaseController {
 		if (!beanValidator(model, tradingAccounts)) {
 			return form(tradingAccounts, model);
 		}
-		
-		/*检查所有款项的金额是否够*/
-		/*double amount = 0;
-		for (Receipt receipt : tradingAccounts.getReceiptList()) {
-			amount += receipt.getReceiptAmount();
-		}
-		
-		double tradeAmount = 0;
-		String[] transIds = tradingAccounts.getTransIds().split(",");
-		for (int i = 0; i < transIds.length; i++) {
-			PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
-			if ("0".equals(paymentTrans.getTradeDirection()))// 应出
-				tradeAmount -= paymentTrans.getTradeAmount();
-			else
-				tradeAmount += paymentTrans.getTradeAmount();
-		}
-		
-		if(Math.abs(amount) != Math.abs(tradeAmount)) {
-			addMessage(redirectAttributes, "账务交易总金额与收据总金额不相等,请重新到账.");
-			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
-		}*/
-		
-		/*校验收据编号重复*/
+
+		/* 校验收据编号重复 */
 		boolean check = true;
 		String receiptNo = "";
 		List<String> receiptNoList = new ArrayList<String>();
-		if(null != tradingAccounts.getReceiptList()) {
+		if (null != tradingAccounts.getReceiptList()) {
 			for (Receipt receipt : tradingAccounts.getReceiptList()) {
 				Receipt tmpReceipt = new Receipt();
 				tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 				tmpReceipt.setDelFlag("0");
 				List<Receipt> list = receiptService.findList(tmpReceipt);
-				if((null != list && list.size()>0) || receiptNoList.contains(receipt.getReceiptNo())) {
-					for(Receipt tReceipt : list) {
-						if(receipt.getReceiptNo().equals(tReceipt.getReceiptNo()) && !tReceipt.getTradingAccounts().getId().equals(tradingAccounts.getId())) {
+				if ((null != list && list.size() > 0) || receiptNoList.contains(receipt.getReceiptNo())) {
+					for (Receipt tReceipt : list) {
+						if (receipt.getReceiptNo().equals(tReceipt.getReceiptNo())
+								&& !tReceipt.getTradingAccounts().getId().equals(tradingAccounts.getId())) {
 							receiptNo = receipt.getReceiptNo();
 							check = false;
 							break;
 						}
 					}
 				}
-				if(!check) break;
+				if (!check)
+					break;
 				receiptNoList.add(receipt.getReceiptNo());
 			}
 		}
-		
-		if(!check) {
-			model.addAttribute("message", "收据编号:"+receiptNo+"已存在.");
+
+		if (!check) {
+			model.addAttribute("message", "收据编号:" + receiptNo + "已存在.");
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-			if(StringUtils.isEmpty(tradingAccounts.getId())) {
-				return form(tradingAccounts,model);
+			if (StringUtils.isEmpty(tradingAccounts.getId())) {
+				return form(tradingAccounts, model);
 			} else {
 				return "modules/funds/tradingAccountsForm";
 			}
 		}
-		
+
 		tradingAccounts.setTradeStatus("0");// 待审核
 		tradingAccountsService.save(tradingAccounts);
 		addMessage(redirectAttributes, "保存账务交易成功");
-		if(StringUtils.isBlank(tradingAccounts.getId())) {
+		if (StringUtils.isBlank(tradingAccounts.getId())) {
 			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
 		} else {
 			return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
