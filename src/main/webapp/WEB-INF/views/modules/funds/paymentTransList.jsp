@@ -128,12 +128,30 @@
 				</td>
 				<td>
 					${paymentTrans.tradeAmount}
+					<c:if test="${paymentTrans.tradeDirection=='0'}">
+					<c:set var="sumTradeAmount" value="${sumTradeAmount-paymentTrans.tradeAmount}"></c:set>
+					</c:if>
+					<c:if test="${paymentTrans.tradeDirection=='1'}">
+					<c:set var="sumTradeAmount" value="${sumTradeAmount+paymentTrans.tradeAmount}"></c:set>
+					</c:if>
 				</td>
 				<td>
 					${paymentTrans.transAmount}
+					<c:if test="${paymentTrans.tradeDirection=='0'}">
+					<c:set var="sumTransAmount" value="${sumTransAmount-paymentTrans.transAmount}"></c:set>
+					</c:if>
+					<c:if test="${paymentTrans.tradeDirection=='1'}">
+					<c:set var="sumTransAmount" value="${sumTransAmount+paymentTrans.transAmount}"></c:set>
+					</c:if>
 				</td>
 				<td>
 					${paymentTrans.lastAmount}
+					<c:if test="${paymentTrans.tradeDirection=='0'}">
+					<c:set var="sumLastAmount" value="${sumLastAmount-paymentTrans.lastAmount}"></c:set>
+					</c:if>
+					<c:if test="${paymentTrans.tradeDirection=='1'}">
+					<c:set var="sumLastAmount" value="${sumLastAmount+paymentTrans.lastAmount}"></c:set>
+					</c:if>
 				</td>
 				<td>
 					${fns:getDictLabel(paymentTrans.transStatus, 'trade_status', '')}
@@ -146,6 +164,21 @@
 				</td>
 			</tr>
 		</c:forEach>
+		<tr>
+				<td colspan="7">
+				</td>
+				<td>
+					总计:<fmt:formatNumber type="number" value="${sumTradeAmount}" pattern="0.00" maxFractionDigits="2"/> 
+				</td>
+				<td>
+					总计:<fmt:formatNumber type="number" value="${sumTransAmount}" pattern="0.00" maxFractionDigits="2"/> 
+				</td>
+				<td>
+					总计:<fmt:formatNumber type="number" value="${sumLastAmount}" pattern="0.00" maxFractionDigits="2"/> 
+				</td>
+				<td colspan="3">
+				</td>
+			</tr>
 		</tbody>
 	</table>
 	<div class="pagination">${page}</div>

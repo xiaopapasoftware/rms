@@ -584,8 +584,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(rentContract.getStartDate());
 			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-			paymentTrans.setTradeAmount(rentContract.getDepositAmount() * rentContract.getDepositMonths());
-			paymentTrans.setLastAmount(rentContract.getDepositAmount() * rentContract.getDepositMonths());
+			paymentTrans.setTradeAmount(rentContract.getDepositAmount());
+			paymentTrans.setLastAmount(rentContract.getDepositAmount());
 			paymentTrans.setTransAmount(0D);
 			paymentTrans.setTransStatus("0");// 未到账登记
 			paymentTrans.setCreateDate(new Date());

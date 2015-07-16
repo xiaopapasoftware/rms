@@ -251,8 +251,10 @@ public class RentContractController extends BaseController {
 			room.setHouse(house);
 			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
-			if (null != rentContract.getRoom())
-				roomList.add(roomServie.get(rentContract.getRoom()));
+			if (null != rentContract.getRoom()) {
+				Room rm = roomServie.get(rentContract.getRoom());
+				if(null != rm) roomList.add(rm);
+			}
 			model.addAttribute("roomList", roomList);
 		}
 
@@ -314,13 +316,17 @@ public class RentContractController extends BaseController {
 			room.setHouse(house);
 			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
-			if (null != rentContract.getRoom())
-				roomList.add(roomServie.get(rentContract.getRoom()));
+			if (null != rentContract.getRoom()) {
+				Room rm = roomServie.get(rentContract.getRoom());
+				if(null!=rm)roomList.add(rm);
+			}
 			model.addAttribute("roomList", roomList);
 		}
 
 		List<Tenant> tenantList = tenantService.findList(new Tenant());
 		model.addAttribute("tenantList", tenantList);
+		
+		model.addAttribute("renew", "1");
 
 		return "modules/contract/rentContractForm";
 	}
@@ -372,8 +378,10 @@ public class RentContractController extends BaseController {
 			room.setHouse(house);
 			room.setChoose("1");
 			List<Room> roomList = roomServie.findList(room);
-			if (null != rentContract.getRoom())
-				roomList.add(roomServie.get(rentContract.getRoom()));
+			if (null != rentContract.getRoom()) {
+				Room rm = roomServie.get(rentContract.getRoom());
+				if(null!=rm)roomList.add(rm);
+			}
 			model.addAttribute("roomList", roomList);
 		}
 
