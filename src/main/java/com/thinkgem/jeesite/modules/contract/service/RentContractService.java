@@ -163,7 +163,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					roomDao.update(room);
 				}
 			}
-
+			
+			PaymentTrans delPaymentTrans = new PaymentTrans();
+			delPaymentTrans.setTransId(auditHis.getObjectId());
+			paymentTransDao.delete(delPaymentTrans);
+			
 			/* 删除账务交易 */
 			TradingAccounts tradingAccounts = new TradingAccounts();
 			tradingAccounts.setTradeId(auditHis.getObjectId());

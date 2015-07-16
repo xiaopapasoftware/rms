@@ -207,7 +207,6 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "audit")
 	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 		rentContractService.audit(auditHis);
-
 		return list(new RentContract(), request, response, model);
 	}
 
@@ -554,13 +553,13 @@ public class RentContractController extends BaseController {
 				outAccountList.add(accounting);
 			}
 		}
-		
+
 		List<Accounting> accountList = new ArrayList<Accounting>();
 		accounting = new Accounting();
-		accounting.setFeeType("9");//早退违约金
-		accounting.setFeeAmount(rentContract.getDepositMonths()*rentContract.getDepositAmount());
+		accounting.setFeeType("9");// 早退违约金
+		accounting.setFeeAmount(rentContract.getDepositMonths() * rentContract.getDepositAmount());
 		accountList.add(accounting);
-		
+
 		model.addAttribute("accountList", accountList);
 		model.addAttribute("accountSize", accountList.size());
 
@@ -620,7 +619,7 @@ public class RentContractController extends BaseController {
 
 		accounting = new Accounting();
 		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount()*rentContract.getDepositMonths());
+		accounting.setFeeAmount(rentContract.getDepositAmount() * rentContract.getDepositMonths());
 		outAccountList.add(accounting);
 
 		model.addAttribute("outAccountList", outAccountList);

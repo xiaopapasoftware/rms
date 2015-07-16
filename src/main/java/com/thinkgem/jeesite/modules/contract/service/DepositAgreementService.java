@@ -177,6 +177,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 				roomDao.update(room);
 			}
 			
+			//删除生成的款项
+			PaymentTrans delPaymentTrans = new PaymentTrans();
+			delPaymentTrans.setTransId(auditHis.getObjectId());
+			paymentTransDao.delete(delPaymentTrans);
+			
 			/*删除账务交易*/
 			TradingAccounts tradingAccounts = new TradingAccounts();
 			tradingAccounts.setTradeId(auditHis.getObjectId());
@@ -203,7 +208,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	public void save(DepositAgreement depositAgreement) {
 		depositAgreement.setAgreementStatus("0");//录入完成到账收据待登记
 		//depositAgreement.setAgreementBusiStatus("0");//待转合同
-		
 		String id = super.saveAndReturnId(depositAgreement);
 		//生成款项
 		PaymentTrans delPaymentTrans = new PaymentTrans();
