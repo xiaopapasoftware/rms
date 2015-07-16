@@ -28,18 +28,23 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/agreementChange/">协议变更列表</a></li>
-		<li class="active"><a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">协议变更<shiro:hasPermission name="contract:agreementChange:edit">${not empty agreementChange.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="contract:agreementChange:edit">查看</shiro:lacksPermission></a></li>
+		<li class="active">
+		<a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">协议变更
+		<c:if test="${agreementChange.agreementStatus=='0'||agreementChange.agreementStatus=='2'}">
+		<shiro:hasPermission name="contract:agreementChange:edit">修改</shiro:hasPermission>
+		</c:if>
+		<c:if test="${agreementChange.agreementStatus=='1'}">查看</c:if>
+		<shiro:lacksPermission name="contract:agreementChange:edit">查看</shiro:lacksPermission>
+		</a>
+		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="agreementChange" action="${ctx}/contract/agreementChange/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
-				<form:select path="rentContract.id" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+				<form:input path="rentContractName" htmlEscape="false" maxlength="64" class="input-xlarge required" readonly="true"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -54,8 +59,8 @@
 			<label class="control-label">协议生效时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -63,27 +68,31 @@
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">协议审核状态：</label>
+			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="agreementStatus" class="input-xlarge required">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">核算人：</label>
+			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<sys:treeselect id="user" name="user.id" value="${agreementChange.user.id}" labelName="user.name" labelValue="${agreementChange.user.name}"
-					title="用户" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true" notAllowSelectParent="true"/>
+				<form:select path="liveList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -94,7 +103,11 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="contract:agreementChange:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="contract:agreementChange:edit">
+			<c:if test="${agreementChange.agreementStatus=='0'||agreementChange.agreementStatus=='2'}">
+			<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+			</c:if>
+			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

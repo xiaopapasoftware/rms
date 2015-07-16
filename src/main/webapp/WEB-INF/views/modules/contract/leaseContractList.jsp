@@ -50,6 +50,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'>全部</option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
@@ -71,6 +72,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'>全部</option>";
 			if("" != building) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
@@ -88,10 +90,9 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
-		<shiro:hasPermission name="contract:leaseContract:edit"><li><a href="${ctx}/contract/leaseContract/form">承租合同添加</a></li></shiro:hasPermission>
+		<shiro:hasPermission name="contract:leaseContract:edit"><li><a href="${ctx}/contract/leaseContract/form?type=add">承租合同添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/" method="post" class="breadcrumb form-search"
-		cssStyle="width:1150px;">
+	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
@@ -113,13 +114,13 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:100px;">汇款人：</label>
-				<form:input path="remittancer.id" htmlEscape="false" maxlength="64" class="input-medium"/>
-			</li>
+			<!-- <li><label style="width:100px;">汇款人：</label>
+				<form:input path="remittancer.userName" htmlEscape="false" maxlength="64" class="input-medium"/>
+			</li> -->
 			<li><label style="width:100px;">承租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">合同生效时间：</label>
+			<!-- <li><label style="width:100px;">合同生效时间：</label>
 				<input name="effectiveDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
@@ -128,14 +129,14 @@
 				<input name="firstRemittanceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</li>
+			</li> -->
 			<li><label style="width:100px;">打款日期：</label>
 				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:100px;">合同过期时间：</label>
+			<!-- <li><label style="width:100px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
@@ -147,7 +148,7 @@
 			</li>
 			<li><label style="width:100px;">承租押金：</label>
 				<form:input path="deposit" htmlEscape="false" class="input-medium"/>
-			</li>
+			</li> -->
 			<li><label style="width:100px;">合同审核状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
@@ -159,7 +160,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:1180px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>承租合同名称</th>
@@ -176,7 +177,7 @@
 				<th>合同审核状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="contract:leaseContract:edit"><th>操作</th></shiro:hasPermission>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -226,14 +227,16 @@
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
-					<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2'}">
+					<c:if test="${leaseContract.contractStatus=='2'}">
     					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
     				</c:if>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
+				<shiro:hasPermission name="contract:leaseContract:audit">
 				<c:if test="${leaseContract.contractStatus=='0'}">
 					<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
 				</c:if>
+				</shiro:hasPermission>
 				<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
 					<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
 				</c:if>

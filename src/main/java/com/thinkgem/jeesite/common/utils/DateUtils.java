@@ -198,8 +198,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.setTime(endDate);
+        endCalendar.add(Calendar.DATE, 1);
         
-        return endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+        if(endCalendar.get(Calendar.YEAR) > startCalendar.get(Calendar.YEAR)) {
+        	return (endCalendar.get(Calendar.YEAR)-startCalendar.get(Calendar.YEAR))*12-startCalendar.get(Calendar.MONTH)+endCalendar.get(Calendar.MONTH);
+        } else 
+        	return endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 	}
 	
 	/**
@@ -212,8 +216,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 //		System.out.println(time/(24*60*60*1000));
 		
-		//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		//System.out.println(getMonthSpace(sdf.parse("2015-03-15"),sdf.parse("2015-04-30")));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		System.out.println(getMonthSpace(sdf.parse("2015-10-01"),sdf.parse("2015-12-31")));
 		//System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-03-31"),1)));
 	}
 }

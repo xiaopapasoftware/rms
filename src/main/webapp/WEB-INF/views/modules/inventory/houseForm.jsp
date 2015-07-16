@@ -6,6 +6,12 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #houseStructure, #decorationStructure").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
@@ -28,6 +34,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";

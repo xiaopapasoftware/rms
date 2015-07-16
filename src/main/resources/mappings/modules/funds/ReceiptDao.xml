@@ -8,15 +8,20 @@
 		a.receipt_no AS "receiptNo",
 		a.receipt_date AS "receiptDate",
 		a.receipt_amount AS "receiptAmount",
+		a.trade_mode AS "tradeMode",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		ta.trade_type as "tradeType",
+		ta.trade_id as "trade_id",
+		a.payment_type as "paymentType"
 	</sql>
 	
 	<sql id="receiptJoins">
+	left join t_trading_accounts ta on a.trading_accounts_id=ta.id 
 	</sql>
     
 	<select id="get" resultType="Receipt">
@@ -28,6 +33,9 @@
 	</select>
 	
 	<select id="findList" resultType="Receipt">
+	  select * from(
+		select t.*,case when t.tradeType=1 then ta.agreement_name 
+		else tc.contract_name end tradeName from(
 		SELECT 
 			<include refid="receiptColumns"/>
 		FROM t_receipt a
@@ -38,16 +46,16 @@
 				AND a.trading_accounts_id = #{tradingAccounts.id}
 			</if>
 			<if test="receiptNo != null and receiptNo != ''">
-				AND a.receipt_no LIKE 
-					<if test="dbName == 'oracle'">'%'||#{receiptNo}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{receiptNo}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{receiptNo},'%')</if>
+				AND a.receipt_no =  #{receiptNo} 
 			</if>
 			<if test="receiptDate != null and receiptDate != ''">
 				AND a.receipt_date = #{receiptDate}
 			</if>
 			<if test="receiptAmount != null and receiptAmount != ''">
 				AND a.receipt_amount = #{receiptAmount}
+			</if>
+			<if test="tradeMode != null and tradeMode != ''">
+				AND a.trade_mode = #{tradeMode}
 			</if>
 		</where>
 		<choose>
@@ -58,6 +66,13 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+		) t left join t_deposit_agreement ta on t.trade_id=ta.id 
+			left join t_rent_contract tc on t.trade_id=tc.id) tt 
+	  <where>
+	  	<if test="tradeName != null and tradeName != ''">
+			AND tt.tradeName like concat('%',#{tradeName},'%')
+		</if>
+	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="Receipt">
@@ -85,24 +100,28 @@
 			receipt_no,
 			receipt_date,
 			receipt_amount,
+			trade_mode,
 			create_by,
 			create_date,
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			payment_type
 		) VALUES (
 			#{id},
 			#{tradingAccounts.id},
 			#{receiptNo},
 			#{receiptDate},
 			#{receiptAmount},
+			#{tradeMode},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{paymentType}
 		)
 	</insert>
 	
@@ -112,6 +131,7 @@
 			receipt_no = #{receiptNo},
 			receipt_date = #{receiptDate},
 			receipt_amount = #{receiptAmount},
+			trade_mode = #{tradeMode},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -121,7 +141,7 @@
 	<update id="delete">
 		UPDATE t_receipt SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		WHERE trading_accounts_id = #{tradingAccounts.id}
 	</update>
 	
 </mapper>

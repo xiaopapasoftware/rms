@@ -41,7 +41,7 @@ public class Company extends DataEntity<Company> {
 		this.companyName = companyName;
 	}
 	
-	@Length(min=1, max=100, message="企业电话长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="企业电话长度必须介于 0 和 100 之间")
 	public String getTellPhone() {
 		return tellPhone;
 	}
@@ -50,7 +50,7 @@ public class Company extends DataEntity<Company> {
 		this.tellPhone = tellPhone;
 	}
 	
-	@Length(min=1, max=100, message="证件类型长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="证件类型长度必须介于 0 和 100 之间")
 	public String getIdType() {
 		return idType;
 	}
@@ -59,7 +59,7 @@ public class Company extends DataEntity<Company> {
 		this.idType = idType;
 	}
 	
-	@Length(min=1, max=100, message="证件号码长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="证件号码长度必须介于0 和 100 之间")
 	public String getIdNo() {
 		return idNo;
 	}
@@ -68,7 +68,7 @@ public class Company extends DataEntity<Company> {
 		this.idNo = idNo;
 	}
 	
-	@Length(min=1, max=100, message="企业注册地址长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="企业注册地址长度必须介于 0 和 100 之间")
 	public String getCompanyAdress() {
 		return companyAdress;
 	}
@@ -77,7 +77,7 @@ public class Company extends DataEntity<Company> {
 		this.companyAdress = companyAdress;
 	}
 	
-	@Length(min=1, max=100, message="企业营业地址长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="企业营业地址长度必须介于0 和 100 之间")
 	public String getBusinessAdress() {
 		return businessAdress;
 	}
@@ -86,7 +86,7 @@ public class Company extends DataEntity<Company> {
 		this.businessAdress = businessAdress;
 	}
 	
-	@Length(min=1, max=100, message="开户行名称长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="开户行名称长度必须介于 0 和 100 之间")
 	public String getBankName() {
 		return bankName;
 	}
@@ -95,7 +95,7 @@ public class Company extends DataEntity<Company> {
 		this.bankName = bankName;
 	}
 	
-	@Length(min=1, max=100, message="开户行账号长度必须介于 1 和 100 之间")
+	@Length(min=0, max=100, message="开户行账号长度必须介于0 和 100 之间")
 	public String getBankAccount() {
 		return bankAccount;
 	}

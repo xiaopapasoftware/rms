@@ -37,6 +37,8 @@ public class Room extends DataEntity<Room> {
 
 	private String roomStatus; // 房间状态
 	private String attachmentPath;// 房间图片
+	
+	private String choose;
 
 	public Room() {
 		super();
@@ -145,4 +147,11 @@ public class Room extends DataEntity<Room> {
 		this.structure = structure;
 	}
 
+	public String getChoose() {
+		return choose;
+	}
+
+	public void setChoose(String choose) {
+		this.choose = choose;
+	}
 }

@@ -49,9 +49,9 @@
 	<h1 class="form-signin-heading">${fns:getConfig('productName')}</h1>
 	<form id="loginForm" class="form-signin" action="${ctx}/login" method="post">
 		<label class="input-label" for="username">登录名</label>
-		<input type="text" id="username" name="username" value="admin" class="input-block-level required">
+		<input type="text" id="username" name="username" value="" class="input-block-level required">
 		<label class="input-label" for="password">密码</label>
-		<input type="password" id="password" name="password" value="admin" class="input-block-level required">
+		<input type="password" id="password" name="password" value="" class="input-block-level required">
 		<c:if test="${isValidateCodeLogin}">
 			<div class="validateCode">
 				<label class="input-label mid" for="validateCode">验证码</label>
@@ -59,8 +59,8 @@
 			</div>
 		</c:if>
 		<%--<label for="mobile" title="手机登录"><input type="checkbox" id="mobileLogin" name="mobileLogin" ${mobileLogin ? 'checked' : ''}/></label> --%>
-		<input class="btn btn-large btn-primary" type="submit" value="登 录"/>&nbsp;&nbsp;
-		<label for="rememberMe" title="下次不需要再登录"><input type="checkbox" id="rememberMe" name="rememberMe" ${rememberMe ? 'checked' : ''}/> 记住我（公共场所慎用）</label>
+		<input class="btn btn-large btn-primary" type="submit" value="登 录" />&nbsp;&nbsp;
+		<!--<label for="rememberMe" title="下次不需要再登录"><input type="checkbox" id="rememberMe" name="rememberMe" ${rememberMe ? 'checked' : ''}/> 记住我（公共场所慎用）</label>-->
 		<div id="themeSwitch" class="dropdown">
 			<a class="dropdown-toggle" data-toggle="dropdown" href="#">${fns:getDictLabel(cookie.theme.value,'theme','默认主题')}<b class="caret"></b></a>
 			<ul class="dropdown-menu">
@@ -70,7 +70,7 @@
 		</div>
 	</form>
 	<div class="footer">
-		Copyright &copy; ${fns:getConfig('copyrightYear')} <a href="${pageContext.request.contextPath}${fns:getFrontPath()}">${fns:getConfig('productName')}</a> - ${fns:getConfig('version')} 
+		Copyright &copy; 2015 ${fns:getConfig('productName')}<br/>Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
 	</div>
 	<script src="${ctxStatic}/flash/zoom.min.js" type="text/javascript"></script>
 </body>

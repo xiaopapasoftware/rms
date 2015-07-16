@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.device.dao.DevicesHisDao">
+    
+	<sql id="devicesHisColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
+		a.building_id AS "building.id",
+		tb.building_name AS "building.buildingName",
+		a.house_id AS "house.id",
+		th.house_no AS "house.houseNo",
+		a.room_id AS "room.id",
+		tr.room_no AS "room.roomNo",
+		a.oper_type AS "operType",
+		a.device_id AS "devices.id",
+		td.device_id AS "devices.deviceId",
+		td.device_name AS "devices.deviceName",
+		td.device_model AS "devices.deviceModel",
+		td.device_type AS "devices.deviceType",
+		td.device_price AS "devices.devicePrice",
+		td.device_brand AS "devices.deviceBrand",
+		td.distr_serl_num AS "devices.distrSerlNum",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		u2.login_name AS "updateBy.loginName",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="devicesHisJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
+		LEFT JOIN t_building tb on tb.id = a.building_id
+		LEFT JOIN t_house th on th.id = a.house_id
+		LEFT JOIN t_room tr on tr.id = a.room_id
+		LEFT JOIN t_devices td on td.id = a.device_id
+	</sql>
+    
+	<select id="get" resultType="DevicesHis">
+		SELECT 
+			<include refid="devicesHisColumns"/>
+		FROM t_devices_his a
+		<include refid="devicesHisJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DevicesHis">
+		SELECT 
+			<include refid="devicesHisColumns"/>
+		FROM t_devices_his a
+		<include refid="devicesHisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_id = #{house.id}
+			</if>
+			<if test="room != null and room.id != null and room.id != ''">
+				AND a.room_id = #{room.id}
+			</if>
+			<if test="operType != null and operType != ''">
+				AND a.oper_type = #{operType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DevicesHis">
+		SELECT 
+			<include refid="devicesHisColumns"/>
+		FROM t_devices_his a
+		<include refid="devicesHisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_devices_his(
+			id,
+			property_project_id,
+			building_id,
+			house_id,
+			room_id,
+			oper_type,
+			device_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProjectId},
+			#{buildingId},
+			#{houseId},
+			#{roomId},
+			#{operType},
+			#{deviceId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_devices_his SET 	
+			property_project_id = #{propertyProjectId},
+			building_id = #{buildingId},
+			house_id = #{houseId},
+			room_id = #{roomId},
+			oper_type = #{operType},
+			device_id = #{deviceId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_devices_his SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

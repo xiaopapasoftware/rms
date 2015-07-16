@@ -24,6 +24,12 @@ public class Receipt extends DataEntity<Receipt> {
 	private String receiptNo;		// 收据号码
 	private Date receiptDate;		// 收据日期
 	private Double receiptAmount;		// 收据金额
+	private String tradeMode;		// 交易方式
+	
+	private String tradeName;
+	private String tradeType;
+	
+	private String paymentType;
 	
 	public Receipt() {
 		super();
@@ -51,7 +57,7 @@ public class Receipt extends DataEntity<Receipt> {
 		this.receiptNo = receiptNo;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="收据日期不能为空")
 	public Date getReceiptDate() {
 		return receiptDate;
@@ -69,5 +75,36 @@ public class Receipt extends DataEntity<Receipt> {
 	public void setReceiptAmount(Double receiptAmount) {
 		this.receiptAmount = receiptAmount;
 	}
-	
+
+	public String getTradeMode() {
+		return tradeMode;
+	}
+
+	public void setTradeMode(String tradeMode) {
+		this.tradeMode = tradeMode;
+	}
+
+	public String getTradeName() {
+		return tradeName;
+	}
+
+	public void setTradeName(String tradeName) {
+		this.tradeName = tradeName;
+	}
+
+	public String getTradeType() {
+		return tradeType;
+	}
+
+	public void setTradeType(String tradeType) {
+		this.tradeType = tradeType;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 }

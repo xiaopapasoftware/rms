@@ -64,7 +64,7 @@
 				<form:input path="${c.javaFieldId}" htmlEscape="false"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if> class="input-medium"/>
 			<#elseif c.showType == "select">
 				<form:select path="${c.javaFieldId}" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${"$"}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			<#elseif c.showType == "checkbox">

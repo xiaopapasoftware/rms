@@ -30,6 +30,8 @@ public class House extends DataEntity<House> {
 	private String decorationStructure; // 装修房屋结构
 	private String houseStatus; // 房屋状态
 	private String attachmentPath; // 房屋图片路径
+	
+	private String choose;
 
 	public House() {
 		super();
@@ -132,5 +134,13 @@ public class House extends DataEntity<House> {
 
 	public void setAttachmentPath(String attachmentPath) {
 		this.attachmentPath = attachmentPath;
+	}
+
+	public String getChoose() {
+		return choose;
+	}
+
+	public void setChoose(String choose) {
+		this.choose = choose;
 	}
 }

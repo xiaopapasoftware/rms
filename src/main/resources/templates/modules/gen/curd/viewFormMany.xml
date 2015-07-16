@@ -84,7 +84,7 @@
 				<form:textarea path="${c.javaFieldId}" htmlEscape="false" rows="4"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if> class="input-xxlarge <#if c.isNull != "1">required</#if>"/>
 			<#elseif c.showType == "select">
 				<form:select path="${c.javaFieldId}" class="input-xlarge <#if c.isNull != "1">required</#if>">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${"$"}{fns:getDictList('${c.dictType}')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			<#elseif c.showType == "checkbox">

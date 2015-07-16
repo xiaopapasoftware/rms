@@ -19,25 +19,36 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/receipt/">账务收据列表</a></li>
-		<shiro:hasPermission name="funds:receipt:edit"><li><a href="${ctx}/funds/receipt/form">账务收据添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="receipt" action="${ctx}/funds/receipt/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>账务交易：</label>
-				<form:input path="tradingAccounts.id" htmlEscape="false" maxlength="64" class="input-medium"/>
+			<li><label style="width:120px;">账务交易对象：</label>
+				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
 			</li>
-			<li><label>收据号码：</label>
-				<form:input path="receiptNo" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:120px;">账务交易类型：</label>
+				<form:select path="tradeType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</li>
-			<li><label>收据日期：</label>
+			<li><label style="width:120px;">账务交易方式：</label>
+				<form:select path="tradeMode" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label style="width:120px;">收据号码：</label>
+				<form:input path="receiptNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
+			</li>
+			<li><label style="width:120px;">收据日期：</label>
 				<input name="receiptDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd HH:mm:ss"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+					value="<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
 			</li>
-			<li><label>收据金额：</label>
-				<form:input path="receiptAmount" htmlEscape="false" class="input-medium"/>
+			<li><label style="width:120px;">收据金额：</label>
+				<form:input path="receiptAmount" htmlEscape="false" class="input-medium" style="width:185px;"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
@@ -47,26 +58,33 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>账务交易</th>
+				<th>账务交易对象</th>
+				<th>账务交易类型</th>
+				<th>账务交易方式</th>
 				<th>收据号码</th>
 				<th>收据日期</th>
 				<th>收据金额</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="funds:receipt:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="receipt">
 			<tr>
-				<td><a href="${ctx}/funds/receipt/form?id=${receipt.id}">
-					${receipt.tradingAccounts.id}
-				</a></td>
+				<td>
+					${receipt.tradeName}
+				</td>
+				<td>
+					${fns:getDictLabel(receipt.tradeType, 'trans_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(receipt.tradeMode, 'trans_mode', '')}
+				</td>
 				<td>
 					${receipt.receiptNo}
 				</td>
 				<td>
-					<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>
 				</td>
 				<td>
 					${receipt.receiptAmount}
@@ -77,10 +95,6 @@
 				<td>
 					${receipt.remarks}
 				</td>
-				<shiro:hasPermission name="funds:receipt:edit"><td>
-    				<a href="${ctx}/funds/receipt/form?id=${receipt.id}">修改</a>
-					<a href="${ctx}/funds/receipt/delete?id=${receipt.id}" onclick="return confirmx('确认要删除该账务收据吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

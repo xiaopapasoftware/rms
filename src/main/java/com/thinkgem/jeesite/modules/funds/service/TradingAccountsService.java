@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.funds.service;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,26 +17,36 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
+import com.thinkgem.jeesite.modules.contract.dao.LeaseContractDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.dao.NormalFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.NormalFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 账务交易Service
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 @Service
 @Transactional(readOnly = true)
 public class TradingAccountsService extends CrudService<TradingAccountsDao, TradingAccounts> {
+
 	@Autowired
 	private PaymentTransService paymentTransService;
 	@Autowired
@@ -50,29 +61,45 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	private TradingAccountsDao tradingAccountsDao;
 	@Autowired
 	private RentContractDao rentContractDao;
-	
-	private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";//账务审批
-	
+	@Autowired
+	private ReceiptDao receiptDao;
+	@Autowired
+	private LeaseContractDao leaseContractDao;
+	@Autowired
+	private PaymentTransDao paymentTransDao;
+	@Autowired
+	private ElectricFeeDao electricFeeDao;
+	@Autowired
+	private NormalFeeDao normalFeeDao;
+
+	private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";// 账务审批
+
 	public TradingAccounts get(String id) {
 		return super.get(id);
 	}
-	
+
 	public List<TradingAccounts> findList(TradingAccounts tradingAccounts) {
 		return super.findList(tradingAccounts);
 	}
 	
+	public List<Receipt> findReceiptList(TradingAccounts tradingAccounts) {
+		Receipt receipt = new Receipt();
+		receipt.setTradingAccounts(tradingAccounts);
+		return receiptDao.findList(receipt);
+	}
+
 	public Page<TradingAccounts> findPage(Page<TradingAccounts> page, TradingAccounts tradingAccounts) {
 		return super.findPage(page, tradingAccounts);
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void audit(AuditHis auditHis) {
 		AuditHis saveAuditHis = new AuditHis();
 		saveAuditHis.setId(IdGen.uuid());
-		saveAuditHis.setObjectType("2");//账务
+		saveAuditHis.setObjectType("2");// 账务
 		saveAuditHis.setObjectId(auditHis.getObjectId());
 		saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
-		saveAuditHis.setAuditStatus(auditHis.getAuditStatus());//1:通过 2:拒绝
+		saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
 		saveAuditHis.setCreateDate(new Date());
 		saveAuditHis.setCreateBy(UserUtils.getUser());
 		saveAuditHis.setUpdateDate(new Date());
@@ -81,88 +108,189 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		saveAuditHis.setAuditUser(UserUtils.getUser().getId());
 		saveAuditHis.setDelFlag("0");
 		auditHisDao.insert(saveAuditHis);
-		
+
 		TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
 		tradingAccounts.setUpdateDate(new Date());
 		tradingAccounts.setUpdateBy(UserUtils.getUser());
 		tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
 		tradingAccountsDao.update(tradingAccounts);
-		
-		if("1".equals(tradingAccounts.getTradeType())) {//定金协议
+
+		// if ("0".equals(tradingAccounts.getTradeType())) {// 承租合同
+		// LeaseContract leaseContract =
+		// leaseContractDao.get(tradingAccounts.getTradeId());
+		// if (!"1".equals(leaseContract.getContractStatus())) {
+		// leaseContract.setContractStatus("1".equals(auditHis.getAuditStatus())
+		// ? "1" : "2");
+		// leaseContract.setUpdateBy(UserUtils.getUser());
+		// leaseContract.setUpdateDate(new Date());
+		// leaseContractDao.update(leaseContract);
+		// }
+		// } else
+		if ("1".equals(tradingAccounts.getTradeType())) {
+			// 定金协议 5:到账收据审核通过 4:到账收据审核拒绝
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
-			depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus())?"5":"4");//5:到账收据审核通过 4:到账收据审核拒绝
-			depositAgreement.setUpdateBy(UserUtils.getUser());
-			depositAgreement.setUpdateDate(new Date());
-			depositAgreementDao.update(depositAgreement);
-		} else if("3".equals(tradingAccounts.getTradeType())) {//新签合同
+			if (!"5".equals(depositAgreement.getAgreementStatus())) {
+				depositAgreement.setUpdateBy(UserUtils.getUser());
+				depositAgreement.setUpdateDate(new Date());
+				depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "5" : "4");
+				if ("1".equals(auditHis.getAuditStatus())) {
+					depositAgreement.setAgreementBusiStatus("0");// 待转合同
+				}
+				depositAgreementDao.update(depositAgreement);
+			}
+		} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType())
+				|| "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
+			// 新签合同 6:到账收据审核通过 5:到账收据审核拒绝
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-			rentContract.setContractStatus("1".equals(auditHis.getAuditStatus())?"6":"5");//6:到账收据审核通过 5:到账收据审核拒绝
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			if (!"6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "6" : "5");
+				if("1".equals(auditHis.getAuditStatus()))
+					rentContract.setContractBusiStatus("0");//有效
+				rentContractDao.update(rentContract);
+			}
+		} else if ("7".equals(tradingAccounts.getTradeType())) {
+			// 正常退租 8:正常退租 6:退租款项审核拒绝
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "8" : "6");
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
-		} else if("7".equals(tradingAccounts.getTradeType())) {//正常退租
+		} else if ("6".equals(tradingAccounts.getTradeType())) {
+			// 提前退租 7:提前退租 6:退租款项审核拒绝
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus())?"8":"6");//8:正常退租 6:退租款项审核拒绝
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "7" : "6");
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
+		} else if ("8".equals(tradingAccounts.getTradeType())) {
+			// 逾期退租 9:逾期退租 6:退租款项审核拒绝
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "9" : "6");
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
+		} else if ("9".equals(tradingAccounts.getTradeType())) {
+			// 特殊退租 16:特殊退租 6:退租款项审核拒绝
+			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+			rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "16" : "6");
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContractDao.update(rentContract);
+		} else if ("10".equals(tradingAccounts.getTradeType()) || "11".equals(tradingAccounts.getTradeType())) {// 电费缴纳、电费充值
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setDelFlag("0");
+			paymentTrade.setTradeId(tradingAccounts.getId());
+			List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+
+			/* 更新充值记录 */
+			for (PaymentTrade tmpPaymentTrade : list) {
+				PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+				ElectricFee electricFee = new ElectricFee();
+				electricFee.setPaymentTransId(paymentTrans.getId());
+				electricFee.setDelFlag("0");
+				electricFee = electricFeeDao.get(electricFee);
+				if (null != electricFee) {
+					electricFee.setSettleStatus("1".equals(auditHis.getAuditStatus()) ? "3" : "2");// 3:审核通过
+																									// 2:审核拒绝
+					electricFeeDao.update(electricFee);
+				}
+			}
+		} else if ("12".equals(tradingAccounts.getTradeType()) || "13".equals(tradingAccounts.getTradeType())
+				|| "14".equals(tradingAccounts.getTradeType()) || "15".equals(tradingAccounts.getTradeType())) {
+			// 水费缴纳、燃气费缴纳、有线费缴纳、宽带费缴纳
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setDelFlag("0");
+			paymentTrade.setTradeId(tradingAccounts.getId());
+			List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+
+			/* 更新充值记录 */
+			for (PaymentTrade tmpPaymentTrade : list) {
+				PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+				NormalFee normalFee = new NormalFee();
+				normalFee.setPaymentTransId(paymentTrans.getId());
+				normalFee.setDelFlag("0");
+				normalFee = normalFeeDao.get(normalFee);
+				if (null != normalFee) {
+					normalFee.setSettleStatus("1".equals(auditHis.getAuditStatus()) ? "3" : "2");// 3:审核通过
+																									// 2:审核拒绝
+					normalFeeDao.update(normalFee);
+				}
+			}
 		}
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void save(TradingAccounts tradingAccounts) {
 		String id = super.saveAndReturnId(tradingAccounts);
-		
-		/*更新款项状态*/
-		String[] transIds = tradingAccounts.getTransIds().split(",");
-		for(int i=0;i<transIds.length;i++) {
-			PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
-			paymentTrans.setTransStatus("2");//完全到账登记
-			paymentTrans.setTransAmount(paymentTrans.getTradeAmount());//实际交易金额
-			paymentTrans.setLastAmount(0D);//剩余交易金额
-			paymentTransService.save(paymentTrans);
-			
-			/*款项账务关联*/
-			PaymentTrade paymentTrade = new PaymentTrade();
-			paymentTrade.setTradeId(id);
-			paymentTrade.setTransId(paymentTrans.getId());
-			paymentTrade.setId(IdGen.uuid());
-			paymentTrade.setCreateDate(new Date());
-			paymentTrade.setCreateBy(UserUtils.getUser());
-			paymentTrade.setUpdateDate(new Date());
-			paymentTrade.setUpdateBy(UserUtils.getUser());
-			paymentTrade.setDelFlag("0");
-			paymentTradeDao.insert(paymentTrade);
+
+		/* 更新款项状态 */
+		if(!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
+			String[] transIds = tradingAccounts.getTransIds().split(",");
+			for (int i = 0; i < transIds.length; i++) {
+				PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
+				paymentTrans.setTransStatus("2");// 完全到账登记
+				paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
+				paymentTrans.setLastAmount(0D);// 剩余交易金额
+				paymentTransService.save(paymentTrans);
+	
+				/* 款项账务关联 */
+				PaymentTrade paymentTrade = new PaymentTrade();
+				paymentTrade.setTradeId(id);
+				paymentTradeDao.delete(paymentTrade);
+				
+				paymentTrade.setTransId(paymentTrans.getId());
+				paymentTrade.setId(IdGen.uuid());
+				paymentTrade.setCreateDate(new Date());
+				paymentTrade.setCreateBy(UserUtils.getUser());
+				paymentTrade.setUpdateDate(new Date());
+				paymentTrade.setUpdateBy(UserUtils.getUser());
+				paymentTrade.setDelFlag("0");
+				paymentTradeDao.insert(paymentTrade);
+			}
 		}
-		
+
 		String tradeId = tradingAccounts.getTradeId();
 		String tradeType = tradingAccounts.getTradeType();
-		
-		if("1".equals(tradeType)) {//预约定金
+
+		if ("1".equals(tradeType)) {// 预约定金
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
-			depositAgreement.setAgreementStatus("1");//到账收据登记完成内容待审核
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
-			depositAgreementDao.update(depositAgreement);
-		} else if("3".equals(tradeType)) {//新签合同
+			if (!"5".equals(depositAgreement.getAgreementStatus())) {
+				depositAgreement.setAgreementStatus("1");// 到账收据登记完成内容待审核
+				depositAgreementDao.update(depositAgreement);
+			}
+		} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
 			RentContract rentContract = rentContractDao.get(tradeId);
-			rentContract.setContractStatus("2");//到账收据完成合同内容待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			rentContractDao.update(rentContract);
-		} else if("7".equals(tradeType)) {//正常退租
+			if (!"6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractStatus("2");// 到账收据完成合同内容待审核
+				rentContractDao.update(rentContract);
+			}
+		} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {
 			RentContract rentContract = rentContractDao.get(tradeId);
-			rentContract.setContractBusiStatus("5");//退租款项待审核
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
+			if ("6".equals(rentContract.getContractStatus())) {
+				rentContract.setContractBusiStatus("5");// 退租款项待审核
+				rentContractDao.update(rentContract);
+			}
+		} else if ("9".equals(tradeType)) {// 特殊退租
+			RentContract rentContract = rentContractDao.get(tradeId);
+			rentContract.setUpdateBy(UserUtils.getUser());
+			rentContract.setUpdateDate(new Date());
+			rentContract.setContractBusiStatus("11");// 特殊退租结算待审核
 			rentContractDao.update(rentContract);
 		}
-		
-		//审核
+
+		// 审核
 		Audit audit = new Audit();
 		audit.setId(IdGen.uuid());
 		audit.setObjectId(id);
-		audit.setObjectType("2");//账务
+		audit.setObjectType("2");// 账务
 		audit.setNextRole(TRADING_ACCOUNTS_ROLE);
 		audit.setCreateDate(new Date());
 		audit.setCreateBy(UserUtils.getUser());
@@ -170,11 +298,32 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		audit.setUpdateBy(UserUtils.getUser());
 		audit.setDelFlag("0");
 		auditDao.insert(audit);
+
+		/* 收据 */
+		if(null != tradingAccounts.getReceiptList()) {
+			Receipt delReceipt = new Receipt();
+			TradingAccounts delTradingAccounts = new TradingAccounts();
+			delTradingAccounts.setId(id);
+			delReceipt.setTradingAccounts(delTradingAccounts);
+			receiptDao.delete(delReceipt);
+			
+			for (Receipt receipt : tradingAccounts.getReceiptList()) {
+				receipt.setId(IdGen.uuid());
+				receipt.setTradingAccounts(tradingAccounts);
+				receipt.setReceiptDate(new Date());
+				receipt.setCreateDate(new Date());
+				receipt.setCreateBy(UserUtils.getUser());
+				receipt.setUpdateDate(new Date());
+				receipt.setUpdateBy(UserUtils.getUser());
+				receipt.setDelFlag("0");
+				receiptDao.insert(receipt);
+			}
+		}
 	}
-	
+
 	@Transactional(readOnly = false)
 	public void delete(TradingAccounts tradingAccounts) {
 		super.delete(tradingAccounts);
 	}
-	
+
 }

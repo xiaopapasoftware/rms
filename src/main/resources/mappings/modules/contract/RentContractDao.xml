@@ -4,8 +4,11 @@
     
 	<sql id="rentContractColumns">
 		a.id AS "id",
-		a.contract_id AS "contractId",
 		a.contract_name AS "contractName",
+		a.agreement_id AS "agreementId",
+		tda.agreement_name AS "refAgreementName",
+		a.contract_id AS "contractId",
+		trc.contract_name AS "refContractName",
 		a.rent_mode AS "rentMode",
 		a.property_project_id AS "propertyProject.id",
 		a.building_id AS "building.id",
@@ -13,7 +16,8 @@
 		a.room_id AS "room.id",
 		a.user_id AS "user.id",
 		a.contract_source AS "contractSource",
-		a.parnter AS "parnter",
+		a.partner_id AS "partner.id",
+		tpart.partner_name AS "partner.partnerName",
 		a.rental AS "rental",
 		a.start_date AS "startDate",
 		a.expired_date AS "expiredDate",
@@ -41,8 +45,10 @@
 		a.contract_status AS "contractStatus",
 		a.contract_busi_status AS "contractBusiStatus",
 		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
@@ -57,11 +63,15 @@
 	
 	<sql id="rentContractJoins">
 		LEFT JOIN sys_user u9 ON u9.id = a.user_id
-		LEFT JOIN sys_user u11 ON u11.id = a.parnter
+		LEFT JOIN t_partner tpart on tpart.id = a.partner_id
 		left join t_property_project tp on a.property_project_id = tp.id 
 		left join t_building tb on a.building_id=tb.id 
 		left join t_house th on a.house_id=th.id 
-		left join t_room tm on a.room_id=tm.id 
+		left join t_room tm on a.room_id=tm.id
+		left join t_rent_contract trc on trc.id = a.contract_id
+		left join t_deposit_agreement tda on tda.id = a.agreement_id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
     
 	<select id="get" resultType="RentContract">
@@ -79,9 +89,6 @@
 		<include refid="rentContractJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="contractId != null and contractId != ''">
-				AND a.contract_id = #{contractId}
-			</if>
 			<if test="contractName != null and contractName != ''">
 				AND a.contract_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
@@ -103,14 +110,8 @@
 			<if test="room != null and room.id != null and room.id != ''">
 				AND a.room_id = #{room.id}
 			</if>
-			<if test="user != null and user.id != null and user.id != ''">
-				AND a.user_id = #{user.id}
-			</if>
 			<if test="contractSource != null and contractSource != ''">
 				AND a.contract_source = #{contractSource}
-			</if>
-			<if test="rental != null and rental != ''">
-				AND a.rental = #{rental}
 			</if>
 			<if test="startDate != null and startDate != ''">
 				AND a.start_date = #{startDate}
@@ -120,6 +121,12 @@
 			</if>
 			<if test="signDate != null and signDate != ''">
 				AND a.sign_date = #{signDate}
+			</if>
+			<if test="signType != null and signType != ''">
+				AND a.sign_type = #{signType}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.contract_name = #{name}
 			</if>
 			<if test="contractStatus != null and contractStatus != ''">
 				AND a.contract_status = #{contractStatus}
@@ -159,6 +166,7 @@
 	<insert id="insert">
 		INSERT INTO t_rent_contract(
 			id,
+			agreement_id,
 			contract_id,
 			contract_name,
 			rent_mode,
@@ -168,7 +176,7 @@
 			room_id,
 			user_id,
 			contract_source,
-			parnter,
+			partner_id,
 			rental,
 			start_date,
 			expired_date,
@@ -205,6 +213,7 @@
 			break_down
 		) VALUES (
 			#{id},
+			#{agreementId},
 			#{contractId},
 			#{contractName},
 			#{rentMode},
@@ -214,7 +223,7 @@
 			#{room.id},
 			#{user.id},
 			#{contractSource},
-			#{parnter},
+			#{partner.id},
 			#{rental},
 			#{startDate},
 			#{expiredDate},
@@ -254,6 +263,7 @@
 	
 	<update id="update">
 		UPDATE t_rent_contract SET 	
+		    agreement_id = #{agreementId},
 			contract_id = #{contractId},
 			contract_name = #{contractName},
 			rent_mode = #{rentMode},
@@ -263,7 +273,7 @@
 			room_id = #{room.id},
 			user_id = #{user.id},
 			contract_source = #{contractSource},
-			parnter = #{parnter},
+			partner_id = #{partner.id},
 			rental = #{rental},
 			start_date = #{startDate},
 			expired_date = #{expiredDate},

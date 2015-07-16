@@ -32,12 +32,21 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="receipt" action="${ctx}/funds/receipt/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">账务交易：</label>
 			<div class="controls">
 				<form:input path="tradingAccounts.id" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">账务交易方式：</label>
+			<div class="controls">
+				<form:select path="tradeMode" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</div>
 		</div>
 		<div class="control-group">

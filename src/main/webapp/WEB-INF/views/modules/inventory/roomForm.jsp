@@ -6,7 +6,21 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#roomNo, #meterNo, #roomSpace").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			$("input[id*='orientationList']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			$("input[id*='structureList']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -28,6 +42,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
@@ -49,6 +64,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";

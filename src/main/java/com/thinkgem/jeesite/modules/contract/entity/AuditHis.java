@@ -25,6 +25,8 @@ public class AuditHis extends DataEntity<AuditHis> {
 	private String auditMsg;		// 审核意见
 	private String auditUserName;
 	
+	private String type;
+	
 	public AuditHis() {
 		super();
 	}
@@ -93,5 +95,13 @@ public class AuditHis extends DataEntity<AuditHis> {
 
 	public void setAuditUserName(String auditUserName) {
 		this.auditUserName = auditUserName;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}	
 }

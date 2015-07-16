@@ -72,32 +72,11 @@
 			<if test="rentMode != null and rentMode != ''">
 				AND a.rent_mode = #{rentMode}
 			</if>
-			<if test="user != null and user.id != null and user.id != ''">
-				AND a.user_id = #{user.id}
-			</if>
 			<if test="agreementName != null and agreementName != ''">
 				AND a.agreement_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{agreementName}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{agreementName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{agreementName},'%')</if>
-			</if>
-			<if test="startDate != null and startDate != ''">
-				AND a.start_date = #{startDate}
-			</if>
-			<if test="expiredDate != null and expiredDate != ''">
-				AND a.expired_date = #{expiredDate}
-			</if>
-			<if test="signDate != null and signDate != ''">
-				AND a.sign_date = #{signDate}
-			</if>
-			<if test="renMonths != null and renMonths != ''">
-				AND a.ren_months = #{renMonths}
-			</if>
-			<if test="depositMonths != null and depositMonths != ''">
-				AND a.deposit_months = #{depositMonths}
-			</if>
-			<if test="agreementDate != null and agreementDate != ''">
-				AND a.agreement_date = #{agreementDate}
 			</if>
 			<if test="agreementStatus != null and agreementStatus != ''">
 				AND a.agreement_status = #{agreementStatus}

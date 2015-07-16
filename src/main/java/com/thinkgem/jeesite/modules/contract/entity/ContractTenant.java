@@ -17,6 +17,7 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 	private static final long serialVersionUID = 1L;
 	private String depositAgreementId;		// 定金协议
 	private String contractId;		// 出租合同
+	private String agreementChangeId;//变更协议
 	private String tenantId;		// 租客
 	private String leaseContractId;		// 承租合同
 	
@@ -63,5 +64,12 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 	public void setLeaseContractId(String leaseContractId) {
 		this.leaseContractId = leaseContractId;
 	}
-	
+
+	public String getAgreementChangeId() {
+		return agreementChangeId;
+	}
+
+	public void setAgreementChangeId(String agreementChangeId) {
+		this.agreementChangeId = agreementChangeId;
+	}
 }

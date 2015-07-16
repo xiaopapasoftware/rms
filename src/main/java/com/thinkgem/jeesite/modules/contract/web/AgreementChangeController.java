@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,10 +19,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.AgreementChangeService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
  * 协议变更Controller
@@ -33,6 +40,10 @@ public class AgreementChangeController extends BaseController {
 
 	@Autowired
 	private AgreementChangeService agreementChangeService;
+	@Autowired
+	private RentContractService rentContractService;
+	@Autowired
+	private TenantService tenantService;
 	
 	@ModelAttribute
 	public AgreementChange get(@RequestParam(required=false) String id) {
@@ -53,11 +64,29 @@ public class AgreementChangeController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/contract/agreementChangeList";
 	}
+	
+	@RequestMapping(value = "audit")
+	public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+		agreementChangeService.audit(auditHis);
+		
+		return list(new AgreementChange(),request,response,model);
+	}
 
 	@RequiresPermissions("contract:agreementChange:view")
 	@RequestMapping(value = "form")
 	public String form(AgreementChange agreementChange, Model model) {
 		model.addAttribute("agreementChange", agreementChange);
+		
+		if(null != agreementChange && !StringUtils.isBlank(agreementChange.getId())) {
+			RentContract rentContract = new RentContract();
+			rentContract.setId(agreementChange.getId());
+			agreementChange.setLiveList(rentContractService.findLiveTenant(rentContract));
+			agreementChange.setTenantList(rentContractService.findTenant(rentContract));
+		}
+		
+		List<Tenant> tenantList = tenantService.findList(new Tenant());
+		model.addAttribute("tenantList", tenantList);
+		
 		return "modules/contract/agreementChangeForm";
 	}
 

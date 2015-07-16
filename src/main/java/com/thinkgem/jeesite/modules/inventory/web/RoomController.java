@@ -99,11 +99,10 @@ public class RoomController extends BaseController {
 
 	@RequestMapping(value = {"findList"})
 	@ResponseBody
-	public List<Room> findList(String id) {
+	public List<Room> findList(House house) {
 		Room room = new Room();
-		House house = new House();
-		house.setHouseNo(id);
 		room.setHouse(house);
+		room.setChoose(house.getChoose());//过滤不可用
 		List<Room> list = roomService.findList(room);
 		return list;
 	}
@@ -216,8 +215,8 @@ public class RoomController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 			}
 		}
-
 	}
+	
 	@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Room room, RedirectAttributes redirectAttributes) {

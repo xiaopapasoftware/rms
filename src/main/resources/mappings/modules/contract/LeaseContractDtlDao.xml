@@ -55,6 +55,9 @@
 		<include refid="leaseContractDtlJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
 		</where>		
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -109,7 +112,7 @@
 	<update id="delete">
 		UPDATE t_lease_contract_dtl SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE lease_contract_id = #{leaseContractId}
+		WHERE id = #{id}
 	</update>
 	
 </mapper>

@@ -25,34 +25,34 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>企业名称：</label>
-				<form:input path="companyName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">企业名称：</label>
+				<form:input path="companyName" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>企业电话：</label>
-				<form:input path="tellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
-			</li>
-			<li><label>证件类型：</label>
-				<form:select path="idType" class="input-medium">
-					<form:option value="" label=""/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+			<li><label style="width:100px;">企业证件类型：</label>
+				<form:select path="idType" class="input-medium" style="width:190px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('comp_idtype')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>证件号码：</label>
-				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">企业证件号码：</label>
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>企业注册地址：</label>
-				<form:input path="companyAdress" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">企业电话：</label>
+				<form:input path="tellPhone" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>企业营业地址：</label>
-				<form:input path="businessAdress" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">企业注册地址：</label>
+				<form:input path="companyAdress" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>开户行名称：</label>
-				<form:input path="bankName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">企业营业地址：</label>
+				<form:input path="businessAdress" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li><label>开户行账号：</label>
-				<form:input path="bankAccount" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">开户行名称：</label>
+				<form:input path="bankName" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li><label style="width:100px;">开户行账号：</label>
+				<form:input path="bankAccount" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
+			</li>
+			<li class="btns" style="width:100px;"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
@@ -61,14 +61,17 @@
 		<thead>
 			<tr>
 				<th>企业名称</th>
+				<th>企业证件类型</th>
+				<th>企业证件号码</th>
 				<th>企业电话</th>
-				<th>证件类型</th>
-				<th>证件号码</th>
 				<th>企业注册地址</th>
 				<th>企业营业地址</th>
 				<th>开户行名称</th>
 				<th>开户行账号</th>
-				<th>更新时间</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<th>备注信息</th>
 				<shiro:hasPermission name="person:company:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
@@ -80,13 +83,13 @@
 					${company.companyName}
 				</a></td>
 				<td>
-					${company.tellPhone}
-				</td>
-				<td>
-					${fns:getDictLabel(company.idType, '', '')}
+					${fns:getDictLabel(company.idType, 'comp_idtype', '')}
 				</td>
 				<td>
 					${company.idNo}
+				</td>
+				<td>
+					${company.tellPhone}
 				</td>
 				<td>
 					${company.companyAdress}
@@ -101,14 +104,23 @@
 					${company.bankAccount}
 				</td>
 				<td>
+					<fmt:formatDate value="${company.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
 					<fmt:formatDate value="${company.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+				</td>
+				<td>
+				 	${company.createBy.loginName}
+				</td>
+				<td>
+				 	${company.updateBy.loginName}
 				</td>
 				<td>
 					${company.remarks}
 				</td>
 				<shiro:hasPermission name="person:company:edit"><td>
     				<a href="${ctx}/person/company/form?id=${company.id}">修改</a>
-					<a href="${ctx}/person/company/delete?id=${company.id}" onclick="return confirmx('确认要删除该企业信息吗？', this.href)">删除</a>
+					<a href="${ctx}/person/company/delete?id=${company.id}" onclick="return confirmx('确认要删除该企业及其联系人信息吗？', this.href)">删除</a>
 				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>

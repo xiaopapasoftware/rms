@@ -3,7 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +13,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
@@ -28,6 +31,15 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	private String agreementStatus;		// 协议审核状态
 	private User user;		// 核算人
 	
+	private String contractId;
+	
+	private List<Tenant> tenantList = new ArrayList<Tenant>();//承租人
+	private List<Tenant> liveList = new ArrayList<Tenant>();//入住人
+	
+	private String rentContractName;
+	
+	private String createUserName;
+	
 	public AgreementChange() {
 		super();
 	}
@@ -36,7 +48,6 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 		super(id);
 	}
 
-	@NotNull(message="出租合同不能为空")
 	public RentContract getRentContract() {
 		return rentContract;
 	}
@@ -54,7 +65,7 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 		this.agreementChangeName = agreementChangeName;
 	}
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message="协议生效时间不能为空")
 	public Date getStartDate() {
 		return startDate;
@@ -73,7 +84,6 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 		this.rentMode = rentMode;
 	}
 	
-	@Length(min=1, max=64, message="协议审核状态长度必须介于 1 和 64 之间")
 	public String getAgreementStatus() {
 		return agreementStatus;
 	}
@@ -82,7 +92,6 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 		this.agreementStatus = agreementStatus;
 	}
 	
-	@NotNull(message="核算人不能为空")
 	public User getUser() {
 		return user;
 	}
@@ -90,5 +99,44 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+	public String getContractId() {
+		return contractId;
+	}
+
+	public void setContractId(String contractId) {
+		this.contractId = contractId;
+	}
+
+	public List<Tenant> getTenantList() {
+		return tenantList;
+	}
+
+	public void setTenantList(List<Tenant> tenantList) {
+		this.tenantList = tenantList;
+	}
+
+	public List<Tenant> getLiveList() {
+		return liveList;
+	}
+
+	public void setLiveList(List<Tenant> liveList) {
+		this.liveList = liveList;
+	}
+
+	public String getRentContractName() {
+		return rentContractName;
+	}
+
+	public void setRentContractName(String rentContractName) {
+		this.rentContractName = rentContractName;
+	}
+
+	public String getCreateUserName() {
+		return createUserName;
+	}
+
+	public void setCreateUserName(String createUserName) {
+		this.createUserName = createUserName;
+	}
 }

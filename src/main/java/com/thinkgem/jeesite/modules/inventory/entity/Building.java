@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.inventory.entity;
 
 import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -20,6 +21,8 @@ public class Building extends DataEntity<Building> {
 	private PropertyProject propertyProject; // 物业项目
 	private String buildingName; // 楼宇名称
 	private String attachmentPath; // 楼宇图片路径
+	
+	private String choose;
 
 	public Building() {
 		super();
@@ -53,5 +56,13 @@ public class Building extends DataEntity<Building> {
 
 	public void setAttachmentPath(String attachmentPath) {
 		this.attachmentPath = attachmentPath;
+	}
+
+	public String getChoose() {
+		return choose;
+	}
+
+	public void setChoose(String choose) {
+		this.choose = choose;
 	}
 }

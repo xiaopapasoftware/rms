@@ -6,11 +6,20 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+			$("#contractName, #deposit").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+			$("input[name$='Date']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#leaseContractDtlList").find("tr").length==0) {
-						top.$.jBox.tip('请录入承租价格.','warning');
+						top.$.jBox.tip('请录入月承租价格.','warning');
 						return;
 					}
 					loading('正在提交，请稍等...');
@@ -63,6 +72,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
@@ -84,6 +94,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'></option>";
 			if("" != building) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
@@ -102,7 +113,7 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<li class="active">
-			<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">承租合同
+			<a href="#">承租合同
 			<shiro:hasPermission name="contract:leaseContract:edit">
 				<c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">
 					${not empty leaseContract.id?'修改':'添加'}
@@ -115,12 +126,13 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<form:hidden path="type"/>
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -130,7 +142,7 @@
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -140,7 +152,7 @@
 			<label class="control-label">房屋：</label>
 			<div class="controls">
 				<form:select path="house.id" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -150,7 +162,7 @@
 			<label class="control-label">汇款人：</label>
 			<div class="controls">
 				<form:select path="remittancer.id" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${remittancerList}" itemLabel="userName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -185,7 +197,7 @@
 			<label class="control-label">打款日期：</label>
 			<div class="controls">
 				<form:select path="remittanceDate" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -238,7 +250,14 @@
 			</div>
 		</div>
 		<div class="control-group">
-				<label class="control-label">承租价格：</label>
+			<label class="control-label">动迁协议：</label>
+			<div class="controls">
+				<form:hidden id="relocation" path="relocation" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="relocation" type="files" uploadPath="/3" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+				<label class="control-label">月承租价格：</label>
 				<div class="controls">
 					<table id="contentTable" class="table table-striped table-bordered table-condensed">
 						<thead>
@@ -246,7 +265,7 @@
 								<th class="hide"></th>
 								<th>开始日期</th>
 								<th>结束日期</th>
-								<th>承租价格</th>
+								<th>月承租价格</th>
 								<shiro:hasPermission name="contract:leaseContract:edit"><th width="10">&nbsp;</th></shiro:hasPermission>
 							</tr>
 						</thead>

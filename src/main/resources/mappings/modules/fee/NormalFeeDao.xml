@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.fee.dao.NormalFeeDao">
+    
+	<sql id="normalFeeColumns">
+		a.id AS "id",
+		a.rent_contract_id AS "rentContractId",
+		a.fee_type AS "feeType",
+		a.settle_type AS "settleType",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.meter_value AS "meterValue",
+		a.person_fee AS "personFee",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.settle_status AS "settleStatus",
+		tc.contract_name as "contractName",
+		a.paymenttrans_id as "paymentTransId"
+	</sql>
+	
+	<sql id="normalFeeJoins">
+	left join t_rent_contract tc on a.rent_contract_id=tc.id 
+	</sql>
+    
+	<select id="get" resultType="NormalFee">
+		SELECT 
+			<include refid="normalFeeColumns"/>
+		FROM t_normal_fee a
+		<include refid="normalFeeJoins"/>
+		WHERE a.paymenttrans_id = #{paymentTransId}
+	</select>
+	
+	<select id="findList" resultType="NormalFee">
+		SELECT 
+			<include refid="normalFeeColumns"/>
+		FROM t_normal_fee a
+		<include refid="normalFeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="rentContractId != null and rentContractId != ''">
+				AND a.rent_contract_id = #{rentContractId}
+			</if>
+			<if test="feeType != null and feeType != ''">
+				AND a.fee_type = #{feeType}
+			</if>
+			<if test="settleType != null and settleType != ''">
+				AND a.settle_type = #{settleType}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.end_date = #{endDate}
+			</if>
+			<if test="meterValue != null and meterValue != ''">
+				AND a.meter_value = #{meterValue}
+			</if>
+			<if test="personFee != null and personFee != ''">
+				AND a.person_fee = #{personFee}
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND tc.contract_name like concat('%',#{contractName},'%')
+			</if>
+			<if test="paymentTransId != null and paymentTransId != ''">
+				AND a.paymenttrans_id = #{paymentTransId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="NormalFee">
+		SELECT 
+			<include refid="normalFeeColumns"/>
+		FROM t_normal_fee a
+		<include refid="normalFeeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_normal_fee(
+			id,
+			rent_contract_id,
+			fee_type,
+			settle_type,
+			start_date,
+			end_date,
+			meter_value,
+			person_fee,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			settle_status,
+			paymenttrans_id
+		) VALUES (
+			#{id},
+			#{rentContractId},
+			#{feeType},
+			#{settleType},
+			#{startDate},
+			#{endDate},
+			#{meterValue},
+			#{personFee},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{settleStatus},
+			#{paymentTransId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_normal_fee SET 	
+			rent_contract_id = #{rentContractId},
+			fee_type = #{feeType},
+			settle_type = #{settleType},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			meter_value = #{meterValue},
+			person_fee = #{personFee},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			settle_status = #{settleStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_normal_fee SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

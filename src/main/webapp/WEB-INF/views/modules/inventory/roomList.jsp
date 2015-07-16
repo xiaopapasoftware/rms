@@ -19,6 +19,7 @@
 			var project = $("[id='propertyProject.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
@@ -40,6 +41,7 @@
 			var building = $("[id='building.id']").val();
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
+				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
 					for(var i=0;i<data.length;i++) {
 						html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
@@ -122,7 +124,7 @@
 				<td>${room.propertyProject.projectName}</td>
 				<td>${room.building.buildingName}</td>
 				<td>${room.house.houseNo}</td>
-				<td><a href="${ctx}/inventory/room/form?id=${room.id}"></a>${room.roomNo}</td>
+				<td><a href="${ctx}/inventory/room/form?id=${room.id}">${room.roomNo}</a></td>
 				<td>${fns:getDictLabel(room.roomStatus, 'room_status', '')}</td>
 				<td>${room.meterNo}</td>
 				<td>${room.roomSpace}</td>
@@ -137,10 +139,13 @@
 				<td>${room.createBy.loginName}</td>
 				<td>${room.updateBy.loginName}</td>
 				<td>${room.remarks}</td>
-				<shiro:hasPermission name="inventory:room:edit"><td>
-    				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
-					<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				<td>
+					<shiro:hasPermission name="inventory:room:edit">
+	    				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
+						<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
+					</shiro:hasPermission>
+					<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备<shiro:hasPermission name="device:roomDevices:edit">维护</shiro:hasPermission><shiro:lacksPermission name="device:roomDevices:edit">查看</shiro:lacksPermission></a>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

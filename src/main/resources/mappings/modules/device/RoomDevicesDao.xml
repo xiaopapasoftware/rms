@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.device.dao.RoomDevicesDao">
+    
+	<sql id="roomDevicesColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProjectId",
+		a.building_id AS "buildingId",
+		a.house_id AS "houseId",
+		a.room_id AS "roomId",
+		a.device_id AS "deviceId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="roomDevicesJoins">
+	</sql>
+    
+	<select id="get" resultType="RoomDevices">
+		SELECT 
+			<include refid="roomDevicesColumns"/>
+		FROM t_room_devices a
+		<include refid="roomDevicesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RoomDevices">
+		SELECT 
+			<include refid="roomDevicesColumns"/>
+		FROM t_room_devices a
+		<include refid="roomDevicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="propertyProjectId != null and propertyProjectId != ''">
+				AND a.property_project_id = #{propertyProjectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				AND a.building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				AND a.house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				AND a.room_id = #{roomId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RoomDevices">
+		SELECT 
+			<include refid="roomDevicesColumns"/>
+		FROM t_room_devices a
+		<include refid="roomDevicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_room_devices(
+			id,
+			property_project_id,
+			building_id,
+			house_id,
+			room_id,
+			device_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{propertyProjectId},
+			#{buildingId},
+			#{houseId},
+			#{roomId},
+			#{deviceId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_room_devices SET 	
+			property_project_id = #{propertyProjectId},
+			building_id = #{buildingId},
+			house_id = #{houseId},
+			room_id = #{roomId},
+			device_id = #{deviceId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_room_devices SET  del_flag = #{DEL_FLAG_DELETE}
+		WHERE   property_project_id = #{propertyProjectId}
+		and 	building_id = #{buildingId}
+		and		house_id = #{houseId}
+		and		room_id = #{roomId}
+		and 	device_id = #{deviceId}
+	</update>
+	
+</mapper>

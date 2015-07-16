@@ -32,12 +32,12 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="accounting" action="${ctx}/contract/accounting/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">核算费用方向：</label>
 			<div class="controls">
 				<form:select path="feeDirection" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -47,7 +47,7 @@
 			<label class="control-label">核算费用类别：</label>
 			<div class="controls">
 				<form:select path="feeType" class="input-xlarge required">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>

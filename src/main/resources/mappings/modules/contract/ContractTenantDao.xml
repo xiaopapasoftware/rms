@@ -13,7 +13,8 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.agreement_change_id as "agreementChangeId"
 	</sql>
 	
 	<sql id="contractTenantJoins">
@@ -34,6 +35,18 @@
 		<include refid="contractTenantJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				AND a.deposit_agreement_id = #{depositAgreementId}
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+				AND a.agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -75,7 +88,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			agreement_change_id
 		) VALUES (
 			#{id},
 			#{depositAgreementId},
@@ -87,7 +101,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{agreementChangeId}
 		)
 	</insert>
 	
@@ -99,14 +114,28 @@
 			lease_contract_id = #{leaseContractId},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			agreement_change_id = #{agreementChangeId}
 		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">
 		UPDATE t_contract_tenant SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE tenant_id = #{tenantId}
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tenantId != null and tenantId != ''">
+				and tenant_id = #{tenantId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				and deposit_agreement_id =  #{depositAgreementId}
+			</if>
+			<if test="contractId != null and contractId != ''">
+				and contract_id = #{contractId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				and lease_contract_id = #{leaseContractId}
+			</if>
 	</update>
 	
 </mapper>

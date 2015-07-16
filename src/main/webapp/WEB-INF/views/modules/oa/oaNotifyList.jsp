@@ -30,7 +30,7 @@
 			</li>
 			<li><label>类型：</label>
 				<form:select path="type" class="input-medium">
-					<form:option value="" label=""/>
+					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('oa_notify_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
