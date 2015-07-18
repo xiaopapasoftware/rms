@@ -50,6 +50,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	private String buildingBame;
 	private String houseNo;
 	private String roomNo;
+	private String depositAgreementFile;//定金协议文件
+	private String depositReceiptFile;//定金协议收据
 	
 	private List<Tenant> tenantList = new ArrayList<Tenant>();
 	
@@ -244,6 +246,21 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
 	public void setRoomNo(String roomNo) {
 		this.roomNo = roomNo;
+	}
+	public String getDepositAgreementFile() {
+		return depositAgreementFile;
+	}
+
+	public void setDepositAgreementFile(String depositAgreementFile) {
+		this.depositAgreementFile = depositAgreementFile;
+	}
+
+	public String getDepositReceiptFile() {
+		return depositReceiptFile;
+	}
+
+	public void setDepositReceiptFile(String depositReceiptFile) {
+		this.depositReceiptFile = depositReceiptFile;
 	}
 
 	public List<Tenant> getTenantList() {

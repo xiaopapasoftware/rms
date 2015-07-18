@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
+import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
@@ -29,6 +32,7 @@ import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
@@ -82,6 +86,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	private ReceiptDao receiptDao;
 	@Autowired
 	private PaymentTransService paymentTransService;
+	@Autowired
+	private AttachmentDao attachmentDao;
 
 	private static final String RENT_CONTRACT_ROLE = "rent_contract_role";// 新签合同审批
 	private static final String CHANGE_AGREEMENT_ROLE = "change_agreement_role";// 变更协议审批
@@ -106,7 +112,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		saveAuditHis.setAuditUser(UserUtils.getUser().getId());
 		saveAuditHis.setDelFlag("0");
 		auditHisDao.insert(saveAuditHis);
-
 		if ("1".equals(auditHis.getAuditStatus())) {
 			// 审核
 			Audit audit = new Audit();
@@ -162,12 +167,35 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 					room.setUpdateDate(new Date());
 					roomDao.update(room);
 				}
+				// 更新房屋的状态
+				House h = houseDao.get(room.getHouse().getId());
+				Room queryRoom = new Room();
+				queryRoom.setHouse(h);
+				List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+				if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+					int rentedRoomCount = 0;
+					for (Room rentedRoom : roomsOfHouse) {
+						if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
+							rentedRoomCount = rentedRoomCount + 1;
+						}
+					}
+					String updatedHouseSts = "";
+					if (rentedRoomCount > 0) {
+						updatedHouseSts = "3";// 房屋为部分出租状态
+					} else if (rentedRoomCount == 0) {
+						updatedHouseSts = "1";// 房屋为待出租可预订
+					}
+					h.setHouseStatus(updatedHouseSts);
+					h.setUpdateBy(UserUtils.getUser());
+					h.setUpdateDate(new Date());
+					houseDao.update(h);
+				}
 			}
-			
+
 			PaymentTrans delPaymentTrans = new PaymentTrans();
 			delPaymentTrans.setTransId(auditHis.getObjectId());
 			paymentTransDao.delete(delPaymentTrans);
-			
+
 			/* 删除账务交易 */
 			TradingAccounts tradingAccounts = new TradingAccounts();
 			tradingAccounts.setTradeId(auditHis.getObjectId());
@@ -808,7 +836,29 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				room.setUpdateDate(new Date());
 				roomDao.update(room);
 			}
-			//TODO 同时更新该房间所属房屋的状态
+			// 同时更新该房间所属房屋的状态
+			House h = houseDao.get(room.getHouse().getId());
+			Room queryRoom = new Room();
+			queryRoom.setHouse(h);
+			List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+			if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+				int rentedRoomCount = 0;
+				for (Room rentedRoom : roomsOfHouse) {
+					if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
+						rentedRoomCount = rentedRoomCount + 1;
+					}
+				}
+				String updatedHouseSts = "";
+				if (rentedRoomCount < roomsOfHouse.size()) {
+					updatedHouseSts = "3";// 房屋为部分出租状态
+				} else if (rentedRoomCount == roomsOfHouse.size()) {
+					updatedHouseSts = "4";// 房屋为完全出租
+				}
+				h.setHouseStatus(updatedHouseSts);
+				h.setUpdateBy(UserUtils.getUser());
+				h.setUpdateDate(new Date());
+				houseDao.update(h);
+			}
 		}
 
 		if ("1".equals(rentContract.getSaveSource())) {// 定金协议转合同
@@ -835,8 +885,41 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			rentContract.setUpdateDate(new Date());
 			rentContractDao.update(rentContract);
 		}
-	}
 
+		if (!rentContract.getIsNewRecord()) {// 非新增
+			Attachment attachment = new Attachment();
+			attachment.setRentContractId(rentContract.getId());
+			attachmentDao.delete(attachment);
+		}
+
+		if (!StringUtils.isBlank(rentContract.getRentContractFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setRentContractId(rentContract.getId());
+			attachment.setAttachmentType(FileType.RENTCONTRACT_FILE.getValue());
+			attachment.setAttachmentPath(rentContract.getRentContractFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
+
+		if (!StringUtils.isBlank(rentContract.getRentContractReceiptFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setRentContractId(rentContract.getId());
+			attachment.setAttachmentType(FileType.RENTCONTRACTRECEIPT_FILE.getValue());
+			attachment.setAttachmentPath(rentContract.getRentContractReceiptFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
+	}
 	@Transactional(readOnly = false)
 	public void delete(RentContract rentContract) {
 		super.delete(rentContract);

@@ -27,8 +27,16 @@ public enum FileType {
 
 	HOUSE_MAP("房屋图", "12"),
 
-	ROOM_MAP("房间图", "13");
+	ROOM_MAP("房间图", "13"),
 
+	DEPOSITAGREEMENT_FILE("定金协议", "14"),
+
+	DEPOSITRECEIPT_FILE("定金协议收据", "15"),
+
+	RENTCONTRACT_FILE("出租合同", "16"),
+
+	RENTCONTRACTRECEIPT_FILE("出租合同收据", "17");
+	
 	private String name;
 	private String value;
 

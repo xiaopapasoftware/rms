@@ -18,6 +18,7 @@ public class Attachment extends DataEntity<Attachment> {
 	private static final long serialVersionUID = 1L;
 	private String leaseContractId; // 承租合同
 	private String rentContractId; // 出租合同
+	private String depositAgreemId;// 定金协议
 	private String propertyProjectId; // 物业项目
 	private String buildingId; // 楼宇
 	private String houseId; // 房屋
@@ -50,7 +51,13 @@ public class Attachment extends DataEntity<Attachment> {
 	public void setRentContractId(String rentContractId) {
 		this.rentContractId = rentContractId;
 	}
+	public String getDepositAgreemId() {
+		return depositAgreemId;
+	}
 
+	public void setDepositAgreemId(String depositAgreemId) {
+		this.depositAgreemId = depositAgreemId;
+	}
 	@Length(min = 0, max = 64, message = "物业项目长度必须介于 0 和 64 之间")
 	public String getPropertyProjectId() {
 		return propertyProjectId;

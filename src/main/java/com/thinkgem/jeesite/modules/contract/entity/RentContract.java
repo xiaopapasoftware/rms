@@ -81,8 +81,7 @@ public class RentContract extends DataEntity<RentContract> {
 	private String chargeType;
 
 	/**
-	 * 值为1表示：从定金协议转化合同时，保存合同
-	 * 值为0表示：直接新签合同的保存操作
+	 * 值为1表示：从定金协议转化合同时，保存合同 值为0表示：直接新签合同的保存操作
 	 * */
 	private String saveSource;
 
@@ -98,6 +97,9 @@ public class RentContract extends DataEntity<RentContract> {
 	private String name;
 	private String refAgreementName;// 原定金协议名称，转合同的定金协议
 	private String refContractName;// 原合同名称，当前合同为续签合同时，保存原合同名称
+
+	private String rentContractFile;// 出租合同文件
+	private String rentContractReceiptFile;// 出租合同收据
 
 	public RentContract() {
 		super();
@@ -553,4 +555,20 @@ public class RentContract extends DataEntity<RentContract> {
 	public void setRefContractName(String refContractName) {
 		this.refContractName = refContractName;
 	}
+	public String getRentContractFile() {
+		return rentContractFile;
+	}
+
+	public void setRentContractFile(String rentContractFile) {
+		this.rentContractFile = rentContractFile;
+	}
+
+	public String getRentContractReceiptFile() {
+		return rentContractReceiptFile;
+	}
+
+	public void setRentContractReceiptFile(String rentContractReceiptFile) {
+		this.rentContractReceiptFile = rentContractReceiptFile;
+	}
+
 }

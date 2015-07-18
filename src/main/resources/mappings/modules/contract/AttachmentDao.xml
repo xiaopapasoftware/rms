@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.lease_contract_id AS "leaseContractId",
 		a.rent_contract_id AS "rentContractId",
+		a.deposit_agreem_id AS "depositAgreemId",
 		a.property_project_id AS "propertyProjectId",
 		a.building_id AS "buildingId",
 		a.house_id AS "houseId",
@@ -44,6 +45,9 @@
 			</if>
 			<if test="rentContractId != null and rentContractId != ''">
 				and a.rent_contract_id = #{rentContractId}
+			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+				and a.deposit_agreem_id = #{depositAgreemId}
 			</if>
 			<if test="propertyProjectId != null and propertyProjectId != ''">
 				and a.property_project_id = #{propertyProjectId}
@@ -94,6 +98,7 @@
 			id,
 			lease_contract_id,
 			rent_contract_id,
+		 	deposit_agreem_id,
 			property_project_id,
 			building_id,
 			house_id,
@@ -111,6 +116,7 @@
 			#{id},
 			#{leaseContractId},
 			#{rentContractId},
+			#{depositAgreemId},
 			#{propertyProjectId},
 			#{buildingId},
 			#{houseId},
@@ -140,6 +146,9 @@
 			</if>
 			<if test="rentContractId != null and rentContractId != ''">
 				,rent_contract_id = #{rentContractId}
+			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+				,deposit_agreem_id = #{depositAgreemId}
 			</if>
 			<if test="propertyProjectId != null and propertyProjectId != ''">
 				,property_project_id = #{propertyProjectId}
@@ -176,6 +185,9 @@
 			<if test="rentContractId != null and rentContractId != ''">
 			 	and rent_contract_id = #{rentContractId}
 			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+			 	and deposit_agreem_id = #{depositAgreemId}
+			</if>
 			<if test="propertyProjectId != null and propertyProjectId != ''">
 				and property_project_id = #{propertyProjectId}
 			</if>
@@ -198,6 +210,9 @@
 		</if>
 		<if test="rentContractId != null and rentContractId != ''">
 			and rent_contract_id = #{rentContractId}
+		</if>
+		<if test="depositAgreemId != null and depositAgreemId != ''">
+		    and deposit_agreem_id = #{depositAgreemId}
 		</if>
 		<if test="propertyProjectId != null and propertyProjectId != ''">
 			and property_project_id = #{propertyProjectId}

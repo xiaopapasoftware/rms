@@ -192,6 +192,7 @@ create table T_ATTACHMENT
    ID                   varchar(64) NOT NULL,
    LEASE_CONTRACT_ID    varchar(64) comment '承租合同',
    RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   DEPOSIT_AGREEM_ID	varchar(64) comment '定金协议',
    PROPERTY_PROJECT_ID	varchar(64) comment '物业项目',
    BUILDING_ID			varchar(64) comment '楼宇',
    HOUSE_ID				varchar(64) comment '房屋',

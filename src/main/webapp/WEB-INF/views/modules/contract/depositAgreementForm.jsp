@@ -262,6 +262,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">定金协议：</label>
+			<div class="controls">
+				<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/14" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">定金收据：</label>
+			<div class="controls">
+				<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/15" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
