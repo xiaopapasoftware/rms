@@ -513,7 +513,7 @@ public class RentContractController extends BaseController {
 
 		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date());// 入住天数
 
-		double dailyRental = rentContract.getRental() * 12 / 365 / 30;// 每天房租租金
+		double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 		double tental = dates * dailyRental;
 		BigDecimal bigDecimal = new BigDecimal(tental);
 		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -526,7 +526,7 @@ public class RentContractController extends BaseController {
 		if ("0".equals(rentContract.getChargeType())) {// 预付
 
 			if (null != rentContract.getTvFee()) {
-				double dailyTvFee = rentContract.getTvFee() * 12 / 365 / 30;// 每天电视费
+				double dailyTvFee = rentContract.getTvFee() * 12 / 365;// 每天电视费
 				double tvfee = dates * dailyTvFee;
 				bigDecimal = new BigDecimal(tvfee);
 				tvfee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -538,7 +538,7 @@ public class RentContractController extends BaseController {
 			}
 
 			if (null != rentContract.getNetFee()) {
-				double dailyNetFee = rentContract.getNetFee() * 12 / 365 / 30;// 每天宽带费
+				double dailyNetFee = rentContract.getNetFee() * 12 / 365;// 每天宽带费
 				double netfee = dates * dailyNetFee;
 				bigDecimal = new BigDecimal(netfee);
 				netfee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -550,7 +550,7 @@ public class RentContractController extends BaseController {
 			}
 
 			if (null != rentContract.getServiceFee()) {
-				double dailyServiceFee = rentContract.getServiceFee() * 12 / 365 / 30;// 每天服务费
+				double dailyServiceFee = rentContract.getServiceFee() * 12 / 365;// 每天服务费
 				double serviceFee = dates * dailyServiceFee;
 				bigDecimal = new BigDecimal(serviceFee);
 				serviceFee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -592,7 +592,7 @@ public class RentContractController extends BaseController {
 
 		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date());// 逾期天数
 
-		double dailyRental = rentContract.getRental() * 12 / 365 / 30;// 每天房租租金
+		double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 		double tental = (dates < 0 ? 0 : dates) * dailyRental;
 		BigDecimal bigDecimal = new BigDecimal(tental);
 		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
