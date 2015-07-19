@@ -490,7 +490,7 @@ public class RentContractController extends BaseController {
 		outAccountList.add(accounting);
 		accounting = new Accounting();
 		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount() * rentContract.getDepositMonths());
+		accounting.setFeeAmount(rentContract.getDepositAmount());
 		outAccountList.add(accounting);
 
 		model.addAttribute("outAccountList", outAccountList);
@@ -517,7 +517,7 @@ public class RentContractController extends BaseController {
 		double tental = dates * dailyRental;
 		BigDecimal bigDecimal = new BigDecimal(tental);
 		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-		double surplus = rentContract.getRental() * rentContract.getDepositMonths() - tental;// 剩余房租
+		double surplus = rentContract.getRental() * DateUtils.getMonthSpace(rentContract.getStartDate(), new Date()) - tental;// 剩余房租
 		accounting = new Accounting();
 		accounting.setFeeType("7");// 提前应退房租
 		accounting.setFeeAmount(surplus);
@@ -565,7 +565,7 @@ public class RentContractController extends BaseController {
 		List<Accounting> accountList = new ArrayList<Accounting>();
 		accounting = new Accounting();
 		accounting.setFeeType("9");// 早退违约金
-		accounting.setFeeAmount(rentContract.getDepositMonths() * rentContract.getDepositAmount());
+		accounting.setFeeAmount(rentContract.getDepositAmount());
 		accountList.add(accounting);
 
 		model.addAttribute("accountList", accountList);
@@ -627,7 +627,7 @@ public class RentContractController extends BaseController {
 
 		accounting = new Accounting();
 		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount() * rentContract.getDepositMonths());
+		accounting.setFeeAmount(rentContract.getDepositAmount());
 		outAccountList.add(accounting);
 
 		model.addAttribute("outAccountList", outAccountList);

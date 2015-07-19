@@ -217,7 +217,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 //		System.out.println(time/(24*60*60*1000));
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(getMonthSpace(sdf.parse("2015-10-01"),sdf.parse("2015-12-31")));
-		//System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-03-31"),1)));
+//		System.out.println(getMonthSpace(sdf.parse("2015-10-01"),sdf.parse("2015-12-31")));
+		System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-2-1"),1)));
 	}
 }
