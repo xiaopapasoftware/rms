@@ -170,7 +170,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static double getDistanceOfTwoDate(Date before, Date after) {
 		long beforeTime = before.getTime();
 		long afterTime = after.getTime();
-		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
+		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24) + 1;
 	}
 	
 	/**

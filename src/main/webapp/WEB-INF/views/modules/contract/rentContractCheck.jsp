@@ -221,6 +221,14 @@
 				</script>
 			</div>
 		</div>
+		<c:if test="${returnRental=='1'}">
+			<div class="control-group">
+				<label class="control-label">备注：</label>
+				<div class="controls">
+					提前应退房租=已缴房租总额-月租金*12/365*总入住天数=${totalFee}-${rental}*12/365*${dates}
+				</div>
+			</div>
+		</c:if>
 		<div class="form-actions">
 			<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
