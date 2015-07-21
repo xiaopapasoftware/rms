@@ -221,7 +221,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				tempC.setTime(dateAddMonth(startCalendar.getTime(), 1));// 先加一个月
 				tempC.add(Calendar.DAY_OF_MONTH, -1);// 按照房屋租赁习惯，到日期应为系统计算的前一天
 				if (tempC.after(endCalendar)) {// 间隔不足一个月，返回月份比例
-					Double diffDays = getDistanceOfTwoDate(startCalendar.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
+					Double diffDays = getDistanceOfTwoDate(startCalendar.getTime(), endCalendar.getTime());// 两日期间隔天数
 					Double totalDays = ((Integer) startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
 					return new BigDecimal(diffDays / totalDays).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数
 				}
@@ -247,11 +247,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 						} else {// 计算该日期开始到截止日期的天数，是零头
 							tempC.set(Calendar.DAY_OF_MONTH, 1);
 							Double diffDays = 0d;
-							if (endCalendar.get(Calendar.DAY_OF_MONTH) == 1) {
-								diffDays = 1d;// 两日期间隔天数
-							} else {
-								diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
-							}
+							diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
 							Double totalDays = ((Integer) tempC.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
 							Float remainNum = new BigDecimal(diffDays / totalDays)
 									.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
@@ -271,7 +267,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 						} else {// 计算该日期开始到截止日期的天数，是零头
 							tempC.add(Calendar.MONTH, -1);
 							tempC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-							Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
+							Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
 							Double totalDays = ((Integer) tempC.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
 							Float remainNum = new BigDecimal(diffDays / totalDays)
 									.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
@@ -296,9 +292,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		// System.out.println(getDate("yyyy年MM月dd日 E"));
 		// long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 		// System.out.println(time/(24*60*60*1000));
-
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(getMonthSpace(sdf.parse("2015-1-1"), sdf.parse("2015-2-28")));
+		System.out.println(getMonthSpace(sdf.parse("2015-1-1"), sdf.parse("2015-4-2")));
 		// System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-3-27"),
 		// 1)));
 
