@@ -154,7 +154,8 @@ public class DepositAgreementController extends BaseController {
 			List<Room> roomList = roomServie.findList(room);
 			if (null != depositAgreement.getRoom()) {
 				Room rm = roomServie.get(depositAgreement.getRoom());
-				if(null != rm) roomList.add(rm);
+				if (null != rm)
+					roomList.add(rm);
 			}
 			model.addAttribute("roomList", roomList);
 		}
@@ -251,6 +252,7 @@ public class DepositAgreementController extends BaseController {
 
 		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
 		model.addAttribute("tenantList", tenantService.findList(new Tenant()));
+		model.addAttribute("depositAmount", depositAgreement.getDepositAmount());
 		return "modules/contract/rentContractAdd";
 	}
 
