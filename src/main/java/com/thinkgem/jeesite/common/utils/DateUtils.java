@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,15 +14,15 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
  * 日期工具类, 继承org.apache.commons.lang.time.DateUtils类
+ * 
  * @author ThinkGem
  * @version 2014-4-15
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
-	
-	private static String[] parsePatterns = {
-		"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM", 
-		"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
-		"yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+
+	private static String[] parsePatterns = {"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+			"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM", "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss",
+			"yyyy.MM.dd HH:mm", "yyyy.MM"};
 
 	/**
 	 * 得到当前日期字符串 格式（yyyy-MM-dd）
@@ -29,14 +30,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static String getDate() {
 		return getDate("yyyy-MM-dd");
 	}
-	
+
 	/**
 	 * 得到当前日期字符串 格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
 	public static String getDate(String pattern) {
 		return DateFormatUtils.format(new Date(), pattern);
 	}
-	
+
 	/**
 	 * 得到日期字符串 默认格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
 	 */
@@ -49,7 +50,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return formatDate;
 	}
-	
+
 	/**
 	 * 得到日期时间字符串，转换格式（yyyy-MM-dd HH:mm:ss）
 	 */
@@ -98,15 +99,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	public static String getWeek() {
 		return formatDate(new Date(), "E");
 	}
-	
+
 	/**
-	 * 日期型字符串转化为日期 格式
-	 * { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", 
-	 *   "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm",
-	 *   "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm" }
+	 * 日期型字符串转化为日期 格式 { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
+	 * "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy.MM.dd",
+	 * "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm" }
 	 */
 	public static Date parseDate(Object str) {
-		if (str == null){
+		if (str == null) {
 			return null;
 		}
 		try {
@@ -118,48 +118,52 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
 	/**
 	 * 获取过去的天数
+	 * 
 	 * @param date
 	 * @return
 	 */
 	public static long pastDays(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(24*60*60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (24 * 60 * 60 * 1000);
 	}
 
 	/**
 	 * 获取过去的小时
+	 * 
 	 * @param date
 	 * @return
 	 */
 	public static long pastHour(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(60*60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (60 * 60 * 1000);
 	}
-	
+
 	/**
 	 * 获取过去的分钟
+	 * 
 	 * @param date
 	 * @return
 	 */
 	public static long pastMinutes(Date date) {
-		long t = new Date().getTime()-date.getTime();
-		return t/(60*1000);
+		long t = new Date().getTime() - date.getTime();
+		return t / (60 * 1000);
 	}
-	
+
 	/**
 	 * 转换为时间（天,时:分:秒.毫秒）
+	 * 
 	 * @param timeMillis
 	 * @return
 	 */
-    public static String formatDateTime(long timeMillis){
-		long day = timeMillis/(24*60*60*1000);
-		long hour = (timeMillis/(60*60*1000)-day*24);
-		long min = ((timeMillis/(60*1000))-day*24*60-hour*60);
-		long s = (timeMillis/1000-day*24*60*60-hour*60*60-min*60);
-		long sss = (timeMillis-day*24*60*60*1000-hour*60*60*1000-min*60*1000-s*1000);
-		return (day>0?day+",":"")+hour+":"+min+":"+s+"."+sss;
-    }
-	
+	public static String formatDateTime(long timeMillis) {
+		long day = timeMillis / (24 * 60 * 60 * 1000);
+		long hour = (timeMillis / (60 * 60 * 1000) - day * 24);
+		long min = ((timeMillis / (60 * 1000)) - day * 24 * 60 - hour * 60);
+		long s = (timeMillis / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+		long sss = (timeMillis - day * 24 * 60 * 60 * 1000 - hour * 60 * 60 * 1000 - min * 60 * 1000 - s * 1000);
+		return (day > 0 ? day + "," : "") + hour + ":" + min + ":" + s + "." + sss;
+	}
+
 	/**
 	 * 获取两个日期之间的天数
 	 * 
@@ -172,52 +176,131 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		long afterTime = after.getTime();
 		return (afterTime - beforeTime) / (1000 * 60 * 60 * 24);
 	}
-	
+
 	/**
 	 * 获取n个月之后的日期
+	 * 
 	 * @param date
 	 * @param addMonth
 	 * @return
 	 */
-	public static Date dateAddMonth(Date date,int addMonth) {
-		GregorianCalendar gc=new GregorianCalendar(); 
-		gc.setTime(date); 
+	public static Date dateAddMonth(Date date, int addMonth) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(date);
 		gc.add(2, addMonth);
 		return gc.getTime();
 	}
-	
+
 	/**
 	 * 计算两个日期之间相隔的月数
-	 * @param startDate
-	 * @param endDate
-	 * @return
 	 */
-	public static int getMonthSpace(Date startDate,Date endDate) {
+	public static float getMonthSpace(Date startDate, Date endDate) {
 		Calendar startCalendar = Calendar.getInstance();
 		startCalendar.setTime(startDate);
-		
-        Calendar endCalendar = Calendar.getInstance();
-        endCalendar.setTime(endDate);
-        endCalendar.add(Calendar.DATE, 1);
-        
-        if(endCalendar.get(Calendar.YEAR) > startCalendar.get(Calendar.YEAR)) {
-        	return (endCalendar.get(Calendar.YEAR)-startCalendar.get(Calendar.YEAR))*12-startCalendar.get(Calendar.MONTH)+endCalendar.get(Calendar.MONTH);
-        } else 
-        	return endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
+		startCalendar.clear(Calendar.HOUR);
+		startCalendar.clear(Calendar.MINUTE);
+		startCalendar.clear(Calendar.SECOND);
+		startCalendar.clear(Calendar.MILLISECOND);
+
+		Calendar endCalendar = Calendar.getInstance();
+		endCalendar.setTime(endDate);
+		endCalendar.clear(Calendar.HOUR);
+		endCalendar.clear(Calendar.MINUTE);
+		endCalendar.clear(Calendar.SECOND);
+		endCalendar.clear(Calendar.MILLISECOND);
+
+		if (startCalendar.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)) {// 同年
+			if (startCalendar.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)) {// 同月
+				Integer days = endCalendar.get(Calendar.DAY_OF_MONTH) - startCalendar.get(Calendar.DAY_OF_MONTH) + 1;// 天数
+				float monthdiff = days.floatValue()
+						/ new Integer(endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).floatValue();// 比例
+				return new BigDecimal(monthdiff).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数
+			}
+			if (startCalendar.get(Calendar.MONTH) < endCalendar.get(Calendar.MONTH)) {// 不同月
+				Calendar tempC = Calendar.getInstance();
+				tempC.setTime(dateAddMonth(startCalendar.getTime(), 1));// 先加一个月
+				tempC.add(Calendar.DAY_OF_MONTH, -1);// 按照房屋租赁习惯，到日期应为系统计算的前一天
+				if (tempC.after(endCalendar)) {// 间隔不足一个月，返回月份比例
+					Double diffDays = getDistanceOfTwoDate(startCalendar.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
+					Double totalDays = ((Integer) startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
+					return new BigDecimal(diffDays / totalDays).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数
+				}
+				if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)
+						&& tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)
+						&& tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
+					return 1.0f;
+				}
+				if (tempC.before(endCalendar)) {// 开始日期和结束日期时间间隔超过一个月
+					float monthCount = 0;// 相差月份的整数间隔
+					int dayOfMonth = startCalendar.get(Calendar.DAY_OF_MONTH);// 循环外保存日期，防止变化
+					if (dayOfMonth == 1) {// 如果恰好是月初第一天，做特殊处理
+						while (tempC.before(endCalendar)) {
+							monthCount++;
+							tempC.add(Calendar.DAY_OF_MONTH, 1);
+							tempC.add(Calendar.MONTH, 1);
+							tempC.add(Calendar.DAY_OF_MONTH, -1);
+						}
+						if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)
+								&& tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)
+								&& tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
+							return monthCount + 1;
+						} else {// 计算该日期开始到截止日期的天数，是零头
+							tempC.set(Calendar.DAY_OF_MONTH, 1);
+							Double diffDays = 0d;
+							if (endCalendar.get(Calendar.DAY_OF_MONTH) == 1) {
+								diffDays = 1d;// 两日期间隔天数
+							} else {
+								diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
+							}
+							Double totalDays = ((Integer) tempC.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
+							Float remainNum = new BigDecimal(diffDays / totalDays)
+									.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
+							return monthCount + remainNum;
+						}
+					} else {
+						while (tempC.before(endCalendar)) {
+							monthCount++;
+							tempC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+							tempC.add(Calendar.MONTH, 1);
+							tempC.add(Calendar.DAY_OF_MONTH, -1);
+						}
+						if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)
+								&& tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)
+								&& tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
+							return monthCount + 1;
+						} else {// 计算该日期开始到截止日期的天数，是零头
+							tempC.add(Calendar.MONTH, -1);
+							tempC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+							Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime()) + 1;// 两日期间隔天数
+							Double totalDays = ((Integer) tempC.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 1个月总天数
+							Float remainNum = new BigDecimal(diffDays / totalDays)
+									.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
+							return monthCount + remainNum;
+						}
+					}
+
+				}
+			}
+		} else {// 不同年 计算思路：开始日期截止当年最后一天的月份间隔 和 剩余天数+截止时间所在年份第一天到截止日期的月份间隔和剩余天数
+
+		}
+		return 0f;
+
 	}
-	
 	/**
 	 * @param args
 	 * @throws ParseException
 	 */
 	public static void main(String[] args) throws ParseException {
-//		System.out.println(formatDate(parseDate("2010/3/6")));
-//		System.out.println(getDate("yyyy年MM月dd日 E"));
-//		long time = new Date().getTime()-parseDate("2012-11-19").getTime();
-//		System.out.println(time/(24*60*60*1000));
-		
+		// System.out.println(formatDate(parseDate("2010/3/6")));
+		// System.out.println(getDate("yyyy年MM月dd日 E"));
+		// long time = new Date().getTime()-parseDate("2012-11-19").getTime();
+		// System.out.println(time/(24*60*60*1000));
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//		System.out.println(getMonthSpace(sdf.parse("2015-10-01"),sdf.parse("2015-12-31")));
-		System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-2-1"),1)));
+		System.out.println(getMonthSpace(sdf.parse("2015-1-1"), sdf.parse("2015-2-28")));
+		// System.out.println(sdf.format(dateAddMonth(sdf.parse("2015-3-27"),
+		// 1)));
+
 	}
 }
