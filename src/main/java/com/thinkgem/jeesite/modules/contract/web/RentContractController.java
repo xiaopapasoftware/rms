@@ -517,11 +517,31 @@ public class RentContractController extends BaseController {
 		double tental = dates * dailyRental;
 		BigDecimal bigDecimal = new BigDecimal(tental);
 		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-		double surplus = rentContract.getRental() * DateUtils.getMonthSpace(rentContract.getStartDate(), new Date()) - tental;// 剩余房租
+		
+		/*已缴房租*/
+		double totalFee = 0;
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setTransId(rentContract.getId());
+		paymentTrans.setPaymentType("6");//房租金额
+		paymentTrans.setTransStatus("2");//完全到账登记
+		paymentTrans.setDelFlag("0");
+		List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
+		for(PaymentTrans tmpPaymentTrans : list) {
+			totalFee += tmpPaymentTrans.getTransAmount();
+		}
+		
+		double surplus = totalFee - tental;// 剩余房租
+		bigDecimal = new BigDecimal(surplus);
+		surplus = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 		accounting = new Accounting();
 		accounting.setFeeType("7");// 提前应退房租
 		accounting.setFeeAmount(surplus);
 		outAccountList.add(accounting);
+		
+		model.addAttribute("returnRental", "1");
+		model.addAttribute("totalFee", totalFee);
+		model.addAttribute("rental", rentContract.getRental());
+		model.addAttribute("dates", dates);
 
 		if ("0".equals(rentContract.getChargeType())) {// 预付
 
@@ -530,7 +550,22 @@ public class RentContractController extends BaseController {
 				double tvfee = dates * dailyTvFee;
 				bigDecimal = new BigDecimal(tvfee);
 				tvfee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-				double surplusTvFee = rentContract.getTvFee() - tvfee;
+				
+				/*已缴电视费*/
+				totalFee = 0;
+				paymentTrans = new PaymentTrans();
+				paymentTrans.setTransId(rentContract.getId());
+				paymentTrans.setPaymentType("18");//有线电视费
+				paymentTrans.setTransStatus("2");//完全到账登记
+				paymentTrans.setDelFlag("0");
+				list = paymentTransService.findList(paymentTrans);
+				for(PaymentTrans tmpPaymentTrans : list) {
+					totalFee += tmpPaymentTrans.getTransAmount();
+				}
+				
+				double surplusTvFee = totalFee - tvfee;
+				bigDecimal = new BigDecimal(surplusTvFee);
+				surplusTvFee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 				accounting = new Accounting();
 				accounting.setFeeType("19");// 有线电视费剩余金额
 				accounting.setFeeAmount(surplusTvFee);
@@ -542,7 +577,22 @@ public class RentContractController extends BaseController {
 				double netfee = dates * dailyNetFee;
 				bigDecimal = new BigDecimal(netfee);
 				netfee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-				double surplusNetFee = rentContract.getNetFee() - netfee;
+				
+				/*已缴宽带费*/
+				totalFee = 0;
+				paymentTrans = new PaymentTrans();
+				paymentTrans.setTransId(rentContract.getId());
+				paymentTrans.setPaymentType("20");//宽带费
+				paymentTrans.setTransStatus("2");//完全到账登记
+				paymentTrans.setDelFlag("0");
+				list = paymentTransService.findList(paymentTrans);
+				for(PaymentTrans tmpPaymentTrans : list) {
+					totalFee += tmpPaymentTrans.getTransAmount();
+				}
+				
+				double surplusNetFee = totalFee - netfee;
+				bigDecimal = new BigDecimal(surplusNetFee);
+				surplusNetFee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 				accounting = new Accounting();
 				accounting.setFeeType("21");// 宽带费剩余金额
 				accounting.setFeeAmount(surplusNetFee);
@@ -554,7 +604,20 @@ public class RentContractController extends BaseController {
 				double serviceFee = dates * dailyServiceFee;
 				bigDecimal = new BigDecimal(serviceFee);
 				serviceFee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-				double surplusServiceFee = rentContract.getServiceFee() - serviceFee;
+				/*已缴服务费*/
+				totalFee = 0;
+				paymentTrans = new PaymentTrans();
+				paymentTrans.setTransId(rentContract.getId());
+				paymentTrans.setPaymentType("22");//服务费
+				paymentTrans.setTransStatus("2");//完全到账登记
+				paymentTrans.setDelFlag("0");
+				list = paymentTransService.findList(paymentTrans);
+				for(PaymentTrans tmpPaymentTrans : list) {
+					totalFee += tmpPaymentTrans.getTransAmount();
+				}
+				double surplusServiceFee = totalFee - serviceFee;
+				bigDecimal = new BigDecimal(surplusServiceFee);
+				surplusServiceFee = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 				accounting = new Accounting();
 				accounting.setFeeType("23");// 服务费剩余金额
 				accounting.setFeeAmount(surplusServiceFee);
