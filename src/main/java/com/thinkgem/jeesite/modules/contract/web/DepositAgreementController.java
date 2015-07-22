@@ -33,7 +33,9 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
@@ -58,6 +60,8 @@ public class DepositAgreementController extends BaseController {
 	private RoomService roomServie;
 	@Autowired
 	private TenantService tenantService;
+	@Autowired
+	private PartnerService partnerService;
 
 	@ModelAttribute
 	public DepositAgreement get(@RequestParam(required = false) String id) {
@@ -249,6 +253,8 @@ public class DepositAgreementController extends BaseController {
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);
 		}
+		
+		model.addAttribute("partnerList", partnerService.findList(new Partner()));
 
 		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
 		model.addAttribute("tenantList", tenantService.findList(new Tenant()));
