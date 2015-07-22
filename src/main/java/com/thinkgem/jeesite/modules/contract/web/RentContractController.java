@@ -25,10 +25,13 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
@@ -71,6 +74,8 @@ public class RentContractController extends BaseController {
 	private PaymentTransService paymentTransService;
 	@Autowired
 	private PartnerService partnerService;
+	@Autowired
+	private LeaseContractService leaseContractService;
 
 	@ModelAttribute
 	public RentContract get(@RequestParam(required = false) String id) {
@@ -327,6 +332,8 @@ public class RentContractController extends BaseController {
 		model.addAttribute("tenantList", tenantList);
 		
 		model.addAttribute("renew", "1");
+		
+		model.addAttribute("partnerList", partnerService.findList(new Partner()));
 
 		return "modules/contract/rentContractForm";
 	}
@@ -387,6 +394,8 @@ public class RentContractController extends BaseController {
 
 		List<Tenant> tenantList = tenantService.findList(new Tenant());
 		model.addAttribute("tenantList", tenantList);
+		
+		model.addAttribute("partnerList", partnerService.findList(new Partner()));
 
 		return "modules/contract/rentContractForm";
 	}
@@ -397,8 +406,23 @@ public class RentContractController extends BaseController {
 		if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 			return form(rentContract, model);
 		}
-		rentContractService.save(rentContract);
-		addMessage(redirectAttributes, "保存出租合同成功");
+		
+		/*出租合同的结束时间不能超过承租合同的结束时间*/
+		boolean check = true;
+		LeaseContract leaseContract = new LeaseContract();
+		leaseContract.setHouse(rentContract.getHouse());
+		List<LeaseContract> list = leaseContractService.findList(leaseContract);
+		if(null != list && list.size()>0) {
+			leaseContract=list.get(0);
+			if(leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
+				model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
+				model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			}
+		}
+		if(check) {
+			rentContractService.save(rentContract);
+			addMessage(redirectAttributes, "保存出租合同成功");
+		}
 		if ("1".equals(rentContract.getSaveSource()))
 			return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 		else
@@ -633,6 +657,11 @@ public class RentContractController extends BaseController {
 
 		model.addAttribute("accountList", accountList);
 		model.addAttribute("accountSize", accountList.size());
+		
+		accounting = new Accounting();
+		accounting.setFeeType("25");//应退房租押金
+		accounting.setFeeAmount(rentContract.getDepositAmount());
+		outAccountList.add(accounting);
 
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
