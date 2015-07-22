@@ -192,9 +192,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	/**
+	 * 获取n个月之后的日期，要扣除1天。
+	 * 
+	 * @param date
+	 * @param addMonth
+	 * @return
+	 */
+	public static Date dateAddMonth2(Date date, int addMonth) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(date);
+		gc.add(2, addMonth);
+		Calendar c = Calendar.getInstance();
+		c.setTime(gc.getTime());
+		c.add(Calendar.DAY_OF_MONTH, -1);
+		return c.getTime();
+	}
+
+	/**
 	 * 计算两个日期之间相隔的月数
 	 */
-	public static float getMonthSpace(Date startDate, Date endDate) {
+	public static double getMonthSpace(Date startDate, Date endDate) {
 		Calendar startCalendar = Calendar.getInstance();
 		startCalendar.setTime(startDate);
 		startCalendar.clear(Calendar.HOUR);
@@ -230,12 +247,12 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 
 	// 计算同年的任意日期月份间隔数
-	private static float calculateSameYearMonthDiff(Calendar startCalendar, Calendar endCalendar) {
+	private static double calculateSameYearMonthDiff(Calendar startCalendar, Calendar endCalendar) {
 		if (startCalendar.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)) {// 同月
 			Integer days = endCalendar.get(Calendar.DAY_OF_MONTH) - startCalendar.get(Calendar.DAY_OF_MONTH) + 1;// 天数
-			float monthdiff = days.floatValue()
-					/ new Integer(endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).floatValue();// 比例
-			return new BigDecimal(monthdiff).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数
+			double monthdiff = days.doubleValue()
+					/ new Integer(endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 比例
+			return new BigDecimal(monthdiff).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
 		}
 		if (startCalendar.get(Calendar.MONTH) < endCalendar.get(Calendar.MONTH)) {// 不同月
 			Calendar tempC = Calendar.getInstance();
@@ -245,7 +262,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				Double diffDays = getDistanceOfTwoDate(startCalendar.getTime(), endCalendar.getTime());// 两日期间隔天数
 				double towMonthAvgDays = (((Integer) (startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar
 						.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-				return new BigDecimal(diffDays / towMonthAvgDays).setScale(2, BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数
+				return new BigDecimal(diffDays / towMonthAvgDays).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
 			}
 			if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)
 					&& tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)
@@ -253,7 +270,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 				return 1.0f;
 			}
 			if (tempC.before(endCalendar)) {// 开始日期和结束日期时间间隔超过一个月
-				float monthCount = 0;// 相差月份的整数间隔
+				double monthCount = 0d;// 相差月份的整数间隔
 				int dayOfMonth = startCalendar.get(Calendar.DAY_OF_MONTH);// 循环外保存日期，防止变化
 				if (dayOfMonth == 1) {// 如果恰好是月初第一天，做特殊处理
 					while (tempC.before(endCalendar)) {
@@ -271,8 +288,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 						Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
 						Double towMonthAvgDays = (((Integer) (tempC.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar
 								.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-						Float remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2,
-								BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
+						double remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2,
+								BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数,整月除外的零头的天数
 						return monthCount + remainNum;
 					}
 				} else {
@@ -292,8 +309,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 						Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
 						Double towMonthAvgDays = (((Integer) (tempC.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar
 								.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-						Float remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2,
-								BigDecimal.ROUND_HALF_UP).floatValue(); // 保留两位小数,整月除外的零头的天数
+						double remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2,
+								BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数,整月除外的零头的天数
 						return monthCount + remainNum;
 					}
 				}
@@ -303,6 +320,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	public static void main(String[] args) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(getMonthSpace(sdf.parse("2015-7-7"), sdf.parse("2016-7-6")));
+		// System.out.println(getMonthSpace(sdf.parse("2015-7-7"),
+		// sdf.parse("2016-7-6")));
+		System.out.println(sdf.format(dateAddMonth2(sdf.parse("2015-9-27"), 1)));
 	}
 }
