@@ -320,7 +320,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	public static void main(String[] args) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(getMonthSpace(sdf.parse("2015-3-31"), sdf.parse("2016-9-29")));
+		System.out.println(getMonthSpace(sdf.parse("2015-1-1"), sdf.parse("2016-2-1")));
 		// System.out.println(sdf.format(dateAddMonth2(sdf.parse("2015-9-27"),
 		// 1)));
 	}
