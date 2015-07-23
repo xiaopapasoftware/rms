@@ -143,6 +143,7 @@
 		<form:hidden path="contractId"/>
 		<form:hidden path="agreementId"/>
 		<form:hidden path="depositAgreementAmount" value="${depositAmount}"/>
+		<form:hidden path="signType"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">合同来源：</label>

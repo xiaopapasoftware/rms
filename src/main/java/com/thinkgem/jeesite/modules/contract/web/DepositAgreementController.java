@@ -209,6 +209,7 @@ public class DepositAgreementController extends BaseController {
 			depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
 		}
 		RentContract rentContract = new RentContract();
+		rentContract.setSignType("0");// 新签
 		rentContract.setContractName(depositAgreement.getAgreementName());
 		rentContract.setRentMode(depositAgreement.getRentMode());
 		rentContract.setPropertyProject(depositAgreement.getPropertyProject());
