@@ -573,121 +573,30 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	public void save(RentContract rentContract) {
 		String id = super.saveAndReturnId(rentContract);
 		if ("1".equals(rentContract.getValidatorFlag())) {// 正常保存，而非暂存
+
 			PaymentTrans delPaymentTrans = new PaymentTrans();// 款项
 			delPaymentTrans.setTransId(id);
 			paymentTransDao.delete(delPaymentTrans);
 
-			String tradeType = "";
-			if ("0".equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType()))
+			String tradeType = "";// 交易类型
+			if ("0".equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
 				tradeType = "3";// 新签合同
-			else if ("1".equals(rentContract.getSignType()))
+			} else if ("1".equals(rentContract.getSignType())) {
 				tradeType = "4";// 正常人工续签
-			else if ("2".equals(rentContract.getSignType()))
+			} else if ("2".equals(rentContract.getSignType())) {
 				tradeType = "5";// 逾期自动续签
+			}
 
-			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额
+			if ("3".equals(tradeType) || "4".equals(tradeType)) {// 新签合同、正常人工续签合同时，才需要生成水电费押金/水电押金差额
+				genDepositElectricPayTrans(tradeType, id, rentContract);
+			}
+
+			if ("3".equals(tradeType) || "4".equals(tradeType)) {// 新签合同、正常人工续签合同时，才需要生成房租押金/房租押金差额
+				genDepositAmountPayTrans(tradeType, id, rentContract);
+			}
 
 			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType(tradeType);
-			paymentTrans.setPaymentType("2");// 水电费押金
-			paymentTrans.setTransId(id);
-			paymentTrans.setTradeDirection("1");// 收款
-			paymentTrans.setStartDate(rentContract.getStartDate());
-			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-			paymentTrans.setTradeAmount(rentContract.getDepositElectricAmount());// 应该交易金额
-			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同的保存
-				if (depositAgreementAmount < rentContract.getDepositElectricAmount()) {// 定金不够支付水电费押金
-					paymentTrans.setLastAmount(rentContract.getDepositElectricAmount() - depositAgreementAmount);// 剩余交易金额
-					paymentTrans.setTransAmount(depositAgreementAmount);// 实际交易金额
-					paymentTrans.setTransStatus("1");// 部分到账登记
-				}
-				if (depositAgreementAmount >= rentContract.getDepositElectricAmount()) {// 定金足够付水电费押金
-					paymentTrans.setLastAmount(0D);// 剩余交易金额
-					paymentTrans.setTransAmount(rentContract.getDepositElectricAmount());// 实际交易金额
-					paymentTrans.setTransStatus("2");// 完全到账登记
-				}
-			} else {// 直接保存合同的情形
-				paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
-				paymentTrans.setTransAmount(0D);// 实际交易金额
-				paymentTrans.setTransStatus("0");// 未到账登记
-			}
-			paymentTrans.setCreateDate(new Date());
-			paymentTrans.setCreateBy(UserUtils.getUser());
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTrans.setDelFlag("0");
-			if (rentContract.getDepositElectricAmount() > 0) {
-				paymentTransDao.insert(paymentTrans);
-			}
-
-			if ("1".equals(rentContract.getSignType())) {// 正常人工续签（逾期自动续签不用生成续补房租押金等款项）
-				paymentTrans = new PaymentTrans();
-				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType(tradeType);
-				paymentTrans.setPaymentType("5");// 续补房租押金
-				paymentTrans.setTransId(id);
-				paymentTrans.setTradeDirection("1");// 收款
-				paymentTrans.setStartDate(rentContract.getStartDate());
-				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-				paymentTrans.setTradeAmount(rentContract.getDepositAmount());
-				paymentTrans.setLastAmount(rentContract.getDepositAmount());
-				paymentTrans.setTransAmount(0D);
-				paymentTrans.setTransStatus("0");// 未到账登记
-				paymentTrans.setCreateDate(new Date());
-				paymentTrans.setCreateBy(UserUtils.getUser());
-				paymentTrans.setUpdateDate(new Date());
-				paymentTrans.setUpdateBy(UserUtils.getUser());
-				paymentTrans.setDelFlag("0");
-				if (paymentTrans.getTradeAmount() > 0) {
-					paymentTransDao.insert(paymentTrans);
-				}
-			}
-			if ("0".equals(rentContract.getSignType())) {// 新签合同
-				paymentTrans = new PaymentTrans();
-				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType(tradeType);
-				paymentTrans.setPaymentType("4");// 房租押金
-				paymentTrans.setTransId(id);
-				paymentTrans.setTradeDirection("1");// 收款
-				paymentTrans.setStartDate(rentContract.getStartDate());
-				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-				paymentTrans.setTradeAmount(rentContract.getDepositAmount());
-				if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同的合同保存
-					Double remainAmount = rentContract.getDepositElectricAmount() - depositAgreementAmount;// 定金给水电押金分配后剩余的金额
-					if (remainAmount >= 0) {// 定金已经分配完毕
-						paymentTrans.setLastAmount(rentContract.getDepositAmount());
-						paymentTrans.setTransAmount(0D);
-						paymentTrans.setTransStatus("0");// 未到账登记
-					}
-					if (remainAmount < 0) {// 定金金额还有剩余的可以分配
-						Double remainAmountVal = Math.abs(remainAmount);// 获取一轮分配后实际剩余的定金金金额
-						if (remainAmountVal >= rentContract.getDepositAmount()) {// 定金剩余金额超过或刚好等于房租押金
-							paymentTrans.setLastAmount(0D);
-							paymentTrans.setTransAmount(rentContract.getDepositAmount());
-							paymentTrans.setTransStatus("2");// 完全到账登记
-						}
-						if (remainAmountVal < rentContract.getDepositAmount()) {// 定金剩余金额小于房租押金
-							paymentTrans.setLastAmount(rentContract.getDepositAmount() - remainAmountVal);
-							paymentTrans.setTransAmount(remainAmountVal);
-							paymentTrans.setTransStatus("1");// 部分到账登记
-						}
-					}
-				} else {// 正常保存，无定金
-					paymentTrans.setLastAmount(rentContract.getDepositAmount());
-					paymentTrans.setTransAmount(0D);
-					paymentTrans.setTransStatus("0");// 未到账登记
-				}
-				paymentTrans.setCreateDate(new Date());
-				paymentTrans.setCreateBy(UserUtils.getUser());
-				paymentTrans.setUpdateDate(new Date());
-				paymentTrans.setUpdateBy(UserUtils.getUser());
-				paymentTrans.setDelFlag("0");
-				if (paymentTrans.getTradeAmount() > 0) {
-					paymentTransDao.insert(paymentTrans);
-				}
-			}
-
+			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额，只适用于定金转合同的业务场景
 			/* 生成合同期内所有的房租款项 */
 			// 合同总月数，结果为带有小数的形式，需要单独分离整数部分及小数部分
 			double monthCountDiff = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());
@@ -1262,4 +1171,108 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		super.delete(rentContract);
 	}
 
+	/**
+	 * 生成水电费押金/水电费押金差额 款项
+	 * */
+	private void genDepositElectricPayTrans(String tradeType, String transObjId, RentContract rentContract) {
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setId(IdGen.uuid());
+		paymentTrans.setTradeType(tradeType);
+		paymentTrans.setTradeAmount(rentContract.getDepositElectricAmount());// 应该交易金额
+		if ("3".equals(tradeType)) {// 新签合同
+			paymentTrans.setPaymentType("2");// 水电费押金
+			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 定金协议转合同，带过来的定金金额
+			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
+				if (depositAgreementAmount < rentContract.getDepositElectricAmount()) {// 定金不够支付水电费押金
+					paymentTrans.setLastAmount(rentContract.getDepositElectricAmount() - depositAgreementAmount);// 剩余交易金额
+					paymentTrans.setTransAmount(depositAgreementAmount);// 实际交易金额
+					paymentTrans.setTransStatus("1");// 部分到账登记
+				}
+				if (depositAgreementAmount >= rentContract.getDepositElectricAmount()) {// 定金足够付水电费押金
+					paymentTrans.setLastAmount(0D);// 剩余交易金额
+					paymentTrans.setTransAmount(rentContract.getDepositElectricAmount());// 实际交易金额
+					paymentTrans.setTransStatus("2");// 完全到账登记
+				}
+			} else {// 直接新签合同
+				paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
+				paymentTrans.setTransAmount(0D);// 实际交易金额
+				paymentTrans.setTransStatus("0");// 未到账登记
+			}
+		}
+		if ("4".equals(tradeType)) {// 续签合同
+			paymentTrans.setPaymentType("3");// 续补水电费押金
+			paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
+			paymentTrans.setTransAmount(0D);// 实际交易金额
+			paymentTrans.setTransStatus("0");// 未到账登记
+		}
+		paymentTrans.setTransId(transObjId);
+		paymentTrans.setTradeDirection("1");// 收款
+		paymentTrans.setStartDate(rentContract.getStartDate());
+		paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+		paymentTrans.setCreateDate(new Date());
+		paymentTrans.setCreateBy(UserUtils.getUser());
+		paymentTrans.setUpdateDate(new Date());
+		paymentTrans.setUpdateBy(UserUtils.getUser());
+		paymentTrans.setDelFlag("0");
+		if (rentContract.getDepositElectricAmount() > 0) {
+			paymentTransDao.insert(paymentTrans);
+		}
+	}
+
+	/**
+	 * 生成房租押金/房租押金差额款项
+	 * */
+	private void genDepositAmountPayTrans(String tradeType, String transObjId, RentContract rentContract) {
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setId(IdGen.uuid());
+		paymentTrans.setTradeType(tradeType);
+		paymentTrans.setTransId(transObjId);
+		paymentTrans.setTradeDirection("1");// 收款
+		paymentTrans.setStartDate(rentContract.getStartDate());
+		paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+		paymentTrans.setTradeAmount(rentContract.getDepositAmount());
+		if ("3".equals(tradeType)) {// 新签合同
+			paymentTrans.setPaymentType("4");// 房租押金
+			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 定金协议转合同，带过来的定金金额
+			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
+				Double remainAmount = rentContract.getDepositElectricAmount() - depositAgreementAmount;// 定金给水电押金分配后剩余的金额
+				if (remainAmount >= 0) {// 定金已经分配完毕
+					paymentTrans.setLastAmount(rentContract.getDepositAmount());
+					paymentTrans.setTransAmount(0D);
+					paymentTrans.setTransStatus("0");// 未到账登记
+				}
+				if (remainAmount < 0) {// 定金金额还有剩余的可以分配
+					Double remainAmountVal = Math.abs(remainAmount);// 获取一轮分配后实际剩余的定金金金额
+					if (remainAmountVal >= rentContract.getDepositAmount()) {// 定金剩余金额超过或刚好等于房租押金
+						paymentTrans.setLastAmount(0D);
+						paymentTrans.setTransAmount(rentContract.getDepositAmount());
+						paymentTrans.setTransStatus("2");// 完全到账登记
+					}
+					if (remainAmountVal < rentContract.getDepositAmount()) {// 定金剩余金额小于房租押金
+						paymentTrans.setLastAmount(rentContract.getDepositAmount() - remainAmountVal);
+						paymentTrans.setTransAmount(remainAmountVal);
+						paymentTrans.setTransStatus("1");// 部分到账登记
+					}
+				}
+			} else {// 正常保存，无定金
+				paymentTrans.setLastAmount(rentContract.getDepositAmount());
+				paymentTrans.setTransAmount(0D);
+				paymentTrans.setTransStatus("0");// 未到账登记
+			}
+		}
+		if ("4".equals(tradeType)) {// 续签合同
+			paymentTrans.setPaymentType("5");// 续补房租押金
+			paymentTrans.setLastAmount(rentContract.getDepositAmount());
+			paymentTrans.setTransAmount(0D);
+			paymentTrans.setTransStatus("0");// 未到账登记
+		}
+		paymentTrans.setCreateDate(new Date());
+		paymentTrans.setCreateBy(UserUtils.getUser());
+		paymentTrans.setUpdateDate(new Date());
+		paymentTrans.setUpdateBy(UserUtils.getUser());
+		paymentTrans.setDelFlag("0");
+		if (paymentTrans.getTradeAmount() > 0) {
+			paymentTransDao.insert(paymentTrans);
+		}
+	}
 }
