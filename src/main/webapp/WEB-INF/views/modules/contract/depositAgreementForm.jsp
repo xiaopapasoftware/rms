@@ -191,21 +191,33 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">定金金额：</label>
+			<div class="controls">
+				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">房屋租金：</label>
+			<div class="controls">
+				<form:input path="housingRent" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">合同开始时间：</label>
 			<div class="controls">
-				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">合同结束时间：</label>
 			<div class="controls">
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -229,29 +241,13 @@
 		<div class="control-group">
 			<label class="control-label">首付房租月数：</label>
 			<div class="controls">
-				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
-				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">定金金额：</label>
-			<div class="controls">
-				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge required number"/>
-				<span class="help-inline"><font color="red">*</font></span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">房屋租金：</label>
-			<div class="controls">
-				<form:input path="housingRent" htmlEscape="false" class="input-xlarge required number"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">
