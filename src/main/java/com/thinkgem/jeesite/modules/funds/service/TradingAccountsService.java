@@ -3,9 +3,11 @@
  */
 package com.thinkgem.jeesite.modules.funds.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,7 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
-
+import com.thinkgem.jeesite.common.utils.DateUtils;
 /**
  * 账务交易Service
  * 
@@ -81,7 +83,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	public List<TradingAccounts> findList(TradingAccounts tradingAccounts) {
 		return super.findList(tradingAccounts);
 	}
-	
+
 	public List<Receipt> findReceiptList(TradingAccounts tradingAccounts) {
 		Receipt receipt = new Receipt();
 		receipt.setTradingAccounts(tradingAccounts);
@@ -140,15 +142,22 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			}
 		} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType())
 				|| "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
-			// 新签合同 6:到账收据审核通过 5:到账收据审核拒绝
 			RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-			rentContract.setUpdateBy(UserUtils.getUser());
-			rentContract.setUpdateDate(new Date());
 			if (!"6".equals(rentContract.getContractStatus())) {
-				rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "6" : "5");
-				if("1".equals(auditHis.getAuditStatus()))
-					rentContract.setContractBusiStatus("0");//有效
-				rentContractDao.update(rentContract);
+				if ("1".equals(auditHis.getAuditStatus())) {// 账务交易审核成功
+					if (checkRentContractTransAmountEnough(rentContract)) {
+						rentContract.setContractStatus("6");// 6:到账收据审核通过
+						rentContract.setContractBusiStatus("0");// 有效
+						rentContract.setUpdateBy(UserUtils.getUser());
+						rentContract.setUpdateDate(new Date());
+						rentContractDao.update(rentContract);
+					}
+				} else {
+					rentContract.setContractStatus("5");// 5:到账收据审核拒绝
+					rentContract.setUpdateBy(UserUtils.getUser());
+					rentContract.setUpdateDate(new Date());
+					rentContractDao.update(rentContract);
+				}
 			}
 		} else if ("7".equals(tradingAccounts.getTradeType())) {
 			// 正常退租 8:正常退租 6:退租款项审核拒绝
@@ -220,13 +229,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			}
 		}
 	}
-
 	@Transactional(readOnly = false)
 	public void save(TradingAccounts tradingAccounts) {
 		String id = super.saveAndReturnId(tradingAccounts);
 
 		/* 更新款项状态 */
-		if(!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
+		if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
 			String[] transIds = tradingAccounts.getTransIds().split(",");
 			for (int i = 0; i < transIds.length; i++) {
 				PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
@@ -234,12 +242,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
 				paymentTrans.setLastAmount(0D);// 剩余交易金额
 				paymentTransService.save(paymentTrans);
-	
+
 				/* 款项账务关联 */
 				PaymentTrade paymentTrade = new PaymentTrade();
 				paymentTrade.setTradeId(id);
 				paymentTradeDao.delete(paymentTrade);
-				
+
 				paymentTrade.setTransId(paymentTrans.getId());
 				paymentTrade.setId(IdGen.uuid());
 				paymentTrade.setCreateDate(new Date());
@@ -258,7 +266,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
-			if (!"5".equals(depositAgreement.getAgreementStatus())) {
+			if (!"3".equals(depositAgreement.getAgreementStatus())
+					&& !"5".equals(depositAgreement.getAgreementStatus())) {// '3':'内容审核通过到账收据待审核',"5":到账收据审核通过
 				depositAgreement.setAgreementStatus("1");// 到账收据登记完成内容待审核
 				depositAgreementDao.update(depositAgreement);
 			}
@@ -266,7 +275,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if (!"6".equals(rentContract.getContractStatus())) {
+			if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
 				rentContract.setContractStatus("2");// 到账收据完成合同内容待审核
 				rentContractDao.update(rentContract);
 			}
@@ -300,13 +309,13 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		auditDao.insert(audit);
 
 		/* 收据 */
-		if(null != tradingAccounts.getReceiptList()) {
+		if (null != tradingAccounts.getReceiptList()) {
 			Receipt delReceipt = new Receipt();
 			TradingAccounts delTradingAccounts = new TradingAccounts();
 			delTradingAccounts.setId(id);
 			delReceipt.setTradingAccounts(delTradingAccounts);
 			receiptDao.delete(delReceipt);
-			
+
 			for (Receipt receipt : tradingAccounts.getReceiptList()) {
 				receipt.setId(IdGen.uuid());
 				receipt.setTradingAccounts(tradingAccounts);
@@ -326,4 +335,54 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		super.delete(tradingAccounts);
 	}
 
+	/**
+	 * 校验新签合同（直接新签、定金转合同）已经成功到账的金额是否超过合同的水电押金+房租押金+1个月房租之和
+	 * 校验续签合同已成功到账的金额是否已超过水电押金差额+房租押金差额+1个月房租之和
+	 * */
+	private boolean checkRentContractTransAmountEnough(RentContract rentContract) {
+		// 计算合同成功到账的总金额
+		TradingAccounts ta = new TradingAccounts();
+		ta.setTradeId(rentContract.getId());
+		ta.setTradeStatus("1");// 账务交易审核通过
+		if ("0".equals(rentContract.getSignType())) {// 新签
+			ta.setTradeType("3");// 账务交易类型为“新签合同”
+		}
+		if ("1".equals(rentContract.getSignType())) {// 正常续签
+			ta.setTradeType("4");// 账务交易类型为“正常人工续签”
+		}
+		if ("2".equals(rentContract.getSignType())) {// 逾期续签
+			ta.setTradeType("5");// 逾期自动续签
+		}
+		BigDecimal totalAmount = BigDecimal.ZERO;// 合同已经被审核通过的总已到账款项
+		List<TradingAccounts> tradingAccounts = tradingAccountsDao.findList(ta);
+		if (CollectionUtils.isNotEmpty(tradingAccounts)) {
+			for (TradingAccounts tempTA : tradingAccounts) {
+				if ("1".equals(tempTA.getTradeDirection())) {// 入账
+					if (tempTA.getTradeAmount() != null && tempTA.getTradeAmount() > 0) {
+						totalAmount = totalAmount.add(new BigDecimal(tempTA.getTradeAmount()));
+					}
+				}
+			}
+		}
+		// 计算合同至少需到账金额
+		BigDecimal needBeAmount = BigDecimal.ZERO;
+		// 新签,至少需要到账金额满足水电押金+房租押金+1个月房租
+		// 正常续签时，到账金额至少满足水电押金差额+房租押金差额+1个月房租
+		if ("0".equals(rentContract.getSignType()) || "1".equals(rentContract.getSignType())) {
+			if (DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate()) < 1) {// 如果合同期不足一个月
+				needBeAmount = new BigDecimal(rentContract.getDepositElectricAmount() + rentContract.getDepositAmount());
+			} else {// 如果合同期超过一个月
+				needBeAmount = new BigDecimal(rentContract.getDepositElectricAmount() + rentContract.getDepositAmount()
+						+ rentContract.getRental());
+			}
+		}
+		if ("2".equals(rentContract.getSignType())) {// 逾期续签,暂不做限制
+		}
+
+		if (totalAmount.compareTo(needBeAmount) >= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
