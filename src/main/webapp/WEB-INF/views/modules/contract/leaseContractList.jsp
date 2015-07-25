@@ -233,9 +233,9 @@
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
 				<shiro:hasPermission name="contract:leaseContract:audit">
-				<c:if test="${leaseContract.contractStatus=='0'}">
+				<!--<c:if test="${leaseContract.contractStatus=='0'}">
 					<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
-				</c:if>
+				</c:if>-->
 				</shiro:hasPermission>
 				<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
 					<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>

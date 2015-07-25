@@ -173,7 +173,7 @@ public class DepositAgreementController extends BaseController {
 	@RequiresPermissions("contract:depositAgreement:edit")
 	@RequestMapping(value = "save")
 	public String save(DepositAgreement depositAgreement, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, depositAgreement)) {
+		if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
 			return form(depositAgreement, model);
 		}
 		depositAgreementService.save(depositAgreement);

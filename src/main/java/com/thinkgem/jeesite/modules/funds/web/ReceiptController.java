@@ -53,6 +53,13 @@ public class ReceiptController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/funds/receiptList";
 	}
+	
+	@RequestMapping(value = {"viewReceipt"})
+	public String viewReceipt(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<Receipt> page = receiptService.findPage(new Page<Receipt>(request, response), receipt); 
+		model.addAttribute("page", page);
+		return "modules/funds/viewReceipt";
+	}
 
 	@RequiresPermissions("funds:receipt:view")
 	@RequestMapping(value = "form")

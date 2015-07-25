@@ -26,6 +26,7 @@ public class Receipt extends DataEntity<Receipt> {
 	private Double receiptAmount;		// 收据金额
 	private String tradeMode;		// 交易方式
 	
+	private String tradeId;
 	private String tradeName;
 	private String tradeType;
 	
@@ -106,5 +107,13 @@ public class Receipt extends DataEntity<Receipt> {
 
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
+	}
+
+	public String getTradeId() {
+		return tradeId;
+	}
+
+	public void setTradeId(String tradeId) {
+		this.tradeId = tradeId;
 	}
 }

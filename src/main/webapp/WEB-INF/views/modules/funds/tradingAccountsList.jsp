@@ -44,6 +44,10 @@
 		function auditHis(id) {
 			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
 		}
+		
+		function viewReceipt(id) {
+			$.jBox.open("iframe:${ctx}/funds/receipt/viewReceipt?tradingAccounts.id="+id,'收据信息',800,400,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -126,6 +130,7 @@
 					${tradingAccounts.remarks}
 				</td>
 				<td>
+				<a href="javascript:void(0);" onclick="viewReceipt('${tradingAccounts.id}')">查看收据</a>
 				<shiro:hasPermission name="funds:tradingAccounts:edit">
 					<c:if test="${tradingAccounts.tradeStatus=='2'}">
     					<a href="${ctx}/funds/tradingAccounts/edit?id=${tradingAccounts.id}">修改</a>

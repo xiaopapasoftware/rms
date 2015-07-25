@@ -16,6 +16,9 @@
 		            event.preventDefault();
 		        }
 		    });
+		});
+		
+		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
@@ -35,7 +38,13 @@
 					}
 				}
 			});
-		});
+		}
+		
+		function saveData() {
+			$("#agreementStatus").val("6");
+			$("#validatorFlag").val("0");
+			$("#inputForm").submit();
+		}
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
@@ -112,6 +121,34 @@
 				$("[id='room.id']").removeAttr("disabled");
 			}
 		}
+		
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/depositAgreement/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
 	</script>
 </head>
 <body>
@@ -123,6 +160,8 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="agreementStatus" value="0"/>
+		<form:hidden path="validatorFlag" value="1"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">出租方式：</label>
@@ -279,8 +318,14 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:depositAgreement:edit">
+				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>
 				<c:if test="${depositAgreement.agreementStatus=='2'|| empty depositAgreement.id}">
-					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+				</c:if>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="contract:depositAgreement:audit">
+				<c:if test="${depositAgreement.agreementStatus=='1'}">
+					<input id="btnSubmit" class="btn btn-primary" type="button" value="审 核" onclick="toAudit('${depositAgreement.id}')"/>
 				</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>

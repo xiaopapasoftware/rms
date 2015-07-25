@@ -132,9 +132,11 @@
 	   					<a href="${ctx}/contract/agreementChange/form?id=${agreementChange.id}">修改</a>
 					</c:if>
 					</shiro:hasPermission>
+					<!--<shiro:hasPermission name="contract:agreementChange:audit">
 					<c:if test="${agreementChange.agreementStatus=='0'}">
 	   					<a href="javascript:void(0);" onclick="toAudit('${agreementChange.id}')">审核</a>
 					</c:if>
+					</shiro:hasPermission>-->
 					<c:if test="${agreementChange.agreementStatus=='1'||agreementChange.agreementStatus=='2'}">
 	   					<a href="javascript:void(0);" onclick="auditHis('${agreementChange.id}')">审核记录</a>
 					</c:if>

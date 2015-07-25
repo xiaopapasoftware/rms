@@ -53,6 +53,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	private String depositAgreementFile;//定金协议文件
 	private String depositReceiptFile;//定金协议收据
 	
+	private String validatorFlag;
+	
 	private List<Tenant> tenantList = new ArrayList<Tenant>();
 	
 	public DepositAgreement() {
@@ -269,5 +271,13 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
 	public void setTenantList(List<Tenant> tenantList) {
 		this.tenantList = tenantList;
+	}
+
+	public String getValidatorFlag() {
+		return validatorFlag;
+	}
+
+	public void setValidatorFlag(String validatorFlag) {
+		this.validatorFlag = validatorFlag;
 	}
 }

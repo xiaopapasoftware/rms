@@ -400,12 +400,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">入住平电系数：</label>
-			<div class="controls">
-				<form:input path="flatMeterValue" htmlEscape="false" class="input-xlarge  number"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">入住谷电系数：</label>
 			<div class="controls">
 				<form:input path="valleyMeterValue" htmlEscape="false" class="input-xlarge  number"/>

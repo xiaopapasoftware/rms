@@ -107,6 +107,61 @@
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
 		}
+		
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/leaseContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
+		
+		function addProject() {
+			top.$.jBox.open("iframe:${ctx}/inventory/propertyProject/add",'添加物业项目',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addBuilding() {
+			if(""==$("[id='propertyProject.id']").val()) {
+				top.$.jBox.tip('请选择物业项目.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/building/add",'添加楼宇',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addHouse() {
+			if(""==$("[id='building.id']").val()) {
+				top.$.jBox.tip('请选择楼宇.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/house/add",'添加房屋',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function saveHandler(v,h,f) {
+			if(v=='1') {
+				h.find("iframe")[0].contentWindow.$("#inputForm").submit();
+				return false;
+			}
+		}
 	</script>
 </head>
 <body>
@@ -136,6 +191,7 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addProject()">添加物业项目</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -146,6 +202,7 @@
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addBuilding()">添加楼宇</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -156,6 +213,7 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addHouse()">添加房屋</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -321,6 +379,11 @@
 				<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2' || empty leaseContract.id}">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 				</c:if>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="contract:leaseContract:audit">
+			<c:if test="${leaseContract.contractStatus=='0'}">
+				<input id="btnSubmit" class="btn btn-primary" type="button" value="审 核" onclick="toAudit('${leaseContract.id}')"/>
+			</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
