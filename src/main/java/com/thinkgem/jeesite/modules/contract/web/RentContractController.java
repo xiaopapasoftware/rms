@@ -276,7 +276,7 @@ public class RentContractController extends BaseController {
 		rentContract.setId(null);
 		rentContract.setContractId(contractId);
 		rentContract.setSignType("1");// 正常续签
-		rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
+		rentContract.setContractName(rentContract.getContractName().concat("(续)"));
 		rentContract.setDepositElectricAmount(null);
 		rentContract.setDepositAmount(null);
 		rentContract.setRental(null);

@@ -240,6 +240,13 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label"><c:if test="${empty renew}">水电押金金额：</c:if><c:if test="${not empty renew}">水电押金差额：</c:if></label>
+			<div class="controls">
+				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label"><c:if test="${empty renew}">房租押金总金额：</c:if><c:if test="${not empty renew}">房租押金差额：</c:if></label>
 			<div class="controls">
 				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge  number required"/>
@@ -257,13 +264,6 @@
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
 				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">水电押金金额：</label>
-			<div class="controls">
-				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

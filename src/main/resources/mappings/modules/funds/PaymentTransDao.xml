@@ -67,7 +67,7 @@
 				AND a.trans_status = #{transStatus}
 			</if>
 		</where>
-		ORDER BY a.start_date,a.payment_type
+		ORDER BY a.payment_type,a.start_date
 	  ) t 
 	  <where>
 	  	<if test="transName != null and transName != ''">

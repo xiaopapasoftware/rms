@@ -134,7 +134,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			paymentTrans.setUpdateDate(new Date());
 			paymentTrans.setUpdateBy(UserUtils.getUser());
 			paymentTrans.setDelFlag("0");
-			if(0!=deposit)
+			if (0 != deposit)
 				paymentTransDao.insert(paymentTrans);
 
 			// 2.房租款项
@@ -169,7 +169,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					paymentTrans.setUpdateDate(new Date());
 					paymentTrans.setUpdateBy(UserUtils.getUser());
 					paymentTrans.setDelFlag("0");
-					if(0!=tmpLeaseContractDtl.getDeposit())
+					if (0 != tmpLeaseContractDtl.getDeposit())
 						paymentTransDao.insert(paymentTrans);
 				}
 			}

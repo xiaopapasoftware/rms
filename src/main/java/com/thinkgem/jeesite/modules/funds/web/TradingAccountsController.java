@@ -79,10 +79,11 @@ public class TradingAccountsController extends BaseController {
 		String tradeType = "";
 		for (int i = 0; i < tradeId.length; i++) {
 			PaymentTrans paymentTrans = paymentTransService.get(tradeId[i]);
-			if ("0".equals(paymentTrans.getTradeDirection()))// 应出
-				amount -= paymentTrans.getTradeAmount();
-			else
-				amount += paymentTrans.getTradeAmount();
+			if ("0".equals(paymentTrans.getTradeDirection())) {// 应出
+				amount -= paymentTrans.getLastAmount();
+			} else {// 应收
+				amount += paymentTrans.getLastAmount();
+			}
 			tradeType = paymentTrans.getTradeType();
 		}
 		tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
@@ -122,7 +123,7 @@ public class TradingAccountsController extends BaseController {
 	@RequestMapping(value = "save")
 	public String save(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
 		String id = tradingAccounts.getId();
-		
+
 		if (!beanValidator(model, tradingAccounts)) {
 			return form(tradingAccounts, model);
 		}
@@ -156,8 +157,8 @@ public class TradingAccountsController extends BaseController {
 		if (!check) {
 			model.addAttribute("message", "收据编号:" + receiptNo + "已存在.");
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-			if(StringUtils.isEmpty(id)) {
-				return form(tradingAccounts,model);
+			if (StringUtils.isEmpty(id)) {
+				return form(tradingAccounts, model);
 			} else {
 				return "modules/funds/tradingAccountsForm";
 			}
@@ -166,7 +167,7 @@ public class TradingAccountsController extends BaseController {
 		tradingAccounts.setTradeStatus("0");// 待审核
 		tradingAccountsService.save(tradingAccounts);
 		addMessage(redirectAttributes, "保存账务交易成功");
-		if(StringUtils.isEmpty(id)) {
+		if (StringUtils.isEmpty(id)) {
 			return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
 		} else {
 			return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";

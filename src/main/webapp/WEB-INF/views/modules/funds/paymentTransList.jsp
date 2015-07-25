@@ -106,7 +106,7 @@
 		<c:forEach items="${page.list}" var="paymentTrans">
 			<tr>
 				<td>
-					<input ${paymentTrans.transStatus!='0' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" transName="${paymentTrans.transName}" type="checkbox" value="${paymentTrans.id}"/>
+					<input ${paymentTrans.transStatus =='2' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" transName="${paymentTrans.transName}" type="checkbox" value="${paymentTrans.id}"/>
 				</td>
 				<td>
 					${paymentTrans.transName}
