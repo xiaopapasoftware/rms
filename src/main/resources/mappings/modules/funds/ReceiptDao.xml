@@ -45,6 +45,9 @@
 			<if test="tradingAccounts != null and tradingAccounts.id != null and tradingAccounts.id != ''">
 				AND a.trading_accounts_id = #{tradingAccounts.id}
 			</if>
+			<if test="tradeId != null and tradeId != ''">
+			AND a.trading_accounts_id = #{tradeId}
+		</if>
 			<if test="receiptNo != null and receiptNo != ''">
 				AND a.receipt_no =  #{receiptNo} 
 			</if>

@@ -23,6 +23,34 @@
 				}
 			});
 		});
+		
+		function toAudit(id) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1');
+				        } else if(v==2){
+				        	saveAudit(id,'2');
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/agreementChange/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
+		}
 	</script>
 </head>
 <body>
@@ -107,6 +135,11 @@
 			<c:if test="${agreementChange.agreementStatus=='0'||agreementChange.agreementStatus=='2'}">
 			<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 			</c:if>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="contract:agreementChange:audit">
+				<c:if test="${agreementChange.agreementStatus=='0'}">
+	  					<input id="btnSubmit" class="btn btn-primary" type="button"  onclick="toAudit('${agreementChange.id}')" value="审 核"/>
+				</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>

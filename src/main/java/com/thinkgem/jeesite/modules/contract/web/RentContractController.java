@@ -407,22 +407,24 @@ public class RentContractController extends BaseController {
 		if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 			return form(rentContract, model);
 		}
-
 		/* 出租合同的结束时间不能超过承租合同的结束时间 */
-		boolean check = true;
-		LeaseContract leaseContract = new LeaseContract();
-		leaseContract.setHouse(rentContract.getHouse());
-		List<LeaseContract> list = leaseContractService.findList(leaseContract);
-		if (null != list && list.size() > 0) {
-			leaseContract = list.get(0);
-			if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
-				model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
-				model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		if (null != rentContract.getHouse() && null != rentContract.getExpiredDate()) {
+			boolean check = true;
+			LeaseContract leaseContract = new LeaseContract();
+			leaseContract.setHouse(rentContract.getHouse());
+			List<LeaseContract> list = leaseContractService.findList(leaseContract);
+			if (null != list && list.size() > 0) {
+				leaseContract = list.get(0);
+				if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
+					model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
+					model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+				}
+
 			}
-		}
-		if (check) {
-			rentContractService.save(rentContract);
-			addMessage(redirectAttributes, "保存出租合同成功");
+			if (check) {
+				rentContractService.save(rentContract);
+				addMessage(redirectAttributes, "保存出租合同成功");
+			}
 		}
 		if ("1".equals(rentContract.getSaveSource()))
 			return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";

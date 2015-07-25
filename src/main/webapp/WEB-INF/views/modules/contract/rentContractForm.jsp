@@ -125,6 +125,34 @@
 				$("[id='room.id']").removeAttr("disabled");
 			}
 		}
+		
+		function toAudit(id,type) {
+			var html = "<table style='margin:20px;'><tr><td><label>审核意见：</label></td><td><textarea id='auditMsg'></textarea></td></tr></table>";
+			var content = {
+		    	state1:{
+					content: html,
+				    buttons: { '同意': 1, '拒绝':2, '取消': 0 },
+				    buttonsFocus: 0,
+				    submit: function (v, h, f) {
+				    	if (v == 0) {
+				        	return true; // close the window
+				        } else if(v==1){
+				        	saveAudit(id,'1',type);
+				        } else if(v==2){
+				        	saveAudit(id,'2',type);
+				        }
+				        return false;
+				    }
+				}
+			};
+			$.jBox.open(content,"审核",350,220,{});
+		}
+		
+		function saveAudit(id,status,type) {
+			loading('正在提交，请稍等...');
+			var msg = $("#auditMsg").val();
+			window.location.href="${ctx}/contract/rentContract/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status+"&type="+type;
+		}
 	</script>
 </head>
 <body>
@@ -413,12 +441,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">入住平电系数：</label>
-			<div class="controls">
-				<form:input path="flatMeterValue" htmlEscape="false" class="input-xlarge  number"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">入住谷电系数：</label>
 			<div class="controls">
 				<form:input path="valleyMeterValue" htmlEscape="false" class="input-xlarge  number"/>
@@ -452,6 +474,14 @@
 				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
 				</c:if>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="contract:rentContract:audit">
+			<c:if test="${rentContract.contractStatus=='2'}">
+  				<input id="btnCancel" class="btn btn-primary" type="button" value="审 核" onclick="toAudit('${rentContract.id}','1')"/>
+			</c:if>
+			<c:if test="${rentContract.contractBusiStatus=='17'}">
+  				<input id="btnCancel" class="btn btn-primary" type="button" value="审 核" onclick="toAudit('${rentContract.id}','2')"/>
+			</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>

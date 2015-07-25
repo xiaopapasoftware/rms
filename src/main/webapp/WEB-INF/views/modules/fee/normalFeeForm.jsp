@@ -28,7 +28,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/fee/normalFee?type=${normalFee.feeType}">${normalFee.type}费管理列表</a></li>
-		<li class="active"><a href="#">${normalFee.type}费充值</a></li>
+		<li class="active"><a href="#">${normalFee.type}费缴纳</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="normalFee" action="${ctx}/fee/normalFee/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>

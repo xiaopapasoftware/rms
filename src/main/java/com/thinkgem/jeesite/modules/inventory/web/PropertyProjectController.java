@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -87,6 +89,33 @@ public class PropertyProjectController extends BaseController {
 
 		return "modules/inventory/propertyProjectForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(PropertyProject propertyProject, Model model) {
+
+		model.addAttribute("propertyProject", propertyProject);
+		model.addAttribute("listNeighborhood", neighborhoodService.findList(new Neighborhood()));
+		model.addAttribute("listManagementCompany", managementCompanyService.findList(new ManagementCompany()));
+
+		return "modules/inventory/propertyProjectAdd";
+	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes){
+		JSONObject jsonObject = new JSONObject();
+		List<PropertyProject> pps = propertyProjectService.findPropertyProjectByNameAndAddress(propertyProject);
+		if (CollectionUtils.isNotEmpty(pps)) {
+			jsonObject.put("message", "物业项目名称及地址已被使用，不能重复添加");
+		} else {
+			String id = propertyProjectService.saveAndReturnId(propertyProject);
+			jsonObject.put("id", id);
+			jsonObject.put("name", propertyProject.getProjectName());
+		}
+		
+		return jsonObject.toString();
+	}
+	
 	@RequiresPermissions("inventory:propertyProject:edit")
 	@RequestMapping(value = "save")
 	public String save(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes) {

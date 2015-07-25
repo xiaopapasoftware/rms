@@ -297,9 +297,9 @@
 					<c:if test="${rentContract.contractStatus=='3'||rentContract.contractStatus=='0'||rentContract.contractStatus=='1'}">
     					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 					</c:if>
-					<c:if test="${rentContract.contractStatus=='2'}">
+					<!--<c:if test="${rentContract.contractStatus=='2'}">
     					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}','1')">审核</a>
-					</c:if>
+					</c:if>-->
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
     					<a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要提前退租吗,提前退租将删除未到账款项?', this.href)">提前退租</a>
@@ -318,9 +318,9 @@
 					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='3'}">
     					<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租核算吗?', this.href)">逾期退租核算</a>
 					</c:if>
-					<c:if test="${rentContract.contractBusiStatus=='17'}">
+					<!--<c:if test="${rentContract.contractBusiStatus=='17'}">
     					<a href="javascript:void(0);" onclick="toAudit('${rentContract.id}','2')">审核</a>
-					</c:if>
+					</c:if>-->
 					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
     					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>
 					</c:if>

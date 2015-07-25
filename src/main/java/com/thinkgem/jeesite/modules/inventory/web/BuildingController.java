@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,13 @@ public class BuildingController extends BaseController {
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		return "modules/inventory/buildingForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Building building, Model model) {
+		model.addAttribute("building", building);
+		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+		return "modules/inventory/buildingAdd";
+	}
 
 	@RequiresPermissions("inventory:building:edit")
 	@RequestMapping(value = "save")
@@ -120,6 +128,24 @@ public class BuildingController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
 			}
 		}
+	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Building building, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
+		if (CollectionUtils.isNotEmpty(blds)) {
+			model.addAttribute("propertyProject", building.getPropertyProject());
+			model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+			jsonObject.put("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
+		} else {
+			String id = buildingService.saveAndReturnId(building);
+			jsonObject.put("id", id);
+			jsonObject.put("name", building.getBuildingName());
+		}
+		
+		return jsonObject.toString();
 	}
 
 	@RequiresPermissions("inventory:building:edit")
