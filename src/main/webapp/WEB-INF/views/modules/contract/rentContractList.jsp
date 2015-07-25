@@ -201,6 +201,9 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>原出租合同名称</th>
+				<th>原定金协议名称</th>
+				<th>合同来源</th>
 				<th>合同签订类型</th>
 				<th>合同名称</th>
 				<th>出租方式</th>
@@ -215,12 +218,27 @@
 				<th>续租提醒时间</th>
 				<th>合同审核状态</th>
 				<th>合同业务状态</th>
+				<th>销售姓名</th>
+				<th>合作人姓名</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
 				<shiro:hasPermission name="contract:rentContract:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
 		<tbody>
 		<c:forEach items="${page.list}" var="rentContract">
 			<tr>
+				<td>
+					${rentContract.refContractName}
+				</td>
+				<td>
+					${rentContract.refAgreementName}
+				</td>
+				<td>
+					${fns:getDictLabel(rentContract.contractSource, 'contract_source', '')}
+				</td>
 				<td>
 					${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
 				</td>
@@ -264,7 +282,17 @@
 				</td>
 				<td>
 					${fns:getDictLabel(rentContract.contractBusiStatus, 'rent_contract_busi_status', '')}
-				</td>			
+				</td>
+				<td>
+					${rentContract.user.name}
+				</td>
+				<td>
+					${rentContract.partner.partnerName}
+				</td>
+				<td><fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+				<td><fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+				<td>${rentContract.createBy.loginName}</td>
+				<td>${rentContract.updateBy.loginName}</td>			
 				<shiro:hasPermission name="contract:rentContract:edit"><td>
 					<c:if test="${rentContract.contractStatus=='3'||rentContract.contractStatus=='0'||rentContract.contractStatus=='1'}">
     					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
