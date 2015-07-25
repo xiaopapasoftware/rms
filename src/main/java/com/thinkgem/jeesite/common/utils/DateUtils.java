@@ -239,9 +239,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			Calendar firstDayOfEndYearCalendar = Calendar.getInstance();
 			firstDayOfEndYearCalendar.clear();
 			firstDayOfEndYearCalendar.set(Calendar.YEAR, endCalendar.get(Calendar.YEAR));
-
-			return calculateSameYearMonthDiff(startCalendar, lastDayOfStartYearCalendar)
-					+ calculateSameYearMonthDiff(firstDayOfEndYearCalendar, endCalendar)
+			return new BigDecimal(calculateSameYearMonthDiff(startCalendar, lastDayOfStartYearCalendar)
+					+ calculateSameYearMonthDiff(firstDayOfEndYearCalendar, endCalendar)).setScale(2,
+					BigDecimal.ROUND_HALF_UP).doubleValue()
 					+ (endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR) - 1) * 12;
 		}
 	}
@@ -320,8 +320,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	public static void main(String[] args) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		System.out.println(getMonthSpace(sdf.parse("2015-1-1"), sdf.parse("2016-2-1")));
+		System.out.println(getMonthSpace(sdf.parse("2015-9-10"), sdf.parse("2016-9-9")));
 		// System.out.println(sdf.format(dateAddMonth2(sdf.parse("2015-9-27"),
 		// 1)));
+
 	}
 }

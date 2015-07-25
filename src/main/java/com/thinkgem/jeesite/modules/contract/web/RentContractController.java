@@ -273,7 +273,6 @@ public class RentContractController extends BaseController {
 	public String renewContract(RentContract rentContract, Model model) {
 		String contractId = rentContract.getId();
 		rentContract = rentContractService.get(contractId);
-		rentContract.setId(null);
 		rentContract.setContractId(contractId);
 		rentContract.setSignType("1");// 正常续签
 		rentContract.setContractName(rentContract.getContractName().concat("(续)"));
@@ -285,7 +284,6 @@ public class RentContractController extends BaseController {
 		rentContract.setStartDate(null);
 		rentContract.setExpiredDate(null);
 		rentContract.setSignDate(null);
-		model.addAttribute("rentContract", rentContract);
 
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
@@ -334,7 +332,8 @@ public class RentContractController extends BaseController {
 		model.addAttribute("renew", "1");
 		
 		model.addAttribute("partnerList", partnerService.findList(new Partner()));
-
+		rentContract.setId(null);
+		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractForm";
 	}
 
@@ -342,15 +341,12 @@ public class RentContractController extends BaseController {
 	public String autoRenewContract(RentContract rentContract, Model model) {
 		String contractId = rentContract.getId();
 		rentContract = rentContractService.get(contractId);
-		rentContract.setId(null);
 		rentContract.setContractId(contractId);
 		rentContract.setSignType("2");// 逾租续签
 		rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
 		rentContract.setStartDate(null);
 		rentContract.setExpiredDate(null);
 		rentContract.setSignDate(null);
-		model.addAttribute("rentContract", rentContract);
-
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 
@@ -396,7 +392,9 @@ public class RentContractController extends BaseController {
 		model.addAttribute("tenantList", tenantList);
 		
 		model.addAttribute("partnerList", partnerService.findList(new Partner()));
-
+		
+		rentContract.setId(null);
+		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractForm";
 	}
 

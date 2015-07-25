@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.contract.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -933,6 +934,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		// 生成零头的房租款项
 		BigDecimal doubledMonthCounts = new BigDecimal(monthCountDiff - intergeredMonthCounts).setScale(2,
 				BigDecimal.ROUND_HALF_UP);// 合同期间间隔的月份零头数
+
+		// 特殊预先处理
+		if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
+			doubledMonthCounts = specialProcess(doubledMonthCounts, rentContract.getStartDate(),
+					rentContract.getExpiredDate());
+		}
+
 		if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -1095,6 +1103,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			// 生成零头的费用款项
 			BigDecimal doubledMonthCounts = new BigDecimal(monthCountDiff - intergeredMonthCounts).setScale(2,
 					BigDecimal.ROUND_HALF_UP);// 合同期间间隔的月份零头数
+
+			// 特殊预先处理
+			if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0
+					&& doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
+				doubledMonthCounts = specialProcess(doubledMonthCounts, rentContract.getStartDate(),
+						rentContract.getExpiredDate());
+			}
+
 			if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0
 					&& doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
 
@@ -1195,5 +1211,28 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				}
 			}
 		}
+	}
+
+	/**
+	 * 特殊处理月份间隔的小数部分 如果开始、结束日期都不含2月份，则误差范围在0.01 如果开始、结束日期 含有2月份，则误差范围在0.05
+	 * */
+	private BigDecimal specialProcess(BigDecimal doubledMonthCounts, Date startDate, Date expiredDate) {
+		Calendar stratC = Calendar.getInstance();
+		stratC.setTime(startDate);
+
+		Calendar expiredC = Calendar.getInstance();
+		expiredC.setTime(expiredDate);
+
+		if (stratC.get(Calendar.MONTH) == 1 || expiredC.get(Calendar.MONTH) == 1) {// 含有2月份
+			if (doubledMonthCounts.compareTo(new BigDecimal(0.06)) < 0) {
+				return BigDecimal.ZERO;
+			}
+		}
+		if (stratC.get(Calendar.MONTH) != 1 && expiredC.get(Calendar.MONTH) != 1) {// 都不含有2月份
+			if (doubledMonthCounts.compareTo(new BigDecimal(0.02)) < 0) {
+				return BigDecimal.ZERO;
+			}
+		}
+		return doubledMonthCounts;
 	}
 }
