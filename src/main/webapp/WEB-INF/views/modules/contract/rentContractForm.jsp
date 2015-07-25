@@ -247,7 +247,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label"><c:if test="${empty renew}">房租押金总金额：</c:if><c:if test="${not empty renew}">房租押金差额：</c:if></label>
+			<label class="control-label"><c:if test="${empty renew}">房租押金金额：</c:if><c:if test="${not empty renew}">房租押金差额：</c:if></label>
 			<div class="controls">
 				<form:input path="depositAmount" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
