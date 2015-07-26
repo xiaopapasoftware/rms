@@ -523,20 +523,12 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "toReturnCheck")
 	public String toReturnCheck(RentContract rentContract, Model model) {
 		rentContract = rentContractService.get(rentContract.getId());
-
-		List<Accounting> outAccountList = new ArrayList<Accounting>();
-		Accounting accounting = new Accounting();
-		accounting.setFeeType("2");// 水电费押金
-		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
-		outAccountList.add(accounting);
-		accounting = new Accounting();
-		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount());
-		outAccountList.add(accounting);
-
+		List<Accounting> outAccountList = genOutAccountListBack(rentContract, "1", false);// 应出核算项列表
+		List<Accounting> inAccountList = genInAccountListBack(rentContract, "1", false, false);// 应收核算项列表
+		model.addAttribute("accountList", inAccountList);
+		model.addAttribute("accountSize", inAccountList.size());
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
-		model.addAttribute("accountSize", 0);
 		rentContract.setTradeType("7");// 正常退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
@@ -545,8 +537,8 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "toEarlyReturnCheck")
 	public String toEarlyReturnCheck(RentContract rentContract, Model model) {
 		rentContract = rentContractService.get(rentContract.getId());
-		List<Accounting> outAccountList = genOutAccountList4PreBack(rentContract);// 应出核算项列表
-		List<Accounting> inAccountList = genInAccountList4PreBack(rentContract);// 应收核算项列表
+		List<Accounting> outAccountList = genOutAccountListBack(rentContract, "0", true);// 应出核算项列表
+		List<Accounting> inAccountList = genInAccountListBack(rentContract, "0", true, false);// 应收核算项列表
 		model.addAttribute("returnRental", "1");// 显示计算公式的标识
 		model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, "6"));// 已缴纳房租总金额
 		model.addAttribute("rental", rentContract.getRental());
@@ -563,31 +555,12 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "toLateReturnCheck")
 	public String toLateReturnCheck(RentContract rentContract, Model model) {
 		rentContract = rentContractService.get(rentContract.getId());
-
-		List<Accounting> accountList = new ArrayList<Accounting>();
-
-		List<Accounting> outAccountList = new ArrayList<Accounting>();
-		Accounting accounting = new Accounting();
-		accounting.setFeeType("2");// 水电费押金
-		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
-		outAccountList.add(accounting);
-
-		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date());// 逾期天数
-
-		double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
-		double tental = (dates < 0 ? 0 : dates) * dailyRental;
-		BigDecimal bigDecimal = new BigDecimal(tental);
-		tental = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-		accounting = new Accounting();
-		accounting.setFeeType("8");// 逾赔房租
-		accounting.setFeeAmount(tental);
-		if (tental > 0)
-			accountList.add(accounting);
-
+		List<Accounting> outAccountList = genOutAccountListBack(rentContract, "2", false);// 应出核算项列表
+		List<Accounting> inAccountList = genInAccountListBack(rentContract, "2", false, true);// 应收核算项列表
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
-		model.addAttribute("accountList", accountList);
-		model.addAttribute("accountSize", accountList.size());
+		model.addAttribute("accountList", inAccountList);
+		model.addAttribute("accountSize", inAccountList.size());
 		rentContract.setTradeType("8");// 逾期退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
@@ -640,16 +613,19 @@ public class RentContractController extends BaseController {
 	}
 
 	/**
-	 * 提前退租------------应出退租核算项列表
+	 * 应出退租核算项列表
+	 * 
+	 * @param isPre
+	 *            是否提前
 	 * */
-	private List<Accounting> genOutAccountList4PreBack(RentContract rentContract) {
+	private List<Accounting> genOutAccountListBack(RentContract rentContract, String accountingType, boolean isPre) {
 
 		List<Accounting> outAccountings = new ArrayList<Accounting>();
 
 		// 水电费押金
 		Accounting eaccounting = new Accounting();
 		eaccounting.setRentContract(rentContract);
-		eaccounting.setAccountingType("0");// '0':'提前退租核算
+		eaccounting.setAccountingType(accountingType);
 		eaccounting.setFeeDirection("0");// 0 : 应出
 		eaccounting.setFeeType("2");// 水电费押金
 		eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
@@ -658,20 +634,21 @@ public class RentContractController extends BaseController {
 		// 房租押金
 		Accounting accounting = new Accounting();
 		accounting.setRentContract(rentContract);
-		accounting.setAccountingType("0");// '0':'提前退租核算
+		accounting.setAccountingType(accountingType);
 		accounting.setFeeDirection("0");// 0 : 应出
 		accounting.setFeeType("4");// 房租押金
 		accounting.setFeeAmount(rentContract.getDepositAmount());
 		outAccountings.add(accounting);
 
-		// 提前应退房租金额
-		Accounting preBackRentalAcc = new Accounting();
-		preBackRentalAcc.setRentContract(rentContract);
-		preBackRentalAcc.setAccountingType("0");// '0':'提前退租核算
-		preBackRentalAcc.setFeeDirection("0");// 0 : 应出
-		preBackRentalAcc.setFeeType("7");// 提前应退房租
-		preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
-		outAccountings.add(preBackRentalAcc);
+		if (isPre) {// 提前应退房租金额
+			Accounting preBackRentalAcc = new Accounting();
+			preBackRentalAcc.setRentContract(rentContract);
+			preBackRentalAcc.setAccountingType(accountingType);
+			preBackRentalAcc.setFeeDirection("0");// 0 : 应出
+			preBackRentalAcc.setFeeType("7");// 提前应退房租
+			preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
+			outAccountings.add(preBackRentalAcc);
+		}
 
 		// 预充---应退 智能电表剩余电费
 		// 整租不装智能电表，只有合租会装智能电表
@@ -680,7 +657,7 @@ public class RentContractController extends BaseController {
 			if (room != null && StringUtils.isNotEmpty(room.getMeterNo())) {// 合租且电表号不为空
 				Accounting elctrBackAcc = new Accounting();
 				elctrBackAcc.setRentContract(rentContract);
-				elctrBackAcc.setAccountingType("0");// '0':'提前退租核算
+				elctrBackAcc.setAccountingType(accountingType);
 				elctrBackAcc.setFeeDirection("0");// 0 : 应出
 				elctrBackAcc.setFeeType("13");// 智能电表剩余电费
 				String elctrFee = electricFeeService.getMeterFee(rentContract.getId());
@@ -696,7 +673,7 @@ public class RentContractController extends BaseController {
 			if (rentContract.getWaterFee() != null && rentContract.getWaterFee() > 0) {
 				Accounting waterAcc = new Accounting();
 				waterAcc.setRentContract(rentContract);
-				waterAcc.setAccountingType("0");// '0':'提前退租核算
+				waterAcc.setAccountingType(accountingType);
 				waterAcc.setFeeDirection("0");// 0 : 应出
 				waterAcc.setFeeType("15");// 水费剩余金额
 				waterAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "14", rentContract.getWaterFee()));
@@ -707,7 +684,7 @@ public class RentContractController extends BaseController {
 			if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
 				Accounting tvAcc = new Accounting();
 				tvAcc.setRentContract(rentContract);
-				tvAcc.setAccountingType("0");// '0':'提前退租核算
+				tvAcc.setAccountingType(accountingType);
 				tvAcc.setFeeDirection("0");// 0 : 应出
 				tvAcc.setFeeType("19");// 有线电视费剩余金额
 				tvAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "18", rentContract.getTvFee()));
@@ -719,7 +696,7 @@ public class RentContractController extends BaseController {
 					&& rentContract.getNetFee() > 0) {
 				Accounting netAcc = new Accounting();
 				netAcc.setRentContract(rentContract);
-				netAcc.setAccountingType("0");// '0':'提前退租核算
+				netAcc.setAccountingType(accountingType);
 				netAcc.setFeeDirection("0");// 0 : 应出
 				netAcc.setFeeType("21");// 宽带费剩余金额
 				netAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "20", rentContract.getNetFee()));
@@ -729,7 +706,7 @@ public class RentContractController extends BaseController {
 			// 预付 ---应退 燃气费
 			// Accounting hotAirAcc = new Accounting();
 			// hotAirAcc.setRentContract(rentContract);
-			// hotAirAcc.setAccountingType("0");// '0':'提前退租核算
+			// hotAirAcc.setAccountingType(accountingType);
 			// hotAirAcc.setFeeDirection("0");// 0 : 应出
 			// hotAirAcc.setFeeType("17");// 燃气费剩余金额
 			// hotAirAcc.setFeeAmount(0D);
@@ -739,7 +716,7 @@ public class RentContractController extends BaseController {
 			if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
 				Accounting servAcc = new Accounting();
 				servAcc.setRentContract(rentContract);
-				servAcc.setAccountingType("0");// '0':'提前退租核算
+				servAcc.setAccountingType(accountingType);
 				servAcc.setFeeDirection("0");// 0 : 应出
 				servAcc.setFeeType("23");// 服务费剩余金额
 				servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "22", rentContract.getServiceFee()));
@@ -818,36 +795,55 @@ public class RentContractController extends BaseController {
 
 		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date());// 实际入住天数
 		double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
-		double hasLivedAmount = new BigDecimal(dates * dailyFee).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		double hasLivedAmount = dates * dailyFee;
 
 		Double refundAmount = totalAmount - hasLivedAmount;// 提前退租应退金额
 		if (refundAmount < 0) {
 			return 0d;
 		} else {
-			return refundAmount;
+			return new BigDecimal(refundAmount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 		}
-
 	}
 
 	/**
-	 * 提前退租------------应收退租核算项列表
+	 * 应收退租核算项列表
+	 * 
+	 * @param isPre
+	 *            是否提前退租
+	 * @param isLate
+	 *            是否与其退租
 	 * */
-	private List<Accounting> genInAccountList4PreBack(RentContract rentContract) {
+	private List<Accounting> genInAccountListBack(RentContract rentContract, String accountingType, boolean isPre,
+			boolean isLate) {
 		List<Accounting> inAccountings = new ArrayList<Accounting>();
 
-		// 应收---早退违约金
-		Accounting earlyDepositAcc = new Accounting();
-		earlyDepositAcc.setRentContract(rentContract);
-		earlyDepositAcc.setAccountingType("0");// '0':'提前退租核算
-		earlyDepositAcc.setFeeDirection("1");// 1 : 应收
-		earlyDepositAcc.setFeeType("9");// 早退违约金
-		earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
-		inAccountings.add(earlyDepositAcc);
+		if (isPre) {// 应收---早退违约金
+			Accounting earlyDepositAcc = new Accounting();
+			earlyDepositAcc.setRentContract(rentContract);
+			earlyDepositAcc.setAccountingType(accountingType);
+			earlyDepositAcc.setFeeDirection("1");// 1 : 应收
+			earlyDepositAcc.setFeeType("9");// 早退违约金
+			earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
+			inAccountings.add(earlyDepositAcc);
+		}
+
+		if (isLate) {// 应收---逾赔房租//TODO
+			Accounting lateAcc = new Accounting();
+			lateAcc.setRentContract(rentContract);
+			lateAcc.setAccountingType(accountingType);
+			lateAcc.setFeeDirection("1");// 1 : 应收
+			lateAcc.setFeeType("8");// 逾赔房租
+			double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date());// 逾期天数
+			double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
+			double tental = (dates < 0 ? 0 : dates) * dailyRental;
+			lateAcc.setFeeAmount(new BigDecimal(tental).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+			inAccountings.add(lateAcc);
+		}
 
 		// 应收---损坏赔偿金
 		Accounting pay4BrokeAcc = new Accounting();
 		pay4BrokeAcc.setRentContract(rentContract);
-		pay4BrokeAcc.setAccountingType("0");// '0':'提前退租核算
+		pay4BrokeAcc.setAccountingType(accountingType);
 		pay4BrokeAcc.setFeeDirection("1");// 1 : 应收
 		pay4BrokeAcc.setFeeType("10");// 损坏赔偿金
 		pay4BrokeAcc.setFeeAmount(0D);
@@ -856,7 +852,7 @@ public class RentContractController extends BaseController {
 		// 应收---退租补偿税金
 		Accounting backSuppAcc = new Accounting();
 		backSuppAcc.setRentContract(rentContract);
-		backSuppAcc.setAccountingType("0");// '0':'提前退租核算
+		backSuppAcc.setAccountingType(accountingType);
 		backSuppAcc.setFeeDirection("1");// 1 : 应收
 		backSuppAcc.setFeeType("24");// 损坏赔偿金
 		backSuppAcc.setFeeAmount(0D);
@@ -865,7 +861,7 @@ public class RentContractController extends BaseController {
 		// 应收---电费自用金额
 		Accounting elSelAcc = new Accounting();
 		elSelAcc.setRentContract(rentContract);
-		elSelAcc.setAccountingType("0");// '0':'提前退租核算
+		elSelAcc.setAccountingType(accountingType);
 		elSelAcc.setFeeDirection("1");// 1 : 应收
 		elSelAcc.setFeeType("11");// 电费自用金额
 		elSelAcc.setFeeAmount(0D);// 人工计算
@@ -874,7 +870,7 @@ public class RentContractController extends BaseController {
 		// 应收---电费分摊金额
 		Accounting elCommAcc = new Accounting();
 		elCommAcc.setRentContract(rentContract);
-		elCommAcc.setAccountingType("0");// '0':'提前退租核算
+		elCommAcc.setAccountingType(accountingType);
 		elCommAcc.setFeeDirection("1");// 1 : 应收
 		elCommAcc.setFeeType("12");// 电费分摊金额
 		elCommAcc.setFeeAmount(0D);// 人工计算
@@ -883,7 +879,7 @@ public class RentContractController extends BaseController {
 		// 应收---水费金额
 		Accounting waterSelAcc = new Accounting();
 		waterSelAcc.setRentContract(rentContract);
-		waterSelAcc.setAccountingType("0");// '0':'提前退租核算
+		waterSelAcc.setAccountingType(accountingType);
 		waterSelAcc.setFeeDirection("1");// 1 : 应收
 		waterSelAcc.setFeeType("14");// 水费金额
 		waterSelAcc.setFeeAmount(0D);// 人工计算
@@ -892,7 +888,7 @@ public class RentContractController extends BaseController {
 		// 应收---燃气金额
 		// Accounting hotAirAcc = new Accounting();
 		// hotAirAcc.setRentContract(rentContract);
-		// hotAirAcc.setAccountingType("0");// '0':'提前退租核算
+		// hotAirAcc.setAccountingType(accountingType);// '0':'提前退租核算
 		// hotAirAcc.setFeeDirection("1");// 1 : 应收
 		// hotAirAcc.setFeeType("16");// 燃气金额
 		// hotAirAcc.setFeeAmount(0D);// 人工计算
@@ -901,7 +897,7 @@ public class RentContractController extends BaseController {
 		// 应收---有线电视费
 		Accounting tvAcc = new Accounting();
 		tvAcc.setRentContract(rentContract);
-		tvAcc.setAccountingType("0");// '0':'提前退租核算
+		tvAcc.setAccountingType(accountingType);
 		tvAcc.setFeeDirection("1");// 1 : 应收
 		tvAcc.setFeeType("18");// 电视费金额
 		tvAcc.setFeeAmount(0D);// 人工计算
@@ -910,7 +906,7 @@ public class RentContractController extends BaseController {
 		// 应收---宽带费
 		Accounting netAcc = new Accounting();
 		netAcc.setRentContract(rentContract);
-		netAcc.setAccountingType("0");// '0':'提前退租核算
+		netAcc.setAccountingType(accountingType);
 		netAcc.setFeeDirection("1");// 1 : 应收
 		netAcc.setFeeType("20");// 宽带费金额
 		netAcc.setFeeAmount(0D);// 人工计算
@@ -919,7 +915,7 @@ public class RentContractController extends BaseController {
 		// 应收---服务费
 		Accounting servAcc = new Accounting();
 		servAcc.setRentContract(rentContract);
-		servAcc.setAccountingType("0");// '0':'提前退租核算
+		servAcc.setAccountingType(accountingType);
 		servAcc.setFeeDirection("1");// 1 : 应收
 		servAcc.setFeeType("22");// 服务费金额
 		servAcc.setFeeAmount(0D);// 人工计算
