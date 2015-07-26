@@ -395,25 +395,26 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		/* 款项 */
 		for (Accounting accounting : accountList) {
 			if (!"9".equals(tradeType)) {// 特殊退租不生成款项
-				PaymentTrans paymentTrans = new PaymentTrans();
-				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType(tradeType);
-				paymentTrans.setPaymentType(accounting.getFeeType());
-				paymentTrans.setTransId(rentContract.getId());
-				paymentTrans.setTradeDirection("1");// 收款
-				paymentTrans.setStartDate(rentContract.getExpiredDate());
-				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-				paymentTrans.setTradeAmount(accounting.getFeeAmount());
-				paymentTrans.setLastAmount(accounting.getFeeAmount());
-				paymentTrans.setTransAmount(0D);
-				paymentTrans.setTransStatus("0");// 未到账登记
-				paymentTrans.setCreateDate(new Date());
-				paymentTrans.setCreateBy(UserUtils.getUser());
-				paymentTrans.setUpdateDate(new Date());
-				paymentTrans.setUpdateBy(UserUtils.getUser());
-				paymentTrans.setDelFlag("0");
-				if (0 != accounting.getFeeAmount())
+				if (accounting.getFeeAmount() > 0) {
+					PaymentTrans paymentTrans = new PaymentTrans();
+					paymentTrans.setId(IdGen.uuid());
+					paymentTrans.setTradeType(tradeType);
+					paymentTrans.setPaymentType(accounting.getFeeType());
+					paymentTrans.setTransId(rentContract.getId());
+					paymentTrans.setTradeDirection("1");// 收款
+					paymentTrans.setStartDate(rentContract.getStartDate());
+					paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+					paymentTrans.setTradeAmount(accounting.getFeeAmount());
+					paymentTrans.setLastAmount(accounting.getFeeAmount());
+					paymentTrans.setTransAmount(0D);
+					paymentTrans.setTransStatus("0");// 未到账登记
+					paymentTrans.setCreateDate(new Date());
+					paymentTrans.setCreateBy(UserUtils.getUser());
+					paymentTrans.setUpdateDate(new Date());
+					paymentTrans.setUpdateBy(UserUtils.getUser());
+					paymentTrans.setDelFlag("0");
 					paymentTransDao.insert(paymentTrans);
+				}
 			}
 
 			/* 核算记录 */
@@ -440,25 +441,26 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
 		for (Accounting accounting : outAccountList) {
 			if (!"9".equals(tradeType)) {// 特殊退租不生成款项
-				PaymentTrans paymentTrans = new PaymentTrans();
-				paymentTrans.setId(IdGen.uuid());
-				paymentTrans.setTradeType(tradeType);
-				paymentTrans.setPaymentType(accounting.getFeeType());
-				paymentTrans.setTransId(rentContract.getId());
-				paymentTrans.setTradeDirection("0");// 出款
-				paymentTrans.setStartDate(rentContract.getExpiredDate());
-				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-				paymentTrans.setTradeAmount(accounting.getFeeAmount());
-				paymentTrans.setLastAmount(accounting.getFeeAmount());
-				paymentTrans.setTransAmount(0D);
-				paymentTrans.setTransStatus("0");// 未到账登记
-				paymentTrans.setCreateDate(new Date());
-				paymentTrans.setCreateBy(UserUtils.getUser());
-				paymentTrans.setUpdateDate(new Date());
-				paymentTrans.setUpdateBy(UserUtils.getUser());
-				paymentTrans.setDelFlag("0");
-				if (0 != accounting.getFeeAmount())
+				if (accounting.getFeeAmount() > 0) {
+					PaymentTrans paymentTrans = new PaymentTrans();
+					paymentTrans.setId(IdGen.uuid());
+					paymentTrans.setTradeType(tradeType);
+					paymentTrans.setPaymentType(accounting.getFeeType());
+					paymentTrans.setTransId(rentContract.getId());
+					paymentTrans.setTradeDirection("0");// 出款
+					paymentTrans.setStartDate(rentContract.getStartDate());
+					paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+					paymentTrans.setTradeAmount(accounting.getFeeAmount());
+					paymentTrans.setLastAmount(accounting.getFeeAmount());
+					paymentTrans.setTransAmount(0D);
+					paymentTrans.setTransStatus("0");// 未到账登记
+					paymentTrans.setCreateDate(new Date());
+					paymentTrans.setCreateBy(UserUtils.getUser());
+					paymentTrans.setUpdateDate(new Date());
+					paymentTrans.setUpdateBy(UserUtils.getUser());
+					paymentTrans.setDelFlag("0");
 					paymentTransDao.insert(paymentTrans);
+				}
 			}
 
 			/* 核算记录 */

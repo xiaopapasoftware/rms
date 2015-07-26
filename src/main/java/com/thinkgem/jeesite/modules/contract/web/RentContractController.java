@@ -503,8 +503,6 @@ public class RentContractController extends BaseController {
 
 	@RequestMapping(value = "specialReturnContract")
 	public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-		// rentContractService.lateReturnContract(rentContract);
-		// addMessage(redirectAttributes, "特殊退租成功");
 		rentContract.setIsSpecial("1");
 		return toSpecialReturnCheck(rentContract, model);
 	}
@@ -568,27 +566,14 @@ public class RentContractController extends BaseController {
 
 	@RequestMapping(value = "toSpecialReturnCheck")
 	public String toSpecialReturnCheck(RentContract rentContract, Model model) {
-		String isSpecial = rentContract.getIsSpecial();
 		rentContract = rentContractService.get(rentContract.getId());
-		rentContract.setIsSpecial(isSpecial);
-
-		List<Accounting> accountList = new ArrayList<Accounting>();
-
-		List<Accounting> outAccountList = new ArrayList<Accounting>();
-		Accounting accounting = new Accounting();
-		accounting.setFeeType("2");// 水电费押金
-		accounting.setFeeAmount(rentContract.getDepositElectricAmount());
-		outAccountList.add(accounting);
-
-		accounting = new Accounting();
-		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount());
-		outAccountList.add(accounting);
-
+		rentContract.setIsSpecial(rentContract.getIsSpecial());
+		List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
+		List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
-		model.addAttribute("accountList", accountList);
-		model.addAttribute("accountSize", accountList.size());
+		model.addAttribute("accountList", inAccountList);
+		model.addAttribute("accountSize", inAccountList.size());
 		rentContract.setTradeType("9");// 特殊退租
 		model.addAttribute("rentContract", rentContract);
 		return "modules/contract/rentContractCheck";
