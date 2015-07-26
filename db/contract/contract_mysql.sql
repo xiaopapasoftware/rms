@@ -241,3 +241,5 @@ create table T_AUDIT_HIS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '审核历史表';
+
+ALTER TABLE t_lease_contract ADD month_space VARCHAR(64) COMMENT '打款月份间隔';

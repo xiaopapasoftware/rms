@@ -4,7 +4,9 @@
 package com.thinkgem.jeesite.modules.funds.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,10 +76,16 @@ public class TradingAccountsController extends BaseController {
 	@RequiresPermissions("funds:tradingAccounts:view")
 	@RequestMapping(value = "form")
 	public String form(TradingAccounts tradingAccounts, Model model) {
+		/*收据*/
+		List<Receipt> receiptList = new ArrayList<Receipt>();
+		
 		String[] tradeId = tradingAccounts.getTransIds().split(",");
 		double amount = 0;
 		String tradeType = "";
+		Map<String,Receipt> paymentTypeMap = new HashMap<String,Receipt>();
+		
 		for (int i = 0; i < tradeId.length; i++) {
+			Receipt receipt = new Receipt();
 			PaymentTrans paymentTrans = paymentTransService.get(tradeId[i]);
 			if ("0".equals(paymentTrans.getTradeDirection())) {// 应出
 				amount -= paymentTrans.getLastAmount();
@@ -85,7 +93,27 @@ public class TradingAccountsController extends BaseController {
 				amount += paymentTrans.getLastAmount();
 			}
 			tradeType = paymentTrans.getTradeType();
+			
+			String paymentType = paymentTrans.getPaymentType();
+			
+			if (!"0".equals(paymentTrans.getTradeDirection())) {
+				if(!paymentTypeMap.containsKey(paymentType)) {
+					receipt.setReceiptAmount((null==receipt.getReceiptAmount()?0d:receipt.getReceiptAmount())+paymentTrans.getLastAmount());
+					receipt.setPaymentType(paymentType);
+				} else {
+					receipt = paymentTypeMap.get(paymentType);
+					receipt.setReceiptAmount((null==receipt.getReceiptAmount()?0d:receipt.getReceiptAmount())+paymentTrans.getLastAmount());
+					receipt.setPaymentType(paymentType);
+				}
+				paymentTypeMap.put(paymentType, receipt);
+			}
 		}
+
+		for (String key : paymentTypeMap.keySet()) {
+			Receipt receipt = paymentTypeMap.get(key);
+			receiptList.add(receipt);
+		}
+		
 		tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
 		tradingAccounts.setTradeAmount(Math.abs(amount));
 		tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(),
@@ -93,6 +121,9 @@ public class TradingAccountsController extends BaseController {
 		tradingAccounts.setTradeType(tradeType);
 		tradingAccounts.setTradeTypeDesc(DictUtils.getDictLabel(tradingAccounts.getTradeType(), "trans_type", ""));
 		model.addAttribute("tradingAccounts", tradingAccounts);
+		
+		tradingAccounts.setReceiptList(receiptList);
+		
 		return "modules/funds/tradingAccountsForm";
 	}
 

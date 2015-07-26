@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -142,6 +143,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			leaseContractDtl.setLeaseContractId(leaseContract.getId());
 			leaseContractDtl.setDelFlag("0");
 			List<LeaseContractDtl> list = leaseContractDtlDao.findList(leaseContractDtl);
+			
+			int monthSpace = leaseContract.getMonthSpace();//打款月份间隔
+			List<PaymentTrans> listPaymentTrans = new ArrayList<PaymentTrans>();
+			
 			for (LeaseContractDtl tmpLeaseContractDtl : list) {
 				// 计算开始日期与结束日期之间的月数
 				double month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(),
@@ -154,10 +159,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					paymentTrans.setPaymentType("6");// 房租
 					paymentTrans.setTransId(leaseContract.getId());
 					paymentTrans.setTradeDirection("0");// 出款
-					Date startDate = i == 1 ? tmpLeaseContractDtl.getStartDate() : DateUtils.dateAddMonth(
+					Date startDate = i == 1 ? tmpLeaseContractDtl.getStartDate() : DateUtils.dateAddMonth2(
 							tmpLeaseContractDtl.getStartDate(), i - 1);
 					paymentTrans.setStartDate(startDate);
-					Date endDate = i == month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth(
+					Date endDate = i == month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth2(
 							tmpLeaseContractDtl.getStartDate(), i);
 					paymentTrans.setExpiredDate(endDate);
 					paymentTrans.setTradeAmount(tmpLeaseContractDtl.getDeposit());
@@ -169,9 +174,47 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 					paymentTrans.setUpdateDate(new Date());
 					paymentTrans.setUpdateBy(UserUtils.getUser());
 					paymentTrans.setDelFlag("0");
-					if (0 != tmpLeaseContractDtl.getDeposit())
-						paymentTransDao.insert(paymentTrans);
+					if (0 != tmpLeaseContractDtl.getDeposit()) {
+						//paymentTransDao.insert(paymentTrans);
+						listPaymentTrans.add(paymentTrans);
+					}
 				}
+			}
+			
+			int split = listPaymentTrans.size()/monthSpace;
+			for(int i=0;i<split;i++) {
+				int end = (i+1)*monthSpace;
+				List<PaymentTrans> tmpList= listPaymentTrans.subList(i*monthSpace,i!=(split-1)?end:listPaymentTrans.size()-1);
+				PaymentTrans tmpPaymentTrans = tmpList.get(0);
+				double tradeAmount = 0d;
+				for(PaymentTrans p : tmpList) {
+					tradeAmount += p.getTradeAmount();
+				}
+				tmpPaymentTrans.setTradeAmount(tradeAmount);
+				tmpPaymentTrans.setTransAmount(0d);
+				tmpPaymentTrans.setLastAmount(tmpPaymentTrans.getTradeAmount());
+				if(i!=0) {
+					tmpPaymentTrans.setStartDate(DateUtils.dateAddDay(tmpPaymentTrans.getStartDate(), 1));
+				}
+				Date endDate = DateUtils.dateAddMonth2(tmpPaymentTrans.getStartDate(), monthSpace);
+				tmpPaymentTrans.setExpiredDate(endDate);
+				paymentTransDao.insert(tmpPaymentTrans);
+			}
+			if(0!=listPaymentTrans.size()%monthSpace) {
+				List<PaymentTrans> tmpList= listPaymentTrans.subList(listPaymentTrans.size()-listPaymentTrans.size()%monthSpace-1,listPaymentTrans.size()-1);
+				PaymentTrans tmpPaymentTrans = tmpList.get(0);
+				tmpPaymentTrans.setId(IdGen.uuid());
+				double tradeAmount = 0d;
+				for(PaymentTrans p : tmpList) {
+					tradeAmount += p.getTradeAmount();
+				}
+				tmpPaymentTrans.setTradeAmount(tradeAmount);
+				tmpPaymentTrans.setTransAmount(0d);
+				tmpPaymentTrans.setLastAmount(tmpPaymentTrans.getTradeAmount());
+				tmpPaymentTrans.setStartDate(DateUtils.dateAddDay(tmpPaymentTrans.getStartDate(), 1));
+				Date endDate = DateUtils.dateAddMonth2(tmpPaymentTrans.getStartDate(), monthSpace);
+				tmpPaymentTrans.setExpiredDate(endDate);
+				paymentTransDao.insert(tmpPaymentTrans);
 			}
 		}
 	}
@@ -345,9 +388,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 				for (LeaseContractDtl lcd : leaseContractDtlList) {
 					if (StringUtils.isEmpty(lcd.getId()) && "0".equals(lcd.getDelFlag())) {
 						addLeaseContractDtlList.add(lcd);
-					}
-					if (StringUtils.isNotEmpty(lcd.getId()) && "1".equals(lcd.getDelFlag())) {
+					} else if (StringUtils.isNotEmpty(lcd.getId()) && "1".equals(lcd.getDelFlag())) {
 						delLeaseContractDtlList.add(lcd);
+					} else {//更新
+						leaseContractDtlDao.update(lcd);
 					}
 				}
 			}

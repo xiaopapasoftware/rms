@@ -190,6 +190,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		gc.add(2, addMonth);
 		return gc.getTime();
 	}
+	
+	/**
+	 * 获取n天之后的日期
+	 * 
+	 * @param date
+	 * @param addMonth
+	 * @return
+	 */
+	public static Date dateAddDay(Date date, int day) {
+		GregorianCalendar gc = new GregorianCalendar();
+		gc.setTime(date);
+		gc.add(Calendar.DAY_OF_MONTH, day);
+		return gc.getTime();
+	}
 
 	/**
 	 * 获取n个月之后的日期，要扣除1天。

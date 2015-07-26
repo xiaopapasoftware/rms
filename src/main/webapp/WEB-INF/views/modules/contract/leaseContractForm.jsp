@@ -285,6 +285,13 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">打款月份间隔：</label>
+			<div class="controls">
+				<form:input path="monthSpace" htmlEscape="false" maxlength="100" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">承租押金：</label>
 			<div class="controls">
 				<form:input path="deposit" htmlEscape="false" class="input-xlarge required number"/>
