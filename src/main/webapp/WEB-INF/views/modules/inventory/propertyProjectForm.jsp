@@ -76,7 +76,7 @@
 			<label class="control-label">物业项目图片：</label>
 			<div class="controls">
 				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/10" selectMultiple="true"/>
+				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/物业项目图片" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

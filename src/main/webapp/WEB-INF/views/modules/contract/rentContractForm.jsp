@@ -472,14 +472,14 @@
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
 				<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="rentContractFile" type="files" uploadPath="/16" selectMultiple="true"/>
+				<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">出租合同收据：</label>
 			<div class="controls">
 				<form:hidden id="rentContractReceiptFile" path="rentContractReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="rentContractReceiptFile" type="files" uploadPath="/17" selectMultiple="true"/>
+				<sys:ckfinder input="rentContractReceiptFile" type="files" uploadPath="/出租合同收据" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
