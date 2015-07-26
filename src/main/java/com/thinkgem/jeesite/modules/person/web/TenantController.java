@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -84,6 +86,15 @@ public class TenantController extends BaseController {
 		model.addAttribute("listCompany", companyService.findList(new Company()));
 		return "modules/person/tenantForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Tenant tenant, Model model) {
+		model.addAttribute("tenant", tenant);
+		model.addAttribute("listUser", systemService.findUser(new User()));
+		model.addAttribute("listCompany", companyService.findList(new Company()));
+		model.addAttribute("type", tenant.getType());
+		return "modules/person/tenantAddDialog";
+	}
 
 	@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "save")
@@ -113,6 +124,24 @@ public class TenantController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
 			}
 		}
+	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);
+		if (CollectionUtils.isNotEmpty(tenants)) {
+			model.addAttribute("listCompany", companyService.findList(new Company()));
+			model.addAttribute("listUser", systemService.findUser(new User()));
+			jsonObject.put("message",  "该证件类型租客的证件号码已被占用，不能重复添加");
+		} else {
+			String id = tenantService.saveAndReturnId(tenant);
+			jsonObject.put("id", id);
+			jsonObject.put("name", tenant.getLabel());
+		}
+		
+		return jsonObject.toString();
 	}
 
 	@RequiresPermissions("person:tenant:edit")

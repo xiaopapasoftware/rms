@@ -119,8 +119,61 @@
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
 				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+				$("[id='room.id']").next("a").hide();
 			} else {
 				$("[id='room.id']").removeAttr("disabled");
+				$("[id='room.id']").next("a").show();
+			}
+		}
+		
+		function addTenant() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add?type=tenant",'添加承租人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addLive() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add?type=live",'添加入住人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addProject() {
+			top.$.jBox.open("iframe:${ctx}/inventory/propertyProject/add",'添加物业项目',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addBuilding() {
+			if(""==$("[id='propertyProject.id']").val()) {
+				top.$.jBox.tip('请选择物业项目.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/building/add?propertyProject.id="+$("[id='propertyProject.id']").val(),'添加楼宇',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addHouse() {
+			if(""==$("[id='building.id']").val()) {
+				top.$.jBox.tip('请选择楼宇.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/house/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val()+"&houseStatus=1",'添加房屋',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addRoom() {
+			if(""==$("[id='house.id']").val()) {
+				top.$.jBox.tip('请选择房屋.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/room/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val()+"&house.id="+$("[id='house.id']").val()+"&roomStatus=1",'添加房间',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addTenant() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加承租人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addPartner() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加合作人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function saveHandler(v,h,f) {
+			if(v=='1') {
+				h.find("iframe")[0].contentWindow.$("#inputForm").submit();
+				return false;
 			}
 		}
 	</script>
@@ -171,6 +224,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addTenant()">添加承租人</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -182,6 +236,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addLive()">添加入住人</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -202,6 +257,7 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addProject()">添加物业项目</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -212,6 +268,7 @@
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addBuilding()">添加楼宇</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -222,6 +279,7 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addHouse()">添加房屋</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -231,6 +289,7 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
+				<a href="#" onclick="addRoom()">添加房间</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -321,6 +380,7 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
 				</form:select>
+				<a href="#" onclick="addPartner()">添加合作人</a>
 			</div>
 		</div>
 		<div class="control-group">

@@ -3,11 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +143,37 @@ public class RoomController extends BaseController {
 		}
 		return "modules/inventory/roomForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Room room, Model model) {
+
+		model.addAttribute("room", room);
+		List<PropertyProject> list = new ArrayList<PropertyProject>();
+		PropertyProject propertyProject = propertyProjectService.get(room.getPropertyProject());
+		list.add(propertyProject);
+		model.addAttribute("listPropertyProject", list);
+
+		List<Building> listBuilding = new ArrayList<Building>();
+		Building building = buildingService.get(room.getBuilding());
+		listBuilding.add(building);
+		model.addAttribute("listBuilding", listBuilding);
+
+		List<House> listHouse = new ArrayList<House>();
+		House house = houseService.get(room.getHouse());
+		listHouse.add(house);
+		model.addAttribute("listHouse", listHouse);
+
+		model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
+		model.addAttribute("listStructure", DictUtils.getDictList("structure"));
+
+		if (StringUtils.isNotEmpty(room.getOrientation())) {
+			room.setOrientationList(convertToDictListFromSelVal(room.getOrientation()));
+		}
+		if (StringUtils.isNotEmpty(room.getStructure())) {
+			room.setStructureList(convertToDictListFromSelVal(room.getStructure()));
+		}
+		return "modules/inventory/roomAdd";
+	}
 
 	@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "finishDirect")
@@ -227,6 +260,48 @@ public class RoomController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 			}
 		}
+	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Room room, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Room> rooms = roomService.findRoomByPrjAndBldAndHouNoAndRomNo(room);
+		if (CollectionUtils.isNotEmpty(rooms)) {// 重复
+			List<PropertyProject> list = new ArrayList<PropertyProject>();
+			PropertyProject propertyProject = propertyProjectService.get(room.getPropertyProject());
+			list.add(propertyProject);
+			model.addAttribute("listPropertyProject", list);
+
+			List<Building> listBuilding = new ArrayList<Building>();
+			Building building = buildingService.get(room.getBuilding());
+			listBuilding.add(building);
+			model.addAttribute("listBuilding", listBuilding);
+
+			List<House> listHouse = new ArrayList<House>();
+			House house = houseService.get(room.getHouse());
+			listHouse.add(house);
+			model.addAttribute("listHouse", listHouse);
+
+			model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
+			model.addAttribute("listStructure", DictUtils.getDictList("structure"));
+
+			jsonObject.put("message", "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加");
+		} else {// 可以新增
+			if(StringUtils.isBlank(room.getRoomStatus()))
+				room.setRoomStatus(DictUtils.getDictValue("待装修", "room_status", "0"));
+			if (CollectionUtils.isNotEmpty(room.getStructureList())) {
+				room.setStructure(convertToStrFromList(room.getStructureList()));
+			}
+			if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
+				room.setOrientation(convertToStrFromList(room.getOrientationList()));
+			}
+			String id = roomService.saveAndReturnId(room);
+			jsonObject.put("id", id);
+			jsonObject.put("name", room.getRoomNo());
+		}
+		
+		return jsonObject.toString();
 	}
 
 	@RequiresPermissions("inventory:room:edit")
