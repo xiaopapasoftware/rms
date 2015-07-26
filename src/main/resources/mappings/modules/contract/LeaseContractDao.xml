@@ -29,7 +29,8 @@
 		tp.project_name as projectName,
 		tb.building_name as buildingBame,
 		th.house_no as houseNo,
-		tr.user_name as remittancerName
+		tr.user_name as remittancerName,
+		a.month_space as "monthSpace"
 	</sql>
 	
 	<sql id="leaseContractJoins">
@@ -128,7 +129,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			month_space
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -148,7 +150,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{monthSpace}
 		)
 	</insert>
 	
@@ -168,7 +171,8 @@
 			contract_status = #{contractStatus},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			month_space = #{monthSpace}
 		WHERE id = #{id}
 	</update>
 	

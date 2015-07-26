@@ -352,14 +352,14 @@
 			<label class="control-label">定金协议：</label>
 			<div class="controls">
 				<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/14" selectMultiple="true"/>
+				<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/定金协议" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">定金收据：</label>
 			<div class="controls">
 				<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/15" selectMultiple="true"/>
+				<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/定金收据" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
