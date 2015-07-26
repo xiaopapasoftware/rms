@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -33,8 +35,13 @@ import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -76,6 +83,14 @@ public class RentContractController extends BaseController {
 	private PartnerService partnerService;
 	@Autowired
 	private LeaseContractService leaseContractService;
+	@Autowired
+	private TradingAccountsService tradingAccountsService;
+	@Autowired
+	private PaymentTradeDao paymentTradeDao;
+	@Autowired
+	private RoomService roomService;
+	@Autowired
+	private ElectricFeeService electricFeeService;
 
 	@ModelAttribute
 	public RentContract get(@RequestParam(required = false) String id) {
@@ -419,7 +434,6 @@ public class RentContractController extends BaseController {
 					model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
 					model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 				}
-
 			}
 			if (check) {
 				rentContractService.save(rentContract);
@@ -531,147 +545,18 @@ public class RentContractController extends BaseController {
 	@RequestMapping(value = "toEarlyReturnCheck")
 	public String toEarlyReturnCheck(RentContract rentContract, Model model) {
 		rentContract = rentContractService.get(rentContract.getId());
-
-		// 应出核算项列表
-		List<Accounting> outAccountList = genOutAccountList4PreBack(rentContract);
-
-		// 应收核算项列表
-		List<Accounting> inAccountList = genInAccountList4PreBack(rentContract);
-
-		// double dates =
-		// DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new
-		// Date());// 入住天数
-		// double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
-		// double tental = dates * dailyRental;
-		// BigDecimal bigDecimal = new BigDecimal(tental);
-		// tental = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-
-		/* 已缴房租 */
-		// double totalFee = 0;
-		// PaymentTrans paymentTrans = new PaymentTrans();
-		// paymentTrans.setTransId(rentContract.getId());
-		// paymentTrans.setPaymentType("6");// 房租金额
-		// paymentTrans.setTransStatus("2");// 完全到账登记
-		// paymentTrans.setDelFlag("0");
-		// List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
-		// for (PaymentTrans tmpPaymentTrans : list) {
-		// totalFee += tmpPaymentTrans.getTransAmount();
-		// }
-
-		// double surplus = totalFee - tental;// 剩余房租
-		// bigDecimal = new BigDecimal(surplus);
-		// surplus = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		// accounting = new Accounting();
-		// accounting.setFeeType("7");// 提前应退房租
-		// accounting.setFeeAmount(surplus);
-		// outAccountList.add(accounting);
-
-		// if ("0".equals(rentContract.getChargeType())) {// 预付
-
-		// if (null != rentContract.getTvFee()) {
-		// double dailyTvFee = rentContract.getTvFee() * 12 / 365;// 每天电视费
-		// double tvfee = dates * dailyTvFee;
-		// bigDecimal = new BigDecimal(tvfee);
-		// tvfee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		//
-		// /* 已缴电视费 */
-		// totalFee = 0;
-		// paymentTrans = new PaymentTrans();
-		// paymentTrans.setTransId(rentContract.getId());
-		// paymentTrans.setPaymentType("18");// 有线电视费
-		// paymentTrans.setTransStatus("2");// 完全到账登记
-		// paymentTrans.setDelFlag("0");
-		// list = paymentTransService.findList(paymentTrans);
-		// for (PaymentTrans tmpPaymentTrans : list) {
-		// totalFee += tmpPaymentTrans.getTransAmount();
-		// }
-		//
-		// double surplusTvFee = totalFee - tvfee;
-		// bigDecimal = new BigDecimal(surplusTvFee);
-		// surplusTvFee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		// accounting = new Accounting();
-		// accounting.setFeeType("19");// 有线电视费剩余金额
-		// accounting.setFeeAmount(surplusTvFee);
-		// outAccountList.add(accounting);
-		// }
-
-		// if (null != rentContract.getNetFee()) {
-		// double dailyNetFee = rentContract.getNetFee() * 12 / 365;// 每天宽带费
-		// double netfee = dates * dailyNetFee;
-		// bigDecimal = new BigDecimal(netfee);
-		// netfee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		//
-		// /* 已缴宽带费 */
-		// totalFee = 0;
-		// paymentTrans = new PaymentTrans();
-		// paymentTrans.setTransId(rentContract.getId());
-		// paymentTrans.setPaymentType("20");// 宽带费
-		// paymentTrans.setTransStatus("2");// 完全到账登记
-		// paymentTrans.setDelFlag("0");
-		// list = paymentTransService.findList(paymentTrans);
-		// for (PaymentTrans tmpPaymentTrans : list) {
-		// totalFee += tmpPaymentTrans.getTransAmount();
-		// }
-		//
-		// double surplusNetFee = totalFee - netfee;
-		// bigDecimal = new BigDecimal(surplusNetFee);
-		// surplusNetFee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		// accounting = new Accounting();
-		// accounting.setFeeType("21");// 宽带费剩余金额
-		// accounting.setFeeAmount(surplusNetFee);
-		// outAccountList.add(accounting);
-		// }
-
-		// if (null != rentContract.getServiceFee()) {
-		// double dailyServiceFee = rentContract.getServiceFee() * 12 /
-		// 365;// 每天服务费
-		// double serviceFee = dates * dailyServiceFee;
-		// bigDecimal = new BigDecimal(serviceFee);
-		// serviceFee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		// /* 已缴服务费 */
-		// totalFee = 0;
-		// paymentTrans = new PaymentTrans();
-		// paymentTrans.setTransId(rentContract.getId());
-		// paymentTrans.setPaymentType("22");// 服务费
-		// paymentTrans.setTransStatus("2");// 完全到账登记
-		// paymentTrans.setDelFlag("0");
-		// list = paymentTransService.findList(paymentTrans);
-		// for (PaymentTrans tmpPaymentTrans : list) {
-		// totalFee += tmpPaymentTrans.getTransAmount();
-		// }
-		// double surplusServiceFee = totalFee - serviceFee;
-		// bigDecimal = new BigDecimal(surplusServiceFee);
-		// surplusServiceFee = bigDecimal.setScale(2,
-		// BigDecimal.ROUND_HALF_UP).doubleValue();
-		// accounting = new Accounting();
-		// accounting.setFeeType("23");// 服务费剩余金额
-		// accounting.setFeeAmount(surplusServiceFee);
-		// outAccountList.add(accounting);
-		// }
-		// }
-
+		List<Accounting> outAccountList = genOutAccountList4PreBack(rentContract);// 应出核算项列表
+		List<Accounting> inAccountList = genInAccountList4PreBack(rentContract);// 应收核算项列表
 		model.addAttribute("returnRental", "1");// 显示计算公式的标识
-		model.addAttribute("totalFee", 100);
+		model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, "6"));// 已缴纳房租总金额
 		model.addAttribute("rental", rentContract.getRental());
-		model.addAttribute("dates", 1);
-
+		model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date()));// 已住天数
 		model.addAttribute("accountList", inAccountList);
 		model.addAttribute("accountSize", inAccountList.size());
-
 		model.addAttribute("outAccountList", outAccountList);
 		model.addAttribute("outAccountSize", outAccountList.size());
-
 		rentContract.setTradeType("6");// 提前退租
-
 		model.addAttribute("rentContract", rentContract);
-
 		return "modules/contract/rentContractCheck";
 	}
 
@@ -785,73 +670,163 @@ public class RentContractController extends BaseController {
 		preBackRentalAcc.setAccountingType("0");// '0':'提前退租核算
 		preBackRentalAcc.setFeeDirection("0");// 0 : 应出
 		preBackRentalAcc.setFeeType("7");// 提前应退房租
-		preBackRentalAcc.setFeeAmount(calculatePreBackRental(rentContract));
+		preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
 		outAccountings.add(preBackRentalAcc);
 
 		// 预充---应退 智能电表剩余电费
-		Accounting elctrBackAcc = new Accounting();
-		elctrBackAcc.setRentContract(rentContract);
-		elctrBackAcc.setAccountingType("0");// '0':'提前退租核算
-		elctrBackAcc.setFeeDirection("0");// 0 : 应出
-		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
-		elctrBackAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(elctrBackAcc);
+		// 整租不装智能电表，只有合租会装智能电表
+		if ("1".equals(rentContract.getRentMode())) {
+			Room room = roomService.get(rentContract.getRoom());
+			if (room != null && StringUtils.isNotEmpty(room.getMeterNo())) {// 合租且电表号不为空
+				Accounting elctrBackAcc = new Accounting();
+				elctrBackAcc.setRentContract(rentContract);
+				elctrBackAcc.setAccountingType("0");// '0':'提前退租核算
+				elctrBackAcc.setFeeDirection("0");// 0 : 应出
+				elctrBackAcc.setFeeType("13");// 智能电表剩余电费
+				String elctrFee = electricFeeService.getMeterFee(rentContract.getId());
+				elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
+				outAccountings.add(elctrBackAcc);
+			}
+		}
 
-		// 预付 ---应退 水费剩余金额
-		Accounting waterAcc = new Accounting();
-		waterAcc.setRentContract(rentContract);
-		waterAcc.setAccountingType("0");// '0':'提前退租核算
-		waterAcc.setFeeDirection("0");// 0 : 应出
-		waterAcc.setFeeType("15");// 水费剩余金额
-		waterAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(waterAcc);
+		// 预付费
+		if ("0".equals(rentContract.getChargeType())) {
 
-		// 预付 ---应退 电视费
-		Accounting tvAcc = new Accounting();
-		tvAcc.setRentContract(rentContract);
-		tvAcc.setAccountingType("0");// '0':'提前退租核算
-		tvAcc.setFeeDirection("0");// 0 : 应出
-		tvAcc.setFeeType("19");// 有线电视费剩余金额
-		tvAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(tvAcc);
+			// 预付 ---应退 水费剩余金额
+			if (rentContract.getWaterFee() != null && rentContract.getWaterFee() > 0) {
+				Accounting waterAcc = new Accounting();
+				waterAcc.setRentContract(rentContract);
+				waterAcc.setAccountingType("0");// '0':'提前退租核算
+				waterAcc.setFeeDirection("0");// 0 : 应出
+				waterAcc.setFeeType("15");// 水费剩余金额
+				waterAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "14", rentContract.getWaterFee()));
+				outAccountings.add(waterAcc);
+			}
 
-		// 预付 ---应退 宽带费
-		Accounting netAcc = new Accounting();
-		netAcc.setRentContract(rentContract);
-		netAcc.setAccountingType("0");// '0':'提前退租核算
-		netAcc.setFeeDirection("0");// 0 : 应出
-		netAcc.setFeeType("21");// 宽带费剩余金额
-		netAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(netAcc);
+			// 预付 ---应退 电视费
+			if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
+				Accounting tvAcc = new Accounting();
+				tvAcc.setRentContract(rentContract);
+				tvAcc.setAccountingType("0");// '0':'提前退租核算
+				tvAcc.setFeeDirection("0");// 0 : 应出
+				tvAcc.setFeeType("19");// 有线电视费剩余金额
+				tvAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "18", rentContract.getTvFee()));
+				outAccountings.add(tvAcc);
+			}
 
-		// 预付 ---应退 燃气费
-		Accounting hotAirAcc = new Accounting();
-		hotAirAcc.setRentContract(rentContract);
-		hotAirAcc.setAccountingType("0");// '0':'提前退租核算
-		hotAirAcc.setFeeDirection("0");// 0 : 应出
-		hotAirAcc.setFeeType("17");// 燃气费剩余金额
-		hotAirAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(hotAirAcc);
+			// 预付 ---应退 宽带费
+			if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee()
+					&& rentContract.getNetFee() > 0) {
+				Accounting netAcc = new Accounting();
+				netAcc.setRentContract(rentContract);
+				netAcc.setAccountingType("0");// '0':'提前退租核算
+				netAcc.setFeeDirection("0");// 0 : 应出
+				netAcc.setFeeType("21");// 宽带费剩余金额
+				netAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "20", rentContract.getNetFee()));
+				outAccountings.add(netAcc);
+			}
 
-		// 预付 ---应退 服务费
-		Accounting servAcc = new Accounting();
-		servAcc.setRentContract(rentContract);
-		servAcc.setAccountingType("0");// '0':'提前退租核算
-		servAcc.setFeeDirection("0");// 0 : 应出
-		servAcc.setFeeType("23");// 服务费剩余金额
-		servAcc.setFeeAmount(0D);// TODO
-		outAccountings.add(servAcc);
+			// 预付 ---应退 燃气费
+			// Accounting hotAirAcc = new Accounting();
+			// hotAirAcc.setRentContract(rentContract);
+			// hotAirAcc.setAccountingType("0");// '0':'提前退租核算
+			// hotAirAcc.setFeeDirection("0");// 0 : 应出
+			// hotAirAcc.setFeeType("17");// 燃气费剩余金额
+			// hotAirAcc.setFeeAmount(0D);
+			// outAccountings.add(hotAirAcc);
 
+			// 预付 ---应退 服务费
+			if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
+				Accounting servAcc = new Accounting();
+				servAcc.setRentContract(rentContract);
+				servAcc.setAccountingType("0");// '0':'提前退租核算
+				servAcc.setFeeDirection("0");// 0 : 应出
+				servAcc.setFeeType("23");// 服务费剩余金额
+				servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "22", rentContract.getServiceFee()));
+				outAccountings.add(servAcc);
+			}
+		}
 		return outAccountings;
+	}
+	/**
+	 * 获取合同下账务交易类型为“新签合同”、“正常人工续签”、“逾期自动续签”的，审核通过的账务交易关联的所有款项列表
+	 * */
+	private List<PaymentTrans> genPaymentTrades(RentContract rentContract) {
+		List<PaymentTrans> allPTs = Lists.newArrayList();
+		// 获取到所有的新签、人工续签、逾期续签的合同审批成功的账务交易记录
+		TradingAccounts ta = new TradingAccounts();
+		ta.setTradeId(rentContract.getId());
+		ta.setTradeStatus("1");// 账务交易审核通过
+		if ("0".equals(rentContract.getSignType())) {// 新签
+			ta.setTradeType("3");// 账务交易类型为“新签合同”
+		}
+		if ("1".equals(rentContract.getSignType())) {// 正常续签
+			ta.setTradeType("4");// 账务交易类型为“正常人工续签”
+		}
+		if ("2".equals(rentContract.getSignType())) {// 逾期续签
+			ta.setTradeType("5");// 逾期自动续签
+		}
+		List<TradingAccounts> tradingAccounts = tradingAccountsService.findList(ta);
+		if (CollectionUtils.isNotEmpty(tradingAccounts)) {
+			for (TradingAccounts taccount : tradingAccounts) {
+				PaymentTrade paymentTrade = new PaymentTrade();
+				paymentTrade.setTradeId(taccount.getId());
+				List<PaymentTrade> pts = paymentTradeDao.findList(paymentTrade);// 账务-款项关联表
+				if (CollectionUtils.isNotEmpty(pts)) {
+					for (PaymentTrade pt : pts) {
+						PaymentTrans paymentTran = paymentTransService.get(pt.getTransId());
+						if (paymentTran != null) {
+							allPTs.add(paymentTran);
+						}
+					}
+				}
+			}
+		}
+		return allPTs;
 	}
 
 	/**
-	 * 计算提前应退房租金额
+	 * 通用的计算应退房租、水费、电视费、燃气费、宽带费、服务费已成功缴纳且到账的总金额
+	 * 
+	 * @param paymentType
+	 *            款项类型
 	 * */
-	private Double calculatePreBackRental(RentContract rentContract) {
-		Double preBackRental = 0d;
-		// TODO
-		return preBackRental;
+	private Double commonCalculateTotalAmount(RentContract rentContract, String paymentType) {
+		Double totalAmount = 0d;// 租客总共已经成功缴纳的费用金额
+		List<PaymentTrans> rentalPaymentTrans = genPaymentTrades(rentContract);
+		if (CollectionUtils.isNotEmpty(rentalPaymentTrans)) {
+			for (PaymentTrans pt : rentalPaymentTrans) {
+				if (pt.getTradeAmount() != null && paymentType.equals(pt.getPaymentType())) {// 款项类型为“房租金额”
+					totalAmount = totalAmount + pt.getTradeAmount();
+				}
+			}
+		}
+		return totalAmount;
+	}
+
+	/**
+	 * 通用的计算应退房租、水费、电视费、燃气费、宽带费、服务费金额的方法
+	 * 
+	 * @param paymentType
+	 *            款项类型
+	 * @param monthFeeAmount
+	 *            每月费用金额
+	 * */
+	private Double commonCalculateBackAmount(RentContract rentContract, String paymentType, double monthFeeAmount) {
+
+		Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
+
+		double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date());// 实际入住天数
+		double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
+		double hasLivedAmount = new BigDecimal(dates * dailyFee).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+		Double refundAmount = totalAmount - hasLivedAmount;// 提前退租应退金额
+		if (refundAmount < 0) {
+			return 0d;
+		} else {
+			return refundAmount;
+		}
+
 	}
 
 	/**
@@ -915,13 +890,13 @@ public class RentContractController extends BaseController {
 		inAccountings.add(waterSelAcc);
 
 		// 应收---燃气金额
-		Accounting hotAirAcc = new Accounting();
-		hotAirAcc.setRentContract(rentContract);
-		hotAirAcc.setAccountingType("0");// '0':'提前退租核算
-		hotAirAcc.setFeeDirection("1");// 1 : 应收
-		hotAirAcc.setFeeType("16");// 燃气金额
-		hotAirAcc.setFeeAmount(0D);// 人工计算
-		inAccountings.add(hotAirAcc);
+		// Accounting hotAirAcc = new Accounting();
+		// hotAirAcc.setRentContract(rentContract);
+		// hotAirAcc.setAccountingType("0");// '0':'提前退租核算
+		// hotAirAcc.setFeeDirection("1");// 1 : 应收
+		// hotAirAcc.setFeeType("16");// 燃气金额
+		// hotAirAcc.setFeeAmount(0D);// 人工计算
+		// inAccountings.add(hotAirAcc);
 
 		// 应收---有线电视费
 		Accounting tvAcc = new Accounting();
