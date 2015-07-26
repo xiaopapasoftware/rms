@@ -21,6 +21,8 @@
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					console.log($("#inputForm").serialize());
+					return;
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
@@ -117,8 +119,10 @@
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
 				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+				$("[id='room.id']").next("a").hide();
 			} else {
 				$("[id='room.id']").removeAttr("disabled");
+				$("[id='room.id']").next("a").show();
 			}
 		}
 		
@@ -149,13 +153,58 @@
 			var msg = $("#auditMsg").val();
 			window.location.href="${ctx}/contract/depositAgreement/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
 		}
+		
+		function addProject() {
+			top.$.jBox.open("iframe:${ctx}/inventory/propertyProject/add",'添加物业项目',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addBuilding() {
+			if(""==$("[id='propertyProject.id']").val()) {
+				top.$.jBox.tip('请选择物业项目.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/building/add?propertyProject.id="+$("[id='propertyProject.id']").val(),'添加楼宇',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addHouse() {
+			if(""==$("[id='building.id']").val()) {
+				top.$.jBox.tip('请选择楼宇.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/house/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val()+"&houseStatus=1",'添加房屋',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addRoom() {
+			if(""==$("[id='house.id']").val()) {
+				top.$.jBox.tip('请选择房屋.','warning');
+				return;
+			}
+			top.$.jBox.open("iframe:${ctx}/inventory/room/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val()+"&house.id="+$("[id='house.id']").val()+"&roomStatus=1",'添加房间',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addTenant() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加承租人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function saveHandler(v,h,f) {
+			if(v=='1') {
+				h.find("iframe")[0].contentWindow.$("#inputForm").submit();
+				return false;
+			}
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
 		<li class="active">
-		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议<shiro:hasPermission name="contract:depositAgreement:edit"><c:if test="${depositAgreement.agreementStatus=='2' || empty depositAgreement.id}">${not empty depositAgreement.id?'修改':'添加'}</c:if><c:if test="${depositAgreement.agreementStatus!='2' && not empty depositAgreement.id}">查看</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission></a>
+		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议
+		<shiro:hasPermission name="contract:depositAgreement:edit">
+		<c:if test="${depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">${not empty depositAgreement.id?'修改':'添加'}</c:if>
+		<c:if test="${depositAgreement.agreementStatus!='2' &&depositAgreement.agreementStatus!='6' && not empty depositAgreement.id}">查看</c:if>
+		</shiro:hasPermission>
+		<shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission>
+		</a>
 		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
@@ -181,6 +230,7 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addProject()">添加物业项目</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -191,6 +241,7 @@
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addBuilding()">添加楼宇</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -201,6 +252,7 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addHouse()">添加房屋</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -210,6 +262,7 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
+				<a href="#" onclick="addRoom()">添加房间</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -223,10 +276,9 @@
 			<label class="control-label">承租人：</label>
 			<div class="controls">
 				<form:select path="tenantList" class="input-xlarge" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
+					<form:options items="${tenantList}" itemValue="id" itemLabel="label"/>
 				</form:select>
+				<a href="#" onclick="addTenant()">添加承租人</a>
 			</div>
 		</div>
 		<div class="control-group">

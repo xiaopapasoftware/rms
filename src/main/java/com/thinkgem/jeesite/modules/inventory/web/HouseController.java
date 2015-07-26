@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -119,13 +120,13 @@ public class HouseController extends BaseController {
 	public String add(House house, Model model) {
 		model.addAttribute("house", house);
 		if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
-			PropertyProject pp = new PropertyProject();
-			pp.setId(house.getPropertyProject().getId());
-			Building bd = new Building();
-			bd.setPropertyProject(pp);
-			model.addAttribute("listBuilding", buildingService.findList(bd));
+			List<Building> list = new ArrayList<Building>();
+			list.add(buildingService.get(house.getBuilding()));
+			model.addAttribute("listBuilding", list);
 		}
-		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+		List<PropertyProject> list = new ArrayList<PropertyProject>();
+		list.add(propertyProjectService.get(house.getPropertyProject()));
+		model.addAttribute("listPropertyProject", list);
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
 		return "modules/inventory/houseAdd";
 	}
@@ -202,18 +203,20 @@ public class HouseController extends BaseController {
 		JSONObject jsonObject = new JSONObject();
 		List<House> houses = houseService.findHourseByProPrjAndBuildingAndHouseNo(house);
 		if (CollectionUtils.isNotEmpty(houses)) {
-			model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-
-			PropertyProject pp = new PropertyProject();
-			pp.setId(house.getPropertyProject().getId());
-			Building bd = new Building();
-			bd.setPropertyProject(pp);
-			model.addAttribute("listBuilding", buildingService.findList(bd));
+			if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
+				List<Building> list = new ArrayList<Building>();
+				list.add(buildingService.get(house.getBuilding()));
+				model.addAttribute("listBuilding", list);
+			}
+			List<PropertyProject> list = new ArrayList<PropertyProject>();
+			list.add(propertyProjectService.get(house.getPropertyProject()));
+			model.addAttribute("listPropertyProject", list);
 
 			model.addAttribute("listOwner", ownerService.findList(new Owner()));
 			jsonObject.put("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
 		} else {
-			house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
+			if(StringUtils.isBlank(house.getHouseStatus()))
+				house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
 			String id= houseService.saveAndReturnId(house);
 			jsonObject.put("id", id);
 			jsonObject.put("name", house.getHouseNo());

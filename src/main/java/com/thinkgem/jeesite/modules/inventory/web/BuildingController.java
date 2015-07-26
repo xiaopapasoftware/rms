@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,7 +90,9 @@ public class BuildingController extends BaseController {
 	@RequestMapping(value = "add")
 	public String add(Building building, Model model) {
 		model.addAttribute("building", building);
-		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+		List<PropertyProject> list = new ArrayList<PropertyProject>();
+		list.add(propertyProjectService.get(building.getPropertyProject()));
+		model.addAttribute("listPropertyProject", list);
 		return "modules/inventory/buildingAdd";
 	}
 
@@ -136,8 +139,9 @@ public class BuildingController extends BaseController {
 		JSONObject jsonObject = new JSONObject();
 		List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
 		if (CollectionUtils.isNotEmpty(blds)) {
-			model.addAttribute("propertyProject", building.getPropertyProject());
-			model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+			List<PropertyProject> list = new ArrayList<PropertyProject>();
+			list.add(propertyProjectService.get(building.getPropertyProject()));
+			model.addAttribute("listPropertyProject", list);
 			jsonObject.put("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
 		} else {
 			String id = buildingService.saveAndReturnId(building);

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -65,6 +67,12 @@ public class RemittancerController extends BaseController {
 		model.addAttribute("remittancer", remittancer);
 		return "modules/person/remittancerForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Remittancer remittancer, Model model) {
+		model.addAttribute("remittancer", remittancer);
+		return "modules/person/remittancerAdd";
+	}
 
 	@RequiresPermissions("person:remittancer:edit")
 	@RequestMapping(value = "save")
@@ -100,7 +108,23 @@ public class RemittancerController extends BaseController {
 			}
 		}
 	}
-
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Remittancer> remittancers = remittancerService.findRemittancersByBankNameAndNo(remittancer);
+		if (CollectionUtils.isNotEmpty(remittancers)) {
+			jsonObject.put("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
+		} else {
+			String id = remittancerService.saveAndReturnId(remittancer);
+			jsonObject.put("id", id);
+			jsonObject.put("name", remittancer.getUserName());
+		}
+		
+		return jsonObject.toString();
+	}
+	
 	@RequiresPermissions("person:remittancer:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Remittancer remittancer, RedirectAttributes redirectAttributes) {

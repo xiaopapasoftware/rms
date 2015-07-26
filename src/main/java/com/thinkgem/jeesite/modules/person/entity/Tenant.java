@@ -34,6 +34,9 @@ public class Tenant extends DataEntity<Tenant> {
 	private String houseRegister; // 户籍所在地
 	private String position; // 职位
 	private String customerId;// 当从客户转化为租客时使用
+	
+	private String label;
+	private String type;
 
 	public Tenant() {
 		super();
@@ -161,5 +164,21 @@ public class Tenant extends DataEntity<Tenant> {
 
 	public void setCustomerId(String customerId) {
 		this.customerId = customerId;
+	}
+
+	public String getLabel() {
+		return this.cellPhone+"-"+this.tenantName;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

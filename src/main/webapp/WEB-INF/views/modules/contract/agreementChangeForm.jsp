@@ -51,6 +51,21 @@
 			var msg = $("#auditMsg").val();
 			window.location.href="${ctx}/contract/agreementChange/audit?objectId="+id+"&auditMsg="+msg+"&auditStatus="+status;
 		}
+		
+		function addTenant() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add?type=tenant",'添加承租人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addLive() {
+			top.$.jBox.open("iframe:${ctx}/person/tenant/add?type=live",'添加入住人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function saveHandler(v,h,f) {
+			if(v=='1') {
+				h.find("iframe")[0].contentWindow.$("#inputForm").submit();
+				return false;
+			}
+		}
 	</script>
 </head>
 <body>
@@ -111,6 +126,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addTenant()">添加承租人</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -122,6 +138,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addLive()">添加入住人</a>
 			</div>
 		</div>
 		<div class="control-group">

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -65,6 +67,12 @@ public class PartnerController extends BaseController {
 		model.addAttribute("partner", partner);
 		return "modules/person/partnerForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Partner partner, Model model) {
+		model.addAttribute("partner", partner);
+		return "modules/person/partnerAdd";
+	}
 
 	@RequiresPermissions("person:partner:edit")
 	@RequestMapping(value = "save")
@@ -91,6 +99,22 @@ public class PartnerController extends BaseController {
 				return "redirect:" + Global.getAdminPath() + "/person/partner/?repage";
 			}
 		}
+	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Partner partner, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Partner> partners = partnerService.findPartnersByCellNoAndType(partner);
+		if (CollectionUtils.isNotEmpty(partners)) {
+			jsonObject.put("message", "该类型合作人的手机号已被占用，不能重复添加");
+		} else {
+			String id = partnerService.saveAndReturnId(partner);
+			jsonObject.put("id", id);
+			jsonObject.put("name", partner.getPartnerName());
+		}
+		
+		return jsonObject.toString();
 	}
 
 	@RequiresPermissions("person:partner:edit")

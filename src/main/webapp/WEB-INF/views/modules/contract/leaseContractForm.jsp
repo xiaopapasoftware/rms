@@ -145,7 +145,7 @@
 				top.$.jBox.tip('请选择物业项目.','warning');
 				return;
 			}
-			top.$.jBox.open("iframe:${ctx}/inventory/building/add",'添加楼宇',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+			top.$.jBox.open("iframe:${ctx}/inventory/building/add?propertyProject.id="+$("[id='propertyProject.id']").val(),'添加楼宇',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
 		}
 		
 		function addHouse() {
@@ -153,7 +153,11 @@
 				top.$.jBox.tip('请选择楼宇.','warning');
 				return;
 			}
-			top.$.jBox.open("iframe:${ctx}/inventory/house/add",'添加房屋',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+			top.$.jBox.open("iframe:${ctx}/inventory/house/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val(),'添加房屋',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addRemittancer() {
+			top.$.jBox.open("iframe:${ctx}/person/remittancer/add",'添加汇款人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
 		}
 		
 		function saveHandler(v,h,f) {
@@ -224,6 +228,7 @@
 					<form:options items="${remittancerList}" itemLabel="userName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addRemittancer()">添加汇款人</a>
 			</div>
 		</div>
 		<div class="control-group">

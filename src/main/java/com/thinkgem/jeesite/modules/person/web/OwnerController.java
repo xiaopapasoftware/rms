@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -65,6 +67,12 @@ public class OwnerController extends BaseController {
 		model.addAttribute("owner", owner);
 		return "modules/person/ownerForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Owner owner, Model model) {
+		model.addAttribute("owner", owner);
+		return "modules/person/ownerAdd";
+	}
 
 	@RequiresPermissions("person:owner:edit")
 	@RequestMapping(value = "save")
@@ -101,6 +109,23 @@ public class OwnerController extends BaseController {
 			return "redirect:" + Global.getAdminPath() + "/person/owner/?repage";
 		}
 	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Owner owner, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Owner> owners = ownerService.findOwnersByCerNoOrMobNoOrTelNo(owner);
+		if (CollectionUtils.isNotEmpty(owners)) {// 已有重复的身份证号或者手机号或者电话号
+			jsonObject.put("message",  calculateTipMsg(owner, owners));
+		} else {// 无重复业主
+			String id = ownerService.saveAndReturnId(owner);
+			jsonObject.put("id", id);
+			jsonObject.put("name", owner.getName());
+		}
+		
+		return jsonObject.toString();
+	}
+	
 	@RequiresPermissions("person:owner:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Owner owner, RedirectAttributes redirectAttributes) {
