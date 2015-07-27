@@ -30,6 +30,12 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 		return super.findList(paymentTrans);
 	}
 	
+	public Page<PaymentTrans> findRemind(Page<PaymentTrans> page, PaymentTrans paymentTrans) {
+		paymentTrans.setPage(page);
+		page.setList(dao.findRemindList(paymentTrans));
+		return page;
+	}
+	
 	public Page<PaymentTrans> findPage(Page<PaymentTrans> page, PaymentTrans paymentTrans) {
 		return super.findPage(page, paymentTrans);
 	}

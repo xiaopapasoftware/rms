@@ -15,6 +15,7 @@
 						var json = eval("("+data+")");
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
 						if(null!=json.id) {
+							top.$.jBox.tip('保存成功!','success');
 							$(window.parent.document).find("iframe")[0].contentWindow.$("[id='building.id']").find("option").each(function(){
 								if($(this).attr("selected")=="selected") {
 									$(this).removeAttr("selected");

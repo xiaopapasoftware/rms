@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.funds.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -14,5 +16,5 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
  */
 @MyBatisDao
 public interface PaymentTransDao extends CrudDao<PaymentTrans> {
-	
+	public List<PaymentTrans> findRemindList(PaymentTrans paymentTrans);
 }

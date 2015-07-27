@@ -76,6 +76,22 @@
 	  </where>
 	</select>
 	
+	<select id="findRemindList" resultType="PaymentTrans">
+		select * from(
+		SELECT 
+			<include refid="paymentTransColumns"/>
+		from t_payment_trans a
+		<include refid="paymentTransJoins"/>
+	  <![CDATA[
+		where a.del_flag='0' 
+		and date_add(a.expired_date,interval-3 day)<=now() 
+		and a.trans_status in('0','1') 
+		and a.payment_type='6' 
+		order by a.expired_date
+	  ]]>
+	  ) t 
+	</select>
+	
 	<select id="findAllList" resultType="PaymentTrans">
 		SELECT 
 			<include refid="paymentTransColumns"/>

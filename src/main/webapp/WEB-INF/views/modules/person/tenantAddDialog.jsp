@@ -24,6 +24,7 @@
 						var json = eval("("+data+")");
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
 						if(null!=json.id) {
+							top.$.jBox.tip('保存成功!','success');
 							if("tenant"==$("type").val()) {
 								var text = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='tenantList']").html();
 								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
