@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +116,7 @@ public class TradingAccountsController extends BaseController {
 		}
 		
 		tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
-		tradingAccounts.setTradeAmount(Math.abs(amount));
+		tradingAccounts.setTradeAmount(new BigDecimal(Math.abs(amount)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
 		tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(),
 				"trans_dirction", ""));
 		tradingAccounts.setTradeType(tradeType);
