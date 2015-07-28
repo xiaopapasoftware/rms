@@ -21,8 +21,6 @@
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					console.log($("#inputForm").serialize());
-					return;
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
@@ -275,9 +273,10 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge" multiple="true">
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
 					<form:options items="${tenantList}" itemValue="id" itemLabel="label"/>
 				</form:select>
+				<span class="help-inline"><font color="red">*</font></span>
 				<a href="#" onclick="addTenant()">添加承租人</a>
 			</div>
 		</div>
@@ -296,22 +295,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">合同开始时间：</label>
-			<div class="controls">
-				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">合同结束时间：</label>
-			<div class="controls">
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">协议签订时间：</label>
 			<div class="controls">
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
@@ -327,6 +310,22 @@
 					value="<fmt:formatDate value="${depositAgreement.agreementDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合同开始时间：</label>
+			<div class="controls">
+				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合同结束时间：</label>
+			<div class="controls">
+				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${depositAgreement.expiredDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -360,6 +359,20 @@
 			<div class="controls">
 				<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/定金收据" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">租客身份证：</label>
+			<div class="controls">
+				<form:hidden id="depositCustomerIDFile" path="depositCustomerIDFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="depositCustomerIDFile" type="files" uploadPath="/租客身份证" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">定金协议其他附件：</label>
+			<div class="controls">
+				<form:hidden id="depositOtherFile" path="depositOtherFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="depositOtherFile" type="files" uploadPath="/定金协议其他" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

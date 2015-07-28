@@ -35,7 +35,11 @@ public enum FileType {
 
 	RENTCONTRACT_FILE("出租合同", "16"),
 
-	RENTCONTRACTRECEIPT_FILE("出租合同收据", "17");
+	RENTCONTRACTRECEIPT_FILE("出租合同收据", "17"),
+	
+	DEPOSITRECEIPT_FILE_OTHER("定金协议其他附件", "18"),
+	
+	RENTCONTRACT_FILE_OTHER("出租合同其他附件", "19");
 	
 	private String name;
 	private String value;

@@ -759,6 +759,34 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			attachment.setDelFlag("0");
 			attachmentDao.insert(attachment);
 		}
+		// 租客身份证
+		if (!StringUtils.isBlank(rentContract.getRentContractCusIDFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setRentContractId(rentContract.getId());
+			attachment.setAttachmentType(FileType.TENANT_ID.getValue());
+			attachment.setAttachmentPath(rentContract.getRentContractCusIDFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
+		// 出租合同其他收据
+		if (!StringUtils.isBlank(rentContract.getRentContractOtherFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setRentContractId(rentContract.getId());
+			attachment.setAttachmentType(FileType.RENTCONTRACT_FILE_OTHER.getValue());
+			attachment.setAttachmentPath(rentContract.getRentContractOtherFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
 	}
 	@Transactional(readOnly = false)
 	public void delete(RentContract rentContract) {

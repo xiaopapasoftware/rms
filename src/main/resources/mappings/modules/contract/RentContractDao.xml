@@ -60,7 +60,9 @@
 		a.charge_type as chargeType,
 		a.break_down as breakDown,
 		at1.attachment_path as "rentContractFile",
-		at2.attachment_path as "rentContractReceiptFile"
+		at2.attachment_path as "rentContractReceiptFile",
+		at3.attachment_path as "rentContractCusIDFile",
+		at4.attachment_path as "rentContractOtherFile"
 	</sql>
 	
 	<sql id="rentContractJoins">
@@ -76,6 +78,8 @@
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 		left join t_attachment at1 on a.id=at1.rent_contract_id and at1.attachment_type='16' and at1.del_flag='0'
 		left join t_attachment at2 on a.id=at2.rent_contract_id and at2.attachment_type='17' and at2.del_flag='0'
+		left join t_attachment at3 on a.id=at3.rent_contract_id and at3.attachment_type='4' and at3.del_flag='0'
+		left join t_attachment at4 on a.id=at4.rent_contract_id and at4.attachment_type='19' and at4.del_flag='0'
 	</sql>
     
 	<select id="get" resultType="RentContract">

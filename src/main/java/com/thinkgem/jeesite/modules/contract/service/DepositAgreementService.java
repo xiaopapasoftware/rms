@@ -230,7 +230,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		delPaymentTrans.setTransId(id);
 		paymentTransDao.delete(delPaymentTrans);
 
-		if(null!=depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate()
+		if (null != depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate()
 				&& null != depositAgreement.getDepositAmount() && null != depositAgreement.getDepositAmount()) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -267,7 +267,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		audit.setDelFlag("0");
 		auditDao.insert(audit);
 
-		if(null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size()>0) {
+		if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
 			/* 合同租客关联信息 */
 			ContractTenant delTenant = new ContractTenant();
 			delTenant.setDepositAgreementId(id);
@@ -297,7 +297,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			house.setUpdateDate(new Date());
 			houseDao.update(house);
 		} else {// 单间
-			if(null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
+			if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
 				Room room = roomDao.get(depositAgreement.getRoom().getId());
 				room.setRoomStatus("2");// 已预定
 				room.setCreateBy(UserUtils.getUser());
@@ -332,7 +332,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			attachment.setDepositAgreemId(depositAgreement.getId());
 			attachmentDao.delete(attachment);
 		}
-		
+
 		if (!StringUtils.isBlank(depositAgreement.getDepositAgreementFile())) {
 			Attachment attachment = new Attachment();
 			attachment.setId(IdGen.uuid());
@@ -361,6 +361,33 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			attachmentDao.insert(attachment);
 		}
 
+		if (!StringUtils.isBlank(depositAgreement.getDepositCustomerIDFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setDepositAgreemId(depositAgreement.getId());
+			attachment.setAttachmentType(FileType.TENANT_ID.getValue());
+			attachment.setAttachmentPath(depositAgreement.getDepositCustomerIDFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
+
+		if (!StringUtils.isBlank(depositAgreement.getDepositOtherFile())) {
+			Attachment attachment = new Attachment();
+			attachment.setId(IdGen.uuid());
+			attachment.setDepositAgreemId(depositAgreement.getId());
+			attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE_OTHER.getValue());
+			attachment.setAttachmentPath(depositAgreement.getDepositOtherFile());
+			attachment.setCreateDate(new Date());
+			attachment.setCreateBy(UserUtils.getUser());
+			attachment.setUpdateDate(new Date());
+			attachment.setUpdateBy(UserUtils.getUser());
+			attachment.setDelFlag("0");
+			attachmentDao.insert(attachment);
+		}
 	}
 
 	@Transactional(readOnly = false)

@@ -100,8 +100,10 @@ public class RentContract extends DataEntity<RentContract> {
 
 	private String rentContractFile;// 出租合同文件
 	private String rentContractReceiptFile;// 出租合同收据
+	private String rentContractCusIDFile;// 租客身份证
+	private String rentContractOtherFile;// 出租合同其他附件
 	private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
-	
+
 	public RentContract() {
 		super();
 	}
@@ -571,6 +573,22 @@ public class RentContract extends DataEntity<RentContract> {
 	public void setRentContractReceiptFile(String rentContractReceiptFile) {
 		this.rentContractReceiptFile = rentContractReceiptFile;
 	}
+	public String getRentContractCusIDFile() {
+		return rentContractCusIDFile;
+	}
+
+	public void setRentContractCusIDFile(String rentContractCusIDFile) {
+		this.rentContractCusIDFile = rentContractCusIDFile;
+	}
+
+	public String getRentContractOtherFile() {
+		return rentContractOtherFile;
+	}
+
+	public void setRentContractOtherFile(String rentContractOtherFile) {
+		this.rentContractOtherFile = rentContractOtherFile;
+	}
+
 	public Double getDepositAgreementAmount() {
 		return depositAgreementAmount;
 	}

@@ -22,50 +22,53 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
  * 定金协议Entity
+ * 
  * @author huangsc
  * @version 2015-06-09
  */
 public class DepositAgreement extends DataEntity<DepositAgreement> {
-	
+
 	private static final long serialVersionUID = 1L;
-	private PropertyProject propertyProject;		// 物业项目
-	private Building building;		// 楼宇
-	private House house;		// 房屋
-	private Room room;		// 房间
-	private String rentMode;		// 出租方式
-	private User user;		// 销售
-	private String agreementName;		// 定金协议名称
-	private Date startDate;		// 协议开始时间
-	private Date expiredDate;		// 协议结束时间
-	private Date signDate;		// 协议签订时间
-	private Integer renMonths;		// 首付房租月数
-	private Integer depositMonths;		// 房租押金月数
-	private Date agreementDate;		// 约定合同签约时间
-	private Double depositAmount;		// 定金金额
-	private Double housingRent;		// 房屋租金
-	private String agreementStatus;		// 定金协议审核状态
-	private String agreementBusiStatus;		// 定金协议业务状态
-	
+	private PropertyProject propertyProject; // 物业项目
+	private Building building; // 楼宇
+	private House house; // 房屋
+	private Room room; // 房间
+	private String rentMode; // 出租方式
+	private User user; // 销售
+	private String agreementName; // 定金协议名称
+	private Date startDate; // 协议开始时间
+	private Date expiredDate; // 协议结束时间
+	private Date signDate; // 协议签订时间
+	private Integer renMonths; // 首付房租月数
+	private Integer depositMonths; // 房租押金月数
+	private Date agreementDate; // 约定合同签约时间
+	private Double depositAmount; // 定金金额
+	private Double housingRent; // 房屋租金
+	private String agreementStatus; // 定金协议审核状态
+	private String agreementBusiStatus; // 定金协议业务状态
+
 	private String projectName;
 	private String buildingBame;
 	private String houseNo;
 	private String roomNo;
-	private String depositAgreementFile;//定金协议文件
-	private String depositReceiptFile;//定金协议收据
-	
+	private String depositAgreementFile;// 定金协议文件
+	private String depositReceiptFile;// 定金协议收据
+	private String depositCustomerIDFile;// 租客身份证
+	private String depositOtherFile;// 定金协议其他附件
+
 	private String validatorFlag;
-	
+
 	private List<Tenant> tenantList = new ArrayList<Tenant>();
-	
+
 	public DepositAgreement() {
 		super();
 	}
 
-	public DepositAgreement(String id){
+	public DepositAgreement(String id) {
 		super(id);
 	}
 
-	@NotNull(message="物业项目不能为空")
+	@NotNull(message = "物业项目不能为空")
 	public PropertyProject getPropertyProject() {
 		return propertyProject;
 	}
@@ -73,8 +76,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setPropertyProject(PropertyProject propertyProject) {
 		this.propertyProject = propertyProject;
 	}
-	
-	@NotNull(message="楼宇不能为空")
+
+	@NotNull(message = "楼宇不能为空")
 	public Building getBuilding() {
 		return building;
 	}
@@ -82,8 +85,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setBuilding(Building building) {
 		this.building = building;
 	}
-	
-	@NotNull(message="房屋不能为空")
+
+	@NotNull(message = "房屋不能为空")
 	public House getHouse() {
 		return house;
 	}
@@ -91,7 +94,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setHouse(House house) {
 		this.house = house;
 	}
-	
+
 	public Room getRoom() {
 		return room;
 	}
@@ -99,8 +102,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setRoom(Room room) {
 		this.room = room;
 	}
-	
-	@Length(min=1, max=64, message="出租方式长度必须介于 1 和 64 之间")
+
+	@Length(min = 1, max = 64, message = "出租方式长度必须介于 1 和 64 之间")
 	public String getRentMode() {
 		return rentMode;
 	}
@@ -108,7 +111,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setRentMode(String rentMode) {
 		this.rentMode = rentMode;
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
@@ -116,8 +119,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
-	@Length(min=1, max=100, message="定金协议名称长度必须介于 1 和 100 之间")
+
+	@Length(min = 1, max = 100, message = "定金协议名称长度必须介于 1 和 100 之间")
 	public String getAgreementName() {
 		return agreementName;
 	}
@@ -125,9 +128,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setAgreementName(String agreementName) {
 		this.agreementName = agreementName;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="协议开始时间不能为空")
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -135,9 +137,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="协议结束时间不能为空")
 	public Date getExpiredDate() {
 		return expiredDate;
 	}
@@ -145,9 +146,9 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setExpiredDate(Date expiredDate) {
 		this.expiredDate = expiredDate;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="协议签订时间不能为空")
+	@NotNull(message = "协议签订时间不能为空")
 	public Date getSignDate() {
 		return signDate;
 	}
@@ -155,8 +156,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setSignDate(Date signDate) {
 		this.signDate = signDate;
 	}
-	
-	@NotNull(message="首付房租月数不能为空")
+
 	public Integer getRenMonths() {
 		return renMonths;
 	}
@@ -164,8 +164,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setRenMonths(Integer renMonths) {
 		this.renMonths = renMonths;
 	}
-	
-	@NotNull(message="房租押金月数不能为空")
+
 	public Integer getDepositMonths() {
 		return depositMonths;
 	}
@@ -173,9 +172,9 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setDepositMonths(Integer depositMonths) {
 		this.depositMonths = depositMonths;
 	}
-	
+
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="约定合同签约时间不能为空")
+	@NotNull(message = "约定合同签约时间不能为空")
 	public Date getAgreementDate() {
 		return agreementDate;
 	}
@@ -183,7 +182,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setAgreementDate(Date agreementDate) {
 		this.agreementDate = agreementDate;
 	}
-	
+
 	public Double getDepositAmount() {
 		return depositAmount;
 	}
@@ -191,7 +190,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setDepositAmount(Double depositAmount) {
 		this.depositAmount = depositAmount;
 	}
-	
+
 	public Double getHousingRent() {
 		return housingRent;
 	}
@@ -199,8 +198,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setHousingRent(Double housingRent) {
 		this.housingRent = housingRent;
 	}
-	
-	@Length(min=0, max=64, message="定金协议审核状态长度必须介于 0 和 64 之间")
+
+	@Length(min = 0, max = 64, message = "定金协议审核状态长度必须介于 0 和 64 之间")
 	public String getAgreementStatus() {
 		return agreementStatus;
 	}
@@ -208,8 +207,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setAgreementStatus(String agreementStatus) {
 		this.agreementStatus = agreementStatus;
 	}
-	
-	@Length(min=0, max=64, message="定金协议业务状态长度必须介于 0 和 64 之间")
+
+	@Length(min = 0, max = 64, message = "定金协议业务状态长度必须介于 0 和 64 之间")
 	public String getAgreementBusiStatus() {
 		return agreementBusiStatus;
 	}
@@ -264,7 +263,21 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	public void setDepositReceiptFile(String depositReceiptFile) {
 		this.depositReceiptFile = depositReceiptFile;
 	}
+	public String getDepositCustomerIDFile() {
+		return depositCustomerIDFile;
+	}
 
+	public void setDepositCustomerIDFile(String depositCustomerIDFile) {
+		this.depositCustomerIDFile = depositCustomerIDFile;
+	}
+
+	public String getDepositOtherFile() {
+		return depositOtherFile;
+	}
+
+	public void setDepositOtherFile(String depositOtherFile) {
+		this.depositOtherFile = depositOtherFile;
+	}
 	public List<Tenant> getTenantList() {
 		return tenantList;
 	}

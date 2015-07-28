@@ -483,6 +483,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">租客身份证：</label>
+			<div class="controls">
+				<form:hidden id="rentContractCusIDFile" path="rentContractCusIDFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="rentContractCusIDFile" type="files" uploadPath="/租客身份证" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出租合同其他附件：</label>
+			<div class="controls">
+				<form:hidden id="rentContractOtherFile" path="rentContractOtherFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="rentContractOtherFile" type="files" uploadPath="/出租合同其他附件" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">入住分电表系数：</label>
 			<div class="controls">
 				<form:input path="meterValue" htmlEscape="false" class="input-xlarge  number"/>
