@@ -726,6 +726,12 @@ public class RentContractController extends BaseController {
 	 * */
 	private double calculateContinueContractAmount(RentContract currentContract, String depositType) {
 		Double totalAmount = 0d;
+		if ("4".equals(depositType)) {// 房租押金金额
+			totalAmount = currentContract.getDepositAmount();
+		}
+		if ("2".equals(depositType)) {// 水电押金金额
+			totalAmount = currentContract.getDepositElectricAmount();
+		}
 		RentContract tempContract = currentContract;// 防止修改原合同数据
 		while (StringUtils.isNotEmpty(tempContract.getContractId())) {
 			RentContract tempOriRentContract = rentContractService.get(tempContract.getContractId());
@@ -843,7 +849,11 @@ public class RentContractController extends BaseController {
 			earlyDepositAcc.setAccountingType(accountingType);
 			earlyDepositAcc.setFeeDirection("1");// 1 : 应收
 			earlyDepositAcc.setFeeType("9");// 早退违约金
-			earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
+			if ("1".equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
+				earlyDepositAcc.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
+			} else {// 如果是新签合同、逾期续签合同则直接退水电费押金
+				earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
+			}		
 			inAccountings.add(earlyDepositAcc);
 		}
 
