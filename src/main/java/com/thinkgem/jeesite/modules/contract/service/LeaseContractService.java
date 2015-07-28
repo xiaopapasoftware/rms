@@ -184,7 +184,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 			int split = listPaymentTrans.size()/monthSpace;
 			for(int i=0;i<split;i++) {
 				int end = (i+1)*monthSpace;
-				List<PaymentTrans> tmpList= listPaymentTrans.subList(i*monthSpace,i!=(split-1)?end:listPaymentTrans.size()-1);
+				List<PaymentTrans> tmpList= listPaymentTrans.subList(i*monthSpace,i!=(split-1)?end:listPaymentTrans.size());
 				PaymentTrans tmpPaymentTrans = tmpList.get(0);
 				double tradeAmount = 0d;
 				for(PaymentTrans p : tmpList) {
