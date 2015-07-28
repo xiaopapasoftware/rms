@@ -512,7 +512,6 @@ public class RentContractController extends BaseController {
 		AgreementChange agreementChange = new AgreementChange();
 		agreementChange.setContractId(rentContract.getId());
 		model.addAttribute("agreementChange", agreementChange);
-
 		List<Tenant> tenantList = tenantService.findList(new Tenant());
 		model.addAttribute("tenantList", tenantList);
 		return "modules/contract/additionalContract";
@@ -613,7 +612,11 @@ public class RentContractController extends BaseController {
 		eaccounting.setAccountingType(accountingType);
 		eaccounting.setFeeDirection("0");// 0 : 应出
 		eaccounting.setFeeType("2");// 水电费押金
-		eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		if ("1".equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
+			eaccounting.setFeeAmount(calculateContinueContractAmount(rentContract, "2"));
+		} else {// 如果是新签合同、逾期续签合同则直接退水电费押金
+			eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
+		}
 		outAccountings.add(eaccounting);
 
 		// 房租押金
@@ -621,8 +624,12 @@ public class RentContractController extends BaseController {
 		accounting.setRentContract(rentContract);
 		accounting.setAccountingType(accountingType);
 		accounting.setFeeDirection("0");// 0 : 应出
+		if ("1".equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的房租押金+房租押金差额,需做递归处理
+			accounting.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
+		} else {// 如果是新签合同、逾期续签合同则直接退房租押金
+			accounting.setFeeAmount(rentContract.getDepositAmount());
+		}
 		accounting.setFeeType("4");// 房租押金
-		accounting.setFeeAmount(rentContract.getDepositAmount());
 		outAccountings.add(accounting);
 
 		if (isPre) {// 提前应退房租金额
@@ -710,6 +717,34 @@ public class RentContractController extends BaseController {
 		}
 		return outAccountings;
 	}
+
+	/**
+	 * 如果当前合同是续签合同，则计算出当前合同前所有的被续签合同的押金总额
+	 * 
+	 * @param depositType
+	 *            为4=则计算所有房租押金金额；为2=则计算所有水电押金金额
+	 * */
+	private double calculateContinueContractAmount(RentContract currentContract, String depositType) {
+		Double totalAmount = 0d;
+		RentContract tempContract = currentContract;// 防止修改原合同数据
+		while (StringUtils.isNotEmpty(tempContract.getContractId())) {
+			RentContract tempOriRentContract = rentContractService.get(tempContract.getContractId());
+			if (tempOriRentContract != null) {
+				if ("4".equals(depositType)) {// 房租押金金额
+					totalAmount = totalAmount + tempOriRentContract.getDepositAmount();
+				}
+				if ("2".equals(depositType)) {// 水电押金金额
+					totalAmount = totalAmount + tempOriRentContract.getDepositElectricAmount();
+				}
+				tempContract = tempOriRentContract;
+			} else {
+				logger.warn("can not find oriRentContract by contractID:[" + tempContract.getContractId() + "]");
+				break;
+			}
+		}
+		return new BigDecimal(totalAmount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+	}
+
 	/**
 	 * 获取合同下账务交易类型为“新签合同”、“正常人工续签”、“逾期自动续签”的，审核通过的账务交易关联的所有款项列表
 	 * */
@@ -812,7 +847,7 @@ public class RentContractController extends BaseController {
 			inAccountings.add(earlyDepositAcc);
 		}
 
-		if (isLate) {// 应收---逾赔房租//TODO
+		if (isLate) {// 应收---逾赔房租
 			Accounting lateAcc = new Accounting();
 			lateAcc.setRentContract(rentContract);
 			lateAcc.setAccountingType(accountingType);
