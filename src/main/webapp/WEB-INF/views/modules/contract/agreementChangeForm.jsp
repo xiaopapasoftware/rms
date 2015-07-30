@@ -107,7 +107,7 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!-- <div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required">
@@ -116,7 +116,7 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
+		</div> -->
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">

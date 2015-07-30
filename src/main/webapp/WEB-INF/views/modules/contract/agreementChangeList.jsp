@@ -66,12 +66,12 @@
 					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
-			<li><label style="width:120px;">出租方式：</label>
+			<!-- <li><label style="width:120px;">出租方式：</label>
 				<form:select path="rentMode" class="input-medium" style="width:210px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
-			</li>
+			</li> -->
 			<li><label style="width:120px;">协议审核状态：</label>
 				<form:select path="agreementStatus" class="input-medium" style="width:210px;">
 					<form:option value="" label="全部"/>
@@ -89,7 +89,7 @@
 				<th>合同变更协议名称</th>
 				<th>出租合同</th>
 				<th>协议生效时间</th>
-				<th>出租方式</th>
+				<!-- <th>出租方式</th> -->
 				<th>协议审核状态</th>
 				<th>申请人</th>
 				<th>更新时间</th>
@@ -111,9 +111,9 @@
 				<td>
 					<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>
 				</td>
-				<td>
+				<!-- <td>
 					${fns:getDictLabel(agreementChange.rentMode, 'rent_mode', '')}
-				</td>
+				</td> -->
 				<td>
 					${fns:getDictLabel(agreementChange.agreementStatus, 'contract_status', '')}
 				</td>
