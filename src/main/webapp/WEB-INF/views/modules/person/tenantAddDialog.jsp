@@ -25,14 +25,20 @@
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
 						if(null!=json.id) {
 							top.$.jBox.tip('保存成功!','success');
+							var iframe;
+							if(undefined == $(window.parent.document).find(".tab_content").html()) {
+								iframe = $(window.parent.document).find("iframe")[0];
+							} else {
+								iframe = $(window.parent.document).find(".tab_content").find("iframe")[1];
+							}
 							if("tenant"==$("type").val()) {
-								var text = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='tenantList']").html();
+								var text = iframe.contentWindow.$("[id='tenantList']").html();
 								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-								$(window.parent.document).find("iframe")[0].contentWindow.$("[id='tenantList']").html(text);
+								iframe.contentWindow.$("[id='tenantList']").html(text);
 							} else if("live"==$("type").val()) {
-								var text = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='liveList']").html();
+								var text = iframe.contentWindow.$("[id='liveList']").html();
 								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-								$(window.parent.document).find("iframe")[0].contentWindow.$("[id='liveList']").html(text);
+								iframe.contentWindow.$("[id='liveList']").html(text);
 							}
 							top.$.jBox.close();
 						}

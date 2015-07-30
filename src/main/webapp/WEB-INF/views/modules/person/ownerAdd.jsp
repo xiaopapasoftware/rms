@@ -16,17 +16,23 @@
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
 						if(null!=json.id) {
 							top.$.jBox.tip('保存成功!','success');
-							$(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']").find("option").each(function(){
+							var iframe;
+							if(undefined == $(window.parent.document).find(".tab_content").html()) {
+								iframe = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='owner.id']");
+							} else {
+								iframe = $("[id='owner.id']",self.parent.frames[3].document);
+							}
+							iframe.find("option").each(function(){
 								if($(this).attr("selected")=="selected") {
 									$(this).removeAttr("selected");
 									return false;
 								}
 							});
-							var text = $(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']").html();
+							var text = iframe.html();
 							text = "<option value='"+json.id+"' selected='selected'>"+json.name+"</option>"+text;
-							$(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']").html(text);
-							$(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']").val(json.id);
-							$(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']").prev("[id='s2id_owner.id']").find(".select2-chosen").html(json.name);
+							iframe.html(text);
+							iframe.val(json.id);
+							iframe.prev("[id='s2id_owner.id']").find(".select2-chosen").html(json.name);
 							//top.$.jBox.close();
 							window.parent.window.jBox.close();
 						}

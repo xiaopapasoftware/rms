@@ -73,7 +73,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">${normalFee.type}费缴纳开始时间：</label>
+			<label class="control-label">${normalFee.type}费缴纳结束时间：</label>
 			<div class="controls">
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>"

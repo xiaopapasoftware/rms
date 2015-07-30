@@ -22,17 +22,23 @@
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
 						if(null!=json.id) {
 							top.$.jBox.tip('保存成功!','success');
-							$(window.parent.document).find("iframe")[0].contentWindow.$("[id='house.id']").find("option").each(function(){
+							var iframe;
+							if(undefined == $(window.parent.document).find(".tab_content").html()) {
+								iframe = $(window.parent.document).find("iframe")[0];
+							} else {
+								iframe = $(window.parent.document).find(".tab_content").find("iframe")[1];
+							}
+							iframe.contentWindow.$("[id='house.id']").find("option").each(function(){
 								if($(this).attr("selected")=="selected") {
 									$(this).removeAttr("selected");
 									return false;
 								}
 							});
-							var text = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='house.id']").html();
+							var text = iframe.contentWindow.$("[id='house.id']").html();
 							text = "<option value='"+json.id+"' selected='selected'>"+json.name+"</option>"+text;
-							$(window.parent.document).find("iframe")[0].contentWindow.$("[id='house.id']").html(text);
-							$(window.parent.document).find("iframe")[0].contentWindow.$("[id='house.id']").val(json.id);
-							$(window.parent.document).find("iframe")[0].contentWindow.$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html(json.name);
+							iframe.contentWindow.$("[id='house.id']").html(text);
+							iframe.contentWindow.$("[id='house.id']").val(json.id);
+							iframe.contentWindow.$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html(json.name);
 							top.$.jBox.close();
 						}
 					});
