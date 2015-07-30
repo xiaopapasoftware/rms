@@ -14,7 +14,8 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		a.agreement_change_id as "agreementChangeId"
+		a.agreement_change_id as "agreementChangeId",
+		a.leasagrem_change_id as "leasagremChangeId"
 	</sql>
 	
 	<sql id="contractTenantJoins">
@@ -43,6 +44,9 @@
 			</if>
 			<if test="agreementChangeId != null and agreementChangeId != ''">
 				AND a.agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leasagremChangeId != null and leasagremChangeId != ''">
+				AND a.leasagrem_change_id = #{leasagremChangeId}
 			</if>
 			<if test="leaseContractId != null and leaseContractId != ''">
 				AND a.lease_contract_id = #{leaseContractId}
@@ -92,7 +96,8 @@
 			update_date,
 			remarks,
 			del_flag,
-			agreement_change_id
+			agreement_change_id,
+			leasagrem_change_id
 		) VALUES (
 			#{id},
 			#{depositAgreementId},
@@ -105,7 +110,8 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{agreementChangeId}
+			#{agreementChangeId},
+			#{leasagremChangeId}
 		)
 	</insert>
 	
@@ -118,7 +124,8 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
-			agreement_change_id = #{agreementChangeId}
+			agreement_change_id = #{agreementChangeId},
+			leasagrem_change_id = #{leasagremChangeId}
 		WHERE id = #{id}
 	</update>
 	
@@ -138,6 +145,12 @@
 			</if>
 			<if test="leaseContractId != null and leaseContractId != ''">
 				and lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+				and agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leasagremChangeId != null and leasagremChangeId != ''">
+				and leasagrem_change_id = #{leasagremChangeId}
 			</if>
 	</update>
 	

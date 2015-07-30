@@ -86,7 +86,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">合同生效时间：</label>
+			<label class="control-label">协议生效时间：</label>
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>"
@@ -94,7 +94,7 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!--<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
@@ -103,7 +103,7 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
-		</div>
+		</div>-->
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">

@@ -43,7 +43,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="rentContractName != null and rentContractName != ''">
-				AND tc.contract_name like conact('%',#{rentContractName},'%')
+				AND tc.contract_name like concat('%',#{rentContractName},'%')
 			</if>
 			<if test="agreementChangeName != null and agreementChangeName != ''">
 				AND a.agreement_change_name LIKE 

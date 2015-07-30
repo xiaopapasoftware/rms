@@ -9,27 +9,29 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
  * 合同租客关联信息Entity
+ * 
  * @author huangsc
  * @version 2015-06-21
  */
 public class ContractTenant extends DataEntity<ContractTenant> {
-	
+
 	private static final long serialVersionUID = 1L;
-	private String depositAgreementId;		// 定金协议
-	private String contractId;		// 出租合同
-	private String agreementChangeId;//变更协议
-	private String tenantId;		// 租客
-	private String leaseContractId;		// 承租合同
-	
+	private String depositAgreementId; // 承租的 定金协议
+	private String contractId; // 入住的 出租合同
+	private String leaseContractId; // 承租的 出租合同
+	private String agreementChangeId; // 入住的 变更协议
+	private String leasagremChangeId; // 承租的 变更协议
+	private String tenantId; // 租客ID
+
 	public ContractTenant() {
 		super();
 	}
 
-	public ContractTenant(String id){
+	public ContractTenant(String id) {
 		super(id);
 	}
 
-	@Length(min=0, max=64, message="定金协议长度必须介于 0 和 64 之间")
+	@Length(min = 0, max = 64, message = "定金协议长度必须介于 0 和 64 之间")
 	public String getDepositAgreementId() {
 		return depositAgreementId;
 	}
@@ -37,8 +39,8 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 	public void setDepositAgreementId(String depositAgreementId) {
 		this.depositAgreementId = depositAgreementId;
 	}
-	
-	@Length(min=1, max=64, message="出租合同长度必须介于 1 和 64 之间")
+
+	@Length(min = 1, max = 64, message = "出租合同长度必须介于 1 和 64 之间")
 	public String getContractId() {
 		return contractId;
 	}
@@ -46,8 +48,8 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 	public void setContractId(String contractId) {
 		this.contractId = contractId;
 	}
-	
-	@Length(min=1, max=64, message="租客长度必须介于 1 和 64 之间")
+
+	@Length(min = 1, max = 64, message = "租客长度必须介于 1 和 64 之间")
 	public String getTenantId() {
 		return tenantId;
 	}
@@ -55,8 +57,8 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 	public void setTenantId(String tenantId) {
 		this.tenantId = tenantId;
 	}
-	
-	@Length(min=0, max=64, message="承租合同长度必须介于 0 和 64 之间")
+
+	@Length(min = 0, max = 64, message = "承租合同长度必须介于 0 和 64 之间")
 	public String getLeaseContractId() {
 		return leaseContractId;
 	}
@@ -71,5 +73,12 @@ public class ContractTenant extends DataEntity<ContractTenant> {
 
 	public void setAgreementChangeId(String agreementChangeId) {
 		this.agreementChangeId = agreementChangeId;
+	}
+	public String getLeasagremChangeId() {
+		return leasagremChangeId;
+	}
+
+	public void setLeasagremChangeId(String leasagremChangeId) {
+		this.leasagremChangeId = leasagremChangeId;
 	}
 }
