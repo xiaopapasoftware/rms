@@ -268,7 +268,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			depositAgreement.setUpdateDate(new Date());
 			if (!"3".equals(depositAgreement.getAgreementStatus())
 					&& !"5".equals(depositAgreement.getAgreementStatus())) {// '3':'内容审核通过到账收据待审核',"5":到账收据审核通过
-				depositAgreement.setAgreementStatus("1");// 到账收据登记完成内容待审核
+				depositAgreement.setAgreementStatus("3");//内容审核通过到账收据待审核
 				depositAgreementDao.update(depositAgreement);
 			}
 		} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
@@ -276,7 +276,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
 			if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
-				rentContract.setContractStatus("2");// 到账收据完成合同内容待审核
+				rentContract.setContractStatus("4");//内容审核通过到账收据待审核
 				rentContractDao.update(rentContract);
 			}
 		} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {

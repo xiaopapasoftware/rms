@@ -19,7 +19,7 @@
 							top.$.jBox.tip('保存成功!','success');
 							var iframe;
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
-								iframe = $(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']");
+								iframe = $(window.parent.document).find(".curholder").find("iframe")[0].contentWindow.$("[id='owner.id']");
 							} else {
 								iframe = $(window.parent.document).find("[id='jbox-iframe']").contents().find("[id='owner.id']");
 							}

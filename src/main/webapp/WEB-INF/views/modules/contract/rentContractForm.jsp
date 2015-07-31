@@ -192,10 +192,6 @@
 			top.$.jBox.open("iframe:${ctx}/inventory/room/add?building.id="+$("[id='building.id']").val()+"&propertyProject.id="+$("[id='propertyProject.id']").val()+"&house.id="+$("[id='house.id']").val()+"&roomStatus=1",'添加房间',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
 		}
 		
-		function addTenant() {
-			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加承租人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
-		}
-		
 		function addPartner() {
 			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加合作人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
 		}

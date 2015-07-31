@@ -26,7 +26,7 @@
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
 								iframe = $(window.parent.document).find("iframe")[0];
 							} else {
-								iframe = $(window.parent.document).find(".tab_content").find("iframe")[1];
+								iframe = $(window.parent.document).find(".tab_content").find(".curholder").find("iframe")[0];
 							}
 							iframe.contentWindow.$("[id='house.id']").find("option").each(function(){
 								if($(this).attr("selected")=="selected") {

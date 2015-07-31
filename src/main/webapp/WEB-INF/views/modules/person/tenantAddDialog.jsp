@@ -29,17 +29,17 @@
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
 								iframe = $(window.parent.document).find("iframe")[0];
 							} else {
-								iframe = $(window.parent.document).find(".tab_content").find("iframe")[1];
+								iframe = $(window.parent.document).find(".tab_content").find(".curholder").find("iframe")[0];
 							}
-							if("tenant"==$("type").val()) {
+							//if("tenant"==$("#type").val()) {
 								var text = iframe.contentWindow.$("[id='tenantList']").html();
 								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
 								iframe.contentWindow.$("[id='tenantList']").html(text);
-							} else if("live"==$("type").val()) {
-								var text = iframe.contentWindow.$("[id='liveList']").html();
+							//} else if("live"==$("#type").val()) {
+								text = iframe.contentWindow.$("[id='liveList']").html();
 								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
 								iframe.contentWindow.$("[id='liveList']").html(text);
-							}
+							//}
 							top.$.jBox.close();
 						}
 					});
