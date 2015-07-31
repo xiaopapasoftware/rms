@@ -6,6 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			//console.log($(window.parent.document).find("[id='jbox-iframe']").contents().find("[id='owner.id']").html());
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
@@ -18,9 +19,9 @@
 							top.$.jBox.tip('保存成功!','success');
 							var iframe;
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
-								iframe = $(window.parent.document).find("iframe")[0].contentWindow.$("[id='owner.id']");
+								iframe = $(window.parent.document).find("iframe")[1].contentWindow.$("[id='owner.id']");
 							} else {
-								iframe = $("[id='owner.id']",self.parent.frames[3].document);
+								iframe = $(window.parent.document).find("[id='jbox-iframe']").contents().find("[id='owner.id']");
 							}
 							iframe.find("option").each(function(){
 								if($(this).attr("selected")=="selected") {
