@@ -16,8 +16,44 @@
 		            event.preventDefault();
 		        }
 		    });
+			
+			var idVal = $("#id").val();
+			if(idVal == null || idVal == "" || idVal == undefined){//新增，而不是修改
+				var curDate = new Date();			
+				var year = curDate.getFullYear();
+				var month = curDate.getMonth() + 1;
+				if(parseFloat(month)<10){
+					month = "0" + "" + month;
+				}
+				var day = curDate.getDate();
+				if(parseFloat(day)<10){
+					day = "0" + "" + day;
+				}
+				var curDateStyle = year + "-" + month + "-" + day;//当前时间
+				
+				$("input[name='signDate']").val(curDateStyle);//协议签订时间，默认为当前日期
+				$("input[name='agreementDate']").val(curDateStyle);//约定合同签约时间，默认为当前日期
+				$("input[name='startDate']").val(curDateStyle);//合同开始时间，默认为当前日期
+				
+				curDate.setFullYear(curDate.getFullYear()+1);
+				curDate.setDate(curDate.getDate()-1);
+				var year2 = curDate.getFullYear();
+				var month2 = curDate.getMonth() + 1;
+				if(parseFloat(month2)<10){
+					month2 = "0" + "" + month2;
+				}
+				var day2 = curDate.getDate();
+				if(parseFloat(day2)<10){
+					day2 = "0" + "" + day2;
+				}
+				var curDateStyle2 = year2 + "-" + month2 + "-" + day2;
+				$("input[name='expiredDate']").val(curDateStyle2);//合同结束时间，默认为当前日期，一年后的日期 减去1天
+			}
 		});
 		
+		 
+
+		 
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
