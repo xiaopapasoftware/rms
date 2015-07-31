@@ -47,7 +47,7 @@
 			</if>
 			<if test="tradeId != null and tradeId != ''">
 			AND a.trading_accounts_id = #{tradeId}
-		</if>
+			</if>
 			<if test="receiptNo != null and receiptNo != ''">
 				AND a.receipt_no =  #{receiptNo} 
 			</if>
@@ -59,6 +59,9 @@
 			</if>
 			<if test="tradeMode != null and tradeMode != ''">
 				AND a.trade_mode = #{tradeMode}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+				AND a.payment_type = #{paymentType}
 			</if>
 		</where>
 		<choose>
@@ -135,6 +138,7 @@
 			receipt_date = #{receiptDate},
 			receipt_amount = #{receiptAmount},
 			trade_mode = #{tradeMode},
+			payment_type = #{paymentType},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}

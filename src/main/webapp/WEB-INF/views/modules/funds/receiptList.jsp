@@ -39,6 +39,12 @@
 					<form:options items="${fns:getDictList('trans_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label style="width:120px;">收据款项类型：</label>
+				<form:select path="paymentType" class="input-medium" style="width:200px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label style="width:120px;">收据号码：</label>
 				<form:input path="receiptNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
 			</li>
@@ -46,9 +52,6 @@
 				<input name="receiptDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
-			<li><label style="width:120px;">收据金额：</label>
-				<form:input path="receiptAmount" htmlEscape="false" class="input-medium" style="width:185px;"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
@@ -61,9 +64,10 @@
 				<th>账务交易对象</th>
 				<th>账务交易类型</th>
 				<th>账务交易方式</th>
+				<th>收据款项类型</th>
+				<th>收据金额</th>
 				<th>收据号码</th>
 				<th>收据日期</th>
-				<th>收据金额</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 			</tr>
@@ -81,13 +85,16 @@
 					${fns:getDictLabel(receipt.tradeMode, 'trans_mode', '')}
 				</td>
 				<td>
+					${fns:getDictLabel(receipt.paymentType, 'payment_type', '')}
+				</td>
+				<td>
+					${receipt.receiptAmount}
+				</td>
+				<td>
 					${receipt.receiptNo}
 				</td>
 				<td>
 					<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>
-				</td>
-				<td>
-					${receipt.receiptAmount}
 				</td>
 				<td>
 					<fmt:formatDate value="${receipt.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

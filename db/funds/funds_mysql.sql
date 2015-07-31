@@ -68,6 +68,7 @@ create table T_RECEIPT
    TRADING_ACCOUNTS_ID  varchar(64) comment '账务交易',
    RECEIPT_NO           varchar(100) comment '收据号码',
    TRADE_MODE           varchar(64) comment '交易方式',
+   PAYMENT_TYPE         varchar(64) comment '款项类型',
    RECEIPT_DATE         DATE comment '收据日期',
    RECEIPT_AMOUNT       float comment '收据金额',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
