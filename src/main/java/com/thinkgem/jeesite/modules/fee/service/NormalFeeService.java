@@ -65,8 +65,8 @@ public class NormalFeeService extends CrudService<NormalFeeDao, NormalFee> {
 		paymentTrans.setPaymentType(parmentType);
 		paymentTrans.setTransId(normalFee.getRentContractId());//合同
 		paymentTrans.setTradeDirection("1");//收款
-		paymentTrans.setStartDate(new Date());
-		paymentTrans.setExpiredDate(new Date());
+		paymentTrans.setStartDate(normalFee.getStartDate());
+		paymentTrans.setExpiredDate(normalFee.getEndDate());
 		paymentTrans.setTradeAmount(normalFee.getPersonFee());
 		paymentTrans.setLastAmount(normalFee.getPersonFee());
 		paymentTrans.setTransAmount(0D);

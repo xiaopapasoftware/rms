@@ -75,8 +75,8 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		paymentTrans.setPaymentType("11");//电费自用金额
 		paymentTrans.setTransId(electricFee.getRentContractId());//合同
 		paymentTrans.setTradeDirection("1");//收款
-		paymentTrans.setStartDate(new Date());
-		paymentTrans.setExpiredDate(new Date());
+		paymentTrans.setStartDate(electricFee.getStartDate());
+		paymentTrans.setExpiredDate(electricFee.getEndDate());
 		paymentTrans.setTradeAmount(electricFee.getPersonFee());
 		paymentTrans.setLastAmount(electricFee.getPersonFee());
 		paymentTrans.setTransAmount(0D);
