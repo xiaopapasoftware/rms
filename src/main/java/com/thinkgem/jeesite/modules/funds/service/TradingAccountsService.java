@@ -266,24 +266,34 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 			DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
 			depositAgreement.setUpdateBy(UserUtils.getUser());
 			depositAgreement.setUpdateDate(new Date());
-			if (!"3".equals(depositAgreement.getAgreementStatus())
-					&& !"5".equals(depositAgreement.getAgreementStatus())) {// '3':'内容审核通过到账收据待审核',"5":到账收据审核通过
-				depositAgreement.setAgreementStatus("3");//内容审核通过到账收据待审核
+			if ("0".equals(depositAgreement.getAgreementStatus())) {// 定金协议状态为“录入完成到账收据待登记”
+				depositAgreement.setAgreementStatus("1");// '1':'到账收据登记完成内容待审核'
 				depositAgreementDao.update(depositAgreement);
+			} else {
+				if (!"3".equals(depositAgreement.getAgreementStatus())// '3':'内容审核通过到账收据待审核'
+						&& !"5".equals(depositAgreement.getAgreementStatus())) {// "5":到账收据审核通过
+					depositAgreement.setAgreementStatus("3");// 内容审核通过到账收据待审核
+					depositAgreementDao.update(depositAgreement);
+				}
 			}
 		} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
-				rentContract.setContractStatus("4");//内容审核通过到账收据待审核
+			if ("1".equals(rentContract.getContractStatus())) {// '1':'录入完成到账收据待登记'
+				rentContract.setContractStatus("2");// '2':'到账收据完成合同内容待审核'
 				rentContractDao.update(rentContract);
+			} else {
+				if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
+					rentContract.setContractStatus("4");// 内容审核通过到账收据待审核
+					rentContractDao.update(rentContract);
+				}
 			}
-		} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {
+		} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {//'6''提前退租';'7''正常退租';'8''逾期退租'
 			RentContract rentContract = rentContractDao.get(tradeId);
 			rentContract.setUpdateBy(UserUtils.getUser());
 			rentContract.setUpdateDate(new Date());
-			if ("6".equals(rentContract.getContractStatus())) {
+			if ("6".equals(rentContract.getContractStatus())) {//'6''到账收据审核通过'
 				rentContract.setContractBusiStatus("5");// 退租款项待审核
 				rentContractDao.update(rentContract);
 			}
