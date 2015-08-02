@@ -126,7 +126,7 @@
 				<th>创建人</th>
 				<th>修改人</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="inventory:room:edit"><th>操作</th></shiro:hasPermission>
+				<th><shiro:hasPermission name="inventory:room:edit">操作</shiro:hasPermission></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -152,13 +152,28 @@
 				<td>${room.remarks}</td>
 				<td>
 					<shiro:hasPermission name="inventory:room:edit">
-	    				<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
-						<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
-						<c:if test="${room.roomStatus eq '0'}">
-								<a href="#" onclick="finishDirect('${room.id}');">装修完成</a>
-						</c:if>
+    					<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
+    				</shiro:hasPermission>
+    			</td>
+	    		<td>
+	    			<shiro:hasPermission name="inventory:room:edit">
+	    				<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
+	    			</shiro:hasPermission>
+	    		</td>
+				<td>
+					<shiro:hasPermission name="inventory:room:edit">
+						<c:if test="${room.roomStatus eq '0'}"><a href="#" onclick="finishDirect('${room.id}');">装修完成</a></c:if></td>
 					</shiro:hasPermission>
-					<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备<shiro:hasPermission name="device:roomDevices:edit">维护</shiro:hasPermission><shiro:lacksPermission name="device:roomDevices:edit">查看</shiro:lacksPermission></a>
+				</td>
+				<td>
+					<shiro:hasPermission name="device:roomDevices:edit">
+						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备维护</a>
+					</shiro:hasPermission>
+				</td>
+				<td>
+					<shiro:lacksPermission name="device:roomDevices:edit">
+						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a>
+					</shiro:lacksPermission>
 				</td>
 			</tr>
 		</c:forEach>

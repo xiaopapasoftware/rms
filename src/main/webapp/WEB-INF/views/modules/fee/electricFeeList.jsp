@@ -33,7 +33,7 @@
 					value="<fmt:formatDate value="${electricFee.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
-			<li><label style="width:120px;">电费缴纳开始时间：</label>
+			<li><label style="width:120px;">电费缴纳结束时间：</label>
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${electricFee.endDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
@@ -57,7 +57,7 @@
 				<th>电费缴纳开始时间</th>
 				<th>电费缴纳开始时间</th>
 				<th>入住电表系数</th>
-				<th>自用金额</th>
+				<th>充值金额</th>
 				<th>结算状态</th>
 				<th>更新时间</th>
 				<th>备注信息</th>

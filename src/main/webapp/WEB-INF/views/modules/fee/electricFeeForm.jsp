@@ -125,7 +125,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">自用金额：</label>
+			<label class="control-label">充值金额：</label>
 			<div class="controls">
 				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
