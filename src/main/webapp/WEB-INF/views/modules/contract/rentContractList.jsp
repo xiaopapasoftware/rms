@@ -293,12 +293,14 @@
 				<td><fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 				<td>${rentContract.createBy.loginName}</td>
 				<td>${rentContract.updateBy.loginName}</td>			
-				<shiro:hasPermission name="contract:rentContract:edit">
+					<shiro:hasPermission name="contract:rentContract:edit">
 					<td>
 						<c:if test="${rentContract.contractStatus=='3'||rentContract.contractStatus=='0'||rentContract.contractStatus=='1'}">
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 						</c:if>
 					</td>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="contract:rentContract:return">
 					<td>
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
 	    				 	<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
@@ -314,16 +316,21 @@
     						<a href="${ctx}/contract/rentContract/lateReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租吗?', this.href)">逾期退租</a>
     					 </c:if>  
     				</td>
+   					</shiro:hasPermission>
+    				<shiro:hasPermission name="contract:rentContract:specialreturn">
 	    			<td>
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					    <a href="${ctx}/contract/rentContract/specialReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租吗?', this.href)">特殊退租</a>
     					 </c:if> 
 	    			</td> 
+   					 </shiro:hasPermission>
+    				<shiro:hasPermission name="contract:rentContract:change">
 	    			<td>
     				 	 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					 	<a href="${ctx}/contract/rentContract/changeContract?id=${rentContract.id}" onclick="return confirmx('确认要协议变更吗?', this.href)">协议变更</a>
     					 </c:if> 
 	    			</td>
+   					 </shiro:hasPermission>
 	    			<td>
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					    <a href="${ctx}/contract/rentContract/renewContract?id=${rentContract.id}" onclick="return confirmx('确认要人工续签吗?', this.href)">人工续签</a>
@@ -334,6 +341,7 @@
     					 	<a href="${ctx}/contract/rentContract/autoRenewContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期自动续签吗?', this.href)">逾期自动续签</a>
     					 </c:if> 
 	    			</td>
+					<shiro:hasPermission name="contract:rentContract:return">
 					<td>
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
     						<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗?', this.href)">正常退租核算</a>
@@ -349,12 +357,12 @@
     						<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租核算吗?', this.href)">逾期退租核算</a>
 						</c:if>
 					</td>
+					</shiro:hasPermission>
 					<td>
 	 					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
 	    					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>
 						</c:if>
 					</td>
-				</shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

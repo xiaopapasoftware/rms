@@ -72,6 +72,12 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	public List<LeaseContract> findList(LeaseContract leaseContract) {
 		return super.findList(leaseContract);
 	}
+	
+	public Page<LeaseContract> findLeaseContractList(Page<LeaseContract> page, LeaseContract leaseContract) {
+		leaseContract.setPage(page);
+		page.setList(dao.findLeaseContractList(leaseContract));
+		return page;
+	}
 
 	public Page<LeaseContract> findPage(Page<LeaseContract> page, LeaseContract leaseContract) {
 		return super.findPage(page, leaseContract);

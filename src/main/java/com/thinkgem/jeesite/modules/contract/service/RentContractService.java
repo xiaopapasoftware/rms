@@ -267,6 +267,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	public Page<RentContract> findPage(Page<RentContract> page, RentContract rentContract) {
 		return super.findPage(page, rentContract);
 	}
+	
+	public Page<RentContract> findContractList(Page<RentContract> page, RentContract rentContract) {
+		rentContract.setPage(page);
+		page.setList(dao.findContractList(rentContract));
+		return page;
+	}
 
 	/**
 	 * 正常退租

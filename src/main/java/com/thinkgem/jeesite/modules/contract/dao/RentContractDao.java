@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.contract.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -14,5 +16,5 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
  */
 @MyBatisDao
 public interface RentContractDao extends CrudDao<RentContract> {
-	
+	public List<RentContract> findContractList(RentContract rentContract);
 }
