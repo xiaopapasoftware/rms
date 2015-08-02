@@ -9,7 +9,7 @@
 			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					if($("#receiptList").find("tr").length>0) {
+					/*if($("#receiptList").find("tr").length>0) {
 						var totalReceiptAmount = 0;
 						$("input[id$='receiptAmount']").each(function(){
 							totalReceiptAmount = totalReceiptAmount + parseFloat($(this).val());
@@ -18,7 +18,7 @@
 							top.$.jBox.tip('账务交易总金额与收据总金额不相等,请重新到账.','warning');
 							return false;
 						}
-					}
+					}*/
 					loading('正在提交，请稍等...');
 					form.submit();
 				},

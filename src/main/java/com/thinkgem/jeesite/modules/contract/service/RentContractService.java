@@ -267,7 +267,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	public Page<RentContract> findPage(Page<RentContract> page, RentContract rentContract) {
 		return super.findPage(page, rentContract);
 	}
-	
+
 	public Page<RentContract> findContractList(Page<RentContract> page, RentContract rentContract) {
 		rentContract.setPage(page);
 		page.setList(dao.findContractList(rentContract));
@@ -543,7 +543,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				contractTenantDao.insert(contractTenant);
 			}
 		}
-		
+
 		ContractTenant delContractTenant2 = new ContractTenant();
 		delContractTenant2.setAgreementChangeId(id);// 入住的 变更协议
 		contractTenantDao.delete(delContractTenant2);
@@ -688,28 +688,31 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				room.setUpdateDate(new Date());
 				roomDao.update(room);
 			}
+
 			// 同时更新该房间所属房屋的状态
-			House h = houseDao.get(room.getHouse().getId());
-			Room queryRoom = new Room();
-			queryRoom.setHouse(h);
-			List<Room> roomsOfHouse = roomDao.findList(queryRoom);
-			if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-				int rentedRoomCount = 0;
-				for (Room rentedRoom : roomsOfHouse) {
-					if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
-						rentedRoomCount = rentedRoomCount + 1;
+			if (room != null && room.getHouse() != null) {
+				House h = houseDao.get(room.getHouse().getId());
+				Room queryRoom = new Room();
+				queryRoom.setHouse(h);
+				List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+				if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+					int rentedRoomCount = 0;
+					for (Room rentedRoom : roomsOfHouse) {
+						if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
+							rentedRoomCount = rentedRoomCount + 1;
+						}
 					}
+					String updatedHouseSts = "";
+					if (rentedRoomCount < roomsOfHouse.size()) {
+						updatedHouseSts = "3";// 房屋为部分出租状态
+					} else if (rentedRoomCount == roomsOfHouse.size()) {
+						updatedHouseSts = "4";// 房屋为完全出租
+					}
+					h.setHouseStatus(updatedHouseSts);
+					h.setUpdateBy(UserUtils.getUser());
+					h.setUpdateDate(new Date());
+					houseDao.update(h);
 				}
-				String updatedHouseSts = "";
-				if (rentedRoomCount < roomsOfHouse.size()) {
-					updatedHouseSts = "3";// 房屋为部分出租状态
-				} else if (rentedRoomCount == roomsOfHouse.size()) {
-					updatedHouseSts = "4";// 房屋为完全出租
-				}
-				h.setHouseStatus(updatedHouseSts);
-				h.setUpdateBy(UserUtils.getUser());
-				h.setUpdateDate(new Date());
-				houseDao.update(h);
 			}
 		}
 

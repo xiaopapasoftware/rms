@@ -30,12 +30,12 @@
 			<li><label style="width:120px;">出租合同：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
-			<li><label style="width:120px;">电费缴纳开始时间：</label>
+			<li><label style="width:120px;">${normalFee.type}费缴纳开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${normalFee.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
 			</li>
-			<li><label style="width:120px;">电费缴纳开始时间：</label>
+			<li><label style="width:120px;">${normalFee.type}费缴纳结束时间：</label>
 				<input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${normalFee.endDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
@@ -57,7 +57,7 @@
 				<th>出租合同</th>
 				<th>结算类型</th>
 				<th>${normalFee.type}费缴纳开始时间</th>
-				<th>${normalFee.type}费缴纳开始时间</th>
+				<th>${normalFee.type}费缴纳结束时间</th>
 				<th>金额</th>
 				<th>结算状态</th>
 				<th>更新时间</th>
