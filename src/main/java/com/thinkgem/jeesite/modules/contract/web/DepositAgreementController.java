@@ -87,9 +87,9 @@ public class DepositAgreementController extends BaseController {
 		model.addAttribute("projectList", projectList);
 
 		if (null != depositAgreement.getPropertyProject()) {
-			Building building = new Building();
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(depositAgreement.getPropertyProject().getId());
+			Building building = new Building();
 			building.setPropertyProject(propertyProject);
 			List<Building> buildingList = buildingService.findList(building);
 			model.addAttribute("buildingList", buildingList);
@@ -104,10 +104,10 @@ public class DepositAgreementController extends BaseController {
 			model.addAttribute("houseList", houseList);
 		}
 
-		if (null != depositAgreement.getRoom()) {
+		if (null != depositAgreement.getHouse()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(depositAgreement.getRoom().getId());
+			house.setId(depositAgreement.getHouse().getId());
 			room.setHouse(house);
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);

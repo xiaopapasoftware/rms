@@ -135,19 +135,24 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">楼宇：</label>
+			<li>
+				<label style="width:120px;">楼宇：</label>
 				<form:select path="building.id" class="input-medium" style="width:200px;" onchange="buildingChange()">
 					<form:option value="" label="全部"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
+					
 			<li><label style="width:120px;">房屋：</label>
 				<form:select path="house.id" class="input-medium" style="width:200px;" onchange="houseChange()">
 					<form:option value="" label="全部"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">房间：</label>
 				<form:select path="room.id" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
+					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">定金协议编号：</label>

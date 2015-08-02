@@ -114,9 +114,9 @@ public class RentContractController extends BaseController {
 		model.addAttribute("projectList", projectList);
 
 		if (null != rentContract.getPropertyProject()) {
-			Building building = new Building();
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(rentContract.getPropertyProject().getId());
+			Building building = new Building();
 			building.setPropertyProject(propertyProject);
 			List<Building> buildingList = buildingService.findList(building);
 			model.addAttribute("buildingList", buildingList);
@@ -131,10 +131,10 @@ public class RentContractController extends BaseController {
 			model.addAttribute("houseList", houseList);
 		}
 
-		if (null != rentContract.getRoom()) {
+		if (null != rentContract.getHouse()) {
 			Room room = new Room();
 			House house = new House();
-			house.setId(rentContract.getRoom().getId());
+			house.setId(rentContract.getHouse().getId());
 			room.setHouse(house);
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);
