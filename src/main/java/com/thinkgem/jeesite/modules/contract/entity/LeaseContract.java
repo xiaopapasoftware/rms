@@ -30,6 +30,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	private Building building;		// 楼宇
 	private House house;		// 房屋
 	private Remittancer remittancer;		// 汇款人
+	private String contractCode; 		// 合同编号
 	private String contractName;		// 承租合同名称
 	private Date effectiveDate;		// 合同生效时间
 	private Date firstRemittanceDate;		// 首次打款日期
@@ -98,7 +99,13 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 	public void setRemittancer(Remittancer remittancer) {
 		this.remittancer = remittancer;
 	}
-	
+	public String getContractCode() {
+		return contractCode;
+	}
+
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
 	@Length(min=1, max=100, message="承租合同名称长度必须介于 1 和 100 之间")
 	public String getContractName() {
 		return contractName;

@@ -120,7 +120,7 @@ public class DepositAgreementController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(DepositAgreement depositAgreement, Model model) {
 		model.addAttribute("depositAgreement", depositAgreement);
-
+		depositAgreement.setAgreementCode("D" + StringUtils.getSysJournalNo(12, true));
 		if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
 			depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
 		}
@@ -226,6 +226,7 @@ public class DepositAgreementController extends BaseController {
 		rentContract.setTenantList(depositAgreement.getTenantList());
 		rentContract.setRemarks(depositAgreement.getRemarks());
 		rentContract.setAgreementId(depositAgreement.getId());
+		rentContract.setContractCode("DR" + StringUtils.getSysJournalNo(12, true));
 		model.addAttribute("rentContract", rentContract);
 
 		if (null != rentContract.getPropertyProject()) {
@@ -254,7 +255,7 @@ public class DepositAgreementController extends BaseController {
 			List<Room> roomList = roomServie.findList(room);
 			model.addAttribute("roomList", roomList);
 		}
-		
+
 		model.addAttribute("partnerList", partnerService.findList(new Partner()));
 
 		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));

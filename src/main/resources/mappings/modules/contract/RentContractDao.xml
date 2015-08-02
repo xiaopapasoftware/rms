@@ -4,6 +4,7 @@
     
 	<sql id="rentContractColumns">
 		a.id AS "id",
+		a.contract_code AS "contractCode",
 		a.contract_name AS "contractName",
 		a.agreement_id AS "agreementId",
 		tda.agreement_name AS "refAgreementName",
@@ -112,6 +113,12 @@
 		<include refid="rentContractJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractCode != null and contractCode != ''">
+				AND a.contract_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
+			</if>
 			<if test="contractName != null and contractName != ''">
 				AND a.contract_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
@@ -191,6 +198,7 @@
 			id,
 			agreement_id,
 			contract_id,
+			contract_code,
 			contract_name,
 			rent_mode,
 			property_project_id,
@@ -238,6 +246,7 @@
 			#{id},
 			#{agreementId},
 			#{contractId},
+			#{contractCode},
 			#{contractName},
 			#{rentMode},
 			#{propertyProject.id},
@@ -288,6 +297,7 @@
 		UPDATE t_rent_contract SET 	
 		    agreement_id = #{agreementId},
 			contract_id = #{contractId},
+			contract_code = #{contractCode},
 			contract_name = #{contractName},
 			rent_mode = #{rentMode},
 			property_project_id = #{propertyProject.id},

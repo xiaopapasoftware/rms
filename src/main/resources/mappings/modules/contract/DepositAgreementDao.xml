@@ -10,6 +10,7 @@
 		a.room_id AS "room.id",
 		a.rent_mode AS "rentMode",
 		a.user_id AS "user.id",
+		a.agreement_code AS "agreementCode",
 		a.agreement_name AS "agreementName",
 		a.start_date AS "startDate",
 		a.expired_date AS "expiredDate",
@@ -80,6 +81,12 @@
 			<if test="rentMode != null and rentMode != ''">
 				AND a.rent_mode = #{rentMode}
 			</if>
+			<if test="agreementCode != null and agreementCode != ''">
+				AND a.agreement_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{agreementCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{agreementCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{agreementCode},'%')</if>
+			</if>
 			<if test="agreementName != null and agreementName != ''">
 				AND a.agreement_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{agreementName}||'%'</if>
@@ -130,6 +137,7 @@
 			room_id,
 			rent_mode,
 			user_id,
+			agreement_code,
 			agreement_name,
 			start_date,
 			expired_date,
@@ -155,6 +163,7 @@
 			#{room.id},
 			#{rentMode},
 			#{user.id},
+			#{agreementCode},
 			#{agreementName},
 			#{startDate},
 			#{expiredDate},
@@ -183,6 +192,7 @@
 			room_id = #{room.id},
 			rent_mode = #{rentMode},
 			user_id = #{user.id},
+			agreement_code = #{agreementCode},
 			agreement_name = #{agreementName},
 			start_date = #{startDate},
 			expired_date = #{expiredDate},

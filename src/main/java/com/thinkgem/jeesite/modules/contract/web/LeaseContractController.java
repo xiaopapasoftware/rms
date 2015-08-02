@@ -121,7 +121,7 @@ public class LeaseContractController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(LeaseContract leaseContract, Model model) {
 		model.addAttribute("leaseContract", leaseContract);
-
+		leaseContract.setContractCode("L" + StringUtils.getSysJournalNo(12, true));
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
 

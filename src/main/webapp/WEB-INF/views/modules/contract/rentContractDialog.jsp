@@ -118,9 +118,9 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<form:hidden path="contractStatus"/>
 		<ul class="ul-form">
-			<!-- <li><label>原出租合同：</label>
-				<form:input path="contractId" htmlEscape="false" maxlength="64" class="input-medium"/>
-			</li> -->
+			<li><label style="width:120px;">合同编号：</label>
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
+			</li>
 			<li><label style="width:120px;">合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
 			</li>
@@ -191,6 +191,7 @@
 		<thead>
 			<tr>
 				<th></th>
+				<th>合同编号</th>
 				<th>合同名称</th>
 				<th>出租方式</th>
 				<th>物业项目</th>
@@ -213,6 +214,9 @@
 			<tr>
 				<td>
 					<input type="radio" name="rentContractId" attr-name="${rentContract.contractName}" value="${rentContract.id}"/>
+				</td>
+				<td>
+					${rentContract.contractCode}
 				</td>
 				<td>
 					${rentContract.contractName}

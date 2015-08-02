@@ -35,6 +35,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	private Room room; // 房间
 	private String rentMode; // 出租方式
 	private User user; // 销售
+	private String agreementCode;//定金协议编号
 	private String agreementName; // 定金协议名称
 	private Date startDate; // 协议开始时间
 	private Date expiredDate; // 协议结束时间
@@ -120,6 +121,14 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 		this.user = user;
 	}
 
+	public String getAgreementCode() {
+		return agreementCode;
+	}
+
+	public void setAgreementCode(String agreementCode) {
+		this.agreementCode = agreementCode;
+	}
+	
 	@Length(min = 1, max = 100, message = "定金协议名称长度必须介于 1 和 100 之间")
 	public String getAgreementName() {
 		return agreementName;

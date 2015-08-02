@@ -133,6 +133,9 @@
 					<form:options items="${fns:getDictList('contract_sign_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label style="width:120px;">合同编号：</label>
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
+			</li>
 			<li><label style="width:120px;">合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
 			</li>
@@ -205,6 +208,7 @@
 				<th>原定金协议名称</th>
 				<th>合同来源</th>
 				<th>合同签订类型</th>
+				<th>合同编号</th>
 				<th>合同名称</th>
 				<th>出租方式</th>
 				<th>物业项目</th>
@@ -241,6 +245,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
+				</td>
+				<td>
+					${rentContract.contractCode}
 				</td>
 				<td>
 					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">

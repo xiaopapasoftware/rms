@@ -13,6 +13,7 @@
 				<th>原定金协议名称</th>
 				<th>合同来源</th>
 				<th>合同签订类型</th>
+				<th>合同编号</th>
 				<th>合同名称</th>
 				<th>出租方式</th>
 				<th>物业项目</th>
@@ -44,6 +45,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
+				</td>
+				<td>
+					${rentContract.contractCode}
 				</td>
 				<td>
 					${rentContract.contractName}

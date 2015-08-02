@@ -32,6 +32,7 @@ public class RentContract extends DataEntity<RentContract> {
 	private static final long serialVersionUID = 1L;
 	private String agreementId; // 原定金协议
 	private String contractId; // 原出租合同
+	private String contractCode; // 合同编号
 	private String contractName; // 合同名称
 	private String rentMode; // 出租方式
 	private PropertyProject propertyProject; // 物业项目
@@ -129,7 +130,13 @@ public class RentContract extends DataEntity<RentContract> {
 	public void setContractId(String contractId) {
 		this.contractId = contractId;
 	}
+	public String getContractCode() {
+		return contractCode;
+	}
 
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
 	@Length(min = 1, max = 100, message = "合同名称长度必须介于 1 和 100 之间")
 	public String getContractName() {
 		return contractName;

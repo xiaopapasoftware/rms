@@ -114,41 +114,18 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<!-- <li><label style="width:100px;">汇款人：</label>
-				<form:input path="remittancer.userName" htmlEscape="false" maxlength="64" class="input-medium"/>
-			</li> -->
+			<li><label style="width:100px;">承租合同编号：</label>
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li><label style="width:100px;">承租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<!-- <li><label style="width:100px;">合同生效时间：</label>
-				<input name="effectiveDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</li>
-			<li><label style="width:100px;">首次打款日期：</label>
-				<input name="firstRemittanceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</li> -->
 			<li><label style="width:100px;">打款日期：</label>
 				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<!-- <li><label style="width:100px;">合同过期时间：</label>
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</li>
-			<li><label style="width:100px;">合同签订时间：</label>
-				<input name="contractDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			</li>
-			<li><label style="width:100px;">承租押金：</label>
-				<form:input path="deposit" htmlEscape="false" class="input-medium"/>
-			</li> -->
 			<li><label style="width:100px;">合同审核状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
@@ -163,6 +140,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>承租合同编号</th>
 				<th>承租合同名称</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
@@ -183,6 +161,9 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="leaseContract">
 			<tr>
+				<td>
+					${leaseContract.contractCode}
+				</td>
 				<td><a title="查看详细" href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
 					${leaseContract.contractName}
 				</a></td>

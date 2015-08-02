@@ -150,6 +150,9 @@
 					<form:option value="" label="全部"/>
 				</form:select>
 			</li>
+			<li><label style="width:120px;">定金协议编号：</label>
+				<form:input path="agreementCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
+			</li>
 			<li><label style="width:120px;">定金协议名称：</label>
 				<form:input path="agreementName" htmlEscape="false" maxlength="100" class="input-medium" style="width:185px;"/>
 			</li>
@@ -173,6 +176,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>定金协议编号</th>
 				<th>定金协议名称</th>
 				<th>出租方式</th>
 				<th>物业项目</th>
@@ -198,6 +202,9 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="depositAgreement">
 			<tr>
+				<td>
+					${depositAgreement.agreementCode}
+				</a>
 				<td><a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">
 					${depositAgreement.agreementName}
 				</a></td>

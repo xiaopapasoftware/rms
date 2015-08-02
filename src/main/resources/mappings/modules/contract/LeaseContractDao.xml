@@ -8,6 +8,7 @@
 		a.building_id AS "building.id",
 		a.house_id AS "house.id",
 		a.remittancer_id AS "remittancer.id",
+		a.contract_code AS "contractCode",
 		a.contract_name AS "contractName",
 		a.effective_date AS "effectiveDate",
 		a.first_remittance_date AS "firstRemittanceDate",
@@ -83,6 +84,12 @@
 			<if test="house != null and house.id != null and house.id != ''">
 				AND a.house_id = #{house.id}
 			</if>
+			<if test="contractCode != null and contractCode != ''">
+				AND a.contract_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
+			</if>
 			<if test="contractName != null and contractName != ''">
 				AND a.contract_name LIKE 
 					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
@@ -131,6 +138,7 @@
 			building_id,
 			house_id,
 			remittancer_id,
+			contract_code,
 			contract_name,
 			effective_date,
 			first_remittance_date,
@@ -152,6 +160,7 @@
 			#{building.id},
 			#{house.id},
 			#{remittancer.id},
+			#{contractCode},
 			#{contractName},
 			#{effectiveDate},
 			#{firstRemittanceDate},
@@ -176,6 +185,7 @@
 			building_id = #{building.id},
 			house_id = #{house.id},
 			remittancer_id = #{remittancer.id},
+			contract_code = #{contractCode},
 			contract_name = #{contractName},
 			effective_date = #{effectiveDate},
 			first_remittance_date = #{firstRemittanceDate},

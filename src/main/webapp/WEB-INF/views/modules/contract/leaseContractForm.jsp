@@ -232,6 +232,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">承租合同编号：</label>
+			<div class="controls">
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">承租合同名称：</label>
 			<div class="controls">
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
