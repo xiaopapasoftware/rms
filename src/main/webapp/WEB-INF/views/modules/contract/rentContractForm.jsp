@@ -23,49 +23,102 @@
 		    });
 			var idVal = $("#id").val();
 			if(idVal == null || idVal == "" || idVal == undefined){//新增，而不是修改
-				var curDate = new Date();			
-				var year = curDate.getFullYear();
-				var month = curDate.getMonth() + 1;
-				if(parseFloat(month)<10){
-					month = "0" + "" + month;
+				var signtype = $("#signType").val();//签约类型
+				if(signtype == "1" || signtype == "2"){//1=正常续签，2=逾期续签
+ 					var oriEndDate = $("#oriEndDate").val();
+					var oriEndDate = new Date(Date.parse(oriEndDate));
+					oriEndDate.setDate(oriEndDate.getDate()+1);//原合同结束日期基础上加一天
+					
+					var year = oriEndDate.getFullYear();
+					var month = oriEndDate.getMonth() + 1;
+					if(parseFloat(month)<10){
+						month = "0" + "" + month;
+					}
+					var day = oriEndDate.getDate();
+					if(parseFloat(day)<10){
+						day = "0" + "" + day;
+					}
+					
+					var continueStartDateStyle = year + "-" + month + "-" + day;//原合同结束日期+1
+					
+					$("input[name='signDate']").val(continueStartDateStyle);//合同签订时间默认为原合同结束日期的后一天
+					$("input[name='startDate']").val(continueStartDateStyle);//合同生效时间默认为原合同结束日期的后一天
+					
+					//合同过期时间默认为一年后的当天时间减去前一天
+					oriEndDate.setFullYear(oriEndDate.getFullYear()+1);//合同过期时间默认为一年后的日期减一天
+					oriEndDate.setDate(oriEndDate.getDate()-1);
+					var year2 = oriEndDate.getFullYear();
+					var month2 = oriEndDate.getMonth() + 1;
+					if(parseFloat(month2)<10){
+						month2 = "0" + "" + month2;
+					}
+					var day2 = oriEndDate.getDate();
+					if(parseFloat(day2)<10){
+						day2 = "0" + "" + day2;
+					}
+					var curDateStyle2 = year2 + "-" + month2 + "-" + day2;
+					$("input[name='expiredDate']").val(curDateStyle2);
+					
+					//合同续租提醒时间默认为结束时间前1个月
+					oriEndDate.setMonth(oriEndDate.getMonth() - 1);
+					var year3 = oriEndDate.getFullYear();
+					var month3 = oriEndDate.getMonth() + 1;
+					if(parseFloat(month3)<10){
+						month3 = "0" + "" + month3;
+					}
+					var day3 = oriEndDate.getDate();
+					if(parseFloat(day3)<10){
+						day3 = "0" + "" + day3;
+					}
+					var curDateStyle3 = year3 + "-" + month3 + "-" + day3;
+					$("input[name='remindTime']").val(curDateStyle3);
+					
+				}else{//如果是新签
+					var curDate = new Date();
+					var year = curDate.getFullYear();
+					var month = curDate.getMonth() + 1;
+					if(parseFloat(month)<10){
+						month = "0" + "" + month;
+					}
+					var day = curDate.getDate();
+					if(parseFloat(day)<10){
+						day = "0" + "" + day;
+					}
+					var curDateStyle = year + "-" + month + "-" + day;//当前时间
+					
+					$("input[name='signDate']").val(curDateStyle);//合同签订时间默认为当天时间
+					$("input[name='startDate']").val(curDateStyle);//合同生效时间默认为当天时间
+					
+					//合同过期时间默认为一年后的当天时间减去前一天
+					curDate.setFullYear(curDate.getFullYear()+1);
+					curDate.setDate(curDate.getDate()-1);
+					var year2 = curDate.getFullYear();
+					var month2 = curDate.getMonth() + 1;
+					if(parseFloat(month2)<10){
+						month2 = "0" + "" + month2;
+					}
+					var day2 = curDate.getDate();
+					if(parseFloat(day2)<10){
+						day2 = "0" + "" + day2;
+					}
+					var curDateStyle2 = year2 + "-" + month2 + "-" + day2;
+					$("input[name='expiredDate']").val(curDateStyle2);
+					
+					//合同续租提醒时间默认为结束时间前1个月
+					curDate.setMonth(curDate.getMonth() - 1);
+					var year3 = curDate.getFullYear();
+					var month3 = curDate.getMonth() + 1;
+					if(parseFloat(month3)<10){
+						month3 = "0" + "" + month3;
+					}
+					var day3 = curDate.getDate();
+					if(parseFloat(day3)<10){
+						day3 = "0" + "" + day3;
+					}
+					var curDateStyle3 = year3 + "-" + month3 + "-" + day3;
+					$("input[name='remindTime']").val(curDateStyle3);
 				}
-				var day = curDate.getDate();
-				if(parseFloat(day)<10){
-					day = "0" + "" + day;
-				}
-				var curDateStyle = year + "-" + month + "-" + day;//当前时间
-				
-				$("input[name='signDate']").val(curDateStyle);//合同签订时间默认为当天时间
-				$("input[name='startDate']").val(curDateStyle);//合同生效时间默认为当天时间
-				
-				curDate.setFullYear(curDate.getFullYear()+1);
-				curDate.setDate(curDate.getDate()-1);
-				var year2 = curDate.getFullYear();
-				var month2 = curDate.getMonth() + 1;
-				if(parseFloat(month2)<10){
-					month2 = "0" + "" + month2;
-				}
-				var day2 = curDate.getDate();
-				if(parseFloat(day2)<10){
-					day2 = "0" + "" + day2;
-				}
-				var curDateStyle2 = year2 + "-" + month2 + "-" + day2;
-				$("input[name='expiredDate']").val(curDateStyle2);//合同过期时间默认为一年后的当天时间减去前一天
-				
-				curDate.setMonth(curDate.getMonth() - 1);
-				var year3 = curDate.getFullYear();
-				var month3 = curDate.getMonth() + 1;
-				if(parseFloat(month3)<10){
-					month3 = "0" + "" + month3;
-				}
-				var day3 = curDate.getDate();
-				if(parseFloat(day3)<10){
-					day3 = "0" + "" + day3;
-				}
-				var curDateStyle3 = year3 + "-" + month3 + "-" + day3;
-				$("input[name='remindTime']").val(curDateStyle3);//合同续租提醒时间默认为结束时间前1个月
 			}
-			
 		});
 		function submitData() {
 			$("#inputForm").validate({
@@ -265,6 +318,7 @@
 		<form:hidden path="saveSource" value="0"/>
 		<form:hidden path="contractId"/>
 		<form:hidden path="signType"/>
+		<form:hidden path="oriEndDate"/><!-- 如是续签，则原合同的结束日期 -->
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">合同来源：</label>

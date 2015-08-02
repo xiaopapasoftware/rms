@@ -7,7 +7,8 @@
 		a.rent_contract_id AS "rentContract.id",
 		a.agreement_change_name AS "agreementChangeName",
 		a.start_date AS "startDate",
-		a.rent_mode AS "rentMode",
+		a.ren_months AS "renMonths",
+		a.deposit_months AS "depositMonths",
 		a.agreement_status AS "agreementStatus",
 		a.user_id AS "user.id",
 		a.create_by AS "createBy.id",
@@ -54,9 +55,6 @@
 			<if test="startDate != null and startDate != ''">
 				AND a.start_date = #{startDate}
 			</if>
-			<if test="rentMode != null and rentMode != ''">
-				AND a.rent_mode = #{rentMode}
-			</if>
 			<if test="agreementStatus != null and agreementStatus != ''">
 				AND a.agreement_status = #{agreementStatus}
 			</if>
@@ -98,7 +96,8 @@
 			rent_contract_id,
 			agreement_change_name,
 			start_date,
-			rent_mode,
+			ren_months,
+			deposit_months,
 			agreement_status,
 			user_id,
 			create_by,
@@ -112,7 +111,8 @@
 			#{rentContract.id},
 			#{agreementChangeName},
 			#{startDate},
-			#{rentMode},
+			#{renMonths},
+			#{depositMonths},
 			#{agreementStatus},
 			#{user.id},
 			#{createBy.id},
@@ -129,7 +129,8 @@
 			rent_contract_id = #{rentContract.id},
 			agreement_change_name = #{agreementChangeName},
 			start_date = #{startDate},
-			rent_mode = #{rentMode},
+			ren_months = #{renMonths},
+			deposit_months = #{depositMonths},
 			agreement_status = #{agreementStatus},
 			user_id = #{user.id},
 			update_by = #{updateBy.id},

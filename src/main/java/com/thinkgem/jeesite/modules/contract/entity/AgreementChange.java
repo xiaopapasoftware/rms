@@ -27,7 +27,8 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	private RentContract rentContract;		// 出租合同
 	private String agreementChangeName;		// 合同变更协议名称
 	private Date startDate;		// 协议生效时间
-	private String rentMode;		// 出租方式
+	private Integer renMonths; // 首付房租月数
+	private Integer depositMonths; // 房租押金月数
 	private String agreementStatus;		// 协议审核状态
 	private User user;		// 核算人
 	
@@ -74,16 +75,22 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
-	
-	@Length(min=1, max=64, message="出租方式长度必须介于 1 和 64 之间")
-	public String getRentMode() {
-		return rentMode;
+	public Integer getRenMonths() {
+		return renMonths;
 	}
 
-	public void setRentMode(String rentMode) {
-		this.rentMode = rentMode;
+	public void setRenMonths(Integer renMonths) {
+		this.renMonths = renMonths;
 	}
-	
+
+	public Integer getDepositMonths() {
+		return depositMonths;
+	}
+
+	public void setDepositMonths(Integer depositMonths) {
+		this.depositMonths = depositMonths;
+	}
+
 	public String getAgreementStatus() {
 		return agreementStatus;
 	}
