@@ -47,7 +47,8 @@
 	  select t.*,ton.name as "ownerName",ton.cell_phone as "ownerCellPhone" from (
 		SELECT 
 			<include refid="leaseContractColumns"/>,th.owner_id,
-	  th.HOUSE_SPACE as "houseSpace",th.HOUSE_STRUCTURE as "houseStructure" 
+	  th.HOUSE_SPACE as "houseSpace",th.ori_struc_room_num as "oriStrucRoomNum",
+	  th.ori_struc_cusspac_num as "oriStrucCusspacNum",th.ori_struc_washro_num as "oriStrucWashroNum" 
 		FROM t_lease_contract a
 		<include refid="leaseContractJoins"/>
 		<where>

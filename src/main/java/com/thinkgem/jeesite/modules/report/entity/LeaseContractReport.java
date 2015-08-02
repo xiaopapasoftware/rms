@@ -32,6 +32,10 @@ public class LeaseContractReport extends DataEntity<LeaseContractReport> {
 	private String houseStructure;//房屋原始结构
 	private String houseSpace;//房屋原始面积
 	
+	private Integer oriStrucRoomNum;// 原始房屋结构-房数
+	private Integer oriStrucCusspacNum;// 原始房屋结构-厅数
+	private Integer oriStrucWashroNum;// 原始房屋结构-卫数
+	
 	public PropertyProject getPropertyProject() {
 		return propertyProject;
 	}
@@ -143,7 +147,14 @@ public class LeaseContractReport extends DataEntity<LeaseContractReport> {
 	}
 	@ExcelField(title="房屋原始结构", align=2, sort=6)
 	public String getHouseStructure() {
-		return houseStructure;
+		String str = "";
+		if(null != oriStrucRoomNum)
+			str += oriStrucRoomNum+"房";
+		if(null != oriStrucCusspacNum)
+			str += oriStrucCusspacNum+"厅";
+		if(null != oriStrucWashroNum)
+			str += oriStrucWashroNum+"卫";
+		return str;
 	}
 	public void setHouseStructure(String houseStructure) {
 		this.houseStructure = houseStructure;
