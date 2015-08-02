@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #houseStructure, #decorationStructure").keypress(function(event) {
+			$("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #oriStrucRoomNum, #oriStrucCusspacNum,#oriStrucWashroNum,#decoraStrucRoomNum,#decoraStrucCusspacNum,#decoraStrucWashroNum").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
@@ -88,6 +88,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">房屋编码：</label>
+			<div class="controls">
+				<form:input path="houseCode" htmlEscape="false" maxlength="100" class="input-xlarge required" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">房屋号：</label>
 			<div class="controls">
 				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
@@ -111,8 +117,12 @@
 		<div class="control-group">
 			<label class="control-label">原始房屋结构：</label>
 			<div class="controls">
-				<form:input path="houseStructure" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<form:input path="oriStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">房 </font></span>
+				<form:input path="oriStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">厅 </font></span>
+				<form:input path="oriStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">卫</font></span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -124,7 +134,12 @@
 		<div class="control-group">
 			<label class="control-label">装修房屋结构：</label>
 			<div class="controls">
-				<form:input path="decorationStructure" htmlEscape="false" maxlength="100" class="input-xlarge "/>
+				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">房 </font></span>
+				<form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">厅 </font></span>
+				<form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">卫</font></span>
 			</div>
 		</div>
 		<div class="control-group">

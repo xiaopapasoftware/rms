@@ -82,6 +82,10 @@
 				</form:select>
 			</li>
 			<li>
+				<label>房屋编码：</label> 
+				<form:input path="houseCode" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
 				<label>房屋号：</label> 
 				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
@@ -106,6 +110,7 @@
 				<th>物业项目</th>
 				<th>楼宇</th>
 				<th>业主</th>
+				<th>房屋编码</th>
 				<th>房屋号</th>
 				<th>房屋状态</th>
 				<th>楼层</th>
@@ -129,13 +134,14 @@
 					<td>${house.propertyProject.projectName}</td>
 					<td>${house.building.buildingName}</td>
 					<td>${house.owner.name}</td>
+					<td>${house.houseCode}</td>
 					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
 					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>
 					<td>${house.houseFloor}</td>
 					<td>${house.houseSpace}</td>
 					<td>${house.decorationSpance}</td>
-					<td>${house.houseStructure}</td>
-					<td>${house.decorationStructure}</td>
+					<td>${house.oriStrucRoomNum}房${house.oriStrucCusspacNum}厅${house.oriStrucWashroNum}卫</td>
+					<td>${house.decoraStrucRoomNum}房${house.decoraStrucCusspacNum}厅${house.decoraStrucWashroNum}卫</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>
@@ -144,7 +150,11 @@
 					<shiro:hasPermission name="inventory:house:edit">
 						<td>
 							<a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
+						</td>
+						<td>	
 							<a href="${ctx}/inventory/house/delete?id=${house.id}" onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a>
+						</td>
+						<td>
 							<c:if test="${house.houseStatus eq '0'}">
 								<a href="#" onclick="finishDirect('${house.id}');">装修完成</a>
 							</c:if>

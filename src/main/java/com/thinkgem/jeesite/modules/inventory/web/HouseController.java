@@ -102,7 +102,7 @@ public class HouseController extends BaseController {
 	@RequiresPermissions("inventory:house:view")
 	@RequestMapping(value = "form")
 	public String form(House house, Model model) {
-
+		house.setHouseCode(StringUtils.getSysJournalNo(12, true));
 		model.addAttribute("house", house);
 		if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 			PropertyProject pp = new PropertyProject();
@@ -115,9 +115,10 @@ public class HouseController extends BaseController {
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
 		return "modules/inventory/houseForm";
 	}
-	
+
 	@RequestMapping(value = "add")
 	public String add(House house, Model model) {
+		house.setHouseCode(StringUtils.getSysJournalNo(12, true));
 		model.addAttribute("house", house);
 		if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 			List<Building> list = new ArrayList<Building>();
@@ -161,10 +162,14 @@ public class HouseController extends BaseController {
 				upHouse.setHouseNo(house.getHouseNo());
 				upHouse.setAttachmentPath(house.getAttachmentPath());
 				upHouse.setDecorationSpance(house.getDecorationSpance());
-				upHouse.setDecorationStructure(house.getDecorationStructure());
+				upHouse.setOriStrucCusspacNum(house.getOriStrucCusspacNum());
+				upHouse.setOriStrucRoomNum(house.getOriStrucRoomNum());
+				upHouse.setOriStrucWashroNum(house.getOriStrucWashroNum());
+				upHouse.setDecoraStrucCusspacNum(house.getDecoraStrucCusspacNum());
+				upHouse.setDecoraStrucRoomNum(house.getDecoraStrucRoomNum());
+				upHouse.setDecoraStrucWashroNum(house.getDecoraStrucWashroNum());
 				upHouse.setHouseFloor(house.getHouseFloor());
 				upHouse.setHouseSpace(house.getHouseSpace());
-				upHouse.setHouseStructure(house.getHouseStructure());
 				upHouse.setRemarks(house.getRemarks());
 				houseService.save(upHouse);
 			} else {
@@ -196,7 +201,7 @@ public class HouseController extends BaseController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "ajaxSave")
 	@ResponseBody
 	public String ajaxSave(House house, Model model, RedirectAttributes redirectAttributes) {
@@ -215,13 +220,13 @@ public class HouseController extends BaseController {
 			model.addAttribute("listOwner", ownerService.findList(new Owner()));
 			jsonObject.put("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
 		} else {
-			if(StringUtils.isBlank(house.getHouseStatus()))
+			if (StringUtils.isBlank(house.getHouseStatus()))
 				house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
-			String id= houseService.saveAndReturnId(house);
+			String id = houseService.saveAndReturnId(house);
 			jsonObject.put("id", id);
 			jsonObject.put("name", house.getHouseNo());
 		}
-		
+
 		return jsonObject.toString();
 	}
 

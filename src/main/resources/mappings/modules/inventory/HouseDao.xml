@@ -10,12 +10,17 @@
 		tb.building_name AS "building.buildingName",
 		a.owner_id AS "owner.id",
 		towner.name AS "owner.name",
+		a.house_code AS "houseCode",
 		a.house_no AS "houseNo",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
 		a.decoration_spance AS "decorationSpance",
-		a.house_structure AS "houseStructure",
-		a.decoration_structure AS "decorationStructure",
+		a.ORI_STRUC_ROOM_NUM  AS "oriStrucRoomNum",
+		a.ORI_STRUC_CUSSPAC_NUM AS "oriStrucCusspacNum",
+		a.ORI_STRUC_WASHRO_NUM AS "oriStrucWashroNum",
+		a.DECORA_STRUC_ROOM_NUM  AS "decoraStrucRoomNum",
+		a.DECORA_STRUC_CUSSPAC_NUM AS "decoraStrucCusspacNum",
+		a.DECORA_STRUC_WASHRO_NUM AS "decoraStrucWashroNum",
 		a.house_status AS "houseStatus",
 		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
@@ -67,6 +72,12 @@
 					<if test="dbName == 'mssql'">'%'+#{houseNo}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{houseNo},'%')</if>
 			</if>
+			<if test="houseCode != null and houseCode != ''">
+				AND a.house_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{houseCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{houseCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{houseCode},'%')</if>
+			</if>
 			<if test="houseStatus != null and houseStatus != ''">
 				AND a.house_status = #{houseStatus}
 			</if>
@@ -109,12 +120,11 @@
 			a.building_id AS "building.id",
 			a.owner_id AS "owner.id",
 			a.house_no AS "houseNo",
+			a.house_code AS "houseCode",
 			a.house_status AS "houseStatus",
 			a.house_floor AS "houseFloor",
 			a.house_space AS "houseSpace",
-			a.decoration_spance AS "decorationSpance",
-			a.house_structure AS "houseStructure",
-			a.decoration_structure AS "decorationStructure"
+			a.decoration_spance AS "decorationSpance"
 		FROM t_house a	
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -130,12 +140,17 @@
 			property_project_id,
 			building_id,
 			owner_id,
+			house_code,
 			house_no,
 			house_floor,
 			house_space,
 			decoration_spance,
-			house_structure,
-			decoration_structure,
+			ORI_STRUC_ROOM_NUM,
+			ORI_STRUC_CUSSPAC_NUM,
+			ORI_STRUC_WASHRO_NUM,
+			DECORA_STRUC_ROOM_NUM,
+			DECORA_STRUC_CUSSPAC_NUM,
+			DECORA_STRUC_WASHRO_NUM,
 			house_status,
 			create_by,
 			create_date,
@@ -148,12 +163,17 @@
 			#{propertyProject.id},
 			#{building.id},
 			#{owner.id},
+			#{houseCode},
 			#{houseNo},
 			#{houseFloor},
 			#{houseSpace},
 			#{decorationSpance},
-			#{houseStructure},
-			#{decorationStructure},
+			#{oriStrucRoomNum},
+			#{oriStrucCusspacNum},
+			#{oriStrucWashroNum},
+			#{decoraStrucRoomNum},
+			#{decoraStrucCusspacNum},
+			#{decoraStrucWashroNum},
 			#{houseStatus},
 			#{createBy.id},
 			#{createDate},
@@ -169,12 +189,17 @@
 			property_project_id = #{propertyProject.id},
 			building_id = #{building.id},
 			owner_id = #{owner.id},
+			house_code = #{houseCode},
 			house_no = #{houseNo},
 			house_floor = #{houseFloor},
 			house_space = #{houseSpace},
 			decoration_spance = #{decorationSpance},
-			house_structure = #{houseStructure},
-			decoration_structure = #{decorationStructure},
+			ORI_STRUC_ROOM_NUM =  #{oriStrucRoomNum},
+			ORI_STRUC_CUSSPAC_NUM=  #{oriStrucCusspacNum},
+			ORI_STRUC_WASHRO_NUM=  #{oriStrucWashroNum},
+			DECORA_STRUC_ROOM_NUM=  #{decoraStrucRoomNum},
+			DECORA_STRUC_CUSSPAC_NUM=  #{decoraStrucCusspacNum},
+			DECORA_STRUC_WASHRO_NUM=  #{decoraStrucWashroNum},
 			<if test="houseStatus != null and houseStatus != ''">
 			 	house_status = #{houseStatus},
 			</if>

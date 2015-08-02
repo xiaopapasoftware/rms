@@ -22,15 +22,24 @@ public class House extends DataEntity<House> {
 	private PropertyProject propertyProject; // 物业项目
 	private Building building; // 楼宇
 	private Owner owner; // 业主
+	private String houseCode;//系统生成的唯一房屋编码
 	private String houseNo; // 房屋号
+	
 	private Integer houseFloor; // 楼层
 	private String houseSpace; // 原始建筑面积
 	private String decorationSpance; // 装修建筑面积
-	private String houseStructure; // 原始房屋结构
-	private String decorationStructure; // 装修房屋结构
+
+	private Integer oriStrucRoomNum;// 原始房屋结构-房数
+	private Integer oriStrucCusspacNum;// 原始房屋结构-厅数
+	private Integer oriStrucWashroNum;// 原始房屋结构-卫数
+
+	private Integer decoraStrucRoomNum;// 装修后房屋结构-房数
+	private Integer decoraStrucCusspacNum;// 装修后房屋结构-厅数
+	private Integer decoraStrucWashroNum;// 装修后房屋结构-卫数
+	
 	private String houseStatus; // 房屋状态
 	private String attachmentPath; // 房屋图片路径
-	
+
 	private String choose;
 
 	public House() {
@@ -67,7 +76,13 @@ public class House extends DataEntity<House> {
 	public void setOwner(Owner owner) {
 		this.owner = owner;
 	}
+	public String getHouseCode() {
+		return houseCode;
+	}
 
+	public void setHouseCode(String houseCode) {
+		this.houseCode = houseCode;
+	}
 	@Length(min = 1, max = 100, message = "房屋号长度必须介于 1 和 100 之间")
 	public String getHouseNo() {
 		return houseNo;
@@ -102,24 +117,6 @@ public class House extends DataEntity<House> {
 		this.decorationSpance = decorationSpance;
 	}
 
-	@Length(min = 0, max = 100, message = "原始房屋结构长度必须介于 0 和 100 之间")
-	public String getHouseStructure() {
-		return houseStructure;
-	}
-
-	public void setHouseStructure(String houseStructure) {
-		this.houseStructure = houseStructure;
-	}
-
-	@Length(min = 0, max = 100, message = "装修房屋结构长度必须介于 0 和 100 之间")
-	public String getDecorationStructure() {
-		return decorationStructure;
-	}
-
-	public void setDecorationStructure(String decorationStructure) {
-		this.decorationStructure = decorationStructure;
-	}
-
 	@Length(min = 1, max = 100, message = "房屋状态长度必须介于 1 和 100 之间")
 	public String getHouseStatus() {
 		return houseStatus;
@@ -143,4 +140,51 @@ public class House extends DataEntity<House> {
 	public void setChoose(String choose) {
 		this.choose = choose;
 	}
+
+	public Integer getOriStrucRoomNum() {
+		return oriStrucRoomNum;
+	}
+
+	public void setOriStrucRoomNum(Integer oriStrucRoomNum) {
+		this.oriStrucRoomNum = oriStrucRoomNum;
+	}
+
+	public Integer getOriStrucCusspacNum() {
+		return oriStrucCusspacNum;
+	}
+
+	public void setOriStrucCusspacNum(Integer oriStrucCusspacNum) {
+		this.oriStrucCusspacNum = oriStrucCusspacNum;
+	}
+	public Integer getOriStrucWashroNum() {
+		return oriStrucWashroNum;
+	}
+
+	public void setOriStrucWashroNum(Integer oriStrucWashroNum) {
+		this.oriStrucWashroNum = oriStrucWashroNum;
+	}
+	public Integer getDecoraStrucRoomNum() {
+		return decoraStrucRoomNum;
+	}
+
+	public void setDecoraStrucRoomNum(Integer decoraStrucRoomNum) {
+		this.decoraStrucRoomNum = decoraStrucRoomNum;
+	}
+
+	public Integer getDecoraStrucCusspacNum() {
+		return decoraStrucCusspacNum;
+	}
+
+	public void setDecoraStrucCusspacNum(Integer decoraStrucCusspacNum) {
+		this.decoraStrucCusspacNum = decoraStrucCusspacNum;
+	}
+
+	public Integer getDecoraStrucWashroNum() {
+		return decoraStrucWashroNum;
+	}
+
+	public void setDecoraStrucWashroNum(Integer decoraStrucWashroNum) {
+		this.decoraStrucWashroNum = decoraStrucWashroNum;
+	}
+
 }
