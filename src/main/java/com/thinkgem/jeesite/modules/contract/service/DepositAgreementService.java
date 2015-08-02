@@ -223,49 +223,90 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 
 	@Transactional(readOnly = false)
 	public void save(DepositAgreement depositAgreement) {
-		// depositAgreement.setAgreementBusiStatus("0");//待转合同
 		String id = super.saveAndReturnId(depositAgreement);
-		// 生成款项
-		PaymentTrans delPaymentTrans = new PaymentTrans();
-		delPaymentTrans.setTransId(id);
-		paymentTransDao.delete(delPaymentTrans);
 
-		if (null != depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate()
-				&& null != depositAgreement.getDepositAmount() && null != depositAgreement.getDepositAmount()) {
-			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType("1");// 定金协议
-			paymentTrans.setPaymentType("0");// 应收定金
-			paymentTrans.setTransId(id);
-			paymentTrans.setTradeDirection("1");// 收款
-			paymentTrans.setStartDate(depositAgreement.getStartDate());
-			paymentTrans.setExpiredDate(depositAgreement.getExpiredDate());
-			paymentTrans.setTradeAmount(depositAgreement.getDepositAmount());
-			paymentTrans.setLastAmount(depositAgreement.getDepositAmount());
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setTransStatus("0");// 未到账登记
-			paymentTrans.setCreateDate(new Date());
-			paymentTrans.setCreateBy(UserUtils.getUser());
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTrans.setDelFlag("0");
-			if (0 != depositAgreement.getDepositAmount())
-				paymentTransDao.insert(paymentTrans);
+		if ("1".equals(depositAgreement.getValidatorFlag())) {// 正常保存，而非暂存,暂存为0
+			// 生成款项
+			PaymentTrans delPaymentTrans = new PaymentTrans();
+			delPaymentTrans.setTransId(id);
+			paymentTransDao.delete(delPaymentTrans);
+
+			if (null != depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate()
+					&& null != depositAgreement.getDepositAmount()) {
+				PaymentTrans paymentTrans = new PaymentTrans();
+				paymentTrans.setId(IdGen.uuid());
+				paymentTrans.setTradeType("1");// 定金协议
+				paymentTrans.setPaymentType("0");// 应收定金
+				paymentTrans.setTransId(id);
+				paymentTrans.setTradeDirection("1");// 收款
+				paymentTrans.setStartDate(depositAgreement.getStartDate());
+				paymentTrans.setExpiredDate(depositAgreement.getExpiredDate());
+				paymentTrans.setTradeAmount(depositAgreement.getDepositAmount());
+				paymentTrans.setLastAmount(depositAgreement.getDepositAmount());
+				paymentTrans.setTransAmount(0D);
+				paymentTrans.setTransStatus("0");// 未到账登记
+				paymentTrans.setCreateDate(new Date());
+				paymentTrans.setCreateBy(UserUtils.getUser());
+				paymentTrans.setUpdateDate(new Date());
+				paymentTrans.setUpdateBy(UserUtils.getUser());
+				paymentTrans.setDelFlag("0");
+				if (0 != depositAgreement.getDepositAmount())
+					paymentTransDao.insert(paymentTrans);
+			}
+
+			// 审核
+			Audit audit = new Audit();
+			audit.setId(IdGen.uuid());
+			audit.setObjectId(id);
+			auditDao.delete(audit);
+			audit.setObjectType("1");// 预约定金
+			audit.setNextRole(DEPOSIT_AGREEMENT_ROLE);
+			audit.setCreateDate(new Date());
+			audit.setCreateBy(UserUtils.getUser());
+			audit.setUpdateDate(new Date());
+			audit.setUpdateBy(UserUtils.getUser());
+			audit.setDelFlag("0");
+			auditDao.insert(audit);
+
+			/* 更新房屋/房间状态 */
+			if ("0".equals(depositAgreement.getRentMode())) {// 整租
+				House house = houseDao.get(depositAgreement.getHouse().getId());
+				house.setHouseStatus("2");// 已预定
+				house.setCreateBy(UserUtils.getUser());
+				house.setUpdateDate(new Date());
+				houseDao.update(house);
+			} else {// 单间
+				if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
+					Room room = roomDao.get(depositAgreement.getRoom().getId());
+					room.setRoomStatus("2");// 已预定
+					room.setCreateBy(UserUtils.getUser());
+					room.setUpdateDate(new Date());
+					roomDao.update(room);
+					// 同时更新该房间所属房屋的状态
+					House h = houseDao.get(room.getHouse().getId());
+					if ("1".equals(h.getHouseStatus())) {// 待出租可预订
+						Room queryRoom = new Room();
+						queryRoom.setHouse(h);
+						List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+						if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+							int depositCount = 0;// 预定或出租的数量
+							for (Room depositedRoom : roomsOfHouse) {
+								if ("2".equals(depositedRoom.getRoomStatus())
+										|| "3".equals(depositedRoom.getRoomStatus())) {// 房间已预定
+									depositCount = depositCount + 1;
+								}
+							}
+							if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
+								h.setHouseStatus("2");// 已预定
+								h.setCreateBy(UserUtils.getUser());
+								h.setUpdateDate(new Date());
+								houseDao.update(h);
+							}
+						}
+					}
+				}
+			}
 		}
-
-		// 审核
-		Audit audit = new Audit();
-		audit.setId(IdGen.uuid());
-		audit.setObjectId(id);
-		auditDao.delete(audit);
-		audit.setObjectType("1");// 预约定金
-		audit.setNextRole(DEPOSIT_AGREEMENT_ROLE);
-		audit.setCreateDate(new Date());
-		audit.setCreateBy(UserUtils.getUser());
-		audit.setUpdateDate(new Date());
-		audit.setUpdateBy(UserUtils.getUser());
-		audit.setDelFlag("0");
-		auditDao.insert(audit);
 
 		if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
 			/* 合同租客关联信息 */
@@ -285,44 +326,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 					contractTenant.setUpdateBy(UserUtils.getUser());
 					contractTenant.setDelFlag("0");
 					contractTenantDao.insert(contractTenant);
-				}
-			}
-		}
-
-		/* 更新房屋/房间状态 */
-		if ("0".equals(depositAgreement.getRentMode())) {// 整租
-			House house = houseDao.get(depositAgreement.getHouse().getId());
-			house.setHouseStatus("2");// 已预定
-			house.setCreateBy(UserUtils.getUser());
-			house.setUpdateDate(new Date());
-			houseDao.update(house);
-		} else {// 单间
-			if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
-				Room room = roomDao.get(depositAgreement.getRoom().getId());
-				room.setRoomStatus("2");// 已预定
-				room.setCreateBy(UserUtils.getUser());
-				room.setUpdateDate(new Date());
-				roomDao.update(room);
-				// 同时更新该房间所属房屋的状态
-				House h = houseDao.get(room.getHouse().getId());
-				if ("1".equals(h.getHouseStatus())) {// 待出租可预订
-					Room queryRoom = new Room();
-					queryRoom.setHouse(h);
-					List<Room> roomsOfHouse = roomDao.findList(queryRoom);
-					if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-						int depositCount = 0;// 预定或出租的数量
-						for (Room depositedRoom : roomsOfHouse) {
-							if ("2".equals(depositedRoom.getRoomStatus()) || "3".equals(depositedRoom.getRoomStatus())) {// 房间已预定
-								depositCount = depositCount + 1;
-							}
-						}
-						if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
-							h.setHouseStatus("2");// 已预定
-							h.setCreateBy(UserUtils.getUser());
-							h.setUpdateDate(new Date());
-							houseDao.update(h);
-						}
-					}
 				}
 			}
 		}

@@ -269,7 +269,7 @@
 				</td>
 				<td>
 					<shiro:hasPermission name="contract:depositAgreement:edit">
-						<c:if test="${depositAgreement.agreementStatus=='2'}">
+						<c:if test="${depositAgreement.agreementStatus=='0' || depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
 	    				</c:if>
 					</shiro:hasPermission>

@@ -641,13 +641,9 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:rentContract:edit">
-				<c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'||rentContract.contractStatus=='1'}">
-				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
-				</c:if>
-				<c:if test="${empty rentContract.id}">
-				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+				<c:if test="${ rentContract.contractStatus=='0' || rentContract.contractStatus=='3'|| rentContract.contractStatus=='1' || empty rentContract.id}">
+					<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
 				</c:if>
 			</shiro:hasPermission>
 			<shiro:hasPermission name="contract:rentContract:audit">

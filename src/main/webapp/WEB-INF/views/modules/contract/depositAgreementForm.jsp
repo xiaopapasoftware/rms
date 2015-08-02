@@ -426,7 +426,7 @@
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:depositAgreement:edit">
 				<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>
-				<c:if test="${depositAgreement.agreementStatus=='2'|| empty depositAgreement.id}">
+				<c:if test="${depositAgreement.agreementStatus=='2'|| depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
 				</c:if>
 			</shiro:hasPermission>

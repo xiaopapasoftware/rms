@@ -427,27 +427,62 @@ public class RentContractController extends BaseController {
 			return form(rentContract, model);
 		}
 		/* 出租合同的结束时间不能超过承租合同的结束时间 */
-		if (null != rentContract.getHouse() && null != rentContract.getExpiredDate()) {
-			boolean check = true;
-			LeaseContract leaseContract = new LeaseContract();
-			leaseContract.setHouse(rentContract.getHouse());
-			List<LeaseContract> list = leaseContractService.findList(leaseContract);
-			if (null != list && list.size() > 0) {
-				leaseContract = list.get(0);
-				if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
-					model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
-					model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		LeaseContract leaseContract = new LeaseContract();
+		leaseContract.setHouse(rentContract.getHouse());
+		List<LeaseContract> list = leaseContractService.findList(leaseContract);
+		if (CollectionUtils.isNotEmpty(list)) {
+			leaseContract = list.get(0);
+			if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
+				model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
+				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+				model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
+				if (null != rentContract.getPropertyProject()) {
+					Building building = new Building();
+					PropertyProject propertyProject = new PropertyProject();
+					propertyProject.setId(rentContract.getPropertyProject().getId());
+					building.setPropertyProject(propertyProject);
+					List<Building> buildingList = buildingService.findList(building);
+					model.addAttribute("buildingList", buildingList);
 				}
-			}
-			if (check) {
-				rentContractService.save(rentContract);
-				addMessage(redirectAttributes, "保存出租合同成功");
+
+				if (null != rentContract.getBuilding()) {
+					House house = new House();
+					Building building = new Building();
+					building.setId(rentContract.getBuilding().getId());
+					house.setBuilding(building);
+					house.setChoose("1");
+					List<House> houseList = houseService.findList(house);
+					if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+						houseList.add(houseService.get(rentContract.getHouse()));
+					model.addAttribute("houseList", houseList);
+				}
+
+				if (null != rentContract.getRoom()) {
+					Room room = new Room();
+					House house = new House();
+					house.setId(rentContract.getHouse().getId());
+					room.setHouse(house);
+					room.setChoose("1");
+					List<Room> roomList = roomServie.findList(room);
+					if (null != rentContract.getRoom()) {
+						Room rm = roomServie.get(rentContract.getRoom());
+						if (null != rm)
+							roomList.add(rm);
+					}
+					model.addAttribute("roomList", roomList);
+				}
+				List<Tenant> tenantList = tenantService.findList(new Tenant());
+				model.addAttribute("tenantList", tenantList);
+				return "modules/contract/rentContractForm";
 			}
 		}
+		rentContractService.save(rentContract);
+		addMessage(redirectAttributes, "保存出租合同成功");
 		if ("1".equals(rentContract.getSaveSource()))
 			return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 		else
 			return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+
 	}
 
 	@RequestMapping(value = "saveAdditional")
