@@ -90,6 +90,21 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findContractList" resultType="RentContract">
+		select * from (
+		select 
+			<include refid="rentContractColumns"/>
+		from t_rent_contract a
+		<include refid="rentContractJoins"/>
+		<![CDATA[
+		where a.del_flag='0' 
+		and a.contract_busi_status='0' 
+  		and date_add(a.expired_date,interval-15 day)<=now()
+		]]>
+		 order by a.expired_date
+		) t
+	</select>
+	
 	<select id="findList" resultType="RentContract">
 		SELECT 
 			<include refid="rentContractColumns"/>

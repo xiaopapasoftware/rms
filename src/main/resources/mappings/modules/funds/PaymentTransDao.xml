@@ -87,9 +87,38 @@
 		and date_add(a.expired_date,interval-3 day)<=now() 
 		and a.trans_status in('0','1') 
 		and a.payment_type='6' 
+		and a.trade_direction='1'  
 		order by a.expired_date
 	  ]]>
 	  ) t 
+	  union 
+	  select <include refid="paymentTransColumns"/> from
+	  <![CDATA[
+  (select 
+    t4.id tid,
+    t3.* 
+  from
+    (select 
+      t2.trade_id,
+      t1.* 
+    from
+      (select 
+        * 
+      from
+        t_payment_trans a 
+      where a.del_flag = '0' 
+        and date_add(a.expired_date, interval - 3 day) <= now() 
+        and a.trans_status in ('2') 
+        and a.payment_type = '6'
+        and a.trade_direction='1') t1 
+      left join t_payment_trade t2 
+        on t1.id = t2.trans_id) t3 
+    left join t_trading_accounts t4 
+      on t3.trade_id = t4.id 
+      and t3.trans_status != '1') a 
+      ]]>
+      <include refid="paymentTransJoins"/>
+	where tid is not null 
 	</select>
 	
 	<select id="findAllList" resultType="PaymentTrans">

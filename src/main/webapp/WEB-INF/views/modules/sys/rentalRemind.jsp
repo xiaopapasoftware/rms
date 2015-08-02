@@ -6,9 +6,6 @@
 	<meta name="decorator" content="default"/>
 </head>
 <body>
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#">待收房租提醒</a></li>
-	</ul>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>

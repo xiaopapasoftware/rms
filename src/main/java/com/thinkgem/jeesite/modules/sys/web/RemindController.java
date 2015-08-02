@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 
@@ -19,12 +23,32 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 public class RemindController extends BaseController {
 	@Autowired
 	private PaymentTransService paymentTransService;
+	@Autowired
+	private LeaseContractService leaseContractService;
+	@Autowired
+	private RentContractService rentContractService;
 	
 	@RequiresPermissions("sys:remind:rental")
 	@RequestMapping(value = {"rentalList", ""})
-	public String list(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String rentalList(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<PaymentTrans> page = paymentTransService.findRemind(new Page<PaymentTrans>(request, response), paymentTrans); 
 		model.addAttribute("page", page);
 		return "modules/sys/rentalRemind";
+	}
+	
+	@RequiresPermissions("sys:remind:leaseContract")
+	@RequestMapping(value = {"leaseContractList", ""})
+	public String leaseContractList(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<LeaseContract> page = leaseContractService.findLeaseContractList(new Page<LeaseContract>(request, response), leaseContract); 
+		model.addAttribute("page", page);
+		return "modules/sys/leaseContract";
+	}
+	
+	@RequiresPermissions("sys:remind:renewContract")
+	@RequestMapping(value = {"renewContract", ""})
+	public String renewContract(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<RentContract> page = rentContractService.findContractList(new Page<RentContract>(request, response), rentContract); 
+		model.addAttribute("page", page);
+		return "modules/sys/rentContractList";
 	}
 }
