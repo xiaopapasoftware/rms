@@ -118,8 +118,8 @@ public class OwnerController extends BaseController {
 		if (CollectionUtils.isNotEmpty(owners)) {// 已有重复的身份证号或者手机号或者电话号
 			jsonObject.put("message",  calculateTipMsg(owner, owners));
 		} else {// 无重复业主
-			String id = ownerService.saveAndReturnId(owner);
-			jsonObject.put("id", id);
+			ownerService.save(owner);
+			jsonObject.put("id", owner.getId());
 			jsonObject.put("name", owner.getName());
 		}
 		

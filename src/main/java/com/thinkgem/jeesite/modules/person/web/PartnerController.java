@@ -109,8 +109,8 @@ public class PartnerController extends BaseController {
 		if (CollectionUtils.isNotEmpty(partners)) {
 			jsonObject.put("message", "该类型合作人的手机号已被占用，不能重复添加");
 		} else {
-			String id = partnerService.saveAndReturnId(partner);
-			jsonObject.put("id", id);
+			partnerService.save(partner);
+			jsonObject.put("id", partner.getId());
 			jsonObject.put("name", partner.getPartnerName());
 		}
 		

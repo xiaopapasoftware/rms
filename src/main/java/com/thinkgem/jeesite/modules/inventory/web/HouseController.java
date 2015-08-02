@@ -222,8 +222,8 @@ public class HouseController extends BaseController {
 		} else {
 			if (StringUtils.isBlank(house.getHouseStatus()))
 				house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
-			String id = houseService.saveAndReturnId(house);
-			jsonObject.put("id", id);
+			houseService.save(house);
+			jsonObject.put("id", house.getId());
 			jsonObject.put("name", house.getHouseNo());
 		}
 

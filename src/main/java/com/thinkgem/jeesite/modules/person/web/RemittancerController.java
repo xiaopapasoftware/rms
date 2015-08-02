@@ -117,8 +117,8 @@ public class RemittancerController extends BaseController {
 		if (CollectionUtils.isNotEmpty(remittancers)) {
 			jsonObject.put("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
 		} else {
-			String id = remittancerService.saveAndReturnId(remittancer);
-			jsonObject.put("id", id);
+			remittancerService.save(remittancer);
+			jsonObject.put("id", remittancer.getId());
 			jsonObject.put("name", remittancer.getUserName());
 		}
 		

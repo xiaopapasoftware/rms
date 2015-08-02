@@ -144,8 +144,8 @@ public class BuildingController extends BaseController {
 			model.addAttribute("listPropertyProject", list);
 			jsonObject.put("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
 		} else {
-			String id = buildingService.saveAndReturnId(building);
-			jsonObject.put("id", id);
+			buildingService.save(building);
+			jsonObject.put("id", building.getId());
 			jsonObject.put("name", building.getBuildingName());
 		}
 		

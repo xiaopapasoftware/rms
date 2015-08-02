@@ -136,8 +136,8 @@ public class TenantController extends BaseController {
 			model.addAttribute("listUser", systemService.findUser(new User()));
 			jsonObject.put("message",  "该证件类型租客的证件号码已被占用，不能重复添加");
 		} else {
-			String id = tenantService.saveAndReturnId(tenant);
-			jsonObject.put("id", id);
+			tenantService.save(tenant);
+			jsonObject.put("id", tenant.getId());
 			jsonObject.put("name", tenant.getLabel());
 		}
 		

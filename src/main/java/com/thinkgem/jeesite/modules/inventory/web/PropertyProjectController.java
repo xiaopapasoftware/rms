@@ -108,8 +108,8 @@ public class PropertyProjectController extends BaseController {
 		if (CollectionUtils.isNotEmpty(pps)) {
 			jsonObject.put("message", "物业项目名称及地址已被使用，不能重复添加");
 		} else {
-			String id = propertyProjectService.saveAndReturnId(propertyProject);
-			jsonObject.put("id", id);
+			propertyProjectService.save(propertyProject);
+			jsonObject.put("id", propertyProject.getId());
 			jsonObject.put("name", propertyProject.getProjectName());
 		}
 		

@@ -296,8 +296,8 @@ public class RoomController extends BaseController {
 			if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
 				room.setOrientation(convertToStrFromList(room.getOrientationList()));
 			}
-			String id = roomService.saveAndReturnId(room);
-			jsonObject.put("id", id);
+			roomService.save(room);
+			jsonObject.put("id", room.getId());
 			jsonObject.put("name", room.getRoomNo());
 		}
 		
