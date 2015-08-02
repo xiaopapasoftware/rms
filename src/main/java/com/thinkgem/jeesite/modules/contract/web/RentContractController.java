@@ -289,9 +289,11 @@ public class RentContractController extends BaseController {
 	public String renewContract(RentContract rentContract, Model model) {
 		String contractId = rentContract.getId();
 		rentContract = rentContractService.get(contractId);
+
+		rentContract.setOriEndDate(DateUtils.formatDate(rentContract.getExpiredDate()));// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
 		rentContract.setContractId(contractId);
 		rentContract.setSignType("1");// 正常续签
-		rentContract.setContractName(rentContract.getContractName().concat("(续)"));
+		rentContract.setContractName(rentContract.getContractName().concat("-续"));
 		rentContract.setDepositElectricAmount(null);
 		rentContract.setDepositAmount(null);
 		rentContract.setRental(null);
@@ -300,6 +302,7 @@ public class RentContractController extends BaseController {
 		rentContract.setStartDate(null);
 		rentContract.setExpiredDate(null);
 		rentContract.setSignDate(null);
+		rentContract.setRemindTime(null);
 
 		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 		model.addAttribute("projectList", projectList);
@@ -853,7 +856,7 @@ public class RentContractController extends BaseController {
 				earlyDepositAcc.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
 			} else {// 如果是新签合同、逾期续签合同则直接退水电费押金
 				earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
-			}		
+			}
 			inAccountings.add(earlyDepositAcc);
 		}
 

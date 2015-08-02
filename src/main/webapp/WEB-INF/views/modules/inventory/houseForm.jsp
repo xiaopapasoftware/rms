@@ -104,19 +104,21 @@
 		<div class="control-group">
 			<label class="control-label">原始建筑面积（平方米）：</label>
 			<div class="controls">
-				<form:input path="houseSpace" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="houseSpace" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">原始房屋结构：</label>
+			<div class="controls">
+				<form:input path="houseStructure" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">装修建筑面积（平方米）：</label>
 			<div class="controls">
 				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">原始房屋结构：</label>
-			<div class="controls">
-				<form:input path="houseStructure" htmlEscape="false" maxlength="100" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -176,6 +176,8 @@ create table T_AGREEMENT_CHANGE
 	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
    AGREEMENT_CHANGE_NAME      varchar(64) comment '合同变更协议名称',
    START_DATE           date comment '协议生效时间',
+   REN_MONTHS           int comment '首付房租月数',
+   DEPOSIT_MONTHS       int comment '房租押金月数',
    RENT_MODE            varchar(64) comment '出租方式',
    AGREEMENT_STATUS     varchar(64) comment '协议审核状态',
    USER_ID              varchar(100) comment '核算人',

@@ -526,7 +526,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
 		/* 合同租客关联信息 */
 		ContractTenant delContractTenant = new ContractTenant();
-		delContractTenant.setContractId(id);
+		delContractTenant.setLeasagremChangeId(id);// 承租的 变更协议
 		contractTenantDao.delete(delContractTenant);
 		List<Tenant> list = agreementChange.getTenantList();// 承租人
 		if (null != list && list.size() > 0) {
@@ -534,7 +534,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				ContractTenant contractTenant = new ContractTenant();
 				contractTenant.setId(IdGen.uuid());
 				contractTenant.setTenantId(tenant.getId());
-				contractTenant.setLeaseContractId(id);
+				contractTenant.setLeasagremChangeId(id);
 				contractTenant.setCreateDate(new Date());
 				contractTenant.setCreateBy(UserUtils.getUser());
 				contractTenant.setUpdateDate(new Date());
@@ -543,13 +543,17 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				contractTenantDao.insert(contractTenant);
 			}
 		}
+		
+		ContractTenant delContractTenant2 = new ContractTenant();
+		delContractTenant2.setAgreementChangeId(id);// 入住的 变更协议
+		contractTenantDao.delete(delContractTenant2);
 		list = agreementChange.getLiveList();// 入住人
 		if (null != list && list.size() > 0) {
 			for (Tenant tenant : list) {
 				ContractTenant contractTenant = new ContractTenant();
 				contractTenant.setId(IdGen.uuid());
 				contractTenant.setTenantId(tenant.getId());
-				contractTenant.setContractId(id);
+				contractTenant.setAgreementChangeId(id);
 				contractTenant.setCreateDate(new Date());
 				contractTenant.setCreateBy(UserUtils.getUser());
 				contractTenant.setUpdateDate(new Date());

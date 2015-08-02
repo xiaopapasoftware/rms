@@ -260,21 +260,21 @@
 						<c:if test="${depositAgreement.agreementStatus=='2'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
 	    				</c:if>
-						<!--<a href="${ctx}/contract/depositAgreement/delete?id=${depositAgreement.id}" onclick="return confirmx('确认要删除该定金协议吗？', this.href)">删除</a>-->
 					</shiro:hasPermission>
-					<shiro:hasPermission name="contract:depositAgreement:audit">
-					<!--<c:if test="${depositAgreement.agreementStatus=='1'}">
-						<a href="javascript:void(0);" onclick="toAudit('${depositAgreement.id}')">审核</a>
-					</c:if>-->
-					</shiro:hasPermission>
+				</td>
+				<td>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
 					</c:if>
+				</td>
+				<td>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>
 					</c:if>
+				</td>
+				<td>
 					<c:if test="${depositAgreement.agreementStatus!='6' &&depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">
-						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a>
+						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a></td>
 					</c:if>
 				</td>
 			</tr>
