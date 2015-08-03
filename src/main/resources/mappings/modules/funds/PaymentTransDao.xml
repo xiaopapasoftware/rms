@@ -67,7 +67,7 @@
 				AND a.trans_status = #{transStatus}
 			</if>
 		</where>
-		ORDER BY a.payment_type desc,a.start_date asc
+		order by FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'),a.start_date
 	  ) t 
 	  <where>
 	  	<if test="transName != null and transName != ''">
@@ -129,7 +129,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
-		ORDER BY a.start_date,a.payment_type
+		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'),a.start_date
 	</select>
 	
 	<insert id="insert">
