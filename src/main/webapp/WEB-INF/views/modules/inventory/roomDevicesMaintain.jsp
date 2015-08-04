@@ -170,9 +170,7 @@
 							<th>设备采购价格</th>
 							<th>设备分配序号</th>
 							<th class="hide"></th>
-							<shiro:hasPermission name="device:roomDevices:edit">
-								<th width="10">操作</th>
-							</shiro:hasPermission>
+							<th width="10">操作</th>
 						</tr>
 					</thead>
 					<tbody id="roomDevicesDtlList">

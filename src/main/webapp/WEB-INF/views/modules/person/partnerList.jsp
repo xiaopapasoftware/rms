@@ -71,7 +71,7 @@
 				<th>创建人</th>
 				<th>修改人</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="person:partner:edit"><th>操作</th></shiro:hasPermission>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>

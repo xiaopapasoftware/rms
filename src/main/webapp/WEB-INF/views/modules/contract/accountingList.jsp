@@ -70,7 +70,7 @@
 				<th>核算人</th>
 				<th>核算时间</th>
 				<th>备注信息</th>
-				<shiro:hasPermission name="contract:accounting:edit"><th>操作</th></shiro:hasPermission>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
