@@ -162,9 +162,9 @@
 				<shiro:hasPermission name="device:roomDevices:edit">
 					<td><a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备维护</a></td>
 				</shiro:hasPermission>
-				<shiro:lacksPermission name="device:roomDevices:view">
+				<shiro:hasPermission name="device:roomDevices:view">
 					<td><a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a></td>
-				</shiro:lacksPermission>
+				</shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>
