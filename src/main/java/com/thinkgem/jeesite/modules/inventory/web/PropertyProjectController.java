@@ -63,7 +63,7 @@ public class PropertyProjectController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:propertyProject:view")
+	//@RequiresPermissions("inventory:propertyProject:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(PropertyProject propertyProject, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -79,7 +79,7 @@ public class PropertyProjectController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/inventory/propertyProjectList";
 	}
-	@RequiresPermissions("inventory:propertyProject:view")
+	//@RequiresPermissions("inventory:propertyProject:view")
 	@RequestMapping(value = "form")
 	public String form(PropertyProject propertyProject, Model model) {
 
@@ -116,7 +116,7 @@ public class PropertyProjectController extends BaseController {
 		return jsonObject.toString();
 	}
 	
-	@RequiresPermissions("inventory:propertyProject:edit")
+	//@RequiresPermissions("inventory:propertyProject:edit")
 	@RequestMapping(value = "save")
 	public String save(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, propertyProject)) {
@@ -157,7 +157,7 @@ public class PropertyProjectController extends BaseController {
 			}
 		}
 	}
-	@RequiresPermissions("inventory:propertyProject:edit")
+	//@RequiresPermissions("inventory:propertyProject:edit")
 	@RequestMapping(value = "delete")
 	public String delete(PropertyProject propertyProject, RedirectAttributes redirectAttributes) {
 		propertyProjectService.delete(propertyProject);

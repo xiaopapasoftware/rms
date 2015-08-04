@@ -46,7 +46,7 @@ public class PaymentTransController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("funds:paymentTrans:view")
+	//@RequiresPermissions("funds:paymentTrans:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<PaymentTrans> page = paymentTransService.findPage(new Page<PaymentTrans>(request, response), paymentTrans); 
@@ -54,14 +54,14 @@ public class PaymentTransController extends BaseController {
 		return "modules/funds/paymentTransList";
 	}
 
-	@RequiresPermissions("funds:paymentTrans:view")
+	//@RequiresPermissions("funds:paymentTrans:view")
 	@RequestMapping(value = "form")
 	public String form(PaymentTrans paymentTrans, Model model) {
 		model.addAttribute("paymentTrans", paymentTrans);
 		return "modules/funds/paymentTransForm";
 	}
 
-	@RequiresPermissions("funds:paymentTrans:edit")
+	//@RequiresPermissions("funds:paymentTrans:edit")
 	@RequestMapping(value = "save")
 	public String save(PaymentTrans paymentTrans, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, paymentTrans)){
@@ -72,7 +72,7 @@ public class PaymentTransController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
 	}
 	
-	@RequiresPermissions("funds:paymentTrans:edit")
+	//@RequiresPermissions("funds:paymentTrans:edit")
 	@RequestMapping(value = "delete")
 	public String delete(PaymentTrans paymentTrans, RedirectAttributes redirectAttributes) {
 		paymentTransService.delete(paymentTrans);

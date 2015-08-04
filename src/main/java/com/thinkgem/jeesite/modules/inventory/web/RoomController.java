@@ -72,7 +72,7 @@ public class RoomController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:room:view")
+	//@RequiresPermissions("inventory:room:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Room room, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Room> page = roomService.findPage(new Page<Room>(request, response), room);
@@ -109,7 +109,7 @@ public class RoomController extends BaseController {
 		return list;
 	}
 
-	@RequiresPermissions("inventory:room:view")
+	//@RequiresPermissions("inventory:room:view")
 	@RequestMapping(value = "form")
 	public String form(Room room, Model model) {
 
@@ -175,7 +175,7 @@ public class RoomController extends BaseController {
 		return "modules/inventory/roomAdd";
 	}
 
-	@RequiresPermissions("inventory:room:edit")
+	//@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "finishDirect")
 	@ResponseBody
 	public String finishDirect(Room room, Model model, RedirectAttributes redirectAttributes) {
@@ -187,7 +187,7 @@ public class RoomController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("inventory:room:edit")
+	//@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "save")
 	public String save(Room room, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, room)) {
@@ -304,7 +304,7 @@ public class RoomController extends BaseController {
 		return jsonObject.toString();
 	}
 
-	@RequiresPermissions("inventory:room:edit")
+	//@RequiresPermissions("inventory:room:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Room room, RedirectAttributes redirectAttributes) {
 		Room queryRoom = roomService.get(room);

@@ -54,7 +54,7 @@ public class DevicesController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("device:devices:view")
+	//@RequiresPermissions("device:devices:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices);
@@ -70,14 +70,14 @@ public class DevicesController extends BaseController {
 		return "modules/device/deviceDialog";
 	}
 
-	@RequiresPermissions("device:devices:view")
+	//@RequiresPermissions("device:devices:view")
 	@RequestMapping(value = "form")
 	public String form(Devices devices, Model model) {
 		model.addAttribute("devices", devices);
 		return "modules/device/devicesForm";
 	}
 
-	@RequiresPermissions("device:devices:edit")
+	//@RequiresPermissions("device:devices:edit")
 	@RequestMapping(value = "save")
 	public String save(Devices devices, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, devices)) {
@@ -106,7 +106,7 @@ public class DevicesController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("device:devices:edit")
+	//@RequiresPermissions("device:devices:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Devices devices, RedirectAttributes redirectAttributes) {
 		devicesService.delete(devices);

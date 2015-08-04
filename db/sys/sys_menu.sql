@@ -240,10 +240,10 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('241','116','0,1,96,116','协议变更','90',NULL,NULL,NULL,'0','contract:rentContract:change','1',now(),'1',now(),NULL,'0');
 
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('242','110','0,1,96,110','装修完成','90',NULL,NULL,NULL,'0','device:house:done','1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('244','110','0,1,96,110','删除','90',NULL,NULL,NULL,'0','device:roomDevices:del','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('244','110','0,1,96,110','删除','90',NULL,NULL,NULL,'0','inventory:house:del','1',now(),'1',now(),NULL,'0');
 
 INSERT INTO sys_menu (id, parent_id, parent_ids, NAME, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) VALUES('243','111','0,1,96,111','装修完成','120',NULL,NULL,NULL,'0','device:room:done','1',NOW(),'1',NOW(),NULL,'0');
-INSERT INTO sys_menu (id, parent_id, parent_ids, NAME, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) VALUES('245','111','0,1,96,111','删除','120',NULL,NULL,NULL,'0','device:roomDevices:del','1',NOW(),'1',NOW(),NULL,'0');
+INSERT INTO sys_menu (id, parent_id, parent_ids, NAME, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) VALUES('245','111','0,1,96,111','删除','120',NULL,NULL,NULL,'0','inventory:room:del','1',NOW(),'1',NOW(),NULL,'0');
 
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('246','109','0,1,105,109','删除','70',NULL,NULL,NULL,'0','inventory:building:del','1',now(),'1',now(),NULL,'0');
 

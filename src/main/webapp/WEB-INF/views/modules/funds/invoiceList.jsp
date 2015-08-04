@@ -60,7 +60,10 @@
 			</li>
 			<li class="btns">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
-				<input id="btnImport" class="btn btn-primary" type="button" value="导入"/></li>
+				<shiro:hasPermission name="funds:invoice:edit">
+				<input id="btnImport" class="btn btn-primary" type="button" value="导入"/>
+				</shiro:hasPermission>
+			</li>
 			</li>
 			<li class="clearfix"></li>
 		</ul>

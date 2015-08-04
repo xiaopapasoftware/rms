@@ -63,7 +63,7 @@ public class InvoiceController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("funds:invoice:view")
+	//@RequiresPermissions("funds:invoice:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Invoice invoice, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Invoice> page = invoiceService.findPage(new Page<Invoice>(request, response), invoice); 
@@ -71,14 +71,14 @@ public class InvoiceController extends BaseController {
 		return "modules/funds/invoiceList";
 	}
 
-	@RequiresPermissions("funds:invoice:view")
+	//@RequiresPermissions("funds:invoice:view")
 	@RequestMapping(value = "form")
 	public String form(Invoice invoice, Model model) {
 		model.addAttribute("invoice", invoice);
 		return "modules/funds/invoiceForm";
 	}
 
-	@RequiresPermissions("funds:invoice:edit")
+	//@RequiresPermissions("funds:invoice:edit")
 	@RequestMapping(value = "save")
 	public String save(Invoice invoice, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, invoice)){
@@ -89,7 +89,7 @@ public class InvoiceController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/funds/tradingAccounts/?repage";
 	}
 	
-	@RequiresPermissions("funds:invoice:edit")
+	//@RequiresPermissions("funds:invoice:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Invoice invoice, RedirectAttributes redirectAttributes) {
 		invoiceService.delete(invoice);

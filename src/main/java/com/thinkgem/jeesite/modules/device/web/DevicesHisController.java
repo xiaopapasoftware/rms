@@ -67,7 +67,7 @@ public class DevicesHisController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("device:devicesHis:view")
+	//@RequiresPermissions("device:devicesHis:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(DevicesHis devicesHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<DevicesHis> page = devicesHisService.findPage(new Page<DevicesHis>(request, response), devicesHis);
@@ -101,14 +101,14 @@ public class DevicesHisController extends BaseController {
 		return "modules/device/devicesHisList";
 	}
 
-	@RequiresPermissions("device:devicesHis:view")
+	//@RequiresPermissions("device:devicesHis:view")
 	@RequestMapping(value = "form")
 	public String form(DevicesHis devicesHis, Model model) {
 		model.addAttribute("devicesHis", devicesHis);
 		return "modules/device/devicesHisForm";
 	}
 
-	@RequiresPermissions("device:devicesHis:edit")
+	//@RequiresPermissions("device:devicesHis:edit")
 	@RequestMapping(value = "save")
 	public String save(DevicesHis devicesHis, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, devicesHis)) {
@@ -119,7 +119,7 @@ public class DevicesHisController extends BaseController {
 		return "redirect:" + Global.getAdminPath() + "/device/devicesHis/?repage";
 	}
 
-	@RequiresPermissions("device:devicesHis:edit")
+	//@RequiresPermissions("device:devicesHis:edit")
 	@RequestMapping(value = "delete")
 	public String delete(DevicesHis devicesHis, RedirectAttributes redirectAttributes) {
 		devicesHisService.delete(devicesHis);

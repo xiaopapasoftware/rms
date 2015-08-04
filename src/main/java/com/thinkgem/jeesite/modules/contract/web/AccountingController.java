@@ -46,7 +46,7 @@ public class AccountingController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("contract:accounting:view")
+	//@RequiresPermissions("contract:accounting:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting); 
@@ -54,14 +54,14 @@ public class AccountingController extends BaseController {
 		return "modules/contract/accountingList";
 	}
 
-	@RequiresPermissions("contract:accounting:view")
+	//@RequiresPermissions("contract:accounting:view")
 	@RequestMapping(value = "form")
 	public String form(Accounting accounting, Model model) {
 		model.addAttribute("accounting", accounting);
 		return "modules/contract/accountingForm";
 	}
 
-	@RequiresPermissions("contract:accounting:edit")
+	//@RequiresPermissions("contract:accounting:edit")
 	@RequestMapping(value = "save")
 	public String save(Accounting accounting, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, accounting)){
@@ -72,7 +72,7 @@ public class AccountingController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/contract/accounting/?repage";
 	}
 	
-	@RequiresPermissions("contract:accounting:edit")
+	//@RequiresPermissions("contract:accounting:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Accounting accounting, RedirectAttributes redirectAttributes) {
 		accountingService.delete(accounting);

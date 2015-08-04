@@ -74,7 +74,7 @@ public class TradingAccountsController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("funds:tradingAccounts:view")
+	//@RequiresPermissions("funds:tradingAccounts:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -84,7 +84,7 @@ public class TradingAccountsController extends BaseController {
 		return "modules/funds/tradingAccountsList";
 	}
 
-	@RequiresPermissions("funds:tradingAccounts:view")
+	//@RequiresPermissions("funds:tradingAccounts:view")
 	@RequestMapping(value = "form")
 	public String form(TradingAccounts tradingAccounts, Model model) {
 		/* 收据 */
@@ -197,7 +197,7 @@ public class TradingAccountsController extends BaseController {
 		return list(new TradingAccounts(), request, response, model);
 	}
 
-	@RequiresPermissions("funds:tradingAccounts:edit")
+	//@RequiresPermissions("funds:tradingAccounts:edit")
 	@RequestMapping(value = "save")
 	public String save(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
 		String id = tradingAccounts.getId();
@@ -252,7 +252,7 @@ public class TradingAccountsController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("funds:tradingAccounts:edit")
+	//@RequiresPermissions("funds:tradingAccounts:edit")
 	@RequestMapping(value = "delete")
 	public String delete(TradingAccounts tradingAccounts, RedirectAttributes redirectAttributes) {
 		tradingAccountsService.delete(tradingAccounts);

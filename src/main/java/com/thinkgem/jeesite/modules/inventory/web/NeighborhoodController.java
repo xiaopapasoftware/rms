@@ -51,7 +51,7 @@ public class NeighborhoodController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:neighborhood:view")
+	//@RequiresPermissions("inventory:neighborhood:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Neighborhood neighborhood, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Neighborhood> page = neighborhoodService.findPage(new Page<Neighborhood>(request, response), neighborhood);
@@ -59,14 +59,14 @@ public class NeighborhoodController extends BaseController {
 		return "modules/inventory/neighborhoodList";
 	}
 
-	@RequiresPermissions("inventory:neighborhood:view")
+	//@RequiresPermissions("inventory:neighborhood:view")
 	@RequestMapping(value = "form")
 	public String form(Neighborhood neighborhood, Model model) {
 		model.addAttribute("neighborhood", neighborhood);
 		return "modules/inventory/neighborhoodForm";
 	}
 
-	@RequiresPermissions("inventory:neighborhood:edit")
+	//@RequiresPermissions("inventory:neighborhood:edit")
 	@RequestMapping(value = "save")
 	public String save(Neighborhood neighborhood, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, neighborhood)) {
@@ -98,7 +98,7 @@ public class NeighborhoodController extends BaseController {
 			}
 		}
 	}
-	@RequiresPermissions("inventory:neighborhood:edit")
+	//@RequiresPermissions("inventory:neighborhood:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Neighborhood neighborhood, RedirectAttributes redirectAttributes) {
 		neighborhoodService.delete(neighborhood);

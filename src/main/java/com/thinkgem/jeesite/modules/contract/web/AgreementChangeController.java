@@ -57,7 +57,7 @@ public class AgreementChangeController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("contract:agreementChange:view")
+	//@RequiresPermissions("contract:agreementChange:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(AgreementChange agreementChange, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -74,7 +74,7 @@ public class AgreementChangeController extends BaseController {
 		return list(new AgreementChange(), request, response, model);
 	}
 
-	@RequiresPermissions("contract:agreementChange:view")
+	//@RequiresPermissions("contract:agreementChange:view")
 	@RequestMapping(value = "form")
 	public String form(AgreementChange agreementChange, Model model) {
 		model.addAttribute("agreementChange", agreementChange);
@@ -90,7 +90,7 @@ public class AgreementChangeController extends BaseController {
 		return "modules/contract/agreementChangeForm";
 	}
 
-	@RequiresPermissions("contract:agreementChange:edit")
+	//@RequiresPermissions("contract:agreementChange:edit")
 	@RequestMapping(value = "save")
 	public String save(AgreementChange agreementChange, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, agreementChange)) {
@@ -101,7 +101,7 @@ public class AgreementChangeController extends BaseController {
 		return "redirect:" + Global.getAdminPath() + "/contract/agreementChange/?repage";
 	}
 
-	@RequiresPermissions("contract:agreementChange:edit")
+	//@RequiresPermissions("contract:agreementChange:edit")
 	@RequestMapping(value = "delete")
 	public String delete(AgreementChange agreementChange, RedirectAttributes redirectAttributes) {
 		agreementChangeService.delete(agreementChange);

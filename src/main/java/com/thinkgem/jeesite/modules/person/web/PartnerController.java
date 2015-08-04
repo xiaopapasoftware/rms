@@ -53,7 +53,7 @@ public class PartnerController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:partner:view")
+	//@RequiresPermissions("person:partner:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Partner partner, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Partner> page = partnerService.findPage(new Page<Partner>(request, response), partner);
@@ -61,7 +61,7 @@ public class PartnerController extends BaseController {
 		return "modules/person/partnerList";
 	}
 
-	@RequiresPermissions("person:partner:view")
+	//@RequiresPermissions("person:partner:view")
 	@RequestMapping(value = "form")
 	public String form(Partner partner, Model model) {
 		model.addAttribute("partner", partner);
@@ -74,7 +74,7 @@ public class PartnerController extends BaseController {
 		return "modules/person/partnerAdd";
 	}
 
-	@RequiresPermissions("person:partner:edit")
+	//@RequiresPermissions("person:partner:edit")
 	@RequestMapping(value = "save")
 	public String save(Partner partner, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, partner)) {
@@ -117,7 +117,7 @@ public class PartnerController extends BaseController {
 		return jsonObject.toString();
 	}
 
-	@RequiresPermissions("person:partner:edit")
+	//@RequiresPermissions("person:partner:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Partner partner, RedirectAttributes redirectAttributes) {
 		partnerService.delete(partner);

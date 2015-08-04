@@ -47,7 +47,7 @@ public class ElectricFeeController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("fee:electricFee:view")
+	//@RequiresPermissions("fee:electricFee:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ElectricFee> page = electricFeeService.findPage(new Page<ElectricFee>(request, response), electricFee); 
@@ -55,14 +55,14 @@ public class ElectricFeeController extends BaseController {
 		return "modules/fee/electricFeeList";
 	}
 
-	@RequiresPermissions("fee:electricFee:view")
+	//@RequiresPermissions("fee:electricFee:view")
 	@RequestMapping(value = "form")
 	public String form(ElectricFee electricFee, Model model) {
 		model.addAttribute("electricFee", electricFee);
 		return "modules/fee/electricFeeForm";
 	}
 
-	@RequiresPermissions("fee:electricFee:edit")
+	//@RequiresPermissions("fee:electricFee:edit")
 	@RequestMapping(value = "save")
 	public String save(ElectricFee electricFee, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, electricFee)){
@@ -73,7 +73,7 @@ public class ElectricFeeController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/fee/electricFee/?repage";
 	}
 	
-	@RequiresPermissions("fee:electricFee:edit")
+	//@RequiresPermissions("fee:electricFee:edit")
 	@RequestMapping(value = "delete")
 	public String delete(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
 		electricFeeService.delete(electricFee);

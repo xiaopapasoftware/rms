@@ -46,7 +46,7 @@ public class ReceiptController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("funds:receipt:view")
+	//@RequiresPermissions("funds:receipt:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Receipt> page = receiptService.findPage(new Page<Receipt>(request, response), receipt); 
@@ -61,14 +61,14 @@ public class ReceiptController extends BaseController {
 		return "modules/funds/viewReceipt";
 	}
 
-	@RequiresPermissions("funds:receipt:view")
+	//@RequiresPermissions("funds:receipt:view")
 	@RequestMapping(value = "form")
 	public String form(Receipt receipt, Model model) {
 		model.addAttribute("receipt", receipt);
 		return "modules/funds/receiptForm";
 	}
 
-	@RequiresPermissions("funds:receipt:edit")
+	//@RequiresPermissions("funds:receipt:edit")
 	@RequestMapping(value = "save")
 	public String save(Receipt receipt, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, receipt)){
@@ -79,7 +79,7 @@ public class ReceiptController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/funds/receipt/?repage";
 	}
 	
-	@RequiresPermissions("funds:receipt:edit")
+	//@RequiresPermissions("funds:receipt:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Receipt receipt, RedirectAttributes redirectAttributes) {
 		receiptService.delete(receipt);

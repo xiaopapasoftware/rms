@@ -56,7 +56,7 @@ public class NeighborhoodContactController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:neighborhoodContact:view")
+	//@RequiresPermissions("person:neighborhoodContact:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(NeighborhoodContact neighborhoodContact, HttpServletRequest request,
 			HttpServletResponse response, Model model) {
@@ -67,7 +67,7 @@ public class NeighborhoodContactController extends BaseController {
 		return "modules/person/neighborhoodContactList";
 	}
 
-	@RequiresPermissions("person:neighborhoodContact:view")
+	//@RequiresPermissions("person:neighborhoodContact:view")
 	@RequestMapping(value = "form")
 	public String form(NeighborhoodContact neighborhoodContact, Model model) {
 		model.addAttribute("neighborhoodContact", neighborhoodContact);
@@ -75,7 +75,7 @@ public class NeighborhoodContactController extends BaseController {
 		return "modules/person/neighborhoodContactForm";
 	}
 
-	@RequiresPermissions("person:neighborhoodContact:edit")
+	//@RequiresPermissions("person:neighborhoodContact:edit")
 	@RequestMapping(value = "save")
 	public String save(NeighborhoodContact neighborhoodContact, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, neighborhoodContact)) {
@@ -112,7 +112,7 @@ public class NeighborhoodContactController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("person:neighborhoodContact:edit")
+	//@RequiresPermissions("person:neighborhoodContact:edit")
 	@RequestMapping(value = "delete")
 	public String delete(NeighborhoodContact neighborhoodContact, RedirectAttributes redirectAttributes) {
 		neighborhoodContactService.delete(neighborhoodContact);

@@ -56,7 +56,7 @@ public class CompanyContactController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:companyContact:view")
+	//@RequiresPermissions("person:companyContact:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(CompanyContact companyContact, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -67,7 +67,7 @@ public class CompanyContactController extends BaseController {
 		return "modules/person/companyContactList";
 	}
 
-	@RequiresPermissions("person:companyContact:view")
+	//@RequiresPermissions("person:companyContact:view")
 	@RequestMapping(value = "form")
 	public String form(CompanyContact companyContact, Model model) {
 		model.addAttribute("companyContact", companyContact);
@@ -75,7 +75,7 @@ public class CompanyContactController extends BaseController {
 		return "modules/person/companyContactForm";
 	}
 
-	@RequiresPermissions("person:companyContact:edit")
+	//@RequiresPermissions("person:companyContact:edit")
 	@RequestMapping(value = "save")
 	public String save(CompanyContact companyContact, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, companyContact)) {
@@ -111,7 +111,7 @@ public class CompanyContactController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("person:companyContact:edit")
+	//@RequiresPermissions("person:companyContact:edit")
 	@RequestMapping(value = "delete")
 	public String delete(CompanyContact companyContact, RedirectAttributes redirectAttributes) {
 		companyContactService.delete(companyContact);

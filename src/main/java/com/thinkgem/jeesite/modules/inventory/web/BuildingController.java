@@ -59,7 +59,7 @@ public class BuildingController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:building:view")
+	//@RequiresPermissions("inventory:building:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Building> page = buildingService.findPage(new Page<Building>(request, response), building);
@@ -79,7 +79,7 @@ public class BuildingController extends BaseController {
 		return list;
 	}
 
-	@RequiresPermissions("inventory:building:view")
+	//@RequiresPermissions("inventory:building:view")
 	@RequestMapping(value = "form")
 	public String form(Building building, Model model) {
 		model.addAttribute("building", building);
@@ -96,7 +96,7 @@ public class BuildingController extends BaseController {
 		return "modules/inventory/buildingAdd";
 	}
 
-	@RequiresPermissions("inventory:building:edit")
+	//@RequiresPermissions("inventory:building:edit")
 	@RequestMapping(value = "save")
 	public String save(Building building, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, building)) {
@@ -152,7 +152,7 @@ public class BuildingController extends BaseController {
 		return jsonObject.toString();
 	}
 
-	@RequiresPermissions("inventory:building:edit")
+	//@RequiresPermissions("inventory:building:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Building building, RedirectAttributes redirectAttributes) {
 		buildingService.delete(building);

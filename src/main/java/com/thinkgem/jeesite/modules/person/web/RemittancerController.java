@@ -53,7 +53,7 @@ public class RemittancerController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:remittancer:view")
+	//@RequiresPermissions("person:remittancer:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Remittancer> page = remittancerService.findPage(new Page<Remittancer>(request, response), remittancer);
@@ -61,7 +61,7 @@ public class RemittancerController extends BaseController {
 		return "modules/person/remittancerList";
 	}
 
-	@RequiresPermissions("person:remittancer:view")
+	//@RequiresPermissions("person:remittancer:view")
 	@RequestMapping(value = "form")
 	public String form(Remittancer remittancer, Model model) {
 		model.addAttribute("remittancer", remittancer);
@@ -74,7 +74,7 @@ public class RemittancerController extends BaseController {
 		return "modules/person/remittancerAdd";
 	}
 
-	@RequiresPermissions("person:remittancer:edit")
+	//@RequiresPermissions("person:remittancer:edit")
 	@RequestMapping(value = "save")
 	public String save(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, remittancer)) {
@@ -125,7 +125,7 @@ public class RemittancerController extends BaseController {
 		return jsonObject.toString();
 	}
 	
-	@RequiresPermissions("person:remittancer:edit")
+	//@RequiresPermissions("person:remittancer:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Remittancer remittancer, RedirectAttributes redirectAttributes) {
 		remittancerService.delete(remittancer);

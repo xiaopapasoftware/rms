@@ -51,7 +51,7 @@ public class ManagementCompanyController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:managementCompany:view")
+	//@RequiresPermissions("inventory:managementCompany:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(ManagementCompany managementCompany, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -61,14 +61,14 @@ public class ManagementCompanyController extends BaseController {
 		return "modules/inventory/managementCompanyList";
 	}
 
-	@RequiresPermissions("inventory:managementCompany:view")
+	//@RequiresPermissions("inventory:managementCompany:view")
 	@RequestMapping(value = "form")
 	public String form(ManagementCompany managementCompany, Model model) {
 		model.addAttribute("managementCompany", managementCompany);
 		return "modules/inventory/managementCompanyForm";
 	}
 
-	@RequiresPermissions("inventory:managementCompany:edit")
+	//@RequiresPermissions("inventory:managementCompany:edit")
 	@RequestMapping(value = "save")
 	public String save(ManagementCompany managementCompany, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, managementCompany)) {
@@ -105,7 +105,7 @@ public class ManagementCompanyController extends BaseController {
 
 	}
 
-	@RequiresPermissions("inventory:managementCompany:edit")
+	//@RequiresPermissions("inventory:managementCompany:edit")
 	@RequestMapping(value = "delete")
 	public String delete(ManagementCompany managementCompany, RedirectAttributes redirectAttributes) {
 		managementCompanyService.delete(managementCompany);

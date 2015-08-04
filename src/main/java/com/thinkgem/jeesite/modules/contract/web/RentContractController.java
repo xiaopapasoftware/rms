@@ -104,7 +104,7 @@ public class RentContractController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("contract:rentContract:view")
+	//@RequiresPermissions("contract:rentContract:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
@@ -230,7 +230,7 @@ public class RentContractController extends BaseController {
 		return list(new RentContract(), request, response, model);
 	}
 
-	@RequiresPermissions("contract:rentContract:view")
+	//@RequiresPermissions("contract:rentContract:view")
 	@RequestMapping(value = "form")
 	public String form(RentContract rentContract, Model model) {
 		rentContract.setSignType("0");// 新签
@@ -420,7 +420,7 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractForm";
 	}
 
-	@RequiresPermissions("contract:rentContract:edit")
+	//@RequiresPermissions("contract:rentContract:edit")
 	@RequestMapping(value = "save")
 	public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
@@ -627,7 +627,7 @@ public class RentContractController extends BaseController {
 		return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 	}
 
-	@RequiresPermissions("contract:rentContract:edit")
+	//@RequiresPermissions("contract:rentContract:edit")
 	@RequestMapping(value = "delete")
 	public String delete(RentContract rentContract, RedirectAttributes redirectAttributes) {
 		rentContractService.delete(rentContract);

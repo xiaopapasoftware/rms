@@ -53,7 +53,7 @@ public class OwnerController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:owner:view")
+	//@RequiresPermissions("person:owner:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Owner> page = ownerService.findPage(new Page<Owner>(request, response), owner);
@@ -61,7 +61,7 @@ public class OwnerController extends BaseController {
 		return "modules/person/ownerList";
 	}
 
-	@RequiresPermissions("person:owner:view")
+	//@RequiresPermissions("person:owner:view")
 	@RequestMapping(value = "form")
 	public String form(Owner owner, Model model) {
 		model.addAttribute("owner", owner);
@@ -74,7 +74,7 @@ public class OwnerController extends BaseController {
 		return "modules/person/ownerAdd";
 	}
 
-	@RequiresPermissions("person:owner:edit")
+	//@RequiresPermissions("person:owner:edit")
 	@RequestMapping(value = "save")
 	public String save(Owner owner, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, owner)) {
@@ -126,7 +126,7 @@ public class OwnerController extends BaseController {
 		return jsonObject.toString();
 	}
 	
-	@RequiresPermissions("person:owner:edit")
+	//@RequiresPermissions("person:owner:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Owner owner, RedirectAttributes redirectAttributes) {
 		ownerService.delete(owner);

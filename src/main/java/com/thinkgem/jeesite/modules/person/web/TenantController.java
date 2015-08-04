@@ -68,7 +68,7 @@ public class TenantController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:tenant:view")
+	//@RequiresPermissions("person:tenant:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
@@ -78,7 +78,7 @@ public class TenantController extends BaseController {
 		return "modules/person/tenantList";
 	}
 
-	@RequiresPermissions("person:tenant:view")
+	//@RequiresPermissions("person:tenant:view")
 	@RequestMapping(value = "form")
 	public String form(Tenant tenant, Model model) {
 		model.addAttribute("tenant", tenant);
@@ -96,7 +96,7 @@ public class TenantController extends BaseController {
 		return "modules/person/tenantAddDialog";
 	}
 
-	@RequiresPermissions("person:tenant:edit")
+	//@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "save")
 	public String save(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, tenant)) {
@@ -144,7 +144,7 @@ public class TenantController extends BaseController {
 		return jsonObject.toString();
 	}
 
-	@RequiresPermissions("person:tenant:edit")
+	//@RequiresPermissions("person:tenant:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Tenant tenant, RedirectAttributes redirectAttributes) {
 		ContractTenant ct = new ContractTenant();

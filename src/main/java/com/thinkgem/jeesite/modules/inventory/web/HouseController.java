@@ -75,7 +75,7 @@ public class HouseController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("inventory:house:view")
+	//@RequiresPermissions("inventory:house:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<House> page = houseService.findPage(new Page<House>(request, response), house);
@@ -104,7 +104,7 @@ public class HouseController extends BaseController {
 		return list;
 	}
 
-	@RequiresPermissions("inventory:house:view")
+	//@RequiresPermissions("inventory:house:view")
 	@RequestMapping(value = "form")
 	public String form(House house, Model model) {
 		house.setHouseCode(StringUtils.getSysJournalNo(12, true));
@@ -137,7 +137,7 @@ public class HouseController extends BaseController {
 		return "modules/inventory/houseAdd";
 	}
 
-	@RequiresPermissions("inventory:house:edit")
+	//@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "finishDirect")
 	@ResponseBody
 	public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
@@ -155,7 +155,7 @@ public class HouseController extends BaseController {
 			}
 		}
 	}
-	@RequiresPermissions("inventory:house:edit")
+	//@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "save")
 	public String save(House house, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, house)) {
@@ -241,7 +241,7 @@ public class HouseController extends BaseController {
 		return jsonObject.toString();
 	}
 
-	@RequiresPermissions("inventory:house:edit")
+	//@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "delete")
 	public String delete(House house, RedirectAttributes redirectAttributes) {
 		House queryhouse = houseService.get(house);

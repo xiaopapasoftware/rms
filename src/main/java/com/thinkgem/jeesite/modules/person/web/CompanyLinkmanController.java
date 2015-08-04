@@ -56,7 +56,7 @@ public class CompanyLinkmanController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:companyLinkman:view")
+	//@RequiresPermissions("person:companyLinkman:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(CompanyLinkman companyLinkman, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -67,14 +67,14 @@ public class CompanyLinkmanController extends BaseController {
 		return "modules/person/companyLinkmanList";
 	}
 
-	@RequiresPermissions("person:companyLinkman:view")
+	//@RequiresPermissions("person:companyLinkman:view")
 	@RequestMapping(value = "form")
 	public String form(CompanyLinkman companyLinkman, Model model) {
 		model.addAttribute("companyLinkman", companyLinkman);
 		model.addAttribute("listCompany", companyService.findList(new Company()));
 		return "modules/person/companyLinkmanForm";
 	}
-	@RequiresPermissions("person:companyLinkman:edit")
+	//@RequiresPermissions("person:companyLinkman:edit")
 	@RequestMapping(value = "save")
 	public String save(CompanyLinkman companyLinkman, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, companyLinkman)) {
@@ -112,7 +112,7 @@ public class CompanyLinkmanController extends BaseController {
 		}
 	}
 
-	@RequiresPermissions("person:companyLinkman:edit")
+	//@RequiresPermissions("person:companyLinkman:edit")
 	@RequestMapping(value = "delete")
 	public String delete(CompanyLinkman companyLinkman, RedirectAttributes redirectAttributes) {
 		companyLinkmanService.delete(companyLinkman);

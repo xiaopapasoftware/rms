@@ -43,7 +43,7 @@ public class CustomerReport extends BaseController {
 	@Autowired
 	private HouseService houseService;
 
-	@RequiresPermissions("customer:leaseContract:view")
+	//@RequiresPermissions("customer:leaseContract:view")
 	@RequestMapping(value = {"leaseContract"})
 	public String leaseContract(LeaseContractReport leaseContractReport, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<LeaseContractReport> page = customerReportService.findLeaseContractList(new Page<LeaseContractReport>(request, response),leaseContractReport);
@@ -65,7 +65,7 @@ public class CustomerReport extends BaseController {
 		return "modules/report/leaseContractList";
 	}
 	
-	@RequiresPermissions("customer:leaseContract:export")
+	//@RequiresPermissions("customer:leaseContract:export")
     @RequestMapping(value = "export", method=RequestMethod.POST)
     public String exportFile(LeaseContractReport leaseContractReport, HttpServletRequest request, HttpServletResponse response, Model model) {
 		try {
@@ -80,7 +80,7 @@ public class CustomerReport extends BaseController {
 		return this.leaseContract(leaseContractReport, request, response, model);
     }
 	
-	@RequiresPermissions("customer:tenant:view")
+	//@RequiresPermissions("customer:tenant:view")
 	@RequestMapping(value = {"tenant"})
 	public String tenant(TenantReport tenantReport, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<TenantReport> page = tenantReportService.findTenantList(new Page<TenantReport>(request, response),tenantReport);
@@ -111,7 +111,7 @@ public class CustomerReport extends BaseController {
 		return "modules/report/rentContractList";
 	}
 	
-	@RequiresPermissions("customer:tenant:export")
+	//@RequiresPermissions("customer:tenant:export")
     @RequestMapping(value = "exportTenant", method=RequestMethod.POST)
     public String exportTenant(TenantReport tenantReport, HttpServletRequest request, HttpServletResponse response, Model model) {
 		try {

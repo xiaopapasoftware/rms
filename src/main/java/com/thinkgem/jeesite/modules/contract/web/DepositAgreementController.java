@@ -77,7 +77,7 @@ public class DepositAgreementController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("contract:depositAgreement:view")
+	//@RequiresPermissions("contract:depositAgreement:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -118,7 +118,7 @@ public class DepositAgreementController extends BaseController {
 		return "modules/contract/depositAgreementList";
 	}
 
-	@RequiresPermissions("contract:depositAgreement:view")
+	//@RequiresPermissions("contract:depositAgreement:view")
 	@RequestMapping(value = "form")
 	public String form(DepositAgreement depositAgreement, Model model) {
 		model.addAttribute("depositAgreement", depositAgreement);
@@ -173,7 +173,7 @@ public class DepositAgreementController extends BaseController {
 		return "modules/contract/depositAgreementForm";
 	}
 
-	@RequiresPermissions("contract:depositAgreement:edit")
+	//@RequiresPermissions("contract:depositAgreement:edit")
 	@RequestMapping(value = "save")
 	public String save(DepositAgreement depositAgreement, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
@@ -267,7 +267,7 @@ public class DepositAgreementController extends BaseController {
 		return "modules/contract/rentContractAdd";
 	}
 
-	@RequiresPermissions("contract:depositAgreement:edit")
+	//@RequiresPermissions("contract:depositAgreement:edit")
 	@RequestMapping(value = "delete")
 	public String delete(DepositAgreement depositAgreement, RedirectAttributes redirectAttributes) {
 		depositAgreementService.delete(depositAgreement);

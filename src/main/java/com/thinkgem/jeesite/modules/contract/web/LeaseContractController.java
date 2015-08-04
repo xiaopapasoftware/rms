@@ -70,7 +70,7 @@ public class LeaseContractController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("contract:leaseContract:view")
+	//@RequiresPermissions("contract:leaseContract:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -117,7 +117,7 @@ public class LeaseContractController extends BaseController {
 		return "modules/contract/auditHis";
 	}
 
-	@RequiresPermissions("contract:leaseContract:view")
+	//@RequiresPermissions("contract:leaseContract:view")
 	@RequestMapping(value = "form")
 	public String form(LeaseContract leaseContract, Model model) {
 		model.addAttribute("leaseContract", leaseContract);
@@ -146,7 +146,7 @@ public class LeaseContractController extends BaseController {
 		return "modules/contract/leaseContractForm";
 	}
 
-	@RequiresPermissions("contract:leaseContract:edit")
+	//@RequiresPermissions("contract:leaseContract:edit")
 	@RequestMapping(value = "save")
 	public String save(LeaseContract leaseContract, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, leaseContract)) {
@@ -182,7 +182,7 @@ public class LeaseContractController extends BaseController {
 		return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
 	}
 
-	@RequiresPermissions("contract:leaseContract:edit")
+	//@RequiresPermissions("contract:leaseContract:edit")
 	@RequestMapping(value = "delete")
 	public String delete(LeaseContract leaseContract, RedirectAttributes redirectAttributes) {
 		leaseContractService.delete(leaseContract);

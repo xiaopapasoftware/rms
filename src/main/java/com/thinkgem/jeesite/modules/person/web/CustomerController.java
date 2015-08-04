@@ -67,7 +67,7 @@ public class CustomerController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("person:customer:view")
+	//@RequiresPermissions("person:customer:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
@@ -76,7 +76,7 @@ public class CustomerController extends BaseController {
 		return "modules/person/customerList";
 	}
 
-	@RequiresPermissions("person:customer:view")
+	//@RequiresPermissions("person:customer:view")
 	@RequestMapping(value = "form")
 	public String form(Customer customer, Model model) {
 		model.addAttribute("customer", customer);
@@ -84,7 +84,7 @@ public class CustomerController extends BaseController {
 		return "modules/person/customerForm";
 	}
 
-	@RequiresPermissions("person:customer:edit")
+	//@RequiresPermissions("person:customer:edit")
 	@RequestMapping(value = "save")
 	public String save(Customer customer, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, customer)) {
@@ -123,7 +123,7 @@ public class CustomerController extends BaseController {
 
 	}
 
-	@RequiresPermissions("person:customer:edit")
+	//@RequiresPermissions("person:customer:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Customer customer, RedirectAttributes redirectAttributes) {
 		customerService.delete(customer);
@@ -134,7 +134,7 @@ public class CustomerController extends BaseController {
 	/**
 	 * 由用户转为租客
 	 */
-	@RequiresPermissions("person:customer:edit")
+	//@RequiresPermissions("person:customer:edit")
 	@RequestMapping(value = "convertToTenant")
 	public String convertToTenant(Customer customer, HttpServletRequest request, HttpServletResponse response,
 			Model model) {
@@ -154,7 +154,7 @@ public class CustomerController extends BaseController {
 	/**
 	 * 客户转租客，保存租客信息。
 	 * */
-	@RequiresPermissions("person:customer:edit")
+	//@RequiresPermissions("person:customer:edit")
 	@RequestMapping(value = "saveTenant")
 	public String saveTenant(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
 		List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);

@@ -71,7 +71,7 @@ public class RoomDevicesController extends BaseController {
 		return entity;
 	}
 
-	@RequiresPermissions("device:roomDevices:view")
+	//@RequiresPermissions("device:roomDevices:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(RoomDevices roomDevices, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<RoomDevices> page = roomDevicesService.findPage(new Page<RoomDevices>(request, response), roomDevices);
@@ -79,14 +79,14 @@ public class RoomDevicesController extends BaseController {
 		return "modules/device/roomDevicesList";
 	}
 
-	@RequiresPermissions("device:roomDevices:view")
+	//@RequiresPermissions("device:roomDevices:view")
 	@RequestMapping(value = "form")
 	public String form(RoomDevices roomDevices, Model model) {
 		model.addAttribute("roomDevices", roomDevices);
 		return "modules/device/roomDevicesForm";
 	}
 
-	@RequiresPermissions("device:roomDevices:edit")
+	//@RequiresPermissions("device:roomDevices:edit")
 	@RequestMapping(value = "save")
 	public String save(RoomDevices roomDevices, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, roomDevices)) {
@@ -114,7 +114,7 @@ public class RoomDevicesController extends BaseController {
 		addMessage(redirectAttributes, "房间设备配备成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 	}
-	@RequiresPermissions("device:roomDevices:edit")
+	//@RequiresPermissions("device:roomDevices:edit")
 	@RequestMapping(value = "delete")
 	public String delete(RoomDevices roomDevices, RedirectAttributes redirectAttributes) {
 		roomDevicesService.delete(roomDevices);
@@ -125,7 +125,7 @@ public class RoomDevicesController extends BaseController {
 	/**
 	 * 房间设备维护
 	 * */
-	@RequiresPermissions("device:roomDevices:view")
+	//@RequiresPermissions("device:roomDevices:view")
 	@RequestMapping(value = "maintainDevices")
 	public String maintainDevices(RoomDevices roomDevices, RedirectAttributes redirectAttributes, Model model) {
 		RoomDevices rd = new RoomDevices();
@@ -169,7 +169,7 @@ public class RoomDevicesController extends BaseController {
 	/**
 	 * 房屋设备查看
 	 * */
-	@RequiresPermissions("device:roomDevices:view")
+	//@RequiresPermissions("device:roomDevices:view")
 	@RequestMapping(value = "viewHouseDevices")
 	public String viewHouseDevices(RoomDevices roomDevices, Model model) {
 		String houseId = roomDevices.getHouseId();
