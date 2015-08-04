@@ -352,7 +352,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addTenant()">添加承租人</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addTenant()">添加承租人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -364,7 +364,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addLive()">添加入住人</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addLive()">添加入住人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -385,7 +385,7 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addProject()">添加物业项目</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addProject()">添加物业项目</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -396,7 +396,7 @@
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addBuilding()">添加楼宇</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addBuilding()">添加楼宇</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -407,7 +407,7 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addHouse()">添加房屋</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addHouse()">添加房屋</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -417,7 +417,7 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
-				<a href="#" onclick="addRoom()">添加房间</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addRoom()">添加房间</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -508,7 +508,7 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
 				</form:select>
-				<a href="#" onclick="addPartner()">添加合作人</a>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addPartner()">添加合作人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">

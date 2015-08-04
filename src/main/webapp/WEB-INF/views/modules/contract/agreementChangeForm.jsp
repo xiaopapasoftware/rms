@@ -116,7 +116,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addTenant()">添加承租人</a>
+				<shiro:hasPermission name="contract:agreementChange:edit"><a href="#" onclick="addTenant()">添加承租人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -128,7 +128,7 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addLive()">添加入住人</a>
+				<shiro:hasPermission name="contract:agreementChange:edit"><a href="#" onclick="addLive()">添加入住人</a></shiro:hasPermission>
 			</div>
 		</div>
 			<div class="control-group">

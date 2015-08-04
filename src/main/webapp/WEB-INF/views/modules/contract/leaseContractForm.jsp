@@ -195,7 +195,7 @@
 					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addProject()">添加物业项目</a>
+				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addProject()">添加物业项目</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -206,7 +206,7 @@
 					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addBuilding()">添加楼宇</a>
+				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addBuilding()">添加楼宇</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -217,7 +217,7 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addHouse()">添加房屋</a>
+				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addHouse()">添加房屋</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -228,7 +228,7 @@
 					<form:options items="${remittancerList}" itemLabel="userName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addRemittancer()">添加汇款人</a>
+				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addRemittancer()">添加汇款人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
