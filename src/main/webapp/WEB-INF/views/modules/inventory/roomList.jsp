@@ -126,7 +126,7 @@
 				<th>创建人</th>
 				<th>修改人</th>
 				<th>备注信息</th>
-				<th><shiro:hasPermission name="inventory:room:edit">操作</shiro:hasPermission></th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -150,31 +150,21 @@
 				<td>${room.createBy.loginName}</td>
 				<td>${room.updateBy.loginName}</td>
 				<td>${room.remarks}</td>
-				<td>
-					<shiro:hasPermission name="inventory:room:edit">
-    					<a href="${ctx}/inventory/room/form?id=${room.id}">修改</a>
-    				</shiro:hasPermission>
-    			</td>
-	    		<td>
-	    			<shiro:hasPermission name="inventory:room:del">
-	    				<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
-	    			</shiro:hasPermission>
-	    		</td>
-				<td>
-					<shiro:hasPermission name="device:room:done">
-						<c:if test="${room.roomStatus eq '0'}"><a href="#" onclick="finishDirect('${room.id}');">装修完成</a></c:if></td>
-					</shiro:hasPermission>
-				</td>
-				<td>
-					<shiro:hasPermission name="device:roomDevices:edit">
-						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备维护</a>
-					</shiro:hasPermission>
-				</td>
-				<td>
-					<shiro:lacksPermission name="device:roomDevices:view">
-						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a>
-					</shiro:lacksPermission>
-				</td>
+				<shiro:hasPermission name="inventory:room:edit">
+   					<td><a href="${ctx}/inventory/room/form?id=${room.id}">修改</a></td>
+   				</shiro:hasPermission>
+    			<shiro:hasPermission name="inventory:room:del">
+    				<td><a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a></td>
+    			</shiro:hasPermission>
+				<shiro:hasPermission name="device:room:done">
+					<td><c:if test="${room.roomStatus eq '0'}"><a href="#" onclick="finishDirect('${room.id}');">装修完成</a></c:if></td>
+				</shiro:hasPermission>
+				<shiro:hasPermission name="device:roomDevices:edit">
+					<td><a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备维护</a></td>
+				</shiro:hasPermission>
+				<shiro:lacksPermission name="device:roomDevices:view">
+					<td><a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a></td>
+				</shiro:lacksPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

@@ -228,7 +228,7 @@
 				<th>修改时间</th>
 				<th>创建人</th>
 				<th>修改人</th>
-				<shiro:hasPermission name="contract:rentContract:edit"><th>操作</th></shiro:hasPermission>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
