@@ -274,6 +274,7 @@
 	    				</c:if>
 					</shiro:hasPermission>
 				</td>
+				<shiro:hasPermission name="contract:depositAgreement:return">
 				<td>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
@@ -284,6 +285,7 @@
 						<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>
 					</c:if>
 				</td>
+				</shiro:hasPermission>
 				<td>
 					<c:if test="${depositAgreement.agreementStatus!='6' &&depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">
 						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a></td>

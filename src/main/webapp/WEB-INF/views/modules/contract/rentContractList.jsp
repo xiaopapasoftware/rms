@@ -338,6 +338,7 @@
     					 </c:if> 
 	    			</td>
    					 </shiro:hasPermission>
+   					<shiro:hasPermission name="contract:rentContract:edit">
 	    			<td>
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					    <a href="${ctx}/contract/rentContract/renewContract?id=${rentContract.id}" onclick="return confirmx('确认要人工续签吗?', this.href)">人工续签</a>
@@ -348,6 +349,7 @@
     					 	<a href="${ctx}/contract/rentContract/autoRenewContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期自动续签吗?', this.href)">逾期自动续签</a>
     					 </c:if> 
 	    			</td>
+	    			</shiro:hasPermission>
 					<shiro:hasPermission name="contract:rentContract:return">
 					<td>
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">

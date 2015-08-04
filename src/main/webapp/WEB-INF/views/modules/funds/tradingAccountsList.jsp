@@ -139,6 +139,7 @@
 					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>-->
+					<shiro:hasPermission name="funds:tradingAccounts:audit">
 					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
@@ -151,9 +152,12 @@
 					<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="funds:tradingAccounts:receipt">
 					<c:if test="${tradingAccounts.tradeStatus=='1'}">
 						<a href="${ctx}/funds/invoice/form?tradingAccountsId=${tradingAccounts.id}">开具发票</a>
 					</c:if>
+					</shiro:hasPermission>
 					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
 						<a href="javascript:void(0);" onclick="auditHis('${tradingAccounts.id}')">审核记录</a>
 					</c:if>

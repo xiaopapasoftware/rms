@@ -153,9 +153,13 @@
 						<td>
 							<a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
 						</td>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="inventory:house:del">
 						<td>	
 							<a href="${ctx}/inventory/house/delete?id=${house.id}" onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a>
 						</td>
+					</shiro:hasPermission>
+					<shiro:hasPermission name="device:house:done">
 						<td>
 							<c:if test="${house.houseStatus eq '0'}">
 								<a href="#" onclick="finishDirect('${house.id}');">装修完成</a>

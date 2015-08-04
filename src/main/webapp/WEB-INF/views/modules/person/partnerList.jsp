@@ -116,10 +116,14 @@
 				<td>
 					${partner.remarks}
 				</td>
-				<shiro:hasPermission name="person:partner:edit"><td>
+				<td>
+				<shiro:hasPermission name="person:partner:edit">
     				<a href="${ctx}/person/partner/form?id=${partner.id}">修改</a>
+    			</shiro:hasPermission>
+    			<shiro:hasPermission name="person:partner:del">
 					<a href="${ctx}/person/partner/delete?id=${partner.id}" onclick="return confirmx('确认要删除该合作人信息吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

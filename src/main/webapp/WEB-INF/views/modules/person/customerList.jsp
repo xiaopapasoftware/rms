@@ -103,13 +103,17 @@
 				<td>
 					${customer.remarks}
 				</td>
-				<shiro:hasPermission name="person:customer:edit"><td>
+				<td>
+				<shiro:hasPermission name="person:customer:edit">
     				<a href="${ctx}/person/customer/form?id=${customer.id}">修改</a>
-					<a href="${ctx}/person/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户信息吗？', this.href)">删除</a>
 					<c:if test="${customer.isTenant eq '0'}">
 						<a href="${ctx}/person/customer/convertToTenant?id=${customer.id}" onclick="return confirmx('确认要转为租客吗?', this.href)">转租客</a>
 					</c:if>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				<shiro:hasPermission name="person:customer:del">
+				<a href="${ctx}/person/customer/delete?id=${customer.id}" onclick="return confirmx('确认要删除该客户信息吗？', this.href)">删除</a>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

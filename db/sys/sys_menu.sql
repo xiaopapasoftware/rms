@@ -238,3 +238,41 @@ UPDATE sys_menu SET NAME='设备修改' WHERE id='196';
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('239','116','0,1,96,116','退租','70',NULL,NULL,NULL,'0','contract:rentContract:return','1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('240','116','0,1,96,116','特殊退租','80',NULL,NULL,NULL,'0','contract:rentContract:specialreturn','1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('241','116','0,1,96,116','协议变更','90',NULL,NULL,NULL,'0','contract:rentContract:change','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('242','110','0,1,96,110','装修完成','90',NULL,NULL,NULL,'0','device:house:done','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('244','110','0,1,96,110','删除','90',NULL,NULL,NULL,'0','device:roomDevices:del','1',now(),'1',now(),NULL,'0');
+
+INSERT INTO sys_menu (id, parent_id, parent_ids, NAME, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) VALUES('243','111','0,1,96,111','装修完成','120',NULL,NULL,NULL,'0','device:room:done','1',NOW(),'1',NOW(),NULL,'0');
+INSERT INTO sys_menu (id, parent_id, parent_ids, NAME, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) VALUES('245','111','0,1,96,111','删除','120',NULL,NULL,NULL,'0','device:roomDevices:del','1',NOW(),'1',NOW(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('246','109','0,1,105,109','删除','70',NULL,NULL,NULL,'0','inventory:building:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('247','107','0,1,105,107','删除','70',NULL,NULL,NULL,'0','inventory:managementCompany:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('248','106','0,1,105,106','删除','70',NULL,NULL,NULL,'0','inventory:neighborhood:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('249','108','0,1,105,108','删除','70',NULL,NULL,NULL,'0','inventory:propertyProject:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('250','177','0,1,176,177','删除','70',NULL,NULL,NULL,'0','device:devices:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('251','129','0,1,96,129','删除','70',NULL,NULL,NULL,'0','person:companyContact:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('252','101','0,1,96,101','删除','70',NULL,NULL,NULL,'0','person:companyLinkman:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('253','100','0,1,96,100','删除','70',NULL,NULL,NULL,'0','person:company:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('254','98','0,1,96,98','删除','70',NULL,NULL,NULL,'0','person:customer:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('255','97','0,1,96,97','删除','70',NULL,NULL,NULL,'0','person:neighborhoodContact:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('256','102','0,1,96,102','删除','70',NULL,NULL,NULL,'0','person:owner:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('257','104','0,1,96,104','修改','70',NULL,NULL,NULL,'0','person:partner:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('258','103','0,1,96,103','删除','70',NULL,NULL,NULL,'0','person:remittancer:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('259','99','0,1,96,99','删除','70',NULL,NULL,NULL,'0','person:tenant:del','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('260','115','0,1,96,115','转合同/转违约','70',NULL,NULL,NULL,'0','contract:depositAgreement:return','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('261','158','0,1,96,158','开具发票','70',NULL,NULL,NULL,'0','funds:tradingAccounts:receipt','1',now(),'1',now(),NULL,'0');

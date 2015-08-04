@@ -156,12 +156,12 @@
     				</shiro:hasPermission>
     			</td>
 	    		<td>
-	    			<shiro:hasPermission name="inventory:room:edit">
+	    			<shiro:hasPermission name="inventory:room:del">
 	    				<a href="${ctx}/inventory/room/delete?id=${room.id}" onclick="return confirmx('确认要删除该房间及图片信息吗？', this.href)">删除</a>
 	    			</shiro:hasPermission>
 	    		</td>
 				<td>
-					<shiro:hasPermission name="inventory:room:edit">
+					<shiro:hasPermission name="device:room:done">
 						<c:if test="${room.roomStatus eq '0'}"><a href="#" onclick="finishDirect('${room.id}');">装修完成</a></c:if></td>
 					</shiro:hasPermission>
 				</td>
@@ -171,7 +171,7 @@
 					</shiro:hasPermission>
 				</td>
 				<td>
-					<shiro:lacksPermission name="device:roomDevices:edit">
+					<shiro:lacksPermission name="device:roomDevices:view">
 						<a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a>
 					</shiro:lacksPermission>
 				</td>

@@ -118,10 +118,14 @@
 				<td>
 					${devices.remarks}
 				</td>
-				<shiro:hasPermission name="device:devices:edit"><td>
+				<td>
+				<shiro:hasPermission name="device:devices:edit">
     				<a href="${ctx}/device/devices/form?id=${devices.id}">修改</a>
+    			</shiro:hasPermission>
+    			<shiro:hasPermission name="device:devices:del">
 					<a href="${ctx}/device/devices/delete?id=${devices.id}" onclick="return confirmx('确认要删除该设备信息吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

@@ -92,10 +92,14 @@
 				<td>
 					${neighborhoodContact.remarks}
 				</td>
-				<shiro:hasPermission name="person:neighborhoodContact:edit"><td>
+				<td>
+				<shiro:hasPermission name="person:neighborhoodContact:edit">
     				<a href="${ctx}/person/neighborhoodContact/form?id=${neighborhoodContact.id}">修改</a>
+    			</shiro:hasPermission>
+    			<shiro:hasPermission name="person:neighborhoodContact:del">
 					<a href="${ctx}/person/neighborhoodContact/delete?id=${neighborhoodContact.id}" onclick="return confirmx('确认要删除该居委会联系人吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

@@ -96,10 +96,14 @@
 				<td>
 					${propertyProject.remarks}
 				</td>
-				<shiro:hasPermission name="inventory:propertyProject:edit"><td>
+				<td>
+				<shiro:hasPermission name="inventory:propertyProject:edit">
     				<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">修改</a>
+    			</shiro:hasPermission>
+    			<shiro:hasPermission name="inventory:propertyProject:del">
 					<a href="${ctx}/inventory/propertyProject/delete?id=${propertyProject.id}" onclick="return confirmx('确认要删除该物业项目和图片、其下楼宇和图片、其下房屋和图片、其下房间和图片吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

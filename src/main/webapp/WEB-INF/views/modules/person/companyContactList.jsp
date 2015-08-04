@@ -90,10 +90,14 @@
 				<td>
 					${companyContact.remarks}
 				</td>
-				<shiro:hasPermission name="person:companyContact:edit"><td>
+				<td>
+				<shiro:hasPermission name="person:companyContact:edit">
     				<a href="${ctx}/person/companyContact/form?id=${companyContact.id}">修改</a>
+    			</shiro:hasPermission>
+    			<shiro:hasPermission name="person:companyContact:del">
 					<a href="${ctx}/person/companyContact/delete?id=${companyContact.id}" onclick="return confirmx('确认要删除该物业公司联系人吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>
