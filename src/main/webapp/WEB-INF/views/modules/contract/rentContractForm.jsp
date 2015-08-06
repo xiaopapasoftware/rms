@@ -291,7 +291,7 @@
 		}
 		
 		function addPartner() {
-			top.$.jBox.open("iframe:${ctx}/person/tenant/add",'添加合作人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+			top.$.jBox.open("iframe:${ctx}/person/partner/add",'添加合作人',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
 		}
 		
 		function saveHandler(v,h,f) {

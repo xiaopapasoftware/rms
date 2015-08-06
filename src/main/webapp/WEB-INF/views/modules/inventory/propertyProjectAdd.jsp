@@ -48,6 +48,21 @@
 				}
 			});
 		});
+		
+		function addNeighborhood() {
+			top.$.jBox.open("iframe:${ctx}/inventory/neighborhood/add",'添加居委会',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function addManagementCompany() {
+			top.$.jBox.open("iframe:${ctx}/inventory/managementCompany/add",'添加物业公司',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+		}
+		
+		function saveHandler(v,h,f) {
+			if(v=='1') {
+				h.find("iframe")[0].contentWindow.$("#inputForm").submit();
+				return false;
+			}
+		}
 	</script>
 </head>
 <body>
@@ -62,6 +77,7 @@
 					<form:options items="${listNeighborhood}" itemLabel="neighborhoodName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addNeighborhood()">添加居委会</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -72,6 +88,7 @@
 					<form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addManagementCompany()">添加物业公司</a>
 			</div>
 		</div>
 		<div class="control-group">

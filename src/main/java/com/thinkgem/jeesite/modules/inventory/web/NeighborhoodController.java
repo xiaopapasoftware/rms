@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -65,6 +67,12 @@ public class NeighborhoodController extends BaseController {
 		model.addAttribute("neighborhood", neighborhood);
 		return "modules/inventory/neighborhoodForm";
 	}
+	
+	@RequestMapping(value = "add")
+	public String add(Neighborhood neighborhood, Model model) {
+		model.addAttribute("neighborhood", neighborhood);
+		return "modules/inventory/neighborhoodAdd";
+	}
 
 	//@RequiresPermissions("inventory:neighborhood:edit")
 	@RequestMapping(value = "save")
@@ -98,6 +106,23 @@ public class NeighborhoodController extends BaseController {
 			}
 		}
 	}
+	
+	@RequestMapping(value = "ajaxSave")
+	@ResponseBody
+	public String ajaxSave(Neighborhood neighborhood, Model model, RedirectAttributes redirectAttributes) {
+		JSONObject jsonObject = new JSONObject();
+		List<Neighborhood> neighborhoods = neighborhoodService.findNeighborhoodByNameAndAddress(neighborhood);
+		if (CollectionUtils.isNotEmpty(neighborhoods)) {
+			jsonObject.put("message", "居委会名称及地址已被使用，不能重复添加");
+		} else {
+			neighborhoodService.save(neighborhood);
+			jsonObject.put("id", neighborhood.getId());
+			jsonObject.put("name", neighborhood.getNeighborhoodName());
+		}
+		
+		return jsonObject.toString();
+	}
+	
 	//@RequiresPermissions("inventory:neighborhood:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Neighborhood neighborhood, RedirectAttributes redirectAttributes) {
