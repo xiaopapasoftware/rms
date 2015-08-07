@@ -21,6 +21,22 @@
 		            event.preventDefault();
 		        }
 		    });
+			
+			//合同续租提醒时间默认为结束时间前1个月
+			var expiredDate = $("input[name='expiredDate']").val();
+			var expiredDate = new Date(Date.parse(expiredDate));
+			expiredDate.setMonth(expiredDate.getMonth() - 1);
+			var year3 = expiredDate.getFullYear();
+			var month3 = expiredDate.getMonth() + 1;
+			if(parseFloat(month3)<10){
+				month3 = "0" + "" + month3;
+			}
+			var day3 = expiredDate.getDate();
+			if(parseFloat(day3)<10){
+				day3 = "0" + "" + day3;
+			}
+			var curDateStyle3 = year3 + "-" + month3 + "-" + day3;
+			$("input[name='remindTime']").val(curDateStyle3);
 		});
 		
 		function submitData() {

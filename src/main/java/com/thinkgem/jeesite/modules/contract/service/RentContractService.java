@@ -901,14 +901,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 							paymentTrans.setTransAmount(rentContract.getRental());
 							paymentTrans.setTransStatus("2");// 完全到账登记
 							depositAgreementAmount = depositAgreementAmount - rentContract.getRental();
-						}
-						if (depositAgreementAmount > 0 && depositAgreementAmount < rentContract.getRental()){
+						} else if (depositAgreementAmount > 0 && depositAgreementAmount < rentContract.getRental()){
 							paymentTrans.setLastAmount(rentContract.getRental() - depositAgreementAmount);
 							paymentTrans.setTransAmount(depositAgreementAmount);
 							paymentTrans.setTransStatus("1");// 部分到账登记
 							depositAgreementAmount = 0d;
-						}
-						if (depositAgreementAmount == 0d) {
+						} else {
 						    	paymentTrans.setLastAmount(rentContract.getRental());
 							paymentTrans.setTransAmount(0D);
 							paymentTrans.setTransStatus("0");// 未到账登记
