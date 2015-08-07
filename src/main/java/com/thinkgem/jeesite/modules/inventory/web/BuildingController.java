@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,123 +40,115 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 @RequestMapping(value = "${adminPath}/inventory/building")
 public class BuildingController extends BaseController {
 
-	@Autowired
-	private PropertyProjectService propertyProjectService;
+    @Autowired
+    private PropertyProjectService propertyProjectService;
 
-	@Autowired
-	private BuildingService buildingService;
+    @Autowired
+    private BuildingService buildingService;
 
-	@ModelAttribute
-	public Building get(@RequestParam(required = false) String id) {
-		Building entity = null;
-		if (StringUtils.isNotBlank(id)) {
-			entity = buildingService.get(id);
-		}
-		if (entity == null) {
-			entity = new Building();
-		}
-		return entity;
+    @ModelAttribute
+    public Building get(@RequestParam(required = false) String id) {
+	Building entity = null;
+	if (StringUtils.isNotBlank(id)) {
+	    entity = buildingService.get(id);
 	}
-
-	//@RequiresPermissions("inventory:building:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Building> page = buildingService.findPage(new Page<Building>(request, response), building);
-		model.addAttribute("page", page);
-		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-		return "modules/inventory/buildingList";
+	if (entity == null) {
+	    entity = new Building();
 	}
-	
-	@RequestMapping(value = {"findList"})
-	@ResponseBody
-	public List<Building> findList(String id) {
-		Building building = new Building();
-		PropertyProject tmpPropertyProject = new PropertyProject();
-		tmpPropertyProject.setId(id);
-		building.setPropertyProject(tmpPropertyProject);
-		List<Building> list = buildingService.findList(building); 
-		return list;
-	}
+	return entity;
+    }
 
-	//@RequiresPermissions("inventory:building:view")
-	@RequestMapping(value = "form")
-	public String form(Building building, Model model) {
-		model.addAttribute("building", building);
+    // @RequiresPermissions("inventory:building:view")
+    @RequestMapping(value = { "list", "" })
+    public String list(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
+	Page<Building> page = buildingService.findPage(new Page<Building>(request, response), building);
+	model.addAttribute("page", page);
+	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+	return "modules/inventory/buildingList";
+    }
+
+    @RequestMapping(value = { "findList" })
+    @ResponseBody
+    public List<Building> findList(String id) {
+	Building building = new Building();
+	PropertyProject tmpPropertyProject = new PropertyProject();
+	tmpPropertyProject.setId(id);
+	building.setPropertyProject(tmpPropertyProject);
+	List<Building> list = buildingService.findList(building);
+	return list;
+    }
+
+    // @RequiresPermissions("inventory:building:view")
+    @RequestMapping(value = "form")
+    public String form(Building building, Model model) {
+	model.addAttribute("building", building);
+	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+	return "modules/inventory/buildingForm";
+    }
+
+    @RequestMapping(value = "add")
+    public String add(Building building, Model model) {
+	model.addAttribute("building", building);
+	List<PropertyProject> list = new ArrayList<PropertyProject>();
+	list.add(propertyProjectService.get(building.getPropertyProject()));
+	model.addAttribute("listPropertyProject", list);
+	return "modules/inventory/buildingAdd";
+    }
+
+    // @RequiresPermissions("inventory:building:edit")
+    @RequestMapping(value = "save")
+    public String save(Building building, Model model, RedirectAttributes redirectAttributes) {
+	if (!beanValidator(model, building)) {
+	    return form(building, model);
+	}
+	List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
+	if (!building.getIsNewRecord()) {// 更新
+	    if (CollectionUtils.isNotEmpty(blds)) {
+		building.setId(blds.get(0).getId());
+	    }
+	    buildingService.save(building);
+	    addMessage(redirectAttributes, "修改楼宇成功");
+	    return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
+	} else {// 新增
+	    if (CollectionUtils.isNotEmpty(blds)) {
+		model.addAttribute("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
+		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+		model.addAttribute("propertyProject", building.getPropertyProject());
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 		return "modules/inventory/buildingForm";
-	}
-	
-	@RequestMapping(value = "add")
-	public String add(Building building, Model model) {
-		model.addAttribute("building", building);
-		List<PropertyProject> list = new ArrayList<PropertyProject>();
-		list.add(propertyProjectService.get(building.getPropertyProject()));
-		model.addAttribute("listPropertyProject", list);
-		return "modules/inventory/buildingAdd";
-	}
-
-	//@RequiresPermissions("inventory:building:edit")
-	@RequestMapping(value = "save")
-	public String save(Building building, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, building)) {
-			return form(building, model);
-		}
-		List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
-		if (!building.getIsNewRecord()) {// 更新
-			if (CollectionUtils.isNotEmpty(blds)) {
-				Building upbld = new Building();
-				upbld.setId(blds.get(0).getId());
-				upbld.setPropertyProject(blds.get(0).getPropertyProject());
-				upbld.setBuildingName(blds.get(0).getBuildingName());
-				upbld.setAttachmentPath(StringUtils.isEmpty(building.getAttachmentPath()) ? null : building
-						.getAttachmentPath());
-				upbld.setRemarks(building.getRemarks());
-				buildingService.save(upbld);
-			} else {
-				buildingService.save(building);
-			}
-			addMessage(redirectAttributes, "修改楼宇成功");
-			return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
-		} else {// 新增
-			if (CollectionUtils.isNotEmpty(blds)) {
-				model.addAttribute("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
-				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-				model.addAttribute("propertyProject", building.getPropertyProject());
-				model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-				return "modules/inventory/buildingForm";
-			} else {
-				buildingService.save(building);
-				addMessage(redirectAttributes, "保存楼宇成功");
-				return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
-			}
-		}
-	}
-	
-	@RequestMapping(value = "ajaxSave")
-	@ResponseBody
-	public String ajaxSave(Building building, Model model, RedirectAttributes redirectAttributes) {
-		JSONObject jsonObject = new JSONObject();
-		List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
-		if (CollectionUtils.isNotEmpty(blds)) {
-			List<PropertyProject> list = new ArrayList<PropertyProject>();
-			list.add(propertyProjectService.get(building.getPropertyProject()));
-			model.addAttribute("listPropertyProject", list);
-			jsonObject.put("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
-		} else {
-			buildingService.save(building);
-			jsonObject.put("id", building.getId());
-			jsonObject.put("name", building.getBuildingName());
-		}
-		
-		return jsonObject.toString();
-	}
-
-	//@RequiresPermissions("inventory:building:edit")
-	@RequestMapping(value = "delete")
-	public String delete(Building building, RedirectAttributes redirectAttributes) {
-		buildingService.delete(building);
-		addMessage(redirectAttributes, "删除楼宇和图片及其房屋和图片、房间和图片成功");
+	    } else {
+		buildingService.save(building);
+		addMessage(redirectAttributes, "保存楼宇成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
+	    }
 	}
+    }
+
+    @RequestMapping(value = "ajaxSave")
+    @ResponseBody
+    public String ajaxSave(Building building, Model model, RedirectAttributes redirectAttributes) {
+	JSONObject jsonObject = new JSONObject();
+	List<Building> blds = buildingService.findBuildingByBldNameAndProProj(building);
+	if (CollectionUtils.isNotEmpty(blds)) {
+	    List<PropertyProject> list = new ArrayList<PropertyProject>();
+	    list.add(propertyProjectService.get(building.getPropertyProject()));
+	    model.addAttribute("listPropertyProject", list);
+	    jsonObject.put("message", "该楼宇名称及楼宇所属物业项目已被使用，不能重复添加");
+	} else {
+	    buildingService.save(building);
+	    jsonObject.put("id", building.getId());
+	    jsonObject.put("name", building.getBuildingName());
+	}
+
+	return jsonObject.toString();
+    }
+
+    // @RequiresPermissions("inventory:building:edit")
+    @RequestMapping(value = "delete")
+    public String delete(Building building, RedirectAttributes redirectAttributes) {
+	buildingService.delete(building);
+	addMessage(redirectAttributes, "删除楼宇和图片及其房屋和图片、房间和图片成功");
+	return "redirect:" + Global.getAdminPath() + "/inventory/building/?repage";
+    }
 
 }

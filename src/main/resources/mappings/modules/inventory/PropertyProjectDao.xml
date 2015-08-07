@@ -7,6 +7,7 @@
 		a.t_neighborhood_main_id AS "neighborhood.id",
 		a.t_management_company_main_id AS "managementCompany.id",
 		a.project_name AS "projectName",
+		a.PROJECT_SIMPLE_NAME AS "projectSimpleName",
 		a.project_addr AS "projectAddr",
 		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
@@ -56,6 +57,12 @@
 					<if test="dbName == 'mssql'">'%'+#{projectName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{projectName},'%')</if>
 			</if>
+			<if test="projectSimpleName != null and projectSimpleName != ''">
+				AND a.project_simple_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{projectSimpleName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{projectSimpleName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{projectSimpleName},'%')</if>
+			</if>
 			<if test="projectAddr != null and projectAddr != ''">
 				AND a.project_addr LIKE 
 					<if test="dbName == 'oracle'">'%'||#{projectAddr}||'%'</if>
@@ -97,6 +104,7 @@
 			t_neighborhood_main_id,
 			t_management_company_main_id,
 			project_name,
+			project_simple_name,
 			project_addr,
 			create_by,
 			create_date,
@@ -109,6 +117,7 @@
 			#{neighborhood.id},
 			#{managementCompany.id},
 			#{projectName},
+			#{projectSimpleName},
 			#{projectAddr},
 			#{createBy.id},
 			#{createDate},
@@ -124,6 +133,7 @@
 			t_neighborhood_main_id = #{neighborhood.id},
 			t_management_company_main_id = #{managementCompany.id},
 			project_name = #{projectName},
+			project_simple_name = #{projectSimpleName},
 			project_addr = #{projectAddr},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},

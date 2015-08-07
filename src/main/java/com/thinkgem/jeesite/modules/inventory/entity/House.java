@@ -22,7 +22,7 @@ public class House extends DataEntity<House> {
 	private PropertyProject propertyProject; // 物业项目
 	private Building building; // 楼宇
 	private Owner owner; // 业主
-	private String houseCode;//系统生成的唯一房屋编码
+	private String houseCode;//房屋序号
 	private String houseNo; // 房屋号
 	
 	private Integer houseFloor; // 楼层

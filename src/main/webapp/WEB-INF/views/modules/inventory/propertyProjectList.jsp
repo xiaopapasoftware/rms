@@ -41,6 +41,9 @@
 			<li><label style="width:120px;">物业项目名称：</label>
 				<form:input path="projectName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
 			</li>
+			<li><label style="width:120px;">项目拼音首字母：</label>
+				<form:input path="projectSimpleName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
+			</li>
 			<li><label style="width:120px;">物业项目地址：</label>
 				<form:input path="projectAddr" htmlEscape="false" maxlength="300" class="input-medium" style="width:180px;"/>
 			</li>
@@ -55,6 +58,7 @@
 				<th>居委会</th>
 				<th>物业公司</th>
 				<th>物业项目名称</th>
+				<th>物业项目拼音首字母</th>
 				<th>物业项目地址</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
@@ -77,6 +81,9 @@
 					<a href="${ctx}/inventory/propertyProject/form?id=${propertyProject.id}">
 					${propertyProject.projectName}
 					</a>
+				</td>
+				<td>
+					${propertyProject.projectSimpleName}
 				</td>
 				<td>
 					${propertyProject.projectAddr}

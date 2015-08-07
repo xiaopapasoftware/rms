@@ -35,6 +35,7 @@ public class Tenant extends DataEntity<Tenant> {
 	private String position; // 职位
 	private String customerId;// 当从客户转化为租客时使用
 	
+	@SuppressWarnings("unused")
 	private String label;
 	private String type;
 

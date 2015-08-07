@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,99 +37,92 @@ import com.thinkgem.jeesite.modules.person.service.RemittancerService;
 @RequestMapping(value = "${adminPath}/person/remittancer")
 public class RemittancerController extends BaseController {
 
-	@Autowired
-	private RemittancerService remittancerService;
+    @Autowired
+    private RemittancerService remittancerService;
 
-	@ModelAttribute
-	public Remittancer get(@RequestParam(required = false) String id) {
-		Remittancer entity = null;
-		if (StringUtils.isNotBlank(id)) {
-			entity = remittancerService.get(id);
-		}
-		if (entity == null) {
-			entity = new Remittancer();
-		}
-		return entity;
+    @ModelAttribute
+    public Remittancer get(@RequestParam(required = false) String id) {
+	Remittancer entity = null;
+	if (StringUtils.isNotBlank(id)) {
+	    entity = remittancerService.get(id);
 	}
-
-	//@RequiresPermissions("person:remittancer:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Remittancer> page = remittancerService.findPage(new Page<Remittancer>(request, response), remittancer);
-		model.addAttribute("page", page);
-		return "modules/person/remittancerList";
+	if (entity == null) {
+	    entity = new Remittancer();
 	}
+	return entity;
+    }
 
-	//@RequiresPermissions("person:remittancer:view")
-	@RequestMapping(value = "form")
-	public String form(Remittancer remittancer, Model model) {
-		model.addAttribute("remittancer", remittancer);
+    // @RequiresPermissions("person:remittancer:view")
+    @RequestMapping(value = { "list", "" })
+    public String list(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
+	Page<Remittancer> page = remittancerService.findPage(new Page<Remittancer>(request, response), remittancer);
+	model.addAttribute("page", page);
+	return "modules/person/remittancerList";
+    }
+
+    // @RequiresPermissions("person:remittancer:view")
+    @RequestMapping(value = "form")
+    public String form(Remittancer remittancer, Model model) {
+	model.addAttribute("remittancer", remittancer);
+	return "modules/person/remittancerForm";
+    }
+
+    @RequestMapping(value = "add")
+    public String add(Remittancer remittancer, Model model) {
+	model.addAttribute("remittancer", remittancer);
+	return "modules/person/remittancerAdd";
+    }
+
+    // @RequiresPermissions("person:remittancer:edit")
+    @RequestMapping(value = "save")
+    public String save(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
+	if (!beanValidator(model, remittancer)) {
+	    return form(remittancer, model);
+	}
+	List<Remittancer> remittancers = remittancerService.findRemittancersByBankNameAndNo(remittancer);
+	if (!remittancer.getIsNewRecord()) {// 是更新
+	    if (CollectionUtils.isNotEmpty(remittancers)) {
+		remittancer.setId(remittancers.get(0).getId());
+	    }
+	    remittancerService.save(remittancer);
+	    addMessage(redirectAttributes, "修改汇款人信息成功");
+	    return "redirect:" + Global.getAdminPath() + "/person/remittancer/?repage";
+
+	} else {// 是新增
+	    if (CollectionUtils.isNotEmpty(remittancers)) {
+		model.addAttribute("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
+		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 		return "modules/person/remittancerForm";
-	}
-	
-	@RequestMapping(value = "add")
-	public String add(Remittancer remittancer, Model model) {
-		model.addAttribute("remittancer", remittancer);
-		return "modules/person/remittancerAdd";
-	}
-
-	//@RequiresPermissions("person:remittancer:edit")
-	@RequestMapping(value = "save")
-	public String save(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, remittancer)) {
-			return form(remittancer, model);
-		}
-		List<Remittancer> remittancers = remittancerService.findRemittancersByBankNameAndNo(remittancer);
-		if (!remittancer.getIsNewRecord()) {// 是更新
-			if (CollectionUtils.isNotEmpty(remittancers)) {
-				Remittancer upRemittancer = new Remittancer();
-				upRemittancer.setId(remittancers.get(0).getId());
-				upRemittancer.setBankAccount(remittancer.getBankAccount());
-				upRemittancer.setBankName(remittancer.getBankName());
-				upRemittancer.setRemarks(remittancer.getRemarks());
-				upRemittancer.setUserName(remittancer.getUserName());
-				remittancerService.save(upRemittancer);
-			} else {
-				remittancerService.save(remittancer);
-			}
-			addMessage(redirectAttributes, "修改汇款人信息成功");
-			return "redirect:" + Global.getAdminPath() + "/person/remittancer/?repage";
-
-		} else {// 是新增
-			if (CollectionUtils.isNotEmpty(remittancers)) {
-				model.addAttribute("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
-				model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-				return "modules/person/remittancerForm";
-			} else {
-				remittancerService.save(remittancer);
-				addMessage(redirectAttributes, "保存汇款人信息成功");
-				return "redirect:" + Global.getAdminPath() + "/person/remittancer/?repage";
-			}
-		}
-	}
-	
-	@RequestMapping(value = "ajaxSave")
-	@ResponseBody
-	public String ajaxSave(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
-		JSONObject jsonObject = new JSONObject();
-		List<Remittancer> remittancers = remittancerService.findRemittancersByBankNameAndNo(remittancer);
-		if (CollectionUtils.isNotEmpty(remittancers)) {
-			jsonObject.put("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
-		} else {
-			remittancerService.save(remittancer);
-			jsonObject.put("id", remittancer.getId());
-			jsonObject.put("name", remittancer.getUserName());
-		}
-		
-		return jsonObject.toString();
-	}
-	
-	//@RequiresPermissions("person:remittancer:edit")
-	@RequestMapping(value = "delete")
-	public String delete(Remittancer remittancer, RedirectAttributes redirectAttributes) {
-		remittancerService.delete(remittancer);
-		addMessage(redirectAttributes, "删除汇款人信息成功");
+	    } else {
+		remittancerService.save(remittancer);
+		addMessage(redirectAttributes, "保存汇款人信息成功");
 		return "redirect:" + Global.getAdminPath() + "/person/remittancer/?repage";
+	    }
 	}
+    }
+
+    @RequestMapping(value = "ajaxSave")
+    @ResponseBody
+    public String ajaxSave(Remittancer remittancer, Model model, RedirectAttributes redirectAttributes) {
+	JSONObject jsonObject = new JSONObject();
+	List<Remittancer> remittancers = remittancerService.findRemittancersByBankNameAndNo(remittancer);
+	if (CollectionUtils.isNotEmpty(remittancers)) {
+	    jsonObject.put("message", "汇款人的开户行名称及开户行账号已被占用，不能重复添加");
+	} else {
+	    remittancerService.save(remittancer);
+	    jsonObject.put("id", remittancer.getId());
+	    jsonObject.put("name", remittancer.getUserName());
+	}
+
+	return jsonObject.toString();
+    }
+
+    // @RequiresPermissions("person:remittancer:edit")
+    @RequestMapping(value = "delete")
+    public String delete(Remittancer remittancer, RedirectAttributes redirectAttributes) {
+	remittancerService.delete(remittancer);
+	addMessage(redirectAttributes, "删除汇款人信息成功");
+	return "redirect:" + Global.getAdminPath() + "/person/remittancer/?repage";
+    }
 
 }

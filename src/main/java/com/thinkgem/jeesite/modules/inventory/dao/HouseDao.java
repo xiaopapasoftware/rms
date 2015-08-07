@@ -17,13 +17,14 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
  */
 @MyBatisDao
 public interface HouseDao extends CrudDao<House> {
-	/**
-	 * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
-	 * */
-	List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
 
-	/**
-	 * 更新房屋状态
-	 * */
-	int updateHouseStatus(House house);
+    /**
+     * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
+     */
+    List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
+
+    /**
+     * 更新房屋状态
+     */
+    int updateHouseStatus(House house);
 }

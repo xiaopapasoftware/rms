@@ -62,7 +62,7 @@
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
+					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" simpleName="projectSimpleName" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font></span>
 			</div>
