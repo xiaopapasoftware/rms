@@ -25,8 +25,6 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.modules.device.entity.RoomDevices;
-import com.thinkgem.jeesite.modules.device.service.RoomDevicesService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -59,8 +57,8 @@ public class HouseController extends BaseController {
 	@Autowired
 	private OwnerService ownerService;
 
-	@Autowired
-	private RoomDevicesService roomDevicesService;
+//	@Autowired
+//	private RoomDevicesService roomDevicesService;
 
 	@ModelAttribute
 	public House get(@RequestParam(required = false) String id) {
@@ -140,19 +138,19 @@ public class HouseController extends BaseController {
 	@RequestMapping(value = "finishDirect")
 	@ResponseBody
 	public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
-		RoomDevices rd = new RoomDevices();
-		rd.setHouseId(house.getId());
-		List<RoomDevices> rds = roomDevicesService.findList(rd);
-		if (CollectionUtils.isEmpty(rds)) {
-			return "NEEDDO";
-		} else {
+//		RoomDevices rd = new RoomDevices();
+//		rd.setHouseId(house.getId());
+//		List<RoomDevices> rds = roomDevicesService.findList(rd);
+//		if (CollectionUtils.isEmpty(rds)) {
+//			return "NEEDDO";
+//		} else {
 			int i = houseService.updateHouseStatus(house);
 			if (i > 0) {
 				return "SUCCESS";
 			} else {
 				return "FAIL";
 			}
-		}
+//		}
 	}
 	//@RequiresPermissions("inventory:house:edit")
 	@RequestMapping(value = "save")

@@ -38,9 +38,9 @@
 			$.get("${ctx}/inventory/house/finishDirect?id=" + houseId, function(data){
 				if("SUCCESS" == data){
 					alertx("操作成功！");
-				}else if("NEEDDO" == data){
+				}/*else if("NEEDDO" == data){
 					alertx("必须先为房屋分配设备！");
-				}else{
+				}*/else{
 					alertx("操作失败！");
 				}
 				$("#searchForm").submit();
