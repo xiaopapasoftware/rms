@@ -814,31 +814,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setId(IdGen.uuid());
 		paymentTrans.setTradeType(tradeType);
 		paymentTrans.setTradeAmount(rentContract.getDepositElectricAmount());// 应该交易金额
+		paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
+		paymentTrans.setTransAmount(0D);// 实际交易金额
+		paymentTrans.setTransStatus("0");// 未到账登记
 		if ("3".equals(tradeType)) {// 新签合同
 			paymentTrans.setPaymentType("2");// 水电费押金
-			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 定金协议转合同，带过来的定金金额
-			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
-				if (depositAgreementAmount < rentContract.getDepositElectricAmount()) {// 定金不够支付水电费押金
-					paymentTrans.setLastAmount(rentContract.getDepositElectricAmount() - depositAgreementAmount);// 剩余交易金额
-					paymentTrans.setTransAmount(depositAgreementAmount);// 实际交易金额
-					paymentTrans.setTransStatus("1");// 部分到账登记
-				}
-				if (depositAgreementAmount >= rentContract.getDepositElectricAmount()) {// 定金足够付水电费押金
-					paymentTrans.setLastAmount(0D);// 剩余交易金额
-					paymentTrans.setTransAmount(rentContract.getDepositElectricAmount());// 实际交易金额
-					paymentTrans.setTransStatus("2");// 完全到账登记
-				}
-			} else {// 直接新签合同
-				paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
-				paymentTrans.setTransAmount(0D);// 实际交易金额
-				paymentTrans.setTransStatus("0");// 未到账登记
-			}
 		}
 		if ("4".equals(tradeType)) {// 续签合同
 			paymentTrans.setPaymentType("3");// 续补水电费押金
-			paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
-			paymentTrans.setTransAmount(0D);// 实际交易金额
-			paymentTrans.setTransStatus("0");// 未到账登记
 		}
 		paymentTrans.setTransId(transObjId);
 		paymentTrans.setTradeDirection("1");// 收款
@@ -866,40 +849,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setStartDate(rentContract.getStartDate());
 		paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 		paymentTrans.setTradeAmount(rentContract.getDepositAmount());
+		paymentTrans.setLastAmount(rentContract.getDepositAmount());
+		paymentTrans.setTransAmount(0D);
+		paymentTrans.setTransStatus("0");// 未到账登记
 		if ("3".equals(tradeType)) {// 新签合同
 			paymentTrans.setPaymentType("4");// 房租押金
-			Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 定金协议转合同，带过来的定金金额
-			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
-				Double remainAmount = rentContract.getDepositElectricAmount() - depositAgreementAmount;// 定金给水电押金分配后剩余的金额
-				if (remainAmount >= 0) {// 定金已经分配完毕
-					paymentTrans.setLastAmount(rentContract.getDepositAmount());
-					paymentTrans.setTransAmount(0D);
-					paymentTrans.setTransStatus("0");// 未到账登记
-				}
-				if (remainAmount < 0) {// 定金金额还有剩余的可以分配
-					Double remainAmountVal = Math.abs(remainAmount);// 获取一轮分配后实际剩余的定金金金额
-					if (remainAmountVal >= rentContract.getDepositAmount()) {// 定金剩余金额超过或刚好等于房租押金
-						paymentTrans.setLastAmount(0D);
-						paymentTrans.setTransAmount(rentContract.getDepositAmount());
-						paymentTrans.setTransStatus("2");// 完全到账登记
-					}
-					if (remainAmountVal < rentContract.getDepositAmount()) {// 定金剩余金额小于房租押金
-						paymentTrans.setLastAmount(rentContract.getDepositAmount() - remainAmountVal);
-						paymentTrans.setTransAmount(remainAmountVal);
-						paymentTrans.setTransStatus("1");// 部分到账登记
-					}
-				}
-			} else {// 正常保存，无定金
-				paymentTrans.setLastAmount(rentContract.getDepositAmount());
-				paymentTrans.setTransAmount(0D);
-				paymentTrans.setTransStatus("0");// 未到账登记
-			}
 		}
 		if ("4".equals(tradeType)) {// 续签合同
 			paymentTrans.setPaymentType("5");// 续补房租押金
-			paymentTrans.setLastAmount(rentContract.getDepositAmount());
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setTransStatus("0");// 未到账登记
 		}
 		paymentTrans.setCreateDate(new Date());
 		paymentTrans.setCreateBy(UserUtils.getUser());
@@ -919,13 +876,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
 		Date startD = rentContract.getStartDate();// 开始日期
 
+		boolean depositTransContractFlag = false;
 		Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额，只适用于定金转合同的业务场景
-		Double remainAmount = 0d; // 定金给水电押金、房租押金分配后剩余的金额
 		if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
-			remainAmount = depositAgreementAmount - rentContract.getDepositElectricAmount()
-					- rentContract.getDepositAmount(); // 定金给水电押金、房租押金分配后剩余的金额
+		    depositTransContractFlag = true;
 		}
-
+		
 		// 先生成整数房租款项列表
 		int intergeredMonthCounts = (int) monthCountDiff;// 合同期间间隔的月份整数个数
 		if (intergeredMonthCounts > 0) {
@@ -939,24 +895,24 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 				paymentTrans.setTradeAmount(rentContract.getRental());
 				paymentTrans.setStartDate(startD);
 				paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
-				if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
-					if (remainAmount <= 0) {// 定金已经被分配完毕
-						paymentTrans.setLastAmount(rentContract.getRental());
-						paymentTrans.setTransAmount(0D);
-						paymentTrans.setTransStatus("0");// 未到账登记
-					} else {// 定金还有剩余
-						if (remainAmount >= rentContract.getRental()) {
+				if (depositTransContractFlag) {// 定金转合同
+						if (depositAgreementAmount >= rentContract.getRental()) {
 							paymentTrans.setLastAmount(0D);
 							paymentTrans.setTransAmount(rentContract.getRental());
 							paymentTrans.setTransStatus("2");// 完全到账登记
-							remainAmount = remainAmount - rentContract.getRental();
-						} else {
-							paymentTrans.setLastAmount(rentContract.getRental() - remainAmount);
-							paymentTrans.setTransAmount(remainAmount);
-							paymentTrans.setTransStatus("1");// 部分到账登记
-							remainAmount = 0d;
+							depositAgreementAmount = depositAgreementAmount - rentContract.getRental();
 						}
-					}
+						if (depositAgreementAmount > 0 && depositAgreementAmount < rentContract.getRental()){
+							paymentTrans.setLastAmount(rentContract.getRental() - depositAgreementAmount);
+							paymentTrans.setTransAmount(depositAgreementAmount);
+							paymentTrans.setTransStatus("1");// 部分到账登记
+							depositAgreementAmount = 0d;
+						}
+						if (depositAgreementAmount == 0d) {
+						    	paymentTrans.setLastAmount(rentContract.getRental());
+							paymentTrans.setTransAmount(0D);
+							paymentTrans.setTransStatus("0");// 未到账登记
+						}
 				} else {// 正常保存，无定金
 					paymentTrans.setLastAmount(rentContract.getRental());
 					paymentTrans.setTransAmount(0D);
@@ -995,23 +951,23 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setStartDate(startD);
 			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 
-			if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
-				if (remainAmount <= 0) {// 定金已经被分配完毕
+			if (depositTransContractFlag) {// 定金转合同
+				if (depositAgreementAmount <= 0) {// 定金已经被分配完毕
 					paymentTrans.setLastAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
 					paymentTrans.setTransAmount(0D);
 					paymentTrans.setTransStatus("0");// 未到账登记
 				} else {// 定金还有剩余
-					if (remainAmount >= rentContract.getRental() * doubledMonthCounts.doubleValue()) {
+					if (depositAgreementAmount >= rentContract.getRental() * doubledMonthCounts.doubleValue()) {
 						paymentTrans.setLastAmount(0D);
 						paymentTrans.setTransAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
 						paymentTrans.setTransStatus("2");// 完全到账登记
-						remainAmount = remainAmount - rentContract.getRental() * doubledMonthCounts.doubleValue();
+						depositAgreementAmount = depositAgreementAmount - rentContract.getRental() * doubledMonthCounts.doubleValue();
 					} else {
 						paymentTrans.setLastAmount(rentContract.getRental() * doubledMonthCounts.doubleValue()
-								- remainAmount);
-						paymentTrans.setTransAmount(remainAmount);
+								- depositAgreementAmount);
+						paymentTrans.setTransAmount(depositAgreementAmount);
 						paymentTrans.setTransStatus("1");// 部分到账登记
-						remainAmount = 0d;
+						depositAgreementAmount = 0d;
 					}
 				}
 			} else {// 正常保存，无定金
