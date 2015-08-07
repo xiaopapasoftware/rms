@@ -228,13 +228,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				}
 			}
 		}
-		
-		/*审核拒绝，删除收据*/
-		if(!"1".equals(auditHis.getAuditStatus())) {
-			Receipt delReceipt = new Receipt();
-			delReceipt.setTradingAccounts(tradingAccounts);
-			receiptDao.delete(delReceipt);
-		}
 	}
 	@Transactional(readOnly = false)
 	public void save(TradingAccounts tradingAccounts) {
