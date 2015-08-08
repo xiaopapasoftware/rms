@@ -137,25 +137,25 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:2000px;">
 		<thead>
 			<tr>
-				<th>承租合同编号</th>
+				<th style="width:40px;">承租合同编号</th>
 				<th>承租合同名称</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
 				<th>房屋</th>
-				<th>汇款人</th>
-				<th>合同生效时间</th>
-				<th>首次打款日期</th>
-				<th>打款日期</th>
-				<th>合同过期时间</th>
-				<th>合同签订时间</th>
+				<th style="width:40px;">汇款人</th>
+				<th style="width:80px;">合同生效时间</th>
+				<th style="width:80px;">首次打款日期</th>
+				<th style="width:40px;">打款日期</th>
+				<th style="width:80px;">合同过期时间</th>
+				<th style="width:80px;">合同签订时间</th>
 				<th>承租押金</th>
-				<th>合同审核状态</th>
-				<th>更新时间</th>
+				<th style="width:40px;">合同审核状态</th>
+				<th style="width:130px;">更新时间</th>
 				<th>备注信息</th>
-				<th>操作</th>
+				<th style="width:100px;">操作</th>
 			</tr>
 		</thead>
 		<tbody>
