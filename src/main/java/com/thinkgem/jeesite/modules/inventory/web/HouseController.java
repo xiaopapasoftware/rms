@@ -125,7 +125,12 @@ public class HouseController extends BaseController {
 
     @RequestMapping(value = "add")
     public String add(House house, Model model) {
-	house.setHouseCode(StringUtils.getSysJournalNo(12, true));
+	Integer currentNum = 0;
+	List<House> allHouses = houseService.findAllHouses();
+	if (CollectionUtils.isNotEmpty(allHouses)) {
+	    currentNum = allHouses.size() + 1;
+	}
+	house.setHouseCode(currentNum.toString());
 	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    List<Building> list = new ArrayList<Building>();
