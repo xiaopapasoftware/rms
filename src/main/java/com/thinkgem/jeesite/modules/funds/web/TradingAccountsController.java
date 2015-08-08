@@ -216,7 +216,7 @@ public class TradingAccountsController extends BaseController {
 				tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 				tmpReceipt.setDelFlag("0");
 				List<Receipt> list = receiptService.findList(tmpReceipt);
-				if ((null != list && list.size() > 0) || receiptNoList.contains(receipt.getReceiptNo())) {
+				if ((null != list && list.size() > 0)) {
 					for (Receipt tReceipt : list) {
 						if (receipt.getReceiptNo().equals(tReceipt.getReceiptNo())
 								&& !tReceipt.getTradingAccounts().getId().equals(tradingAccounts.getId())) {
@@ -226,6 +226,10 @@ public class TradingAccountsController extends BaseController {
 						}
 					}
 				}
+				if(receiptNoList.contains(receipt.getReceiptNo())) {
+					receiptNo = receipt.getReceiptNo();
+					check = false;
+				}
 				if (!check)
 					break;
 				receiptNoList.add(receipt.getReceiptNo());
@@ -233,7 +237,7 @@ public class TradingAccountsController extends BaseController {
 		}
 
 		if (!check) {
-			model.addAttribute("message", "收据编号:" + receiptNo + "已存在.");
+			model.addAttribute("message", "收据编号:" + receiptNo + "重复或已存在.");
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 			if (StringUtils.isEmpty(id)) {
 				return form(tradingAccounts, model);
