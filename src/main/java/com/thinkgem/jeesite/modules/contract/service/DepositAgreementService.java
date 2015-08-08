@@ -28,8 +28,10 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
@@ -68,6 +70,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	private TradingAccountsDao tradingAccountsDao;
 	@Autowired
 	private AttachmentDao attachmentDao;
+	@Autowired
+	private ReceiptDao receiptDao;
 
 	private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";// 定金协议审批
 
@@ -209,6 +213,15 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 					tmpTradingAccounts.setUpdateDate(new Date());
 					tmpTradingAccounts.setDelFlag("1");
 					tradingAccountsDao.delete(tradingAccounts);
+					
+					/* 删除收据 */
+					Receipt receipt = new Receipt();
+					TradingAccounts delTradingAccounts = new TradingAccounts();
+					delTradingAccounts.setId(tmpTradingAccounts.getId());
+					receipt.setTradingAccounts(delTradingAccounts);
+					receipt.setUpdateBy(UserUtils.getUser());
+					receipt.setUpdateDate(new Date());
+					this.receiptDao.delete(receipt);
 				}
 			}
 		}
