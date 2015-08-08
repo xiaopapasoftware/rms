@@ -259,7 +259,7 @@ public class RentContractController extends BaseController {
 			house.setBuilding(building);
 			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
-			if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+			//if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
 				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
@@ -326,7 +326,7 @@ public class RentContractController extends BaseController {
 			house.setBuilding(building);
 			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
-			if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+			//if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
 				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
@@ -389,7 +389,7 @@ public class RentContractController extends BaseController {
 			house.setBuilding(building);
 			house.setChoose("1");
 			List<House> houseList = houseService.findList(house);
-			if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+			//if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
 				houseList.add(houseService.get(rentContract.getHouse()));
 			model.addAttribute("houseList", houseList);
 		}
@@ -451,7 +451,7 @@ public class RentContractController extends BaseController {
 					house.setBuilding(building);
 					house.setChoose("1");
 					List<House> houseList = houseService.findList(house);
-					if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
+					//if ("0".equals(rentContract.getRentMode()) && null != rentContract.getHouse())
 						houseList.add(houseService.get(rentContract.getHouse()));
 					model.addAttribute("houseList", houseList);
 				}
