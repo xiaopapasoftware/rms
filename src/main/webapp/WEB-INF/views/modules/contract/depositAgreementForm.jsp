@@ -226,6 +226,23 @@
 				return false;
 			}
 		}
+		
+		function startDateChange() {
+			var startDate = new Date($("input[name='startDate']").val());
+
+			var date = new Date();
+			date.setFullYear(startDate.getFullYear()+1);
+			date.setDate(startDate.getDate()-1);
+			var year = date.getFullYear();
+			var month = date.getMonth()+1;
+			if(parseFloat(month)<10)
+				month = "0"+""+month;
+			var day = date.getDate();
+			if(parseFloat(day)<10)
+				day = "0"+""+day;
+			var expiredDate=year+"-"+month+"-"+day;
+			$("input[name='expiredDate']").val(expiredDate);
+		}
 	</script>
 </head>
 <body>
@@ -359,7 +376,7 @@
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" onchange="startDateChange()"/>
 			</div>
 		</div>
 		<div class="control-group">

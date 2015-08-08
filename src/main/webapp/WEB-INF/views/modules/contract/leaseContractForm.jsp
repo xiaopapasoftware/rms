@@ -166,6 +166,23 @@
 				return false;
 			}
 		}
+		
+		function effectiveDateChange() {
+			var startDate = new Date($("input[name='effectiveDate']").val());
+
+			var date = new Date();
+			date.setFullYear(startDate.getFullYear()+6);
+			date.setDate(startDate.getDate()-1);
+			var year = date.getFullYear();
+			var month = date.getMonth()+1;
+			if(parseFloat(month)<10)
+				month = "0"+""+month;
+			var day = date.getDate();
+			if(parseFloat(day)<10)
+				day = "0"+""+day;
+			var expiredDate=year+"-"+month+"-"+day;
+			$("input[name='expiredDate']").val(expiredDate);
+		}
 	</script>
 </head>
 <body>
@@ -258,7 +275,7 @@
 			<div class="controls">
 				<input name="effectiveDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" onchange="effectiveDateChange()"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
