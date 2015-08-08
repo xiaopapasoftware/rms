@@ -236,6 +236,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		/* 更新款项状态 */
 		if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
 			String[] transIds = tradingAccounts.getTransIds().split(",");
+			/* 款项账务关联 */
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setTradeId(id);
+			paymentTradeDao.delete(paymentTrade);
 			for (int i = 0; i < transIds.length; i++) {
 				PaymentTrans paymentTrans = paymentTransService.get(transIds[i]);
 				paymentTrans.setTransStatus("2");// 完全到账登记
@@ -243,10 +247,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				paymentTrans.setLastAmount(0D);// 剩余交易金额
 				paymentTransService.save(paymentTrans);
 
-				/* 款项账务关联 */
-				PaymentTrade paymentTrade = new PaymentTrade();
-				paymentTrade.setTradeId(id);
-				paymentTradeDao.delete(paymentTrade);
 
 				paymentTrade.setTransId(paymentTrans.getId());
 				paymentTrade.setId(IdGen.uuid());
