@@ -31,15 +31,21 @@
 							} else {
 								iframe = $(window.parent.document).find(".tab_content").find(".curholder").find("iframe")[0];
 							}
-							//if("tenant"==$("#type").val()) {
-								var text = iframe.contentWindow.$("[id='tenantList']").html();
-								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-								iframe.contentWindow.$("[id='tenantList']").html(text);
-							//} else if("live"==$("#type").val()) {
-								text = iframe.contentWindow.$("[id='liveList']").html();
-								text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-								iframe.contentWindow.$("[id='liveList']").html(text);
-							//}
+							var text = iframe.contentWindow.$("[id='tenantList']").html();
+							text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
+							iframe.contentWindow.$("[id='tenantList']").html(text);
+							
+							text = iframe.contentWindow.$("[id='liveList']").html();
+							text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
+							iframe.contentWindow.$("[id='liveList']").html(text);
+							
+							if("tenant"==$("#type").val()) {
+								iframe.contentWindow.$("select[name='tenantList']").val(json.id).trigger("change");
+							} else if("live"==$("#type").val()) {
+								iframe.contentWindow.$("select[name='liveList']").val(json.id).trigger("change");
+							}
+							
+							
 							top.$.jBox.close();
 						}
 					});
