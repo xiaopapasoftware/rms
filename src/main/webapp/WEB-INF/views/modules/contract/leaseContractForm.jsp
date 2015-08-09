@@ -79,7 +79,7 @@
 				$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
 			}
 			
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
@@ -92,16 +92,19 @@
 				$("[id='building.id']").html(html);
 			}
 			$("[id='building.id']").val("");
-			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='house.id']").html(html);
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+			
+			//更新合同名称
+			changeContractName();
 		}
 		
 		function buildingChange() {
 			var building = $("[id='building.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
 				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building, function(data){
@@ -114,7 +117,59 @@
 				$("[id='house.id']").html(html);
 			}
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
+			
+			//更新合同名称
+			changeContractName();
+		}
+		
+		function houseChange() {
+			//更新合同名称
+			changeContractName();
+		}
+		
+		//更新合同名称
+		function changeContractName(){
+			var contractName = "";
+			
+			var porjectId = $("[id='propertyProject.id']").find("option:selected").val();
+			if(porjectId != null && porjectId != undefined && porjectId != ""){
+				var projectName = $("[id='propertyProject.id']").find("option:selected").text();
+				contractName = contractName + projectName;
+			}
+			
+			
+			var buildingId = $("[id='building.id']").find("option:selected").val();
+			if(buildingId != null && buildingId != undefined && buildingId != ""){
+				var buildingName = $("[id='building.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + buildingName;
+				}else{
+					contractName = contractName + "-" + buildingName;
+				}
+			}
+			
+			var houseId = $("[id='house.id']").find("option:selected").val();
+			if(houseId != null && houseId != undefined && houseId != ""){
+				var houseNo = $("[id='house.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + houseNo;
+				}else{
+					contractName = contractName + "-" + houseNo;
+				}
+			}
+			
+			var roomId = $("[id='room.id']").find("option:selected").val();
+			if(roomId != null && roomId != undefined && roomId != ""){
+				var roomNo = $("[id='room.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + roomNo;
+				}else{
+					contractName = contractName + "-" + roomNo;
+				}
+			}
+			
+			$("#contractName").val(contractName);
 		}
 		
 		function toAudit(id) {
@@ -214,6 +269,20 @@
 		<form:hidden path="type"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
+			<label class="control-label">承租合同编号：</label>
+			<div class="controls">
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">承租合同名称：</label>
+			<div class="controls">
+				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-xlarge required" readonly="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
@@ -240,7 +309,7 @@
 		<div class="control-group">
 			<label class="control-label">房屋：</label>
 			<div class="controls">
-				<form:select path="house.id" class="input-xlarge required">
+				<form:select path="house.id" class="input-xlarge required" onchange="houseChange()">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -257,19 +326,6 @@
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addRemittancer()">添加汇款人</a></shiro:hasPermission>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租合同编号：</label>
-			<div class="controls">
-				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租合同名称：</label>
-			<div class="controls">
-				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

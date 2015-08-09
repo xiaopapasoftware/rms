@@ -51,9 +51,6 @@
 			}
 		});
 		
-		 
-
-		 
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
@@ -115,6 +112,8 @@
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeAgreementName();
 		}
 		
 		function buildingChange() {
@@ -137,6 +136,8 @@
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeAgreementName();
 		}
 		
 		function houseChange() {
@@ -155,6 +156,56 @@
 			}
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeAgreementName();
+		}
+		
+		function roomChange() {
+			changeAgreementName();
+		}
+		
+		//更新定金协议名称
+		function changeAgreementName(){
+			var agreementName = "";
+			
+			var porjectId = $("[id='propertyProject.id']").find("option:selected").val();
+			if(porjectId != null && porjectId != undefined && porjectId != ""){
+				var projectName = $("[id='propertyProject.id']").find("option:selected").text();
+				agreementName = agreementName + projectName;
+			}
+			
+			
+			var buildingId = $("[id='building.id']").find("option:selected").val();
+			if(buildingId != null && buildingId != undefined && buildingId != ""){
+				var buildingName = $("[id='building.id']").find("option:selected").text();
+				if(agreementName == ""){
+					agreementName = agreementName + buildingName;
+				}else{
+					agreementName = agreementName + "-" + buildingName;
+				}
+			}
+			
+			var houseId = $("[id='house.id']").find("option:selected").val();
+			if(houseId != null && houseId != undefined && houseId != ""){
+				var houseNo = $("[id='house.id']").find("option:selected").text();
+				if(agreementName == ""){
+					agreementName = agreementName + houseNo;
+				}else{
+					agreementName = agreementName + "-" + houseNo;
+				}
+			}
+			
+			var roomId = $("[id='room.id']").find("option:selected").val();
+			if(roomId != null && roomId != undefined && roomId != ""){
+				var roomNo = $("[id='room.id']").find("option:selected").text();
+				if(agreementName == ""){
+					agreementName = agreementName + roomNo;
+				}else{
+					agreementName = agreementName + "-" + roomNo;
+				}
+			}
+			
+			$("#agreementName").val(agreementName);
 		}
 		
 		function rentModeChange() {
@@ -273,6 +324,20 @@
 		<form:hidden path="validatorFlag" value="1"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
+			<label class="control-label">定金协议编号：</label>
+			<div class="controls">
+				<form:input path="agreementCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">定金协议名称：</label>
+			<div class="controls">
+				<form:input path="agreementName" htmlEscape="false" maxlength="100" class="input-xlarge required" readonly="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">出租方式：</label>
 			<div class="controls">
 				<form:select path="rentMode" class="input-xlarge required" onchange="rentModeChange()">
@@ -320,24 +385,11 @@
 		<div class="control-group">
 			<label class="control-label">房间：</label>
 			<div class="controls">
-				<form:select path="room.id" class="input-xlarge">
+				<form:select path="room.id" class="input-xlarge" onchange="roomChange()">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<shiro:hasPermission name="contract:depositAgreement:edit"><a href="#" onclick="addRoom()">添加房间</a></shiro:hasPermission>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">定金协议编号：</label>
-			<div class="controls">
-				<form:input path="agreementCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">定金协议名称：</label>
-			<div class="controls">
-				<form:input path="agreementName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

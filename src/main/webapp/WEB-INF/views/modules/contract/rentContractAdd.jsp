@@ -45,6 +45,9 @@
 			}else{
 				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
 			}
+			
+			//更新合同名称
+			changeContractName();
 		});
 		
 		function submitData() {
@@ -83,7 +86,7 @@
 				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
 			}
 			
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/building/findList?id=" + project, function(data){
@@ -96,20 +99,22 @@
 				$("[id='building.id']").html(html);
 			}
 			$("[id='building.id']").val("");
-			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("");
+			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='house.id']").html(html);
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeContractName();
 		}
 		
 		function buildingChange() {
 			var building = $("[id='building.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
 				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/house/findList?id=" + building+"&choose=1", function(data){
@@ -122,16 +127,18 @@
 				$("[id='house.id']").html(html);
 			}
 			$("[id='house.id']").val("");
-			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("");
+			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeContractName();
 		}
 		
 		function houseChange() {
 			var room = $("[id='house.id']").val();
-			var html = "<option value='' selected='selected'></option>";
+			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != room) {
 				$.ajaxSetup({ cache: false });
 				$.get("${ctx}/inventory/room/findList?id=" + room+"&choose=1", function(data){
@@ -144,7 +151,58 @@
 				$("[id='room.id']").html(html);
 			}
 			$("[id='room.id']").val("");
-			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("");
+			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
+			
+			changeContractName();
+		}
+		
+		function roomChange(){
+			//更新合同名称
+			changeContractName();
+		}
+		
+		//更新合同名称
+		function changeContractName(){
+			var contractName = "";
+			
+			var porjectId = $("[id='propertyProject.id']").find("option:selected").val();
+			if(porjectId != null && porjectId != undefined && porjectId != ""){
+				var projectName = $("[id='propertyProject.id']").find("option:selected").text();
+				contractName = contractName + projectName;
+			}
+			
+			
+			var buildingId = $("[id='building.id']").find("option:selected").val();
+			if(buildingId != null && buildingId != undefined && buildingId != ""){
+				var buildingName = $("[id='building.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + buildingName;
+				}else{
+					contractName = contractName + "-" + buildingName;
+				}
+			}
+			
+			var houseId = $("[id='house.id']").find("option:selected").val();
+			if(houseId != null && houseId != undefined && houseId != ""){
+				var houseNo = $("[id='house.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + houseNo;
+				}else{
+					contractName = contractName + "-" + houseNo;
+				}
+			}
+			
+			var roomId = $("[id='room.id']").find("option:selected").val();
+			if(roomId != null && roomId != undefined && roomId != ""){
+				var roomNo = $("[id='room.id']").find("option:selected").text();
+				if(contractName == ""){
+					contractName = contractName + roomNo;
+				}else{
+					contractName = contractName + "-" + roomNo;
+				}
+			}
+			
+			$("#contractName").val(contractName);
 		}
 		
 		function rentModeChange() {
@@ -232,50 +290,17 @@
 		<form:hidden path="signType"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
-			<label class="control-label">合同来源：</label>
-			<div class="controls">
-				<form:select path="contractSource" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">合同编号：</label>
 			<div class="controls">
 				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-xlarge" readonly="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">合同名称：</label>
 			<div class="controls">
-				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-xlarge required" readonly="true"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">承租人：</label>
-			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addTenant()">添加承租人</a>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">入住人：</label>
-			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
-					</c:forEach>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="addLive()">添加入住人</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -326,7 +351,7 @@
 		<div class="control-group">
 			<label class="control-label">房间：</label>
 			<div class="controls">
-				<form:select path="room.id" class="input-xlarge">
+				<form:select path="room.id" class="input-xlarge" onchange="roomChange()">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
@@ -337,6 +362,13 @@
 			<label class="control-label">月租金：</label>
 			<div class="controls">
 				<form:input path="rental" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">水电押金金额：</label>
+			<div class="controls">
+				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -362,9 +394,36 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">水电押金金额：</label>
+			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addTenant()">添加承租人</a>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">入住人：</label>
+			<div class="controls">
+				<form:select path="liveList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${tenantList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addLive()">添加入住人</a>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合同来源：</label>
+			<div class="controls">
+				<form:select path="contractSource" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('contract_source')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
