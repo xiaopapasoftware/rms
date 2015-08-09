@@ -335,3 +335,6 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('336','17','出租合同收据','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('337','18','定金协议其他附件','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('338','19','出租合同其他附件','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('339','25','转租手续费','payment_type','款项类型','26','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('340','25','转租手续费','fee_type','核算费用类别','26','0','1',now(),'1',now(),NULL,'0');

@@ -87,6 +87,7 @@ create table T_HOUSE
    DECORA_STRUC_ROOM_NUM    	int comment 	'装修房屋结构房数',
    DECORA_STRUC_CUSSPAC_NUM    int comment 		'装修房屋结构厅数',
    DECORA_STRUC_WASHRO_NUM     int comment		'装修房屋结构卫数',
+   CERTIFICATE_NO		varchar(64) comment '房屋产权证号',
    HOUSE_STATUS         varchar(100) comment '房屋状态',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',

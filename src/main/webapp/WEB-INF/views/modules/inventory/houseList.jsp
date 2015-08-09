@@ -92,6 +92,10 @@
 				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
+				<label>产证证号：</label> 
+				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
 				<label>房屋状态：</label> 
 				<form:select path="houseStatus" class="input-medium">
 					<form:option value="" label="请选择..." />
@@ -120,6 +124,7 @@
 				<th>装修建筑面积(平方米)</th>
 				<th>原始房屋结构</th>
 				<th>装修房屋结构</th>
+				<th>产权证号</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -142,6 +147,7 @@
 					<td>${house.decorationSpance}</td>
 					<td>${house.oriStrucRoomNum}房${house.oriStrucCusspacNum}厅${house.oriStrucWashroNum}卫</td>
 					<td>${house.decoraStrucRoomNum}房${house.decoraStrucCusspacNum}厅${house.decoraStrucWashroNum}卫</td>
+					<td>${house.certificateNo}</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>

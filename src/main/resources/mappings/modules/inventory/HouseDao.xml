@@ -12,6 +12,7 @@
 		towner.name AS "owner.name",
 		a.house_code AS "houseCode",
 		a.house_no AS "houseNo",
+		a.certificate_no AS "certificateNo",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
 		a.decoration_spance AS "decorationSpance",
@@ -71,6 +72,12 @@
 					<if test="dbName == 'oracle'">'%'||#{houseNo}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{houseNo}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{houseNo},'%')</if>
+			</if>
+			<if test="certificateNo != null and certificateNo != ''">
+				AND a.certificate_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{certificateNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{certificateNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{certificateNo},'%')</if>
 			</if>
 			<if test="houseCode != null and houseCode != ''">
 				AND a.house_code LIKE 
@@ -142,6 +149,7 @@
 			owner_id,
 			house_code,
 			house_no,
+			certificate_no,
 			house_floor,
 			house_space,
 			decoration_spance,
@@ -165,6 +173,7 @@
 			#{owner.id},
 			#{houseCode},
 			#{houseNo},
+			#{certificateNo},
 			#{houseFloor},
 			#{houseSpace},
 			#{decorationSpance},
@@ -191,6 +200,7 @@
 			owner_id = #{owner.id},
 			house_code = #{houseCode},
 			house_no = #{houseNo},
+			certificate_no = #{certificateNo},
 			house_floor = #{houseFloor},
 			house_space = #{houseSpace},
 			decoration_spance = #{decorationSpance},

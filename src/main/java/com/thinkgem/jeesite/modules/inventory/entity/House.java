@@ -18,173 +18,184 @@ import com.thinkgem.jeesite.modules.person.entity.Owner;
  */
 public class House extends DataEntity<House> {
 
-	private static final long serialVersionUID = 1L;
-	private PropertyProject propertyProject; // 物业项目
-	private Building building; // 楼宇
-	private Owner owner; // 业主
-	private String houseCode;//房屋序号
-	private String houseNo; // 房屋号
-	
-	private Integer houseFloor; // 楼层
-	private String houseSpace; // 原始建筑面积
-	private String decorationSpance; // 装修建筑面积
+    private static final long serialVersionUID = 1L;
+    private PropertyProject propertyProject; // 物业项目
+    private Building building; // 楼宇
+    private Owner owner; // 业主
+    private String houseCode;// 房屋序号
+    private String houseNo; // 房屋号
+    private String certificateNo;// 产权证号
+    private Integer houseFloor; // 楼层
+    private String houseSpace; // 原始建筑面积
+    private String decorationSpance; // 装修建筑面积
+    private Integer oriStrucRoomNum;// 原始房屋结构-房数
+    private Integer oriStrucCusspacNum;// 原始房屋结构-厅数
+    private Integer oriStrucWashroNum;// 原始房屋结构-卫数
+    private Integer decoraStrucRoomNum;// 装修后房屋结构-房数
+    private Integer decoraStrucCusspacNum;// 装修后房屋结构-厅数
+    private Integer decoraStrucWashroNum;// 装修后房屋结构-卫数
 
-	private Integer oriStrucRoomNum;// 原始房屋结构-房数
-	private Integer oriStrucCusspacNum;// 原始房屋结构-厅数
-	private Integer oriStrucWashroNum;// 原始房屋结构-卫数
+    private String houseStatus; // 房屋状态
+    private String attachmentPath; // 房屋图片路径
 
-	private Integer decoraStrucRoomNum;// 装修后房屋结构-房数
-	private Integer decoraStrucCusspacNum;// 装修后房屋结构-厅数
-	private Integer decoraStrucWashroNum;// 装修后房屋结构-卫数
-	
-	private String houseStatus; // 房屋状态
-	private String attachmentPath; // 房屋图片路径
+    private String choose;
 
-	private String choose;
+    public House() {
+	super();
+    }
 
-	public House() {
-		super();
-	}
+    public House(String id) {
+	super(id);
+    }
 
-	public House(String id) {
-		super(id);
-	}
+    @NotNull(message = "物业项目不能为空")
+    public PropertyProject getPropertyProject() {
+	return propertyProject;
+    }
 
-	@NotNull(message = "物业项目不能为空")
-	public PropertyProject getPropertyProject() {
-		return propertyProject;
-	}
+    public void setPropertyProject(PropertyProject propertyProject) {
+	this.propertyProject = propertyProject;
+    }
 
-	public void setPropertyProject(PropertyProject propertyProject) {
-		this.propertyProject = propertyProject;
-	}
+    @NotNull(message = "楼宇不能为空")
+    public Building getBuilding() {
+	return building;
+    }
 
-	@NotNull(message = "楼宇不能为空")
-	public Building getBuilding() {
-		return building;
-	}
+    public void setBuilding(Building building) {
+	this.building = building;
+    }
 
-	public void setBuilding(Building building) {
-		this.building = building;
-	}
+    @NotNull(message = "业主不能为空")
+    public Owner getOwner() {
+	return owner;
+    }
 
-	@NotNull(message = "业主不能为空")
-	public Owner getOwner() {
-		return owner;
-	}
+    public void setOwner(Owner owner) {
+	this.owner = owner;
+    }
 
-	public void setOwner(Owner owner) {
-		this.owner = owner;
-	}
-	public String getHouseCode() {
-		return houseCode;
-	}
+    public String getHouseCode() {
+	return houseCode;
+    }
 
-	public void setHouseCode(String houseCode) {
-		this.houseCode = houseCode;
-	}
-	@Length(min = 1, max = 100, message = "房屋号长度必须介于 1 和 100 之间")
-	public String getHouseNo() {
-		return houseNo;
-	}
+    public void setHouseCode(String houseCode) {
+	this.houseCode = houseCode;
+    }
 
-	public void setHouseNo(String houseNo) {
-		this.houseNo = houseNo;
-	}
+    @Length(min = 1, max = 100, message = "房屋号长度必须介于 1 和 100 之间")
+    public String getHouseNo() {
+	return houseNo;
+    }
 
-	@NotNull(message = "楼层不能为空")
-	public Integer getHouseFloor() {
-		return houseFloor;
-	}
+    public void setHouseNo(String houseNo) {
+	this.houseNo = houseNo;
+    }
 
-	public void setHouseFloor(Integer houseFloor) {
-		this.houseFloor = houseFloor;
-	}
+    public String getCertificateNo() {
+	return certificateNo;
+    }
 
-	public String getHouseSpace() {
-		return houseSpace;
-	}
+    public void setCertificateNo(String certificateNo) {
+	this.certificateNo = certificateNo;
+    }
 
-	public void setHouseSpace(String houseSpace) {
-		this.houseSpace = houseSpace;
-	}
+    @NotNull(message = "楼层不能为空")
+    public Integer getHouseFloor() {
+	return houseFloor;
+    }
 
-	public String getDecorationSpance() {
-		return decorationSpance;
-	}
+    public void setHouseFloor(Integer houseFloor) {
+	this.houseFloor = houseFloor;
+    }
 
-	public void setDecorationSpance(String decorationSpance) {
-		this.decorationSpance = decorationSpance;
-	}
+    public String getHouseSpace() {
+	return houseSpace;
+    }
 
-	@Length(min = 1, max = 100, message = "房屋状态长度必须介于 1 和 100 之间")
-	public String getHouseStatus() {
-		return houseStatus;
-	}
+    public void setHouseSpace(String houseSpace) {
+	this.houseSpace = houseSpace;
+    }
 
-	public void setHouseStatus(String houseStatus) {
-		this.houseStatus = houseStatus;
-	}
-	public String getAttachmentPath() {
-		return attachmentPath;
-	}
+    public String getDecorationSpance() {
+	return decorationSpance;
+    }
 
-	public void setAttachmentPath(String attachmentPath) {
-		this.attachmentPath = attachmentPath;
-	}
+    public void setDecorationSpance(String decorationSpance) {
+	this.decorationSpance = decorationSpance;
+    }
 
-	public String getChoose() {
-		return choose;
-	}
+    @Length(min = 1, max = 100, message = "房屋状态长度必须介于 1 和 100 之间")
+    public String getHouseStatus() {
+	return houseStatus;
+    }
 
-	public void setChoose(String choose) {
-		this.choose = choose;
-	}
+    public void setHouseStatus(String houseStatus) {
+	this.houseStatus = houseStatus;
+    }
 
-	public Integer getOriStrucRoomNum() {
-		return oriStrucRoomNum;
-	}
+    public String getAttachmentPath() {
+	return attachmentPath;
+    }
 
-	public void setOriStrucRoomNum(Integer oriStrucRoomNum) {
-		this.oriStrucRoomNum = oriStrucRoomNum;
-	}
+    public void setAttachmentPath(String attachmentPath) {
+	this.attachmentPath = attachmentPath;
+    }
 
-	public Integer getOriStrucCusspacNum() {
-		return oriStrucCusspacNum;
-	}
+    public String getChoose() {
+	return choose;
+    }
 
-	public void setOriStrucCusspacNum(Integer oriStrucCusspacNum) {
-		this.oriStrucCusspacNum = oriStrucCusspacNum;
-	}
-	public Integer getOriStrucWashroNum() {
-		return oriStrucWashroNum;
-	}
+    public void setChoose(String choose) {
+	this.choose = choose;
+    }
 
-	public void setOriStrucWashroNum(Integer oriStrucWashroNum) {
-		this.oriStrucWashroNum = oriStrucWashroNum;
-	}
-	public Integer getDecoraStrucRoomNum() {
-		return decoraStrucRoomNum;
-	}
+    public Integer getOriStrucRoomNum() {
+	return oriStrucRoomNum;
+    }
 
-	public void setDecoraStrucRoomNum(Integer decoraStrucRoomNum) {
-		this.decoraStrucRoomNum = decoraStrucRoomNum;
-	}
+    public void setOriStrucRoomNum(Integer oriStrucRoomNum) {
+	this.oriStrucRoomNum = oriStrucRoomNum;
+    }
 
-	public Integer getDecoraStrucCusspacNum() {
-		return decoraStrucCusspacNum;
-	}
+    public Integer getOriStrucCusspacNum() {
+	return oriStrucCusspacNum;
+    }
 
-	public void setDecoraStrucCusspacNum(Integer decoraStrucCusspacNum) {
-		this.decoraStrucCusspacNum = decoraStrucCusspacNum;
-	}
+    public void setOriStrucCusspacNum(Integer oriStrucCusspacNum) {
+	this.oriStrucCusspacNum = oriStrucCusspacNum;
+    }
 
-	public Integer getDecoraStrucWashroNum() {
-		return decoraStrucWashroNum;
-	}
+    public Integer getOriStrucWashroNum() {
+	return oriStrucWashroNum;
+    }
 
-	public void setDecoraStrucWashroNum(Integer decoraStrucWashroNum) {
-		this.decoraStrucWashroNum = decoraStrucWashroNum;
-	}
+    public void setOriStrucWashroNum(Integer oriStrucWashroNum) {
+	this.oriStrucWashroNum = oriStrucWashroNum;
+    }
+
+    public Integer getDecoraStrucRoomNum() {
+	return decoraStrucRoomNum;
+    }
+
+    public void setDecoraStrucRoomNum(Integer decoraStrucRoomNum) {
+	this.decoraStrucRoomNum = decoraStrucRoomNum;
+    }
+
+    public Integer getDecoraStrucCusspacNum() {
+	return decoraStrucCusspacNum;
+    }
+
+    public void setDecoraStrucCusspacNum(Integer decoraStrucCusspacNum) {
+	this.decoraStrucCusspacNum = decoraStrucCusspacNum;
+    }
+
+    public Integer getDecoraStrucWashroNum() {
+	return decoraStrucWashroNum;
+    }
+
+    public void setDecoraStrucWashroNum(Integer decoraStrucWashroNum) {
+	this.decoraStrucWashroNum = decoraStrucWashroNum;
+    }
 
 }
