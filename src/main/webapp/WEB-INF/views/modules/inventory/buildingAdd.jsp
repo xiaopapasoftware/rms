@@ -33,6 +33,9 @@
 							iframe.contentWindow.$("[id='building.id']").html(text);
 							iframe.contentWindow.$("[id='building.id']").val(json.id);
 							iframe.contentWindow.$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html(json.name);
+							
+							iframe.contentWindow.$("[id='house.id']").val("").trigger("change");
+							iframe.contentWindow.$("[id='building.id']").val(json.id).trigger("change");
 							top.$.jBox.close();
 						}
 					});
