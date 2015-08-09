@@ -47,6 +47,7 @@
 							iframe.contentWindow.$("[id='room.id']").html(text);
 							iframe.contentWindow.$("[id='room.id']").val(json.id);
 							iframe.contentWindow.$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html(json.name);
+							iframe.contentWindow.$("[id='room.id']").val(json.id).trigger("change");
 							top.$.jBox.close();
 						}
 					});
@@ -113,7 +114,6 @@
 			<label class="control-label">物业项目：</label>
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
-					<form:option value="" label="请选择..."/>
 					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -123,7 +123,6 @@
 			<label class="control-label">楼宇：</label>
 			<div class="controls">
 				<form:select path="building.id" class="input-xlarge required" onchange="buildingChange()">
-					<form:option value="" label="请选择..."/>
 					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -133,7 +132,6 @@
 			<label class="control-label">房屋号：</label>
 			<div class="controls">
 				<form:select path="house.id" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
 					<form:options items="${listHouse}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
