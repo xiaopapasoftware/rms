@@ -267,6 +267,38 @@
 				return false;
 			}
 		}
+		
+		function startDateChange() {
+			var startDate = new Date($("input[name='startDate']").val());
+			
+			var endDate = new Date(Date.parse(startDate));
+			endDate.setFullYear(endDate.getFullYear()+1);
+			endDate.setDate(endDate.getDate()-1);
+			
+			var year = endDate.getFullYear();
+			var month = endDate.getMonth()+1;
+			if(parseFloat(month)<10)
+				month = "0"+""+month;
+			var day = endDate.getDate();
+			if(parseFloat(day)<10)
+				day = "0"+""+day;
+			var expiredDate=year+"-"+month+"-"+day;
+			$("input[name='expiredDate']").val(expiredDate);
+			
+			//合同续租提醒时间默认为结束时间前1个月
+			endDate.setMonth(startDate.getMonth() - 1);
+			year = endDate.getFullYear();
+			month = endDate.getMonth() + 1;
+			if(parseFloat(month)<10){
+				month = "0" + "" + month;
+			}
+			day = endDate.getDate();
+			if(parseFloat(day)<10){
+				day = "0" + "" + day;
+			}
+			var remindTime = year + "-" + month + "-" + day;
+			$("input[name='remindTime']").val(remindTime);
+		}
 	</script>
 </head>
 <body>
@@ -451,7 +483,7 @@
 			<div class="controls">
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" onchange="startDateChange()"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

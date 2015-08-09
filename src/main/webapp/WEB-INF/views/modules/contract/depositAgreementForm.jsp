@@ -289,19 +289,20 @@
 		
 		function startDateChange() {
 			var startDate = new Date($("input[name='startDate']").val());
-
-			var date = new Date();
-			date.setFullYear(startDate.getFullYear()+1);
-			date.setDate(startDate.getDate()-1);
-			var year = date.getFullYear();
-			var month = date.getMonth()+1;
-			if(parseFloat(month)<10)
-				month = "0"+""+month;
-			var day = date.getDate();
-			if(parseFloat(day)<10)
-				day = "0"+""+day;
-			var expiredDate=year+"-"+month+"-"+day;
-			$("input[name='expiredDate']").val(expiredDate);
+			var oriEndDate = new Date(Date.parse(startDate));
+			oriEndDate.setFullYear(oriEndDate.getFullYear()+1);
+			oriEndDate.setDate(oriEndDate.getDate()-1);
+			var year2 = oriEndDate.getFullYear();
+			var month2 = oriEndDate.getMonth() + 1;
+			if(parseFloat(month2)<10){
+				month2 = "0" + "" + month2;
+			}
+			var day2 = oriEndDate.getDate();
+			if(parseFloat(day2)<10){
+				day2 = "0" + "" + day2;
+			}
+			var curDateStyle2 = year2 + "-" + month2 + "-" + day2;
+			$("input[name='expiredDate']").val(curDateStyle2);
 		}
 	</script>
 </head>

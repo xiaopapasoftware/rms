@@ -374,28 +374,29 @@
 		
 		function startDateChange() {
 			var startDate = new Date($("input[name='startDate']").val());
-
-			var date = new Date();
-			date.setFullYear(startDate.getFullYear()+1);
-			date.setDate(startDate.getDate()-1);
-			var year = date.getFullYear();
-			var month = date.getMonth()+1;
+			
+			var endDate = new Date(Date.parse(startDate));
+			endDate.setFullYear(endDate.getFullYear()+1);
+			endDate.setDate(endDate.getDate()-1);
+			
+			var year = endDate.getFullYear();
+			var month = endDate.getMonth()+1;
 			if(parseFloat(month)<10)
 				month = "0"+""+month;
-			var day = date.getDate();
+			var day = endDate.getDate();
 			if(parseFloat(day)<10)
 				day = "0"+""+day;
 			var expiredDate=year+"-"+month+"-"+day;
 			$("input[name='expiredDate']").val(expiredDate);
 			
 			//合同续租提醒时间默认为结束时间前1个月
-			date.setMonth(startDate.getMonth() - 1);
-			year = date.getFullYear();
-			month = date.getMonth() + 1;
+			endDate.setMonth(startDate.getMonth() - 1);
+			year = endDate.getFullYear();
+			month = endDate.getMonth() + 1;
 			if(parseFloat(month)<10){
 				month = "0" + "" + month;
 			}
-			day = date.getDate();
+			day = endDate.getDate();
 			if(parseFloat(day)<10){
 				day = "0" + "" + day;
 			}
