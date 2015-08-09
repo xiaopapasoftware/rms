@@ -337,13 +337,13 @@
 	    			</shiro:hasPermission>
 					<shiro:hasPermission name="contract:rentContract:return">
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
-    						<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要正常退租核算吗?', this.href)">正常退租核算</a>
+    						<a href="${ctx}/contract/rentContract/toReturnCheck?id=${rentContract.id}" onclick="$('#messageBox').remove();">正常退租核算</a>
 						</c:if>
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='1'}">
-    						<a href="${ctx}/contract/rentContract/toEarlyReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要提前退租核算吗?', this.href)">提前退租核算</a>
+    						<a href="${ctx}/contract/rentContract/toEarlyReturnCheck?id=${rentContract.id}" onclick="$('#messageBox').remove();">提前退租核算</a>
 						</c:if>
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='3'}">
-    						<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租核算吗?', this.href)">逾期退租核算</a>
+    						<a href="${ctx}/contract/rentContract/toLateReturnCheck?id=${rentContract.id}" onclick="$('#messageBox').remove();">逾期退租核算</a>
 						</c:if>
 					</shiro:hasPermission>
 	 					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">

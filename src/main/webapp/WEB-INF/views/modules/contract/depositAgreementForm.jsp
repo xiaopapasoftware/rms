@@ -84,6 +84,15 @@
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
+			
+			//把物业项目简称带入房屋编号中
+			var projectSimpleName= $("[id='propertyProject.id']").find("option:selected").attr("projectSimpleName");
+			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
+				$("#agreementCode").val("${depositAgreement.agreementCode}");
+			}else{
+				$("#agreementCode").val(projectSimpleName + "-" + "${depositAgreement.agreementCode}");
+			}
+			
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.ajaxSetup({ cache: false });
@@ -278,7 +287,9 @@
 			<div class="controls">
 				<form:select path="propertyProject.id" class="input-xlarge required" onchange="changeProject()">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
+					<c:forEach items="${projectList}" var="item">
+						<form:option projectSimpleName="${item.projectSimpleName}" value="${item.id}">${item.projectName}</form:option>
+					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 				<shiro:hasPermission name="contract:depositAgreement:edit"><a href="#" onclick="addProject()">添加物业项目</a></shiro:hasPermission>

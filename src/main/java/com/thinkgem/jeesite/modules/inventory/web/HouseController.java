@@ -104,10 +104,10 @@ public class HouseController extends BaseController {
     // @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = "form")
     public String form(House house, Model model) {
-	Integer currentNum = 0;
+	Integer currentNum = 1;
 	List<House> allHouses = houseService.findAllHouses();
 	if (CollectionUtils.isNotEmpty(allHouses)) {
-	    currentNum = allHouses.size() + 1;
+	    currentNum = allHouses.size() + currentNum;
 	}
 	house.setHouseCode(currentNum.toString());
 	model.addAttribute("house", house);
