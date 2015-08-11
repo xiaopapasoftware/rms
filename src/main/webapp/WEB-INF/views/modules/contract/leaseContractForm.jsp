@@ -22,6 +22,40 @@
 						top.$.jBox.tip('请录入月承租价格.','warning');
 						return;
 					}
+					var isStartDateEarly = false;//输入的时间是否比合同开始时间早
+					var i =0 ;
+					var oriStartDate = $("input[name='effectiveDate']").val();
+					oriStartDate = new Date(oriStartDate.replace(/\-/g, "\/"));
+				 	$("#leaseContractDtlList").find("tr").each(function(index){
+						var startDate = $(this).children('td').eq(1).find("input").val();
+						startDate = new Date(startDate.replace(/\-/g, "\/"));
+						if(oriStartDate!=""&&startDate!=""&& startDate < oriStartDate){
+							i = index + 1; 
+							isStartDateEarly = true;
+							return false; 
+						}
+					});
+					if(isStartDateEarly){
+						alertx("第"+ i +"行的月承租价格开始日期不能比合同开始日期早！");
+						return;
+					}
+					var isEndDateLate = false;
+					var i2 =0 ;
+					var oriEndDate = $("input[name='expiredDate']").val();
+					oriEndDate = new Date(oriEndDate.replace(/\-/g, "\/"));
+					$("#leaseContractDtlList").find("tr").each(function(index){
+						var endDate = $(this).children('td').eq(2).find("input").val();
+						endDate = new Date(endDate.replace(/\-/g, "\/"));
+						if(oriEndDate!=""&&endDate!=""&& oriEndDate < endDate){
+							i2 = index + 1; 
+							isEndDateLate = true;
+							return false; 
+						}
+					});
+					if(isEndDateLate){
+						alertx("第"+ i2 +"行的月承租价格结束日期不能比合同结束日期晚！");
+						return;
+					}
 					loading('正在提交，请稍等...');
 					form.submit();
 				},
