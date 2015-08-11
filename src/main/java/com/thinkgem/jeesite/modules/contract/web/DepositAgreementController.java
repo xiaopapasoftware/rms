@@ -121,14 +121,14 @@ public class DepositAgreementController extends BaseController {
     @RequestMapping(value = "form")
     public String form(DepositAgreement depositAgreement, Model model) {
 	model.addAttribute("depositAgreement", depositAgreement);
-
-	int currAgreeNum = 1;
-	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
-	if (CollectionUtils.isNotEmpty(allAgreements)) {
-	    currAgreeNum = currAgreeNum + allAgreements.size();
+	if (depositAgreement.getIsNewRecord()) {
+	    int currAgreeNum = 1;
+	    List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
+	    if (CollectionUtils.isNotEmpty(allAgreements)) {
+		currAgreeNum = currAgreeNum + allAgreements.size();
+	    }
+	    depositAgreement.setAgreementCode(currAgreeNum + "-" + "XY");
 	}
-	depositAgreement.setAgreementCode(currAgreeNum + "-" + "XY");
-
 	if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
 	    depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
 	}

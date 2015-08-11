@@ -118,12 +118,14 @@ public class LeaseContractController extends BaseController {
     @RequestMapping(value = "form")
     public String form(LeaseContract leaseContract, Model model) {
 	model.addAttribute("leaseContract", leaseContract);
-	int currContractNum = 1;
-	List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
-	if (CollectionUtils.isNotEmpty(allContracts)) {
-	    currContractNum = currContractNum + allContracts.size();
+	if (leaseContract.getIsNewRecord()) {
+	    int currContractNum = 1;
+	    List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
+	    if (CollectionUtils.isNotEmpty(allContracts)) {
+		currContractNum = currContractNum + allContracts.size();
+	    }
+	    leaseContract.setContractCode(currContractNum + "-" + "SF");
 	}
-	leaseContract.setContractCode(currContractNum + "-" + "SF");
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
 

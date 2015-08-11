@@ -120,6 +120,9 @@
 			<li><label style="width:100px;">承租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li><label style="width:100px;">出租人姓名：</label>
+				<form:input path="lessorName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li><label style="width:100px;">打款日期：</label>
 				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
@@ -152,6 +155,9 @@
 				<th style="width:80px;">合同过期时间</th>
 				<th style="width:80px;">合同签订时间</th>
 				<th>承租押金</th>
+				<th>出租人姓名</th>
+				<th>出租人身份证号码</th>
+				<th>出租人手机号</th>
 				<th style="width:40px;">合同审核状态</th>
 				<th style="width:130px;">更新时间</th>
 				<th>备注信息</th>
@@ -196,6 +202,15 @@
 				</td>
 				<td>
 					${leaseContract.deposit}
+				</td>
+				<td>
+					${leaseContract.lessorName}
+				</td>
+				<td>
+					${leaseContract.lessorIdNo}
+				</td>
+				<td>
+					${leaseContract.lessorCellNo}
 				</td>
 				<td>
 					${fns:getDictLabel(leaseContract.contractStatus, 'contract_status', '')}

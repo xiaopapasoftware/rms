@@ -231,12 +231,14 @@ public class RentContractController extends BaseController {
     @RequestMapping(value = "form")
     public String form(RentContract rentContract, Model model) {
 	rentContract.setSignType("0");// 新签
-	int currContractNum = 1;
-	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	if (CollectionUtils.isNotEmpty(allContracts)) {
-	    currContractNum = currContractNum + allContracts.size();
+	if (rentContract.getIsNewRecord()) {
+	    int currContractNum = 1;
+	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	    if (CollectionUtils.isNotEmpty(allContracts)) {
+		currContractNum = currContractNum + allContracts.size();
+	    }
+	    rentContract.setContractCode(currContractNum + "-" + "CZ");
 	}
-	rentContract.setContractCode(currContractNum + "-" + "CZ");
 	model.addAttribute("rentContract", rentContract);
 	model.addAttribute("partnerList", partnerService.findList(new Partner()));
 	model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));

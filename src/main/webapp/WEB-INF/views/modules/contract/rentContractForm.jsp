@@ -390,7 +390,7 @@
 			$("input[name='expiredDate']").val(expiredDate);
 			
 			//合同续租提醒时间默认为结束时间前1个月
-			endDate.setMonth(startDate.getMonth() - 1);
+			endDate.setMonth(endDate.getMonth() - 1);
 			year = endDate.getFullYear();
 			month = endDate.getMonth() + 1;
 			if(parseFloat(month)<10){
@@ -402,6 +402,25 @@
 			}
 			var remindTime = year + "-" + month + "-" + day;
 			$("input[name='remindTime']").val(remindTime);
+		}
+		
+		function endDateChange() {
+			var expiredDate = new Date($("input[name='expiredDate']").val());
+			expiredDate = new Date(Date.parse(expiredDate));
+			expiredDate.setFullYear(expiredDate.getFullYear());
+			expiredDate.setMonth(expiredDate.getMonth()-1);
+			expiredDate.setDate(expiredDate.getDate());
+			
+			var year = expiredDate.getFullYear();
+			var month = expiredDate.getMonth() + 1;
+			if(parseFloat(month)<10){
+				month = "0" + "" + month;
+			}
+			var day = expiredDate.getDate();
+			if(parseFloat(day)<10){
+				day = "0" + "" + day;
+			}
+			$("input[name='remindTime']").val(year + "-" + month + "-" + day);
 		}
 	</script>
 </head>
@@ -594,7 +613,7 @@
 			<div class="controls">
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" onchange="endDateChange()"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>

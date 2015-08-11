@@ -23,6 +23,9 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
+		a.LESSOR_NAME AS "lessorName",
+		a.LESSOR_ID_NO AS "lessorIdNo",
+		a.LESSOR_CELL_NO AS "lessorCellNo",
 		at1.attachment_path as landlordId, 
 		at2.attachment_path as profile,
 		at3.attachment_path as certificate,
@@ -96,6 +99,24 @@
 					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
 			</if>
+			<if test="lessorName != null and lessorName != ''">
+				AND a.lessor_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{lessorName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{lessorName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{lessorName},'%')</if>
+			</if>
+			<if test="lessorIdNo != null and lessorIdNo != ''">
+				AND a.lessor_id_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{lessorIdNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{lessorIdNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{lessorIdNo},'%')</if>
+			</if>
+			<if test="lessorCellNo != null and lessorCellNo != ''">
+				AND a.lessor_cell_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{lessorCellNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{lessorCellNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{lessorCellNo},'%')</if>
+			</if>
 			<if test="remittanceDate != null and remittanceDate != ''">
 				AND a.remittance_date = #{remittanceDate}
 			</if>
@@ -140,6 +161,9 @@
 			remittancer_id,
 			contract_code,
 			contract_name,
+			LESSOR_NAME,
+			LESSOR_ID_NO,
+			LESSOR_CELL_NO,
 			effective_date,
 			first_remittance_date,
 			remittance_date,
@@ -162,6 +186,9 @@
 			#{remittancer.id},
 			#{contractCode},
 			#{contractName},
+			#{lessorName},
+			#{lessorIdNo},
+			#{lessorCellNo},
 			#{effectiveDate},
 			#{firstRemittanceDate},
 			#{remittanceDate},
@@ -187,6 +214,9 @@
 			remittancer_id = #{remittancer.id},
 			contract_code = #{contractCode},
 			contract_name = #{contractName},
+			LESSOR_NAME = #{lessorName},
+			LESSOR_ID_NO = #{lessorIdNo},
+			LESSOR_CELL_NO = #{lessorCellNo},
 			effective_date = #{effectiveDate},
 			first_remittance_date = #{firstRemittanceDate},
 			remittance_date = #{remittanceDate},

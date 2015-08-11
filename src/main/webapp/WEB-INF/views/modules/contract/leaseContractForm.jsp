@@ -389,6 +389,25 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">出租人姓名：</label>
+			<div class="controls">
+				<form:input path="lessorName" htmlEscape="false" class="input-xlarge required "/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出租人身份证号码：</label>
+			<div class="controls">
+				<form:input path="lessorIdNo" htmlEscape="false" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出租人手机号：</label>
+			<div class="controls">
+				<form:input path="lessorCellNo" htmlEscape="false" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">业主身份证：</label>
 			<div class="controls">
 				<form:hidden id="landlordId" path="landlordId" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
