@@ -349,7 +349,7 @@
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					    <a href="javascript:void(0);" onclick="javascript:specialReturn('${rentContract.id}');">特殊退租</a>
     					 </c:if> 
-   					 </shiro:hasPermission>
+   					 </shiro:hasPermission><br/>
     				<shiro:hasPermission name="contract:rentContract:change">
     				 	 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
     					 	<a href="${ctx}/contract/rentContract/changeContract?id=${rentContract.id}" onclick="return confirmx('确认要协议变更吗?', this.href)">协议变更</a>
