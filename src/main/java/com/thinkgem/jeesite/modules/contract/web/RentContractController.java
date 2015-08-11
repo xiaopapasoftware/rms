@@ -607,9 +607,9 @@ public class RentContractController extends BaseController {
     }
 
     @RequestMapping(value = "toSpecialReturnCheck")
-    public String toSpecialReturnCheck(RentContract rentContract, Model model) {
-	rentContract = rentContractService.get(rentContract.getId());
-	rentContract.setIsSpecial(rentContract.getIsSpecial());
+    public String toSpecialReturnCheck(RentContract rentContractParam, Model model) {
+    RentContract rentContract = rentContractService.get(rentContractParam.getId());
+	rentContract.setIsSpecial(rentContractParam.getIsSpecial());
 	List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
 	List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
 	model.addAttribute("outAccountList", outAccountList);
@@ -861,7 +861,11 @@ public class RentContractController extends BaseController {
 
 	Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
 
-	double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date());// 实际入住天数
+	Date endDate = new Date();
+	if("1".equals(rentContract.getIsSpecial()))
+		endDate = DateUtils.parseDate(rentContract.getReturnDate());
+	
+	double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数
 	double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
 	double hasLivedAmount = dates * dailyFee;
 
@@ -904,7 +908,10 @@ public class RentContractController extends BaseController {
 	    lateAcc.setAccountingType(accountingType);
 	    lateAcc.setFeeDirection("1");// 1 : 应收
 	    lateAcc.setFeeType("8");// 逾赔房租
-	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date());// 逾期天数
+	    Date endDate = new Date();
+	    if("1".equals(rentContract.getIsSpecial()))
+	    	endDate = DateUtils.parseDate(rentContract.getReturnDate());
+	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate);// 逾期天数
 	    double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 	    double tental = (dates < 0 ? 0 : dates) * dailyRental;
 	    lateAcc.setFeeAmount(new BigDecimal(tental).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());

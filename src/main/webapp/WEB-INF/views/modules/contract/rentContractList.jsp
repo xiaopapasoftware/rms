@@ -110,6 +110,34 @@
 		function auditHis(id) {
 			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
 		}
+		
+		function specialReturn(id) {
+			confirmx("确认要特殊退租吗?",function(){
+				var curDate = new Date();
+				var year = curDate.getFullYear();
+				var month = curDate.getMonth() + 1;
+				if(parseFloat(month)<10){
+					month = "0" + "" + month;
+				}
+				var day = curDate.getDate();
+				if(parseFloat(day)<10){
+					day = "0" + "" + day;
+				}
+				var curDateStyle = year + "-" + month + "-" + day;
+				
+				var html = '<label style="width:120px;">合同生效时间：</label>';
+				html += '<input name="returnDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"';
+				html += 'value="'+curDateStyle+'"';
+				html += 'onclick="WdatePicker({dateFmt:\'yyyy-MM-dd\',isShowClear:false});" style="width:196px;"/>';
+				
+				var submit = function (v, h, f) {
+				    window.location.href="${ctx}/contract/rentContract/specialReturnContract?id="+id+"&returnDate="+f.returnDate;
+				    return true;
+				};
+				
+				$.jBox(html,{title:"选择退租日期",submit:submit});
+			});
+		}
 	</script>
 </head>
 <body>
@@ -319,7 +347,7 @@
    					</shiro:hasPermission>
     				<shiro:hasPermission name="contract:rentContract:specialreturn">
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
-    					    <a href="${ctx}/contract/rentContract/specialReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要特殊退租吗?', this.href)">特殊退租</a>
+    					    <a href="javascript:void(0);" onclick="javascript:specialReturn('${rentContract.id}');">特殊退租</a>
     					 </c:if> 
    					 </shiro:hasPermission>
     				<shiro:hasPermission name="contract:rentContract:change">

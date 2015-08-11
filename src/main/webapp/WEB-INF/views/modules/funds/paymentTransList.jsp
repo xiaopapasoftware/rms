@@ -50,7 +50,7 @@
 	</ul>
 	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
-		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
+		<input id="pageSize" name="pageSize" type="hidden" value="500"/>
 		<ul class="ul-form">
 			<li><label style="width:120px;">交易对象：</label>
 				<form:input path="transName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
@@ -67,6 +67,13 @@
 					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li>
+				<label style="width:120px;" class="control-label">打款日期：</label>
+				<form:select path="remittanceDate" class="input-xlarge"  style="width:200px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</li>
 			<li><label style="width:120px;">交易款项方向：</label>
 				<form:select path="tradeDirection" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -78,6 +85,16 @@
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('trade_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+			</li>
+			<li><label style="width:120px;">交易款项开始时间：</label>
+				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
+			</li>
+			<li><label style="width:120px;">交易款项到期时间：</label>
+				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>

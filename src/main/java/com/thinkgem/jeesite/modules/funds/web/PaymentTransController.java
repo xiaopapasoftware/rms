@@ -49,7 +49,9 @@ public class PaymentTransController extends BaseController {
 	//@RequiresPermissions("funds:paymentTrans:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<PaymentTrans> page = paymentTransService.findPage(new Page<PaymentTrans>(request, response), paymentTrans); 
+		Page pageParam = new Page<PaymentTrans>(request, response);
+		pageParam.setPageSize(500);
+		Page<PaymentTrans> page = paymentTransService.findPage(pageParam, paymentTrans); 
 		model.addAttribute("page", page);
 		return "modules/funds/paymentTransList";
 	}
