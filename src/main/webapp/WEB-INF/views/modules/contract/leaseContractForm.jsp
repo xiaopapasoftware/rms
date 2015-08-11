@@ -233,15 +233,15 @@
 		
 		function effectiveDateChange() {
 			var startDate = new Date($("input[name='effectiveDate']").val());
-
-			var date = new Date();
-			date.setFullYear(startDate.getFullYear()+6);
-			date.setDate(startDate.getDate()-1);
-			var year = date.getFullYear();
-			var month = date.getMonth()+1;
+			var endDate = new Date(Date.parse(startDate));
+			endDate.setFullYear(endDate.getFullYear()+6);
+			endDate.setMonth(endDate.getMonth());
+			endDate.setDate(endDate.getDate()-1);
+			var year = endDate.getFullYear();
+			var month = endDate.getMonth()+1;
 			if(parseFloat(month)<10)
 				month = "0"+""+month;
-			var day = date.getDate();
+			var day = endDate.getDate();
 			if(parseFloat(day)<10)
 				day = "0"+""+day;
 			var expiredDate=year+"-"+month+"-"+day;
