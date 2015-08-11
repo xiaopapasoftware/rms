@@ -33,6 +33,8 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 	private Double lastAmount;		// 剩余交易金额
 	private String transStatus;		// 交易款项状态
 	
+	private String remittanceDate;
+	
 	public PaymentTrans() {
 		super();
 	}
@@ -138,5 +140,13 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 
 	public void setTransName(String transName) {
 		this.transName = transName;
+	}
+
+	public String getRemittanceDate() {
+		return remittanceDate;
+	}
+
+	public void setRemittanceDate(String remittanceDate) {
+		this.remittanceDate = remittanceDate;
 	}
 }

@@ -106,6 +106,8 @@ public class RentContract extends DataEntity<RentContract> {
 	private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
 
 	private String oriEndDate;//为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
+	
+	private String returnDate;
 
 	public RentContract() {
 		super();
@@ -613,4 +615,11 @@ public class RentContract extends DataEntity<RentContract> {
 		this.oriEndDate = oriEndDate;
 	}
 
+	public String getReturnDate() {
+		return returnDate;
+	}
+
+	public void setReturnDate(String returnDate) {
+		this.returnDate = returnDate;
+	}
 }
