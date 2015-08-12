@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+			top.$.jBox.tip.mess = null;
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
@@ -119,8 +119,19 @@
 				html += '<input name="refundAmount" type="text" maxlength="20" class="input-medium number"';
 				html += 'style="width:196px;"/>';
 				var submit = function (v, h, f) {
-				    window.location.href="${ctx}/contract/depositAgreement/breakContract?id="+id+"&refundAmount="+f.refundAmount;
-				    return true;
+					var isNum = /^\d+(\.\d+)?$/;
+					if(!isNum.test(f.refundAmount)){
+						alertx("转违约退费金额输入不合法！");
+						return false;
+					}else{
+						if(parseFloat(f.refundAmount) <=0 ){
+							alertx("转违约退费金额必须大于0！");
+							return false;
+						}else{
+						 	window.location.href="${ctx}/contract/depositAgreement/breakContract?id="+id+"&refundAmount="+f.refundAmount;
+							return true;
+						}
+					}
 				};
 				$.jBox(html,{title:"转违约退款金额",submit:submit});
 			});

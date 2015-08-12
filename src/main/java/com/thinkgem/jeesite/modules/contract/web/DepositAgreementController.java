@@ -205,6 +205,7 @@ public class DepositAgreementController extends BaseController {
 	depositAgreementService.breakContract(depositAgreement);
 	model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
 	model.addAttribute("messageType", ViewMessageTypeEnum.SUCCESS.getValue());
+	model.addAttribute("depositAgreement", new DepositAgreement());
 	return list(new DepositAgreement(), request, response, model);
     }
 
