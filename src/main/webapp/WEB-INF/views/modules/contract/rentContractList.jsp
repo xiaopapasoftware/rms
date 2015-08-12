@@ -125,7 +125,7 @@
 				}
 				var curDateStyle = year + "-" + month + "-" + day;
 				
-				var html = '<label style="width:120px;">合同生效时间：</label>';
+				var html = '<label style="width:120px;">实际退房日期：</label>';
 				html += '<input name="returnDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"';
 				html += 'value="'+curDateStyle+'"';
 				html += 'onclick="WdatePicker({dateFmt:\'yyyy-MM-dd\',isShowClear:false});" style="width:196px;"/>';
