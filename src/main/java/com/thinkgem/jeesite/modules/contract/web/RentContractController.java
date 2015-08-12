@@ -608,8 +608,9 @@ public class RentContractController extends BaseController {
 
     @RequestMapping(value = "toSpecialReturnCheck")
     public String toSpecialReturnCheck(RentContract rentContractParam, Model model) {
-    RentContract rentContract = rentContractService.get(rentContractParam.getId());
+	RentContract rentContract = rentContractService.get(rentContractParam.getId());
 	rentContract.setIsSpecial(rentContractParam.getIsSpecial());
+	rentContract.setReturnDate(rentContractParam.getReturnDate());
 	List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
 	List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
 	model.addAttribute("outAccountList", outAccountList);
@@ -675,12 +676,12 @@ public class RentContractController extends BaseController {
 	accounting.setFeeType("4");// 房租押金
 	outAccountings.add(accounting);
 
-	if (isPre) {// 提前应退房租金额
+	if (isPre || "1".equals(rentContract.getIsSpecial())) {// 提前退租或许特殊退租，需计算应退房租金额
 	    Accounting preBackRentalAcc = new Accounting();
 	    preBackRentalAcc.setRentContract(rentContract);
 	    preBackRentalAcc.setAccountingType(accountingType);
 	    preBackRentalAcc.setFeeDirection("0");// 0 : 应出
-	    preBackRentalAcc.setFeeType("7");// 提前应退房租
+	    preBackRentalAcc.setFeeType("7");// 应退房租
 	    preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
 	    outAccountings.add(preBackRentalAcc);
 	}
@@ -862,9 +863,9 @@ public class RentContractController extends BaseController {
 	Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
 
 	Date endDate = new Date();
-	if("1".equals(rentContract.getIsSpecial()))
-		endDate = DateUtils.parseDate(rentContract.getReturnDate());
-	
+	if ("1".equals(rentContract.getIsSpecial())) {// 特殊退租时
+	    endDate = DateUtils.parseDate(rentContract.getReturnDate());
+	}
 	double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数
 	double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
 	double hasLivedAmount = dates * dailyFee;
@@ -883,7 +884,7 @@ public class RentContractController extends BaseController {
      * @param isPre
      *            是否提前退租
      * @param isLate
-     *            是否与其退租
+     *            是否逾期退租
      */
     private List<Accounting> genInAccountListBack(RentContract rentContract, String accountingType, boolean isPre, boolean isLate) {
 	List<Accounting> inAccountings = new ArrayList<Accounting>();
@@ -909,8 +910,8 @@ public class RentContractController extends BaseController {
 	    lateAcc.setFeeDirection("1");// 1 : 应收
 	    lateAcc.setFeeType("8");// 逾赔房租
 	    Date endDate = new Date();
-	    if("1".equals(rentContract.getIsSpecial()))
-	    	endDate = DateUtils.parseDate(rentContract.getReturnDate());
+	    if ("1".equals(rentContract.getIsSpecial()))
+		endDate = DateUtils.parseDate(rentContract.getReturnDate());
 	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate);// 逾期天数
 	    double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 	    double tental = (dates < 0 ? 0 : dates) * dailyRental;
