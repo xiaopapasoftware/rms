@@ -50,7 +50,7 @@ public class PaymentTransController extends BaseController {
 	@RequestMapping(value = {"list", ""})
 	public String list(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page pageParam = new Page<PaymentTrans>(request, response);
-		pageParam.setPageSize(500);
+		pageParam.setPageSize(250);
 		Page<PaymentTrans> page = paymentTransService.findPage(pageParam, paymentTrans); 
 		model.addAttribute("page", page);
 		return "modules/funds/paymentTransList";

@@ -22,7 +22,8 @@
 				return;
 			} else if(transIds>1){
 				for(var i=1;i<transIds;i++) {
-					if($("input[name='transIds']:checked").eq(i).attr("transId") != $("input[name='transIds']:checked").eq(i-1).attr("transId")) {
+					if($("input[name='transIds']:checked").eq(i).attr("transId") != $("input[name='transIds']:checked").eq(i-1).attr("transId")
+							&& $("input[name='transIds']:checked").eq(i).attr("tradeType")!='0') {
 						check = false;
 						break;
 					}
@@ -34,10 +35,22 @@
 					transId.push($("input[name='transIds']:checked").eq(i).val());
 				}
 				window.location.href="${ctx}/funds/tradingAccounts/form?transIds="+transId.join(",")+"&tradeId="+$("input[name='transIds']:checked").eq(0).attr("transId")
-						+"&tradeName="+$("input[name='transIds']:checked").eq(0).attr("transName");
+						+"&tradeName="+$("input[name='transIds']:checked").eq(0).attr("transName")+"&tradeType="+$("input[name='transIds']:checked").eq(0).attr("tradeType");
 			} else {
 				top.$.jBox.tip('勾选的款项来自不同的合同,不能一并到账登记.','warning');
 			}
+		}
+		
+		function chooseAllTransId(target) {
+			$("input[name='transIds']").each(function(index){
+				if(!$(this).prop("disabled")) {
+					if($(target).is(":checked")) {
+						$(this).attr("checked",true);
+					} else {
+						$(this).attr("checked",false);
+					}
+				}
+			});
 		}
 	</script>
 </head>
@@ -50,7 +63,7 @@
 	</ul>
 	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
-		<input id="pageSize" name="pageSize" type="hidden" value="500"/>
+		<input id="pageSize" name="pageSize" type="hidden" value="250"/>
 		<ul class="ul-form">
 			<li><label style="width:120px;">交易对象：</label>
 				<form:input path="transName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
@@ -100,11 +113,11 @@
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th width="15"></th>
+				<th width="15"><input type="checkbox" onclick="chooseAllTransId(this)" title="全选"/></th>
 				<th>交易对象</th>
 				<th>交易类型</th>
 				<th>款项类型</th>
@@ -123,7 +136,7 @@
 		<c:forEach items="${page.list}" var="paymentTrans">
 			<tr>
 				<td>
-					<input ${paymentTrans.transStatus =='2' ? 'disabled="disabled"' : ""} name="transIds" transId="${paymentTrans.transId}" transName="${paymentTrans.transName}" type="checkbox" value="${paymentTrans.id}"/>
+					<input ${paymentTrans.transStatus =='2' ? 'disabled="disabled"' : ""} name="transIds" tradeType="${paymentTrans.tradeType}" transId="${paymentTrans.transId}" transName="${paymentTrans.transName}" type="checkbox" value="${paymentTrans.id}"/>
 				</td>
 				<td>
 					${paymentTrans.transName}

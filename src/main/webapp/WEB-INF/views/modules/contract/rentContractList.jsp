@@ -256,7 +256,7 @@
 				<th style="width:130px;">修改时间</th>
 				<th style="width:20px;">创建人</th>
 				<th style="width:20px;">修改人</th>
-				<th style="width:480px;">操作</th>
+				<th style="width:250px;">操作</th>
 			</tr>
 		</thead>
 		<tbody>

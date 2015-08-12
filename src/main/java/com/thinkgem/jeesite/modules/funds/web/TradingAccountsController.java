@@ -28,8 +28,10 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
+import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
@@ -60,6 +62,8 @@ public class TradingAccountsController extends BaseController {
     private DepositAgreementService depositAgreementService;
     @Autowired
     private RentContractService rentContractService;
+    @Autowired
+    private LeaseContractService leaseContractService;
 
     @ModelAttribute
     public TradingAccounts get(@RequestParam(required = false) String id) {
@@ -83,97 +87,119 @@ public class TradingAccountsController extends BaseController {
 
     // @RequiresPermissions("funds:tradingAccounts:view")
     @RequestMapping(value = "form")
-    public String form(TradingAccounts tradingAccounts, Model model) {
-
-	String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
-	double amount = 0;// 实际交易金额
-	String tradeType = "";// 交易类型
-	String tradeObjectId = "";// 交易对象ID
-	Map<String, Receipt> paymentTypeMap = new HashMap<String, Receipt>();
-	for (int i = 0; i < paymentTransIdArray.length; i++) {
-	    PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
-	    if ("0".equals(paymentTrans.getTradeDirection())) {// 应出
-		amount -= paymentTrans.getLastAmount();
-	    } else {// 应收
-		amount += paymentTrans.getLastAmount();
-	    }
-	    tradeType = paymentTrans.getTradeType();// 交易类型
-	    tradeObjectId = paymentTrans.getTransId();// 交易对象ID
-	    String paymentType = paymentTrans.getPaymentType();// 款项类型
-
-	    // 包含有出款的交易类型:0=承租合同,2=定金转违约,6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
-	    if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
-	    } else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {
-	    } else {// 交易类型里的款项全是收款，不包含出款
-		if (!"0".equals(paymentTrans.getTradeDirection())) {// 应收款项
-		    Receipt receipt = new Receipt();
-		    if (paymentTypeMap.containsKey(paymentType)) {
-			receipt = paymentTypeMap.get(paymentType);
-		    }
-		    receipt.setReceiptAmount((null == receipt.getReceiptAmount() ? 0d : receipt.getReceiptAmount()) + paymentTrans.getLastAmount());
-		    receipt.setPaymentType(paymentType);
-		    paymentTypeMap.put(paymentType, receipt);
-		}
-	    }
-	}
-	List<Receipt> receiptList = new ArrayList<Receipt>(); /* 收据 */
-	if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
-	} else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {// 6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
-	    if (amount > 0) {// 总到账金额大于0
-		Receipt receipt = new Receipt();
-		receipt.setReceiptAmount(new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
-		receiptList.add(receipt);
-	    }
-	} else {
-	    for (String key : paymentTypeMap.keySet()) {
-		Receipt receipt = paymentTypeMap.get(key);
-		receiptList.add(receipt);
-	    }
-	}
-
-	// 获取交易对象名称,设置交易对象名称、交易对象类型
-	if (StringUtils.isNotEmpty(tradeObjectId)) {
-	    DepositAgreement da = depositAgreementService.get(tradeObjectId);
-	    if (da != null) {// 定金协议承租人
-		List<Tenant> tenants = depositAgreementService.findTenant(da);// 定金协议的承租人列表
-		if (CollectionUtils.isNotEmpty(tenants)) {
-		    tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-		    String tenantType = tenants.get(0).getTenantType();// 租客类型
-		    if ("0".equals(tenantType)) {// 个人租客
-			tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-		    }
-		    if ("1".equals(tenantType)) {// 企业租客
-			tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
-		    }
-		}
-	    } else {
-		RentContract rc = rentContractService.get(tradeObjectId);
-		if (rc != null) {// 出租合同承租人
-		    List<Tenant> tenants = rentContractService.findTenant(rc);
-		    if (CollectionUtils.isNotEmpty(tenants)) {
-			tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-			String tenantType = tenants.get(0).getTenantType();// 租客类型
-			if ("0".equals(tenantType)) {// 个人租客
-			    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-			}
-			if ("1".equals(tenantType)) {// 企业租客
-			    tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
-			}
-		    }
-		}
-	    }
-	}
-
-	tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
-	tradingAccounts.setTradeAmount(new BigDecimal(Math.abs(amount)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
-	tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(), "trans_dirction", ""));
-	tradingAccounts.setTradeType(tradeType);
-	tradingAccounts.setTradeTypeDesc(DictUtils.getDictLabel(tradingAccounts.getTradeType(), "trans_type", ""));
-	model.addAttribute("tradingAccounts", tradingAccounts);
-
-	tradingAccounts.setReceiptList(receiptList);
-
-	return "modules/funds/tradingAccountsForm";
+    public String form(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
+    	String type = tradingAccounts.getTradeType();
+    	if("0".equals(type)) {//承租合同直接处理，不跳转
+    		tradingAccounts.setTradeStatus("1");//审核通过
+    		tradingAccounts.setTradeDirection("0");//出账
+    		tradingAccounts.setPayeeType("1");//交易人类型为“个人”
+    		
+    		String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
+    		for (int i = 0; i < paymentTransIdArray.length; i++) {
+    			tradingAccounts.setId(null);
+    			PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
+    			tradingAccounts.setTradeAmount(paymentTrans.getLastAmount());
+    			tradingAccounts.setTransIds(paymentTransIdArray[i]);
+    			String transId = paymentTrans.getTransId();
+    			LeaseContract leaseContract = leaseContractService.get(transId);
+    			tradingAccounts.setPayeeName(leaseContract.getRemittancerName());
+    			
+    			tradingAccountsService.save(tradingAccounts);
+    		}
+    		
+    		addMessage(redirectAttributes, "保存账务交易成功");
+    		return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
+    	} else {
+    		String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
+    		double amount = 0;// 实际交易金额
+    		String tradeType = "";// 交易类型
+    		String tradeObjectId = "";// 交易对象ID
+    		Map<String, Receipt> paymentTypeMap = new HashMap<String, Receipt>();
+    		for (int i = 0; i < paymentTransIdArray.length; i++) {
+    			PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
+    			if ("0".equals(paymentTrans.getTradeDirection())) {// 应出
+    				amount -= paymentTrans.getLastAmount();
+    			} else {// 应收
+    				amount += paymentTrans.getLastAmount();
+    			}
+    			tradeType = paymentTrans.getTradeType();// 交易类型
+    			tradeObjectId = paymentTrans.getTransId();// 交易对象ID
+    			String paymentType = paymentTrans.getPaymentType();// 款项类型
+    			
+    			// 包含有出款的交易类型:0=承租合同,2=定金转违约,6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
+    			if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
+    			} else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {
+    			} else {// 交易类型里的款项全是收款，不包含出款
+    				if (!"0".equals(paymentTrans.getTradeDirection())) {// 应收款项
+    					Receipt receipt = new Receipt();
+    					if (paymentTypeMap.containsKey(paymentType)) {
+    						receipt = paymentTypeMap.get(paymentType);
+    					}
+    					receipt.setReceiptAmount((null == receipt.getReceiptAmount() ? 0d : receipt.getReceiptAmount()) + paymentTrans.getLastAmount());
+    					receipt.setPaymentType(paymentType);
+    					paymentTypeMap.put(paymentType, receipt);
+    				}
+    			}
+    		}
+    		List<Receipt> receiptList = new ArrayList<Receipt>(); /* 收据 */
+    		if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
+    		} else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {// 6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
+    			if (amount > 0) {// 总到账金额大于0
+    				Receipt receipt = new Receipt();
+    				receipt.setReceiptAmount(new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+    				receiptList.add(receipt);
+    			}
+    		} else {
+    			for (String key : paymentTypeMap.keySet()) {
+    				Receipt receipt = paymentTypeMap.get(key);
+    				receiptList.add(receipt);
+    			}
+    		}
+    		
+    		// 获取交易对象名称,设置交易对象名称、交易对象类型
+    		if (StringUtils.isNotEmpty(tradeObjectId)) {
+    			DepositAgreement da = depositAgreementService.get(tradeObjectId);
+    			if (da != null) {// 定金协议承租人
+    				List<Tenant> tenants = depositAgreementService.findTenant(da);// 定金协议的承租人列表
+    				if (CollectionUtils.isNotEmpty(tenants)) {
+    					tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
+    					String tenantType = tenants.get(0).getTenantType();// 租客类型
+    					if ("0".equals(tenantType)) {// 个人租客
+    						tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+    					}
+    					if ("1".equals(tenantType)) {// 企业租客
+    						tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+    					}
+    				}
+    			} else {
+    				RentContract rc = rentContractService.get(tradeObjectId);
+    				if (rc != null) {// 出租合同承租人
+    					List<Tenant> tenants = rentContractService.findTenant(rc);
+    					if (CollectionUtils.isNotEmpty(tenants)) {
+    						tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
+    						String tenantType = tenants.get(0).getTenantType();// 租客类型
+    						if ("0".equals(tenantType)) {// 个人租客
+    							tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+    						}
+    						if ("1".equals(tenantType)) {// 企业租客
+    							tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+    						}
+    					}
+    				}
+    			}
+    		}
+    		
+    		tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
+    		tradingAccounts.setTradeAmount(new BigDecimal(Math.abs(amount)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+    		tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(), "trans_dirction", ""));
+    		tradingAccounts.setTradeType(tradeType);
+    		tradingAccounts.setTradeTypeDesc(DictUtils.getDictLabel(tradingAccounts.getTradeType(), "trans_type", ""));
+    		model.addAttribute("tradingAccounts", tradingAccounts);
+    		
+    		tradingAccounts.setReceiptList(receiptList);
+    		
+    		return "modules/funds/tradingAccountsForm";
+    	}
     }
 
     @RequestMapping(value = "edit")
@@ -205,7 +231,7 @@ public class TradingAccountsController extends BaseController {
 	String id = tradingAccounts.getId();
 
 	if (!beanValidator(model, tradingAccounts)) {
-	    return form(tradingAccounts, model);
+	    return form(tradingAccounts, model,redirectAttributes);
 	}
 
 	/* 校验收据编号重复 */
@@ -241,7 +267,7 @@ public class TradingAccountsController extends BaseController {
 	    model.addAttribute("message", "收据编号:" + receiptNo + "重复或已存在.");
 	    model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 	    if (StringUtils.isEmpty(id)) {
-		return form(tradingAccounts, model);
+		return form(tradingAccounts, model,redirectAttributes);
 	    } else {
 		return "modules/funds/tradingAccountsForm";
 	    }
