@@ -28,278 +28,291 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
  */
 public class DepositAgreement extends DataEntity<DepositAgreement> {
 
-	private static final long serialVersionUID = 1L;
-	private PropertyProject propertyProject; // 物业项目
-	private Building building; // 楼宇
-	private House house; // 房屋
-	private Room room; // 房间
-	private String rentMode; // 出租方式
-	private User user; // 销售
-	private String agreementCode;//定金协议编号
-	private String agreementName; // 定金协议名称
-	private Date startDate; // 协议开始时间
-	private Date expiredDate; // 协议结束时间
-	private Date signDate; // 协议签订时间
-	private Integer renMonths; // 首付房租月数
-	private Integer depositMonths; // 房租押金月数
-	private Date agreementDate; // 约定合同签约时间
-	private Double depositAmount; // 定金金额
-	private Double housingRent; // 房屋租金
-	private String agreementStatus; // 定金协议审核状态
-	private String agreementBusiStatus; // 定金协议业务状态
+    private static final long serialVersionUID = 1L;
+    private PropertyProject propertyProject; // 物业项目
+    private Building building; // 楼宇
+    private House house; // 房屋
+    private Room room; // 房间
+    private String rentMode; // 出租方式
+    private User user; // 销售
+    private String agreementCode;// 定金协议编号
+    private String agreementName; // 定金协议名称
+    private Date startDate; // 协议开始时间
+    private Date expiredDate; // 协议结束时间
+    private Date signDate; // 协议签订时间
+    private Integer renMonths; // 首付房租月数
+    private Integer depositMonths; // 房租押金月数
+    private Date agreementDate; // 约定合同签约时间
+    private Double depositAmount; // 定金金额
+    private Double housingRent; // 房屋租金
+    private String agreementStatus; // 定金协议审核状态
+    private String agreementBusiStatus; // 定金协议业务状态
 
-	private String projectName;
-	private String buildingBame;
-	private String houseNo;
-	private String roomNo;
-	private String depositAgreementFile;// 定金协议文件
-	private String depositReceiptFile;// 定金协议收据
-	private String depositCustomerIDFile;// 租客身份证
-	private String depositOtherFile;// 定金协议其他附件
+    private String projectName;
+    private String buildingBame;
+    private String houseNo;
+    private String roomNo;
+    private String depositAgreementFile;// 定金协议文件
+    private String depositReceiptFile;// 定金协议收据
+    private String depositCustomerIDFile;// 租客身份证
+    private String depositOtherFile;// 定金协议其他附件
 
-	private String validatorFlag;
+    private String validatorFlag;
 
-	private List<Tenant> tenantList = new ArrayList<Tenant>();
+    private List<Tenant> tenantList = new ArrayList<Tenant>();
 
-	public DepositAgreement() {
-		super();
-	}
+    private Double refundAmount;// 退费金额
 
-	public DepositAgreement(String id) {
-		super(id);
-	}
+    public DepositAgreement() {
+	super();
+    }
 
-	@NotNull(message = "物业项目不能为空")
-	public PropertyProject getPropertyProject() {
-		return propertyProject;
-	}
+    public DepositAgreement(String id) {
+	super(id);
+    }
 
-	public void setPropertyProject(PropertyProject propertyProject) {
-		this.propertyProject = propertyProject;
-	}
+    @NotNull(message = "物业项目不能为空")
+    public PropertyProject getPropertyProject() {
+	return propertyProject;
+    }
 
-	@NotNull(message = "楼宇不能为空")
-	public Building getBuilding() {
-		return building;
-	}
+    public void setPropertyProject(PropertyProject propertyProject) {
+	this.propertyProject = propertyProject;
+    }
 
-	public void setBuilding(Building building) {
-		this.building = building;
-	}
+    @NotNull(message = "楼宇不能为空")
+    public Building getBuilding() {
+	return building;
+    }
 
-	@NotNull(message = "房屋不能为空")
-	public House getHouse() {
-		return house;
-	}
+    public void setBuilding(Building building) {
+	this.building = building;
+    }
 
-	public void setHouse(House house) {
-		this.house = house;
-	}
+    @NotNull(message = "房屋不能为空")
+    public House getHouse() {
+	return house;
+    }
 
-	public Room getRoom() {
-		return room;
-	}
+    public void setHouse(House house) {
+	this.house = house;
+    }
 
-	public void setRoom(Room room) {
-		this.room = room;
-	}
+    public Room getRoom() {
+	return room;
+    }
 
-	@Length(min = 1, max = 64, message = "出租方式长度必须介于 1 和 64 之间")
-	public String getRentMode() {
-		return rentMode;
-	}
+    public void setRoom(Room room) {
+	this.room = room;
+    }
 
-	public void setRentMode(String rentMode) {
-		this.rentMode = rentMode;
-	}
+    @Length(min = 1, max = 64, message = "出租方式长度必须介于 1 和 64 之间")
+    public String getRentMode() {
+	return rentMode;
+    }
 
-	public User getUser() {
-		return user;
-	}
+    public void setRentMode(String rentMode) {
+	this.rentMode = rentMode;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public User getUser() {
+	return user;
+    }
 
-	public String getAgreementCode() {
-		return agreementCode;
-	}
+    public void setUser(User user) {
+	this.user = user;
+    }
 
-	public void setAgreementCode(String agreementCode) {
-		this.agreementCode = agreementCode;
-	}
-	
-	@Length(min = 1, max = 100, message = "定金协议名称长度必须介于 1 和 100 之间")
-	public String getAgreementName() {
-		return agreementName;
-	}
+    public String getAgreementCode() {
+	return agreementCode;
+    }
 
-	public void setAgreementName(String agreementName) {
-		this.agreementName = agreementName;
-	}
+    public void setAgreementCode(String agreementCode) {
+	this.agreementCode = agreementCode;
+    }
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getStartDate() {
-		return startDate;
-	}
+    @Length(min = 1, max = 100, message = "定金协议名称长度必须介于 1 和 100 之间")
+    public String getAgreementName() {
+	return agreementName;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setAgreementName(String agreementName) {
+	this.agreementName = agreementName;
+    }
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getExpiredDate() {
-		return expiredDate;
-	}
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public Date getStartDate() {
+	return startDate;
+    }
 
-	public void setExpiredDate(Date expiredDate) {
-		this.expiredDate = expiredDate;
-	}
+    public void setStartDate(Date startDate) {
+	this.startDate = startDate;
+    }
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message = "协议签订时间不能为空")
-	public Date getSignDate() {
-		return signDate;
-	}
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public Date getExpiredDate() {
+	return expiredDate;
+    }
 
-	public void setSignDate(Date signDate) {
-		this.signDate = signDate;
-	}
+    public void setExpiredDate(Date expiredDate) {
+	this.expiredDate = expiredDate;
+    }
 
-	public Integer getRenMonths() {
-		return renMonths;
-	}
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "协议签订时间不能为空")
+    public Date getSignDate() {
+	return signDate;
+    }
 
-	public void setRenMonths(Integer renMonths) {
-		this.renMonths = renMonths;
-	}
+    public void setSignDate(Date signDate) {
+	this.signDate = signDate;
+    }
 
-	public Integer getDepositMonths() {
-		return depositMonths;
-	}
+    public Integer getRenMonths() {
+	return renMonths;
+    }
 
-	public void setDepositMonths(Integer depositMonths) {
-		this.depositMonths = depositMonths;
-	}
+    public void setRenMonths(Integer renMonths) {
+	this.renMonths = renMonths;
+    }
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message = "约定合同签约时间不能为空")
-	public Date getAgreementDate() {
-		return agreementDate;
-	}
+    public Integer getDepositMonths() {
+	return depositMonths;
+    }
 
-	public void setAgreementDate(Date agreementDate) {
-		this.agreementDate = agreementDate;
-	}
+    public void setDepositMonths(Integer depositMonths) {
+	this.depositMonths = depositMonths;
+    }
 
-	public Double getDepositAmount() {
-		return depositAmount;
-	}
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "约定合同签约时间不能为空")
+    public Date getAgreementDate() {
+	return agreementDate;
+    }
 
-	public void setDepositAmount(Double depositAmount) {
-		this.depositAmount = depositAmount;
-	}
+    public void setAgreementDate(Date agreementDate) {
+	this.agreementDate = agreementDate;
+    }
 
-	public Double getHousingRent() {
-		return housingRent;
-	}
+    public Double getDepositAmount() {
+	return depositAmount;
+    }
 
-	public void setHousingRent(Double housingRent) {
-		this.housingRent = housingRent;
-	}
+    public void setDepositAmount(Double depositAmount) {
+	this.depositAmount = depositAmount;
+    }
 
-	@Length(min = 0, max = 64, message = "定金协议审核状态长度必须介于 0 和 64 之间")
-	public String getAgreementStatus() {
-		return agreementStatus;
-	}
+    public Double getHousingRent() {
+	return housingRent;
+    }
 
-	public void setAgreementStatus(String agreementStatus) {
-		this.agreementStatus = agreementStatus;
-	}
+    public void setHousingRent(Double housingRent) {
+	this.housingRent = housingRent;
+    }
 
-	@Length(min = 0, max = 64, message = "定金协议业务状态长度必须介于 0 和 64 之间")
-	public String getAgreementBusiStatus() {
-		return agreementBusiStatus;
-	}
+    @Length(min = 0, max = 64, message = "定金协议审核状态长度必须介于 0 和 64 之间")
+    public String getAgreementStatus() {
+	return agreementStatus;
+    }
 
-	public void setAgreementBusiStatus(String agreementBusiStatus) {
-		this.agreementBusiStatus = agreementBusiStatus;
-	}
+    public void setAgreementStatus(String agreementStatus) {
+	this.agreementStatus = agreementStatus;
+    }
 
-	public String getProjectName() {
-		return projectName;
-	}
+    @Length(min = 0, max = 64, message = "定金协议业务状态长度必须介于 0 和 64 之间")
+    public String getAgreementBusiStatus() {
+	return agreementBusiStatus;
+    }
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
-	}
+    public void setAgreementBusiStatus(String agreementBusiStatus) {
+	this.agreementBusiStatus = agreementBusiStatus;
+    }
 
-	public String getBuildingBame() {
-		return buildingBame;
-	}
+    public String getProjectName() {
+	return projectName;
+    }
 
-	public void setBuildingBame(String buildingBame) {
-		this.buildingBame = buildingBame;
-	}
+    public void setProjectName(String projectName) {
+	this.projectName = projectName;
+    }
 
-	public String getHouseNo() {
-		return houseNo;
-	}
+    public String getBuildingBame() {
+	return buildingBame;
+    }
 
-	public void setHouseNo(String houseNo) {
-		this.houseNo = houseNo;
-	}
+    public void setBuildingBame(String buildingBame) {
+	this.buildingBame = buildingBame;
+    }
 
-	public String getRoomNo() {
-		return roomNo;
-	}
+    public String getHouseNo() {
+	return houseNo;
+    }
 
-	public void setRoomNo(String roomNo) {
-		this.roomNo = roomNo;
-	}
-	public String getDepositAgreementFile() {
-		return depositAgreementFile;
-	}
+    public void setHouseNo(String houseNo) {
+	this.houseNo = houseNo;
+    }
 
-	public void setDepositAgreementFile(String depositAgreementFile) {
-		this.depositAgreementFile = depositAgreementFile;
-	}
+    public String getRoomNo() {
+	return roomNo;
+    }
 
-	public String getDepositReceiptFile() {
-		return depositReceiptFile;
-	}
+    public void setRoomNo(String roomNo) {
+	this.roomNo = roomNo;
+    }
 
-	public void setDepositReceiptFile(String depositReceiptFile) {
-		this.depositReceiptFile = depositReceiptFile;
-	}
-	public String getDepositCustomerIDFile() {
-		return depositCustomerIDFile;
-	}
+    public String getDepositAgreementFile() {
+	return depositAgreementFile;
+    }
 
-	public void setDepositCustomerIDFile(String depositCustomerIDFile) {
-		this.depositCustomerIDFile = depositCustomerIDFile;
-	}
+    public void setDepositAgreementFile(String depositAgreementFile) {
+	this.depositAgreementFile = depositAgreementFile;
+    }
 
-	public String getDepositOtherFile() {
-		return depositOtherFile;
-	}
+    public String getDepositReceiptFile() {
+	return depositReceiptFile;
+    }
 
-	public void setDepositOtherFile(String depositOtherFile) {
-		this.depositOtherFile = depositOtherFile;
-	}
-	public List<Tenant> getTenantList() {
-		return tenantList;
-	}
+    public void setDepositReceiptFile(String depositReceiptFile) {
+	this.depositReceiptFile = depositReceiptFile;
+    }
 
-	public void setTenantList(List<Tenant> tenantList) {
-		this.tenantList = tenantList;
-	}
+    public String getDepositCustomerIDFile() {
+	return depositCustomerIDFile;
+    }
 
-	public String getValidatorFlag() {
-		return validatorFlag;
-	}
+    public void setDepositCustomerIDFile(String depositCustomerIDFile) {
+	this.depositCustomerIDFile = depositCustomerIDFile;
+    }
 
-	public void setValidatorFlag(String validatorFlag) {
-		this.validatorFlag = validatorFlag;
-	}
+    public String getDepositOtherFile() {
+	return depositOtherFile;
+    }
+
+    public void setDepositOtherFile(String depositOtherFile) {
+	this.depositOtherFile = depositOtherFile;
+    }
+
+    public List<Tenant> getTenantList() {
+	return tenantList;
+    }
+
+    public void setTenantList(List<Tenant> tenantList) {
+	this.tenantList = tenantList;
+    }
+
+    public String getValidatorFlag() {
+	return validatorFlag;
+    }
+
+    public void setValidatorFlag(String validatorFlag) {
+	this.validatorFlag = validatorFlag;
+    }
+
+    public Double getRefundAmount() {
+	return refundAmount;
+    }
+
+    public void setRefundAmount(Double refundAmount) {
+	this.refundAmount = refundAmount;
+    }
 }

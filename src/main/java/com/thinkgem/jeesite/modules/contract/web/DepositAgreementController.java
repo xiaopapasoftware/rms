@@ -22,6 +22,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -202,6 +203,8 @@ public class DepositAgreementController extends BaseController {
     @RequestMapping(value = "breakContract")
     public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
 	depositAgreementService.breakContract(depositAgreement);
+	model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
+	model.addAttribute("messageType", ViewMessageTypeEnum.SUCCESS.getValue());
 	return list(new DepositAgreement(), request, response, model);
     }
 

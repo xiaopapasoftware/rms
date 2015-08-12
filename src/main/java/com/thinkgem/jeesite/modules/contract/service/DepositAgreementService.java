@@ -101,8 +101,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 
     @Transactional(readOnly = false)
     public void breakContract(DepositAgreement depositAgreement) {
+	Double refundAmount = depositAgreement.getRefundAmount();
 	depositAgreement = depositAgreementDao.get(depositAgreement.getId());
-
+	if (refundAmount != null && refundAmount > 0) {
+	    depositAgreement.setRefundAmount(refundAmount);
+	}
 	/* 1.生成款项 */
 	PaymentTrans paymentTrans = new PaymentTrans();
 	paymentTrans.setId(IdGen.uuid());
@@ -121,11 +124,31 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	paymentTrans.setUpdateDate(new Date());
 	paymentTrans.setUpdateBy(UserUtils.getUser());
 	paymentTrans.setDelFlag("0");
-	if (0 != depositAgreement.getDepositAmount())
+	if (depositAgreement.getDepositAmount() != null && depositAgreement.getDepositAmount() > 0)
 	    paymentTransDao.insert(paymentTrans);
 
-	/* 2.更新定金协议 */
-	depositAgreement.setAgreementBusiStatus("1");// 已转违约
+	/* 1.生成款项--定金转违约退费 */
+	paymentTrans.setId(IdGen.uuid());
+	paymentTrans.setTradeType("2");// 定金转违约
+	paymentTrans.setPaymentType("26");// '26'='定金转违约退费'
+	paymentTrans.setTransId(depositAgreement.getId());
+	paymentTrans.setTradeDirection("0");// 出款
+	paymentTrans.setStartDate(new Date());
+	paymentTrans.setExpiredDate(new Date());
+	paymentTrans.setTradeAmount(depositAgreement.getRefundAmount());
+	paymentTrans.setLastAmount(depositAgreement.getRefundAmount());
+	paymentTrans.setTransAmount(0D);
+	paymentTrans.setTransStatus("0");// 未到账登记
+	paymentTrans.setCreateDate(new Date());
+	paymentTrans.setCreateBy(UserUtils.getUser());
+	paymentTrans.setUpdateDate(new Date());
+	paymentTrans.setUpdateBy(UserUtils.getUser());
+	paymentTrans.setDelFlag("0");
+	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0)
+	    paymentTransDao.insert(paymentTrans);
+
+	/* 2.更新定金协议为“定金转违约到账待登记” */
+	depositAgreement.setAgreementBusiStatus("3");// '3'='定金转违约到账待登记'
 	depositAgreement.setUpdateDate(new Date());
 	depositAgreement.setUpdateBy(UserUtils.getUser());
 	depositAgreementDao.update(depositAgreement);

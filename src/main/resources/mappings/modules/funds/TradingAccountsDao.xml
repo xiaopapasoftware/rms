@@ -18,16 +18,16 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		case 
-		    when a.trade_type=0 or a.trade_type=2 
+		    when a.trade_type=0
 				then tlc.contract_name
-			when a.trade_type=1 
+			when a.trade_type=1 or a.trade_type =2
 				then ta.agreement_name 
 			else tc.contract_name  
 		end tradeName, 
 		case 
 			when a.trade_type=0 
 				then tlc.contract_status
-			when a.trade_type=1 
+			when a.trade_type=1 or a.trade_type =2
 				then ta.agreement_status 
 			else tc.contract_status  
 		end transStatus,

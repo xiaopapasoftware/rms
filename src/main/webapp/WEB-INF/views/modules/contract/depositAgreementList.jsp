@@ -112,6 +112,19 @@
 		function auditHis(id) {
 			$.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId="+id,'审核记录',650,400,{buttons:{'关闭':true}});
 		}
+		
+		function breakContract(id){
+			confirmx('确认要转违约吗?',function(){
+				var html = '<label>转违约退费金额：</label>';
+				html += '<input name="refundAmount" type="text" maxlength="20" class="input-medium number"';
+				html += 'style="width:196px;"/>';
+				var submit = function (v, h, f) {
+				    window.location.href="${ctx}/contract/depositAgreement/breakContract?id="+id+"&refundAmount="+f.refundAmount;
+				    return true;
+				};
+				$.jBox(html,{title:"转违约退款金额",submit:submit});
+			});
+		}
 	</script>
 </head>
 <body>
@@ -275,7 +288,7 @@
 					</shiro:hasPermission>
 				<shiro:hasPermission name="contract:depositAgreement:return">
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
-						<a href="${ctx}/contract/depositAgreement/breakContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转违约吗?', this.href)">转违约</a>
+					 	<a href="javascript:void(0);" onclick="javascript:breakContract('${depositAgreement.id}');">转违约</a>
 					</c:if>
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">
 						<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>

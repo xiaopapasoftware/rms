@@ -115,8 +115,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
 	tradingAccountsDao.update(tradingAccounts);
 
-	if ("1".equals(tradingAccounts.getTradeType())) {
-	    // 定金协议 5:到账收据审核通过 4:到账收据审核拒绝
+	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
+	    // 5:到账收据审核通过 4:到账收据审核拒绝
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
 	    if (!"5".equals(depositAgreement.getAgreementStatus())) {
 		depositAgreement.setUpdateBy(UserUtils.getUser());
@@ -127,6 +127,13 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		}
 		depositAgreementDao.update(depositAgreement);
 	    }
+	} else if ("2".equals(tradingAccounts.getTradeType())) {// 定金转违约
+	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
+	    // 1=已转违约；6=定金转违约到账审核拒绝
+	    depositAgreement.setUpdateBy(UserUtils.getUser());
+	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.setAgreementBusiStatus("1".equals(auditHis.getAuditStatus()) ? "1" : "6");
+	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType()) || "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 	    if (!"6".equals(rentContract.getContractStatus())) {
@@ -261,6 +268,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    depositAgreementDao.update(depositAgreement);
 		}
 	    }
+	} else if ("2".equals(tradeType)) {// 定金转违约
+	    DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
+	    depositAgreement.setUpdateBy(UserUtils.getUser());
+	    depositAgreement.setUpdateDate(new Date());
+	    if ("3".equals(depositAgreement.getAgreementBusiStatus()) || "6".equals(depositAgreement.getAgreementBusiStatus())) { // '3','定金转违约到账待登记';'6'='定金转违约到账审核拒绝'
+		depositAgreement.setAgreementBusiStatus("4");// '4'='定金转违约到账待审核';
+	    }
+	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
 	    RentContract rentContract = rentContractDao.get(tradeId);
 	    rentContract.setUpdateBy(UserUtils.getUser());
@@ -304,13 +319,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	auditDao.insert(audit);
 
 	/* 收据 */
-	if (null != tradingAccounts.getReceiptList()) {
+	if (CollectionUtils.isNotEmpty(tradingAccounts.getReceiptList())) {
 	    Receipt delReceipt = new Receipt();
 	    TradingAccounts delTradingAccounts = new TradingAccounts();
 	    delTradingAccounts.setId(id);
 	    delReceipt.setTradingAccounts(delTradingAccounts);
 	    receiptDao.delete(delReceipt);
-
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
 		receipt.setId(IdGen.uuid());
 		receipt.setTradingAccounts(tradingAccounts);
