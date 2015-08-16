@@ -83,13 +83,13 @@ public class ElectricFeeController extends BaseController {
 
 	@RequestMapping(value = {"getMeterValue"})
 	@ResponseBody
-	public String getMeterValue(String rentContractId) {
-		return electricFeeService.getMeterValue(rentContractId);
+	public String getMeterValue(String rentContractId,String type) {
+		return electricFeeService.getMeterValue(rentContractId,type);
 	}
 	
 	@RequestMapping(value = {"getFee"})
 	@ResponseBody
-	public String getFee(String rentContractId) {
-		return electricFeeService.getMeterFee(rentContractId);
+	public String getFee(String rentContractId,String type) {
+		return electricFeeService.getMeterFee(rentContractId,type);
 	}
 }

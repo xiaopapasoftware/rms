@@ -30,6 +30,7 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
@@ -101,6 +102,13 @@ public class RentContractController extends BaseController {
 	    entity = new RentContract();
 	}
 	return entity;
+    }
+    
+    @RequestMapping(value = {"viewAttachment"})
+    public String get(String id,Model model) {
+    	RentContract entity = rentContractService.get(id);
+    	model.addAttribute("entity", entity);
+    	return "modules/funds/viewRentAttachment";
     }
 
     // @RequiresPermissions("contract:rentContract:view")
@@ -230,7 +238,9 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = "form")
     public String form(RentContract rentContract, Model model) {
-	rentContract.setSignType("0");// 新签
+    	if(rentContract.getIsNewRecord())
+    		rentContract.setSignType("0");// 新签
+    	
 	if (rentContract.getIsNewRecord()) {
 	    int currContractNum = 1;
 	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
@@ -696,7 +706,7 @@ public class RentContractController extends BaseController {
 		elctrBackAcc.setAccountingType(accountingType);
 		elctrBackAcc.setFeeDirection("0");// 0 : 应出
 		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
-		String elctrFee = electricFeeService.getMeterFee(rentContract.getId());
+		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(),"1");
 		elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
 		outAccountings.add(elctrBackAcc);
 	    }

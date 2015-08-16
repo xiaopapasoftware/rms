@@ -53,6 +53,7 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
+		a.return_remark as "returnRemark",
 		u9.name AS "user.name",
 		tp.project_name as projectName,
 		tb.building_name as buildingBame,
@@ -241,7 +242,8 @@
 			remarks,
 			del_flag,
 			charge_type,
-			break_down
+			break_down,
+			return_remark
 		) VALUES (
 			#{id},
 			#{agreementId},
@@ -289,7 +291,8 @@
 			#{remarks},
 			#{delFlag},
 			#{chargeType},
-			#{breakDown}
+			#{breakDown},
+			#{returnRemark}
 		)
 	</insert>
 	
@@ -337,7 +340,8 @@
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			charge_type = #{chargeType},
-			break_down = #{breakDown}
+			break_down = #{breakDown},
+			return_remark=#{returnRemark}
 		WHERE id = #{id}
 	</update>
 	

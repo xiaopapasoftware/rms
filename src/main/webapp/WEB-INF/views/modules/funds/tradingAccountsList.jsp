@@ -48,6 +48,14 @@
 		function viewReceipt(id) {
 			$.jBox.open("iframe:${ctx}/funds/receipt/viewReceipt?tradingAccounts.id="+id,'收据信息',800,400,{buttons:{'关闭':true}});
 		}
+		
+		function viewDepositReceipt(id) {
+			$.jBox.open("iframe:${ctx}/contract/depositAgreement/viewAttachment?id="+id,'定金收据附件',1000,460,{buttons:{'关闭':true}});
+		}
+		
+		function viewRentReceipt(id) {
+			$.jBox.open("iframe:${ctx}/contract/rentContract/viewAttachment?id="+id,'出租合同收据附件',1000,460,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -136,6 +144,12 @@
     					<a href="${ctx}/funds/tradingAccounts/edit?id=${tradingAccounts.id}">修改</a>
     				</c:if>
 				</shiro:hasPermission>
+				<c:if test="${tradingAccounts.tradeType=='1'||tradingAccounts.tradeType=='2'}">
+					<a href="javascript:void(0);" onclick="viewDepositReceipt('${tradingAccounts.tradeId}')">定金收据附件</a>
+				</c:if>
+				<c:if test="${tradingAccounts.tradeType=='3'||tradingAccounts.tradeType=='4'||tradingAccounts.tradeType=='5'||tradingAccounts.tradeType=='6'||tradingAccounts.tradeType=='7'||tradingAccounts.tradeType=='8'||tradingAccounts.tradeType=='9'}">
+					<a href="javascript:void(0);" onclick="viewRentReceipt('${tradingAccounts.tradeId}')">出租合同收据附件</a>
+				</c:if>
 					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>-->

@@ -252,3 +252,4 @@ create table T_AUDIT_HIS
 ) comment = '审核历史表';
 
 ALTER TABLE t_lease_contract ADD month_space VARCHAR(64) COMMENT '打款月份间隔';
+ALTER TABLE t_rent_contract ADD return_remark VARCHAR(64) COMMENT '退租备注';

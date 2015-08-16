@@ -53,6 +53,13 @@ public class AccountingController extends BaseController {
 		model.addAttribute("page", page);
 		return "modules/contract/accountingList";
 	}
+	
+	@RequestMapping(value = {"listByContract"})
+	public String listByContract(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting); 
+		model.addAttribute("page", page);
+		return "modules/contract/accountingViewList";
+	}
 
 	//@RequiresPermissions("contract:accounting:view")
 	@RequestMapping(value = "form")

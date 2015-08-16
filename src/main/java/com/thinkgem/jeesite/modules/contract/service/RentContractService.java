@@ -391,6 +391,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     @Transactional(readOnly = false)
     public void returnCheck(RentContract rentContract, String tradeType) {
 	String breakDown = rentContract.getBreakDown();
+	String returnRemark = rentContract.getReturnRemark();
 	List<Accounting> accountList = rentContract.getAccountList();
 	List<Accounting> outAccountList = rentContract.getOutAccountList();
 
@@ -401,6 +402,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContract.setContractBusiStatus("17");// 特殊退租内容待审核
 	rentContract.setUpdateBy(UserUtils.getUser());
 	rentContract.setUpdateDate(new Date());
+	rentContract.setReturnRemark(returnRemark);
 	this.rentContractDao.update(rentContract);
 
 	/* 款项 */
@@ -736,18 +738,18 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
 	/* 更改原合同 */
 	if ("1".equals(rentContract.getSignType())) {
-	    rentContract = this.rentContractDao.get(rentContract.getContractId());
-	    rentContract.setContractBusiStatus("14");// 正常人工续签
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
-	    rentContractDao.update(rentContract);
+		RentContract rentContractOld = this.rentContractDao.get(rentContract.getContractId());
+		rentContractOld.setContractBusiStatus("14");// 正常人工续签
+		rentContractOld.setUpdateBy(UserUtils.getUser());
+		rentContractOld.setUpdateDate(new Date());
+	    rentContractDao.update(rentContractOld);
 	}
 	if ("2".equals(rentContract.getSignType())) {
-	    rentContract = this.rentContractDao.get(rentContract.getContractId());
-	    rentContract.setContractBusiStatus("15");// 逾期自动续签
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
-	    rentContractDao.update(rentContract);
+		RentContract rentContractOld = this.rentContractDao.get(rentContract.getContractId());
+		rentContractOld.setContractBusiStatus("15");// 逾期自动续签
+		rentContractOld.setUpdateBy(UserUtils.getUser());
+		rentContractOld.setUpdateDate(new Date());
+	    rentContractDao.update(rentContractOld);
 	}
 	if (!rentContract.getIsNewRecord()) {// 非新增
 	    Attachment attachment = new Attachment();

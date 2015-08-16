@@ -422,6 +422,10 @@
 			}
 			$("input[name='remindTime']").val(year + "-" + month + "-" + day);
 		}
+		
+		function viewCheckInfo(id) {
+			top.$.jBox.open("iframe:${ctx}/contract/accounting/listByContract?rentContractId="+id,'核算信息',850,500,{buttons:{'关闭':true}});
+		}
 	</script>
 </head>
 <body>
@@ -764,6 +768,14 @@
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
 			</div>
 		</div>
+		<c:if test="${rentContract.contractBusiStatus!='0'&&rentContract.contractBusiStatus!='14'&&rentContract.contractBusiStatus!='15'}">
+			<div class="control-group">
+			<label class="control-label">退租备注：</label>
+			<div class="controls">
+				<form:textarea path="returnRemark" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
+			</div>
+		</div>
+		</c:if>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:rentContract:edit">
 				<c:if test="${ rentContract.contractStatus=='0' || rentContract.contractStatus=='3'|| rentContract.contractStatus=='1' || empty rentContract.id}">
@@ -772,6 +784,9 @@
 				</c:if>
 			</shiro:hasPermission>
 			<shiro:hasPermission name="contract:rentContract:audit">
+			<c:if test="${rentContract.contractBusiStatus!=null&&rentContract.contractBusiStatus!='0'&&rentContract.contractBusiStatus!='1'&&rentContract.contractBusiStatus!='2'&&rentContract.contractBusiStatus!='3'&&rentContract.contractBusiStatus!='14'&&rentContract.contractBusiStatus!='15'}">
+				<input class="btn btn-primary" type="button" value="查看退租核算" onclick="viewCheckInfo('${rentContract.id}')"/>	
+			</c:if>
 			<c:if test="${rentContract.contractStatus=='2'}">
   				<input id="btnCancel" class="btn btn-primary" type="button" value="审 核" onclick="toAudit('${rentContract.id}','1')"/>
 			</c:if>

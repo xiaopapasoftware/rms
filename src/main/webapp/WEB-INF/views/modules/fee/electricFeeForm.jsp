@@ -28,26 +28,26 @@
 			});
 		});
 		
-		function getMeterValue() {
+		function getMeterValue(type) {
 			if(""==$("#contractName").val()) {
 				top.$.jBox.tip('请选择合同.','warning');
 				return;
 			}
 			var rentContractId = $("#rentContractId").val();
 			$.ajaxSetup({ cache: false });
-			$.get("${ctx}/fee/electricFee/getMeterValue?rentContractId="+rentContractId, function(data){
+			$.get("${ctx}/fee/electricFee/getMeterValue?rentContractId="+rentContractId+"&type="+type, function(data){
 				$("#meterValue").val(data);
 			});
 		}
 		
-		function getMeterFee() {
+		function getMeterFee(type) {
 			if(""==$("#contractName").val()) {
 				top.$.jBox.tip('请选择合同.','warning');
 				return;
 			}
 			var rentContractId = $("#rentContractId").val();
 			$.ajaxSetup({ cache: false });
-			$.get("${ctx}/fee/electricFee/getFee?rentContractId="+rentContractId, function(data){
+			$.get("${ctx}/fee/electricFee/getFee?rentContractId="+rentContractId+"&type="+type, function(data){
 				$("#personFee").val(data);
 			});
 		}
@@ -121,7 +121,8 @@
 			<div class="controls">
 				<form:input path="meterValue" htmlEscape="false" class="input-xlarge required number"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="javascript:getMeterValue();">查看电表读数</a>
+				<a href="#" onclick="javascript:getMeterValue('1');">查看电表读数</a>
+				<a href="#" onclick="javascript:getMeterValue('0');">查看公共区域电表读数</a>
 			</div>
 		</div>
 		<div class="control-group">
@@ -129,7 +130,8 @@
 			<div class="controls">
 				<form:input path="personFee" htmlEscape="false" class="input-xlarge  number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-				<a href="#" onclick="javascript:getMeterFee();">查看电表余额</a>
+				<a href="#" onclick="javascript:getMeterFee('1');">查看电表余额</a>
+				<a href="#" onclick="javascript:getMeterFee('0');">查看公共区域电表余额</a>
 			</div>
 		</div>
 		<div class="control-group">

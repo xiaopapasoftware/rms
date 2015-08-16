@@ -26,13 +26,11 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.device.dao.DevicesDao;
-import com.thinkgem.jeesite.modules.device.dao.RoomDevicesDao;
-import com.thinkgem.jeesite.modules.device.entity.Devices;
-import com.thinkgem.jeesite.modules.device.entity.RoomDevices;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -50,9 +48,9 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	@Autowired
 	private RentContractDao rentContractDao;
 	@Autowired
-	private RoomDevicesDao roomDevicesDao;
-	@Autowired
 	private DevicesDao devicesDao;
+	@Autowired
+	private RoomDao roomDao;
 	
 	public ElectricFee get(String id) {
 		return super.get(id);
@@ -93,38 +91,12 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		String id = "";
 		RentContract rentContract = rentContractDao.get(electricFee.getRentContractId());
 		
-		if(null != rentContract && "0".equals(rentContract.getRentMode())) {//整租
-			House house = rentContract.getHouse();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setHouseId(house.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					Devices device = devicesDao.get(roomDevices.getDeviceId());
-					if(null != device) {
-						DecimalFormat df=new DecimalFormat("0");
-						id = charge(device.getDeviceId(),df.format(electricFee.getPersonFee()));
-					}
-				}
-			}
-		} else if(null != rentContract && "1".equals(rentContract.getRentMode())) {//单间
+		if(null != rentContract && "1".equals(rentContract.getRentMode())) {//单间
 			Room room = rentContract.getRoom();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setRoomId(room.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					Devices device = devicesDao.get(roomDevices.getDeviceId());
-					if(null != device) {
-						DecimalFormat df=new DecimalFormat("0");
-						id = charge(device.getDeviceId(),df.format(electricFee.getPersonFee()));
-					}
-				}
-			}
+			room = roomDao.get(room);
+			String meterNo = room.getMeterNo();
+			DecimalFormat df=new DecimalFormat("0");
+			id = charge(meterNo,df.format(electricFee.getPersonFee()));
 		}
 		
 		if(!StringUtils.isBlank(id)) {
@@ -140,40 +112,31 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		super.save(electricFee);
 	}
 	
-	public String getMeterValue(String rentContractId) {
+	public String getMeterValue(String rentContractId,String type) {
 		String value = "";
-		Devices device = null;
 		RentContract rentContract = rentContractDao.get(rentContractId);
 		
-		if(null != rentContract && "0".equals(rentContract.getRentMode())) {//整租
-			House house = rentContract.getHouse();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setHouseId(house.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					device = devicesDao.get(roomDevices.getDeviceId());
-				}
-			}
-		} else if(null != rentContract && "1".equals(rentContract.getRentMode())) {//单间
+		String meterNo = "";
+		if(null != rentContract && "1".equals(rentContract.getRentMode()) && "1".equals(type)) {//单间
 			Room room = rentContract.getRoom();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setRoomId(room.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					device = devicesDao.get(roomDevices.getDeviceId());
-				}
+			room = roomDao.get(room);
+			meterNo = room.getMeterNo();
+		} else if("0".equals(type)) {//公共区域
+			House house = rentContract.getHouse();
+			Room room = new Room();
+			room.setDelFlag("0");
+			room.setRoomNo("0");
+			room.setHouse(house);
+			List<Room> roomList = roomDao.findList(room);
+			if(null != roomList && roomList.size()>0) {
+				room = roomList.get(0);
+				meterNo = room.getMeterNo();
 			}
 		}
 		
-		if(null != device && !StringUtils.isBlank(device.getDeviceId())) {
+		if(!StringUtils.isBlank(meterNo)) {
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			String meterurl = proper.getProperty("meter.url")+"read_val.action?addr="+device.getDeviceId();
+			String meterurl = proper.getProperty("meter.url")+"read_val.action?addr="+meterNo;
 			
 			String result = "";
 			BufferedReader read=null;
@@ -210,40 +173,31 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		return value;
 	}
 	
-	public String getMeterFee(String rentContractId) {
+	public String getMeterFee(String rentContractId,String type) {
 		String value = "";
-		Devices device = null;
 		RentContract rentContract = rentContractDao.get(rentContractId);
 		
-		if(null != rentContract && "0".equals(rentContract.getRentMode())) {//整租
-			House house = rentContract.getHouse();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setHouseId(house.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					device = devicesDao.get(roomDevices.getDeviceId());
-				}
-			}
-		} else if(null != rentContract && "1".equals(rentContract.getRentMode())) {//单间
+		String meterNo = "";
+		if(null != rentContract && "1".equals(rentContract.getRentMode())) {//单间
 			Room room = rentContract.getRoom();
-			RoomDevices roomDevices = new RoomDevices();
-			roomDevices.setRoomId(room.getId());
-			roomDevices.setDelFlag("0");
-			List<RoomDevices> list = roomDevicesDao.findList(roomDevices);
-			if(null != list && list.size()>0) {
-				roomDevices = list.get(0);
-				if(null != roomDevices) {
-					device = devicesDao.get(roomDevices.getDeviceId());
-				}
+			room = roomDao.get(room);
+			meterNo = room.getMeterNo();
+		} else if("0".equals(type)) {//公共区域
+			House house = rentContract.getHouse();
+			Room room = new Room();
+			room.setDelFlag("0");
+			room.setRoomNo("0");
+			room.setHouse(house);
+			List<Room> roomList = roomDao.findList(room);
+			if(null != roomList && roomList.size()>0) {
+				room = roomList.get(0);
+				meterNo = room.getMeterNo();
 			}
 		}
 		
-		if(null != device && !StringUtils.isBlank(device.getDeviceId())) {
+		if(!StringUtils.isBlank(meterNo)) {
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			String meterurl = proper.getProperty("meter.url")+"read_remain_val.action?addr="+device.getDeviceId();
+			String meterurl = proper.getProperty("meter.url")+"read_remain_val.action?addr="+meterNo;
 			
 			String result = "";
 			BufferedReader read=null;

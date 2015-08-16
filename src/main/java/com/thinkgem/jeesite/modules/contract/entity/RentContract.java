@@ -108,6 +108,8 @@ public class RentContract extends DataEntity<RentContract> {
 	private String oriEndDate;//为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
 	
 	private String returnDate;
+	
+	private String returnRemark;//退租备注
 
 	public RentContract() {
 		super();
@@ -621,5 +623,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setReturnDate(String returnDate) {
 		this.returnDate = returnDate;
+	}
+
+	public String getReturnRemark() {
+		return returnRemark;
+	}
+
+	public void setReturnRemark(String returnRemark) {
+		this.returnRemark = returnRemark;
 	}
 }
