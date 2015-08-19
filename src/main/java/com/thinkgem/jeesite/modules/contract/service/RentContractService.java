@@ -889,9 +889,15 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	Date startD = rentContract.getStartDate();// 开始日期
 
 	boolean depositTransContractFlag = false;
-	Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额，只适用于定金转合同的业务场景
+	/*Double depositAgreementAmount = rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额，只适用于定金转合同的业务场景
 	if (depositAgreementAmount != null && depositAgreementAmount > 0) {// 定金转合同
 	    depositTransContractFlag = true;
+	}*/
+	Double depositAgreementAmount = 0d;
+	if(!StringUtils.isBlank(rentContract.getAgreementId())) {
+		DepositAgreement depositAgreement = this.depositAgreementDao.get(rentContract.getAgreementId());
+		depositAgreementAmount = depositAgreement.getDepositAmount();
+		depositTransContractFlag = true;
 	}
 
 	// 先生成整数房租款项列表
