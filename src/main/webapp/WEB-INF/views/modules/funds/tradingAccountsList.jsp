@@ -178,7 +178,7 @@
 						<a href="${ctx}/funds/invoice/form?tradingAccountsId=${tradingAccounts.id}">开具发票</a>
 					</c:if>
 					</shiro:hasPermission>
-					<c:if test="${tradingAccounts.tradeStatus=='0'||tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
+					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
 						<a href="javascript:void(0);" onclick="auditHis('${tradingAccounts.id}')">审核记录</a>
 					</c:if>
 				</td>

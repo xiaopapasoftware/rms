@@ -36,13 +36,16 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -90,6 +93,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     private PaymentTransService paymentTransService;
     @Autowired
     private AttachmentDao attachmentDao;
+    @Autowired
+    private PaymentTradeDao paymentTradeDao;
 
     private static final String RENT_CONTRACT_ROLE = "rent_contract_role";// 新签合同审批
     private static final String CHANGE_AGREEMENT_ROLE = "change_agreement_role";// 变更协议审批
@@ -602,6 +607,16 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    PaymentTrans delPaymentTrans = new PaymentTrans();// 款项
 	    delPaymentTrans.setTransId(id);
 	    paymentTransDao.delete(delPaymentTrans);
+	    
+	    TradingAccounts delTradingAccounts = new TradingAccounts();
+	    delTradingAccounts.setTradeId(id);
+	    List<TradingAccounts> list = tradingAccountsDao.findList(delTradingAccounts);
+	    for(TradingAccounts dTradingAccounts : list) {
+		    this.tradingAccountsDao.delete(dTradingAccounts);
+		    PaymentTrade delPaymentTrade = new PaymentTrade();
+		    delPaymentTrade.setTradeId(dTradingAccounts.getId());
+		    this.paymentTradeDao.delete(delPaymentTrade);
+	    }
 
 	    String tradeType = "";// 交易类型
 	    if ("0".equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
@@ -941,6 +956,49 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setDelFlag("0");
 		if (paymentTrans.getTradeAmount() > 0) {
 		    paymentTransDao.insert(paymentTrans);
+		    
+		    if("2".equals(paymentTrans.getTransStatus())) {
+		    	//生成账务交易
+		    	TradingAccounts tradingAccounts = new TradingAccounts();
+		    	tradingAccounts.setId(IdGen.uuid());
+		    	tradingAccounts.setTradeId(transObjId);
+		    	tradingAccounts.setTradeType("3");//新签合同
+		    	tradingAccounts.setTradeDirection("1");//入账
+		    	tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
+		    	
+				List<Tenant> tenants = rentContract.getTenantList();
+				if (CollectionUtils.isNotEmpty(tenants)) {
+					String tenantId = tenants.get(0).getId();
+					Tenant tenant = tenantDao.get(tenantId);
+					tradingAccounts.setPayeeName(tenant.getTenantName());
+					String tenantType = tenant.getTenantType();// 租客类型
+					if ("0".equals(tenantType)) {// 个人租客
+						tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+					}
+					if ("1".equals(tenantType)) {// 企业租客
+						tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+					}
+				}
+		    	
+				tradingAccounts.setTradeStatus("0");//待审核
+				tradingAccounts.setCreateDate(new Date());
+				tradingAccounts.setCreateBy(UserUtils.getUser());
+				tradingAccounts.setUpdateDate(new Date());
+				tradingAccounts.setUpdateBy(UserUtils.getUser());
+				tradingAccounts.setDelFlag("0");
+		    	tradingAccountsDao.insert(tradingAccounts);
+		    	
+		    	PaymentTrade paymentTrade = new PaymentTrade();
+			    paymentTrade.setTradeId(tradingAccounts.getId());
+		    	paymentTrade.setTransId(paymentTrans.getId());
+				paymentTrade.setId(IdGen.uuid());
+				paymentTrade.setCreateDate(new Date());
+				paymentTrade.setCreateBy(UserUtils.getUser());
+				paymentTrade.setUpdateDate(new Date());
+				paymentTrade.setUpdateBy(UserUtils.getUser());
+				paymentTrade.setDelFlag("0");
+				paymentTradeDao.insert(paymentTrade);
+		    }
 		}
 		startD = DateUtils.dateAddMonth(startD, 1);
 	    }
@@ -995,6 +1053,49 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    paymentTrans.setDelFlag("0");
 	    if (paymentTrans.getTradeAmount() > 0) {
 		paymentTransDao.insert(paymentTrans);
+		
+		if("2".equals(paymentTrans.getTransStatus())) {
+	    	//生成账务交易
+	    	TradingAccounts tradingAccounts = new TradingAccounts();
+	    	tradingAccounts.setId(IdGen.uuid());
+	    	tradingAccounts.setTradeId(transObjId);
+	    	tradingAccounts.setTradeType("3");//新签合同
+	    	tradingAccounts.setTradeDirection("1");//入账
+	    	tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
+	    	
+			List<Tenant> tenants = rentContract.getTenantList();
+			if (CollectionUtils.isNotEmpty(tenants)) {
+				String tenantId = tenants.get(0).getId();
+				Tenant tenant = tenantDao.get(tenantId);
+				tradingAccounts.setPayeeName(tenant.getTenantName());
+				String tenantType = tenant.getTenantType();// 租客类型
+				if ("0".equals(tenantType)) {// 个人租客
+					tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+				}
+				if ("1".equals(tenantType)) {// 企业租客
+					tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+				}
+			}
+	    	
+			tradingAccounts.setTradeStatus("0");//待审核
+			tradingAccounts.setCreateDate(new Date());
+			tradingAccounts.setCreateBy(UserUtils.getUser());
+			tradingAccounts.setUpdateDate(new Date());
+			tradingAccounts.setUpdateBy(UserUtils.getUser());
+			tradingAccounts.setDelFlag("0");
+	    	tradingAccountsDao.insert(tradingAccounts);
+	    	
+	    	PaymentTrade paymentTrade = new PaymentTrade();
+		    paymentTrade.setTradeId(tradingAccounts.getId());
+	    	paymentTrade.setTransId(paymentTrans.getId());
+			paymentTrade.setId(IdGen.uuid());
+			paymentTrade.setCreateDate(new Date());
+			paymentTrade.setCreateBy(UserUtils.getUser());
+			paymentTrade.setUpdateDate(new Date());
+			paymentTrade.setUpdateBy(UserUtils.getUser());
+			paymentTrade.setDelFlag("0");
+			paymentTradeDao.insert(paymentTrade);
+	    }
 	    }
 	}
     }
