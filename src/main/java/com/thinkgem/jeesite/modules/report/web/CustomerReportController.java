@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,14 +23,16 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.report.entity.ContractReport;
 import com.thinkgem.jeesite.modules.report.entity.LeaseContractReport;
 import com.thinkgem.jeesite.modules.report.entity.TenantReport;
+import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.CustomerReportService;
 import com.thinkgem.jeesite.modules.report.service.TenantReportService;
 
 @Controller
 @RequestMapping(value = "${adminPath}/report/customer")
-public class CustomerReport extends BaseController {
+public class CustomerReportController extends BaseController {
 	@Autowired
 	private CustomerReportService customerReportService;
 	@Autowired
@@ -42,6 +43,8 @@ public class CustomerReport extends BaseController {
 	private TenantReportService tenantReportService;
 	@Autowired
 	private HouseService houseService;
+	@Autowired
+	private ContractReportService contractReportService;
 
 	//@RequiresPermissions("customer:leaseContract:view")
 	@RequestMapping(value = {"leaseContract"})
@@ -62,7 +65,7 @@ public class CustomerReport extends BaseController {
 			model.addAttribute("buildingList", buildingList);
 		}
 		
-		return "modules/report/leaseContractList";
+		return "modules/report/customer/leaseContractList";
 	}
 	
 	//@RequiresPermissions("customer:leaseContract:export")
@@ -108,7 +111,7 @@ public class CustomerReport extends BaseController {
 			model.addAttribute("houseList", houseList);
 		}
 		
-		return "modules/report/rentContractList";
+		return "modules/report/customer/rentContractList";
 	}
 	
 	//@RequiresPermissions("customer:tenant:export")
@@ -124,5 +127,49 @@ public class CustomerReport extends BaseController {
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.tenant(tenantReport, request, response, model);
+    }
+    
+    @RequestMapping(value = {"contract"})
+	public String contract(ContractReport contractReport,HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<ContractReport> page = contractReportService.report(new Page<ContractReport>(request, response),contractReport);
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+
+		if (null != contractReport.getPropertyProject()
+				&& StringUtils.isNotEmpty(contractReport.getPropertyProject().getId())) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(contractReport.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if (null != contractReport.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(contractReport.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		return "modules/report/customer/contractReport";
+	}
+    
+    @RequestMapping(value = "exportContract", method=RequestMethod.POST)
+    public String exportContract(ContractReport contractReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "催款统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<ContractReport> page = contractReportService.report(new Page<ContractReport>(request, response, -1),contractReport);
+    		new ExportExcel("催款统计", ContractReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出催款统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.contract(contractReport, request, response, model);
     }
 }

@@ -231,7 +231,25 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('237','233','0,1,228,233','查看','10',NULL,NULL,NULL,'0','customer:tenant:view','1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('238','233','0,1,228,233','导出','20',NULL,NULL,NULL,'0','customer:tenant:export','1',now(),'1',now(),NULL,'0');
 
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('234','228','0,1,228,','催款统计','10103','',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('234','228','0,1,228,','催款统计','10103','/report/customer/contract',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('262','234','0,1,228,234','查看','10',NULL,NULL,NULL,'0','customer:contract:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('263','234','0,1,228,234','导出','20',NULL,NULL,NULL,'0','customer:contract:export','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('264','229','0,1,229,','合同到期提醒统计','10201','/report/sales/expire',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('265','264','0,1,229,264','查看','10',NULL,NULL,NULL,'0','sales:expire:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('266','264','0,1,229,264','导出','20',NULL,NULL,NULL,'0','sales:expire:export','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('267','229','0,1,229,','续租合同统计','10202','/report/sales/relet',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('268','267','0,1,229,267','查看','10',NULL,NULL,NULL,'0','sales:relet:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('269','267','0,1,229,267','导出','20',NULL,NULL,NULL,'0','sales:relet:export','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('270','229','0,1,229,','第三方推介统计','10203','/report/sales/recommend',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('271','270','0,1,229,270','查看','10',NULL,NULL,NULL,'0','sales:recommend:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('272','270','0,1,229,270','导出','20',NULL,NULL,NULL,'0','sales:recommend:export','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('273','229','0,1,229,','退租统计','10204','/report/sales/rent',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('274','273','0,1,229,273','查看','10',NULL,NULL,NULL,'0','sales:rent:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('275','273','0,1,229,273','导出','20',NULL,NULL,NULL,'0','sales:rent:export','1',now(),'1',now(),NULL,'0');
 
 UPDATE sys_menu SET NAME='设备查看' WHERE id='195';
 UPDATE sys_menu SET NAME='设备修改' WHERE id='196';

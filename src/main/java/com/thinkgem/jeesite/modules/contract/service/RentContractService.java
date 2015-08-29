@@ -45,13 +45,13 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
-import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.report.entity.ContractReport;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -1337,5 +1337,4 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	}
 	return doubledMonthCounts;
     }
-
 }

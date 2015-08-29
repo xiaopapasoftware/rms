@@ -2,14 +2,14 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>租客统计</title>
+	<title></title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#btnExport").click(function(){
-				$("#searchForm").attr("action","${ctx}/report/customer/exportTenant");
+				$("#searchForm").attr("action","${ctx}/report/sales/exportRelet");
 				$("#searchForm").submit();
-				$("#searchForm").attr("action","${ctx}/report/customer/tenant");
+				$("#searchForm").attr("action","${ctx}/report/sales/relet");
 			});
 		});
 		function page(n,s){
@@ -86,7 +86,7 @@
 	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="tenantReport" action="${ctx}/report/customer/tenant" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="reletReport" action="${ctx}/report/sales/relet" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<sys:message content="${message}" type="${messageType}"/>
@@ -117,46 +117,74 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>出租合同编号</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
-				<th>房屋</th>
-				<th>承租人姓名</th>
-				<th>承租人手机号码</th>
-				<th>入住人</th>
-				<th>入住人手机号码</th>
-				<th>出租合同开始日期</th>
-				<th>出租合同结束日期</th>
+				<th>房屋号</th>
+				<th>房间号</th>
+				<th>租客姓名</th>
+				<th>租客手机号码</th>
+				<th>原租金</th>
+				<th>原合同开始时间</th>
+				<th>原合同到期日期</th>
+				<th>原成交业务员</th>
+				<th>现成交业务员</th>
+				<th>续租日期</th>
+				<th>现租金</th>
+				<th>现合同开始时间</th>
+				<th>现合同到期日期</th>
 			</tr>
 		</thead>
 		<tbody>
-		<c:forEach items="${page.list}" var="tenantReport">
+		<c:forEach items="${page.list}" var="reletReport">
 			<tr>
 				<td>
-					${tenantReport.projectName}
+					${reletReport.contractCode}
 				</td>
 				<td>
-					${tenantReport.buildingBame}
+					${reletReport.projectName}
 				</td>
 				<td>
-					${tenantReport.houseNo}
+					${reletReport.buildingName}
 				</td>
 				<td>
-					${tenantReport.tenant}
+					${reletReport.houseNo}
 				</td>
 				<td>
-					${tenantReport.tenantCellPhone}
+					${reletReport.roomNo}
 				</td>
 				<td>
-					${tenantReport.live}
+					${reletReport.tenantName}
 				</td>
 				<td>
-					${tenantReport.liveCellPhone}
+					${reletReport.cellPhone}
 				</td>
 				<td>
-					<fmt:formatDate value="${tenantReport.startDate}" pattern="yyyy-MM-dd"/>
+					${reletReport.rental}
 				</td>
 				<td>
-					<fmt:formatDate value="${tenantReport.expiredDate}" pattern="yyyy-MM-dd"/>
+					<fmt:formatDate value="${reletReport.startDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					<fmt:formatDate value="${reletReport.expiredDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					${reletReport.saler}
+				</td>
+				<td>
+					${reletReport.reletSaler}
+				</td>
+				<td>
+					<fmt:formatDate value="${reletReport.signDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					${reletReport.reletRental}
+				</td>
+				<td>
+					<fmt:formatDate value="${reletReport.reletStartDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					<fmt:formatDate value="${reletReport.reletExpiredDate}" pattern="yyyy-MM-dd"/>
 				</td>
 			</tr>
 		</c:forEach>
