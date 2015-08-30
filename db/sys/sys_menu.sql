@@ -251,6 +251,10 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('274','273','0,1,229,273','查看','10',NULL,NULL,NULL,'0','sales:rent:view','1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('275','273','0,1,229,273','导出','20',NULL,NULL,NULL,'0','sales:rent:export','1',now(),'1',now(),NULL,'0');
 
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('276','229','0,1,229,','合同续租率统计','10205','/report/sales/reletRate',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('277','276','0,1,229,276','查看','10',NULL,NULL,NULL,'0','sales:reletRate:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('278','276','0,1,229,276','导出','20',NULL,NULL,NULL,'0','sales:reletRate:export','1',now(),'1',now(),NULL,'0');
+
 UPDATE sys_menu SET NAME='设备查看' WHERE id='195';
 UPDATE sys_menu SET NAME='设备修改' WHERE id='196';
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('239','116','0,1,96,116','退租','70',NULL,NULL,NULL,'0','contract:rentContract:return','1',now(),'1',now(),NULL,'0');

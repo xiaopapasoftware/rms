@@ -25,9 +25,11 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.report.entity.ExpireReport;
 import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
+import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletReport;
 import com.thinkgem.jeesite.modules.report.entity.RentReport;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
+import com.thinkgem.jeesite.modules.report.service.ReportService;
 
 @Controller
 @RequestMapping(value = "${adminPath}/report/sales")
@@ -40,6 +42,8 @@ public class SalesReportController extends BaseController {
 	private HouseService houseService;
 	@Autowired
 	private ContractReportService contractReportService;
+	@Autowired
+	private ReportService reportService;
 	
 	@RequestMapping(value = {"expire"})
 	public String expire(ExpireReport expireReport, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -123,7 +127,7 @@ public class SalesReportController extends BaseController {
     		new ExportExcel("续租合同统计", ReletReport.class).setDataList(page.getList()).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
-			model.addAttribute("message", "导出续租合同失败！失败信息："+e.getMessage());
+			model.addAttribute("message", "导出续租合同统计失败！失败信息："+e.getMessage());
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.relet(reletReport, request, response, model);
@@ -167,7 +171,7 @@ public class SalesReportController extends BaseController {
     		new ExportExcel("第三方推介统计", RecommendReport.class).setDataList(page.getList()).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
-			model.addAttribute("message", "导出第三方推介失败！失败信息："+e.getMessage());
+			model.addAttribute("message", "导出第三方推介统计失败！失败信息："+e.getMessage());
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.recommend(recommendReport, request, response, model);
@@ -211,9 +215,34 @@ public class SalesReportController extends BaseController {
     		new ExportExcel("退租统计", RentReport.class).setDataList(page.getList()).write(response, fileName).dispose();
     		return null;
 		} catch (Exception e) {
-			model.addAttribute("message", "导出退租失败！失败信息："+e.getMessage());
+			model.addAttribute("message", "导出退租统计失败！失败信息："+e.getMessage());
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.rent(rentReport, request, response, model);
+    }
+	
+	@RequestMapping(value = {"reletRate"})
+	public String reletRate(ReletRateReport reletRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<ReletRateReport> page = reportService.reletRateReport(new Page<ReletRateReport>(request, response),reletRateReport);
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+
+		return "modules/report/sales/reletRateList";
+	}
+	
+	@RequestMapping(value = "exportReletRate", method=RequestMethod.POST)
+    public String exportReletRate(ReletRateReport reletRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "合同到期续租率统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<ReletRateReport> page = reportService.reletRateReport(new Page<ReletRateReport>(request, response, -1),reletRateReport);
+    		new ExportExcel("合同到期续租率统计", ReletRateReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出合同到期续租率统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.reletRate(reletRateReport, request, response, model);
     }
 }
