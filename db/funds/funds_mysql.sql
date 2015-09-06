@@ -97,5 +97,3 @@ create table T_INVOICE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '发票信息';
-
-ALTER TABLE T_RECEIPT ADD PAYMENT_TYPE VARCHAR(64);
