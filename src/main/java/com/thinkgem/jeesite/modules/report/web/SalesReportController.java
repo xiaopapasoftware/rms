@@ -28,6 +28,7 @@ import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletReport;
 import com.thinkgem.jeesite.modules.report.entity.RentReport;
+import com.thinkgem.jeesite.modules.report.entity.ResultsReport;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportService;
 
@@ -244,5 +245,27 @@ public class SalesReportController extends BaseController {
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.reletRate(reletRateReport, request, response, model);
+    }
+	
+	@RequestMapping(value = {"results"})
+	public String results(ResultsReport resultsReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<ResultsReport> page = reportService.resultsReport(new Page<ResultsReport>(request, response),resultsReport);
+		model.addAttribute("page", page);
+		
+		return "modules/report/sales/resultsList";
+	}
+	
+	@RequestMapping(value = "exportResults", method=RequestMethod.POST)
+    public String exportResults(ResultsReport resultsReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "销售业绩统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<ResultsReport> page = reportService.resultsReport(new Page<ResultsReport>(request, response, -1),resultsReport);
+    		new ExportExcel("销售业绩统计", ResultsReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出销售业绩统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.results(resultsReport, request, response, model);
     }
 }

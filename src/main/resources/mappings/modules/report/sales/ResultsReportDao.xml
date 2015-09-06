@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ResultsReportDao">
+	<select id="resultsReport" resultType="ResultsReport">
+		select reportMonth,saler,salerId,COUNT(counts) counts from(
+		select CONCAT(YEAR(sign_date),LPAD(MONTH(sign_date),2,'0')) reportMonth,u.name saler,c.user_id salerId,c.id counts from t_rent_contract c
+		left join sys_user u on c.user_id=u.id
+		<if test="salerId != null and salerId != ''">
+			where c.user_id = #{salerId}
+		</if>
+		) t 
+		group by reportMonth,saler,salerId
+	</select>
+</mapper>
