@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.modules.report.entity.ExpireReport;
 import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletReport;
+import com.thinkgem.jeesite.modules.report.entity.RentDataReport;
 import com.thinkgem.jeesite.modules.report.entity.RentReport;
 import com.thinkgem.jeesite.modules.report.entity.ResultsReport;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
@@ -267,5 +268,30 @@ public class SalesReportController extends BaseController {
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.results(resultsReport, request, response, model);
+    }
+	
+	@RequestMapping(value = {"rentData"})
+	public String rentData(RentDataReport rentDataReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<RentDataReport> page = reportService.rentDataReport(new Page<RentDataReport>(request, response),rentDataReport);
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+		
+		return "modules/report/sales/rentDataList";
+	}
+	
+	@RequestMapping(value = "exportRentData", method=RequestMethod.POST)
+    public String exportRentData(RentDataReport rentDataReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "出租数据统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<RentDataReport> page = reportService.rentDataReport(new Page<RentDataReport>(request, response, -1),rentDataReport);
+    		new ExportExcel("出租数据统计", RentDataReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出出租数据统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.rentData(rentDataReport, request, response, model);
     }
 }

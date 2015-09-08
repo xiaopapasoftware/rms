@@ -259,6 +259,10 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('280','279','0,1,229,279','查看','10',NULL,NULL,NULL,'0','sales:results:view','1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('281','279','0,1,229,279','导出','20',NULL,NULL,NULL,'0','sales:results:export','1',now(),'1',now(),NULL,'0');
 
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('282','229','0,1,229,','出租数据统计','10207','/report/sales/rentData',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('283','282','0,1,229,282','查看','10',NULL,NULL,NULL,'0','sales:rentData:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('284','282','0,1,229,282','导出','20',NULL,NULL,NULL,'0','sales:rentData:export','1',now(),'1',now(),NULL,'0');
+
 UPDATE sys_menu SET NAME='设备查看' WHERE id='195';
 UPDATE sys_menu SET NAME='设备修改' WHERE id='196';
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('239','116','0,1,96,116','退租','70',NULL,NULL,NULL,'0','contract:rentContract:return','1',now(),'1',now(),NULL,'0');
