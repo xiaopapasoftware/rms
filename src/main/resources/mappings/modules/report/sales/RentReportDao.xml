@@ -29,4 +29,48 @@
 				AND c.house_id = #{house.id}
 			</if>
 	</select>
+	
+	<!--<select id="">
+		/*正常退租*/
+		select r1.fee_date,r1.property_project_id,r1.counts,r2.counts,r3.counts,r4.counts,r5.counts from(
+		select fee_date,property_project_id,COUNT(id) counts from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='8') t group by fee_date,property_project_id)r1
+		left join(
+		/*定金违约*/
+		select COUNT(id) counts,property_project_id,start_date from(
+		select id,property_project_id,CONCAT(YEAR(start_date),LPAD(MONTH(start_date),2,'0')) start_date from(
+		select id,property_project_id from t_deposit_agreement a where a.agreement_busi_status='1') t1 left join 
+		(select trans_id,start_date from t_payment_trans ts where ts.payment_type='26') t2 on t1.id=t2.trans_id) t group by property_project_id,start_date) r2
+		on r1.fee_date=r2.start_date and r1.property_project_id=r2.property_project_id
+		left join(
+		/*提前退租*/
+		select fee_date,property_project_id,COUNT(id) counts from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='7') t group by fee_date,property_project_id) r3
+		on r1.fee_date=r3.fee_date and r1.property_project_id=r3.property_project_id
+		left join(
+		/*特殊退租*/
+		select fee_date,property_project_id,COUNT(id) counts from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='16') t group by fee_date,property_project_id)r4
+		on r1.fee_date=r4.fee_date and r1.property_project_id=r4.property_project_id
+		left join 
+		/*出租*/
+		(select CONCAT(YEAR(sign_date),LPAD(MONTH(sign_date),2,'0')) fee_date,property_project_id,COUNT(c.id) counts from t_rent_contract c
+		where c.contract_busi_status='0'
+		group by CONCAT(YEAR(sign_date),LPAD(MONTH(sign_date),2,'0')),property_project_id) r5 
+		on r1.fee_date=r5.fee_date and r1.property_project_id=r5.property_project_id
+		/*月末在租*/
+		left join(
+		select property_project_id,COUNT(id) counts from t_rent_contract c where contract_busi_status='0' and CONCAT(YEAR(start_date),LPAD(MONTH(start_date),2,'0'))<=r1.fee_date 
+		and CONCAT(YEAR(expired_date),LPAD(MONTH(expired_date),2,'0'))>=r1.fee_date group by property_project_id) r6
+		on r1.property_project_id=r6.property_project_id
+	</select>-->
 </mapper>

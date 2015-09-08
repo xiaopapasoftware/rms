@@ -150,4 +150,9 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="delByRent">
+		UPDATE t_accounting SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE rent_contract_id = #{rentContract.id} and accounting_type = #{accountingType}
+	</update>
 </mapper>

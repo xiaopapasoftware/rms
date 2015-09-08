@@ -486,6 +486,21 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	this.rentContractDao.update(rentContract);
 
 	/* 款项 */
+	Accounting delAccounting = new Accounting();
+	delAccounting.setRentContract(rentContract);
+	delAccounting.setDelFlag("0");
+	if ("7".equals(tradeType))
+		delAccounting.setAccountingType("1");// 正常退租核算
+	else if ("6".equals(tradeType))
+		delAccounting.setAccountingType("0");// 提前退租核算
+	else if ("8".equals(tradeType))
+		delAccounting.setAccountingType("2");// 逾期退租核算
+	else if ("9".equals(tradeType))
+		delAccounting.setAccountingType("3");// 特殊退租核算
+	delAccounting.setUpdateDate(new Date());
+	delAccounting.setUpdateBy(UserUtils.getUser());
+	accountingDao.delByRent(delAccounting);
+	
 	for (Accounting accounting : accountList) {
 	    if (accounting != null && accounting.getFeeAmount() != null) {
 		if (!"9".equals(tradeType)) {// 特殊退租不生成款项
