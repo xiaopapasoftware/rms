@@ -139,7 +139,7 @@ public class DllInvoke
 };</pre>
 　　浏览这个类，它在创建时就加载winface.dll了，如果加载失败，其成员变量 m_hLib 为零，报表服务也就不可用。<br>
 <br>
-<img src='glass.jpg'><font color="552222">为什么我们要采用操作系统LoadLibrary函数、代理方式调用硕正的dll呢？原因是部署后DLL的位置是不固定的.</font><br>
+<img src='glass.jpg'><font color="552222">为什么我们要采用操作系统LoadLibrary函数、代理方式调用硕正的dll呢？原因是部署后DLL的位置是不固定的.</font><br>
 <br>
 　　为了方便讨论，我们在下面的文档中，都假定这个类的实例名为 "dll":
 <pre class='cpp'>
