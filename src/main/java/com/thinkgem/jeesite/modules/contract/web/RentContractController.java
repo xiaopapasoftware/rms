@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -242,9 +243,14 @@ public class RentContractController extends BaseController {
     	
 	if (rentContract.getIsNewRecord()) {
 	    int currContractNum = 1;
-	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	    if (CollectionUtils.isNotEmpty(allContracts)) {
-		currContractNum = currContractNum + allContracts.size();
+	    if(null == EhCacheUtils.get("currRentContractNum")) {
+	    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	    	if (CollectionUtils.isNotEmpty(allContracts)) {
+	    		currContractNum = currContractNum + allContracts.size();
+	    	}
+	    	EhCacheUtils.put("currRentContractNum", currContractNum);		
+	    } else {
+	    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
 	    }
 	    rentContract.setContractCode(currContractNum + "-" + "CZ");
 	}
@@ -307,7 +313,7 @@ public class RentContractController extends BaseController {
 	rentContract.setOriEndDate(DateUtils.formatDate(rentContract.getExpiredDate()));// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
 	rentContract.setContractId(contractId);
 	rentContract.setSignType("1");// 正常续签
-	rentContract.setContractName(rentContract.getContractName().concat("-续"));
+	rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
 	rentContract.setDepositElectricAmount(null);
 	rentContract.setDepositAmount(null);
 	rentContract.setRental(null);
@@ -317,6 +323,18 @@ public class RentContractController extends BaseController {
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
 	rentContract.setRemindTime(null);
+	
+	int currContractNum = 1;
+    if(null == EhCacheUtils.get("currRentContractNum")) {
+    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+    	if (CollectionUtils.isNotEmpty(allContracts)) {
+    		currContractNum = currContractNum + allContracts.size();
+    	}
+    	EhCacheUtils.put("currRentContractNum", currContractNum);		
+    } else {
+    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+    }
+    rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
 
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -381,6 +399,17 @@ public class RentContractController extends BaseController {
 	rentContract.setStartDate(null);
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
+	int currContractNum = 1;
+    if(null == EhCacheUtils.get("currRentContractNum")) {
+    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+    	if (CollectionUtils.isNotEmpty(allContracts)) {
+    		currContractNum = currContractNum + allContracts.size();
+    	}
+    	EhCacheUtils.put("currRentContractNum", currContractNum);		
+    } else {
+    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+    }
+    rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
 
@@ -490,6 +519,7 @@ public class RentContractController extends BaseController {
 	    }
 	}
 	rentContractService.save(rentContract);
+	EhCacheUtils.put("currRentContractNum", (Integer)EhCacheUtils.get("currRentContractNum")+1);
 	addMessage(redirectAttributes, "保存出租合同成功");
 	if ("1".equals(rentContract.getSaveSource()))
 	    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";

@@ -38,14 +38,7 @@
 				AND a.lease_contract_id = #{leaseContractId}
 			</if>
 		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+		ORDER BY a.start_date 
 	</select>
 	
 	<select id="findAllList" resultType="LeaseContractDtl">
@@ -59,14 +52,7 @@
 				AND a.lease_contract_id = #{leaseContractId}
 			</if>
 		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+		ORDER BY a.start_date
 	</select>
 	
 	<insert id="insert">

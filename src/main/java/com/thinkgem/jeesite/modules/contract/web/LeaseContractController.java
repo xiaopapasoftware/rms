@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -119,11 +120,17 @@ public class LeaseContractController extends BaseController {
     public String form(LeaseContract leaseContract, Model model) {
 	model.addAttribute("leaseContract", leaseContract);
 	if (leaseContract.getIsNewRecord()) {
-	    int currContractNum = 1;
-	    List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
-	    if (CollectionUtils.isNotEmpty(allContracts)) {
-		currContractNum = currContractNum + allContracts.size();
-	    }
+		int currContractNum = 1;
+		if(null == EhCacheUtils.get("currContractNum")) {
+			List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
+			if (CollectionUtils.isNotEmpty(allContracts)) {
+				currContractNum = currContractNum + allContracts.size();
+			}
+			EhCacheUtils.put("currContractNum", currContractNum);			
+		} else {
+			currContractNum = (Integer) EhCacheUtils.get("currContractNum");
+		}
+	    
 	    leaseContract.setContractCode(currContractNum + "-" + "SF");
 	}
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -179,6 +186,7 @@ public class LeaseContractController extends BaseController {
 	    }
 	}
 	leaseContractService.save(leaseContract);
+	EhCacheUtils.put("currContractNum", (Integer)EhCacheUtils.get("currContractNum")+1);			
 	addMessage(redirectAttributes, "保存承租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
     }
