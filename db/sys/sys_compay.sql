@@ -1,5 +1,6 @@
 /* Drop Tables */
 drop table if exists t_work_record;
+drop table if exists t_document;
 
 /* Create Tables */
 create table t_work_record
@@ -20,3 +21,18 @@ create table t_work_record
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '工作记录';
+
+create table t_document
+(
+   ID                   varchar(64) NOT NULL,
+   ATTACHMENT_NAME      varchar(64) comment '附件名称',
+   ATTACHMENT_TYPE      varchar(64) comment '附件类型',
+   ATTACHMENT_PATH      varchar(4000) comment '附件地址',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '办公文件';

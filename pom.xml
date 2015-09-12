@@ -1007,6 +1007,7 @@
 									<transaction src="db/sys/sys_user.sql"/>
 									<!--<transaction src="db/sys/sys_user_role.sql"/>-->
 									<transaction src="db/fee/fee.sql"/>
+									<transaction src="db/sys/sys_compay.sql"/>
 								</sql>
 								
 								<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
