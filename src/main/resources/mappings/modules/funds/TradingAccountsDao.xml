@@ -22,7 +22,7 @@
 				then tlc.contract_name
 			when a.trade_type=1 or a.trade_type =2
 				then ta.agreement_name 
-			else tc.contract_name  
+			else tc.contract_name
 		end tradeName, 
 		case 
 			when a.trade_type=0 
@@ -31,7 +31,11 @@
 				then ta.agreement_status 
 			else tc.contract_status  
 		end transStatus,
-		tc.contract_busi_status as transBusiStatus
+		case 
+			when a.trade_type=1 or a.trade_type=2
+				then ta.agreement_busi_status
+			else tc.contract_busi_status  
+		end transBusiStatus
 	</sql>
 	
 	<sql id="tradingAccountsJoins">

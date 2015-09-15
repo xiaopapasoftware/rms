@@ -34,8 +34,8 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 	private String transIds;//款项ID列表
 	private String tradeName;//交易对象名称
 
-	private String transStatus;
-	private String transBusiStatus;
+	private String transStatus;//定金协议审核状态/出租合同审核状态/承租合同审核状态
+	private String transBusiStatus;//定金协议业务状态/出租合同业务状态
 
 	private List<Receipt> receiptList = new ArrayList<Receipt>();
 
