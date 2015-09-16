@@ -126,10 +126,10 @@ public class LeaseContractController extends BaseController {
 			if (CollectionUtils.isNotEmpty(allContracts)) {
 				currContractNum = currContractNum + allContracts.size();
 			}
-			EhCacheUtils.put("currContractNum", currContractNum);			
 		} else {
 			currContractNum = (Integer) EhCacheUtils.get("currContractNum");
 		}
+		EhCacheUtils.put("currContractNum", currContractNum+1);			
 	    
 	    leaseContract.setContractCode(currContractNum + "-" + "SF");
 	}
@@ -186,7 +186,6 @@ public class LeaseContractController extends BaseController {
 	    }
 	}
 	leaseContractService.save(leaseContract);
-	EhCacheUtils.put("currContractNum", (Integer)EhCacheUtils.get("currContractNum")+1);			
 	addMessage(redirectAttributes, "保存承租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
     }

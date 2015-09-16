@@ -248,10 +248,10 @@ public class RentContractController extends BaseController {
 	    	if (CollectionUtils.isNotEmpty(allContracts)) {
 	    		currContractNum = currContractNum + allContracts.size();
 	    	}
-	    	EhCacheUtils.put("currRentContractNum", currContractNum);		
 	    } else {
 	    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
 	    }
+	    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
 	    rentContract.setContractCode(currContractNum + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
@@ -330,10 +330,10 @@ public class RentContractController extends BaseController {
     	if (CollectionUtils.isNotEmpty(allContracts)) {
     		currContractNum = currContractNum + allContracts.size();
     	}
-    	EhCacheUtils.put("currRentContractNum", currContractNum);		
     } else {
     	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
     }
+    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
     rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
 
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -405,10 +405,10 @@ public class RentContractController extends BaseController {
     	if (CollectionUtils.isNotEmpty(allContracts)) {
     		currContractNum = currContractNum + allContracts.size();
     	}
-    	EhCacheUtils.put("currRentContractNum", currContractNum);		
     } else {
     	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
     }
+    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
     rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -519,7 +519,6 @@ public class RentContractController extends BaseController {
 	    }
 	}
 	rentContractService.save(rentContract);
-	EhCacheUtils.put("currRentContractNum", (Integer)EhCacheUtils.get("currRentContractNum")+1);
 	addMessage(redirectAttributes, "保存出租合同成功");
 	if ("1".equals(rentContract.getSaveSource()))
 	    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
