@@ -179,6 +179,13 @@ public class RoomController extends BaseController {
     @ResponseBody
     public String finishDirect(Room room, Model model, RedirectAttributes redirectAttributes) {
 	int i = roomService.updateRoomStatus(room);
+
+	Room r = roomService.get(room.getId());
+	House h = houseService.get(r.getHouse().getId());
+	if ("0".equals(h.getHouseStatus())) {// 如果房屋状态为待装修，则更新为装修完成。
+	    houseService.updateHouseStatus(h);
+	}
+
 	if (i > 0) {
 	    return "SUCCESS";
 	} else {
@@ -243,7 +250,7 @@ public class RoomController extends BaseController {
 		model.addAttribute("listStructure", DictUtils.getDictList("structure"));
 		return "modules/inventory/roomForm";
 	    } else {// 可以新增
-		room.setRoomStatus("1");//房间状态默认改为“待出租可预订”
+		room.setRoomStatus("1");// 房间状态默认改为“待出租可预订”
 		if (CollectionUtils.isNotEmpty(room.getStructureList())) {
 		    room.setStructure(convertToStrFromList(room.getStructureList()));
 		}

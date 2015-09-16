@@ -194,8 +194,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    audit.setUpdateDate(new Date());
 	    audit.setUpdateBy(UserUtils.getUser());
 	    auditDao.update(audit);
-
-	} else {
+	} else {// 审核拒绝时，需要把房屋和房间的状态回滚到原先状态
 	    /* 更新房屋/房间状态 */
 	    DepositAgreement depositAgreement = this.depositAgreementDao.get(auditHis.getObjectId());
 	    if ("0".equals(depositAgreement.getRentMode())) {// 整租
