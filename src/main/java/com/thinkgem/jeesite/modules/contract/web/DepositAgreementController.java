@@ -137,10 +137,10 @@ public class DepositAgreementController extends BaseController {
 	    	if (CollectionUtils.isNotEmpty(allAgreements)) {
 	    		currAgreeNum = currAgreeNum + allAgreements.size();
 	    	}
-	    	EhCacheUtils.put("currAgreeNum", currAgreeNum);		
 	    } else {
 	    	currAgreeNum = (Integer) EhCacheUtils.get("currAgreeNum");
 	    }
+	    EhCacheUtils.put("currAgreeNum", currAgreeNum+1);		
 	    depositAgreement.setAgreementCode(currAgreeNum + "-" + "XY");
 	}
 	if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
@@ -200,7 +200,6 @@ public class DepositAgreementController extends BaseController {
 	    return form(depositAgreement, model);
 	}
 	depositAgreementService.save(depositAgreement);
-	EhCacheUtils.put("currAgreeNum", (Integer)EhCacheUtils.get("currAgreeNum")+1);		
 	addMessage(redirectAttributes, "保存定金协议成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
     }
@@ -257,10 +256,10 @@ public class DepositAgreementController extends BaseController {
 		if (CollectionUtils.isNotEmpty(allContracts)) {
 		    currContractNum = currContractNum + allContracts.size();
 		}
-		EhCacheUtils.put("currRentContractNum",currContractNum);
 	} else {
 		currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
 	}
+	EhCacheUtils.put("currRentContractNum",currContractNum+1);
 	rentContract.setContractCode(currContractNum + "-" + "CZ");
 	model.addAttribute("rentContract", rentContract);
 
