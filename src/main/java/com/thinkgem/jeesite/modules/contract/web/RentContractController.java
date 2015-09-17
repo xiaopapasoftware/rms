@@ -234,12 +234,7 @@ public class RentContractController extends BaseController {
 	    rentContract.setSignType("0");// 新签
 
 	if (rentContract.getIsNewRecord()) {
-	    int currContractNum = 1;
-		List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-		if (CollectionUtils.isNotEmpty(allContracts)) {
-		    currContractNum = currContractNum + allContracts.size();
-		}
-	    rentContract.setContractCode(currContractNum + "-" + "CZ");
+	    rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
 	model.addAttribute("partnerList", partnerService.findList(new Partner()));
@@ -312,10 +307,10 @@ public class RentContractController extends BaseController {
 	rentContract.setRemindTime(null);
 
 	int currContractNum = 1;
-    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-    if (CollectionUtils.isNotEmpty(allContracts)) {
-	currContractNum = currContractNum + allContracts.size();
-    }
+	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	if (CollectionUtils.isNotEmpty(allContracts)) {
+	    currContractNum = currContractNum + allContracts.size();
+	}
 	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -382,10 +377,10 @@ public class RentContractController extends BaseController {
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
 	int currContractNum = 1;
-    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-    if (CollectionUtils.isNotEmpty(allContracts)) {
-	currContractNum = currContractNum + allContracts.size();
-    }
+	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	if (CollectionUtils.isNotEmpty(allContracts)) {
+	    currContractNum = currContractNum + allContracts.size();
+	}
 	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -495,15 +490,9 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractForm";
 	    }
 	}
-	
-	int currContractNum = 1;
-	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	if (CollectionUtils.isNotEmpty(allContracts)) {
-	    currContractNum = currContractNum + allContracts.size();
-	}
 	String[] codeArr = rentContract.getContractCode().split("-");
-    rentContract.setContractCode(codeArr[0]+"-"+currContractNum + "-" + "CZ");
-	
+	rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
 	if ("1".equals(rentContract.getSaveSource()))

@@ -422,4 +422,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	return depositAgreementDao.findAllList(new DepositAgreement());
     }
 
+    @Transactional(readOnly = true)
+    public Integer getTotalValidDACounts() {
+	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
 }

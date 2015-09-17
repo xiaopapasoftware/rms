@@ -428,4 +428,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	return leaseContractDao.findAllList(new LeaseContract());
     }
 
+    @Transactional(readOnly = true)
+    public Integer getTotalValidLeaseContractCounts() {
+	return leaseContractDao.getTotalValidLeaseContractCounts(new LeaseContract());
+    }
+
 }

@@ -78,7 +78,7 @@ public class DepositAgreementController extends BaseController {
 	}
 	return entity;
     }
-    
+
     // @RequiresPermissions("contract:depositAgreement:view")
     @RequestMapping(value = { "list", "" })
     public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -123,12 +123,7 @@ public class DepositAgreementController extends BaseController {
     public String form(DepositAgreement depositAgreement, Model model) {
 	model.addAttribute("depositAgreement", depositAgreement);
 	if (depositAgreement.getIsNewRecord()) {
-	    int currAgreeNum = 1;
-    	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
-    	if (CollectionUtils.isNotEmpty(allAgreements)) {
-    		currAgreeNum = currAgreeNum + allAgreements.size();
-    	}
-	    depositAgreement.setAgreementCode(currAgreeNum + "-" + "XY");
+	    depositAgreement.setAgreementCode((depositAgreementService.getTotalValidDACounts() + 1) + "-" + "XY");
 	}
 	if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
 	    depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
@@ -186,15 +181,10 @@ public class DepositAgreementController extends BaseController {
 	if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
 	    return form(depositAgreement, model);
 	}
-	
-	int currAgreeNum = 1;
-	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
-	if (CollectionUtils.isNotEmpty(allAgreements)) {
-		currAgreeNum = currAgreeNum + allAgreements.size();
-	}
+
 	String[] codeArr = depositAgreement.getAgreementCode().split("-");
-    depositAgreement.setAgreementCode(codeArr[0]+"-"+currAgreeNum + "-" + "XY");
-	
+	depositAgreement.setAgreementCode(codeArr[0] + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-" + "XY");
+
 	depositAgreementService.save(depositAgreement);
 	addMessage(redirectAttributes, "保存定金协议成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
@@ -246,12 +236,7 @@ public class DepositAgreementController extends BaseController {
 	rentContract.setTenantList(depositAgreement.getTenantList());
 	rentContract.setRemarks(depositAgreement.getRemarks());
 	rentContract.setAgreementId(depositAgreement.getId());
-	int currContractNum = 1;
-	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	if (CollectionUtils.isNotEmpty(allContracts)) {
-	    currContractNum = currContractNum + allContracts.size();
-	}
-	rentContract.setContractCode(currContractNum + "-" + "CZ");
+	rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	model.addAttribute("rentContract", rentContract);
 
 	if (null != rentContract.getPropertyProject()) {

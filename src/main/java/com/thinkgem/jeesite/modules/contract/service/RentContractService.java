@@ -335,6 +335,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	return rentContractDao.findAllList(new RentContract());
     }
 
+    @Transactional(readOnly = true)
+    public Integer getAllValidRentContractCounts() {
+	return rentContractDao.getAllValidRentContractCounts(new RentContract());
+    }
+
     /**
      * 正常退租核算
      */

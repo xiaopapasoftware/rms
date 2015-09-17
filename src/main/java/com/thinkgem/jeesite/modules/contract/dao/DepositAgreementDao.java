@@ -9,10 +9,12 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 
 /**
  * 定金协议DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-09
  */
 @MyBatisDao
 public interface DepositAgreementDao extends CrudDao<DepositAgreement> {
-	
+
+    Integer getTotalValidDACounts(DepositAgreement depositAgreement);
 }

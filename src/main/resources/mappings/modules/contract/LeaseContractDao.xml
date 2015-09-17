@@ -152,6 +152,10 @@
 		</choose>
 	</select>
 	
+	<select id="getTotalValidLeaseContractCounts" resultType="int">
+		SELECT count(*) FROM t_lease_contract where del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_lease_contract(
 			id,

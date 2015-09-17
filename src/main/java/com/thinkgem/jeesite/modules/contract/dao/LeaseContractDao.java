@@ -11,10 +11,14 @@ import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 
 /**
  * 承租合同DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-06
  */
 @MyBatisDao
 public interface LeaseContractDao extends CrudDao<LeaseContract> {
-	public List<LeaseContract> findLeaseContractList(LeaseContract leaseContract);
+
+    public List<LeaseContract> findLeaseContractList(LeaseContract leaseContract);
+
+    Integer getTotalValidLeaseContractCounts(LeaseContract leaseContract);
 }
