@@ -20,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -125,15 +124,10 @@ public class DepositAgreementController extends BaseController {
 	model.addAttribute("depositAgreement", depositAgreement);
 	if (depositAgreement.getIsNewRecord()) {
 	    int currAgreeNum = 1;
-	    if(null == EhCacheUtils.get("currAgreeNum")) {
-	    	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
-	    	if (CollectionUtils.isNotEmpty(allAgreements)) {
-	    		currAgreeNum = currAgreeNum + allAgreements.size();
-	    	}
-	    } else {
-	    	currAgreeNum = (Integer) EhCacheUtils.get("currAgreeNum");
-	    }
-	    EhCacheUtils.put("currAgreeNum", currAgreeNum+1);		
+    	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
+    	if (CollectionUtils.isNotEmpty(allAgreements)) {
+    		currAgreeNum = currAgreeNum + allAgreements.size();
+    	}
 	    depositAgreement.setAgreementCode(currAgreeNum + "-" + "XY");
 	}
 	if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
@@ -192,6 +186,15 @@ public class DepositAgreementController extends BaseController {
 	if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
 	    return form(depositAgreement, model);
 	}
+	
+	int currAgreeNum = 1;
+	List<DepositAgreement> allAgreements = depositAgreementService.findAllValidAgreements();
+	if (CollectionUtils.isNotEmpty(allAgreements)) {
+		currAgreeNum = currAgreeNum + allAgreements.size();
+	}
+	String[] codeArr = depositAgreement.getAgreementCode().split("-");
+    depositAgreement.setAgreementCode(codeArr[0]+"-"+currAgreeNum + "-" + "XY");
+	
 	depositAgreementService.save(depositAgreement);
 	addMessage(redirectAttributes, "保存定金协议成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
@@ -244,15 +247,10 @@ public class DepositAgreementController extends BaseController {
 	rentContract.setRemarks(depositAgreement.getRemarks());
 	rentContract.setAgreementId(depositAgreement.getId());
 	int currContractNum = 1;
-	if(null == EhCacheUtils.get("currRentContractNum")) {
-		List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-		if (CollectionUtils.isNotEmpty(allContracts)) {
-		    currContractNum = currContractNum + allContracts.size();
-		}
-	} else {
-		currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	if (CollectionUtils.isNotEmpty(allContracts)) {
+	    currContractNum = currContractNum + allContracts.size();
 	}
-	EhCacheUtils.put("currRentContractNum",currContractNum+1);
 	rentContract.setContractCode(currContractNum + "-" + "CZ");
 	model.addAttribute("rentContract", rentContract);
 

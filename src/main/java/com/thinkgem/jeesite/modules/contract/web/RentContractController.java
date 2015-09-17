@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -236,15 +235,10 @@ public class RentContractController extends BaseController {
 
 	if (rentContract.getIsNewRecord()) {
 	    int currContractNum = 1;
-	    if (null == EhCacheUtils.get("currRentContractNum")) {
 		List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
 		if (CollectionUtils.isNotEmpty(allContracts)) {
 		    currContractNum = currContractNum + allContracts.size();
 		}
-	    } else {
-		currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
-	    }
-	    EhCacheUtils.put("currRentContractNum", currContractNum + 1);
 	    rentContract.setContractCode(currContractNum + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
@@ -318,15 +312,10 @@ public class RentContractController extends BaseController {
 	rentContract.setRemindTime(null);
 
 	int currContractNum = 1;
-	if (null == EhCacheUtils.get("currRentContractNum")) {
-	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	    if (CollectionUtils.isNotEmpty(allContracts)) {
-		currContractNum = currContractNum + allContracts.size();
-	    }
-	} else {
-	    currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
-	}
-	EhCacheUtils.put("currRentContractNum", currContractNum + 1);
+    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+    if (CollectionUtils.isNotEmpty(allContracts)) {
+	currContractNum = currContractNum + allContracts.size();
+    }
 	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -393,15 +382,10 @@ public class RentContractController extends BaseController {
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
 	int currContractNum = 1;
-	if (null == EhCacheUtils.get("currRentContractNum")) {
-	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	    if (CollectionUtils.isNotEmpty(allContracts)) {
-		currContractNum = currContractNum + allContracts.size();
-	    }
-	} else {
-	    currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
-	}
-	EhCacheUtils.put("currRentContractNum", currContractNum + 1);
+    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+    if (CollectionUtils.isNotEmpty(allContracts)) {
+	currContractNum = currContractNum + allContracts.size();
+    }
 	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -511,6 +495,15 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractForm";
 	    }
 	}
+	
+	int currContractNum = 1;
+	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	if (CollectionUtils.isNotEmpty(allContracts)) {
+	    currContractNum = currContractNum + allContracts.size();
+	}
+	String[] codeArr = rentContract.getContractCode().split("-");
+    rentContract.setContractCode(codeArr[0]+"-"+currContractNum + "-" + "CZ");
+	
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
 	if ("1".equals(rentContract.getSaveSource()))
