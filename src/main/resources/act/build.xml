@@ -25,5 +25,5 @@
 		<zip destfile="${deployments}/oa/test_audit/test_audit.bar" basedir="${designs}/oa/test_audit" update="true" includes="*.xml,*.png" />
 		<delete file="${designs}/oa/test_audit/test_audit.bpmn20.xml" />
 	</target>
- 
+  
 </project>
