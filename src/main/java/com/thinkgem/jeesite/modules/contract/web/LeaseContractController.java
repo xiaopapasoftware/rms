@@ -19,7 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
@@ -121,15 +120,10 @@ public class LeaseContractController extends BaseController {
 	model.addAttribute("leaseContract", leaseContract);
 	if (leaseContract.getIsNewRecord()) {
 		int currContractNum = 1;
-		if(null == EhCacheUtils.get("currContractNum")) {
-			List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
-			if (CollectionUtils.isNotEmpty(allContracts)) {
-				currContractNum = currContractNum + allContracts.size();
-			}
-		} else {
-			currContractNum = (Integer) EhCacheUtils.get("currContractNum");
+		List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
+		if (CollectionUtils.isNotEmpty(allContracts)) {
+			currContractNum = currContractNum + allContracts.size();
 		}
-		EhCacheUtils.put("currContractNum", currContractNum+1);			
 	    
 	    leaseContract.setContractCode(currContractNum + "-" + "SF");
 	}
@@ -185,6 +179,15 @@ public class LeaseContractController extends BaseController {
 		}
 	    }
 	}
+	
+	int currContractNum = 1;
+	List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
+	if (CollectionUtils.isNotEmpty(allContracts)) {
+		currContractNum = currContractNum + allContracts.size();
+	}
+	String[] codeArr = leaseContract.getContractCode().split("-");
+	leaseContract.setContractCode(codeArr[0]+"-"+currContractNum + "-" + "SF");
+	
 	leaseContractService.save(leaseContract);
 	addMessage(redirectAttributes, "保存承租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
