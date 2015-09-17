@@ -343,8 +343,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    }
 	}
 
-	// 非新增，首先清空所有的账务交易记录的附件信息
-	if (!tradingAccounts.getIsNewRecord()) {
+	// 非新增，首先清空所有的账务交易记录的附件信息，非承租合同，承租合同批量到账登记就直接生成账务记录，不需要审核
+	if (!tradingAccounts.getIsNewRecord() && !"0".equals(tradingAccounts.getTradeType())) {
 	    Attachment attachment = new Attachment();
 	    attachment.setTradingAccountsId(id);
 	    attachmentDao.delete(attachment);

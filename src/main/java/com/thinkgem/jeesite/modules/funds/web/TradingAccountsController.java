@@ -104,20 +104,16 @@ public class TradingAccountsController extends BaseController {
 	    tradingAccounts.setTradeStatus("1");// 审核通过
 	    tradingAccounts.setTradeDirection("0");// 出账
 	    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-
 	    String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
 	    for (int i = 0; i < paymentTransIdArray.length; i++) {
 		tradingAccounts.setId(null);
 		PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
 		tradingAccounts.setTradeAmount(paymentTrans.getLastAmount());
 		tradingAccounts.setTransIds(paymentTransIdArray[i]);
-		String transId = paymentTrans.getTransId();
-		LeaseContract leaseContract = leaseContractService.get(transId);
+		LeaseContract leaseContract = leaseContractService.get(paymentTrans.getTransId());
 		tradingAccounts.setPayeeName(leaseContract.getRemittancerName());
-
 		tradingAccountsService.save(tradingAccounts);
 	    }
-
 	    addMessage(redirectAttributes, "保存账务交易成功");
 	    return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
 	} else {
