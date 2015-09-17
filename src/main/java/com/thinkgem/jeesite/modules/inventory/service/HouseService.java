@@ -149,4 +149,9 @@ public class HouseService extends CrudService<HouseDao, House> {
     public List<House> findAllHouses() {
 	return dao.findAllList(new House());
     }
+
+    @Transactional(readOnly = true)
+    public int getCurrentValidHouseNum() {
+	return dao.getCurrentValidHouseNum(new House());
+    }
 }
