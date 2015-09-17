@@ -34,7 +34,6 @@
 		th.house_no as "houseNo",
 		tm.room_no as "roomNo",
 		at1.attachment_path as "depositAgreementFile",
-		at2.attachment_path as "depositReceiptFile",
 		at3.attachment_path as "depositCustomerIDFile",
 		at4.attachment_path as "depositOtherFile"
 	</sql>
@@ -46,7 +45,6 @@
 		left join t_house th on a.house_id=th.id 
 		left join t_room tm on a.room_id=tm.id 
 		left join t_attachment at1 on a.id=at1.deposit_agreem_id and at1.attachment_type='14' and at1.del_flag='0'
-		left join t_attachment at2 on a.id=at2.deposit_agreem_id and at2.attachment_type='15' and at2.del_flag='0'
 		left join t_attachment at3 on a.id=at3.deposit_agreem_id and at3.attachment_type='4' and at3.del_flag='0'
 		left join t_attachment at4 on a.id=at4.deposit_agreem_id and at4.attachment_type='18' and at4.del_flag='0'
 	</sql>

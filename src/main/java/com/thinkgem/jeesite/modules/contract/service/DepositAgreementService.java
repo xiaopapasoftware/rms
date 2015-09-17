@@ -363,7 +363,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    }
 	}
 
-	if (!depositAgreement.getIsNewRecord()) {// 新增
+	if (!depositAgreement.getIsNewRecord()) {// 新增清空定金协议所有的附件信息
 	    Attachment attachment = new Attachment();
 	    attachment.setDepositAgreemId(depositAgreement.getId());
 	    attachmentDao.delete(attachment);
@@ -375,20 +375,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    attachment.setDepositAgreemId(depositAgreement.getId());
 	    attachment.setAttachmentType(FileType.DEPOSITAGREEMENT_FILE.getValue());
 	    attachment.setAttachmentPath(depositAgreement.getDepositAgreementFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
-	}
-
-	if (!StringUtils.isBlank(depositAgreement.getDepositReceiptFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setDepositAgreemId(depositAgreement.getId());
-	    attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE.getValue());
-	    attachment.setAttachmentPath(depositAgreement.getDepositReceiptFile());
 	    attachment.setCreateDate(new Date());
 	    attachment.setCreateBy(UserUtils.getUser());
 	    attachment.setUpdateDate(new Date());

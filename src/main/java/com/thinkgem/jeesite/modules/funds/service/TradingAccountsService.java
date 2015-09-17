@@ -17,6 +17,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
+import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
@@ -24,6 +26,7 @@ import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.dao.NormalFeeDao;
@@ -71,6 +74,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     private ElectricFeeDao electricFeeDao;
     @Autowired
     private NormalFeeDao normalFeeDao;
+    @Autowired
+    private AttachmentDao attachmentDao;
 
     private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";// 账务审批
 
@@ -337,6 +342,44 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		receiptDao.insert(receipt);
 	    }
 	}
+
+	// 非新增，首先清空所有的账务交易记录的附件信息
+	if (!tradingAccounts.getIsNewRecord()) {
+	    Attachment attachment = new Attachment();
+	    attachment.setTradingAccountsId(id);
+	    attachmentDao.delete(attachment);
+	}
+
+	// 出租合同收据附件
+	if (!StringUtils.isBlank(tradingAccounts.getRentContractReceiptFile())) {
+	    Attachment attachment = new Attachment();
+	    attachment.setId(IdGen.uuid());
+	    attachment.setTradingAccountsId(id);
+	    attachment.setAttachmentType(FileType.RENTCONTRACTRECEIPT_FILE.getValue());
+	    attachment.setAttachmentPath(tradingAccounts.getRentContractReceiptFile());
+	    attachment.setCreateDate(new Date());
+	    attachment.setCreateBy(UserUtils.getUser());
+	    attachment.setUpdateDate(new Date());
+	    attachment.setUpdateBy(UserUtils.getUser());
+	    attachment.setDelFlag("0");
+	    attachmentDao.insert(attachment);
+	}
+
+	// 定金协议收据附件
+	if (!StringUtils.isBlank(tradingAccounts.getDepositReceiptFile())) {
+	    Attachment attachment = new Attachment();
+	    attachment.setId(IdGen.uuid());
+	    attachment.setTradingAccountsId(id);
+	    attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE.getValue());
+	    attachment.setAttachmentPath(tradingAccounts.getDepositReceiptFile());
+	    attachment.setCreateDate(new Date());
+	    attachment.setCreateBy(UserUtils.getUser());
+	    attachment.setUpdateDate(new Date());
+	    attachment.setUpdateBy(UserUtils.getUser());
+	    attachment.setDelFlag("0");
+	    attachmentDao.insert(attachment);
+	}
+
     }
 
     @Transactional(readOnly = false)

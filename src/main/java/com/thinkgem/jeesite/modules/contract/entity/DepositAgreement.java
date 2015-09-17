@@ -53,7 +53,6 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
     private String houseNo;
     private String roomNo;
     private String depositAgreementFile;// 定金协议文件
-    private String depositReceiptFile;// 定金协议收据
     private String depositCustomerIDFile;// 租客身份证
     private String depositOtherFile;// 定金协议其他附件
 
@@ -266,14 +265,6 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
     public void setDepositAgreementFile(String depositAgreementFile) {
 	this.depositAgreementFile = depositAgreementFile;
-    }
-
-    public String getDepositReceiptFile() {
-	return depositReceiptFile;
-    }
-
-    public void setDepositReceiptFile(String depositReceiptFile) {
-	this.depositReceiptFile = depositReceiptFile;
     }
 
     public String getDepositCustomerIDFile() {

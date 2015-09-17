@@ -711,13 +711,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">出租合同收据：</label>
-			<div class="controls">
-				<form:hidden id="rentContractReceiptFile" path="rentContractReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="rentContractReceiptFile" type="files" uploadPath="/出租合同收据" selectMultiple="true"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">租客身份证：</label>
 			<div class="controls">
 				<form:hidden id="rentContractCusIDFile" path="rentContractCusIDFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>

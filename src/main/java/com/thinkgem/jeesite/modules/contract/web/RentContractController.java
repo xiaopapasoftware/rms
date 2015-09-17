@@ -103,13 +103,6 @@ public class RentContractController extends BaseController {
 	}
 	return entity;
     }
-    
-    @RequestMapping(value = {"viewAttachment"})
-    public String get(String id,Model model) {
-    	RentContract entity = rentContractService.get(id);
-    	model.addAttribute("entity", entity);
-    	return "modules/funds/viewRentAttachment";
-    }
 
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = { "list", "" })
@@ -238,20 +231,20 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = "form")
     public String form(RentContract rentContract, Model model) {
-    	if(rentContract.getIsNewRecord())
-    		rentContract.setSignType("0");// 新签
-    	
+	if (rentContract.getIsNewRecord())
+	    rentContract.setSignType("0");// 新签
+
 	if (rentContract.getIsNewRecord()) {
 	    int currContractNum = 1;
-	    if(null == EhCacheUtils.get("currRentContractNum")) {
-	    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-	    	if (CollectionUtils.isNotEmpty(allContracts)) {
-	    		currContractNum = currContractNum + allContracts.size();
-	    	}
+	    if (null == EhCacheUtils.get("currRentContractNum")) {
+		List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+		if (CollectionUtils.isNotEmpty(allContracts)) {
+		    currContractNum = currContractNum + allContracts.size();
+		}
 	    } else {
-	    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+		currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
 	    }
-	    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
+	    EhCacheUtils.put("currRentContractNum", currContractNum + 1);
 	    rentContract.setContractCode(currContractNum + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
@@ -323,18 +316,18 @@ public class RentContractController extends BaseController {
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
 	rentContract.setRemindTime(null);
-	
+
 	int currContractNum = 1;
-    if(null == EhCacheUtils.get("currRentContractNum")) {
-    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-    	if (CollectionUtils.isNotEmpty(allContracts)) {
-    		currContractNum = currContractNum + allContracts.size();
-    	}
-    } else {
-    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
-    }
-    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
-    rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
+	if (null == EhCacheUtils.get("currRentContractNum")) {
+	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	    if (CollectionUtils.isNotEmpty(allContracts)) {
+		currContractNum = currContractNum + allContracts.size();
+	    }
+	} else {
+	    currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+	}
+	EhCacheUtils.put("currRentContractNum", currContractNum + 1);
+	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -400,16 +393,16 @@ public class RentContractController extends BaseController {
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
 	int currContractNum = 1;
-    if(null == EhCacheUtils.get("currRentContractNum")) {
-    	List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-    	if (CollectionUtils.isNotEmpty(allContracts)) {
-    		currContractNum = currContractNum + allContracts.size();
-    	}
-    } else {
-    	currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
-    }
-    EhCacheUtils.put("currRentContractNum", currContractNum+1);		
-    rentContract.setContractCode(rentContract.getContractCode().split("-")[0]+"-"+currContractNum+"-"+rentContract.getContractCode().split("-")[2]);
+	if (null == EhCacheUtils.get("currRentContractNum")) {
+	    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
+	    if (CollectionUtils.isNotEmpty(allContracts)) {
+		currContractNum = currContractNum + allContracts.size();
+	    }
+	} else {
+	    currContractNum = (Integer) EhCacheUtils.get("currRentContractNum");
+	}
+	EhCacheUtils.put("currRentContractNum", currContractNum + 1);
+	rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
 
@@ -536,7 +529,6 @@ public class RentContractController extends BaseController {
 	}
 	rentContractService.saveAdditional(agreementChange);
 	addMessage(redirectAttributes, "保存变更协议成功");
-
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -734,7 +726,7 @@ public class RentContractController extends BaseController {
 		elctrBackAcc.setAccountingType(accountingType);
 		elctrBackAcc.setFeeDirection("0");// 0 : 应出
 		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
-		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(),"1");
+		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(), "1");
 		elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
 		outAccountings.add(elctrBackAcc);
 	    }

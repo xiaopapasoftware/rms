@@ -17,6 +17,8 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
+		at3.attachment_path as "rentContractReceiptFile",
+		at2.attachment_path as "depositReceiptFile",
 		case 
 		    when a.trade_type=0
 				then tlc.contract_name
@@ -42,6 +44,8 @@
 		left join t_deposit_agreement ta on a.trade_id=ta.id
 		left join t_rent_contract tc on a.trade_id=tc.id
 		left join t_lease_contract tlc on a.trade_id = tlc.id
+		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
+		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
 	</sql>
     
 	<select id="get" resultType="TradingAccounts">

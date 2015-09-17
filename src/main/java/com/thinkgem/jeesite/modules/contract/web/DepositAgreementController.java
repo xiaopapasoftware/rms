@@ -80,13 +80,6 @@ public class DepositAgreementController extends BaseController {
 	return entity;
     }
     
-    @RequestMapping(value = {"viewAttachment"})
-    public String get(String id,Model model) {
-    	DepositAgreement entity = depositAgreementService.get(id);
-    	model.addAttribute("entity", entity);
-    	return "modules/funds/viewReceiptAttachment";
-    }
-
     // @RequiresPermissions("contract:depositAgreement:view")
     @RequestMapping(value = { "list", "" })
     public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {

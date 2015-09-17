@@ -726,7 +726,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContractOld.setUpdateDate(new Date());
 	    rentContractDao.update(rentContractOld);
 	}
-	if (!rentContract.getIsNewRecord()) {// 非新增
+
+	// 非新增，首先清空所有的合同附件
+	if (!rentContract.getIsNewRecord()) {
 	    Attachment attachment = new Attachment();
 	    attachment.setRentContractId(rentContract.getId());
 	    attachmentDao.delete(attachment);
@@ -738,20 +740,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    attachment.setRentContractId(rentContract.getId());
 	    attachment.setAttachmentType(FileType.RENTCONTRACT_FILE.getValue());
 	    attachment.setAttachmentPath(rentContract.getRentContractFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
-	}
-	// 出租合同收据
-	if (!StringUtils.isBlank(rentContract.getRentContractReceiptFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setRentContractId(rentContract.getId());
-	    attachment.setAttachmentType(FileType.RENTCONTRACTRECEIPT_FILE.getValue());
-	    attachment.setAttachmentPath(rentContract.getRentContractReceiptFile());
 	    attachment.setCreateDate(new Date());
 	    attachment.setCreateBy(UserUtils.getUser());
 	    attachment.setUpdateDate(new Date());
