@@ -8,6 +8,7 @@ drop table if exists T_REMITTANCER;
 drop table if exists T_PARTNER;
 drop table if exists T_COMPANY;
 drop table if exists T_COMPANY_LINKMAN;
+drop table if exists `t_lessor`;
 
 
 /* Create Tables */
@@ -188,4 +189,4 @@ CREATE TABLE `t_lessor` (
 	`REMARKS` VARCHAR(255) NULL DEFAULT NULL COMMENT '备注信息',
 	`DEL_FLAG` CHAR(1) NOT NULL DEFAULT '0' COMMENT '删除标记',
 	PRIMARY KEY (`ID`)
-)COMMENT='承租人信息'
+)COMMENT='出租人信息';
