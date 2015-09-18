@@ -367,9 +367,11 @@
 			<div class="controls">
 				<form:select path="remittancer.id" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${remittancerList}" itemLabel="userName" itemValue="id" htmlEscape="false"/>
+					<c:forEach items="${remittancerList}" var="item">
+						<form:option value="${item.id}">${item.userName}-${item.bankAccount}</form:option>
+					</c:forEach>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font></span>
 				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addRemittancer()">添加汇款人</a></shiro:hasPermission>
 			</div>
 		</div>
