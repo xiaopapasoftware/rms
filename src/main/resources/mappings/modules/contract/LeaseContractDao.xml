@@ -8,6 +8,8 @@
 		a.building_id AS "building.id",
 		a.house_id AS "house.id",
 		a.remittancer_id AS "remittancer.id",
+		tr.user_name AS "remittancer.userName",
+		tr.bank_account AS "remittancer.bankAccount",
 		a.contract_code AS "contractCode",
 		a.contract_name AS "contractName",
 		a.effective_date AS "effectiveDate",
