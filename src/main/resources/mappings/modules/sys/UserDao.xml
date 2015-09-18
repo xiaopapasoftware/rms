@@ -298,10 +298,7 @@
 	<insert id="insertUserRole">
 		INSERT INTO sys_user_role(user_id, role_id)
 		<foreach collection="roleList" item="role" separator=" union all ">
-			SELECT #{id}, #{role.id}
-			<if test="dbName != 'mssql'">
-			FROM dual
-			</if>
+			SELECT #{id}, #{role.id} FROM dual
 		</foreach>
 	</insert>
 	

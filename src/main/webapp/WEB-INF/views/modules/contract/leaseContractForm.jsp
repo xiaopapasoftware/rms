@@ -287,16 +287,8 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<li class="active">
-			<a href="#">承租合同
-			<shiro:hasPermission name="contract:leaseContract:edit">
-				<c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">
-					${not empty leaseContract.id?'修改':'添加'}
-				</c:if>
-				<c:if test="${leaseContract.contractStatus=='1'}">
-					<span>查看</span>
-				</c:if>
-			</shiro:hasPermission>
-			<shiro:lacksPermission name="contract:leaseContract:edit">查看</shiro:lacksPermission></a></li>
+			<a href="#">承租合同<shiro:hasPermission name="contract:leaseContract:edit"><c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">${not empty leaseContract.id?'修改':'添加'}</c:if><c:if test="${leaseContract.contractStatus=='1'}"><span>查看</span></c:if></shiro:hasPermission><shiro:lacksPermission name="contract:leaseContract:edit">查看</shiro:lacksPermission></a>
+		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
