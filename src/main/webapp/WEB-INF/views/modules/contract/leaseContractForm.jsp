@@ -110,7 +110,12 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${leaseContract.contractCode}");
 			}else{
-				$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
+				if(""=="${leaseContract.id}") {
+					$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");					
+				} else {
+					var code = $("#contractCode").val().split("-");
+					$("#contractCode").val(projectSimpleName + "-" + code[1]+"-"+code[2]);		
+				}
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";
@@ -280,6 +285,20 @@
 				day = "0"+""+day;
 			var expiredDate=year+"-"+month+"-"+day;
 			$("input[name='expiredDate']").val(expiredDate);
+		}
+		
+		window.onload=function() {
+			if(""=="${leaseContract.id}") {
+				var project = $("[id='propertyProject.id']").val();
+				
+				//把物业项目简称带入房屋编号中
+				var projectSimpleName= $("[id='propertyProject.id']").find("option:selected").attr("projectSimpleName");
+				if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
+					$("#contractCode").val("${leaseContract.contractCode}");
+				}else{
+					$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
+				}
+			}
 		}
 	</script>
 </head>
