@@ -29,10 +29,10 @@
 								}
 							});
 							var text = iframe.contentWindow.$("[id='remittancer.id']").html();
-							text = "<option value='"+json.id+"' selected='selected'>"+json.name+"</option>"+text;
+							text = "<option value='"+json.id+"' selected='selected'>"+json.name+"-"+json.accountNo+"</option>"+text;
 							iframe.contentWindow.$("[id='remittancer.id']").html(text);
 							iframe.contentWindow.$("[id='remittancer.id']").val(json.id);
-							iframe.contentWindow.$("[id='remittancer.id']").prev("[id='s2id_remittancer.id']").find(".select2-chosen").html(json.name);
+							iframe.contentWindow.$("[id='remittancer.id']").prev("[id='s2id_remittancer.id']").find(".select2-chosen").html(json.name+"-"+json.accountNo);
 							top.$.jBox.close();
 						}
 					});
