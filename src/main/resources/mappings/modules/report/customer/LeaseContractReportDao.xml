@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.LeaseContractReportDao">
+    
+	<sql id="leaseContractColumns">
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.remittancer_id AS "remittancer.id",
+		a.contract_name AS "contractName",
+		a.effective_date AS "effectiveDate",
+		a.first_remittance_date AS "firstRemittanceDate",
+		a.remittance_date AS "remittanceDate",
+		a.expired_date AS "expiredDate",
+		a.contract_date AS "contractDate",
+		a.deposit AS "deposit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		at1.attachment_path as landlordId, 
+		at2.attachment_path as profile,
+		at3.attachment_path as certificate,
+		at4.attachment_path as relocation,
+		tp.project_name as projectName,
+		tb.building_name as buildingBame,
+		th.house_no as houseNo,
+		tr.user_name as remittancerName,
+		a.month_space as "monthSpace"
+	</sql>
+	
+	<sql id="leaseContractJoins">
+		left join t_attachment at1 on a.id=at1.lease_contract_id and at1.attachment_type='0' and at1.del_flag='0'
+		left join t_attachment at2 on a.id=at2.lease_contract_id and at2.attachment_type='1' and at2.del_flag='0'
+		left join t_attachment at3 on a.id=at3.lease_contract_id and at3.attachment_type='2' and at3.del_flag='0'
+		left join t_attachment at4 on a.id=at4.lease_contract_id and at4.attachment_type='3' and at4.del_flag='0'  
+		left join t_property_project tp on a.property_project_id = tp.id  
+		left join t_building tb on a.building_id=tb.id  
+		left join t_house th on a.house_id=th.id  
+		left join t_remittancer tr on a.remittancer_id=tr.id and tr.del_flag='0' 
+	</sql>
+    
+	<select id="findLeaseContractList" resultType="LeaseContractReport">
+	  select t.*,ton.name as "ownerName",ton.cell_phone as "ownerCellPhone" from (
+		SELECT 
+			<include refid="leaseContractColumns"/>,th.owner_id,
+	  th.HOUSE_SPACE as "houseSpace",th.ori_struc_room_num as "oriStrucRoomNum",
+	  th.ori_struc_cusspac_num as "oriStrucCusspacNum",th.ori_struc_washro_num as "oriStrucWashroNum" 
+		FROM t_lease_contract a
+		<include refid="leaseContractJoins"/>
+		<where>
+			a.del_flag = '0' 
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_id = #{house.id}
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND a.contract_name LIKE 
+					concat('%',#{contractName},'%')
+			</if>
+			<if test="remittanceDate != null and remittanceDate != ''">
+				AND a.remittance_date = #{remittanceDate}
+			</if>
+				AND a.contract_status = '1' 
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+		) t left join t_owner ton on t.owner_id=ton.id 
+	</select>
+</mapper>

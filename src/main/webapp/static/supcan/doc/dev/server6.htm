@@ -26,8 +26,8 @@ Response.ContentType = "text/plain";</pre>
 <pre class='cpp'>
  String ReportFilename = dll.func("CacheDirUtility", "isCreateTempFile=true;ext=htm;DeleteEarlierFile=15m;KeepMB=10");</pre>
 　　这个函数的详细文档在 "Supcan Treelist组件\12.全局函数"中，参数中的 "DeleteEarlierFile=15m;KeepMB=10" 就是表示清理垃圾，它将删除15分钟前的文件、并保证缓存垃圾不超过10MB; "isCreateTempFile=true;ext=htm" 表示生成一个唯一的.htm文件，并返回全文件名.<br>
-<img src='glass.jpg'><font color="552222">清理缓存需要消耗一定CPU，建议您产生一个随机数，随机清理，不需要每次都清理;</font><br>
-<img src='glass.jpg'><font color="552222">KeepMB建议不要设得太大, 数字越大则缓存清理过程越慢;</font><br>
+<img src='glass.jpg'><font color="552222">清理缓存需要消耗一定CPU，建议您产生一个随机数，随机清理，不需要每次都清理;</font><br>
+<img src='glass.jpg'><font color="552222">KeepMB建议不要设得太大, 数字越大则缓存清理过程越慢;</font><br>
 <br>
 
 <b>3.示例3中分类汇总表查询的aspx源码分析</b><br>

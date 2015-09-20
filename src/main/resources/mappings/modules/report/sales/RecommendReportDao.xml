@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.RecommendReportDao">
+	<select id="recommendReport" resultType="RecommendReport">
+		<![CDATA[
+			SELECT tt.contractTotal,tt.recommendTotal,tt.roomTotal,
+			tt.recommendRoomTotal,
+			p.PROJECT_NAME projectName,tt.recommendTotal/tt.contractTotal*100 ratio,
+			tt.recommendRoomTotal/tt.roomTotal*100 roomRatio
+			 FROM (
+			SELECT COUNT(contractTotal) contractTotal,
+			COUNT(recommendTotal) recommendTotal,SUM(roomTotal) roomTotal,SUM(recommendRoomTotal) recommendRoomTotal,PROPERTY_PROJECT_ID
+			FROM(
+			SELECT c.PROPERTY_PROJECT_ID,
+			CASE WHEN CONTRACT_SOURCE='1' THEN id END contractTotal,
+			CASE WHEN CONTRACT_SOURCE='0' THEN id END recommendTotal,
+			CASE WHEN RENT_MODE='0' THEN (select case when ORI_STRUC_ROOM_NUM=1 then 2 when ORI_STRUC_ROOM_NUM=2 then 3 else 2 end from T_HOUSE where id=c.HOUSE_ID) 
+			WHEN RENT_MODE='1' THEN 1 END roomTotal,
+			CASE WHEN (CONTRACT_SOURCE='0' AND RENT_MODE='0') THEN 3 WHEN (CONTRACT_SOURCE='0' AND RENT_MODE='1') THEN 1 ELSE 0 END recommendRoomTotal
+			FROM T_RENT_CONTRACT c WHERE c.CONTRACT_BUSI_STATUS='0'
+		]]>
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND c.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND c.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND c.house_id = #{house.id}
+			</if>
+			) t GROUP BY PROPERTY_PROJECT_ID) tt
+			LEFT JOIN T_PROPERTY_PROJECT p ON tt.PROPERTY_PROJECT_ID=p.id
+	</select>
+</mapper>

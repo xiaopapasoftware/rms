@@ -10,7 +10,7 @@
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
-		    }); 
+		    });
 			
 			//$("#name").focus();
 			$("#inputForm").validate({

@@ -346,7 +346,7 @@
     					 </c:if>  
    					</shiro:hasPermission>
     				<shiro:hasPermission name="contract:rentContract:specialreturn">
-    					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
+    					 <c:if test="${rentContract.contractStatus=='6' && (rentContract.contractBusiStatus=='0'||rentContract.contractBusiStatus=='18')}">
     					    <a href="javascript:void(0);" onclick="javascript:specialReturn('${rentContract.id}');">特殊退租</a>
     					 </c:if> 
    					 </shiro:hasPermission><br/>

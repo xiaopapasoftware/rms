@@ -141,6 +141,11 @@
 		</where>		
 	</select>
 	
+	<select id="getCurrentValidHouseNum" resultType="int">
+		SELECT count(*) from  t_house
+		WHERE del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_house(
 			id,

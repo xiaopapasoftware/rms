@@ -197,16 +197,34 @@
 					</script>
 				</div>
 			</div>
-		<div class="control-group">
-			<label class="control-label">备注信息：</label>
-			<div class="controls">
-				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
+			<c:if test="${tradingAccounts.tradeDirection=='1' && (tradingAccounts.tradeType == '3'|| tradingAccounts.tradeType == '4'|| tradingAccounts.tradeType == '5'|| tradingAccounts.tradeType == '6'|| tradingAccounts.tradeType == '7'|| tradingAccounts.tradeType == '8'|| tradingAccounts.tradeType == '9'|| tradingAccounts.tradeType == '10'|| tradingAccounts.tradeType == '11'|| tradingAccounts.tradeType == '12'|| tradingAccounts.tradeType == '13'|| tradingAccounts.tradeType == '14'|| tradingAccounts.tradeType == '15')}"><!-- 新签合同/正常人工续签/逾期自动续签/提前退租/正常退租/逾期退租/特殊退租--入账 -->
+				<div class="control-group">
+					<label class="control-label">出租合同收据：</label>
+					<div class="controls">
+						<form:hidden id="rentContractReceiptFile" path="rentContractReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+						<sys:ckfinder input="rentContractReceiptFile" type="files" uploadPath="/出租合同收据" selectMultiple="true"/>
+					</div>
+				</div>
+			</c:if>
+			<c:if test="${tradingAccounts.tradeDirection=='1' && tradingAccounts.tradeType == '1'}"><!-- 预约定金--入账 -->
+				<div class="control-group">
+					<label class="control-label">定金协议收据：</label>
+					<div class="controls">
+						<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+						<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/定金收据" selectMultiple="true"/>
+					</div>
+				</div>
+			</c:if>
+			<div class="control-group">
+				<label class="control-label">备注信息：</label>
+				<div class="controls">
+					<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
+				</div>
 			</div>
-		</div>
-		<div class="form-actions">
-			<shiro:hasPermission name="funds:tradingAccounts:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
-			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
-		</div>
+			<div class="form-actions">
+				<shiro:hasPermission name="funds:tradingAccounts:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
 	</form:form>
 </body>
 </html>

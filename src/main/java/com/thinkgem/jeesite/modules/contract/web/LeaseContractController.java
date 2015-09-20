@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -119,12 +118,7 @@ public class LeaseContractController extends BaseController {
     public String form(LeaseContract leaseContract, Model model) {
 	model.addAttribute("leaseContract", leaseContract);
 	if (leaseContract.getIsNewRecord()) {
-	    int currContractNum = 1;
-	    List<LeaseContract> allContracts = leaseContractService.findAllValidLeaseContracts();
-	    if (CollectionUtils.isNotEmpty(allContracts)) {
-		currContractNum = currContractNum + allContracts.size();
-	    }
-	    leaseContract.setContractCode(currContractNum + "-" + "SF");
+	    leaseContract.setContractCode((leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
 	}
 	List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
 	model.addAttribute("projectList", projectList);
@@ -178,6 +172,10 @@ public class LeaseContractController extends BaseController {
 		}
 	    }
 	}
+
+	String[] codeArr = leaseContract.getContractCode().split("-");
+	leaseContract.setContractCode(codeArr[0] + "-" + (leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
+
 	leaseContractService.save(leaseContract);
 	addMessage(redirectAttributes, "保存承租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";

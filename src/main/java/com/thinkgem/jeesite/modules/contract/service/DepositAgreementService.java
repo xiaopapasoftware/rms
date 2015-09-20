@@ -194,8 +194,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    audit.setUpdateDate(new Date());
 	    audit.setUpdateBy(UserUtils.getUser());
 	    auditDao.update(audit);
-
-	} else {
+	} else {// 审核拒绝时，需要把房屋和房间的状态回滚到原先状态
 	    /* 更新房屋/房间状态 */
 	    DepositAgreement depositAgreement = this.depositAgreementDao.get(auditHis.getObjectId());
 	    if ("0".equals(depositAgreement.getRentMode())) {// 整租
@@ -364,7 +363,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    }
 	}
 
-	if (!depositAgreement.getIsNewRecord()) {// 新增
+	if (!depositAgreement.getIsNewRecord()) {// 新增清空定金协议所有的附件信息
 	    Attachment attachment = new Attachment();
 	    attachment.setDepositAgreemId(depositAgreement.getId());
 	    attachmentDao.delete(attachment);
@@ -376,20 +375,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    attachment.setDepositAgreemId(depositAgreement.getId());
 	    attachment.setAttachmentType(FileType.DEPOSITAGREEMENT_FILE.getValue());
 	    attachment.setAttachmentPath(depositAgreement.getDepositAgreementFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
-	}
-
-	if (!StringUtils.isBlank(depositAgreement.getDepositReceiptFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setDepositAgreemId(depositAgreement.getId());
-	    attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE.getValue());
-	    attachment.setAttachmentPath(depositAgreement.getDepositReceiptFile());
 	    attachment.setCreateDate(new Date());
 	    attachment.setCreateBy(UserUtils.getUser());
 	    attachment.setUpdateDate(new Date());
@@ -437,4 +422,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	return depositAgreementDao.findAllList(new DepositAgreement());
     }
 
+    @Transactional(readOnly = true)
+    public Integer getTotalValidDACounts() {
+	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
 }

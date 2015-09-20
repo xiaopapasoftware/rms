@@ -14,5 +14,5 @@ import com.thinkgem.jeesite.modules.contract.entity.Accounting;
  */
 @MyBatisDao
 public interface AccountingDao extends CrudDao<Accounting> {
-	
+	public int delByRent(Accounting accounting);
 }

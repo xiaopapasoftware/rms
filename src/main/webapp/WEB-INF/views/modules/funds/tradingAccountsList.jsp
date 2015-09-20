@@ -49,12 +49,8 @@
 			$.jBox.open("iframe:${ctx}/funds/receipt/viewReceipt?tradingAccounts.id="+id,'收据信息',800,400,{buttons:{'关闭':true}});
 		}
 		
-		function viewDepositReceipt(id) {
-			$.jBox.open("iframe:${ctx}/contract/depositAgreement/viewAttachment?id="+id,'定金收据附件',1000,460,{buttons:{'关闭':true}});
-		}
-		
-		function viewRentReceipt(id) {
-			$.jBox.open("iframe:${ctx}/contract/rentContract/viewAttachment?id="+id,'出租合同收据附件',1000,460,{buttons:{'关闭':true}});
+		function viewReceiptAttachmentFiles(id) {
+			$.jBox.open("iframe:${ctx}/funds/tradingAccounts/viewReceiptAttachmentFiles?id="+id,'收据凭单',1000,460,{buttons:{'关闭':true}});
 		}
 	</script>
 </head>
@@ -144,11 +140,8 @@
     					<a href="${ctx}/funds/tradingAccounts/edit?id=${tradingAccounts.id}">修改</a>
     				</c:if>
 				</shiro:hasPermission>
-				<c:if test="${tradingAccounts.tradeType=='1'||tradingAccounts.tradeType=='2'}">
-					<a href="javascript:void(0);" onclick="viewDepositReceipt('${tradingAccounts.tradeId}')">定金收据附件</a>
-				</c:if>
-				<c:if test="${tradingAccounts.tradeType=='3'||tradingAccounts.tradeType=='4'||tradingAccounts.tradeType=='5'||tradingAccounts.tradeType=='6'||tradingAccounts.tradeType=='7'||tradingAccounts.tradeType=='8'||tradingAccounts.tradeType=='9'}">
-					<a href="javascript:void(0);" onclick="viewRentReceipt('${tradingAccounts.tradeId}')">出租合同收据附件</a>
+				<c:if test="${tradingAccounts.tradeType=='1' || tradingAccounts.tradeType=='3' || tradingAccounts.tradeType=='4' || tradingAccounts.tradeType=='5' || tradingAccounts.tradeType=='6' || tradingAccounts.tradeType=='7' || tradingAccounts.tradeType=='8' || tradingAccounts.tradeType=='9' || tradingAccounts.tradeType == '10' || tradingAccounts.tradeType == '11' || tradingAccounts.tradeType == '12' || tradingAccounts.tradeType == '13' || tradingAccounts.tradeType == '14' || tradingAccounts.tradeType == '15'}">
+					<a href="javascript:void(0);" onclick="viewReceiptAttachmentFiles('${tradingAccounts.id}')">收据凭单</a>
 				</c:if>
 					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
@@ -160,13 +153,13 @@
 					<c:if test="${tradingAccounts.tradeType=='2' && tradingAccounts.transStatus=='5' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
-					<c:if test="${(tradingAccounts.tradeType!='1') && ((tradingAccounts.transStatus=='4'||tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
+					<c:if test="${(tradingAccounts.tradeType!='1' && tradingAccounts.tradeType!='2' && (tradingAccounts.transStatus=='4' || tradingAccounts.transStatus=='6') && tradingAccounts.transBusiStatus=='0' && tradingAccounts.tradeStatus=='0')}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
 					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
-					<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0'}">
+					<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0' && tradingAccounts.transStatus=='6'}">
 						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 					</c:if>
 					<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.tradeStatus=='0'}">
@@ -178,7 +171,7 @@
 						<a href="${ctx}/funds/invoice/form?tradingAccountsId=${tradingAccounts.id}">开具发票</a>
 					</c:if>
 					</shiro:hasPermission>
-					<c:if test="${tradingAccounts.tradeStatus=='0'||tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
+					<c:if test="${tradingAccounts.tradeStatus=='1' || tradingAccounts.tradeStatus=='2' || tradingAccounts.tradeStatus=='3'}">
 						<a href="javascript:void(0);" onclick="auditHis('${tradingAccounts.id}')">审核记录</a>
 					</c:if>
 				</td>

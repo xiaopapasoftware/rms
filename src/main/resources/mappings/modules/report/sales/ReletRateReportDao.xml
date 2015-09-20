@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReletRateReportDao">
+	<select id="reletRateReport" resultType="ReletRateReport">
+		select p.PROJECT_NAME projectName,t1.expiredMonth,roomTotal,coalesce(reletTotal,0) reletTotal,coalesce(reletTotal,0)/roomTotal*100 reletRate,
+		t3.contractTotal,coalesce(t4.reletContractTotal,0) reletContractTotal,coalesce(t4.reletContractTotal,0)/t3.contractTotal*100 reletContractRate
+		from(
+		select property_project_id, 
+		concat(year(expired_date),lpad(month(expired_date),2,'0')) expiredMonth,
+		sum(case when rent_mode='0' then (select case when ori_struc_room_num=1 then 2 when ori_struc_room_num=2 then 3 else 2 end from t_house where id=c.house_id) 
+		when rent_mode='1' then 1 end) roomTotal
+		from t_rent_contract c 
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			where c.property_project_id = #{propertyProject.id}
+		</if>
+		group by year(expired_date),month(expired_date),property_project_id) t1
+		left join(
+		select concat(year(sign_date),lpad(month(sign_date),2,'0')) signMonth,
+		sum(case when rent_mode='0' then (select case when ori_struc_room_num=1 then 2 when ori_struc_room_num=2 then 3 else 2 end from t_house where id=c.house_id) 
+		when rent_mode='1' then 1 end) reletTotal
+		from t_rent_contract c where contract_id is not null and contract_id != ''
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		group by year(expired_date),month(expired_date))t2
+		on t1.expiredMonth=t2.signMonth
+		left join(
+		select property_project_id,concat(year(expired_date),lpad(month(expired_date),2,'0')) expiredMonth,count(id) contractTotal
+		from T_RENT_CONTRACT c 
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			where c.property_project_id = #{propertyProject.id}
+		</if>
+		group by year(expired_date),month(expired_date),property_project_id) t3
+		on t1.expiredMonth=t3.expiredMonth and t1.property_project_id=t3.property_project_id 
+		left join(
+		select count(id) reletContractTotal,concat(year(sign_date),lpad(month(sign_date),2,'0')) sign_month
+		from t_rent_contract c where contract_id is not null and contract_id != ''
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		) t4
+		on t1.expiredMonth=t4.sign_month
+		LEFT JOIN T_PROPERTY_PROJECT p ON t1.PROPERTY_PROJECT_ID=p.id
+	</select>
+</mapper>

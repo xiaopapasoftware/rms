@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.RentDataReportDao">
+	<select id="rentDataReport" resultType="RentDataReport">
+	  <![CDATA[
+		select r1.fee_date reportMonth,p.PROJECT_NAME projectName,r1.normal,r2.breakContract,r3.early,r4.special,r5.rent,count(r6.id) renting from(
+		select fee_date,property_project_id,COUNT(id) normal from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='8') t group by fee_date,property_project_id)r1
+		LEFT JOIN T_PROPERTY_PROJECT p ON r1.PROPERTY_PROJECT_ID=p.id
+		left join(
+		select COUNT(id) breakContract,property_project_id,start_date from(
+		select id,property_project_id,CONCAT(YEAR(start_date),LPAD(MONTH(start_date),2,'0')) start_date from(
+		select id,property_project_id from t_deposit_agreement a where a.agreement_busi_status='1') t1 left join 
+		(select trans_id,start_date from t_payment_trans ts where ts.payment_type='26') t2 on t1.id=t2.trans_id) t group by property_project_id,start_date) r2
+		on r1.fee_date=r2.start_date and r1.property_project_id=r2.property_project_id
+		left join(
+		select fee_date,property_project_id,COUNT(id) early from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='7') t group by fee_date,property_project_id) r3
+		on r1.fee_date=r3.fee_date and r1.property_project_id=r3.property_project_id
+		left join(
+		select fee_date,property_project_id,COUNT(id) special from(
+		select CONCAT(YEAR(fee_date),LPAD(MONTH(fee_date),2,'0')) fee_date,t2.property_project_id,t2.id from(
+		select a.rent_contract_id,MAX(a.fee_date) fee_date from t_accounting a
+		group by a.rent_contract_id)t1 left join t_rent_contract t2 on t1.rent_contract_id=t2.id
+		where t2.contract_busi_status='16') t group by fee_date,property_project_id)r4
+		on r1.fee_date=r4.fee_date and r1.property_project_id=r4.property_project_id
+		left join 
+		(select CONCAT(YEAR(sign_date),LPAD(MONTH(sign_date),2,'0')) fee_date,property_project_id,COUNT(c.id) rent from t_rent_contract c
+		where c.contract_busi_status='0'
+		group by CONCAT(YEAR(sign_date),LPAD(MONTH(sign_date),2,'0')),property_project_id) r5 
+		on r1.fee_date=r5.fee_date and r1.property_project_id=r5.property_project_id
+		left join(
+		select property_project_id,id,start_date,expired_date,contract_busi_status from t_rent_contract) r6
+		on r1.property_project_id=r6.property_project_id and r6.contract_busi_status='0' and CONCAT(YEAR(r6.start_date),LPAD(MONTH(r6.start_date),2,'0'))<=r1.fee_date 
+		and CONCAT(YEAR(r6.expired_date),LPAD(MONTH(r6.expired_date),2,'0'))>=r1.fee_date 
+      ]]>
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND r1.property_project_id = #{propertyProject.id}
+		</if>
+		group by r6.property_project_id
+	</select>
+</mapper>

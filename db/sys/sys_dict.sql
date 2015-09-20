@@ -345,3 +345,16 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('344','4','定金转违约到账待审核','deposit_agreement_busi_status','定金协议业务状态','5','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('346','6','定金转违约到账审核拒绝','deposit_agreement_busi_status','定金协议业务状态','7','0','1',now(),'1',now(),NULL,'0');
 
+
+#二期
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('347','1','工作总结','work_record_type','工作记录类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('348','2','工作备忘','work_record_type','工作记录类型','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('349','3','工作计划','work_record_type','工作记录类型','3','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('350','1','待审阅','work_record_status','工作记录状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('351','2','已审阅','work_record_status','工作记录状态','2','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('352','1','承租合同模板','document_type','办公文件类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('353','2','出租合同模板','document_type','办公文件类型','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('354','3','请假单','document_type','办公文件类型','3','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('355','4','宣传资料','document_type','办公文件类型','4','0','1',now(),'1',now(),NULL,'0');

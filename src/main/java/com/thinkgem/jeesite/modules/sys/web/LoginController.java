@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
 import com.thinkgem.jeesite.common.servlet.ValidateCodeServlet;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
@@ -27,6 +28,12 @@ import com.thinkgem.jeesite.common.utils.CookieUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.sys.security.FormAuthenticationFilter;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -41,6 +48,12 @@ public class LoginController extends BaseController{
 	
 	@Autowired
 	private SessionDAO sessionDAO;
+	@Autowired
+	private PaymentTransService paymentTransService;
+	@Autowired
+	private LeaseContractService leaseContractService;
+	@Autowired
+	private RentContractService rentContractService;
 	
 	/**
 	 * 管理登录
@@ -131,7 +144,7 @@ public class LoginController extends BaseController{
 	 */
 	@RequiresPermissions("user")
 	@RequestMapping(value = "${adminPath}")
-	public String index(HttpServletRequest request, HttpServletResponse response) {
+	public String index(HttpServletRequest request, HttpServletResponse response,Model model) {
 		Principal principal = UserUtils.getPrincipal();
 
 		// 登录成功后，验证码计算器清零
@@ -180,6 +193,14 @@ public class LoginController extends BaseController{
 ////			request.getSession().setAttribute("aaa", "aa");
 ////		}
 //		System.out.println("==========================b");
+		
+		Page<PaymentTrans> page = paymentTransService.findRemind(new Page<PaymentTrans>(request, response,-1), new PaymentTrans()); 
+		model.addAttribute("paymentTrans", page.getList().size());
+		Page<LeaseContract> pageLeaseContract = leaseContractService.findLeaseContractList(new Page<LeaseContract>(request, response,-1), new LeaseContract()); 
+		model.addAttribute("leaseContract", pageLeaseContract.getList().size());
+		Page<RentContract> pageRentContract = rentContractService.findContractList(new Page<RentContract>(request, response,-1), new RentContract()); 
+		model.addAttribute("rentContract", pageRentContract.getList().size());
+		
 		return "modules/sys/sysIndex";
 	}
 	

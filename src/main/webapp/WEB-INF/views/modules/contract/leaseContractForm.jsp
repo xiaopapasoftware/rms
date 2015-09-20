@@ -110,7 +110,12 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${leaseContract.contractCode}");
 			}else{
-				$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
+				if(""=="${leaseContract.id}") {
+					$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");					
+				} else {
+					var code = $("#contractCode").val().split("-");
+					$("#contractCode").val(projectSimpleName + "-" + code[1]+"-"+code[2]);		
+				}
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";
@@ -281,22 +286,28 @@
 			var expiredDate=year+"-"+month+"-"+day;
 			$("input[name='expiredDate']").val(expiredDate);
 		}
+		
+		window.onload=function() {
+			if(""=="${leaseContract.id}") {
+				var project = $("[id='propertyProject.id']").val();
+				
+				//把物业项目简称带入房屋编号中
+				var projectSimpleName= $("[id='propertyProject.id']").find("option:selected").attr("projectSimpleName");
+				if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
+					$("#contractCode").val("${leaseContract.contractCode}");
+				}else{
+					$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
+				}
+			}
+		}
 	</script>
 </head>
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<li class="active">
-			<a href="#">承租合同
-			<shiro:hasPermission name="contract:leaseContract:edit">
-				<c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">
-					${not empty leaseContract.id?'修改':'添加'}
-				</c:if>
-				<c:if test="${leaseContract.contractStatus=='1'}">
-					<span>查看</span>
-				</c:if>
-			</shiro:hasPermission>
-			<shiro:lacksPermission name="contract:leaseContract:edit">查看</shiro:lacksPermission></a></li>
+			<a href="#">承租合同<shiro:hasPermission name="contract:leaseContract:edit"><c:if test="${leaseContract.contractStatus=='0'||leaseContract.contractStatus=='2'||empty leaseContract.id}">${not empty leaseContract.id?'修改':'添加'}</c:if><c:if test="${leaseContract.contractStatus=='1'}"><span>查看</span></c:if></shiro:hasPermission><shiro:lacksPermission name="contract:leaseContract:edit">查看</shiro:lacksPermission></a>
+		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -356,9 +367,11 @@
 			<div class="controls">
 				<form:select path="remittancer.id" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${remittancerList}" itemLabel="userName" itemValue="id" htmlEscape="false"/>
+					<c:forEach items="${remittancerList}" var="item">
+						<form:option value="${item.id}">${item.userName}-${item.bankAccount}</form:option>
+					</c:forEach>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font></span>
 				<shiro:hasPermission name="contract:leaseContract:edit"><a href="#" onclick="addRemittancer()">添加汇款人</a></shiro:hasPermission>
 			</div>
 		</div>

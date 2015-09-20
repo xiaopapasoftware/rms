@@ -104,12 +104,11 @@ public class HouseController extends BaseController {
     // @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = "form")
     public String form(House house, Model model) {
-	Integer currentNum = 1;
-	List<House> allHouses = houseService.findAllHouses();
-	if (CollectionUtils.isNotEmpty(allHouses)) {
-	    currentNum = allHouses.size() + currentNum;
+	if (house.getIsNewRecord()) {
+	    Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
+	    currentValidHouseNum = currentValidHouseNum + 1;
+	    house.setHouseCode(currentValidHouseNum.toString());
 	}
-	house.setHouseCode(currentNum.toString());
 	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    PropertyProject pp = new PropertyProject();
@@ -125,12 +124,9 @@ public class HouseController extends BaseController {
 
     @RequestMapping(value = "add")
     public String add(House house, Model model) {
-	Integer currentNum = 0;
-	List<House> allHouses = houseService.findAllHouses();
-	if (CollectionUtils.isNotEmpty(allHouses)) {
-	    currentNum = allHouses.size() + 1;
-	}
-	house.setHouseCode(currentNum.toString());
+	Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
+	currentValidHouseNum = currentValidHouseNum + 1;
+	house.setHouseCode(currentValidHouseNum.toString());
 	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    List<Building> list = new ArrayList<Building>();
@@ -181,19 +177,22 @@ public class HouseController extends BaseController {
 	    if (CollectionUtils.isNotEmpty(houses)) {
 		model.addAttribute("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
 		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-
 		model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-
 		PropertyProject pp = new PropertyProject();
 		pp.setId(house.getPropertyProject().getId());
 		Building bd = new Building();
 		bd.setPropertyProject(pp);
 		model.addAttribute("listBuilding", buildingService.findList(bd));
-
 		model.addAttribute("listOwner", ownerService.findList(new Owner()));
 		return "modules/inventory/houseForm";
 	    } else {
 		house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
+		String houseCode = house.getHouseCode();
+		if (houseCode.contains("-")) {
+		    house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
+		} else {
+		    house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
+		}
 		houseService.save(house);
 		addMessage(redirectAttributes, "保存房屋信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -222,6 +221,12 @@ public class HouseController extends BaseController {
 	} else {
 	    if (StringUtils.isBlank(house.getHouseStatus()))
 		house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
+	    String houseCode = house.getHouseCode();
+	    if (houseCode.contains("-")) {
+		house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
+	    } else {
+		house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
+	    }
 	    houseService.save(house);
 	    jsonObject.put("id", house.getId());
 	    jsonObject.put("name", house.getHouseNo());

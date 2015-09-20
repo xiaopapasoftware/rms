@@ -156,7 +156,12 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${rentContract.contractCode}");
 			}else{
-				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
+				if($("#contractCode").val().split("-").length>2) {
+					
+					$("#contractCode").val(projectSimpleName + "-" + $("#contractCode").val().split("-")[1]+"-"+$("#contractCode").val().split("-")[2]);	
+				} else {
+					$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");					
+				}
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";
@@ -433,7 +438,7 @@
 		<li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
 		<li class="active">
 		<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
-			出租合同<shiro:hasPermission name="contract:rentContract:edit"><c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'||rentContract.contractStatus=='1'}">修改</c:if><c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='3'}">${not empty rentContract.id?'查看':'添加'}</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission>
+			出租合同<shiro:hasPermission name="contract:rentContract:edit"><c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'||rentContract.contractStatus=='1'}">修改</c:if><c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='3' && rentContract.contractStatus!='1'}">${not empty rentContract.id?'查看':'添加'}</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission>
 		</a>
 		</li>
 	</ul><br/>
@@ -703,13 +708,6 @@
 			<div class="controls">
 				<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">出租合同收据：</label>
-			<div class="controls">
-				<form:hidden id="rentContractReceiptFile" path="rentContractReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="rentContractReceiptFile" type="files" uploadPath="/出租合同收据" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

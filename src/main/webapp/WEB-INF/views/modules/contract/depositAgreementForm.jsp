@@ -310,11 +310,8 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
 		<li class="active">
-		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">定金协议
-		<shiro:hasPermission name="contract:depositAgreement:edit">
-		<c:if test="${depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">${not empty depositAgreement.id?'修改':'添加'}</c:if>
-		<c:if test="${depositAgreement.agreementStatus!='2' &&depositAgreement.agreementStatus!='6' && not empty depositAgreement.id}">查看</c:if>
-		</shiro:hasPermission>
+		<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">
+		<shiro:hasPermission name="contract:depositAgreement:edit">定金协议<c:if test="${depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">${not empty depositAgreement.id?'修改':'添加'}</c:if><c:if test="${depositAgreement.agreementStatus!='2' &&depositAgreement.agreementStatus!='6' && not empty depositAgreement.id}">查看</c:if></shiro:hasPermission>
 		<shiro:lacksPermission name="contract:depositAgreement:edit">查看</shiro:lacksPermission>
 		</a>
 		</li>
@@ -475,13 +472,6 @@
 			<div class="controls">
 				<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/定金协议" selectMultiple="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">定金收据：</label>
-			<div class="controls">
-				<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="depositReceiptFile" type="files" uploadPath="/定金收据" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

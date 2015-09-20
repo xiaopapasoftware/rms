@@ -112,8 +112,8 @@ public class RemittancerController extends BaseController {
 	    remittancerService.save(remittancer);
 	    jsonObject.put("id", remittancer.getId());
 	    jsonObject.put("name", remittancer.getUserName());
+	    jsonObject.put("accountNo", remittancer.getBankAccount());
 	}
-
 	return jsonObject.toString();
     }
 

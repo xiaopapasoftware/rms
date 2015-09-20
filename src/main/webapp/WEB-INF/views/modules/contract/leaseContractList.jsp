@@ -183,7 +183,7 @@
 					${leaseContract.houseNo}
 				</td>
 				<td>
-					${leaseContract.remittancerName}
+					${leaseContract.remittancer.userName}-${leaseContract.remittancer.bankAccount}
 				</td>
 				<td>
 					<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>

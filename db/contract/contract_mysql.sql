@@ -89,11 +89,11 @@ create table T_DEPOSIT_AGREEMENT
 create table T_CONTRACT_TENANT
 (
 	 ID                   varchar(64) NOT NULL,
-	 DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '承租的定金协议',
-	 CONTRACT_ID          varchar(64) comment '入住的出租合同',	
-	 LEASE_CONTRACT_ID    varchar(64) comment '承租的出租合同',	
-	 AGREEMENT_CHANGE_ID  varchar(64) comment '入住的变更协议',	
-	 LEASAGREM_CHANGE_ID  varchar(64) comment '承租的变更协议',	
+	 DEPOSIT_AGREEMENT_ID VARCHAR(64) comment '承租的定金协议ID',
+	 CONTRACT_ID          varchar(64) comment '入住的出租合同ID',	
+	 LEASE_CONTRACT_ID    varchar(64) comment '承租的出租合同ID',	
+	 AGREEMENT_CHANGE_ID  varchar(64) comment '入住的变更协议ID',
+	 LEASAGREM_CHANGE_ID  varchar(64) comment '承租的变更协议ID',	
 	 TENANT_ID            varchar(64) comment '租客ID',
 	 CREATE_BY            VARCHAR(64) COMMENT '创建者',
    	CREATE_DATE          DATETIME 	COMMENT '创建时间',
@@ -253,3 +253,4 @@ create table T_AUDIT_HIS
 
 ALTER TABLE t_lease_contract ADD month_space VARCHAR(64) COMMENT '打款月份间隔';
 ALTER TABLE t_rent_contract ADD return_remark VARCHAR(64) COMMENT '退租备注';
+ALTER TABLE t_attachment ADD trading_accounts_id VARCHAR(64) COMMENT '账务交易ID';
