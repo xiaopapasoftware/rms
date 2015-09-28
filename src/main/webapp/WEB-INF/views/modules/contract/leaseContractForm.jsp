@@ -288,7 +288,7 @@
 			$("input[name='expiredDate']").val(expiredDate);
 		}
 		
-		/***window.onload=function() {
+		window.onload=function() {
 			if(""=="${leaseContract.id}") {
 				var project = $("[id='propertyProject.id']").val();
 				
@@ -300,7 +300,7 @@
 					$("#contractCode").val(projectSimpleName + "-" + "${leaseContract.contractCode}");
 				}
 			}
-		}**/
+		}
 	</script>
 </head>
 <body>

@@ -488,8 +488,11 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractForm";
 	    }
 	}
-	String[] codeArr = rentContract.getContractCode().split("-");
-	rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+
+	if (rentContract.getIsNewRecord()) {
+	    String[] codeArr = rentContract.getContractCode().split("-");
+	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+	}
 
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");

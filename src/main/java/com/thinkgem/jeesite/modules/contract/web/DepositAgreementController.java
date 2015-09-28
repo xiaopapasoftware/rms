@@ -182,8 +182,10 @@ public class DepositAgreementController extends BaseController {
 	    return form(depositAgreement, model);
 	}
 
-	String[] codeArr = depositAgreement.getAgreementCode().split("-");
-	depositAgreement.setAgreementCode(codeArr[0] + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-" + "XY");
+	if (depositAgreement.getIsNewRecord()) {
+	    String[] codeArr = depositAgreement.getAgreementCode().split("-");
+	    depositAgreement.setAgreementCode(codeArr[0] + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-" + "XY");
+	}
 
 	depositAgreementService.save(depositAgreement);
 	addMessage(redirectAttributes, "保存定金协议成功");
