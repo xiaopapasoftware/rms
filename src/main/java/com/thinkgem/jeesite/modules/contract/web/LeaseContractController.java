@@ -173,8 +173,10 @@ public class LeaseContractController extends BaseController {
 	    }
 	}
 
-	String[] codeArr = leaseContract.getContractCode().split("-");
-	leaseContract.setContractCode(codeArr[0] + "-" + (leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
+	if (leaseContract.getIsNewRecord()) {
+	    String[] codeArr = leaseContract.getContractCode().split("-");
+	    leaseContract.setContractCode(codeArr[0] + "-" + (leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
+	}
 
 	leaseContractService.save(leaseContract);
 	addMessage(redirectAttributes, "保存承租合同成功");

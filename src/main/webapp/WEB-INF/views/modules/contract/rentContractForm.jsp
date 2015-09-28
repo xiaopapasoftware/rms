@@ -156,12 +156,13 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${rentContract.contractCode}");
 			}else{
-				if($("#contractCode").val().split("-").length>2) {
+				/**if($("#contractCode").val().split("-").length>2) {
 					
 					$("#contractCode").val(projectSimpleName + "-" + $("#contractCode").val().split("-")[1]+"-"+$("#contractCode").val().split("-")[2]);	
 				} else {
 					$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");					
-				}
+				}**/
+				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";

@@ -230,10 +230,8 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = "form")
     public String form(RentContract rentContract, Model model) {
-	if (rentContract.getIsNewRecord())
-	    rentContract.setSignType("0");// 新签
-
 	if (rentContract.getIsNewRecord()) {
+	    rentContract.setSignType("0");// 新签
 	    rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
@@ -490,8 +488,11 @@ public class RentContractController extends BaseController {
 		return "modules/contract/rentContractForm";
 	    }
 	}
-	String[] codeArr = rentContract.getContractCode().split("-");
-	rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+
+	if (rentContract.getIsNewRecord()) {
+	    String[] codeArr = rentContract.getContractCode().split("-");
+	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+	}
 
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
