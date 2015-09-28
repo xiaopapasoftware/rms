@@ -230,10 +230,8 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = "form")
     public String form(RentContract rentContract, Model model) {
-	if (rentContract.getIsNewRecord())
-	    rentContract.setSignType("0");// 新签
-
 	if (rentContract.getIsNewRecord()) {
+	    rentContract.setSignType("0");// 新签
 	    rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	}
 	model.addAttribute("rentContract", rentContract);
