@@ -577,10 +577,23 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    delTradingAccounts.setTradeId(id);
 	    List<TradingAccounts> list = tradingAccountsDao.findList(delTradingAccounts);
 	    for (TradingAccounts dTradingAccounts : list) {
-		this.tradingAccountsDao.delete(dTradingAccounts);
+		// 删除已经上传的收据附件
+		Attachment attachment3 = new Attachment();
+		attachment3.setTradingAccountsId(dTradingAccounts.getId());
+		attachmentDao.delete(attachment3);
+
+		// 同时删除已经录入的收据记录
+		Receipt r = new Receipt();
+		r.setTradingAccounts(dTradingAccounts);
+		receiptDao.delete(r);
+
+		// 删除账务记录
+		tradingAccountsDao.delete(dTradingAccounts);
+
+		// 删除账务记录款项关联信息
 		PaymentTrade delPaymentTrade = new PaymentTrade();
 		delPaymentTrade.setTradeId(dTradingAccounts.getId());
-		this.paymentTradeDao.delete(delPaymentTrade);
+		paymentTradeDao.delete(delPaymentTrade);
 	    }
 
 	    String tradeType = "";// 交易类型
@@ -669,7 +682,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 	}
 
-	/* 合同租客关联信息 */
+	/* 合同承租人关联信息 */
 	ContractTenant delContractTenant = new ContractTenant();
 	delContractTenant.setLeaseContractId(id);
 	contractTenantDao.delete(delContractTenant);
@@ -689,6 +702,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 	}
 
+	/* 合同入住人关联信息 */
 	ContractTenant delContractTenant2 = new ContractTenant();
 	delContractTenant2.setContractId(id);
 	contractTenantDao.delete(delContractTenant2);
@@ -708,7 +722,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 	}
 
-	if ("1".equals(rentContract.getSaveSource())) {// 定金协议转合同
+	if ("1".equals(rentContract.getSaveSource())) {// 定金协议转合同，更新原定金协议状态
 	    DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getAgreementId());
 	    depositAgreement.setAgreementBusiStatus("2");// 已转合同
 	    depositAgreement.setUpdateBy(UserUtils.getUser());
@@ -716,7 +730,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    depositAgreementDao.update(depositAgreement);
 	}
 
-	/* 更改原合同 */
+	/* 当前合同为续签合同，则把原合同业务状态改成“正常人工续签” */
 	if ("1".equals(rentContract.getSignType())) {
 	    RentContract rentContractOld = this.rentContractDao.get(rentContract.getContractId());
 	    rentContractOld.setContractBusiStatus("14");// 正常人工续签
@@ -724,6 +738,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContractOld.setUpdateDate(new Date());
 	    rentContractDao.update(rentContractOld);
 	}
+
+	/* 当前合同为逾期自动续签，则把原合同业务状态改成“逾期自动续签” */
 	if ("2".equals(rentContract.getSignType())) {
 	    RentContract rentContractOld = this.rentContractDao.get(rentContract.getContractId());
 	    rentContractOld.setContractBusiStatus("15");// 逾期自动续签
@@ -732,7 +748,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContractDao.update(rentContractOld);
 	}
 
-	// 非新增，首先清空所有的合同附件
+	// 非新增，修改合同，首先清空所有的合同附件
 	if (!rentContract.getIsNewRecord()) {
 	    Attachment attachment = new Attachment();
 	    attachment.setRentContractId(rentContract.getId());
@@ -766,7 +782,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    attachment.setDelFlag("0");
 	    attachmentDao.insert(attachment);
 	}
-	// 出租合同其他收据
+	// 出租合同其他附件
 	if (!StringUtils.isBlank(rentContract.getRentContractOtherFile())) {
 	    Attachment attachment = new Attachment();
 	    attachment.setId(IdGen.uuid());
