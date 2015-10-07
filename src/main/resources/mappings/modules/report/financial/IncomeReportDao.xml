@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.IncomeReportDao">
+	<select id="report" resultType="IncomeReport">
+		select sales,project_name,building_name,house_no,start_date,expired_date,
+		sum(trans_amount) trans_amount,payment_type,sum(shuidianya_fee) shuidianya_fee,
+		sum(fangzuya_fee) fangzuya_fee,sum(fangzu_fee) fangzu_fee,coalesce(sum(weiyue_fee),0) weiyue_fee from (
+		select sales,project_name,building_name,house_no,start_date,expired_date,
+		trans_amount,payment_type,
+		case when payment_type='2' then trans_amount end shuidianya_fee,
+		case when payment_type='4' then trans_amount end fangzuya_fee,
+		case when payment_type='6' then trans_amount end fangzu_fee,
+		case when payment_type='9' then trans_amount end weiyue_fee
+		 from(
+		select u.name sales,p.PROJECT_NAME,b.BUILDING_NAME,h.HOUSE_no,a.start_date,a.expired_date,
+		a.trans_amount,a.payment_type from t_payment_trans a 
+		left join t_rent_contract c on a.trans_id=c.id
+		left join T_PROPERTY_PROJECT p on c.PROPERTY_PROJECT_ID=p.id
+		left join T_BUILDING b on c.BUILDING_ID=b.id
+		left join t_house h on c.house_id=h.id
+		left join sys_user u on c.user_id=u.id
+		where a.trade_direction='1' and a.trans_status='2' and a.del_flag='0'
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building != null and building.id != null and building.id != ''">
+			AND c.building_id = #{building.id}
+		</if>
+		<if test="house != null and house.id != null and house.id != ''">
+			AND c.house_id = #{house.id}
+		</if>		
+		)t
+		) tt group by project_name,building_name,house_no
+	</select>
+</mapper>

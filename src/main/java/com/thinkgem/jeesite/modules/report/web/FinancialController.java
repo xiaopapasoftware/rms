@@ -23,7 +23,9 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.report.entity.IncomeReport;
 import com.thinkgem.jeesite.modules.report.entity.LandlordReport;
+import com.thinkgem.jeesite.modules.report.entity.PayRentReport;
 import com.thinkgem.jeesite.modules.report.entity.PaymentReport;
 import com.thinkgem.jeesite.modules.report.service.ReportService;
 
@@ -125,5 +127,93 @@ public class FinancialController extends BaseController {
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		}
 		return this.payment(paymentReport, request, response, model);
+    }
+	
+	@RequestMapping(value = {"pay"})
+	public String pay(PayRentReport payRentReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<PayRentReport> page = reportService.payrentReport(new Page<PayRentReport>(request, response),payRentReport);
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+
+		if (null != payRentReport.getPropertyProject()
+				&& StringUtils.isNotEmpty(payRentReport.getPropertyProject().getId())) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(payRentReport.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if (null != payRentReport.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(payRentReport.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		return "modules/report/financial/payrentList";
+	}
+	
+	@RequestMapping(value = "exportPay", method=RequestMethod.POST)
+    public String exportPay(PayRentReport payRentReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "待付房租统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<PayRentReport> page = reportService.payrentReport(new Page<PayRentReport>(request, response, -1),payRentReport);
+    		new ExportExcel("待付房租统计", PayRentReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出待付房租统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.pay(payRentReport, request, response, model);
+    }
+	
+	@RequestMapping(value = {"income"})
+	public String income(IncomeReport incomeReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<IncomeReport> page = reportService.incomeReport(new Page<IncomeReport>(request, response),incomeReport);
+		model.addAttribute("page", page);
+		
+		List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+		model.addAttribute("projectList", projectList);
+
+		if (null != incomeReport.getPropertyProject()
+				&& StringUtils.isNotEmpty(incomeReport.getPropertyProject().getId())) {
+			Building building = new Building();
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(incomeReport.getPropertyProject().getId());
+			building.setPropertyProject(propertyProject);
+			List<Building> buildingList = buildingService.findList(building);
+			model.addAttribute("buildingList", buildingList);
+		}
+		
+		if (null != incomeReport.getBuilding()) {
+			House house = new House();
+			Building building = new Building();
+			building.setId(incomeReport.getBuilding().getId());
+			house.setBuilding(building);
+			List<House> houseList = houseService.findList(house);
+			model.addAttribute("houseList", houseList);
+		}
+		
+		return "modules/report/financial/incomeList";
+	}
+	
+	@RequestMapping(value = "exportIncome", method=RequestMethod.POST)
+    public String exportIncome(IncomeReport incomeReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+		try {
+            String fileName = "每月收入统计"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+            Page<IncomeReport> page = reportService.incomeReport(new Page<IncomeReport>(request, response, -1),incomeReport);
+    		new ExportExcel("每月收入统计", IncomeReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+    		return null;
+		} catch (Exception e) {
+			model.addAttribute("message", "导出每月收入统计失败！失败信息："+e.getMessage());
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+		}
+		return this.income(incomeReport, request, response, model);
     }
 }
