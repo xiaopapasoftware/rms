@@ -6,7 +6,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
-public class IncomeReport extends DataEntity<IncomeReport> {
+public class IncomeRefundReport extends DataEntity<IncomeRefundReport> {
 	private PropertyProject propertyProject; // 物业项目
 	private Building building; // 楼宇
 	private House house; // 房屋
@@ -89,35 +89,30 @@ public class IncomeReport extends DataEntity<IncomeReport> {
 	public void setExpiredDate(String expiredDate) {
 		this.expiredDate = expiredDate;
 	}
-	@ExcelField(title="合计", align=2, sort=11)
 	public String getTransAmount() {
-		return transAmount;
+		return String.valueOf(this.getDepositElectricAmount()+this.getDepositAmount());
 	}
 	public void setTransAmount(String transAmount) {
-		this.transAmount = transAmount;
+		this.transAmount = String.valueOf(this.getDepositElectricAmount()+this.getDepositAmount());
 	}
-	@ExcelField(title="水电押金", align=2, sort=7)
 	public String getShuidianyaFee() {
 		return shuidianyaFee;
 	}
 	public void setShuidianyaFee(String shuidianyaFee) {
 		this.shuidianyaFee = shuidianyaFee;
 	}
-	@ExcelField(title="房租押金", align=2, sort=8)
 	public String getFangzuyaFee() {
 		return fangzuyaFee;
 	}
 	public void setFangzuyaFee(String fangzuyaFee) {
 		this.fangzuyaFee = fangzuyaFee;
 	}
-	@ExcelField(title="房租收入", align=2, sort=9)
 	public String getFangzuFee() {
 		return fangzuFee;
 	}
 	public void setFangzuFee(String fangzuFee) {
 		this.fangzuFee = fangzuFee;
 	}
-	@ExcelField(title="违约收入", align=2, sort=10)
 	public String getWeiyueFee() {
 		return weiyueFee;
 	}
@@ -148,18 +143,21 @@ public class IncomeReport extends DataEntity<IncomeReport> {
 	public void setLastAmount(String lastAmount) {
 		this.lastAmount = lastAmount;
 	}
+	@ExcelField(title="水电押金", align=2, sort=7)
 	public Double getDepositElectricAmount() {
 		return depositElectricAmount;
 	}
 	public void setDepositElectricAmount(Double depositElectricAmount) {
 		this.depositElectricAmount = depositElectricAmount;
 	}
+	@ExcelField(title="房租押金", align=2, sort=8)
 	public Double getDepositAmount() {
 		return depositAmount;
 	}
 	public void setDepositAmount(Double depositAmount) {
 		this.depositAmount = depositAmount;
 	}
+	@ExcelField(title="应退款金额", align=2, sort=9)
 	public Double getRefundAmount() {
 		return this.getDepositElectricAmount()+this.getDepositAmount();
 	}

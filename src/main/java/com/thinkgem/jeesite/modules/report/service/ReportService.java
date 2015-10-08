@@ -78,4 +78,22 @@ public class ReportService {
 		page.setList(incomeReportDao.report(incomeReport));
 		return page;
     }
+	
+	public Page<IncomeReport> incomeFangzuReport(Page<IncomeReport> page, IncomeReport incomeReport) {
+		incomeReport.setPage(page);
+		page.setList(incomeReportDao.fangzuReport(incomeReport));
+		return page;
+    }
+	
+	public Page<IncomeReport> receivableReport(Page<IncomeReport> page, IncomeReport incomeReport) {
+		incomeReport.setPage(page);
+		page.setList(incomeReportDao.receivableReport(incomeReport));
+		return page;
+    }
+	
+	public Page<IncomeReport> refundReport(Page<IncomeReport> page, IncomeReport incomeReport) {
+		incomeReport.setPage(page);
+		page.setList(incomeReportDao.refundReport(incomeReport));
+		return page;
+    }
 }

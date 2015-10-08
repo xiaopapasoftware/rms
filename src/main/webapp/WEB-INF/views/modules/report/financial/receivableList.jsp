@@ -7,9 +7,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#btnExport").click(function(){
-				$("#searchForm").attr("action","${ctx}/report/financial/exportIncome");
+				$("#searchForm").attr("action","${ctx}/report/financial/exportReceivable");
 				$("#searchForm").submit();
-				$("#searchForm").attr("action","${ctx}/report/financial/income");
+				$("#searchForm").attr("action","${ctx}/report/financial/receivable");
 			});
 		});
 		function page(n,s){
@@ -86,7 +86,7 @@
 	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="incomeReport" action="${ctx}/report/financial/income" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="incomeReport" action="${ctx}/report/financial/receivable" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<sys:message content="${message}" type="${messageType}"/>
@@ -109,16 +109,6 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">开始时间：</label>
-				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${incomeReport.startDate}"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:175px;"/>
-			</li>
-			<li><label style="width:120px;">结束时间：</label>
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="${incomeReport.expiredDate}"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:175px;"/>
-			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="btns"><input id="btnExport" class="btn btn-primary" type="button" value="导出"/></li>
 			<li class="clearfix"></li>
@@ -131,13 +121,13 @@
 				<th>楼宇</th>
 				<th>房号</th>
 				<th>业务员</th>
+				<th>合同编号</th>
+				<th>月租金</th>
+				<th>合同金额</th>
 				<th>开始时间</th>
 				<th>结束时间</th>
-				<th>水电押金</th>
-				<th>房租押金</th>
-				<th>房租收入</th>
-				<th>违约收入</th>
-				<th>合计</th>
+				<th>房租已收款</th>
+				<th>应收小计</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -156,25 +146,25 @@
 					${incomeReport.sales}
 				</td>
 				<td>
+					${incomeReport.contractCode}
+				</td>
+				<td>
+					${incomeReport.rental}
+				</td>
+				<td>
+					${incomeReport.tradeAmount}
+				</td>
+				<td>
 					${incomeReport.startDate}
 				</td>
 				<td>
 					${incomeReport.expiredDate}
 				</td>
 				<td>
-					${incomeReport.shuidianyaFee}
-				</td>
-				<td>
-					${incomeReport.fangzuyaFee}
-				</td>
-				<td>
-					${incomeReport.fangzuFee}
-				</td>
-				<td>
-					${incomeReport.weiyueFee}
-				</td>
-				<td>
 					${incomeReport.transAmount}
+				</td>
+				<td>
+					${incomeReport.lastAmount}
 				</td>
 			</tr>
 		</c:forEach>

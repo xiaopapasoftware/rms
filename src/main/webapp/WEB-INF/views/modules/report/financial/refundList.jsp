@@ -7,9 +7,9 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#btnExport").click(function(){
-				$("#searchForm").attr("action","${ctx}/report/financial/exportIncome");
+				$("#searchForm").attr("action","${ctx}/report/financial/exportRefund");
 				$("#searchForm").submit();
-				$("#searchForm").attr("action","${ctx}/report/financial/income");
+				$("#searchForm").attr("action","${ctx}/report/financial/refund");
 			});
 		});
 		function page(n,s){
@@ -86,7 +86,7 @@
 	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="incomeReport" action="${ctx}/report/financial/income" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="incomeReport" action="${ctx}/report/financial/refund" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<sys:message content="${message}" type="${messageType}"/>
@@ -135,9 +135,7 @@
 				<th>结束时间</th>
 				<th>水电押金</th>
 				<th>房租押金</th>
-				<th>房租收入</th>
-				<th>违约收入</th>
-				<th>合计</th>
+				<th>应退款金额</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -162,19 +160,13 @@
 					${incomeReport.expiredDate}
 				</td>
 				<td>
-					${incomeReport.shuidianyaFee}
+					${incomeReport.depositElectricAmount}
 				</td>
 				<td>
-					${incomeReport.fangzuyaFee}
+					${incomeReport.depositAmount}
 				</td>
 				<td>
-					${incomeReport.fangzuFee}
-				</td>
-				<td>
-					${incomeReport.weiyueFee}
-				</td>
-				<td>
-					${incomeReport.transAmount}
+					${incomeReport.depositElectricAmount+incomeReport.depositAmount}
 				</td>
 			</tr>
 		</c:forEach>

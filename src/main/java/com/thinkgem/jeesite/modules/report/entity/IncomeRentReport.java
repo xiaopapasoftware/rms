@@ -6,7 +6,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
-public class IncomeReport extends DataEntity<IncomeReport> {
+public class IncomeRentReport extends DataEntity<IncomeRentReport> {
 	private PropertyProject propertyProject; // 物业项目
 	private Building building; // 楼宇
 	private House house; // 房屋
@@ -21,13 +21,6 @@ public class IncomeReport extends DataEntity<IncomeReport> {
 	private String fangzuyaFee;
 	private String fangzuFee;
 	private String weiyueFee;
-	private String contractCode;
-	private String rental;
-	private String tradeAmount;
-	private String lastAmount;
-	private Double depositElectricAmount;
-	private Double depositAmount;
-	private Double refundAmount;
 	
 	public PropertyProject getPropertyProject() {
 		return propertyProject;
@@ -89,81 +82,35 @@ public class IncomeReport extends DataEntity<IncomeReport> {
 	public void setExpiredDate(String expiredDate) {
 		this.expiredDate = expiredDate;
 	}
-	@ExcelField(title="合计", align=2, sort=11)
+	@ExcelField(title="房租收入", align=2, sort=7)
 	public String getTransAmount() {
 		return transAmount;
 	}
 	public void setTransAmount(String transAmount) {
 		this.transAmount = transAmount;
 	}
-	@ExcelField(title="水电押金", align=2, sort=7)
 	public String getShuidianyaFee() {
 		return shuidianyaFee;
 	}
 	public void setShuidianyaFee(String shuidianyaFee) {
 		this.shuidianyaFee = shuidianyaFee;
 	}
-	@ExcelField(title="房租押金", align=2, sort=8)
 	public String getFangzuyaFee() {
 		return fangzuyaFee;
 	}
 	public void setFangzuyaFee(String fangzuyaFee) {
 		this.fangzuyaFee = fangzuyaFee;
 	}
-	@ExcelField(title="房租收入", align=2, sort=9)
 	public String getFangzuFee() {
 		return fangzuFee;
 	}
 	public void setFangzuFee(String fangzuFee) {
 		this.fangzuFee = fangzuFee;
 	}
-	@ExcelField(title="违约收入", align=2, sort=10)
 	public String getWeiyueFee() {
 		return weiyueFee;
 	}
 	public void setWeiyueFee(String weiyueFee) {
 		this.weiyueFee = weiyueFee;
-	}
-	public String getContractCode() {
-		return contractCode;
-	}
-	public void setContractCode(String contractCode) {
-		this.contractCode = contractCode;
-	}
-	public String getRental() {
-		return rental;
-	}
-	public void setRental(String rental) {
-		this.rental = rental;
-	}
-	public String getTradeAmount() {
-		return tradeAmount;
-	}
-	public void setTradeAmount(String tradeAmount) {
-		this.tradeAmount = tradeAmount;
-	}
-	public String getLastAmount() {
-		return lastAmount;
-	}
-	public void setLastAmount(String lastAmount) {
-		this.lastAmount = lastAmount;
-	}
-	public Double getDepositElectricAmount() {
-		return depositElectricAmount;
-	}
-	public void setDepositElectricAmount(Double depositElectricAmount) {
-		this.depositElectricAmount = depositElectricAmount;
-	}
-	public Double getDepositAmount() {
-		return depositAmount;
-	}
-	public void setDepositAmount(Double depositAmount) {
-		this.depositAmount = depositAmount;
-	}
-	public Double getRefundAmount() {
-		return this.getDepositElectricAmount()+this.getDepositAmount();
-	}
-	public void setRefundAmount(Double refundAmount) {
-		this.refundAmount = refundAmount;
 	}
 }
