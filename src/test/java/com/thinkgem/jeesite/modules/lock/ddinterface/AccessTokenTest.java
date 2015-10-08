@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.lock.ddinterface;
 
+import static org.junit.Assert.fail;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -24,7 +26,7 @@ public class AccessTokenTest {
 		System.out.println(json);
 		//String content = "{\"client_id\": \"4641dc274ed14ff9184755d9\",\"client_secret\": \"698d57e3c491c4f1c7176481eff94793}");
 		try {
-			String s  = HttpRequestUtil.readContentFromPost(HttpRequestUtil.POST_URL, json);
+			String s  = HttpRequestUtil.readContentFromPost(HttpRequestUtil.POST_URL, "access_token",json);
 			Map res = (Map) JsonMapper.fromJsonString(s, Map.class);
 			System.out.println(res);
 			FileOutputStream fs = new FileOutputStream("token.ser"); 
@@ -34,6 +36,7 @@ public class AccessTokenTest {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 

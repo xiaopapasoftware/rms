@@ -8,16 +8,27 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 public class HttpRequestUtil {
-	public static final String GET_URL = "http://www.jiucool.com/request.php?key=j0r56u2";
+	public static final String GET_URL = "http://115.28.141.204:8090/openapi/v1";
 
-	public static final String POST_URL = "http://115.28.141.204:8090/openapi/v1/access_token";
+	public static final String POST_URL = "http://115.28.141.204:8090/openapi/v1";
+	
+	private static Logger logger = Logger.getLogger(HttpRequestUtil.class);
 
-	public static void readContentFromGet() throws IOException {
+	public static String readContentFromGet(String url, String method,  Map<String, Object> paramsMap) throws IOException {
+		logger.debug("=============" + method);
+		logger.debug("Get params:" + paramsMap);
 		// 拼凑get请求的URL字串，使用URLEncoder.encode对特殊和不可见字符进行编码
-		String getURL = GET_URL + "&activatecode=" + URLEncoder.encode("aaa", "utf-8");
-		URL getUrl = new URL(getURL);
+		//String getURL = GET_URL + "&activatecode=" + URLEncoder.encode("aaa", "utf-8");
+		String fullUrl = url + "/" + method + "/" + "?random="+Math.random();
+		for (String key : paramsMap.keySet()) {
+			  fullUrl = fullUrl + "&" + key + "=" + paramsMap.get(key);
+		}
+		URL getUrl = new URL(fullUrl);
 		// 根据拼凑的URL，打开连接，URL.openConnection函数会根据URL的类型，
 		// 返回不同的URLConnection子类的对象，这里URL是一个http，因此实际返回的是HttpURLConnection
 		HttpURLConnection connection = (HttpURLConnection) getUrl.openConnection();
@@ -26,25 +37,24 @@ public class HttpRequestUtil {
 		connection.connect();
 		// 取得输入流，并使用Reader读取
 		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));// 设置编码,否则中文乱码
-		System.out.println("=============================");
-		System.out.println("Contents of get request");
-		System.out.println("=============================");
+		
 		String lines;
-		while ((lines = reader.readLine()) != null) {
-			// lines = new String(lines.getBytes(), "utf-8");
-			System.out.println(lines);
+		if ((lines = reader.readLine()) != null) {
+			logger.debug("Get response:" + lines);
 		}
 		reader.close();
 		// 断开连接
 		connection.disconnect();
-		System.out.println("=============================");
-		System.out.println("Contents of get request ends");
-		System.out.println("=============================");
+		
+		return lines;
 	}
 
-	public static String readContentFromPost(String url, String content) throws IOException {
+	public static String readContentFromPost(String url, String method, String content) throws IOException {
+		logger.debug("==============" + method);
+		logger.debug("Post params:" + content);
 		// Post请求的url，与get不同的是不需要带参数
-		URL postUrl = new URL(url);
+		
+		URL postUrl = new URL(url + "/" + method + "/");
 		// 打开连接
 		HttpURLConnection connection = (HttpURLConnection) postUrl.openConnection();		
 		// connection
@@ -75,30 +85,22 @@ public class HttpRequestUtil {
 		// The URL-encoded contend
 		// 正文，正文内容其实跟get的URL中'?'后的参数字符串一致
 		//String content = "{\"client_id\": \"4641dc274ed14ff9184755d9\",\"client_secret\": \"698d57e3c491c4f1c7176481eff94793\"}";
-		System.out.println(content);
+
 		// DataOutputStream.writeBytes将字符串中的16位的unicode字符以8位的字符形式写道流里面
 		out.writeBytes(content);
 		out.flush();
 		out.close(); // flush and close
 		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));// 设置编码,否则中文乱码
 		String line = "";
-		System.out.println("=============================");
-		System.out.println("Contents of post request");
-		System.out.println("=============================");
+
 		if ((line = reader.readLine()) != null) {
-			// line = new String(line.getBytes(), "utf-8");
-			System.out.println(line);
+			logger.debug("Post response:" + line);
 		}
-		System.out.println("=============================");
-		System.out.println("Contents of post request ends");
-		System.out.println("=============================");
+		
 		reader.close();
 		connection.disconnect();
 		return line;
 	}
 	
-	  public static void main(String[] args) throws IOException {
-		  String res = HttpRequestUtil.readContentFromPost(HttpRequestUtil.POST_URL,"{\"client_id\": \"4641dc274ed14ff9184755d9\",\"client_secret\": \"698d57e3c491c4f1c7176481eff94793\"}");
-		  System.out.println(res);
-	  }
+	
 }
