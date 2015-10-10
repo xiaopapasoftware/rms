@@ -209,7 +209,7 @@
 		<!-- SPRING end -->
 		
 		<!-- AOP begin -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
 			<version>1.7.4</version>
@@ -223,7 +223,7 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>3.1</version>
-		</dependency>
+		</dependency>-->
 		<!-- AOP end -->
 		
 		<!-- PERSISTENCE begin -->
@@ -390,7 +390,7 @@
 			<artifactId>activiti-spring</artifactId>
 			<version>${activiti.version}</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-explorer</artifactId>
 			<version>${activiti.version}</version>
@@ -408,7 +408,7 @@
 					<groupId>org.activiti</groupId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.activiti</groupId>
 			<artifactId>activiti-modeler</artifactId>
@@ -579,7 +579,7 @@
 		</dependency>
 		
 		<!-- 条形码、二维码生成  -->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
 			<version>2.2</version>
@@ -588,14 +588,14 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 			<version>2.2</version>
-		</dependency>
+		</dependency>-->
 		
 		<!-- 中文分词 -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.wltea</groupId>
 			<artifactId>analyzer</artifactId>
 			<version>2012_u6</version>
-		</dependency>
+		</dependency>-->
 		<!-- GENERAL UTILS end -->
 		
 		<!-- CKFinder begin -->
@@ -806,7 +806,8 @@
 					<packagingExcludes>
 						<!-- WEB-INF/classes/com/thinkgem/jeesite/** -->
 						WEB-INF/classes/org/apache/ibatis/**,
-						WEB-INF/classes/org/mybatis/spring/**
+						WEB-INF/classes/org/mybatis/spring/**,
+						WEB-INF/classes/act/**
 					</packagingExcludes>
 					<warSourceExcludes>
 						static/bootstrap/2.3.1/docs/**,
@@ -824,7 +825,8 @@
 						static/SuperSlide/demo/**,
 						static/treeTable/demo/**<!-- , -->
 						<!-- userfiles/** --><!-- ,/**/*.jsp -->,
-						test/**
+						test/**,
+						act/**
 					</warSourceExcludes>
 					<webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory><!-- 
 					<webXml>${project.basedir}/target/jspweb.xml</webXml> -->
@@ -926,18 +928,18 @@
 			</plugin>
 			
 			<!-- ant插件 -->
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<version>1.7</version>
-			</plugin>
+			</plugin>-->
 			
 			<!-- dependency插件 -->
-			<plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.5.1</version>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 	
