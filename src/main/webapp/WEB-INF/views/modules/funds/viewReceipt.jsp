@@ -23,6 +23,7 @@
 			<tr>
 				<th>账务交易对象</th>
 				<th>账务交易类型</th>
+				<th>款项类型</th>
 				<th>账务交易方式</th>
 				<th>收据号码</th>
 				<th>收据日期</th>
@@ -38,6 +39,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(receipt.tradeType, 'trans_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(receipt.paymentType, 'payment_type', '')}
 				</td>
 				<td>
 					${fns:getDictLabel(receipt.tradeMode, 'trans_mode', '')}
