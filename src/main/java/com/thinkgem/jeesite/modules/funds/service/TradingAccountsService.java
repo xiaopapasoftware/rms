@@ -118,7 +118,29 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setUpdateDate(new Date());
 	tradingAccounts.setUpdateBy(UserUtils.getUser());
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
-	tradingAccountsDao.update(tradingAccounts);
+	tradingAccountsDao.update(tradingAccounts);		
+	
+	/*审核拒绝:退回已到账的款项、删除收据*/
+	if("2".equals(auditHis.getAuditStatus())) {//拒绝
+		PaymentTrade paymentTrade = new PaymentTrade();
+		paymentTrade.setTradeId(tradingAccounts.getId());
+		List<PaymentTrade> listPaymentTrade = this.paymentTradeDao.findList(paymentTrade);
+		for(PaymentTrade tmpPaymentTrade : listPaymentTrade) {
+			PaymentTrans paymentTrans = new PaymentTrans();
+			paymentTrans.setId(tmpPaymentTrade.getTransId());
+			paymentTrans = this.paymentTransDao.get(paymentTrans);
+			paymentTrans.setTransAmount(0D);
+			paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
+			paymentTrans.setTransStatus("0");//未到账登记
+			paymentTrans.setUpdateDate(new Date());
+			paymentTrans.setUpdateBy(UserUtils.getUser());
+			paymentTransDao.update(paymentTrans);
+		}
+		
+		Receipt receipt = new Receipt();
+		receipt.setTradingAccounts(tradingAccounts);
+		this.receiptDao.delete(receipt);
+	}
 
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
