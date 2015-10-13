@@ -1303,12 +1303,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	expiredC.setTime(expiredDate);
 
 	if (stratC.get(Calendar.MONTH) == 1 || expiredC.get(Calendar.MONTH) == 1) {// 含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.06)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.08)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}
 	if (stratC.get(Calendar.MONTH) != 1 && expiredC.get(Calendar.MONTH) != 1) {// 都不含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.06)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.08)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}
