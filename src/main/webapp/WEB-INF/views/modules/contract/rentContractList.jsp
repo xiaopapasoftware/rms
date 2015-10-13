@@ -229,7 +229,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:3000px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:3020px;">
 		<thead>
 			<tr>
 				<th>原出租合同名称</th>
@@ -248,9 +248,9 @@
 				<th style="width:80px;">合同过期时间</th>
 				<th style="width:80px;">合同签订时间</th>
 				<th style="width:80px;">续租提醒时间</th>
-				<th style="width:150px;">合同审核状态</th>
+				<th style="width:170px;">合同审核状态</th>
 				<th style="width:180px;">合同业务状态</th>
-				<th style="width:20px;">销售姓名</th>
+				<th style="width:70px;">销售姓名</th>
 				<th style="width:20px;">合作人姓名</th>
 				<th style="width:130px;">创建时间</th>
 				<th style="width:130px;">修改时间</th>
