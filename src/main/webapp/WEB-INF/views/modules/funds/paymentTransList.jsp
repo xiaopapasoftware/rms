@@ -114,7 +114,7 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}" type="${messageType}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="white-space:nowrap;">
 		<thead>
 			<tr>
 				<th width="15"><input type="checkbox" onclick="chooseAllTransId(this)" title="全选"/></th>

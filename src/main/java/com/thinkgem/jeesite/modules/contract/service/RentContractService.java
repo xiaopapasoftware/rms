@@ -898,7 +898,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setTradeDirection("1");// 收款
 		paymentTrans.setTradeAmount(rentContract.getRental());
 		paymentTrans.setStartDate(startD);
-		paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+		if(i != (intergeredMonthCounts-1))
+			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+		else 
+			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 		if (depositTransContractFlag) {// 定金转合同
 		    if (depositAgreementAmount >= rentContract.getRental()) {
 			paymentTrans.setLastAmount(0D);
@@ -1093,7 +1096,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			if(i != (intergeredMonthCounts-1))
+				paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			else 
+				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 			paymentTrans.setTradeAmount(rentContract.getWaterFee());
 			paymentTrans.setLastAmount(rentContract.getWaterFee());
 			paymentTrans.setTransAmount(0D);
