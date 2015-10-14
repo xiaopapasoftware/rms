@@ -898,7 +898,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setTradeDirection("1");// 收款
 		paymentTrans.setTradeAmount(rentContract.getRental());
 		paymentTrans.setStartDate(startD);
-		paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+		if(i != (intergeredMonthCounts-1))
+			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+		else 
+			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 		if (depositTransContractFlag) {// 定金转合同
 		    if (depositAgreementAmount >= rentContract.getRental()) {
 			paymentTrans.setLastAmount(0D);
@@ -928,48 +931,48 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		if (paymentTrans.getTradeAmount() > 0) {
 		    paymentTransDao.insert(paymentTrans);
 
-		    if ("2".equals(paymentTrans.getTransStatus())) {
-			// 生成账务交易
-			TradingAccounts tradingAccounts = new TradingAccounts();
-			tradingAccounts.setId(IdGen.uuid());
-			tradingAccounts.setTradeId(transObjId);
-			tradingAccounts.setTradeType("3");// 新签合同
-			tradingAccounts.setTradeDirection("1");// 入账
-			tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
-
-			List<Tenant> tenants = rentContract.getTenantList();
-			if (CollectionUtils.isNotEmpty(tenants)) {
-			    String tenantId = tenants.get(0).getId();
-			    Tenant tenant = tenantDao.get(tenantId);
-			    tradingAccounts.setPayeeName(tenant.getTenantName());
-			    String tenantType = tenant.getTenantType();// 租客类型
-			    if ("0".equals(tenantType)) {// 个人租客
-				tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-			    }
-			    if ("1".equals(tenantType)) {// 企业租客
-				tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
-			    }
-			}
-
-			tradingAccounts.setTradeStatus("0");// 待审核
-			tradingAccounts.setCreateDate(new Date());
-			tradingAccounts.setCreateBy(UserUtils.getUser());
-			tradingAccounts.setUpdateDate(new Date());
-			tradingAccounts.setUpdateBy(UserUtils.getUser());
-			tradingAccounts.setDelFlag("0");
-			tradingAccountsDao.insert(tradingAccounts);
-
-			PaymentTrade paymentTrade = new PaymentTrade();
-			paymentTrade.setTradeId(tradingAccounts.getId());
-			paymentTrade.setTransId(paymentTrans.getId());
-			paymentTrade.setId(IdGen.uuid());
-			paymentTrade.setCreateDate(new Date());
-			paymentTrade.setCreateBy(UserUtils.getUser());
-			paymentTrade.setUpdateDate(new Date());
-			paymentTrade.setUpdateBy(UserUtils.getUser());
-			paymentTrade.setDelFlag("0");
-			paymentTradeDao.insert(paymentTrade);
-		    }
+//		    if ("2".equals(paymentTrans.getTransStatus())) {
+//			// 生成账务交易
+//			TradingAccounts tradingAccounts = new TradingAccounts();
+//			tradingAccounts.setId(IdGen.uuid());
+//			tradingAccounts.setTradeId(transObjId);
+//			tradingAccounts.setTradeType("3");// 新签合同
+//			tradingAccounts.setTradeDirection("1");// 入账
+//			tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
+//
+//			List<Tenant> tenants = rentContract.getTenantList();
+//			if (CollectionUtils.isNotEmpty(tenants)) {
+//			    String tenantId = tenants.get(0).getId();
+//			    Tenant tenant = tenantDao.get(tenantId);
+//			    tradingAccounts.setPayeeName(tenant.getTenantName());
+//			    String tenantType = tenant.getTenantType();// 租客类型
+//			    if ("0".equals(tenantType)) {// 个人租客
+//				tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+//			    }
+//			    if ("1".equals(tenantType)) {// 企业租客
+//				tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+//			    }
+//			}
+//
+//			tradingAccounts.setTradeStatus("0");// 待审核
+//			tradingAccounts.setCreateDate(new Date());
+//			tradingAccounts.setCreateBy(UserUtils.getUser());
+//			tradingAccounts.setUpdateDate(new Date());
+//			tradingAccounts.setUpdateBy(UserUtils.getUser());
+//			tradingAccounts.setDelFlag("0");
+//			tradingAccountsDao.insert(tradingAccounts);
+//
+//			PaymentTrade paymentTrade = new PaymentTrade();
+//			paymentTrade.setTradeId(tradingAccounts.getId());
+//			paymentTrade.setTransId(paymentTrans.getId());
+//			paymentTrade.setId(IdGen.uuid());
+//			paymentTrade.setCreateDate(new Date());
+//			paymentTrade.setCreateBy(UserUtils.getUser());
+//			paymentTrade.setUpdateDate(new Date());
+//			paymentTrade.setUpdateBy(UserUtils.getUser());
+//			paymentTrade.setDelFlag("0");
+//			paymentTradeDao.insert(paymentTrade);
+//		    }
 		}
 		startD = DateUtils.dateAddMonth(startD, 1);
 	    }
@@ -1025,48 +1028,48 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    if (paymentTrans.getTradeAmount() > 0) {
 		paymentTransDao.insert(paymentTrans);
 
-		if ("2".equals(paymentTrans.getTransStatus())) {
-		    // 生成账务交易
-		    TradingAccounts tradingAccounts = new TradingAccounts();
-		    tradingAccounts.setId(IdGen.uuid());
-		    tradingAccounts.setTradeId(transObjId);
-		    tradingAccounts.setTradeType("3");// 新签合同
-		    tradingAccounts.setTradeDirection("1");// 入账
-		    tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
-
-		    List<Tenant> tenants = rentContract.getTenantList();
-		    if (CollectionUtils.isNotEmpty(tenants)) {
-			String tenantId = tenants.get(0).getId();
-			Tenant tenant = tenantDao.get(tenantId);
-			tradingAccounts.setPayeeName(tenant.getTenantName());
-			String tenantType = tenant.getTenantType();// 租客类型
-			if ("0".equals(tenantType)) {// 个人租客
-			    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-			}
-			if ("1".equals(tenantType)) {// 企业租客
-			    tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
-			}
-		    }
-
-		    tradingAccounts.setTradeStatus("0");// 待审核
-		    tradingAccounts.setCreateDate(new Date());
-		    tradingAccounts.setCreateBy(UserUtils.getUser());
-		    tradingAccounts.setUpdateDate(new Date());
-		    tradingAccounts.setUpdateBy(UserUtils.getUser());
-		    tradingAccounts.setDelFlag("0");
-		    tradingAccountsDao.insert(tradingAccounts);
-
-		    PaymentTrade paymentTrade = new PaymentTrade();
-		    paymentTrade.setTradeId(tradingAccounts.getId());
-		    paymentTrade.setTransId(paymentTrans.getId());
-		    paymentTrade.setId(IdGen.uuid());
-		    paymentTrade.setCreateDate(new Date());
-		    paymentTrade.setCreateBy(UserUtils.getUser());
-		    paymentTrade.setUpdateDate(new Date());
-		    paymentTrade.setUpdateBy(UserUtils.getUser());
-		    paymentTrade.setDelFlag("0");
-		    paymentTradeDao.insert(paymentTrade);
-		}
+//		if ("2".equals(paymentTrans.getTransStatus())) {
+//		    // 生成账务交易
+//		    TradingAccounts tradingAccounts = new TradingAccounts();
+//		    tradingAccounts.setId(IdGen.uuid());
+//		    tradingAccounts.setTradeId(transObjId);
+//		    tradingAccounts.setTradeType("3");// 新签合同
+//		    tradingAccounts.setTradeDirection("1");// 入账
+//		    tradingAccounts.setTradeAmount(paymentTrans.getTransAmount());
+//
+//		    List<Tenant> tenants = rentContract.getTenantList();
+//		    if (CollectionUtils.isNotEmpty(tenants)) {
+//			String tenantId = tenants.get(0).getId();
+//			Tenant tenant = tenantDao.get(tenantId);
+//			tradingAccounts.setPayeeName(tenant.getTenantName());
+//			String tenantType = tenant.getTenantType();// 租客类型
+//			if ("0".equals(tenantType)) {// 个人租客
+//			    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+//			}
+//			if ("1".equals(tenantType)) {// 企业租客
+//			    tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+//			}
+//		    }
+//
+//		    tradingAccounts.setTradeStatus("0");// 待审核
+//		    tradingAccounts.setCreateDate(new Date());
+//		    tradingAccounts.setCreateBy(UserUtils.getUser());
+//		    tradingAccounts.setUpdateDate(new Date());
+//		    tradingAccounts.setUpdateBy(UserUtils.getUser());
+//		    tradingAccounts.setDelFlag("0");
+//		    tradingAccountsDao.insert(tradingAccounts);
+//
+//		    PaymentTrade paymentTrade = new PaymentTrade();
+//		    paymentTrade.setTradeId(tradingAccounts.getId());
+//		    paymentTrade.setTransId(paymentTrans.getId());
+//		    paymentTrade.setId(IdGen.uuid());
+//		    paymentTrade.setCreateDate(new Date());
+//		    paymentTrade.setCreateBy(UserUtils.getUser());
+//		    paymentTrade.setUpdateDate(new Date());
+//		    paymentTrade.setUpdateBy(UserUtils.getUser());
+//		    paymentTrade.setDelFlag("0");
+//		    paymentTradeDao.insert(paymentTrade);
+//		}
 	    }
 	}
     }
@@ -1093,7 +1096,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			if(i != (intergeredMonthCounts-1))
+				paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			else 
+				paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 			paymentTrans.setTradeAmount(rentContract.getWaterFee());
 			paymentTrans.setLastAmount(rentContract.getWaterFee());
 			paymentTrans.setTransAmount(0D);
@@ -1297,12 +1303,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	expiredC.setTime(expiredDate);
 
 	if (stratC.get(Calendar.MONTH) == 1 || expiredC.get(Calendar.MONTH) == 1) {// 含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.06)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.08)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}
 	if (stratC.get(Calendar.MONTH) != 1 && expiredC.get(Calendar.MONTH) != 1) {// 都不含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.02)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.08)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}
