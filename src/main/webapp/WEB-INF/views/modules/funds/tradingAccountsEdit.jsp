@@ -64,6 +64,13 @@
 				$(obj).parent().parent().removeClass("error");
 			}
 		}
+		
+		function delData() {
+			if(confirm("确定要撤销到账?")) {
+				var id = $("#id").val();
+				window.location.href="${ctx}/funds/tradingAccounts/revoke?id="+id;
+			}
+		}
 	</script>
 </head>
 <body>
@@ -207,7 +214,10 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="funds:tradingAccounts:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
+			<shiro:hasPermission name="funds:tradingAccounts:edit">
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				<input id="delSubmit" onclick="delData()" class="btn btn-primary" type="button" value="撤 销"/>&nbsp;
+			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>

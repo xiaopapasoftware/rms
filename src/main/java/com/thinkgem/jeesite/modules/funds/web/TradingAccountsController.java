@@ -218,6 +218,12 @@ public class TradingAccountsController extends BaseController {
 	model.addAttribute("tradingAccounts", tradingAccounts);
 	return "modules/funds/tradingAccountsEdit";
     }
+    
+    @RequestMapping(value = "revoke")
+    public String revoke(String id) {
+    	tradingAccountsService.remoke(id);
+    	return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
+    }
 
     @RequestMapping(value = "findOne")
     public String findOne(TradingAccounts tradingAccounts, Model model) {

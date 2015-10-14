@@ -14,5 +14,5 @@ import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
  */
 @MyBatisDao
 public interface TradingAccountsDao extends CrudDao<TradingAccounts> {
-	
+	public void deleteById(TradingAccounts tradingAccounts);
 }
