@@ -474,25 +474,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	}
 
 	/* 更新房屋/房间状态 */
-	if ("0".equals(rentContract.getRentMode())) {// 整租
-	    if ("1".equals(breakDown)) {
-		House house = houseDao.get(rentContract.getHouse().getId());
-		house.setHouseStatus("6");// 已损坏
-		house.setCreateBy(UserUtils.getUser());
-		house.setUpdateDate(new Date());
-		houseDao.update(house);
-	    }
-	} else {// 单间
-	    Room room = roomDao.get(rentContract.getRoom().getId());
-	    if (null != room) {
-		if ("1".equals(breakDown)) {
-		    room.setRoomStatus("5");// 已损坏
-		    room.setCreateBy(UserUtils.getUser());
-		    room.setUpdateDate(new Date());
-		    roomDao.update(room);
-		}
-	    }
-	}
+	this.changeHouseOrRoomStatusByReturn(rentContract);
     }
 
     @Transactional(readOnly = false)
