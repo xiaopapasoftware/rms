@@ -136,6 +136,21 @@
 				$.jBox(html,{title:"转违约退款金额",submit:submit});
 			});
 		}
+		
+		function resetForm() {
+			$("#searchForm").find("select").each(function(index){
+				$(this).val("");
+				$(this).prev("div").find(".select2-chosen").html("全部");
+				
+				$(this).find("option").each(function(){
+					$(this).removeAttr("selected");
+				});
+			});
+			$("#searchForm").find("input").each(function(index){
+				if($(this).attr("type")=="text")
+					$(this).val("");
+			});
+		}
 	</script>
 </head>
 <body>
@@ -197,7 +212,10 @@
 					<form:options items="${fns:getDictList('deposit_agreement_busi_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li class="btns"><label style="width:60px;"></label><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li class="btns"><label style="width:60px;"></label>
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+			</li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
