@@ -345,7 +345,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
      */
     @Transactional(readOnly = false)
     public void returnCheck(RentContract rentContract, String tradeType) {
-	String breakDown = rentContract.getBreakDown();
 	String returnRemark = rentContract.getReturnRemark();
 	List<Accounting> accountList = rentContract.getAccountList();
 	List<Accounting> outAccountList = rentContract.getOutAccountList();
