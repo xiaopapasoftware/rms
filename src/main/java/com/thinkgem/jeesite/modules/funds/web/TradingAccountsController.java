@@ -253,6 +253,9 @@ public class TradingAccountsController extends BaseController {
 	List<String> receiptNoList = new ArrayList<String>();
 	if (null != tradingAccounts.getReceiptList()) {
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
+	    	if(StringUtils.isBlank(receipt.getReceiptNo())){
+	    		continue;
+	    	}
 		Receipt tmpReceipt = new Receipt();
 		tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 		tmpReceipt.setDelFlag("0");
