@@ -99,6 +99,10 @@
 				if($(this).attr("type")=="text")
 					$(this).val("");
 			});
+			
+			var html = '<option value="">全部</option>';
+			$("[id='building.id']").html(html);
+			$("[id='house.id']").html(html);
 		}
 	</script>
 </head>
