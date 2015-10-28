@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.HouseOwnerDao">
+    
+	<sql id="houseColumns">
+		a.id AS "id",
+		house_id AS "houseId",
+		owner_id AS "ownerId"
+	</sql>
+	
+	<select id="get" resultType="HouseOwner">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house_owner a
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="HouseOwner">
+		SELECT 
+			<include refid="houseColumns"/>
+		FROM t_house_owner a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="houseId != null and houseId != ''">
+				AND a.house_id = #{houseId}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_house_owner(
+			id,
+			house_id,
+			owner_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{houseId},
+			#{ownerId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="delete">
+		UPDATE t_house_owner SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE house_id = #{houseId}
+	</update>
+</mapper>

@@ -109,7 +109,6 @@ public class HouseController extends BaseController {
 	    currentValidHouseNum = currentValidHouseNum + 1;
 	    house.setHouseCode(currentValidHouseNum.toString());
 	}
-	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    PropertyProject pp = new PropertyProject();
 	    pp.setId(house.getPropertyProject().getId());
@@ -119,6 +118,19 @@ public class HouseController extends BaseController {
 	}
 	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
 	model.addAttribute("listOwner", ownerService.findList(new Owner()));
+		
+		List<Owner> ownerList = null; 
+		if(!house.getIsNewRecord()) {
+			if(null == house.getOwner()) {
+				ownerList = ownerService.findByHouse(house);
+			} else {
+				ownerList = new ArrayList<Owner>();
+				ownerList.add(ownerService.get(house.getOwner().getId()));
+			}
+			house.setOwnerList(ownerList);				
+		}
+		model.addAttribute("ownerList", ownerService.findList(new Owner()));
+		model.addAttribute("house", house);
 	return "modules/inventory/houseForm";
     }
 
@@ -127,7 +139,6 @@ public class HouseController extends BaseController {
 	Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
 	currentValidHouseNum = currentValidHouseNum + 1;
 	house.setHouseCode(currentValidHouseNum.toString());
-	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    List<Building> list = new ArrayList<Building>();
 	    list.add(buildingService.get(house.getBuilding()));
@@ -137,6 +148,19 @@ public class HouseController extends BaseController {
 	list.add(propertyProjectService.get(house.getPropertyProject()));
 	model.addAttribute("listPropertyProject", list);
 	model.addAttribute("listOwner", ownerService.findList(new Owner()));
+	
+	List<Owner> ownerList = null; 
+	if(!house.getIsNewRecord()) {
+		if(null == house.getOwner()) {
+			ownerList = ownerService.findByHouse(house);
+		} else {
+			ownerList = new ArrayList<Owner>();
+			ownerList.add(ownerService.get(house.getOwner().getId()));
+		}
+		house.setOwnerList(ownerList);				
+	}
+	model.addAttribute("ownerList", ownerService.findList(new Owner()));
+	model.addAttribute("house", house);
 	return "modules/inventory/houseAdd";
     }
 

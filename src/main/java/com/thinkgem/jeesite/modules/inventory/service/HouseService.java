@@ -19,8 +19,11 @@ import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
+import com.thinkgem.jeesite.modules.inventory.dao.HouseOwnerDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -38,7 +41,9 @@ public class HouseService extends CrudService<HouseDao, House> {
 
     @Autowired
     private AttachmentDao attachmentDao;
-
+    @Autowired
+    private HouseOwnerDao houseOwnerDao;
+    
     public House get(String id) {
 	return super.get(id);
     }
@@ -91,6 +96,23 @@ public class HouseService extends CrudService<HouseDao, House> {
 		attachmentDao.insert(toAddattachment);
 	    }
 	}
+		//房屋业主关系信息
+		HouseOwner houseOwner = new HouseOwner();
+		houseOwner.setHouseId(house.getId());
+		houseOwnerDao.delete(houseOwner);
+		
+		List<Owner> ownerList = house.getOwnerList();
+		for(Owner owner : ownerList) {
+			houseOwner = new HouseOwner();
+			houseOwner.setId(IdGen.uuid());
+			houseOwner.setOwnerId(owner.getId());
+			houseOwner.setHouseId(house.getId());
+			houseOwner.setCreateDate(new Date());
+			houseOwner.setCreateBy(UserUtils.getUser());
+			houseOwner.setUpdateDate(new Date());
+			houseOwner.setUpdateBy(UserUtils.getUser());
+			houseOwnerDao.insert(houseOwner);
+		}
     }
 
     @Transactional(readOnly = false)

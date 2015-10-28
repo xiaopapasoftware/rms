@@ -3,6 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
@@ -39,6 +42,8 @@ public class House extends DataEntity<House> {
     private String attachmentPath; // 房屋图片路径
 
     private String choose;
+    
+    private List<Owner> ownerList = new ArrayList<Owner>();
 
     public House() {
 	super();
@@ -66,7 +71,6 @@ public class House extends DataEntity<House> {
 	this.building = building;
     }
 
-    @NotNull(message = "业主不能为空")
     public Owner getOwner() {
 	return owner;
     }
@@ -197,5 +201,12 @@ public class House extends DataEntity<House> {
     public void setDecoraStrucWashroNum(Integer decoraStrucWashroNum) {
 	this.decoraStrucWashroNum = decoraStrucWashroNum;
     }
+    @NotNull(message = "业主不能为空")
+	public List<Owner> getOwnerList() {
+		return ownerList;
+	}
 
+	public void setOwnerList(List<Owner> ownerList) {
+		this.ownerList = ownerList;
+	}
 }
