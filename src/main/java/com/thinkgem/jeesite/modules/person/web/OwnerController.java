@@ -111,6 +111,7 @@ public class OwnerController extends BaseController {
 	    ownerService.save(owner);
 	    jsonObject.put("id", owner.getId());
 	    jsonObject.put("name", owner.getName());
+	    jsonObject.put("cellPhone", owner.getCellPhone());
 	}
 
 	return jsonObject.toString();

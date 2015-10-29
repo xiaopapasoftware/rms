@@ -12,6 +12,7 @@
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
 					$.ajaxSetup({ cache: false });
+					
 					$.get("${ctx}/person/owner/ajaxSave", saveData, function(data){
 						var json = eval("("+data+")");
 						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
@@ -19,23 +20,20 @@
 							top.$.jBox.tip('保存成功!','success');
 							var iframe;
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
-								iframe = $(window.parent.document).find(".curholder").find("iframe")[0].contentWindow.$("[id='owner.id']");
+								iframe = $(window.parent.document).find(".curholder").find("iframe")[0].contentWindow;
 							} else {
-								iframe = $(window.parent.document).find("[id='jbox-iframe']").contents().find("[id='owner.id']");
+								iframe = $(window.parent.document).find("[id='jbox-iframe']").contents();
 							}
-							iframe.find("option").each(function(){
-								if($(this).attr("selected")=="selected") {
-									$(this).removeAttr("selected");
-									return false;
-								}
-							});
-							var text = iframe.html();
-							text = "<option value='"+json.id+"' selected='selected'>"+json.name+"</option>"+text;
-							iframe.html(text);
-							iframe.val(json.id);
-							iframe.prev("[id='s2id_owner.id']").find(".select2-chosen").html(json.name);
-							//top.$.jBox.close();
-							window.parent.window.jBox.close();
+							var text = iframe.find("[id='ownerList']").html();
+							text = "<option value='"+json.id+"'>"+json.cellPhone+"-"+json.name+"</option>"+text;
+							iframe.find("[id='ownerList']").html(text);
+							
+							iframe.find("[id='ownerList']").val(json.id);
+							iframe.find("[id='ownerList']").trigger("change");
+							console.log(iframe.find("[id='ownerList']").val());
+							console.log(iframe.find("[id='ownerList']").html());
+							
+							top.$.jBox.close();
 						}
 					});
 				},
