@@ -8,7 +8,7 @@ drop table if exists T_ROOM;
 drop table if exists T_DEVICES;
 drop table if exists t_room_devices;
 drop table if exists T_DEVICES_HIS;
-
+drop table if exists T_HOUSE_OWNER;
 
 /* Create Tables */
 create table T_NEIGHBORHOOD

@@ -128,14 +128,14 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">原始建筑面积（平方米）：</label>
+			<label class="control-label">原始面积：</label>
 			<div class="controls">
 				<form:input path="houseSpace" htmlEscape="false" class="input-xlarge required number"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">原始房屋结构：</label>
+			<label class="control-label">原始结构：</label>
 			<div class="controls">
 				<form:input path="oriStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge required digits"/>
 				<span class="help-inline"><font color="red">房 </font></span>
@@ -146,13 +146,13 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">装修建筑面积（平方米）：</label>
+			<label class="control-label">装修面积：</label>
 			<div class="controls">
 				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">装修房屋结构：</label>
+			<label class="control-label">装修结构：</label>
 			<div class="controls">
 				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
 				<span class="help-inline">房</span>
