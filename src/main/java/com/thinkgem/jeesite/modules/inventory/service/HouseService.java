@@ -41,9 +41,10 @@ public class HouseService extends CrudService<HouseDao, House> {
 
     @Autowired
     private AttachmentDao attachmentDao;
+
     @Autowired
     private HouseOwnerDao houseOwnerDao;
-    
+
     public House get(String id) {
 	return super.get(id);
     }
@@ -96,23 +97,23 @@ public class HouseService extends CrudService<HouseDao, House> {
 		attachmentDao.insert(toAddattachment);
 	    }
 	}
-		//房屋业主关系信息
-		HouseOwner houseOwner = new HouseOwner();
-		houseOwner.setHouseId(house.getId());
-		houseOwnerDao.delete(houseOwner);
-		
-		List<Owner> ownerList = house.getOwnerList();
-		for(Owner owner : ownerList) {
-			houseOwner = new HouseOwner();
-			houseOwner.setId(IdGen.uuid());
-			houseOwner.setOwnerId(owner.getId());
-			houseOwner.setHouseId(house.getId());
-			houseOwner.setCreateDate(new Date());
-			houseOwner.setCreateBy(UserUtils.getUser());
-			houseOwner.setUpdateDate(new Date());
-			houseOwner.setUpdateBy(UserUtils.getUser());
-			houseOwnerDao.insert(houseOwner);
-		}
+	// 房屋业主关系信息
+	HouseOwner houseOwner = new HouseOwner();
+	houseOwner.setHouseId(house.getId());
+	houseOwnerDao.delete(houseOwner);
+
+	List<Owner> ownerList = house.getOwnerList();
+	for (Owner owner : ownerList) {
+	    houseOwner = new HouseOwner();
+	    houseOwner.setId(IdGen.uuid());
+	    houseOwner.setOwnerId(owner.getId());
+	    houseOwner.setHouseId(house.getId());
+	    houseOwner.setCreateDate(new Date());
+	    houseOwner.setCreateBy(UserUtils.getUser());
+	    houseOwner.setUpdateDate(new Date());
+	    houseOwner.setUpdateBy(UserUtils.getUser());
+	    houseOwnerDao.insert(houseOwner);
+	}
     }
 
     @Transactional(readOnly = false)
