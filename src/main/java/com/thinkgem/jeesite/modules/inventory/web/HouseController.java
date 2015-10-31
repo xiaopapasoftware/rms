@@ -145,11 +145,10 @@ public class HouseController extends BaseController {
 	    model.addAttribute("listBuilding", buildingService.findList(bd));
 	}
 	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-	model.addAttribute("listOwner", ownerService.findList(new Owner()));
 
 	List<Owner> ownerList = null;
-	if (!house.getIsNewRecord()) {
-	    if (null == house.getOwner()) {
+	if (!house.getIsNewRecord()) {// 修改房屋信息
+	    if (null == house.getOwner() || StringUtils.isEmpty(house.getOwner().getId())) {
 		ownerList = ownerService.findByHouse(house);
 	    } else {
 		ownerList = new ArrayList<Owner>();
@@ -228,7 +227,7 @@ public class HouseController extends BaseController {
 		Building bd = new Building();
 		bd.setPropertyProject(pp);
 		model.addAttribute("listBuilding", buildingService.findList(bd));
-		model.addAttribute("listOwner", ownerService.findList(new Owner()));
+		model.addAttribute("ownerList", ownerService.findList(new Owner()));
 		return "modules/inventory/houseForm";
 	    } else {
 		house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));

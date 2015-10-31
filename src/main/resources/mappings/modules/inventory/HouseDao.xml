@@ -8,8 +8,6 @@
 		pp.project_name AS "propertyProject.projectName",
 		a.building_id AS "building.id",
 		tb.building_name AS "building.buildingName",
-		<!-- a.owner_id AS "owner.id", 
-		towner.name AS "owner.name",-->
 		a.house_code AS "houseCode",
 		a.house_no AS "houseNo",
 		a.certificate_no AS "certificateNo",
@@ -39,16 +37,19 @@
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
-		<!-- LEFT JOIN t_owner towner on towner.id = a.owner_id-->
 		left JOIN t_attachment atta on atta.house_id = a.id
-		join t_house_owner tho on tho.house_id = a.id
+		<if test="owner != null and owner.id != null and owner.id != ''">
+	  	 	 join t_house_owner tho on tho.house_id = a.id AND tho.owner_id = #{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
+    	</if>
 	</sql>
     
 	<select id="get" resultType="House">
-		SELECT 
-			<include refid="houseColumns"/>
-		FROM t_house a
-		<include refid="houseJoins"/>
+		SELECT <include refid="houseColumns"/>
+		FROM t_house a LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
+		LEFT JOIN t_building tb on tb.id = a.building_id
+		left JOIN t_attachment atta on atta.house_id = a.id
 		WHERE a.id = #{id}
 	</select>
 	
@@ -64,9 +65,6 @@
 			</if>
 			<if test="building != null and building.id != null and building.id != ''">
 				AND a.building_id = #{building.id}
-			</if>
-			<if test="owner != null and owner.id != null and owner.id != ''">
-				AND tho.owner_id = #{owner.id}
 			</if>
 			<if test="houseNo != null and houseNo != ''">
 				AND a.house_no LIKE 
@@ -152,7 +150,6 @@
 			id,
 			property_project_id,
 			building_id,
-			owner_id,
 			house_code,
 			house_no,
 			certificate_no,
@@ -176,7 +173,6 @@
 			#{id},
 			#{propertyProject.id},
 			#{building.id},
-			#{owner.id},
 			#{houseCode},
 			#{houseNo},
 			#{certificateNo},
