@@ -22,16 +22,13 @@
 							if(undefined == $(window.parent.document).find(".tab_content").html()) {
 								iframe = $(window.parent.document).find(".curholder").find("iframe")[0].contentWindow;
 							} else {
-								iframe = $(window.parent.document).find("[id='jbox-iframe']").contents();
+								iframe = $(window.parent.document).find("[id='jbox-iframe']")[0].contentWindow;
 							}
-							var text = iframe.find("[id='ownerList']").html();
+							var text = iframe.$("[id='ownerList']").html();
 							text = "<option value='"+json.id+"'>"+json.cellPhone+"-"+json.name+"</option>"+text;
-							iframe.find("[id='ownerList']").html(text);
+							iframe.$("[id='ownerList']").html(text);
 							
-							iframe.find("[id='ownerList']").val(json.id);
-							iframe.find("[id='ownerList']").trigger("change");
-							console.log(iframe.find("[id='ownerList']").val());
-							console.log(iframe.find("[id='ownerList']").html());
+							iframe.$("[id='ownerList']").val(json.id).trigger("change");
 							
 							top.$.jBox.close();
 						}
