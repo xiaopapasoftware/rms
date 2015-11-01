@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.funds.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,38 +97,38 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     public Page<TradingAccounts> findPage(Page<TradingAccounts> page, TradingAccounts tradingAccounts) {
 	return super.findPage(page, tradingAccounts);
     }
-    
+
     @Transactional(readOnly = false)
     public void remoke(String id) {
-    	TradingAccounts tradingAccounts = tradingAccountsDao.get(id);
-    	/*退回已到账的款项、删除收据*/
-		PaymentTrade paymentTrade = new PaymentTrade();
-		paymentTrade.setTradeId(tradingAccounts.getId());
-		List<PaymentTrade> listPaymentTrade = this.paymentTradeDao.findList(paymentTrade);
-		for(PaymentTrade tmpPaymentTrade : listPaymentTrade) {
-			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.setId(tmpPaymentTrade.getTransId());
-			paymentTrans = this.paymentTransDao.get(paymentTrans);
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
-			paymentTrans.setTransStatus("0");//未到账登记
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTransDao.update(paymentTrans);
-		}
-		
-		Receipt receipt = new Receipt();
-		receipt.setTradingAccounts(tradingAccounts);
-		this.receiptDao.delete(receipt);
-		
-		tradingAccountsDao.deleteById(tradingAccounts);
+	TradingAccounts tradingAccounts = tradingAccountsDao.get(id);
+	/* 退回已到账的款项、删除收据 */
+	PaymentTrade paymentTrade = new PaymentTrade();
+	paymentTrade.setTradeId(tradingAccounts.getId());
+	List<PaymentTrade> listPaymentTrade = this.paymentTradeDao.findList(paymentTrade);
+	for (PaymentTrade tmpPaymentTrade : listPaymentTrade) {
+	    PaymentTrans paymentTrans = new PaymentTrans();
+	    paymentTrans.setId(tmpPaymentTrade.getTransId());
+	    paymentTrans = this.paymentTransDao.get(paymentTrans);
+	    paymentTrans.setTransAmount(0D);
+	    paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
+	    paymentTrans.setTransStatus("0");// 未到账登记
+	    paymentTrans.setUpdateDate(new Date());
+	    paymentTrans.setUpdateBy(UserUtils.getUser());
+	    paymentTransDao.update(paymentTrans);
+	}
+
+	Receipt receipt = new Receipt();
+	receipt.setTradingAccounts(tradingAccounts);
+	this.receiptDao.delete(receipt);
+
+	tradingAccountsDao.deleteById(tradingAccounts);
     }
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
 	AuditHis saveAuditHis = new AuditHis();
 	saveAuditHis.setId(IdGen.uuid());
-	saveAuditHis.setObjectType("2");// 账务
+	saveAuditHis.setObjectType("4");// 账务
 	saveAuditHis.setObjectId(auditHis.getObjectId());
 	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
 	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
@@ -144,8 +145,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setUpdateDate(new Date());
 	tradingAccounts.setUpdateBy(UserUtils.getUser());
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
-	tradingAccountsDao.update(tradingAccounts);		
-	
+	tradingAccountsDao.update(tradingAccounts);
+
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
@@ -433,6 +434,23 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	}
 	BigDecimal totalAmount = BigDecimal.ZERO;// 合同已经被审核通过的总已到账款项
 	List<TradingAccounts> tradingAccounts = tradingAccountsDao.findList(ta);
+	if (tradingAccounts == null) {
+	    tradingAccounts = new ArrayList<TradingAccounts>();
+	}
+	if ("0".equals(rentContract.getSignType())) {// 新签还需要考虑一种情况就是：这笔合同如果由定金协议转的，则还需要加上定金的金额
+	    if (StringUtils.isNotEmpty(rentContract.getAgreementId())) {
+		TradingAccounts ta2 = new TradingAccounts();
+		ta2.setTradeId(rentContract.getAgreementId());
+		ta2.setTradeStatus("1");// 账务交易审核通过
+		ta2.setTradeType("1");// 账务交易类型为“预约定金”
+		List<TradingAccounts> tradingAccounts2 = tradingAccountsDao.findList(ta2);
+		if (tradingAccounts2 == null) {
+		    tradingAccounts2 = new ArrayList<TradingAccounts>();
+		}
+		tradingAccounts.addAll(tradingAccounts2);
+	    }
+	}
+
 	if (CollectionUtils.isNotEmpty(tradingAccounts)) {
 	    for (TradingAccounts tempTA : tradingAccounts) {
 		if ("1".equals(tempTA.getTradeDirection())) {// 入账
@@ -442,6 +460,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		}
 	    }
 	}
+
 	// 计算合同至少需到账金额
 	BigDecimal needBeAmount = BigDecimal.ZERO;
 	// 新签,至少需要到账金额满足水电押金+房租押金+1个月房租

@@ -329,40 +329,40 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    audit.setUpdateBy(UserUtils.getUser());
 	    audit.setDelFlag("0");
 	    auditDao.insert(audit);
+	}
 
-	    /* 更新房屋/房间状态 */
-	    if ("0".equals(depositAgreement.getRentMode())) {// 整租
-		House house = houseDao.get(depositAgreement.getHouse().getId());
-		house.setHouseStatus("2");// 已预定
-		house.setCreateBy(UserUtils.getUser());
-		house.setUpdateDate(new Date());
-		houseDao.update(house);
-	    } else {// 单间
-		if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
-		    Room room = roomDao.get(depositAgreement.getRoom().getId());
-		    room.setRoomStatus("2");// 已预定
-		    room.setCreateBy(UserUtils.getUser());
-		    room.setUpdateDate(new Date());
-		    roomDao.update(room);
-		    // 同时更新该房间所属房屋的状态
-		    House h = houseDao.get(room.getHouse().getId());
-		    if ("1".equals(h.getHouseStatus())) {// 待出租可预订
-			Room queryRoom = new Room();
-			queryRoom.setHouse(h);
-			List<Room> roomsOfHouse = roomDao.findList(queryRoom);
-			if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-			    int depositCount = 0;// 预定或出租的数量
-			    for (Room depositedRoom : roomsOfHouse) {
-				if ("2".equals(depositedRoom.getRoomStatus()) || "3".equals(depositedRoom.getRoomStatus())) {// 房间已预定
-				    depositCount = depositCount + 1;
-				}
+	/* 更新房屋/房间状态 */
+	if ("0".equals(depositAgreement.getRentMode())) {// 整租
+	    House house = houseDao.get(depositAgreement.getHouse().getId());
+	    house.setHouseStatus("2");// 已预定
+	    house.setCreateBy(UserUtils.getUser());
+	    house.setUpdateDate(new Date());
+	    houseDao.update(house);
+	} else {// 单间
+	    if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
+		Room room = roomDao.get(depositAgreement.getRoom().getId());
+		room.setRoomStatus("2");// 已预定
+		room.setCreateBy(UserUtils.getUser());
+		room.setUpdateDate(new Date());
+		roomDao.update(room);
+		// 同时更新该房间所属房屋的状态
+		House h = houseDao.get(room.getHouse().getId());
+		if ("1".equals(h.getHouseStatus())) {// 待出租可预订
+		    Room queryRoom = new Room();
+		    queryRoom.setHouse(h);
+		    List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+		    if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+			int depositCount = 0;// 预定或出租的数量
+			for (Room depositedRoom : roomsOfHouse) {
+			    if ("2".equals(depositedRoom.getRoomStatus()) || "3".equals(depositedRoom.getRoomStatus())) {// 房间已预定
+				depositCount = depositCount + 1;
 			    }
-			    if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
-				h.setHouseStatus("2");// 已预定
-				h.setCreateBy(UserUtils.getUser());
-				h.setUpdateDate(new Date());
-				houseDao.update(h);
-			    }
+			}
+			if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
+			    h.setHouseStatus("2");// 已预定
+			    h.setCreateBy(UserUtils.getUser());
+			    h.setUpdateDate(new Date());
+			    houseDao.update(h);
 			}
 		    }
 		}
