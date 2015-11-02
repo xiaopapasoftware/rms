@@ -605,6 +605,51 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    // 生成合同期内所有的费用款项
 	    genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff);
 
+	    /* 更新房屋/房间状态 */
+	    if ("0".equals(rentContract.getRentMode())) {// 整租
+		House house = houseDao.get(rentContract.getHouse().getId());
+		if (house != null) {
+		    house.setHouseStatus("4");// 完全出租
+		    house.setUpdateBy(UserUtils.getUser());
+		    house.setUpdateDate(new Date());
+		    houseDao.update(house);
+		}
+	    } else {// 单间
+		Room room = roomDao.get(rentContract.getRoom().getId());
+		if (null != room) {
+		    room.setRoomStatus("3");// 已出租
+		    room.setUpdateBy(UserUtils.getUser());
+		    room.setUpdateDate(new Date());
+		    roomDao.update(room);
+		}
+
+		// 同时更新该房间所属房屋的状态
+		if (room != null && room.getHouse() != null) {
+		    House h = houseDao.get(room.getHouse().getId());
+		    Room queryRoom = new Room();
+		    queryRoom.setHouse(h);
+		    List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+		    if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+			int rentedRoomCount = 0;
+			for (Room rentedRoom : roomsOfHouse) {
+			    if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
+				rentedRoomCount = rentedRoomCount + 1;
+			    }
+			}
+			String updatedHouseSts = "";
+			if (rentedRoomCount < roomsOfHouse.size()) {
+			    updatedHouseSts = "3";// 房屋为部分出租状态
+			} else if (rentedRoomCount == roomsOfHouse.size()) {
+			    updatedHouseSts = "4";// 房屋为完全出租
+			}
+			h.setHouseStatus(updatedHouseSts);
+			h.setUpdateBy(UserUtils.getUser());
+			h.setUpdateDate(new Date());
+			houseDao.update(h);
+		    }
+		}
+	    }
+
 	    // 审核
 	    Audit audit = new Audit();
 	    audit.setId(IdGen.uuid());
@@ -617,49 +662,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    audit.setUpdateBy(UserUtils.getUser());
 	    audit.setDelFlag("0");
 	    auditDao.insert(audit);
-	}
-
-	/* 更新房屋/房间状态 */
-	if ("0".equals(rentContract.getRentMode())) {// 整租
-	    House house = houseDao.get(rentContract.getHouse().getId());
-	    house.setHouseStatus("4");// 完全出租
-	    house.setUpdateBy(UserUtils.getUser());
-	    house.setUpdateDate(new Date());
-	    houseDao.update(house);
-	} else {// 单间
-	    Room room = roomDao.get(rentContract.getRoom().getId());
-	    if (null != room) {
-		room.setRoomStatus("3");// 已出租
-		room.setUpdateBy(UserUtils.getUser());
-		room.setUpdateDate(new Date());
-		roomDao.update(room);
-	    }
-
-	    // 同时更新该房间所属房屋的状态
-	    if (room != null && room.getHouse() != null) {
-		House h = houseDao.get(room.getHouse().getId());
-		Room queryRoom = new Room();
-		queryRoom.setHouse(h);
-		List<Room> roomsOfHouse = roomDao.findList(queryRoom);
-		if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-		    int rentedRoomCount = 0;
-		    for (Room rentedRoom : roomsOfHouse) {
-			if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
-			    rentedRoomCount = rentedRoomCount + 1;
-			}
-		    }
-		    String updatedHouseSts = "";
-		    if (rentedRoomCount < roomsOfHouse.size()) {
-			updatedHouseSts = "3";// 房屋为部分出租状态
-		    } else if (rentedRoomCount == roomsOfHouse.size()) {
-			updatedHouseSts = "4";// 房屋为完全出租
-		    }
-		    h.setHouseStatus(updatedHouseSts);
-		    h.setUpdateBy(UserUtils.getUser());
-		    h.setUpdateDate(new Date());
-		    houseDao.update(h);
-		}
-	    }
 	}
 
 	/* 合同承租人关联信息 */

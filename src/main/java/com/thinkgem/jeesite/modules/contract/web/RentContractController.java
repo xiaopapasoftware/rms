@@ -30,8 +30,10 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
@@ -90,6 +92,8 @@ public class RentContractController extends BaseController {
     private RoomService roomService;
     @Autowired
     private ElectricFeeService electricFeeService;
+    @Autowired
+    private DepositAgreementService depositAgreementService;
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -435,60 +439,78 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "save")
     public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+
 	if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 	    return form(rentContract, model);
 	}
+
 	/* 出租合同的结束时间不能超过承租合同的结束时间 */
 	LeaseContract leaseContract = new LeaseContract();
 	leaseContract.setHouse(rentContract.getHouse());
 	List<LeaseContract> list = leaseContractService.findList(leaseContract);
 	if (CollectionUtils.isNotEmpty(list)) {
-	    leaseContract = list.get(0);
-	    if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
+	    if (list.get(0).getExpiredDate().before(rentContract.getExpiredDate())) {
 		model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
 		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
-		if (null != rentContract.getPropertyProject()) {
-		    Building building = new Building();
-		    PropertyProject propertyProject = new PropertyProject();
-		    propertyProject.setId(rentContract.getPropertyProject().getId());
-		    building.setPropertyProject(propertyProject);
-		    List<Building> buildingList = buildingService.findList(building);
-		    model.addAttribute("buildingList", buildingList);
-		}
-
-		if (null != rentContract.getBuilding()) {
-		    House house = new House();
-		    Building building = new Building();
-		    building.setId(rentContract.getBuilding().getId());
-		    house.setBuilding(building);
-		    house.setChoose("1");
-		    List<House> houseList = houseService.findList(house);
-		    if (null != rentContract.getHouse())
-			houseList.add(houseService.get(rentContract.getHouse()));
-		    model.addAttribute("houseList", houseList);
-		}
-
-		if (null != rentContract.getRoom()) {
-		    Room room = new Room();
-		    House house = new House();
-		    house.setId(rentContract.getHouse().getId());
-		    room.setHouse(house);
-		    room.setChoose("1");
-		    List<Room> roomList = roomServie.findList(room);
-		    if (null != rentContract.getRoom()) {
-			Room rm = roomServie.get(rentContract.getRoom());
-			if (null != rm)
-			    roomList.add(rm);
-		    }
-		    model.addAttribute("roomList", roomList);
-		}
-		List<Tenant> tenantList = tenantService.findList(new Tenant());
-		model.addAttribute("tenantList", tenantList);
+		initExceptionedModel(model, rentContract);
 		return "modules/contract/rentContractForm";
 	    }
 	}
 
+	// 若系统里面已经存在了出租合同，状态为暂存或者合同内容审核拒绝，再添加合同时候不能选择当前房屋。
+	RentContract conditionRentContract = new RentContract();
+	conditionRentContract.setPropertyProject(rentContract.getPropertyProject());
+	conditionRentContract.setHouse(rentContract.getHouse());
+	conditionRentContract.setRoom(rentContract.getRoom());
+	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
+	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
+	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
+	if (CollectionUtils.isNotEmpty(rentContracts)) {
+	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
+		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+		    hasRefusedFlag = true;
+		}
+		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+		    hasTempExistFlag = true;
+		}
+	    }
+	}
+	if (hasRefusedFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+	if (hasTempExistFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+
+	// 保存合同时检查如果该房屋或房间还有定金协议未转合同，则强迫操作者先把定金转合同。
+	DepositAgreement conditionDepositAgreement = new DepositAgreement();
+	conditionDepositAgreement.setPropertyProject(rentContract.getPropertyProject());
+	conditionDepositAgreement.setHouse(rentContract.getHouse());
+	conditionDepositAgreement.setRoom(rentContract.getRoom());
+	boolean hasToBeTransedDepositFlag = false;// 该合同存在未转的定金协议，默认为不存在
+	List<DepositAgreement> das = depositAgreementService.findList(conditionDepositAgreement);
+	if (CollectionUtils.isNotEmpty(das)) {
+	    for (DepositAgreement da : das) {
+		if ("5".equals(da.getAgreementStatus()) && "0".equals(da.getAgreementBusiStatus()) && StringUtils.isEmpty(rentContract.getAgreementId())) {// 定金协议的审核状态为“账务审核通过”，业务状态为“待转合同”,且该合同不是从定金协议转过来的
+		    hasToBeTransedDepositFlag = true;
+		    break;
+		}
+	    }
+	}
+	if (hasToBeTransedDepositFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间有未转的定金协议，请先转定金！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+
+	// 设置出租合同编码
 	if (rentContract.getIsNewRecord()) {
 	    String[] codeArr = rentContract.getContractCode().split("-");
 	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
@@ -501,6 +523,46 @@ public class RentContractController extends BaseController {
 	else
 	    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 
+    }
+
+    private void initExceptionedModel(Model model, RentContract rentContract) {
+	model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
+	if (null != rentContract.getPropertyProject()) {
+	    Building building = new Building();
+	    PropertyProject propertyProject = new PropertyProject();
+	    propertyProject.setId(rentContract.getPropertyProject().getId());
+	    building.setPropertyProject(propertyProject);
+	    List<Building> buildingList = buildingService.findList(building);
+	    model.addAttribute("buildingList", buildingList);
+	}
+
+	if (null != rentContract.getBuilding()) {
+	    House house = new House();
+	    Building building = new Building();
+	    building.setId(rentContract.getBuilding().getId());
+	    house.setBuilding(building);
+	    house.setChoose("1");
+	    List<House> houseList = houseService.findList(house);
+	    if (null != rentContract.getHouse())
+		houseList.add(houseService.get(rentContract.getHouse()));
+	    model.addAttribute("houseList", houseList);
+	}
+
+	if (null != rentContract.getRoom()) {
+	    Room room = new Room();
+	    House house = new House();
+	    house.setId(rentContract.getHouse().getId());
+	    room.setHouse(house);
+	    room.setChoose("1");
+	    List<Room> roomList = roomServie.findList(room);
+	    if (null != rentContract.getRoom()) {
+		Room rm = roomServie.get(rentContract.getRoom());
+		if (null != rm)
+		    roomList.add(rm);
+	    }
+	    model.addAttribute("roomList", roomList);
+	}
+	model.addAttribute("tenantList", tenantService.findList(new Tenant()));
     }
 
     @RequestMapping(value = "saveAdditional")
