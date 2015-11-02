@@ -360,7 +360,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
 		receipt.setId(IdGen.uuid());
 		receipt.setTradingAccounts(tradingAccounts);
-		receipt.setReceiptDate(new Date());
+		//receipt.setReceiptDate(new Date());
 		receipt.setCreateDate(new Date());
 		receipt.setCreateBy(UserUtils.getUser());
 		receipt.setUpdateDate(new Date());
