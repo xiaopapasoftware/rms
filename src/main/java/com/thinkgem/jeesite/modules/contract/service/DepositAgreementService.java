@@ -110,28 +110,9 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	if (refundAmount != null && refundAmount > 0) {
 	    depositAgreement.setRefundAmount(refundAmount);
 	}
-	/* 1.生成款项 */
-	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.setId(IdGen.uuid());
-	paymentTrans.setTradeType("2");// 定金转违约
-	paymentTrans.setPaymentType("1");// 定金违约金
-	paymentTrans.setTransId(depositAgreement.getId());
-	paymentTrans.setTradeDirection("1");// 收款
-	paymentTrans.setStartDate(new Date());
-	paymentTrans.setExpiredDate(new Date());
-	paymentTrans.setTradeAmount(depositAgreement.getDepositAmount());
-	paymentTrans.setLastAmount(0D);
-	paymentTrans.setTransAmount(depositAgreement.getDepositAmount());
-	paymentTrans.setTransStatus("2");// 完全到账登记
-	paymentTrans.setCreateDate(new Date());
-	paymentTrans.setCreateBy(UserUtils.getUser());
-	paymentTrans.setUpdateDate(new Date());
-	paymentTrans.setUpdateBy(UserUtils.getUser());
-	paymentTrans.setDelFlag("0");
-	if (depositAgreement.getDepositAmount() != null && depositAgreement.getDepositAmount() > 0)
-	    paymentTransDao.insert(paymentTrans);
-
+	
 	/* 1.生成款项--定金转违约退费 */
+	PaymentTrans paymentTrans = new PaymentTrans();
 	paymentTrans.setId(IdGen.uuid());
 	paymentTrans.setTradeType("2");// 定金转违约
 	paymentTrans.setPaymentType("26");// '26'='定金转违约退费'
