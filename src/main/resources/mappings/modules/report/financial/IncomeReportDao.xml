@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.IncomeReportDao">
+	<select id="report" resultType="IncomeReport">
+		select sales,project_name,building_name,house_no,start_date,expired_date,
+		coalesce(sum(trans_amount),0) trans_amount,payment_type,coalesce(sum(shuidianya_fee),0) shuidianya_fee,
+		coalesce(sum(fangzuya_fee),0) fangzuya_fee,coalesce(sum(fangzu_fee),0) fangzu_fee,coalesce(sum(weiyue_fee),0) weiyue_fee from (
+		select sales,project_name,building_name,house_no,start_date,expired_date,
+		trans_amount,payment_type,
+		case when payment_type='2' then trans_amount end shuidianya_fee,
+		case when payment_type='4' then trans_amount end fangzuya_fee,
+		case when payment_type='6' then trans_amount end fangzu_fee,
+		case when payment_type='9' then trans_amount end weiyue_fee
+		 from(
+		select u.name sales,p.PROJECT_NAME,b.BUILDING_NAME,h.HOUSE_no,a.start_date,a.expired_date,
+		a.trans_amount,a.payment_type from t_payment_trans a 
+		left join t_rent_contract c on a.trans_id=c.id
+		left join T_PROPERTY_PROJECT p on c.PROPERTY_PROJECT_ID=p.id
+		left join T_BUILDING b on c.BUILDING_ID=b.id
+		left join t_house h on c.house_id=h.id
+		left join sys_user u on c.user_id=u.id
+		where a.trade_direction='1' and a.trans_status='2' and a.del_flag='0' and c.id is not null 
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building != null and building.id != null and building.id != ''">
+			AND c.building_id = #{building.id}
+		</if>
+		<if test="house != null and house.id != null and house.id != ''">
+			AND c.house_id = #{house.id}
+		</if>		
+		<if test="startDate != null and startDate != ''">
+			AND a.start_date >= str_to_date(#{startDate},'%Y-%m-%d')
+		</if>
+		<if test="expiredDate != null and expiredDate != ''">
+			<![CDATA[AND a.expired_date <= str_to_date(#{expiredDate},'%Y-%m-%d')]]>
+		</if>
+		)t
+		) tt group by project_name,building_name,house_no
+	</select>
+	
+	<select id="fangzuReport" resultType="IncomeReport">
+		select 
+		  sales,
+		  project_name,
+		  building_name,
+		  house_no,
+		  start_date,
+		  expired_date,
+		  trans_amount,
+		  payment_type
+		from
+		  (select 
+		    sales,
+		    project_name,
+		    building_name,
+		    house_no,
+		    start_date,
+		    expired_date,
+		    trans_amount,
+		    payment_type
+		  from
+		    (select 
+		      u.name sales,
+		      p.PROJECT_NAME,
+		      b.BUILDING_NAME,
+		      h.HOUSE_no,
+		      a.start_date,
+		      a.expired_date,
+		      a.trans_amount,
+		      a.payment_type 
+		    from
+		      t_payment_trans a 
+		      left join t_rent_contract c 
+		        on a.trans_id = c.id 
+		      left join T_PROPERTY_PROJECT p 
+		        on c.PROPERTY_PROJECT_ID = p.id 
+		      left join T_BUILDING b 
+		        on c.BUILDING_ID = b.id 
+		      left join t_house h 
+		        on c.house_id = h.id 
+		      left join sys_user u 
+		        on c.user_id = u.id 
+		    where a.trade_direction = '1' 
+		      and a.trans_status = '2' 
+		      and a.del_flag = '0' and a.payment_type = '6' 
+		      and c.id is not null
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building != null and building.id != null and building.id != ''">
+			AND c.building_id = #{building.id}
+		</if>
+		<if test="house != null and house.id != null and house.id != ''">
+			AND c.house_id = #{house.id}
+		</if>		
+		<if test="startDate != null and startDate != ''">
+			AND a.start_date >= str_to_date(#{startDate},'%Y-%m-%d')
+		</if>
+		<if test="expiredDate != null and expiredDate != ''">
+			<![CDATA[AND a.expired_date <= str_to_date(#{expiredDate},'%Y-%m-%d')]]>
+		</if>		      
+		      ) t) tt order by project_name,building_name,house_no
+	</select>
+	
+	<select id="receivableReport" resultType="IncomeReport">
+		select 
+		  project_name,
+		  building_name,
+		  house_no,
+		  c.contract_code,
+		  u.name sales,
+		  c.rental,
+		  c.start_date,
+		  c.expired_date,
+		  coalesce(t1.trade_amount,0) trade_amount,
+		  coalesce(t1.trans_amount,0) trans_amount,
+		  coalesce(t1.last_amount,0) last_amount
+		from
+		  t_rent_contract c 
+		  left join 
+		    (select 
+		      t.trans_id,
+		      sum(trade_amount) trade_amount,
+		      sum(t.trans_amount) trans_amount,
+		      sum(t.last_amount) last_amount 
+		    from
+		      t_payment_trans t 
+		    group by t.trans_id) t1 
+		    on c.id = t1.trans_id 
+		  left join T_PROPERTY_PROJECT p 
+		    on c.PROPERTY_PROJECT_ID = p.id 
+		  left join T_BUILDING b 
+		    on c.BUILDING_ID = b.id 
+		  left join t_house h 
+		    on c.house_id = h.id 
+		  left join sys_user u 
+		    on c.user_id = u.id 
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building != null and building.id != null and building.id != ''">
+			AND c.building_id = #{building.id}
+		</if>
+		<if test="house != null and house.id != null and house.id != ''">
+			AND c.house_id = #{house.id}
+		</if>	
+	</select>
+	
+	<select id="refundReport" resultType="IncomeReport">
+		select 
+		  project_name,
+		  building_name,
+		  house_no,
+		  u.name sales,
+		  c.start_date,
+		  c.expired_date,
+		  c.DEPOSIT_ELECTRIC_AMOUNT,
+		  c.DEPOSIT_AMOUNT 
+		from
+		  t_rent_contract c 
+		  left join T_PROPERTY_PROJECT p 
+		    on c.PROPERTY_PROJECT_ID = p.id 
+		  left join T_BUILDING b 
+		    on c.BUILDING_ID = b.id 
+		  left join t_house h 
+		    on c.house_id = h.id 
+		  left join sys_user u 
+		    on c.user_id = u.id
+		<if test="startDate != null and startDate != ''">
+			AND c.start_date >= str_to_date(#{startDate},'%Y-%m-%d')
+		</if>
+		<if test="expiredDate != null and expiredDate != ''">
+			<![CDATA[AND c.expired_date <= str_to_date(#{expiredDate},'%Y-%m-%d')]]>
+		</if>
+	</select>
+</mapper>

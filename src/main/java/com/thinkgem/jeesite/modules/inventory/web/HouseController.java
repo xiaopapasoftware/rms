@@ -104,9 +104,11 @@ public class HouseController extends BaseController {
     // @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = "form")
     public String form(House house, Model model) {
-	Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
-	currentValidHouseNum = currentValidHouseNum + 1;
-	house.setHouseCode(currentValidHouseNum.toString());
+	if (house.getIsNewRecord()) {
+	    Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
+	    currentValidHouseNum = currentValidHouseNum + 1;
+	    house.setHouseCode(currentValidHouseNum.toString());
+	}
 	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    PropertyProject pp = new PropertyProject();

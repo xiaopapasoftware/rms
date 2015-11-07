@@ -27,9 +27,11 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
@@ -72,6 +74,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private AttachmentDao attachmentDao;
     @Autowired
     private ReceiptDao receiptDao;
+    @Autowired
+    private PaymentTradeDao paymentTradeDao;
 
     private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";// 定金协议审批
 
@@ -266,6 +270,30 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    delPaymentTrans.setTransId(id);
 	    paymentTransDao.delete(delPaymentTrans);
 
+	    TradingAccounts delTradingAccounts = new TradingAccounts();
+	    delTradingAccounts.setTradeId(id);
+	    List<TradingAccounts> list = tradingAccountsDao.findList(delTradingAccounts);
+
+	    for (TradingAccounts dTradingAccounts : list) {
+		// 删除已经上传的收据附件
+		Attachment attachment3 = new Attachment();
+		attachment3.setTradingAccountsId(dTradingAccounts.getId());
+		attachmentDao.delete(attachment3);
+
+		// 同时删除已经录入的收据记录
+		Receipt r = new Receipt();
+		r.setTradingAccounts(dTradingAccounts);
+		receiptDao.delete(r);
+
+		// 删除账务记录
+		tradingAccountsDao.delete(dTradingAccounts);
+
+		// 删除账务记录款项关联信息
+		PaymentTrade delPaymentTrade = new PaymentTrade();
+		delPaymentTrade.setTradeId(dTradingAccounts.getId());
+		paymentTradeDao.delete(delPaymentTrade);
+	    }
+
 	    if (null != depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate() && null != depositAgreement.getDepositAmount()) {
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
@@ -422,4 +450,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	return depositAgreementDao.findAllList(new DepositAgreement());
     }
 
+    @Transactional(readOnly = true)
+    public Integer getTotalValidDACounts() {
+	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
 }

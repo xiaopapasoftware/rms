@@ -28,7 +28,6 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
@@ -106,13 +105,14 @@ public class TradingAccountsController extends BaseController {
 	    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
 	    String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
 	    for (int i = 0; i < paymentTransIdArray.length; i++) {
-		tradingAccounts.setId(null);
 		PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
-		tradingAccounts.setTradeAmount(paymentTrans.getLastAmount());
+		tradingAccounts.setId(null);
+		tradingAccounts.setTradeAmount(paymentTrans.getTradeAmount() - paymentTrans.getTransAmount());
 		tradingAccounts.setTransIds(paymentTransIdArray[i]);
-		LeaseContract leaseContract = leaseContractService.get(paymentTrans.getTransId());
-		tradingAccounts.setPayeeName(leaseContract.getRemittancerName());
-		tradingAccountsService.save(tradingAccounts);
+		tradingAccounts.setPayeeName(leaseContractService.get(paymentTrans.getTransId()).getRemittancerName());
+		if (tradingAccounts.getTradeAmount() > 0) {
+		    tradingAccountsService.save(tradingAccounts);
+		}
 	    }
 	    addMessage(redirectAttributes, "保存账务交易成功");
 	    return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";

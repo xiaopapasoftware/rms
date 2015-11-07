@@ -140,28 +140,28 @@
 		</ul>
 	</form:form>
 	<sys:message content="${message}"/>
-	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:2000px;">
+	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="white-space:nowrap;">
 		<thead>
 			<tr>
-				<th style="width:40px;">承租合同编号</th>
+				<th>承租合同编号</th>
 				<th>承租合同名称</th>
-				<th>物业项目</th>
+				<!--<th>物业项目</th>
 				<th>楼宇</th>
-				<th>房屋</th>
-				<th style="width:40px;">汇款人</th>
-				<th style="width:80px;">合同生效时间</th>
-				<th style="width:80px;">首次打款日期</th>
-				<th style="width:40px;">打款日期</th>
-				<th style="width:80px;">合同过期时间</th>
-				<th style="width:80px;">合同签订时间</th>
+				<th>房屋</th>-->
+				<th>汇款人</th>
+				<th>合同生效时间</th>
+				<th>首次打款日期</th>
+				<th>打款日期</th>
+				<th>合同过期时间</th>
+				<th>合同签订时间</th>
 				<th>承租押金</th>
 				<th>出租人姓名</th>
 				<th>出租人身份证号码</th>
 				<th>出租人手机号</th>
-				<th style="width:40px;">合同审核状态</th>
-				<th style="width:130px;">更新时间</th>
-				<th>备注信息</th>
-				<th style="width:100px;">操作</th>
+				<th>合同审核状态</th>
+				<th>更新时间</th>
+				<!--<th>备注信息</th>-->
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -173,7 +173,7 @@
 				<td><a title="查看详细" href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
 					${leaseContract.contractName}
 				</a></td>
-				<td>
+				<!--<td>
 					${leaseContract.projectName}
 				</td>
 				<td>
@@ -181,9 +181,9 @@
 				</td>
 				<td>
 					${leaseContract.houseNo}
-				</td>
+				</td>-->
 				<td>
-					${leaseContract.remittancerName}
+					${leaseContract.remittancer.userName}-${leaseContract.remittancer.bankAccount}
 				</td>
 				<td>
 					<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>
@@ -206,7 +206,7 @@
 				<td>
 					${leaseContract.lessorName}
 				</td>
-				<td>
+				<td style="white-space:normal;">
 					${leaseContract.lessorIdNo}
 				</td>
 				<td>
@@ -218,9 +218,9 @@
 				<td>
 					<fmt:formatDate value="${leaseContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
-				<td>
+				<!--<td>
 					${leaseContract.remarks}
-				</td>
+				</td>-->
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
 					<c:if test="${leaseContract.contractStatus=='2'}">

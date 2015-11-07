@@ -192,6 +192,11 @@
 		</choose>
 	</select>
 	
+	<select id="getAllValidRentContractCounts" resultType="int">
+		SELECT count(*) FROM t_rent_contract where del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	
 	<insert id="insert">
 		INSERT INTO t_rent_contract(
 			id,

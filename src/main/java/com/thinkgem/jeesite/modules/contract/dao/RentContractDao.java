@@ -11,10 +11,14 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 
 /**
  * 出租合同DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 @MyBatisDao
 public interface RentContractDao extends CrudDao<RentContract> {
-	public List<RentContract> findContractList(RentContract rentContract);
+
+    public List<RentContract> findContractList(RentContract rentContract);
+
+    Integer getAllValidRentContractCounts(RentContract rentContract);
 }

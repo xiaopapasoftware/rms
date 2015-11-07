@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.PayRentReportDao">
+	<select id="report" resultType="PayRentReport">
+		select sd.label payDate,t.last_amount payAmount,h.ORI_STRUC_ROOM_NUM,h.ORI_STRUC_CUSSPAC_NUM,h.ORI_STRUC_WASHRO_NUM,
+		r.user_name accountName,r.bank_name,r.bank_account,p.PROJECT_NAME,b.BUILDING_NAME,h.HOUSE_no from t_payment_trans t 
+		left join t_lease_contract c on t.trans_id=c.id
+		left join t_remittancer r on c.remittancer_id=r.id
+		left join T_PROPERTY_PROJECT p on c.PROPERTY_PROJECT_ID=p.id
+		left join T_BUILDING b on c.BUILDING_ID=b.id
+		left join t_house h on c.house_id=h.id
+		left join sys_dict sd on c.remittance_date=sd.value and sd.type='remittance_date'
+		where t.trade_type='0' and t.payment_type='6' and t.trans_status='0' and t.del_flag='0'
+		<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			AND c.property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building != null and building.id != null and building.id != ''">
+			AND c.building_id = #{building.id}
+		</if>
+		<if test="house != null and house.id != null and house.id != ''">
+			AND c.house_id = #{house.id}
+		</if>
+		<if test="payDateValue != null and payDateValue != ''">
+			AND c.remittance_date = #{payDateValue}
+		</if>
+	</select>
+</mapper>
