@@ -166,4 +166,10 @@
 		WHERE trade_id = #{tradeId}
 	</update>
 	
+	<update id="deleteById">
+		UPDATE t_trading_accounts SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
 </mapper>

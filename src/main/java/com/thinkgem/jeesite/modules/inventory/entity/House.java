@@ -3,6 +3,9 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
@@ -34,11 +37,11 @@ public class House extends DataEntity<House> {
     private Integer decoraStrucRoomNum;// 装修后房屋结构-房数
     private Integer decoraStrucCusspacNum;// 装修后房屋结构-厅数
     private Integer decoraStrucWashroNum;// 装修后房屋结构-卫数
-
+    private String ownerNamesOfHouse;// 用于查询房屋时，显示该房屋下所有的业主姓名
     private String houseStatus; // 房屋状态
     private String attachmentPath; // 房屋图片路径
-
     private String choose;
+    private List<Owner> ownerList = new ArrayList<Owner>();// 用来渲染业主查询条件下拉框数据源
 
     public House() {
 	super();
@@ -66,7 +69,6 @@ public class House extends DataEntity<House> {
 	this.building = building;
     }
 
-    @NotNull(message = "业主不能为空")
     public Owner getOwner() {
 	return owner;
     }
@@ -198,4 +200,20 @@ public class House extends DataEntity<House> {
 	this.decoraStrucWashroNum = decoraStrucWashroNum;
     }
 
+    public String getOwnerNamesOfHouse() {
+	return ownerNamesOfHouse;
+    }
+
+    public void setOwnerNamesOfHouse(String ownerNamesOfHouse) {
+	this.ownerNamesOfHouse = ownerNamesOfHouse;
+    }
+
+    @NotNull(message = "业主不能为空")
+    public List<Owner> getOwnerList() {
+	return ownerList;
+    }
+
+    public void setOwnerList(List<Owner> ownerList) {
+	this.ownerList = ownerList;
+    }
 }

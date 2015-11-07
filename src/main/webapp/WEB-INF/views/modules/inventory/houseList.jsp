@@ -120,10 +120,10 @@
 				<th>房屋号</th>
 				<th>房屋状态</th>
 				<th>楼层</th>
-				<th>原始建筑面积(平方米)</th>
-				<th>装修建筑面积(平方米)</th>
-				<th>原始房屋结构</th>
-				<th>装修房屋结构</th>
+				<th>原始面积</th>
+				<th>装修面积</th>
+				<th>原始结构</th>
+				<th>装修结构</th>
 				<th>产权证号</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
@@ -138,7 +138,7 @@
 				<tr>
 					<td>${house.propertyProject.projectName}</td>
 					<td>${house.building.buildingName}</td>
-					<td>${house.owner.name}</td>
+					<td>${house.ownerNamesOfHouse}</td> 
 					<td>${house.houseCode}</td>
 					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
 					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>

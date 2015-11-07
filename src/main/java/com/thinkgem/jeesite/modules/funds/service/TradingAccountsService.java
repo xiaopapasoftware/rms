@@ -96,6 +96,32 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     public Page<TradingAccounts> findPage(Page<TradingAccounts> page, TradingAccounts tradingAccounts) {
 	return super.findPage(page, tradingAccounts);
     }
+    
+    @Transactional(readOnly = false)
+    public void remoke(String id) {
+    	TradingAccounts tradingAccounts = tradingAccountsDao.get(id);
+    	/*退回已到账的款项、删除收据*/
+		PaymentTrade paymentTrade = new PaymentTrade();
+		paymentTrade.setTradeId(tradingAccounts.getId());
+		List<PaymentTrade> listPaymentTrade = this.paymentTradeDao.findList(paymentTrade);
+		for(PaymentTrade tmpPaymentTrade : listPaymentTrade) {
+			PaymentTrans paymentTrans = new PaymentTrans();
+			paymentTrans.setId(tmpPaymentTrade.getTransId());
+			paymentTrans = this.paymentTransDao.get(paymentTrans);
+			paymentTrans.setTransAmount(0D);
+			paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
+			paymentTrans.setTransStatus("0");//未到账登记
+			paymentTrans.setUpdateDate(new Date());
+			paymentTrans.setUpdateBy(UserUtils.getUser());
+			paymentTransDao.update(paymentTrans);
+		}
+		
+		Receipt receipt = new Receipt();
+		receipt.setTradingAccounts(tradingAccounts);
+		this.receiptDao.delete(receipt);
+		
+		tradingAccountsDao.deleteById(tradingAccounts);
+    }
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
@@ -118,8 +144,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setUpdateDate(new Date());
 	tradingAccounts.setUpdateBy(UserUtils.getUser());
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
-	tradingAccountsDao.update(tradingAccounts);
-
+	tradingAccountsDao.update(tradingAccounts);		
+	
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());

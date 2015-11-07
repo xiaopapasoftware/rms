@@ -27,8 +27,10 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseOwnerService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
@@ -57,8 +59,8 @@ public class HouseController extends BaseController {
     @Autowired
     private OwnerService ownerService;
 
-    // @Autowired
-    // private RoomDevicesService roomDevicesService;
+    @Autowired
+    private HouseOwnerService houseOwnerService;
 
     @ModelAttribute
     public House get(@RequestParam(required = false) String id) {
@@ -78,9 +80,35 @@ public class HouseController extends BaseController {
 	Page<House> page = houseService.findPage(new Page<House>(request, response), house);
 	model.addAttribute("page", page);
 
+	// 查询房屋下所有的业主信息
+	if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
+	    for (House h : page.getList()) {
+		String ownerNamesOfHouse = "";
+		HouseOwner ho = new HouseOwner();
+		ho.setHouseId(h.getId());
+		List<HouseOwner> hos = houseOwnerService.findList(ho);
+		if (CollectionUtils.isNotEmpty(hos)) {
+		    for (HouseOwner tempHO : hos) {
+			Owner owner = new Owner();
+			owner.setId(tempHO.getOwnerId());
+			Owner tempO = ownerService.get(owner);
+			if (tempO != null && StringUtils.isNotEmpty(tempO.getName())) {
+			    if (StringUtils.isEmpty(ownerNamesOfHouse)) {
+				ownerNamesOfHouse = tempO.getName();
+			    } else {
+				ownerNamesOfHouse = ownerNamesOfHouse + "，" + tempO.getName();
+			    }
+			}
+		    }
+		}
+		h.setOwnerNamesOfHouse(ownerNamesOfHouse);
+	    }
+	}
+	// 组装物业项目搜索条件值
 	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+	// 组装业主搜索条件值
 	model.addAttribute("listOwner", ownerService.findList(new Owner()));
-
+	// 组装楼宇搜索条件值
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    PropertyProject pp = new PropertyProject();
 	    pp.setId(house.getPropertyProject().getId());
@@ -109,7 +137,6 @@ public class HouseController extends BaseController {
 	    currentValidHouseNum = currentValidHouseNum + 1;
 	    house.setHouseCode(currentValidHouseNum.toString());
 	}
-	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    PropertyProject pp = new PropertyProject();
 	    pp.setId(house.getPropertyProject().getId());
@@ -118,7 +145,19 @@ public class HouseController extends BaseController {
 	    model.addAttribute("listBuilding", buildingService.findList(bd));
 	}
 	model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-	model.addAttribute("listOwner", ownerService.findList(new Owner()));
+
+	List<Owner> ownerList = null;
+	if (!house.getIsNewRecord()) {// 修改房屋信息
+	    if (null == house.getOwner() || StringUtils.isEmpty(house.getOwner().getId())) {
+		ownerList = ownerService.findByHouse(house);
+	    } else {
+		ownerList = new ArrayList<Owner>();
+		ownerList.add(ownerService.get(house.getOwner().getId()));
+	    }
+	    house.setOwnerList(ownerList);
+	}
+	model.addAttribute("ownerList", ownerService.findList(new Owner()));
+	model.addAttribute("house", house);
 	return "modules/inventory/houseForm";
     }
 
@@ -127,7 +166,6 @@ public class HouseController extends BaseController {
 	Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
 	currentValidHouseNum = currentValidHouseNum + 1;
 	house.setHouseCode(currentValidHouseNum.toString());
-	model.addAttribute("house", house);
 	if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
 	    List<Building> list = new ArrayList<Building>();
 	    list.add(buildingService.get(house.getBuilding()));
@@ -137,6 +175,19 @@ public class HouseController extends BaseController {
 	list.add(propertyProjectService.get(house.getPropertyProject()));
 	model.addAttribute("listPropertyProject", list);
 	model.addAttribute("listOwner", ownerService.findList(new Owner()));
+
+	List<Owner> ownerList = null;
+	if (!house.getIsNewRecord()) {
+	    if (null == house.getOwner()) {
+		ownerList = ownerService.findByHouse(house);
+	    } else {
+		ownerList = new ArrayList<Owner>();
+		ownerList.add(ownerService.get(house.getOwner().getId()));
+	    }
+	    house.setOwnerList(ownerList);
+	}
+	model.addAttribute("ownerList", ownerService.findList(new Owner()));
+	model.addAttribute("house", house);
 	return "modules/inventory/houseAdd";
     }
 
@@ -144,19 +195,12 @@ public class HouseController extends BaseController {
     @RequestMapping(value = "finishDirect")
     @ResponseBody
     public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
-	// RoomDevices rd = new RoomDevices();
-	// rd.setHouseId(house.getId());
-	// List<RoomDevices> rds = roomDevicesService.findList(rd);
-	// if (CollectionUtils.isEmpty(rds)) {
-	// return "NEEDDO";
-	// } else {
 	int i = houseService.updateHouseStatus(house);
 	if (i > 0) {
 	    return "SUCCESS";
 	} else {
 	    return "FAIL";
 	}
-	// }
     }
 
     // @RequiresPermissions("inventory:house:edit")
@@ -183,7 +227,7 @@ public class HouseController extends BaseController {
 		Building bd = new Building();
 		bd.setPropertyProject(pp);
 		model.addAttribute("listBuilding", buildingService.findList(bd));
-		model.addAttribute("listOwner", ownerService.findList(new Owner()));
+		model.addAttribute("ownerList", ownerService.findList(new Owner()));
 		return "modules/inventory/houseForm";
 	    } else {
 		house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));

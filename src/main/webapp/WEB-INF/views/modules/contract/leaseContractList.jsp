@@ -85,6 +85,25 @@
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
 		}
+		
+		function resetForm() {
+			$("#searchForm").find("select").each(function(index){
+				$(this).val("");
+				$(this).prev("div").find(".select2-chosen").html("全部");
+				
+				$(this).find("option").each(function(){
+					$(this).removeAttr("selected");
+				});
+			});
+			$("#searchForm").find("input").each(function(index){
+				if($(this).attr("type")=="text")
+					$(this).val("");
+			});
+			
+			var html = '<option value="">全部</option>';
+			$("[id='building.id']").html(html);
+			$("[id='house.id']").html(html);
+		}
 	</script>
 </head>
 <body>
@@ -135,7 +154,10 @@
 					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="true"/>
 				</form:select>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<li class="btns">
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+			</li>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

@@ -128,12 +128,24 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<div class="control-group">
+		<!--<div class="control-group">
 			<label class="control-label">业主：</label>
 			<div class="controls">
 				<form:select path="owner.id" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${listOwner}" itemLabel="name" itemValue="id" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addOwner()">添加业主</a>
+			</div>
+		</div>-->
+		<div class="control-group">
+			<label class="control-label">业主：</label>
+			<div class="controls">
+				<form:select path="ownerList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${ownerList}" var="item">
+						<form:option value="${item.id}">${item.cellPhone}-${item.name}</form:option>
+					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 				<a href="#" onclick="addOwner()">添加业主</a>

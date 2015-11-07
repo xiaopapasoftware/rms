@@ -8,7 +8,7 @@ drop table if exists T_ROOM;
 drop table if exists T_DEVICES;
 drop table if exists t_room_devices;
 drop table if exists T_DEVICES_HIS;
-
+drop table if exists T_HOUSE_OWNER;
 
 /* Create Tables */
 create table T_NEIGHBORHOOD
@@ -174,3 +174,17 @@ create table T_DEVICES_HIS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '设备变更信息';
+
+create table T_HOUSE_OWNER
+(
+	ID                   varchar(64) NOT NULL,
+  HOUSE_ID             varchar(64) comment '房屋',
+  OWNER_ID             varchar(64) comment '设备ID',
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+  primary key (ID)
+) comment = '房屋业主关联信息';

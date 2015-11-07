@@ -218,6 +218,12 @@ public class TradingAccountsController extends BaseController {
 	model.addAttribute("tradingAccounts", tradingAccounts);
 	return "modules/funds/tradingAccountsEdit";
     }
+    
+    @RequestMapping(value = "revoke")
+    public String revoke(String id) {
+    	tradingAccountsService.remoke(id);
+    	return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
+    }
 
     @RequestMapping(value = "findOne")
     public String findOne(TradingAccounts tradingAccounts, Model model) {
@@ -247,6 +253,9 @@ public class TradingAccountsController extends BaseController {
 	List<String> receiptNoList = new ArrayList<String>();
 	if (null != tradingAccounts.getReceiptList()) {
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
+	    	if(StringUtils.isBlank(receipt.getReceiptNo())){
+	    		continue;
+	    	}
 		Receipt tmpReceipt = new Receipt();
 		tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 		tmpReceipt.setDelFlag("0");
