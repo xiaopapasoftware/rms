@@ -106,7 +106,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     public void audit(AuditHis auditHis) {
 	AuditHis saveAuditHis = new AuditHis();
 	saveAuditHis.setId(IdGen.uuid());
-	saveAuditHis.setObjectType("2");// 定金协议
+	saveAuditHis.setObjectType("2");// 出租合同
 	saveAuditHis.setObjectId(auditHis.getObjectId());
 	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
 	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
