@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.TAppCheckCodeService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
 
 @Controller
 @RequestMapping("system")
@@ -37,6 +38,8 @@ public class SystemController {
 	
 	@Autowired
 	private AppTokenService appTokenService;
+	@Autowired
+	private SmsService smsService;
 	
 	@RequestMapping(value="register")
 	@ResponseBody
@@ -96,17 +99,27 @@ public class SystemController {
 	@RequestMapping(value="check_code")
 	@ResponseBody
 	public String check_code(@RequestBody HashMap paramsMap) {
-		TAppCheckCode tAppCheckCode = new TAppCheckCode();
-		tAppCheckCode.setPhone((String) paramsMap.get("mobile"));
-		tAppCheckCode.setCode(RandomStrUtil.generateCode(true, 6));
-		Date expiredate = caculateExpireTime(60);
-		tAppCheckCode.setExprie(expiredate);
-		tAppCheckCodeService.merge(tAppCheckCode);
-		ResponseData data = new ResponseData(); 
-		data.setCode("200");
-		data.setMsg("fetch check code success");
-		data.setData(tAppCheckCode.getCode());
-		return JsonUtil.object2Json(data);
+		try{
+			String mobile = (String) paramsMap.get("mobile");
+		
+			TAppCheckCode tAppCheckCode = new TAppCheckCode();
+			tAppCheckCode.setPhone(mobile);
+			tAppCheckCode.setCode(RandomStrUtil.generateCode(true, 6));
+			Date expiredate = caculateExpireTime(60);
+			tAppCheckCode.setExprie(expiredate);
+			tAppCheckCodeService.merge(tAppCheckCode);
+			smsService.sendSms(mobile, "校验码"+mobile+",您正在使用唐巢APP,校验码很重要，请勿谢告诉任何人.");
+			ResponseData data = new ResponseData(); 
+			data.setCode("200");
+			data.setMsg("fetch check code success");
+			data.setData(tAppCheckCode.getCode());
+			return JsonUtil.object2Json(data);
+		}catch(Exception e){
+			ResponseData data = new ResponseData(); 
+			data.setCode("411");
+			data.setMsg("fetch check code error");
+			return JsonUtil.object2Json(data);
+		}
 	}
 	
 	@RequestMapping(value="login/pwd")
