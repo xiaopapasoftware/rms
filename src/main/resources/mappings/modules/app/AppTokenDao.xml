@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.app.dao.AppTokenDao">
+    
+	<sql id="appTokenColumns">
+		a.id AS "id",
+		a.phone AS "phone",
+		a.token AS "token",
+		a.exprie AS "exprie"
+	</sql>
+	
+	<sql id="appTokenJoins">
+	</sql>
+    
+	<select id="get" resultType="AppToken">
+		SELECT 
+			<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AppToken">
+		SELECT 
+			<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AppToken">
+		SELECT 
+			<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_app_token(
+			id,
+			phone,
+			token,
+			exprie
+		) VALUES (
+			#{id},
+			#{phone},
+			#{token},
+			#{exprie}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_app_token SET 	
+			phone = #{phone},
+			token = #{token},
+			exprie = #{exprie}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_app_token
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delByPhone">
+		DELETE FROM t_app_token
+		WHERE phone = #{phone}
+	</update>
+	
+</mapper>
