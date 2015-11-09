@@ -5,15 +5,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.util.StringUtils;
 import com.thinkgem.jeesite.modules.app.entity.AppToken;
 import com.thinkgem.jeesite.modules.app.entity.AppUser;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
@@ -43,12 +48,12 @@ public class SystemController {
 	
 	@RequestMapping(value="register")
 	@ResponseBody
-	public String register(@RequestBody HashMap paramsMap) {
+	public String register(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		ResponseData data = new ResponseData(); 
-		String mobile = (String) paramsMap.get("mobile");
-		String code = (String) paramsMap.get("code");
-		String password =  (String) paramsMap.get("password");
+		String mobile = (String) request.getParameter("mobile");
+		String code = (String) request.getParameter("code");
+		String password =  (String) request.getParameter("password");
 		
 		TAppCheckCode tAppCheckCode = new TAppCheckCode();
 		tAppCheckCode.setPhone(mobile);
@@ -98,9 +103,13 @@ public class SystemController {
 	
 	@RequestMapping(value="check_code")
 	@ResponseBody
-	public String check_code(@RequestBody HashMap paramsMap) {
+	public String check_code(HttpServletRequest request, HttpServletResponse response, Model model) {
 		try{
-			String mobile = (String) paramsMap.get("mobile");
+			log.debug("parasMap:" + request.getParameterMap());
+			String mobile = (String) request.getParameter("mobile");
+			if(StringUtils.isEmpty(mobile)){
+				throw new Exception("no mobile param");
+			}
 		
 			TAppCheckCode tAppCheckCode = new TAppCheckCode();
 			tAppCheckCode.setPhone(mobile);
@@ -115,6 +124,7 @@ public class SystemController {
 			data.setData(tAppCheckCode.getCode());
 			return JsonUtil.object2Json(data);
 		}catch(Exception e){
+			log.error("in check_code:"+ e.getMessage());
 			ResponseData data = new ResponseData(); 
 			data.setCode("411");
 			data.setMsg("fetch check code error");
@@ -124,11 +134,11 @@ public class SystemController {
 	
 	@RequestMapping(value="login/pwd")
 	@ResponseBody
-	public String loginWithPwd(@RequestBody HashMap paramsMap) {
+	public String loginWithPwd(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		ResponseData data = new ResponseData(); 
-		String phone = (String) paramsMap.get("mobile");
-		String password = (String) paramsMap.get("password");
+		String phone = (String) request.getParameter("mobile");
+		String password = (String) request.getParameter("password");
 		AppUser appUser = new AppUser();
 		appUser.setPhone(phone);
 		appUser = appUserService.getByPhone(appUser);
@@ -158,11 +168,11 @@ public class SystemController {
 	
 	@RequestMapping(value="login/code")
 	@ResponseBody
-	public String loginWithCode(@RequestBody HashMap paramsMap) {
+	public String loginWithCode(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		String res = "";
-		String mobile = (String) paramsMap.get("mobile");
-		String code = (String) paramsMap.get("code");;
+		String mobile = (String) request.getParameter("mobile");
+		String code = (String)request.getParameter("code");;
 		
 		TAppCheckCode tAppCheckCode = new TAppCheckCode();
 		tAppCheckCode.setPhone(mobile);
