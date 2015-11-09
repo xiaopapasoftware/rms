@@ -340,9 +340,7 @@ public class DepositAgreementController extends BaseController {
 	    List<Room> roomList = roomServie.findList(room);
 	    model.addAttribute("roomList", roomList);
 	}
-
 	model.addAttribute("partnerList", partnerService.findList(new Partner()));
-
 	model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
 	model.addAttribute("tenantList", tenantService.findList(new Tenant()));
 	model.addAttribute("depositAmount", depositAgreement.getDepositAmount());

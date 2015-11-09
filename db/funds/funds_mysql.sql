@@ -97,3 +97,5 @@ create table T_INVOICE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '发票信息';
+
+ALTER TABLE T_PAYMENT_TRANS ADD transfer_deposit_amount FLOAT COMMENT '已转定金金额';

@@ -855,12 +855,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	Date startD = rentContract.getStartDate();// 开始日期
 
 	boolean depositTransContractFlag = false;
-	/*
-	 * Double depositAgreementAmount =
-	 * rentContract.getDepositAgreementAmount();// 已经缴纳的定金金额，只适用于定金转合同的业务场景
-	 * if (depositAgreementAmount != null && depositAgreementAmount > 0) {//
-	 * 定金转合同 depositTransContractFlag = true; }
-	 */
 	Double depositAgreementAmount = 0d;
 	if (!StringUtils.isBlank(rentContract.getAgreementId())) {
 	    DepositAgreement depositAgreement = this.depositAgreementDao.get(rentContract.getAgreementId());
@@ -889,11 +883,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setLastAmount(0D);
 			paymentTrans.setTransAmount(rentContract.getRental());
 			paymentTrans.setTransStatus("2");// 完全到账登记
+			paymentTrans.setTransferDepositAmount(rentContract.getRental());
 			depositAgreementAmount = depositAgreementAmount - rentContract.getRental();
 		    } else if (depositAgreementAmount > 0 && depositAgreementAmount < rentContract.getRental()) {
 			paymentTrans.setLastAmount(rentContract.getRental() - depositAgreementAmount);
 			paymentTrans.setTransAmount(depositAgreementAmount);
 			paymentTrans.setTransStatus("1");// 部分到账登记
+			paymentTrans.setTransferDepositAmount(depositAgreementAmount);
 			depositAgreementAmount = 0d;
 		    } else {
 			paymentTrans.setLastAmount(rentContract.getRental());

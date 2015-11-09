@@ -128,11 +128,9 @@
 			}
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
-			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
 			changeContractName();
 		}
 		
