@@ -42,6 +42,9 @@ public class House extends DataEntity<House> {
     private String attachmentPath; // 房屋图片路径
     private String choose;
     private List<Owner> ownerList = new ArrayList<Owner>();// 用来渲染业主查询条件下拉框数据源
+    
+    private String intentMode;//意向租赁类型
+    private String isFeature;//是否精选房源
 
     public House() {
 	super();
@@ -216,4 +219,20 @@ public class House extends DataEntity<House> {
     public void setOwnerList(List<Owner> ownerList) {
 	this.ownerList = ownerList;
     }
+
+	public String getIntentMode() {
+		return intentMode;
+	}
+
+	public void setIntentMode(String intentMode) {
+		this.intentMode = intentMode;
+	}
+
+	public String getIsFeature() {
+		return isFeature;
+	}
+
+	public void setIsFeature(String isFeature) {
+		this.isFeature = isFeature;
+	}
 }

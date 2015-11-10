@@ -29,7 +29,9 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		atta.attachment_path AS "attachmentPath"
+		atta.attachment_path AS "attachmentPath",
+		a.intent_mode as "intentMode",
+		a.is_feature as "isFeature"
 	</sql>
 	
 	<sql id="houseJoins">
@@ -90,6 +92,12 @@
 			<if test="choose != null and choose != ''">
 				and a.house_status not in('0','2','4','6') 
 			</if>
+			<if test="intentMode != null and intentMode != ''">
+				and a.intent_mode = #{intentMode}
+			</if>
+			<if test="isFeature != null and isFeature != ''">
+				and a.is_feature = #{isFeature}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -130,7 +138,8 @@
 			a.house_status AS "houseStatus",
 			a.house_floor AS "houseFloor",
 			a.house_space AS "houseSpace",
-			a.decoration_spance AS "decorationSpance"
+			a.decoration_spance AS "decorationSpance",
+			a.is_feature as "isFeature"
 		FROM t_house a	
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -168,7 +177,9 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			intent_mode,
+			is_feature
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -191,7 +202,9 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{intentMode},
+			#{isFeature}
 		)
 	</insert>
 	
@@ -217,7 +230,9 @@
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			intent_mode = #{intentMode},
+			is_feature = #{isFeature}
 		WHERE id = #{id}
 	</update>
 	

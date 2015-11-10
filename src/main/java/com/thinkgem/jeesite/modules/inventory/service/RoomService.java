@@ -18,8 +18,9 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -45,6 +46,11 @@ public class RoomService extends CrudService<RoomDao, Room> {
 
 	public Page<Room> findPage(Page<Room> page, Room room) {
 		return super.findPage(page, room);
+	}
+	
+	public Page<House> findFeaturePage(Page<House> page) {
+		page.setList(dao.findFeatureList());
+		return page;
 	}
 
 	@Transactional(readOnly = false)

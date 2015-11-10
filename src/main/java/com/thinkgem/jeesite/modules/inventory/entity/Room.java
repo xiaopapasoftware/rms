@@ -39,6 +39,8 @@ public class Room extends DataEntity<Room> {
 	private String attachmentPath;// 房间图片
 	
 	private String choose;
+	
+    private String isFeature;//是否精选房源
 
 	public Room() {
 		super();
@@ -153,5 +155,13 @@ public class Room extends DataEntity<Room> {
 
 	public void setChoose(String choose) {
 		this.choose = choose;
+	}
+
+	public String getIsFeature() {
+		return isFeature;
+	}
+
+	public void setIsFeature(String isFeature) {
+		this.isFeature = isFeature;
 	}
 }

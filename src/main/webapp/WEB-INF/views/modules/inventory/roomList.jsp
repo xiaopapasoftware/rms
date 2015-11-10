@@ -104,6 +104,13 @@
 					<form:options items="${fns:getDictList('room_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li>
+				<label>精选房源：</label> 
+				<form:select path="isFeature" class="input-medium">
+					<form:option value="" label="请选择..." />
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+				</form:select>
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -116,6 +123,7 @@
 				<th>楼宇</th>
 				<th>房屋号</th>
 				<th>房间号</th>
+				<th>精选房源</th>
 				<th>房间状态</th>
 				<th>电表号</th>
 				<th>房间面积(平方米)</th>
@@ -136,6 +144,7 @@
 				<td>${room.building.buildingName}</td>
 				<td>${room.house.houseNo}</td>
 				<td><a href="${ctx}/inventory/room/form?id=${room.id}">${room.roomNo}</a></td>
+				<td>${fns:getDictLabel(room.isFeature, 'yes_no', '')}</td>
 				<td>${fns:getDictLabel(room.roomStatus, 'room_status', '')}</td>
 				<td>${room.meterNo}</td>
 				<td>${room.roomSpace}</td>

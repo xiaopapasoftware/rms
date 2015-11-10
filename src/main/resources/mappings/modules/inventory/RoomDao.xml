@@ -24,7 +24,8 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		atta.attachment_path AS "attachmentPath"
+		atta.attachment_path AS "attachmentPath",
+		a.is_feature as "isFeature"
 	</sql>
 	
 	<sql id="roomJoins">
@@ -72,6 +73,9 @@
 			<if test="choose !=null and choose != ''">
 				and a.room_status not in('0','2','3','5') 
 			</if>
+			<if test="isFeature != null and isFeature != ''">
+				and a.is_feature = #{isFeature}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -91,7 +95,8 @@
 				a.house_id AS "house.id",
 				a.room_no AS "roomNo",
 				a.room_status AS "roomStatus",
-				a.del_flag AS "delFlag"
+				a.del_flag AS "delFlag",
+				a.is_feature as "isFeature"
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 			  AND a.property_project_id = #{propertyProject.id}
@@ -135,7 +140,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			is_feature
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -152,7 +158,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{isFeature}
 		)
 	</insert>
 	
@@ -171,7 +178,8 @@
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			is_feature = #{isFeature}
 		WHERE id = #{id}
 	</update>
 	
