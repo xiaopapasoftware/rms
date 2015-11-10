@@ -114,7 +114,13 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    paymentTrans.setTransStatus("0");// 未到账登记
 	    paymentTrans.setUpdateDate(new Date());
 	    paymentTrans.setUpdateBy(UserUtils.getUser());
-	    paymentTransDao.update(paymentTrans);
+	    
+	    //定金转过来的部分,特殊处理
+	    if(paymentTrans.getTransferDepositAmount()>0) {
+	    	continue;
+	    } else {
+	    	paymentTransDao.update(paymentTrans);
+	    }
 	}
 
 	Receipt receipt = new Receipt();
