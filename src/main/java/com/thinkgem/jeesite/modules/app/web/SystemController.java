@@ -90,7 +90,7 @@ public class SystemController {
 				JSONObject object = new JSONObject();
 				object.put("user_id", appUser.getPhone());
 				object.put("token", appToken.getToken());
-				object.put("expire", formatDate(appToken.getExprie()));
+				object.put("expire", appToken.getExprie().getTime());
 				data.setData(object.toString());
 			}
 		}else{
@@ -158,7 +158,7 @@ public class SystemController {
 			JSONObject object = new JSONObject();
 			object.put("user_id", appUser.getPhone());
 			object.put("token", appToken.getToken());
-			object.put("expire", formatDate(appToken.getExprie()));
+			object.put("expire", appToken.getExprie().getTime());
 			data.setData(object.toString());
 			data.setCode("200");
 			data.setMsg("login success");
@@ -195,7 +195,7 @@ public class SystemController {
 			JSONObject object = new JSONObject();
 			object.put("user_id", mobile);
 			object.put("token", appToken.getToken());
-			object.put("expire", formatDate(appToken.getExprie()));
+			object.put("expire", appToken.getExprie().getTime());
 			data.setData(object.toString());
 			res = JsonUtil.object2Json(data);
 		}else{
@@ -220,11 +220,7 @@ public class SystemController {
 	       return cal.getTime(); 
 	}
 	
-	private String formatDate(Date date){
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-	    return sdf.format(date); 
-	}
+
 	
 
 }
