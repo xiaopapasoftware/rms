@@ -108,25 +108,27 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	for (PaymentTrade tmpPaymentTrade : listPaymentTrade) {
 	    PaymentTrans paymentTrans = new PaymentTrans();
 	    paymentTrans.setId(tmpPaymentTrade.getTransId());
-	    paymentTrans = this.paymentTransDao.get(paymentTrans);
-	    paymentTrans.setTransAmount(0D);
+	    paymentTrans = paymentTransDao.get(paymentTrans);
+	    if (paymentTrans.getTransferDepositAmount() != null && paymentTrans.getTransferDepositAmount() > 0) {// 定金转过来的部分,特殊处理
+		double shouldBeTransAmount = paymentTrans.getTransAmount() - paymentTrans.getTransferDepositAmount();
+		paymentTrans.setTransAmount(shouldBeTransAmount);
+		if (shouldBeTransAmount > 0) {// 状态恢复为部分到账登记
+		    paymentTrans.setTransStatus("1");
+		} else if (shouldBeTransAmount == 0) {// 状态恢复为未到账登记
+		    paymentTrans.setTransStatus("0");
+		}
+	    } else {
+		paymentTrans.setTransAmount(0D);
+		paymentTrans.setTransStatus("0");// 未到账登记
+	    }
 	    paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
-	    paymentTrans.setTransStatus("0");// 未到账登记
 	    paymentTrans.setUpdateDate(new Date());
 	    paymentTrans.setUpdateBy(UserUtils.getUser());
-	    
-	    //定金转过来的部分,特殊处理
-	    if(paymentTrans.getTransferDepositAmount()>0) {
-	    	continue;
-	    } else {
-	    	paymentTransDao.update(paymentTrans);
-	    }
+	    paymentTransDao.update(paymentTrans);
 	}
-
 	Receipt receipt = new Receipt();
 	receipt.setTradingAccounts(tradingAccounts);
 	this.receiptDao.delete(receipt);
-
 	tradingAccountsDao.deleteById(tradingAccounts);
     }
 
