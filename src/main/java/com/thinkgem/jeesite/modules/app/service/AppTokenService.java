@@ -58,4 +58,10 @@ public class AppTokenService extends CrudService<AppTokenDao, AppToken> {
 		super.save(appToken);
 	}
 	
+	public AppToken findByTokenAndExpire(AppToken appToken) {
+		return appTokenDao.findByTokenAndExpire(appToken);
+	}
+	
+	
+	
 }

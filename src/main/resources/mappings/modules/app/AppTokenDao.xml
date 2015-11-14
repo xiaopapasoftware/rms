@@ -85,5 +85,15 @@
 		DELETE FROM t_app_token
 		WHERE phone = #{phone}
 	</update>
+
+	<select id="findByTokenAndExpire" resultType="AppToken">
+		SELECT 
+			<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		WHERE a.token = #{token}
+		and a.exprie >= #{exprie}
+	</select>
+	
 	
 </mapper>

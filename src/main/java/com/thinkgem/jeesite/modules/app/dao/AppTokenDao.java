@@ -16,4 +16,6 @@ import com.thinkgem.jeesite.modules.app.entity.TAppCheckCode;
 @MyBatisDao
 public interface AppTokenDao extends CrudDao<AppToken> {
 	public int delByPhone(AppToken appToken);
+	
+	public AppToken findByTokenAndExpire(AppToken appToken);
 }

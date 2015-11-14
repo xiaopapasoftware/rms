@@ -1,20 +1,18 @@
 package com.thinkgem.jeesite.modules.app.web;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.activiti.engine.impl.util.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -46,6 +44,27 @@ public class SystemController {
 	@Autowired
 	private SmsService smsService;
 	
+	@RequestMapping(value="checkToken")
+	@ResponseBody
+	public String checkToken(HttpServletRequest request, HttpServletResponse response, Model model) {
+		String res;
+		
+		String token = (String) request.getHeader("token");
+		log.debug("in checkToken. token:" + token );
+		//验证token是否存在
+		AppToken appToken = new AppToken();
+		appToken.setToken(token);
+		appToken.setExprie(new Date());
+		appToken = appTokenService.findByTokenAndExpire(appToken);
+		if(appToken!=null)
+			res = appToken.getPhone();
+		else
+			res = null;
+		log.debug("in chekcToken. return phone:" + res);
+		return res;		
+	}
+	
+	
 	@RequestMapping(value="register")
 	@ResponseBody
 	public String register(HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -68,7 +87,7 @@ public class SystemController {
 			if(appUser!=null){
 				
 				data.setCode("406");
-				data.setMsg("user exists!");
+				data.setMsg("用户不存在");
 				data.setData("");
 				
 			}else{			
@@ -86,20 +105,22 @@ public class SystemController {
 				
 				
 				data.setCode("200");
-				data.setMsg("register success");
-				JSONObject object = new JSONObject();
+				data.setMsg("注册成功");
+				Map object = new HashMap();
 				object.put("user_id", appUser.getPhone());
 				object.put("token", appToken.getToken());
 				object.put("expire", appToken.getExprie().getTime());
-				data.setData(object.toString());
+				data.setData(object);
 			}
 		}else{
 			data.setCode("402");
-			data.setMsg("invalid check code");
+			data.setMsg("无效验证码");
 			data.setData("");
 		}
 		return JsonUtil.object2Json(data);
 	}
+	
+	
 	
 	@RequestMapping(value="check_code")
 	@ResponseBody
@@ -108,7 +129,10 @@ public class SystemController {
 			log.debug("parasMap:" + request.getParameterMap());
 			String mobile = (String) request.getParameter("mobile");
 			if(StringUtils.isEmpty(mobile)){
-				throw new Exception("no mobile param");
+				ResponseData data = new ResponseData();
+				data.setCode("101");
+				data.setMsg("必填参数不能为空 ");	
+				return JsonUtil.object2Json(data);
 			}
 		
 			TAppCheckCode tAppCheckCode = new TAppCheckCode();
@@ -117,17 +141,17 @@ public class SystemController {
 			Date expiredate = caculateExpireTime(60);
 			tAppCheckCode.setExprie(expiredate);
 			tAppCheckCodeService.merge(tAppCheckCode);
-			smsService.sendSms(mobile, "校验码"+tAppCheckCode.getCode()+",您正在使用唐巢APP,校验码很重要，请勿谢泄露.");
+			smsService.sendSms(mobile, "验证码"+tAppCheckCode.getCode()+",您正在使用唐巢APP,验证码很重要，请勿谢泄露.");
 			ResponseData data = new ResponseData(); 
 			data.setCode("200");
-			data.setMsg("fetch check code success");
+			data.setMsg("成功获取验证码");
 			data.setData(tAppCheckCode.getCode());
 			return JsonUtil.object2Json(data);
 		}catch(Exception e){
 			log.error("in check_code:"+ e.getMessage());
 			ResponseData data = new ResponseData(); 
 			data.setCode("411");
-			data.setMsg("fetch check code error");
+			data.setMsg("获取验证码异常");
 			return JsonUtil.object2Json(data);
 		}
 	}
@@ -144,10 +168,10 @@ public class SystemController {
 		appUser = appUserService.getByPhone(appUser);
 		if(appUser==null){
 			data.setCode("403");
-			data.setMsg("user doesn't exist");
+			data.setMsg("用户不存在");
 		}else if(!password.equals(appUser.getPassword())){
 			data.setCode("404");
-			data.setMsg("wrong user/password");			
+			data.setMsg("用户名/密码有误");			
 		}else{
 			//generate new user token
 			AppToken appToken = new AppToken();
@@ -155,13 +179,13 @@ public class SystemController {
 			appToken.setToken(RandomStrUtil.generateCode(false, 32));
 			appToken.setExprie(caculateExpireTime(2592000));
 			appTokenService.merge(appToken);
-			JSONObject object = new JSONObject();
+			Map object = new HashMap();
 			object.put("user_id", appUser.getPhone());
 			object.put("token", appToken.getToken());
 			object.put("expire", appToken.getExprie().getTime());
-			data.setData(object.toString());
+			data.setData(object);
 			data.setCode("200");
-			data.setMsg("login success");
+			data.setMsg("登陆成功");
 		}
 		return JsonUtil.object2Json(data);
 	}
@@ -191,21 +215,52 @@ public class SystemController {
 			
 			ResponseData data = new ResponseData(); 
 			data.setCode("200");
-			data.setMsg("login success");
-			JSONObject object = new JSONObject();
+			data.setMsg("登陆成功");
+			Map object = new HashMap();
 			object.put("user_id", mobile);
 			object.put("token", appToken.getToken());
 			object.put("expire", appToken.getExprie().getTime());
-			data.setData(object.toString());
+			data.setData(object);
 			res = JsonUtil.object2Json(data);
 		}else{
 			ResponseData data = new ResponseData(); 
 			data.setCode("402");
-			data.setMsg("invalid check code");
+			data.setMsg("无效验证码");
 			data.setData("");
 			res = JsonUtil.object2Json(data);
 		}
 		return res;
+	}
+	
+	@RequestMapping(value="self/pwd")
+	@ResponseBody
+	public String changePwd(HttpServletRequest request, HttpServletResponse response, Model model) {
+		ResponseData data = new ResponseData(); 
+		log.debug(request.getParameterMap().toString());
+		String res = "";
+		String mobile = (String) request.getParameter("mobile");
+		String oldPassword = (String)request.getParameter("old_password");
+		String newPassword = (String)request.getParameter("new_password");	
+		if(oldPassword == null || newPassword== null){
+			data.setCode("101");
+			data.setMsg("必填参数不能为空 ");	
+			return JsonUtil.object2Json(data);
+		}
+		
+		AppUser appUser = new AppUser();
+		appUser.setPhone(mobile);
+		appUser.setPassword(oldPassword);
+		appUser = appUserService.getByPhone(appUser);
+		if(!oldPassword.equals(appUser.getPassword())){
+			data.setCode("102");
+			data.setMsg("用户原密码有误");			
+		}else{
+			appUser.setPassword(newPassword);
+			appUserService.save(appUser);
+			data.setCode("100");
+			data.setMsg("修改密码成功");
+		}
+		return JsonUtil.object2Json(data);
 	}
  
 	/**
@@ -219,6 +274,8 @@ public class SystemController {
 	       cal.add(13, duration);
 	       return cal.getTime(); 
 	}
+	
+	
 	
 
 	
