@@ -77,9 +77,12 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label style="width:120px;">账务交易对象：</label>
-				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
-			</li>
+			<li><label style="width:500px;">定金协议名称/出租合同名称/承租合同名称/物业项目名称/楼宇名称/房屋号/房间号：</label>
+				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:500px;"/>
+			</li><br/>
+			<li><label style="width:500px;">出租合同编号/承租合同编号/定金协议编号：</label>
+				<form:input path="tradeObjectNo" htmlEscape="false" maxlength="64" class="input-medium" style="width:500px;"/>
+			</li><br/>
 			<li><label style="width:120px;">账务交易类型：</label>
 				<form:select path="tradeType" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>

@@ -118,6 +118,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
 	saveAuditHis.setDelFlag("0");
 	auditHisDao.insert(saveAuditHis);
+	RentContract rentContract = this.rentContractDao.get(auditHis.getObjectId());
 	if ("1".equals(auditHis.getAuditStatus())) {
 	    // 审核
 	    Audit audit = new Audit();
@@ -127,13 +128,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    audit.setUpdateBy(UserUtils.getUser());
 	    auditDao.update(audit);
 
-	    if ("2".equals(auditHis.getType())) {// 特殊退租生成款项
+	    if ("2".equals(auditHis.getType())) {// 特殊退租审核通过则生成款项
 		Accounting accounting = new Accounting();
 		accounting.setRentContractId(auditHis.getObjectId());
 		accounting.setAccountingType("3");// 特殊退租核算
 		accounting.setDelFlag("0");
 		List<Accounting> list = accountingDao.findList(accounting);
-
 		for (Accounting tmpAccounting : list) {
 		    PaymentTrans paymentTrans = new PaymentTrans();
 		    paymentTrans.setId(IdGen.uuid());
@@ -141,8 +141,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    paymentTrans.setPaymentType(tmpAccounting.getFeeType());
 		    paymentTrans.setTransId(auditHis.getObjectId());
 		    paymentTrans.setTradeDirection(tmpAccounting.getFeeDirection());
-		    paymentTrans.setStartDate(tmpAccounting.getFeeDate());
-		    paymentTrans.setExpiredDate(tmpAccounting.getFeeDate());
+		    paymentTrans.setStartDate(rentContract.getStartDate());
+		    if ("2".equals(tmpAccounting.getFeeType()) || "4".equals(tmpAccounting.getFeeType())) {// 2=水电费押金；'4'='房租押金'
+			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+		    } else {
+			paymentTrans.setExpiredDate(tmpAccounting.getFeeDate());
+		    }
 		    paymentTrans.setTradeAmount(tmpAccounting.getFeeAmount());
 		    paymentTrans.setLastAmount(tmpAccounting.getFeeAmount());
 		    paymentTrans.setTransAmount(0D);
@@ -155,10 +159,20 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    if (0 != tmpAccounting.getFeeAmount())
 			paymentTransDao.insert(paymentTrans);
 		}
+
+		// 删除还未到账的款项
+		PaymentTrans tempPaymentTrans = new PaymentTrans();
+		tempPaymentTrans.setTransId(auditHis.getObjectId());
+		tempPaymentTrans.setPaymentType("6");// 房租金额
+		tempPaymentTrans.setTransStatus("0");// 未到账登记的
+		tempPaymentTrans.setTradeType("3");// 交易类型为“新签合同”3
+		tempPaymentTrans.setTradeDirection("1");// 入账
+		paymentTransService.delete(tempPaymentTrans);
+		tempPaymentTrans.setTradeType("4");// 交易类型为“续签合同”4
+		paymentTransService.delete(tempPaymentTrans);
 	    }
 	} else {// 审核失败的时候，需要把房屋状态回滚到原先状态
 	    /* 更新房屋/房间状态 */
-	    RentContract rentContract = this.rentContractDao.get(auditHis.getObjectId());
 	    if ("0".equals(rentContract.getRentMode())) {// 整租
 		House house = houseDao.get(rentContract.getHouse().getId());
 		house.setHouseStatus("1");// 待出租可预订
@@ -224,16 +238,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    this.receiptDao.delete(receipt);
 		}
 	    }
-
 	}
-
-	RentContract rentContract = rentContractDao.get(auditHis.getObjectId());
-	if ("2".equals(auditHis.getType())) {
-	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "10" : "18");// 10:特殊退租待结算
-												    // 18:特殊退租内容审核拒绝
+	if ("2".equals(auditHis.getType())) {// 如果是特殊退租
+	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "10" : "18");// 10:特殊退租待结算，18:特殊退租内容审核拒绝
 	} else {
-	    rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "4" : "3");// 4:内容审核通过到账收据待审核
-											      // 3:内容审核拒绝
+	    rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "4" : "3");// 4:内容审核通过到账收据待审核，3:内容审核拒绝
 	}
 	rentContract.setUpdateDate(new Date());
 	rentContract.setUpdateBy(UserUtils.getUser());
@@ -341,16 +350,15 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
 
     /**
-     * 正常退租核算
+     * 退租核算
      */
     @Transactional(readOnly = false)
     public void returnCheck(RentContract rentContract, String tradeType) {
 	String returnRemark = rentContract.getReturnRemark();
 	List<Accounting> accountList = rentContract.getAccountList();
 	List<Accounting> outAccountList = rentContract.getOutAccountList();
-
 	rentContract = rentContractDao.get(rentContract.getId());
-	if (!"9".equals(tradeType))
+	if (!"9".equals(tradeType))// 特殊退租与其他退租类型不同，需要人工先进行审核
 	    rentContract.setContractBusiStatus("4");// 退租核算完成到账收据待登记
 	else
 	    rentContract.setContractBusiStatus("17");// 特殊退租内容待审核
@@ -413,14 +421,19 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    accounting.setAccountingType("3");// 特殊退租核算
 		accounting.setFeeDirection("1");// 应收
 		accounting.setUser(UserUtils.getUser());
-		accounting.setFeeDate(new Date());
+		if (!"9".equals(tradeType)) {// 非特殊退租核算
+		    accounting.setFeeDate(new Date());
+		} else {
+		    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
+			accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
+		    }
+		}
 		accounting.setCreateDate(new Date());
 		accounting.setCreateBy(UserUtils.getUser());
 		accounting.setUpdateDate(new Date());
 		accounting.setUpdateBy(UserUtils.getUser());
 		accounting.setDelFlag("0");
 		accountingDao.insert(accounting);
-
 	    }
 	}
 
@@ -462,7 +475,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    accounting.setAccountingType("3");// 特殊退租核算
 		accounting.setFeeDirection("0");// 应出
 		accounting.setUser(UserUtils.getUser());
-		accounting.setFeeDate(new Date());
+		if (!"9".equals(tradeType)) {// 非特殊退租核算
+		    accounting.setFeeDate(new Date());
+		} else {
+		    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
+			accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
+		    }
+		}
 		accounting.setCreateDate(new Date());
 		accounting.setCreateBy(UserUtils.getUser());
 		accounting.setUpdateDate(new Date());
@@ -471,7 +490,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		accountingDao.insert(accounting);
 	    }
 	}
-
 	/* 更新房屋/房间状态 */
 	this.changeHouseOrRoomStatusByReturn(rentContract);
     }

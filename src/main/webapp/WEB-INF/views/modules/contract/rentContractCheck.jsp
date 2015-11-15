@@ -100,6 +100,9 @@
 								<input id="accountList${status.index}_feeAmount" name="accountList[${status.index}].feeAmount" type="text" value="${outItem.feeAmount}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
+							<td class="hide">
+								<input id="accountList${status.index}_feeDateStr" name="accountList[${status.index}].feeDateStr" type="text" value="${outItem.feeDateStr}" maxlength="255" type="hidden"/>
+							</td>
 							<td class="text-center" width="10">
 								<span class="close" onclick="delRow(this, '#accountList${status.index}')" title="删除">&times;</span>
 							</td>
@@ -128,6 +131,9 @@
 							<td>
 								<input id="accountList{{idx}}_feeAmount" name="accountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td class="hide">
+								<input id="accountList{{idx}}_feeDateStr" name="accountList[{{idx}}].feeDateStr" type="hidden" value="${outItem.feeDateStr}" maxlength="255"/>
 							</td>
 							<td class="text-center" width="10">
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#accountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
@@ -175,6 +181,9 @@
 								<input id="outAccountList${status.index}_feeAmount" name="outAccountList[${status.index}].feeAmount" type="text" value="${outItem.feeAmount}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
+							<td class="hide">
+								<input id="outAccountList${status.index}_feeDateStr" name="outAccountList[${status.index}].feeDateStr" type="hidden" value="${outItem.feeDateStr}"/>
+							</td>
 							<td class="text-center" width="10">
 								<span class="close" onclick="delRow(this, '#outAccountList${status.index}')" title="删除">&times;</span>
 							</td>
@@ -203,6 +212,9 @@
 							<td>
 								<input id="outAccountList{{idx}}_feeAmount" name="outAccountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td class="hide">
+								<input id="outAccountList{{idx}}_feeDateStr" name="outAccountList[{{idx}}].feeDateStr" type="hidden" value="{{row.feeDateStr}}"/>
 							</td>
 							<td class="text-center" width="10">
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#outAccountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}

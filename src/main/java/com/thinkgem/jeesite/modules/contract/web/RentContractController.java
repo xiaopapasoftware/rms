@@ -701,9 +701,9 @@ public class RentContractController extends BaseController {
     public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	rentContractService.returnCheck(rentContract, rentContract.getTradeType());
 	if (!StringUtils.isBlank(rentContract.getIsSpecial()))
-	    addMessage(redirectAttributes, "特殊退租成功");
+	    addMessage(redirectAttributes, "特殊退租成功！");
 	else
-	    addMessage(redirectAttributes, "退租核算成功");
+	    addMessage(redirectAttributes, "退租核算成功！");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -758,6 +758,12 @@ public class RentContractController extends BaseController {
 	    preBackRentalAcc.setFeeDirection("0");// 0 : 应出
 	    preBackRentalAcc.setFeeType("7");// 应退房租
 	    preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
+	    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		preBackRentalAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		preBackRentalAcc.setFeeDateStr(rentContract.getReturnDate());
+	    } else {
+		preBackRentalAcc.setFeeDate(new Date());
+	    }
 	    outAccountings.add(preBackRentalAcc);
 	}
 
@@ -773,6 +779,12 @@ public class RentContractController extends BaseController {
 		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
 		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(), "1");
 		elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    elctrBackAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    elctrBackAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    elctrBackAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(elctrBackAcc);
 	    }
 	}
@@ -788,6 +800,12 @@ public class RentContractController extends BaseController {
 		waterAcc.setFeeDirection("0");// 0 : 应出
 		waterAcc.setFeeType("15");// 水费剩余金额
 		waterAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "14", rentContract.getWaterFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    waterAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    waterAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    waterAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(waterAcc);
 	    }
 
@@ -799,6 +817,12 @@ public class RentContractController extends BaseController {
 		tvAcc.setFeeDirection("0");// 0 : 应出
 		tvAcc.setFeeType("19");// 有线电视费剩余金额
 		tvAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "18", rentContract.getTvFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    tvAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    tvAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(tvAcc);
 	    }
 
@@ -810,6 +834,12 @@ public class RentContractController extends BaseController {
 		netAcc.setFeeDirection("0");// 0 : 应出
 		netAcc.setFeeType("21");// 宽带费剩余金额
 		netAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "20", rentContract.getNetFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    netAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    netAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(netAcc);
 	    }
 
@@ -829,6 +859,12 @@ public class RentContractController extends BaseController {
 		servAcc.setAccountingType(accountingType);
 		servAcc.setFeeDirection("0");// 0 : 应出
 		servAcc.setFeeType("23");// 服务费剩余金额
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    servAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    servAcc.setFeeDate(new Date());
+		}
 		servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "22", rentContract.getServiceFee()));
 		outAccountings.add(servAcc);
 	    }
@@ -1001,6 +1037,12 @@ public class RentContractController extends BaseController {
 	pay4BrokeAcc.setFeeDirection("1");// 1 : 应收
 	pay4BrokeAcc.setFeeType("10");// 损坏赔偿金
 	pay4BrokeAcc.setFeeAmount(0D);
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    pay4BrokeAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    pay4BrokeAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    pay4BrokeAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(pay4BrokeAcc);
 
 	// 应收---退租补偿税金
@@ -1010,6 +1052,12 @@ public class RentContractController extends BaseController {
 	backSuppAcc.setFeeDirection("1");// 1 : 应收
 	backSuppAcc.setFeeType("24");// 损坏赔偿金
 	backSuppAcc.setFeeAmount(0D);
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    backSuppAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    backSuppAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    backSuppAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(backSuppAcc);
 
 	// 应收---电费自用金额
@@ -1019,6 +1067,12 @@ public class RentContractController extends BaseController {
 	elSelAcc.setFeeDirection("1");// 1 : 应收
 	elSelAcc.setFeeType("11");// 电费自用金额
 	elSelAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    elSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    elSelAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    elSelAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(elSelAcc);
 
 	// 应收---电费分摊金额
@@ -1028,6 +1082,12 @@ public class RentContractController extends BaseController {
 	elCommAcc.setFeeDirection("1");// 1 : 应收
 	elCommAcc.setFeeType("12");// 电费分摊金额
 	elCommAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    elCommAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    elCommAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    elCommAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(elCommAcc);
 
 	// 应收---水费金额
@@ -1037,6 +1097,12 @@ public class RentContractController extends BaseController {
 	waterSelAcc.setFeeDirection("1");// 1 : 应收
 	waterSelAcc.setFeeType("14");// 水费金额
 	waterSelAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    waterSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    waterSelAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    waterSelAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(waterSelAcc);
 
 	// 应收---燃气金额
@@ -1055,6 +1121,12 @@ public class RentContractController extends BaseController {
 	tvAcc.setFeeDirection("1");// 1 : 应收
 	tvAcc.setFeeType("18");// 电视费金额
 	tvAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    tvAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    tvAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(tvAcc);
 
 	// 应收---宽带费
@@ -1064,6 +1136,12 @@ public class RentContractController extends BaseController {
 	netAcc.setFeeDirection("1");// 1 : 应收
 	netAcc.setFeeType("20");// 宽带费金额
 	netAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    netAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    netAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(netAcc);
 
 	// 应收---服务费
@@ -1073,8 +1151,13 @@ public class RentContractController extends BaseController {
 	servAcc.setFeeDirection("1");// 1 : 应收
 	servAcc.setFeeType("22");// 服务费金额
 	servAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    servAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    servAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(servAcc);
-
 	return inAccountings;
     }
 }

@@ -26,13 +26,14 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
     private String paymentType; // 款项类型
     private String transId; // 交易对象
     private String transName; // 交易对象名称
+    private String transObjectNo;// 交易对象编号
     private String tradeDirection; // 交易款项方向
     private Date startDate; // 交易款项开始时间
     private Date expiredDate; // 交易款项到期时间
     private Double tradeAmount; // 应该交易金额
     private Double transAmount; // 实际交易金额
     private Double lastAmount; // 剩余交易金额
-    private Double transferDepositAmount; // 定金转合同
+    private Double transferDepositAmount; // 定金转合同的实转金额
     private String transStatus; // 交易款项状态
     private String remittanceDate;
 
@@ -149,6 +150,14 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 
     public void setTransName(String transName) {
 	this.transName = transName;
+    }
+
+    public String getTransObjectNo() {
+	return transObjectNo;
+    }
+
+    public void setTransObjectNo(String transObjectNo) {
+	this.transObjectNo = transObjectNo;
     }
 
     public String getRemittanceDate() {
