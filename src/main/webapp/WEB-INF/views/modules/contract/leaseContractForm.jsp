@@ -58,6 +58,7 @@
 					}
 					loading('正在提交，请稍等...');
 					form.submit();
+					$("#btnSubmit").attr("disabled",true); 
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {

@@ -60,6 +60,7 @@
 					}
 					loading('正在提交，请稍等...');
 					form.submit();
+					$("#btnSubmit").attr("disabled",true); 
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
@@ -77,6 +78,7 @@
 			$("#agreementStatus").val("6");
 			$("#validatorFlag").val("0");
 			$("#inputForm").submit();
+			$("#saveBtn").attr("disabled",true); 
 		}
 		
 		function changeProject() {
