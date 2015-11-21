@@ -67,7 +67,7 @@ public class SystemController {
 	
 	@RequestMapping(value="register")
 	@ResponseBody
-	public String register(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public ResponseData register(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		ResponseData data = new ResponseData(); 
 		String mobile = (String) request.getParameter("mobile");
@@ -117,14 +117,14 @@ public class SystemController {
 			data.setMsg("无效验证码");
 			data.setData("");
 		}
-		return JsonUtil.object2Json(data);
+		return data;
 	}
 	
 	
 	
 	@RequestMapping(value="check_code")
 	@ResponseBody
-	public String check_code(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public ResponseData check_code(HttpServletRequest request, HttpServletResponse response, Model model) {
 		try{
 			log.debug("parasMap:" + request.getParameterMap());
 			String mobile = (String) request.getParameter("mobile");
@@ -132,7 +132,7 @@ public class SystemController {
 				ResponseData data = new ResponseData();
 				data.setCode("101");
 				data.setMsg("必填参数不能为空 ");	
-				return JsonUtil.object2Json(data);
+				return data;
 			}
 		
 			TAppCheckCode tAppCheckCode = new TAppCheckCode();
@@ -146,19 +146,19 @@ public class SystemController {
 			data.setCode("200");
 			data.setMsg("成功获取验证码");
 			data.setData(tAppCheckCode.getCode());
-			return JsonUtil.object2Json(data);
+			return data;
 		}catch(Exception e){
 			log.error("in check_code:"+ e.getMessage());
 			ResponseData data = new ResponseData(); 
 			data.setCode("411");
 			data.setMsg("获取验证码异常");
-			return JsonUtil.object2Json(data);
+			return data;
 		}
 	}
 	
 	@RequestMapping(value="login/pwd")
 	@ResponseBody
-	public String loginWithPwd(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public ResponseData loginWithPwd(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
 		ResponseData data = new ResponseData(); 
 		String phone = (String) request.getParameter("mobile");
@@ -187,14 +187,14 @@ public class SystemController {
 			data.setCode("200");
 			data.setMsg("登陆成功");
 		}
-		return JsonUtil.object2Json(data);
+		return data;
 	}
 	
 	@RequestMapping(value="login/code")
 	@ResponseBody
-	public String loginWithCode(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public ResponseData loginWithCode(HttpServletRequest request, HttpServletResponse response, Model model) {
+		ResponseData data = new ResponseData(); 
 		
-		String res = "";
 		String mobile = (String) request.getParameter("mobile");
 		String code = (String)request.getParameter("code");;
 		
@@ -213,7 +213,6 @@ public class SystemController {
 			appToken.setExprie(caculateExpireTime(2592000));
 			appTokenService.merge(appToken);
 			
-			ResponseData data = new ResponseData(); 
 			data.setCode("200");
 			data.setMsg("登陆成功");
 			Map object = new HashMap();
@@ -221,30 +220,26 @@ public class SystemController {
 			object.put("token", appToken.getToken());
 			object.put("expire", appToken.getExprie().getTime());
 			data.setData(object);
-			res = JsonUtil.object2Json(data);
 		}else{
-			ResponseData data = new ResponseData(); 
 			data.setCode("402");
 			data.setMsg("无效验证码");
 			data.setData("");
-			res = JsonUtil.object2Json(data);
 		}
-		return res;
+		return data;
 	}
 	
 	@RequestMapping(value="self/pwd")
 	@ResponseBody
-	public String changePwd(HttpServletRequest request, HttpServletResponse response, Model model) {
+	public ResponseData changePwd(HttpServletRequest request, HttpServletResponse response, Model model) {
 		ResponseData data = new ResponseData(); 
 		log.debug(request.getParameterMap().toString());
-		String res = "";
 		String mobile = (String) request.getParameter("mobile");
 		String oldPassword = (String)request.getParameter("old_password");
 		String newPassword = (String)request.getParameter("new_password");	
 		if(oldPassword == null || newPassword== null){
 			data.setCode("101");
 			data.setMsg("必填参数不能为空 ");	
-			return JsonUtil.object2Json(data);
+			return data;
 		}
 		
 		AppUser appUser = new AppUser();
@@ -260,7 +255,7 @@ public class SystemController {
 			data.setCode("100");
 			data.setMsg("修改密码成功");
 		}
-		return JsonUtil.object2Json(data);
+		return data;
 	}
  
 	/**
