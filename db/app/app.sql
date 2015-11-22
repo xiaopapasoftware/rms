@@ -3,6 +3,7 @@ drop table if exists T_APP_INTERFACE_LOG;
 drop table if exists T_APP_CHECK_CODE;
 drop table if exists T_APP_USER;
 drop table if exists T_APP_TOKEN;
+drop table if exists　T_APP_QUESTIONS;
 
 
 /* Create Tables */
@@ -10,7 +11,16 @@ create table T_APP_USER
 (
    ID                   varchar(64) NOT NULL,
    PHONE    			varchar(20) comment '手机号码',
-   PASSWORD           	varchar(20) comment '密码',
+   PASSWORD           	varchar(64) comment '密码',
+   ID_NO				VARCHAR(18) comment  '身份证号',
+   NAME					VARCHAR(30) COMMENT  '姓名',
+   SEX					VARCHAR(1)  COMMENT  '性别1-男 2-女',
+   BIRTH				VARCHAR(10) COMMENT  '生日',
+   AGE					INT			COMMENT  '年龄',
+   PROFESSION			VARCHAR(100) COMMENT '职业',
+   CORP					VARCHAR(200) COMMENT '公司',
+   ID_PHOTO＿FRONT		VARCHAR(64)comment  '身份证正面',
+   ID_PHOTO＿BACK		VARCHAR(64)comment  '身份证反面',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -50,3 +60,19 @@ create table T_APP_INTERFACE_LOG
    	RETURN_TIME          TIMESTAMP 	COMMENT '创建时间',
    primary key (ID)
 ) comment = '接口调用日志';
+
+create table T_APP_QUESTIONS
+(
+   ID                   varchar(64) NOT NULL,
+   QUESTION    			varchar(2000) comment '问题',
+   ANSWER           	varchar(2000) comment '回签',
+   TYPE					VARCHAR(1) COMMENT  '类型',
+   SORT					INT  COMMENT  '排序',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME 	COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '常见问题';
