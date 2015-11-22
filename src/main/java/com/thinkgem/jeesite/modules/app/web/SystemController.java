@@ -258,6 +258,57 @@ public class SystemController {
 		return data;
 	}
  
+	@RequestMapping(value="pwd/reset")
+	@ResponseBody
+	public ResponseData resetPwd(HttpServletRequest request, HttpServletResponse response, Model model) {
+		ResponseData data = new ResponseData(); 
+		log.debug(request.getParameterMap().toString());
+		String mobile = (String) request.getParameter("mobile");
+		String code = (String)request.getParameter("code");
+		String password = (String)request.getParameter("password");	
+		if(mobile == null || code== null || password == null){
+			data.setCode("101");
+			data.setMsg("必填参数不能为空 ");	
+			return data;
+		}
+		
+		TAppCheckCode tAppCheckCode = new TAppCheckCode();
+		tAppCheckCode.setPhone(mobile);
+		tAppCheckCode.setCode(code);
+		tAppCheckCode.setExprie(new Date());
+		boolean isValidCheckCode = tAppCheckCodeService.verifyCheckCode(tAppCheckCode);
+		
+		if(isValidCheckCode){
+			//cheange pwd
+			AppUser appUser = new AppUser();
+			appUser.setPhone(mobile);
+			appUser = appUserService.getByPhone(appUser);
+			appUser.setPassword(password);
+			appUser.setUpdateDate(new Date());
+			appUserService.save(appUser);
+			//generate user token
+			AppToken appToken = new AppToken();
+			appToken.setPhone(mobile);
+			appToken.setToken(RandomStrUtil.generateCode(false, 32));
+			appToken.setExprie(caculateExpireTime(2592000));
+			appTokenService.merge(appToken);
+			
+			data.setCode("200");
+			data.setMsg("重置密码成功");
+			Map object = new HashMap();
+			object.put("user_id", appUser.getPhone());
+			object.put("token", appToken.getToken());
+			object.put("expire", appToken.getExprie().getTime());
+			data.setData(object);
+		}else{
+			data.setCode("402");
+			data.setMsg("无效验证码");
+			data.setData("");
+		}
+		return data;
+	}
+	
+	
 	/**
 	 * 计算过期时间，单位秒
 	 * @param duration
