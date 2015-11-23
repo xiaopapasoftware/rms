@@ -46,6 +46,9 @@ public class House extends DataEntity<House> {
     private String projectAddr;
     private String orientation;
     
+    private String houseId;
+    private String roomId;
+    
     private String intentMode;//意向租赁类型
     private String isFeature;//是否精选房源
     private Double rental;//意向租金
@@ -289,5 +292,21 @@ public class House extends DataEntity<House> {
 
 	public void setOrientation(String orientation) {
 		this.orientation = orientation;
+	}
+
+	public String getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(String houseId) {
+		this.houseId = houseId;
+	}
+
+	public String getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
 	}
 }

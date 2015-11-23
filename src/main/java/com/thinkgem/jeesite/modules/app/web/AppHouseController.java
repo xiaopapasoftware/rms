@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.app.entity.AppToken;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
+import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -34,6 +38,8 @@ public class AppHouseController {
     private HouseService houseService;
 	@Autowired
 	private ContractBookService contractBookService;
+	@Autowired
+	private AppTokenService appTokenService;
 	
 	@RequestMapping(value = "findFeatureList")
     @ResponseBody
@@ -146,9 +152,25 @@ public class AppHouseController {
 		
 		try {
 			String token = (String) request.getHeader("token");
+			AppToken apptoken = new AppToken();
+			apptoken.setToken(token);
+			apptoken = appTokenService.findByToken(apptoken);
 			
 			ContractBook contractBook = new ContractBook();
-			//contractBook
+			contractBook.setUserId(apptoken.getPhone());
+			
+			House house = new House();
+			house.setId(request.getParameter("house_id"));
+			house = this.houseService.getHouseByHouseId(house);
+			
+			contractBook.setHouseId(house.getHouseId());
+			contractBook.setRoomId(house.getRoomId());
+			contractBook.setUserName(request.getParameter("b_name"));
+			contractBook.setUserPhone(request.getParameter("phone"));
+			contractBook.setUserGender(request.getParameter("sex"));
+			contractBook.setRemarks(request.getParameter("msg"));
+			contractBook.setBookDate(DateUtils.parseDate(request.getParameter("b_time")));
+			contractBook.setBookStatus("0");//管家确认中
 			contractBookService.save(contractBook);
 			data.setCode("200");
 		} catch (Exception e) {

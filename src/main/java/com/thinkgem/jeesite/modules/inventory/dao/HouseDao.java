@@ -36,4 +36,6 @@ public interface HouseDao extends CrudDao<House> {
     List<House> findFeatureList(House house);
     
     House getFeatureInfo(House house);
+    
+    House getHouseByHouseId(House house);
 }

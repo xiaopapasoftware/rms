@@ -62,6 +62,8 @@ public class AppTokenService extends CrudService<AppTokenDao, AppToken> {
 		return appTokenDao.findByTokenAndExpire(appToken);
 	}
 	
-	
+	public AppToken findByToken(AppToken appToken) {
+		return appTokenDao.findByToken(appToken);
+	}
 	
 }

@@ -18,4 +18,6 @@ public interface AppTokenDao extends CrudDao<AppToken> {
 	public int delByPhone(AppToken appToken);
 	
 	public AppToken findByTokenAndExpire(AppToken appToken);
+	
+	AppToken findByToken(AppToken appToken);
 }

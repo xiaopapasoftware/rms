@@ -32,7 +32,7 @@
 			</li>
 			<li><label>预约时间：</label>
 				<input name="bookDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${contractBook.bookDate}" pattern="yyyy-MM-dd、"/>"
+					value="<fmt:formatDate value="${contractBook.bookDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
 			</li>
 			<li><label>预约状态：</label>
@@ -64,28 +64,40 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="contractBook">
 			<tr>
-				<td><a href="${ctx}/contract/contractBook/form?id=${contractBook.id}">
+				<td>
+					${contractBook.projectName}
+				</td>
+				<td>
+					${contractBook.buildingName}
+				</td>
+				<td>
+					${contractBook.houseCode}
+				</td>
+				<td>
+					${contractBook.roomNo}
+				</td>
+				<td>
 					${contractBook.userName}
-				</a></td>
+				</td>
 				<td>
 					${contractBook.userPhone}
 				</td>
 				<td>
-					${contractBook.bookDate}
+					<fmt:formatDate value="${contractBook.bookDate}" pattern="yyyy-MM-dd HH:mm"/>
 				</td>
 				<td>
-					${contractBook.bookStatus}
-				</td>
-				<td>
-					<fmt:formatDate value="${contractBook.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+					${fns:getDictLabel(contractBook.bookStatus, 'book_status', '')}
 				</td>
 				<td>
 					${contractBook.remarks}
 				</td>
-				<shiro:hasPermission name="contract:contractBook:edit"><td>
-    				<a href="${ctx}/contract/contractBook/form?id=${contractBook.id}">修改</a>
-					<a href="${ctx}/contract/contractBook/delete?id=${contractBook.id}" onclick="return confirmx('确认要删除该预约看房信息吗？', this.href)">删除</a>
-				</td></shiro:hasPermission>
+				<td>
+				<shiro:hasPermission name="contract:contractBook:edit">
+				  <c:if test="${contractBook.bookStatus=='0'}">
+					<a href="${ctx}/contract/book/confirm?id=${contractBook.id}" onclick="return confirmx('确认该预约信息吗？', this.href)">确认</a>
+				  </c:if>
+				</shiro:hasPermission>
+				</td>
 			</tr>
 		</c:forEach>
 		</tbody>

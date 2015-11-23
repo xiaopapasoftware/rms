@@ -20,6 +20,14 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByToken" resultType="AppToken">
+		SELECT 
+			<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		WHERE a.token = #{token}
+	</select>
+	
 	<select id="findList" resultType="AppToken">
 		SELECT 
 			<include refid="appTokenColumns"/>

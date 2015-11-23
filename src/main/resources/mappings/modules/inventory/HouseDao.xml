@@ -78,6 +78,12 @@
 		where r.id=#{id})t2
 	</select>
 	
+	<select id="getHouseByHouseId" resultType="House">
+		select h.id house_id,'' room_id from t_house h where h.id=#{id}
+		union all
+		select r.house_id,r.id room_id from t_room r where r.id=#{id}
+	</select>
+	
 	<select id="findList" resultType="House">
 		SELECT 
 			<include refid="houseColumns"/>

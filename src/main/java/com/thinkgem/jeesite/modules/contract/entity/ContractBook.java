@@ -24,6 +24,11 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private String bookStatus;		// book_status
 	private String salesId;		// sales_id
 	
+	private String projectName;
+	private String buildingName;
+	private String houseCode;
+	private String roomNo;
+	
 	public ContractBook() {
 		super();
 	}
@@ -102,6 +107,38 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setSalesId(String salesId) {
 		this.salesId = salesId;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
+	}
+
+	public String getBuildingName() {
+		return buildingName;
+	}
+
+	public void setBuildingName(String buildingName) {
+		this.buildingName = buildingName;
+	}
+
+	public String getHouseCode() {
+		return houseCode;
+	}
+
+	public void setHouseCode(String houseCode) {
+		this.houseCode = houseCode;
+	}
+
+	public String getRoomNo() {
+		return roomNo;
+	}
+
+	public void setRoomNo(String roomNo) {
+		this.roomNo = roomNo;
 	}
 	
 }

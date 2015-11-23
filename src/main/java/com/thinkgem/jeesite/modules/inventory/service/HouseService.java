@@ -190,4 +190,8 @@ public class HouseService extends CrudService<HouseDao, House> {
     public int getCurrentValidHouseNum() {
 	return dao.getCurrentValidHouseNum(new House());
     }
+    
+    public House getHouseByHouseId(House house) {
+    	return dao.getHouseByHouseId(house);
+    }
 }

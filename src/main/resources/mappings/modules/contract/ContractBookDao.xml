@@ -18,10 +18,22 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		t.project_name,
+		t.building_name,
+		t.house_code,
+		t.room_no
 	</sql>
 	
 	<sql id="contractBookJoins">
+		left join 
+		(
+		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no from t_house h,t_property_project p,t_building b
+		where h.property_project_id=p.id and h.building_id=b.id 
+		union all 
+		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no from t_room r,t_property_project p,t_building b,t_house h
+		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id
+		) t on (a.house_id = t.house_id or a.room_id=t.house_id)
 	</sql>
     
 	<select id="get" resultType="ContractBook">
@@ -46,7 +58,7 @@
 				AND a.user_phone = #{userPhone}
 			</if>
 			<if test="bookDate != null and bookDate != ''">
-				AND a.book_date = #{bookDate}
+				AND date_format(a.book_date,'%Y-%m-%d') = date_format(#{bookDate},'%Y-%m-%d')
 			</if>
 			<if test="bookStatus != null and bookStatus != ''">
 				AND a.book_status = #{bookStatus}

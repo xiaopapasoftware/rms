@@ -6,7 +6,6 @@ package com.thinkgem.jeesite.modules.contract.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,8 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 
@@ -45,7 +44,6 @@ public class ContractBookController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("contract:contractBook:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(ContractBook contractBook, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ContractBook> page = contractBookService.findPage(new Page<ContractBook>(request, response), contractBook); 
@@ -53,14 +51,12 @@ public class ContractBookController extends BaseController {
 		return "modules/contract/contractBookList";
 	}
 
-	@RequiresPermissions("contract:contractBook:view")
 	@RequestMapping(value = "form")
 	public String form(ContractBook contractBook, Model model) {
 		model.addAttribute("contractBook", contractBook);
 		return "modules/contract/contractBookForm";
 	}
 
-	@RequiresPermissions("contract:contractBook:edit")
 	@RequestMapping(value = "save")
 	public String save(ContractBook contractBook, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, contractBook)){
@@ -68,15 +64,16 @@ public class ContractBookController extends BaseController {
 		}
 		contractBookService.save(contractBook);
 		addMessage(redirectAttributes, "保存预约看房信息成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/contractBook/?repage";
+		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
 	}
 	
-	@RequiresPermissions("contract:contractBook:edit")
-	@RequestMapping(value = "delete")
-	public String delete(ContractBook contractBook, RedirectAttributes redirectAttributes) {
-		contractBookService.delete(contractBook);
-		addMessage(redirectAttributes, "删除预约看房信息成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/contractBook/?repage";
+	@RequestMapping(value = "confirm")
+	public String confirm(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+		contractBook = contractBookService.get(contractBook);
+		contractBook.setBookStatus("1");//预约成功
+		contractBookService.save(contractBook);
+		addMessage(redirectAttributes, "确认预约信息成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
 	}
 
 }
