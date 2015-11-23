@@ -25,7 +25,11 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		atta.attachment_path AS "attachmentPath",
-		a.is_feature as "isFeature"
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay"
 	</sql>
 	
 	<sql id="roomJoins">
@@ -96,7 +100,11 @@
 				a.room_no AS "roomNo",
 				a.room_status AS "roomStatus",
 				a.del_flag AS "delFlag",
-				a.is_feature as "isFeature"
+				a.is_feature as "isFeature",
+				a.rental as "rental",
+				a.short_desc as "shortDesc",
+				a.short_location as "shortLocation",
+				a.pay_way as "payWay"
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 			  AND a.property_project_id = #{propertyProject.id}
@@ -141,7 +149,11 @@
 			update_date,
 			remarks,
 			del_flag,
-			is_feature
+			is_feature,
+			rental,
+			short_desc,
+			short_location,
+			pay_way
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -159,7 +171,11 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{isFeature}
+			#{isFeature},
+			#{rental},
+			#{shortDesc},
+			#{shortLocation},
+			#{payWay}
 		)
 	</insert>
 	
@@ -179,7 +195,11 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
-			is_feature = #{isFeature}
+			is_feature = #{isFeature},
+			rental = #{rental},
+			short_desc = #{shortDesc},
+			short_location = #{shortLocation},
+			pay_way = #{payWay}
 		WHERE id = #{id}
 	</update>
 	

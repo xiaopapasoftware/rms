@@ -32,4 +32,8 @@ public interface HouseDao extends CrudDao<House> {
      * 获取当前有效房屋的总数量
      */
     int getCurrentValidHouseNum(House house);
+    
+    List<House> findFeatureList(House house);
+    
+    House getFeatureInfo(House house);
 }

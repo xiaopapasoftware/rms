@@ -31,7 +31,11 @@
 		a.del_flag AS "delFlag",
 		atta.attachment_path AS "attachmentPath",
 		a.intent_mode as "intentMode",
-		a.is_feature as "isFeature"
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay"
 	</sql>
 	
 	<sql id="houseJoins">
@@ -53,6 +57,25 @@
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		left JOIN t_attachment atta on atta.house_id = a.id
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getFeatureInfo" resultType="House">
+		select * from (
+		select h.id,HOUSE_CODE,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path,
+		  h.DECORA_STRUC_ROOM_NUM,h.DECORA_STRUC_CUSSPAC_NUM,h.DECORA_STRUC_WASHRO_NUM,h.HOUSE_SPACE,h.HOUSE_FLOOR,
+		  '' ORIENTATION,p.PROJECT_ADDR from t_house h 
+		left join t_attachment a on h.id=a.house_id
+		left join T_PROPERTY_PROJECT p on h.PROPERTY_PROJECT_ID=p.id
+		where h.id=#{id})t1 
+		union all
+		select * from(
+		select r.id,concat(house_code,'-',room_no) house_code,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path,
+		  h.DECORA_STRUC_ROOM_NUM,h.DECORA_STRUC_CUSSPAC_NUM,h.DECORA_STRUC_WASHRO_NUM,h.HOUSE_SPACE,h.HOUSE_FLOOR,
+		  r.ORIENTATION,p.PROJECT_ADDR from t_room r 
+		left join t_attachment a on r.id=a.room_id
+		left join t_house h on r.HOUSE_ID=h.id
+		left join T_PROPERTY_PROJECT p on h.PROPERTY_PROJECT_ID=p.id
+		where r.id=#{id})t2
 	</select>
 	
 	<select id="findList" resultType="House">
@@ -109,6 +132,18 @@
 		</choose>
 	</select>
 	
+	<select id="findFeatureList" resultType="House">
+		select * from (
+		select h.id,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path from t_house h 
+		left join t_attachment a on h.id=a.house_id
+		where h.intent_mode='0' and h.is_feature='1' and h.house_status in('1','5'))t1 
+		union all
+		select * from(
+		select r.id,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path from t_room r 
+		left join t_attachment a on r.id=a.room_id
+		where r.is_feature='1' and r.room_status in('1','4'))t2
+	</select>
+	
 	<select id="findAllList" resultType="House">
 		SELECT 
 			<include refid="houseColumns"/>
@@ -139,7 +174,11 @@
 			a.house_floor AS "houseFloor",
 			a.house_space AS "houseSpace",
 			a.decoration_spance AS "decorationSpance",
-			a.is_feature as "isFeature"
+			a.is_feature as "isFeature",
+			a.rental as "rental",
+			a.short_desc as "shortDesc",
+			a.short_location as "shortLocation",
+			a.pay_way as "payWay"
 		FROM t_house a	
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -179,7 +218,11 @@
 			remarks,
 			del_flag,
 			intent_mode,
-			is_feature
+			is_feature,
+			rental,
+			short_desc,
+			short_location,
+			pay_way
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -204,7 +247,11 @@
 			#{remarks},
 			#{delFlag},
 			#{intentMode},
-			#{isFeature}
+			#{isFeature},
+			#{rental},
+			#{shortDesc},
+			#{shortLocation},
+			#{payWay}
 		)
 	</insert>
 	
@@ -232,7 +279,11 @@
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			intent_mode = #{intentMode},
-			is_feature = #{isFeature}
+			is_feature = #{isFeature},
+			rental = #{rental},
+			short_desc = #{shortDesc},
+			short_location = #{shortLocation},
+			pay_way = #{payWay}
 		WHERE id = #{id}
 	</update>
 	

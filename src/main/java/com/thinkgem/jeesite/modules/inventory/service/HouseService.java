@@ -56,6 +56,19 @@ public class HouseService extends CrudService<HouseDao, House> {
     public Page<House> findPage(Page<House> page, House house) {
 	return super.findPage(page, house);
     }
+    
+    /**
+     * 精选房源 
+     */
+    public Page<House> findFeaturePage(Page<House> page, House house) {
+    	house.setPage(page);
+		page.setList(dao.findFeatureList(house));
+		return page;
+    }
+    
+    public House getFeatureInfo(House house) {
+    	return dao.getFeatureInfo(house);
+    }
 
     @Transactional(readOnly = false)
     public void save(House house) {

@@ -816,7 +816,12 @@
 						<!-- WEB-INF/classes/com/thinkgem/jeesite/** -->
 						WEB-INF/classes/org/apache/ibatis/**,
 						WEB-INF/classes/org/mybatis/spring/**,
-						WEB-INF/classes/act/**
+						WEB-INF/classes/act/**,
+						WEB-INF/lib/**,
+						static/**,
+						userfiles/**,
+						WEB-INF/tags/**,
+						WEB-INF/tlds/**
 					</packagingExcludes>
 					<warSourceExcludes>
 						static/bootstrap/2.3.1/docs/**,

@@ -9,6 +9,7 @@ drop table if exists T_LEASE_CONTRACT_DTL;
 drop table if exists T_AUDIT;
 drop table if exists T_AUDIT_HIS;
 drop table if exists T_CONTRACT_TENANT;
+drop table if exists t_contract_book;
 
 
 /* Create Tables */
@@ -254,3 +255,24 @@ create table T_AUDIT_HIS
 ALTER TABLE t_lease_contract ADD month_space VARCHAR(64) COMMENT '打款月份间隔';
 ALTER TABLE t_rent_contract ADD return_remark VARCHAR(64) COMMENT '退租备注';
 ALTER TABLE t_attachment ADD trading_accounts_id VARCHAR(64) COMMENT '账务交易ID';
+
+create table t_contract_book
+(
+	ID                   varchar(64) NOT NULL,
+	user_id              varchar(64),
+	house_id             varchar(64),
+	room_id              varchar(64),
+	user_name            varchar(64),
+	user_phone           varchar(64),
+	user_gender          varchar(64),
+	book_date            DATETIME,
+	book_status          varchar(64),
+	sales_id             varchar(64),
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME 	COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+	primary key (ID)
+) comment = '预约看房信息';
