@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.app.dao.AppUserDao">
+    
+	<sql id="appUserColumns">
+		a.id AS "id",
+		a.phone AS "phone",
+		a.password AS "password",
+		a.create_by AS "createBy.id",
+		a.id_card_no AS "idCardNo",
+		a.name AS "name",
+		a.create_date AS "createDate",
+		a.sex AS "sex",
+		a.update_by AS "updateBy.id",
+		a.birth AS "birth",
+		a.update_date AS "updateDate",
+		a.age AS "age",
+		a.remarks AS "remarks",
+		a.profession AS "profession",
+		a.del_flag AS "delFlag",
+		a.corp AS "corp",
+		a.avatar AS "avatar",
+		a.id_card_photo＿front AS "idCardPhoto＿front",
+		a.id_card_photo＿back AS "idCardPhoto＿back"
+	</sql>
+	
+	<sql id="appUserJoins">
+	</sql>
+    
+	<select id="get" resultType="AppUser">
+		SELECT 
+			<include refid="appUserColumns"/>
+		FROM t_app_user a
+		<include refid="appUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AppUser">
+		SELECT 
+			<include refid="appUserColumns"/>
+		FROM t_app_user a
+		<include refid="appUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AppUser">
+		SELECT 
+			<include refid="appUserColumns"/>
+		FROM t_app_user a
+		<include refid="appUserJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_app_user(
+			id,
+			phone,
+			password,
+			create_by,
+			id_card_no,
+			name,
+			create_date,
+			sex,
+			update_by,
+			birth,
+			update_date,
+			age,
+			remarks,
+			profession,
+			del_flag,
+			corp,
+			avatar,
+			id_card_photo＿front,
+			id_card_photo＿back
+		) VALUES (
+			#{id},
+			#{phone},
+			#{password},
+			#{createBy.id},
+			#{idCardNo},
+			#{name},
+			#{createDate},
+			#{sex},
+			#{updateBy.id},
+			#{birth},
+			#{updateDate},
+			#{age},
+			#{remarks},
+			#{profession},
+			#{delFlag},
+			#{corp},
+			#{avatar},
+			#{idCardPhoto＿front},
+			#{idCardPhoto＿back}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_app_user SET 	
+			phone = #{phone},
+			password = #{password},
+			id_card_no = #{idCardNo},
+			name = #{name},
+			sex = #{sex},
+			update_by = #{updateBy.id},
+			birth = #{birth},
+			update_date = #{updateDate},
+			age = #{age},
+			remarks = #{remarks},
+			profession = #{profession},
+			corp = #{corp},
+			avatar = #{avatar},
+			id_card_photo＿front = #{idCardPhoto＿front},
+			id_card_photo＿back = #{idCardPhoto＿back}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_app_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getByPhone" resultType="AppUser">
+		SELECT 
+			<include refid="appUserColumns"/>
+		FROM t_app_user a
+		<include refid="appUserJoins"/>
+		WHERE a.phone = #{phone}
+	</select>
+</mapper>
