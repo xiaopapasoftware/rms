@@ -109,6 +109,8 @@ public class RentContract extends DataEntity<RentContract> {
 	private String returnDate;
 	
 	private String returnRemark;//退租备注
+	
+	private String dataSource;
 
 	public RentContract() {
 		super();
@@ -623,5 +625,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setReturnRemark(String returnRemark) {
 		this.returnRemark = returnRemark;
+	}
+
+	public String getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(String dataSource) {
+		this.dataSource = dataSource;
 	}
 }

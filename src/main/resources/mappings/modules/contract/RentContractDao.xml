@@ -63,7 +63,8 @@
 		a.break_down as breakDown,
 		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
-		at4.attachment_path as "rentContractOtherFile"
+		at4.attachment_path as "rentContractOtherFile",
+		a.data_source as "dataSource"
 	</sql>
 	
 	<sql id="rentContractJoins">
@@ -246,7 +247,8 @@
 			del_flag,
 			charge_type,
 			break_down,
-			return_remark
+			return_remark,
+			data_source
 		) VALUES (
 			#{id},
 			#{agreementId},
@@ -295,7 +297,8 @@
 			#{delFlag},
 			#{chargeType},
 			#{breakDown},
-			#{returnRemark}
+			#{returnRemark},
+			#{dataSource}
 		)
 	</insert>
 	

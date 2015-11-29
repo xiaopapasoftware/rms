@@ -35,7 +35,8 @@
 		tm.room_no as "roomNo",
 		at1.attachment_path as "depositAgreementFile",
 		at3.attachment_path as "depositCustomerIDFile",
-		at4.attachment_path as "depositOtherFile"
+		at4.attachment_path as "depositOtherFile",
+		a.data_source as "dataSource"
 	</sql>
 	
 	<sql id="depositAgreementJoins">
@@ -156,7 +157,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			data_source
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -182,7 +184,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{dataSource}
 		)
 	</insert>
 	

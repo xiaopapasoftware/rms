@@ -29,6 +29,15 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private String houseCode;
 	private String roomNo;
 	
+	private String shortDesc;
+	private String shortLocation;
+	private String attachmentPath;
+	
+	private String depositId;
+	
+	private String contractCode;
+	private Double rent;
+	
 	public ContractBook() {
 		super();
 	}
@@ -140,5 +149,52 @@ public class ContractBook extends DataEntity<ContractBook> {
 	public void setRoomNo(String roomNo) {
 		this.roomNo = roomNo;
 	}
-	
+
+	public String getShortDesc() {
+		return shortDesc;
+	}
+
+	public void setShortDesc(String shortDesc) {
+		this.shortDesc = shortDesc;
+	}
+
+	public String getAttachmentPath() {
+		return attachmentPath;
+	}
+
+	public void setAttachmentPath(String attachmentPath) {
+		this.attachmentPath = attachmentPath;
+	}
+
+	public String getShortLocation() {
+		return shortLocation;
+	}
+
+	public void setShortLocation(String shortLocation) {
+		this.shortLocation = shortLocation;
+	}
+
+	public String getDepositId() {
+		return depositId;
+	}
+
+	public void setDepositId(String depositId) {
+		this.depositId = depositId;
+	}
+
+	public String getContractCode() {
+		return contractCode;
+	}
+
+	public void setContractCode(String contractCode) {
+		this.contractCode = contractCode;
+	}
+
+	public Double getRent() {
+		return rent;
+	}
+
+	public void setRent(Double rent) {
+		this.rent = rent;
+	}
 }

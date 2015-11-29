@@ -94,7 +94,7 @@
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">
 				  <c:if test="${contractBook.bookStatus=='0'}">
-					<a href="${ctx}/contract/book/confirm?id=${contractBook.id}" onclick="return confirmx('确认该预约信息吗？', this.href)">确认</a>
+					<a href="${ctx}/contract/book/confirm?houseId=${contractBook.houseId}&roomId=${contractBook.roomId}" onclick="return confirmx('确认该预约信息吗？', this.href)">确认</a>
 				  </c:if>
 				</shiro:hasPermission>
 				</td>

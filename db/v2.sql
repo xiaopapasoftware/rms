@@ -28,6 +28,20 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('358','0','管家确认中','book_status','预约状态','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('359','1','预约成功','book_status','预约状态','2','0','1',now(),'1',now(),NULL,'0');
 
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('360','1','管理系统','data_source','数据来源','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('361','2','APP','data_source','数据来源','2','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','1','未支付','order_status','订单状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','2','已支付','order_status','订单状态','2','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','管家确认中','booked_status','预定状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','1','预定成功','booked_status','预定状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('366','2','已支付','booked_status','预定状态','3','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('367','0','管家确认中','sign_status','签约状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('368','1','签约成功','sign_status','签约状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('369','2','已支付','sign_status','签约状态','3','0','1',now(),'1',now(),NULL,'0');
+
 create table t_contract_book
 (
 	ID                   varchar(64) NOT NULL,
@@ -48,3 +62,28 @@ create table t_contract_book
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
 ) comment = '预约看房信息';
+
+ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
+update T_DEPOSIT_AGREEMENT set data_source = '1';
+
+create table t_payment_order
+(
+	ID                   varchar(64) NOT NULL,
+	order_id             varchar(64),
+	order_amount         float,
+	order_date           DATETIME,
+	order_status         varchar(2),
+	trade_id             varchar(64) comment '账务交易ID',
+	trans_id             varchar(64) comment '支付交易单号',
+	trans_date           DATETIME,
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME 	COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+	primary key (ID)
+) comment = '支付订单信息';
+
+ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
+update T_RENT_CONTRACT set data_source = '1';

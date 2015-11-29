@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao">
+    
+	<sql id="paymentOrderColumns">
+		a.id AS "id",
+		a.order_id AS "orderId",
+		a.order_amount AS "orderAmount",
+		a.order_date AS "orderDate",
+		a.order_status AS "orderStatus",
+		a.trade_id AS "tradeId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.trans_id as "transId",
+		a.trans_date as "transDate"
+	</sql>
+	
+	<sql id="paymentOrderJoins">
+	</sql>
+    
+	<select id="get" resultType="PaymentOrder">
+		SELECT 
+			<include refid="paymentOrderColumns"/>
+		FROM t_payment_order a
+		<include refid="paymentOrderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PaymentOrder">
+		SELECT 
+			<include refid="paymentOrderColumns"/>
+		FROM t_payment_order a
+		<include refid="paymentOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PaymentOrder">
+		SELECT 
+			<include refid="paymentOrderColumns"/>
+		FROM t_payment_order a
+		<include refid="paymentOrderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_payment_order(
+			id,
+			order_id,
+			order_amount,
+			order_date,
+			order_status,
+			trade_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			trans_id,
+			trans_date
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{orderAmount},
+			#{orderDate},
+			#{orderStatus},
+			#{tradeId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{transId},
+			#{transDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_payment_order SET 	
+			order_id = #{orderId},
+			order_amount = #{orderAmount},
+			order_date = #{orderDate},
+			order_status = #{orderStatus},
+			trade_id = #{tradeId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			trans_id = #{transId},
+			trans_date = #{transDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_payment_order SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

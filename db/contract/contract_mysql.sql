@@ -276,3 +276,6 @@ create table t_contract_book
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
 ) comment = '预约看房信息';
+
+ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default 'SYS' COMMENT '数据来源 管理系统/APP';
+update T_DEPOSIT_AGREEMENT set data_source = 'SYS';

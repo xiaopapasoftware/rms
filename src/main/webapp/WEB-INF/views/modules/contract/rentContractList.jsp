@@ -258,6 +258,7 @@
 				<th>原出租合同名称</th>
 				<th>原定金协议名称</th>
 				<th style="width:20px;">合同来源</th>
+				<th>数据来源</th>
 				<th style="width:20px;">合同签订类型</th>
 				<th>合同编号</th>
 				<th>合同名称</th>
@@ -294,6 +295,9 @@
 				<td>
 					${fns:getDictLabel(rentContract.contractSource, 'contract_source', '')}
 				</td>
+				<td>
+					${fns:getDictLabel(rentContract.dataSource, 'data_source', '管理系统')}
+				</a>
 				<td>
 					${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
 				</td>

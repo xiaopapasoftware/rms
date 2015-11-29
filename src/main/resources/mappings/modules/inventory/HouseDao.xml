@@ -140,12 +140,12 @@
 	
 	<select id="findFeatureList" resultType="House">
 		select * from (
-		select h.id,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path from t_house h 
+		select h.id,HOUSE_CODE,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path from t_house h 
 		left join t_attachment a on h.id=a.house_id
 		where h.intent_mode='0' and h.is_feature='1' and h.house_status in('1','5'))t1 
 		union all
 		select * from(
-		select r.id,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path from t_room r 
+		select r.id,concat(house_code,'-',room_no) house_code,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path from t_room r 
 		left join t_attachment a on r.id=a.room_id
 		where r.is_feature='1' and r.room_status in('1','4'))t2
 	</select>

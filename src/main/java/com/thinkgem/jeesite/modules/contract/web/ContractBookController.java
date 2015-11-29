@@ -69,6 +69,7 @@ public class ContractBookController extends BaseController {
 	
 	@RequestMapping(value = "confirm")
 	public String confirm(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+		contractBook.setDelFlag("0");
 		contractBook = contractBookService.get(contractBook);
 		contractBook.setBookStatus("1");//预约成功
 		contractBookService.save(contractBook);
