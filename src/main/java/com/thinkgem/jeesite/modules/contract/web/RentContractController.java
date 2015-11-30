@@ -7,11 +7,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -777,8 +779,19 @@ public class RentContractController extends BaseController {
 		elctrBackAcc.setAccountingType(accountingType);
 		elctrBackAcc.setFeeDirection("0");// 0 : 应出
 		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
-		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(), "1");
-		elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
+		Map<Integer, String> resultMap = electricFeeService.getMeterFee(rentContract.getId(), DateUtils.firstDateOfCurrentMonth(), DateUtils.lastDateOfCurrentMonth());
+		Double feeAmount = 0D;
+		if (MapUtils.isNotEmpty(resultMap)) {
+		    String remainedTotalEle = resultMap.get(3);// 剩余总电量
+		    String personElePrice = resultMap.get(4);// 个人电量单价
+		    if (StringUtils.isNotEmpty(remainedTotalEle) && StringUtils.isNotEmpty(personElePrice)) {
+			Double price = Double.valueOf(remainedTotalEle) * Double.valueOf(personElePrice);
+			if (price > 0) {
+			    feeAmount = new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
+			}
+		    }
+		}
+		elctrBackAcc.setFeeAmount(feeAmount);
 		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
 		    elctrBackAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
 		    elctrBackAcc.setFeeDateStr(rentContract.getReturnDate());
