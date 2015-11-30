@@ -79,4 +79,5 @@ public class ElectricFeeController extends BaseController {
 	addMessage(redirectAttributes, "删除电费结算成功");
 	return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
     }
+
 }

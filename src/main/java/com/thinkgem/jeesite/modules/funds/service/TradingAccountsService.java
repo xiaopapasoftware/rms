@@ -256,6 +256,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				    electricFee.setChargeId(id);
 				    electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
 				    electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
+				    electricFee.setUpdateBy(UserUtils.getUser());
+				    electricFee.setUpdateDate(new Date());
 				    electricFeeDao.update(electricFee);
 				}
 			    }
@@ -263,6 +265,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    } else {// 审核不通过
 			electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
 			electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+			electricFee.setUpdateBy(UserUtils.getUser());
+			electricFee.setUpdateDate(new Date());
 			electricFeeDao.update(electricFee);
 		    }
 		}
@@ -361,7 +365,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		ElectricFee upFee = electricFeeDao.get(fee);
 		upFee.setChargeStatus("0");// 0=充值中
 		upFee.setSettleStatus("1");// '1'='结算待审核'
-		electricFeeDao.update(fee);
+		upFee.setUpdateBy(UserUtils.getUser());
+		upFee.setUpdateDate(new Date());
+		electricFeeDao.update(upFee);
 	    }
 	}
 

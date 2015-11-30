@@ -26,9 +26,6 @@
 				}
 			});
 		});
-		$("#getMeterFeeBtn").click(function(){
-			alert("check");
-		});
 	</script>
 </head>
 <body>
@@ -50,18 +47,18 @@
 				<span class="help-inline"><font color="red">*</font></span>
 				<script type="text/javascript">
 					$("#rentContractButton, #contractName").click(function(){
-					if ($("#rentContractButton").hasClass("disabled")){
-						return true;
-					}
-					top.$.jBox.open("iframe:${ctx}/contract/rentContract/rentContractDialog", "选择合同", 1000, 520, {
-						buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
-							if (v=="ok"){
-								var checkedId = h.find("iframe")[0].contentWindow.$("input[name='rentContractId']:checked");
-								$("#rentContractId").val($(checkedId).val());
-								$("#contractName").val($(checkedId).attr("attr-name"));
-							}
+						if ($("#rentContractButton").hasClass("disabled")){
+							return true;
 						}
-					});
+						top.$.jBox.open("iframe:${ctx}/contract/rentContract/rentContractDialog", "选择合同", 1000, 520, {
+							buttons:{"确定":"ok", "关闭":true}, submit:function(v, h, f){
+								if (v=="ok"){
+									var checkedId = h.find("iframe")[0].contentWindow.$("input[name='rentContractId']:checked");
+									$("#rentContractId").val($(checkedId).val());
+									$("#contractName").val($(checkedId).attr("attr-name"));
+								}
+							}
+						});
 					});
 				</script>
 			</div>
@@ -81,7 +78,6 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="fee:electricFee:edit"><input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;</shiro:hasPermission>
-			<shiro:hasPermission name="fee:electricFee:edit"><input id="getMeterFeeBtn" class="btn btn-primary" type="button" value="查看当月用电详情"/>&nbsp;</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
 	</form:form>
