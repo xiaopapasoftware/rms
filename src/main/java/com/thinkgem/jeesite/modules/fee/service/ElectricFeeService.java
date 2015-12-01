@@ -4,10 +4,10 @@
 package com.thinkgem.jeesite.modules.fee.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -100,7 +100,8 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
      *            开始日期 格式：2015-11-01
      * @param endDate
      *            结束日期 格式：2015-11-21
-     * @return Map<String,String> 返回结果为：1=个人住户使用掉的总电量（度）；2=公共区域使用掉的总电量（度）；
+     * @return Map<String,String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2=
+     *         公共区域使用掉的总电量（度）；
      *         3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
      */
     public Map<Integer, String> getMeterFee(String rentContractId, String beginDate, String endDate) {
@@ -112,20 +113,12 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	    room = roomDao.get(room);
 	    meterNo = room.getMeterNo();
 	}
+	String result = "";// 电表系统返回值
 	if (!StringUtils.isBlank(meterNo)) {
 	    String meterurl = new PropertiesLoader("jeesite.properties").getProperty("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
-	    String result = "";
-	    BufferedReader read = null;
 	    try {
-		URL url = new URL(meterurl);
-		URLConnection connection = url.openConnection();
-		connection.connect();
-		read = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-		String line;
-		while ((line = read.readLine()) != null) {
-		    result += line;
-		}
-		this.logger.info("call meter get fee result:" + result);
+		result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
+		logger.info("call meter get fee result:" + result);
 		if (!StringUtils.isBlank(result)) {
 		    result = result + ",";// 人工在结尾添加,
 		    Pattern p = Pattern.compile("(.*?)\\,(.*?)");
@@ -138,16 +131,11 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 		}
 	    } catch (Exception e) {
 		this.logger.error("call meter get fee error:", e);
-	    } finally {
-		try {
-		    if (null != read)
-			read.close();
-		} catch (IOException e) {
-		    logger.error("close io error:", e);
-		}
 	    }
 	}
+	resultMap.put(0, result);// 直接存放智能电表系统的返回值
 	return resultMap;
+
     }
 
     @Transactional(readOnly = false)
@@ -155,4 +143,32 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	super.delete(electricFee);
     }
 
+    private String openHttpsConnection(final String urlPath, String charset, int connectTimeout, int readTimeout) throws Exception {
+	HttpURLConnection conn = null;
+	URL url = null;
+	try {
+	    url = new URL(urlPath);
+	    conn = (HttpURLConnection) url.openConnection();
+	    conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; " + "SailBrowser; Maxthon; Alexa Toolbar; .NET CLR 2.0.50727)");
+	    conn.setDoOutput(true);
+	    conn.setDoInput(true);
+	    conn.setUseCaches(false);
+	    conn.setConnectTimeout(connectTimeout);
+	    conn.setReadTimeout(readTimeout);
+	    conn.connect();
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), Charset.forName(charset)));
+	    String str = null;
+	    StringBuffer returnStr = new StringBuffer(200);
+	    while ((str = reader.readLine()) != null) {
+		returnStr.append(str);
+	    }
+	    conn.disconnect();
+	    return returnStr.toString();
+	} catch (Exception e) {
+	    throw e;
+	} finally {
+	    conn = null;
+	    url = null;
+	}
+    }
 }

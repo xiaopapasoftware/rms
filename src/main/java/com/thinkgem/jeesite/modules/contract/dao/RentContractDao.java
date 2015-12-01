@@ -21,4 +21,6 @@ public interface RentContractDao extends CrudDao<RentContract> {
     public List<RentContract> findContractList(RentContract rentContract);
 
     Integer getAllValidRentContractCounts(RentContract rentContract);
+
+    RentContract findContractByCode(String contractCode);
 }

@@ -3,9 +3,15 @@
  */
 package com.thinkgem.jeesite.modules.fee.web;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +24,10 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 
 /**
@@ -33,6 +42,9 @@ public class ElectricFeeController extends BaseController {
 
     @Autowired
     private ElectricFeeService electricFeeService;
+
+    @Autowired
+    private RentContractService rentContractService;
 
     @ModelAttribute
     public ElectricFee get(@RequestParam(required = false) String id) {
@@ -59,6 +71,53 @@ public class ElectricFeeController extends BaseController {
     public String form(ElectricFee electricFee, Model model) {
 	model.addAttribute("electricFee", electricFee);
 	return "modules/fee/electricFeeForm";
+    }
+
+    @RequestMapping(value = "viewUseInfo")
+    public String viewUseInfo(ElectricFeeUseInfo electricFeeUseInfo, Model model) {
+	if (StringUtils.isNotEmpty(electricFeeUseInfo.getContractCode())) {
+	    RentContract resultRentContract = rentContractService.findContractByCode(electricFeeUseInfo.getContractCode());
+	    if (resultRentContract != null) {
+		String startDate = electricFeeUseInfo.getStartDate();
+		String endDate = electricFeeUseInfo.getEndDate();
+		Map<Integer, String> resultMap = electricFeeService.getMeterFee(resultRentContract.getId(), startDate, endDate);
+		if (MapUtils.isNotEmpty(resultMap)) {
+		    List<ElectricFeeUseInfo> list = new ArrayList<ElectricFeeUseInfo>();
+		    ElectricFeeUseInfo ele = new ElectricFeeUseInfo();
+		    ele.setContractCode(resultRentContract.getContractCode());
+		    ele.setEndDate(endDate);
+		    ele.setPersonalPrice("0".equals(resultMap.get(4)) ? "" : resultMap.get(4));
+		    if (StringUtils.isNotEmpty(resultMap.get(4)) && StringUtils.isNotEmpty(resultMap.get(1))) {
+			double value = Double.valueOf(resultMap.get(4)) * Double.valueOf(resultMap.get(1));
+			ele.setPersonalUseAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		    } else {
+			ele.setPersonalUseAmount("");
+		    }
+		    ele.setPersonalUseEle("0".equals(resultMap.get(1)) ? "" : resultMap.get(1));
+		    ele.setPublicPrice("0".equals(resultMap.get(5)) ? "" : resultMap.get(5));
+		    if (StringUtils.isNotEmpty(resultMap.get(5)) && StringUtils.isNotEmpty(resultMap.get(2))) {
+			double value = Double.valueOf(resultMap.get(5)) * Double.valueOf(resultMap.get(2));
+			ele.setPublicUseAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		    } else {
+			ele.setPublicUseAmount("");
+		    }
+		    ele.setPublicUseEle("0".equals(resultMap.get(2)) ? "" : resultMap.get(2));
+		    ele.setRemainedEle("0".equals(resultMap.get(3)) ? "" : resultMap.get(3));
+		    if (StringUtils.isNotEmpty(resultMap.get(3)) && StringUtils.isNotEmpty(resultMap.get(4))) {
+			double value = Double.valueOf(resultMap.get(4)) * Double.valueOf(resultMap.get(3));
+			ele.setRemainedEleAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		    } else {
+			ele.setRemainedEleAmount("");
+		    }
+		    ele.setStartDate(startDate);
+		    ele.setReturnValue(resultMap.get(0));
+		    list.add(ele);
+		    model.addAttribute("electricFeeUseInfo", electricFeeUseInfo);
+		    model.addAttribute("list", list);
+		}
+	    }
+	}
+	return "modules/fee/electricFeeUseInfo";
     }
 
     // @RequiresPermissions("fee:electricFee:edit")

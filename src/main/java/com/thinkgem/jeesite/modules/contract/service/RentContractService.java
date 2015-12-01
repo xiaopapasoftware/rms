@@ -277,6 +277,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	return super.findList(rentContract);
     }
 
+    public RentContract findContractByCode(String contractCode) {
+	return dao.findContractByCode(contractCode);
+    }
+
     public Page<RentContract> findPage(Page<RentContract> page, RentContract rentContract) {
 	return super.findPage(page, rentContract);
     }
