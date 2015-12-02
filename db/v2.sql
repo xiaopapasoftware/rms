@@ -87,3 +87,26 @@ create table t_payment_order
 
 ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_RENT_CONTRACT set data_source = '1';
+
+
+alter table t_attachment add BIZ_ID varchar(64) comment '业务ID';
+
+drop table if exists T_MESSAGE;
+/* Create Tables */
+create table T_MESSAGE
+(
+   ID                   varchar(64) NOT NULL,
+   TITLE    	 varchar(200) comment '消息标题',
+   CONTENT           varchar(500) comment '消息内容',
+   TYPE	 VARCHAR(10) comment  '消息类型',
+   SENDER	 VARCHAR(30) COMMENT  '发送人',
+   RECEIVER	 VARCHAR(30)  COMMENT  '接收人',
+   STATUS	 VARCHAR(10) COMMENT  '状态',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '消息表';

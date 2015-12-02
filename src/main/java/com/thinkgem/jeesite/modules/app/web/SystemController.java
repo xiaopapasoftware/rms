@@ -320,10 +320,5 @@ public class SystemController {
 	       cal.add(13, duration);
 	       return cal.getTime(); 
 	}
-	
-	
-	
-
-	
 
 }
