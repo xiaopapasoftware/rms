@@ -129,6 +129,7 @@
 					}
 					loading('正在提交，请稍等...');
 					form.submit();
+					$("#saveBtn").attr("disabled",true);
 					$("#btnSubmit").attr("disabled",true); 
 				},
 				errorContainer: "#messageBox",
@@ -147,7 +148,8 @@
 			$("#contractStatus").val("0");
 			$("#validatorFlag").val("0");
 			$("#inputForm").submit();
-			$("#saveBtn").attr("disabled",true); 
+			$("#saveBtn").attr("disabled",true);
+			$("#btnSubmit").attr("disabled",true); 
 		}
 		
 		function changeProject() {
