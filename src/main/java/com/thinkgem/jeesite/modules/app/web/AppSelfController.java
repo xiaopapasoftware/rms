@@ -100,33 +100,30 @@ public class AppSelfController {
 			infoMap.put("age", appUser.getAge());
 			infoMap.put("profession", appUser.getProfession());
 			infoMap.put("corp", appUser.getCorp());
-	
+			//TODO 暂时返回固定图片，下面为真实图片URL,图片服务器搭好后放开
+			infoMap.put("avatar", "http://218.80.0.218:12301/avatar.jpg");
+			infoMap.put("id_photo_front", "http://218.80.0.218:12301/id_photo_front.jpg");
+			infoMap.put("id_photo_back", "http://218.80.0.218:12301/id_photo_back.jpg");
 			
+/*
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			
-//			String avatar = "";
-//			if(!StringUtils.isEmpty(house.getAvatarPath())) {
-//				
-//			    String img_url = appUser.getProperty("img.url");
-//				avatar = img_url+appUser.getAvatarPath;
-//			}
-//			map.put("avatar", cover);
-//			String id_photo_front = "";
-//			if(!StringUtils.isEmpty(house.getAvatarPath())) {
-//				
-//			    String img_url = appUser.getProperty("img.url");
-//				avatar = img_url+appUser.getAvatarPath;
-//			}
-//			map.put("id_photo_front", id_photo_front);
-//			String id_photo_back = "";
-//			if(!StringUtils.isEmpty(house.getAvatarPath())) {
-//				
-//			    String img_url = appUser.getProperty("img.url");
-//				avatar = img_url+appUser.getAvatarPath;
-//			}
-//			map.put("id_photo_back", id_photo_back);
-			
-			
+			String img_url = proper.getProperty("img.url");
+			String avatar = "";
+			if(!StringUtils.isEmpty(appUser.getAvatar())) {
+				avatar = img_url+appUser.getAvatar();
+			}
+			infoMap.put("avatar", avatar);
+			String idCardPhotoFront = "";
+			if(!StringUtils.isEmpty(appUser.getIdCardPhoto＿front())) {
+				idCardPhotoFront = img_url+appUser.getIdCardPhoto＿front();
+			}
+			infoMap.put("id_photo_front", idCardPhotoFront);
+			String idCardPhotoBack = "";
+			if(!StringUtils.isEmpty(appUser.getIdCardPhoto＿back())) {
+				idCardPhotoBack = img_url+appUser.getIdCardPhoto＿back();
+			}
+			infoMap.put("id_photo_back", idCardPhotoBack);
+			*/
 			data.setData(infoMap);
 			data.setCode("200");
 		} catch (Exception e) {

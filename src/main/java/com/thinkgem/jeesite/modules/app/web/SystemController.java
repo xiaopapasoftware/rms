@@ -27,6 +27,8 @@ import com.thinkgem.jeesite.modules.app.service.TAppCheckCodeService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
+import com.thinkgem.jeesite.modules.message.entity.Message;
+import com.thinkgem.jeesite.modules.message.service.MessageService;
 
 @Controller
 @RequestMapping("system")
@@ -43,6 +45,9 @@ public class SystemController {
 	private AppTokenService appTokenService;
 	@Autowired
 	private SmsService smsService;
+	@Autowired
+	private MessageService messageService;
+	
 	
 	@RequestMapping(value="checkToken")
 	@ResponseBody
@@ -103,6 +108,14 @@ public class SystemController {
 				appToken.setExprie(caculateExpireTime(2592000));
 				appTokenService.save(appToken);
 				
+				Message message = new Message();
+				message.setContent("欢迎使用唐巢APP");
+				message.setReceiver(mobile);
+				message.setSender("system");
+				message.setStatus("00");//新增
+				message.setTitle("注册成功");
+				message.setType("LOGIN");
+				messageService.save(message);
 				
 				data.setCode("200");
 				data.setMsg("注册成功");
