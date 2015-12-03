@@ -149,10 +149,29 @@
 	
 	
 	<select id="getByPhone" resultType="AppUser">
-		SELECT 
-			<include refid="appUserColumns"/>
-		FROM t_app_user a
-		<include refid="appUserJoins"/>
+		SELECT a.id AS "id",
+		a.phone AS "phone",
+		a.password AS "password",
+		a.create_by AS "createBy.id",
+		a.id_card_no AS "idCardNo",
+		a.name AS "name",
+		a.create_date AS "createDate",
+		a.sex AS "sex",
+		a.update_by AS "updateBy.id",
+		a.birth AS "birth",
+		a.update_date AS "updateDate",
+		a.age AS "age",
+		a.remarks AS "remarks",
+		a.profession AS "profession",
+		a.del_flag AS "delFlag",
+		a.corp AS "corp",
+		attach.ATTACHMENT_PATH AS "avatar",
+		attach2.ATTACHMENT_PATH AS "idCardPhoto＿front",
+		attach3.ATTACHMENT_PATH AS "idCardPhoto＿back"
+		FROM t_app_user a 
+        left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='APP_USER_AVATAR'
+        left join t_attachment attach2 on a.id=attach2.BIZ_ID and attach2.attachment_type='APP_USER_ID_FRONT'
+        left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK'
 		WHERE a.phone = #{phone}
 	</select>
 </mapper>
