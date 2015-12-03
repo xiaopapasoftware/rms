@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.entity.AppToken;
 import com.thinkgem.jeesite.modules.app.entity.AppUser;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
@@ -1126,6 +1128,30 @@ public class AppHouseController {
 			log.error("contract_info error:",e);
 		}
 		
+		return data;
+	}
+	
+	@RequestMapping(value="pay_sign_booked")
+	@ResponseBody
+	public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+		
+		if(null == request.getParameter("order_id")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		String orderId = request.getParameter("order_id");
+		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		DecimalFormat df  = new DecimalFormat("######0.00"); 
+		Double orderAmount = paymentOrder.getOrderAmount();
+		String signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("sign", signStr);
+		
+		data.setData(map);
+		data.setCode("200");
 		return data;
 	}
 }
