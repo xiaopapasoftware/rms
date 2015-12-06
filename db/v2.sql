@@ -61,7 +61,7 @@ create table t_contract_book
   REMARKS              VARCHAR(255) COMMENT '备注信息',
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
-) comment = '预约看房信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '预约看房信息';
 
 ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_DEPOSIT_AGREEMENT set data_source = '1';
@@ -83,7 +83,7 @@ create table t_payment_order
   REMARKS              VARCHAR(255) COMMENT '备注信息',
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
-) comment = '支付订单信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '支付订单信息';
 
 ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_RENT_CONTRACT set data_source = '1';

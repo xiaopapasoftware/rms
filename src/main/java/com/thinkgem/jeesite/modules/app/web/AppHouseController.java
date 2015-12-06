@@ -105,7 +105,7 @@ public class AppHouseController {
 			for(House h:pageList) {
 				Map<String,Object> mp = new HashMap<String,Object>();
 				mp.put("id", h.getId());
-				map.put("house_num", h.getHouseCode());
+				mp.put("house_num", h.getHouseCode());
 				mp.put("price", h.getRental());
 				mp.put("short_desc", h.getShortDesc());
 				mp.put("short_location", h.getShortLocation());

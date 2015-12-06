@@ -1,13 +1,22 @@
 package com.thinkgem.jeesite.modules.app.alipay;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.thinkgem.jeesite.modules.app.web.AppHouseController;
 
 public class AlipayUtil {
+	static Logger log = LoggerFactory.getLogger(AlipayUtil.class);
+	
 	private static final String PARTNER = "2088811545435611"; 
 	private static final String SELLER_EMAIL = "tangchaotouzi@126.com";
 	private static final String NOTIFY_URL = "http://218.80.0.218:12301/rms-api/house/alipaynNotify";
@@ -34,23 +43,50 @@ public class AlipayUtil {
         
         String signStr = "";
         List<String> keys = new ArrayList<String>(sPara.keySet());
+//        for (int i = 0; i < keys.size(); i++) {
+//            String name = (String) keys.get(i);
+//            String value = (String) sPara.get(name);
+//            signStr += name + "=" + value + "&";
+//        }
+//        if(StringUtils.endsWith(signStr,"&"))
+//        	signStr = StringUtils.substringBeforeLast(signStr, "&");
+        
+        StringBuffer sbHtml = new StringBuffer();
+
+        sbHtml.append("<form id=\"alipaysubmit\" name=\"alipaysubmit\" action=\"https://mapi.alipay.com/gateway.do?_input_charset=utf-8\" method=\"POST\">");
+
         for (int i = 0; i < keys.size(); i++) {
             String name = (String) keys.get(i);
             String value = (String) sPara.get(name);
-            signStr += name + "=" + value + "&";
+
+            sbHtml.append("<input type=\"hidden\" name=\"" + name + "\" value=\"" + value + "\"/>");
         }
-        if(StringUtils.endsWith(signStr,"&"))
-        	signStr = StringUtils.substringBeforeLast(signStr, "&");
+
+        //submit按钮控件请不要含有name属性
+        sbHtml.append("<input type=\"submit\" value=\"支付\" style=\"display:none;\"></form>");
+        sbHtml.append("<script>document.forms['alipaysubmit'].submit();</script>");
+
+        signStr = sbHtml.toString();
         
         return signStr;
 	}
 	
 	private static String buildRequestMysign(Map<String, String> sPara) {
     	String prestr = AlipayCore.createLinkString(sPara); //把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
-        String mysign = "";
-        if(AlipayConfig.sign_type.equals("MD5") ) {
-        	mysign = MD5.sign(prestr, AlipayConfig.key, AlipayConfig.input_charset);
-        }
+    	try {
+			prestr = URLEncoder.encode(prestr,"utf-8");
+		} catch (UnsupportedEncodingException e1) {
+			log.error("encode param error:",e1);
+		}
+    	String mysign = "";
+        
+    	try {
+            String source = prestr;
+            byte[] encodedData = RSA.encryptByPrivateKey(source.getBytes(), AlipayConfig.private_key);
+            mysign = RSA.sign(encodedData, AlipayConfig.private_key);
+		} catch (Exception e) {
+			log.error("sign error:",e);
+		}
         return mysign;
     }
 }
