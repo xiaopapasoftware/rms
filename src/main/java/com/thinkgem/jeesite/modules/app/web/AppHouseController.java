@@ -471,6 +471,7 @@ public class AppHouseController {
 				Map<String,String> mp = new HashMap<String,String>();
 				mp.put("house_id", tmpContractBook.getHouseId());
 				mp.put("desc", tmpContractBook.getShortDesc());
+				mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(),"yyyy-MM-dd"));
 				mp.put("status", tmpContractBook.getBookStatus().equals("6")?"0":"1");
 				
 				String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
