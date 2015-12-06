@@ -27,6 +27,13 @@
 			else tc.contract_name
 		end tradeName, 
 		case 
+		    when a.trade_type=0
+				then tlc.contract_code
+			when a.trade_type=1 or a.trade_type =2
+				then ta.agreement_code 
+			else tc.contract_code
+		end tradeObjectNo,
+		case 
 			when a.trade_type=0 
 				then tlc.contract_status
 			when a.trade_type=1 or a.trade_type =2
@@ -89,6 +96,9 @@
 	  <where>
 	  	<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
+		</if>
+		<if test="tradeObjectNo != null and tradeObjectNo != ''">
+			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
 		</if>
 	  </where>
 	</select>

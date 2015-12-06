@@ -30,10 +30,9 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
     private String payeeName; // 收款人名称
     private String payeeType; // 收款人类型
     private String tradeStatus; // 账务状态
-
     private String transIds;// 款项ID列表
     private String tradeName;// 交易对象名称
-
+    private String tradeObjectNo;// 交易对象编号
     private String transStatus;// 定金协议审核状态/出租合同审核状态/承租合同审核状态
     private String transBusiStatus;// 定金协议业务状态/出租合同业务状态
 
@@ -141,6 +140,14 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 
     public void setTradeName(String tradeName) {
 	this.tradeName = tradeName;
+    }
+
+    public String getTradeObjectNo() {
+	return tradeObjectNo;
+    }
+
+    public void setTradeObjectNo(String tradeObjectNo) {
+	this.tradeObjectNo = tradeObjectNo;
     }
 
     public String getTransStatus() {

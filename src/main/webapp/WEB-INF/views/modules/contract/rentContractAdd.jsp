@@ -56,6 +56,8 @@
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
 					form.submit();
+					$("#btnSubmit").attr("disabled",true);
+					$("#saveBtn").attr("disabled",true);
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
@@ -73,6 +75,8 @@
 			$("#contractStatus").val("0");
 			$("#validatorFlag").val("0");
 			$("#inputForm").submit();
+			$("#btnSubmit").attr("disabled",true);
+			$("#saveBtn").attr("disabled",true);
 		}
 		
 		function changeProject() {
@@ -128,11 +132,9 @@
 			}
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
-			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
 			changeContractName();
 		}
 		

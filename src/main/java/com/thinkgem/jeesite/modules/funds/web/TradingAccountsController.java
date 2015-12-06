@@ -162,7 +162,6 @@ public class TradingAccountsController extends BaseController {
 		    receiptList.add(receipt);
 		}
 	    }
-
 	    // 获取交易对象名称,设置交易对象名称、交易对象类型
 	    if (StringUtils.isNotEmpty(tradeObjectId)) {
 		DepositAgreement da = depositAgreementService.get(tradeObjectId);
@@ -195,16 +194,13 @@ public class TradingAccountsController extends BaseController {
 		    }
 		}
 	    }
-
 	    tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
 	    tradingAccounts.setTradeAmount(new BigDecimal(Math.abs(amount)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
 	    tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(), "trans_dirction", ""));
 	    tradingAccounts.setTradeType(tradeType);
 	    tradingAccounts.setTradeTypeDesc(DictUtils.getDictLabel(tradingAccounts.getTradeType(), "trans_type", ""));
 	    model.addAttribute("tradingAccounts", tradingAccounts);
-
 	    tradingAccounts.setReceiptList(receiptList);
-
 	    return "modules/funds/tradingAccountsForm";
 	}
     }
@@ -218,11 +214,11 @@ public class TradingAccountsController extends BaseController {
 	model.addAttribute("tradingAccounts", tradingAccounts);
 	return "modules/funds/tradingAccountsEdit";
     }
-    
+
     @RequestMapping(value = "revoke")
     public String revoke(String id) {
-    	tradingAccountsService.remoke(id);
-    	return "redirect:"+Global.getAdminPath()+"/funds/paymentTrans/?repage";
+	tradingAccountsService.remoke(id);
+	return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
 
     @RequestMapping(value = "findOne")
@@ -253,9 +249,9 @@ public class TradingAccountsController extends BaseController {
 	List<String> receiptNoList = new ArrayList<String>();
 	if (null != tradingAccounts.getReceiptList()) {
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
-	    	if(StringUtils.isBlank(receipt.getReceiptNo())){
-	    		continue;
-	    	}
+		if (StringUtils.isBlank(receipt.getReceiptNo())) {
+		    continue;
+		}
 		Receipt tmpReceipt = new Receipt();
 		tmpReceipt.setReceiptNo(receipt.getReceiptNo());
 		tmpReceipt.setDelFlag("0");

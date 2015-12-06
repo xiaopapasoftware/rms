@@ -7,11 +7,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,8 +32,10 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
@@ -90,6 +94,8 @@ public class RentContractController extends BaseController {
     private RoomService roomService;
     @Autowired
     private ElectricFeeService electricFeeService;
+    @Autowired
+    private DepositAgreementService depositAgreementService;
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -435,60 +441,78 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "save")
     public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+
 	if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 	    return form(rentContract, model);
 	}
+
 	/* 出租合同的结束时间不能超过承租合同的结束时间 */
 	LeaseContract leaseContract = new LeaseContract();
 	leaseContract.setHouse(rentContract.getHouse());
 	List<LeaseContract> list = leaseContractService.findList(leaseContract);
 	if (CollectionUtils.isNotEmpty(list)) {
-	    leaseContract = list.get(0);
-	    if (leaseContract.getExpiredDate().before(rentContract.getExpiredDate())) {
+	    if (list.get(0).getExpiredDate().before(rentContract.getExpiredDate())) {
 		model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
 		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-		model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
-		if (null != rentContract.getPropertyProject()) {
-		    Building building = new Building();
-		    PropertyProject propertyProject = new PropertyProject();
-		    propertyProject.setId(rentContract.getPropertyProject().getId());
-		    building.setPropertyProject(propertyProject);
-		    List<Building> buildingList = buildingService.findList(building);
-		    model.addAttribute("buildingList", buildingList);
-		}
-
-		if (null != rentContract.getBuilding()) {
-		    House house = new House();
-		    Building building = new Building();
-		    building.setId(rentContract.getBuilding().getId());
-		    house.setBuilding(building);
-		    house.setChoose("1");
-		    List<House> houseList = houseService.findList(house);
-		    if (null != rentContract.getHouse())
-			houseList.add(houseService.get(rentContract.getHouse()));
-		    model.addAttribute("houseList", houseList);
-		}
-
-		if (null != rentContract.getRoom()) {
-		    Room room = new Room();
-		    House house = new House();
-		    house.setId(rentContract.getHouse().getId());
-		    room.setHouse(house);
-		    room.setChoose("1");
-		    List<Room> roomList = roomServie.findList(room);
-		    if (null != rentContract.getRoom()) {
-			Room rm = roomServie.get(rentContract.getRoom());
-			if (null != rm)
-			    roomList.add(rm);
-		    }
-		    model.addAttribute("roomList", roomList);
-		}
-		List<Tenant> tenantList = tenantService.findList(new Tenant());
-		model.addAttribute("tenantList", tenantList);
+		initExceptionedModel(model, rentContract);
 		return "modules/contract/rentContractForm";
 	    }
 	}
 
+	// 若系统里面已经存在了出租合同，状态为暂存或者合同内容审核拒绝，再添加合同时候不能选择当前房屋。
+	RentContract conditionRentContract = new RentContract();
+	conditionRentContract.setPropertyProject(rentContract.getPropertyProject());
+	conditionRentContract.setHouse(rentContract.getHouse());
+	conditionRentContract.setRoom(rentContract.getRoom());
+	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
+	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
+	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
+	if (CollectionUtils.isNotEmpty(rentContracts)) {
+	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
+		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+		    hasRefusedFlag = true;
+		}
+		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+		    hasTempExistFlag = true;
+		}
+	    }
+	}
+	if (hasRefusedFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+	if (hasTempExistFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+
+	// 保存合同时检查如果该房屋或房间还有定金协议未转合同，则强迫操作者先把定金转合同。
+	DepositAgreement conditionDepositAgreement = new DepositAgreement();
+	conditionDepositAgreement.setPropertyProject(rentContract.getPropertyProject());
+	conditionDepositAgreement.setHouse(rentContract.getHouse());
+	conditionDepositAgreement.setRoom(rentContract.getRoom());
+	boolean hasToBeTransedDepositFlag = false;// 该合同存在未转的定金协议，默认为不存在
+	List<DepositAgreement> das = depositAgreementService.findList(conditionDepositAgreement);
+	if (CollectionUtils.isNotEmpty(das)) {
+	    for (DepositAgreement da : das) {
+		if ("5".equals(da.getAgreementStatus()) && "0".equals(da.getAgreementBusiStatus()) && StringUtils.isEmpty(rentContract.getAgreementId())) {// 定金协议的审核状态为“账务审核通过”，业务状态为“待转合同”,且该合同不是从定金协议转过来的
+		    hasToBeTransedDepositFlag = true;
+		    break;
+		}
+	    }
+	}
+	if (hasToBeTransedDepositFlag) {
+	    model.addAttribute("message", "当前选择的房屋或房间有未转的定金协议，请先转定金！");
+	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	    initExceptionedModel(model, rentContract);
+	    return "modules/contract/rentContractForm";
+	}
+
+	// 设置出租合同编码
 	if (rentContract.getIsNewRecord()) {
 	    String[] codeArr = rentContract.getContractCode().split("-");
 	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
@@ -501,6 +525,46 @@ public class RentContractController extends BaseController {
 	else
 	    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 
+    }
+
+    private void initExceptionedModel(Model model, RentContract rentContract) {
+	model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
+	if (null != rentContract.getPropertyProject()) {
+	    Building building = new Building();
+	    PropertyProject propertyProject = new PropertyProject();
+	    propertyProject.setId(rentContract.getPropertyProject().getId());
+	    building.setPropertyProject(propertyProject);
+	    List<Building> buildingList = buildingService.findList(building);
+	    model.addAttribute("buildingList", buildingList);
+	}
+
+	if (null != rentContract.getBuilding()) {
+	    House house = new House();
+	    Building building = new Building();
+	    building.setId(rentContract.getBuilding().getId());
+	    house.setBuilding(building);
+	    house.setChoose("1");
+	    List<House> houseList = houseService.findList(house);
+	    if (null != rentContract.getHouse())
+		houseList.add(houseService.get(rentContract.getHouse()));
+	    model.addAttribute("houseList", houseList);
+	}
+
+	if (null != rentContract.getRoom()) {
+	    Room room = new Room();
+	    House house = new House();
+	    house.setId(rentContract.getHouse().getId());
+	    room.setHouse(house);
+	    room.setChoose("1");
+	    List<Room> roomList = roomServie.findList(room);
+	    if (null != rentContract.getRoom()) {
+		Room rm = roomServie.get(rentContract.getRoom());
+		if (null != rm)
+		    roomList.add(rm);
+	    }
+	    model.addAttribute("roomList", roomList);
+	}
+	model.addAttribute("tenantList", tenantService.findList(new Tenant()));
     }
 
     @RequestMapping(value = "saveAdditional")
@@ -639,9 +703,9 @@ public class RentContractController extends BaseController {
     public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	rentContractService.returnCheck(rentContract, rentContract.getTradeType());
 	if (!StringUtils.isBlank(rentContract.getIsSpecial()))
-	    addMessage(redirectAttributes, "特殊退租成功");
+	    addMessage(redirectAttributes, "特殊退租成功！");
 	else
-	    addMessage(redirectAttributes, "退租核算成功");
+	    addMessage(redirectAttributes, "退租核算成功！");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -696,6 +760,12 @@ public class RentContractController extends BaseController {
 	    preBackRentalAcc.setFeeDirection("0");// 0 : 应出
 	    preBackRentalAcc.setFeeType("7");// 应退房租
 	    preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "6", rentContract.getRental()));
+	    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		preBackRentalAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		preBackRentalAcc.setFeeDateStr(rentContract.getReturnDate());
+	    } else {
+		preBackRentalAcc.setFeeDate(new Date());
+	    }
 	    outAccountings.add(preBackRentalAcc);
 	}
 
@@ -709,8 +779,25 @@ public class RentContractController extends BaseController {
 		elctrBackAcc.setAccountingType(accountingType);
 		elctrBackAcc.setFeeDirection("0");// 0 : 应出
 		elctrBackAcc.setFeeType("13");// 智能电表剩余电费
-		String elctrFee = electricFeeService.getMeterFee(rentContract.getId(), "1");
-		elctrBackAcc.setFeeAmount(StringUtils.isEmpty(elctrFee) ? 0d : new Double(elctrFee));
+		Map<Integer, String> resultMap = electricFeeService.getMeterFee(rentContract.getId(), DateUtils.firstDateOfCurrentMonth(), DateUtils.lastDateOfCurrentMonth());
+		Double feeAmount = 0D;
+		if (MapUtils.isNotEmpty(resultMap)) {
+		    String remainedTotalEle = resultMap.get(3);// 剩余总电量
+		    String personElePrice = resultMap.get(4);// 个人电量单价
+		    if (StringUtils.isNotEmpty(remainedTotalEle) && StringUtils.isNotEmpty(personElePrice)) {
+			Double price = Double.valueOf(remainedTotalEle) * Double.valueOf(personElePrice);
+			if (price > 0) {
+			    feeAmount = new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
+			}
+		    }
+		}
+		elctrBackAcc.setFeeAmount(feeAmount);
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    elctrBackAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    elctrBackAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    elctrBackAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(elctrBackAcc);
 	    }
 	}
@@ -726,6 +813,12 @@ public class RentContractController extends BaseController {
 		waterAcc.setFeeDirection("0");// 0 : 应出
 		waterAcc.setFeeType("15");// 水费剩余金额
 		waterAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "14", rentContract.getWaterFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    waterAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    waterAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    waterAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(waterAcc);
 	    }
 
@@ -737,6 +830,12 @@ public class RentContractController extends BaseController {
 		tvAcc.setFeeDirection("0");// 0 : 应出
 		tvAcc.setFeeType("19");// 有线电视费剩余金额
 		tvAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "18", rentContract.getTvFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    tvAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    tvAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(tvAcc);
 	    }
 
@@ -748,6 +847,12 @@ public class RentContractController extends BaseController {
 		netAcc.setFeeDirection("0");// 0 : 应出
 		netAcc.setFeeType("21");// 宽带费剩余金额
 		netAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "20", rentContract.getNetFee()));
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    netAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    netAcc.setFeeDate(new Date());
+		}
 		outAccountings.add(netAcc);
 	    }
 
@@ -767,6 +872,12 @@ public class RentContractController extends BaseController {
 		servAcc.setAccountingType(accountingType);
 		servAcc.setFeeDirection("0");// 0 : 应出
 		servAcc.setFeeType("23");// 服务费剩余金额
+		if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+		    servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+		    servAcc.setFeeDateStr(rentContract.getReturnDate());
+		} else {
+		    servAcc.setFeeDate(new Date());
+		}
 		servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, "22", rentContract.getServiceFee()));
 		outAccountings.add(servAcc);
 	    }
@@ -939,6 +1050,12 @@ public class RentContractController extends BaseController {
 	pay4BrokeAcc.setFeeDirection("1");// 1 : 应收
 	pay4BrokeAcc.setFeeType("10");// 损坏赔偿金
 	pay4BrokeAcc.setFeeAmount(0D);
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    pay4BrokeAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    pay4BrokeAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    pay4BrokeAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(pay4BrokeAcc);
 
 	// 应收---退租补偿税金
@@ -948,6 +1065,12 @@ public class RentContractController extends BaseController {
 	backSuppAcc.setFeeDirection("1");// 1 : 应收
 	backSuppAcc.setFeeType("24");// 损坏赔偿金
 	backSuppAcc.setFeeAmount(0D);
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    backSuppAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    backSuppAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    backSuppAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(backSuppAcc);
 
 	// 应收---电费自用金额
@@ -957,6 +1080,12 @@ public class RentContractController extends BaseController {
 	elSelAcc.setFeeDirection("1");// 1 : 应收
 	elSelAcc.setFeeType("11");// 电费自用金额
 	elSelAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    elSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    elSelAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    elSelAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(elSelAcc);
 
 	// 应收---电费分摊金额
@@ -966,6 +1095,12 @@ public class RentContractController extends BaseController {
 	elCommAcc.setFeeDirection("1");// 1 : 应收
 	elCommAcc.setFeeType("12");// 电费分摊金额
 	elCommAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    elCommAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    elCommAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    elCommAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(elCommAcc);
 
 	// 应收---水费金额
@@ -975,6 +1110,12 @@ public class RentContractController extends BaseController {
 	waterSelAcc.setFeeDirection("1");// 1 : 应收
 	waterSelAcc.setFeeType("14");// 水费金额
 	waterSelAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    waterSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    waterSelAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    waterSelAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(waterSelAcc);
 
 	// 应收---燃气金额
@@ -993,6 +1134,12 @@ public class RentContractController extends BaseController {
 	tvAcc.setFeeDirection("1");// 1 : 应收
 	tvAcc.setFeeType("18");// 电视费金额
 	tvAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    tvAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    tvAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(tvAcc);
 
 	// 应收---宽带费
@@ -1002,6 +1149,12 @@ public class RentContractController extends BaseController {
 	netAcc.setFeeDirection("1");// 1 : 应收
 	netAcc.setFeeType("20");// 宽带费金额
 	netAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    netAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    netAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(netAcc);
 
 	// 应收---服务费
@@ -1011,8 +1164,13 @@ public class RentContractController extends BaseController {
 	servAcc.setFeeDirection("1");// 1 : 应收
 	servAcc.setFeeType("22");// 服务费金额
 	servAcc.setFeeAmount(0D);// 人工计算
+	if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+	    servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+	    servAcc.setFeeDateStr(rentContract.getReturnDate());
+	} else {
+	    servAcc.setFeeDate(new Date());
+	}
 	inAccountings.add(servAcc);
-
 	return inAccountings;
     }
 }

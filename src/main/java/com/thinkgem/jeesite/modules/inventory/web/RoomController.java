@@ -204,7 +204,6 @@ public class RoomController extends BaseController {
 	    if (CollectionUtils.isNotEmpty(rooms)) {
 		Room upRoom = new Room();
 		upRoom.setId(rooms.get(0).getId());
-		upRoom.setRoomStatus(rooms.get(0).getRoomStatus());
 		upRoom.setPropertyProject(room.getPropertyProject());
 		upRoom.setBuilding(room.getBuilding());
 		upRoom.setHouse(room.getHouse());
