@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.common.utils;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -341,5 +342,17 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	// sdf.parse("2015-10-29")));
 	// System.out.println(sdf.format(dateAddMonth2(sdf.parse("2015-9-27"),
 	// 1)));
+
+	DateFormat format = DateFormat.getDateInstance();
+	Date before;
+	try {
+	    before = format.parse("2015-11-30");
+	    Date after = format.parse("2015-12-05");
+	    System.out.println(getDistanceOfTwoDate(before, after));
+	} catch (ParseException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
+
     }
 }

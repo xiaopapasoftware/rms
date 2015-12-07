@@ -1036,7 +1036,7 @@ public class RentContractController extends BaseController {
 	    Date endDate = new Date();
 	    if ("1".equals(rentContract.getIsSpecial()))
 		endDate = DateUtils.parseDate(rentContract.getReturnDate());
-	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate);// 逾期天数
+	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate) - 1;// 逾期天数
 	    double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 	    double tental = (dates < 0 ? 0 : dates) * dailyRental;
 	    lateAcc.setFeeAmount(new BigDecimal(tental).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
