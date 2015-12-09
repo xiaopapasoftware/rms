@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.entity.AppToken;
 import com.thinkgem.jeesite.modules.app.entity.AppUser;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
@@ -103,7 +105,7 @@ public class AppHouseController {
 			for(House h:pageList) {
 				Map<String,Object> mp = new HashMap<String,Object>();
 				mp.put("id", h.getId());
-				map.put("house_num", h.getHouseCode());
+				mp.put("house_num", h.getHouseCode());
 				mp.put("price", h.getRental());
 				mp.put("short_desc", h.getShortDesc());
 				mp.put("short_location", h.getShortLocation());
@@ -469,6 +471,7 @@ public class AppHouseController {
 				Map<String,String> mp = new HashMap<String,String>();
 				mp.put("house_id", tmpContractBook.getHouseId());
 				mp.put("desc", tmpContractBook.getShortDesc());
+				mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(),"yyyy-MM-dd"));
 				mp.put("status", tmpContractBook.getBookStatus().equals("6")?"0":"1");
 				
 				String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
@@ -1126,6 +1129,30 @@ public class AppHouseController {
 			log.error("contract_info error:",e);
 		}
 		
+		return data;
+	}
+	
+	@RequestMapping(value="pay_sign_booked")
+	@ResponseBody
+	public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+		
+		if(null == request.getParameter("order_id")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		String orderId = request.getParameter("order_id");
+		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		DecimalFormat df  = new DecimalFormat("######0.00"); 
+		Double orderAmount = paymentOrder.getOrderAmount();
+		String signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("sign", signStr);
+		
+		data.setData(map);
+		data.setCode("200");
 		return data;
 	}
 }
