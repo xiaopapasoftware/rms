@@ -787,7 +787,7 @@ public class RentContractController extends BaseController {
 		    if (StringUtils.isNotEmpty(remainedTotalEle) && StringUtils.isNotEmpty(personElePrice)) {
 			Double price = Double.valueOf(remainedTotalEle) * Double.valueOf(personElePrice);
 			if (price > 0) {
-			    feeAmount = new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
+			    feeAmount = new BigDecimal(price).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
 			}
 		    }
 		}
@@ -1039,7 +1039,7 @@ public class RentContractController extends BaseController {
 	    double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate) - 1;// 逾期天数
 	    double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
 	    double tental = (dates < 0 ? 0 : dates) * dailyRental;
-	    lateAcc.setFeeAmount(new BigDecimal(tental).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+	    lateAcc.setFeeAmount(new BigDecimal(tental).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
 	    inAccountings.add(lateAcc);
 	}
 

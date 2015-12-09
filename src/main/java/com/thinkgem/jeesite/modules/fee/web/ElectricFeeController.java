@@ -89,7 +89,7 @@ public class ElectricFeeController extends BaseController {
 		    ele.setPersonalPrice("0".equals(resultMap.get(4)) ? "" : resultMap.get(4));
 		    if (StringUtils.isNotEmpty(resultMap.get(4)) && StringUtils.isNotEmpty(resultMap.get(1))) {
 			double value = Double.valueOf(resultMap.get(4)) * Double.valueOf(resultMap.get(1));
-			ele.setPersonalUseAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+			ele.setPersonalUseAmount(new BigDecimal(value).setScale(1, BigDecimal.ROUND_HALF_UP).toString());
 		    } else {
 			ele.setPersonalUseAmount("");
 		    }
@@ -97,7 +97,7 @@ public class ElectricFeeController extends BaseController {
 		    ele.setPublicPrice("0".equals(resultMap.get(5)) ? "" : resultMap.get(5));
 		    if (StringUtils.isNotEmpty(resultMap.get(5)) && StringUtils.isNotEmpty(resultMap.get(2))) {
 			double value = Double.valueOf(resultMap.get(5)) * Double.valueOf(resultMap.get(2));
-			ele.setPublicUseAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+			ele.setPublicUseAmount(new BigDecimal(value).setScale(1, BigDecimal.ROUND_HALF_UP).toString());
 		    } else {
 			ele.setPublicUseAmount("");
 		    }
@@ -105,7 +105,7 @@ public class ElectricFeeController extends BaseController {
 		    ele.setRemainedEle("0".equals(resultMap.get(3)) ? "" : resultMap.get(3));
 		    if (StringUtils.isNotEmpty(resultMap.get(3)) && StringUtils.isNotEmpty(resultMap.get(4))) {
 			double value = Double.valueOf(resultMap.get(4)) * Double.valueOf(resultMap.get(3));
-			ele.setRemainedEleAmount(new BigDecimal(value).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+			ele.setRemainedEleAmount(new BigDecimal(value).setScale(1, BigDecimal.ROUND_HALF_UP).toString());
 		    } else {
 			ele.setRemainedEleAmount("");
 		    }
