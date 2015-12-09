@@ -92,7 +92,7 @@ public class SystemController {
 			if(appUser!=null){
 				
 				data.setCode("406");
-				data.setMsg("用户不存在");
+				data.setMsg("用户已存在");
 				data.setData("");
 				
 			}else{			

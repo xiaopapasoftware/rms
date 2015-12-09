@@ -169,9 +169,9 @@
 		attach2.ATTACHMENT_PATH AS "idCardPhoto＿front",
 		attach3.ATTACHMENT_PATH AS "idCardPhoto＿back"
 		FROM t_app_user a 
-        left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='APP_USER_AVATAR'
-        left join t_attachment attach2 on a.id=attach2.BIZ_ID and attach2.attachment_type='APP_USER_ID_FRONT'
-        left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK'
+        left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='APP_USER_AVATAR' and attach.del_flag = 0
+        left join t_attachment attach2 on a.id=attach2.BIZ_ID and attach2.attachment_type='APP_USER_ID_FRONT' and attach.del_flag = 0
+        left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK' and attach.del_flag = 0
 		WHERE a.phone = #{phone}
 	</select>
 </mapper>

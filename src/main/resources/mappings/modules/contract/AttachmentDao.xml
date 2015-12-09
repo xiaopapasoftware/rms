@@ -20,7 +20,8 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.biz_id as "bizId"
 	</sql>
 	
 	<sql id="attachmentJoins">
@@ -116,7 +117,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			biz_id
 		) VALUES (
 			#{id},
 			#{leaseContractId},
@@ -135,7 +137,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{bizId}
 		)
 	</insert>
 	
@@ -177,6 +180,9 @@
 			<if test="attachmentType != null and attachmentType != ''">
 				,attachment_type = #{attachmentType}
 			</if>
+			<if test="bizId != null and bizId != ''">
+				,biz_id = #{bizId}
+			</if>
 		WHERE id = #{id}
 	</update>
 	
@@ -212,6 +218,9 @@
 			<if test="roomId != null and roomId != ''">
 				and room_id = #{roomId}
 			</if>
+			<if test="bizId != null and bizId != ''">
+				and biz_id = #{bizId}
+			</if>
 	</update>
 	
 	<update id="delete">
@@ -243,6 +252,12 @@
 		</if>
 		<if test="id != null and id != ''">
 			and id = #{id}
+		</if>
+		<if test="bizId != null and bizId != ''">
+			and biz_id = #{bizId}
+		</if>
+		<if test="attachmentType != null and attachmentType != ''">
+			and attachment_type = #{attachmentType}
 		</if>
 	</update>
 	

@@ -110,3 +110,24 @@ create table T_MESSAGE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '消息表';
+
+drop table if exists T_REPAIRS;
+/* Create Tables */
+create table T_REPAIRS
+(
+   ID                   varchar(64) NOT NULL,
+   USER_ID    	 varchar(20) comment '用户ID, APP用户为注册手机号',
+   USER_MOBILE          varchar(64) comment '报修填写的联系手机号',
+   ROOM_ID	 VARCHAR(64) COMMENT '房间号',
+   DESCRIPTION	 VARCHAR(18) comment  '描述',
+   STEWARD      	 VARCHAR(1)  COMMENT  '管家',
+   STEWARD_MOBILE	 VARCHAR(10) COMMENT  '管家电话',
+   STATUS	 INT	 COMMENT  '报修状态',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '报修记录';

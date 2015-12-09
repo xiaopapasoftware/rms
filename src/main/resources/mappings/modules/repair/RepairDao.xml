@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.repair.dao.RepairDao">
+    
+	<sql id="repairColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.user_mobile AS "userMobile",
+		a.room_id AS "roomId",
+		a.description AS "description",
+		a.steward AS "steward",
+		a.steward_mobile AS "stewardMobile",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="repairJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>
+		FROM t_repairs a
+		<include refid="repairJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>
+		FROM t_repairs a
+		<include refid="repairJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="userMobile != null and userMobile != ''">
+				AND a.user_mobile = #{userMobile}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				AND a.room_id = #{roomId}
+			</if>
+			<if test="description != null and description != ''">
+				AND a.description LIKE 
+					<if test="dbName == 'oracle'">'%'||#{description}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{description},'%')</if>
+			</if>
+			<if test="steward != null and steward != ''">
+				AND a.steward = #{steward}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>
+		FROM t_repairs a
+		<include refid="repairJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_repairs(
+			id,
+			user_id,
+			user_mobile,
+			room_id,
+			description,
+			steward,
+			steward_mobile,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{userMobile},
+			#{roomId},
+			#{description},
+			#{steward},
+			#{stewardMobile},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_repairs SET 	
+			user_id = #{user.id},
+			user_mobile = #{userMobile},
+			room_id = #{roomId},
+			description = #{description},
+			steward = #{steward},
+			steward_mobile = #{stewardMobile},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_repairs SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

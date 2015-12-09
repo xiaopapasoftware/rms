@@ -51,7 +51,7 @@
 		<jdk.version>1.6</jdk.version>
 		<tomcat.version>2.2</tomcat.version>
 		<jetty.version>7.6.14.v20131031</jetty.version>
-		<webserver.port>8080</webserver.port>
+		<webserver.port>12301</webserver.port>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<downloadSources>true</downloadSources>
 		
@@ -681,6 +681,13 @@
 				<artifactId>json</artifactId>
 				<version>20140107</version>
 			</dependency>
+			<dependency>
+				<groupId>Xinge</groupId>
+				<artifactId>Xinge</artifactId>
+				<version>1.0</version>
+				<scope>system</scope>
+            	<systemPath>${project.basedir}/lib/XingeApp.jar</systemPath>
+			</dependency>
 	</dependencies>
 
 	<build>
@@ -812,6 +819,16 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
+					<webResources>
+	                    <resource>
+	                        <directory>${project.basedir}/lib</directory>
+	                        <targetPath>WEB-INF/lib</targetPath>
+	                        <filtering>true</filtering>
+	                        <includes>
+	                            <include>**/*.jar</include>
+	                        </includes>
+	                    </resource>
+	                </webResources>
 					<packagingExcludes>
 						<!-- WEB-INF/classes/com/thinkgem/jeesite/** -->
 						WEB-INF/classes/org/apache/ibatis/**,

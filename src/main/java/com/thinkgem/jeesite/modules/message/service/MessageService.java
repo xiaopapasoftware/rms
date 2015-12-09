@@ -8,9 +8,11 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tencent.xinge.XingeApp;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.message.entity.Message;
+import com.thinkgem.jeesite.modules.message.util.MessagePushUtil;
 import com.thinkgem.jeesite.modules.message.dao.MessageDao;
 
 /**
@@ -42,6 +44,16 @@ public class MessageService extends CrudService<MessageDao, Message> {
 	@Transactional(readOnly = false)
 	public void delete(Message message) {
 		super.delete(message);
+	}
+	//添加消息
+	public void addMessage(Message message, boolean isPush){
+		super.save(message);
+		if(isPush){
+			push(message);
+		}
+	}
+	public void push(Message message){
+		MessagePushUtil.pushAccount(message.getTitle(), message.getContent(), message.getReceiver());
 	}
 	
 
