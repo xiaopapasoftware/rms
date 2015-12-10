@@ -45,7 +45,9 @@ public enum FileType {
 	
 	APP_USER_ID_FRONT("app用户身份证正面","APP_USER_ID_FRONT"),
 	
-	APP_USER_ID_BACK("app用户身份证背面","APP_USER_ID_BACK");
+	APP_USER_ID_BACK("app用户身份证背面","APP_USER_ID_BACK"),
+
+    REPAIR_PICTURE("维修图片","REPAIR_PICTURE");
 	
 	private String name;
 	private String value;

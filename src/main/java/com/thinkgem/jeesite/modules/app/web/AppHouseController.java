@@ -10,6 +10,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
+import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.repair.entity.Repair;
+import com.thinkgem.jeesite.modules.repair.service.RepairService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,8 +88,15 @@ public class AppHouseController {
     private TradingAccountsService tradingAccountsService;
 	@Autowired
 	private RentContractService rentContractService;
-	
-	@RequestMapping(value = "findFeatureList")
+
+    @Autowired
+    private RepairService repairService;
+
+    @Autowired
+    private AttachmentDao attachmentDao;
+
+
+    @RequestMapping(value = "findFeatureList")
     @ResponseBody
     public ResponseData findFeatureList(HttpServletRequest request, HttpServletResponse response) {
     	ResponseData data = new ResponseData();
@@ -1155,4 +1169,48 @@ public class AppHouseController {
 		data.setCode("200");
 		return data;
 	}
+
+    @RequestMapping(value = "repair")
+    @ResponseBody
+    public ResponseData avatar(HttpServletRequest request, HttpServletResponse response) {
+        ResponseData data = new ResponseData();
+        if (null == request.getParameter("mobile")) {
+            data.setCode("101");
+            return data;
+        }
+
+        try {
+            String mobile = request.getParameter("mobile");
+
+            Repair repair = new Repair();
+
+            String attach_path = request.getParameter("attach_path");
+            if (attach_path == null) {
+                data.setCode("500");
+                data.setMsg("上传有误");
+                return data;
+            }
+            Attachment attachment = new Attachment();
+            attachment.setId(IdGen.uuid());
+            attachment.setAttachmentType(FileType.REPAIR_PICTURE.getValue());
+            attachment.setAttachmentPath(attach_path);
+            attachment.setCreateDate(new Date());
+            attachment.setCreateBy(UserUtils.getUser());
+            attachment.setUpdateDate(new Date());
+            attachment.setUpdateBy(UserUtils.getUser());
+            attachment.setDelFlag("0");
+            attachment.setBizId(repair.getId());
+            attachmentDao.insert(attachment);
+
+
+            PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+            String img_url = proper.getProperty("img.url");
+
+            data.setCode("200");
+        } catch (Exception e) {
+            data.setCode("500");
+            log.error("create repair error:", e);
+        }
+        return data;
+    }
 }
