@@ -1183,6 +1183,14 @@ public class AppHouseController {
             String mobile = request.getParameter("mobile");
 
             Repair repair = new Repair();
+            repair.setId(IdGen.uuid());
+            repair.setUserId(mobile);
+            repair.setUserMobile(request.getParameter("user_mobile"));
+            repair.setContractId(request.getParameter("contract_id"));
+            repair.setRoomId(request.getParameter("room_id"));
+            repair.setStatus("01");
+            repair.setDescription(request.getParameter("description"));
+            repairService.save(repair);
 
             String attach_path = request.getParameter("attach_path");
             if (attach_path == null) {
@@ -1203,10 +1211,8 @@ public class AppHouseController {
             attachmentDao.insert(attachment);
 
 
-            PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-            String img_url = proper.getProperty("img.url");
-
             data.setCode("200");
+            data.setMsg("报修已提交");
         } catch (Exception e) {
             data.setCode("500");
             log.error("create repair error:", e);
