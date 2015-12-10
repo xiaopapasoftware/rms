@@ -387,113 +387,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	delAccounting.setUpdateBy(UserUtils.getUser());
 	accountingDao.delByRent(delAccounting);
 
-	for (Accounting accounting : accountList) {
-	    if (accounting != null && accounting.getFeeAmount() != null) {
-		if (!"9".equals(tradeType)) {// 特殊退租不生成款项
-		    if (accounting.getFeeAmount() > 0) {
-			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType(tradeType);
-			paymentTrans.setPaymentType(accounting.getFeeType());
-			paymentTrans.setTransId(rentContract.getId());
-			paymentTrans.setTradeDirection("1");// 收款
-			paymentTrans.setStartDate(rentContract.getStartDate());
-			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-			paymentTrans.setTradeAmount(accounting.getFeeAmount());
-			paymentTrans.setLastAmount(accounting.getFeeAmount());
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setTransStatus("0");// 未到账登记
-			paymentTrans.setCreateDate(new Date());
-			paymentTrans.setCreateBy(UserUtils.getUser());
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTrans.setDelFlag("0");
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
+	generatePaymentTransAndAccounts(accountList, rentContract, tradeType, "1");// 收款
+	generatePaymentTransAndAccounts(outAccountList, rentContract, tradeType, "0");// 出款
 
-		/* 核算记录 */
-		accounting.setId(IdGen.uuid());
-		accounting.setRentContract(rentContract);
-		if ("7".equals(tradeType))
-		    accounting.setAccountingType("1");// 正常退租核算
-		else if ("6".equals(tradeType))
-		    accounting.setAccountingType("0");// 提前退租核算
-		else if ("8".equals(tradeType))
-		    accounting.setAccountingType("2");// 逾期退租核算
-		else if ("9".equals(tradeType))
-		    accounting.setAccountingType("3");// 特殊退租核算
-		accounting.setFeeDirection("1");// 应收
-		accounting.setUser(UserUtils.getUser());
-		if (!"9".equals(tradeType)) {// 非特殊退租核算
-		    accounting.setFeeDate(new Date());
-		} else {
-		    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
-			accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
-		    }
-		}
-		accounting.setCreateDate(new Date());
-		accounting.setCreateBy(UserUtils.getUser());
-		accounting.setUpdateDate(new Date());
-		accounting.setUpdateBy(UserUtils.getUser());
-		accounting.setDelFlag("0");
-		accountingDao.insert(accounting);
-	    }
-	}
-
-	for (Accounting accounting : outAccountList) {
-	    if (accounting != null && accounting.getFeeAmount() != null) {
-		if (!"9".equals(tradeType)) {// 特殊退租不生成款项
-		    if (accounting.getFeeAmount() > 0) {
-			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType(tradeType);
-			paymentTrans.setPaymentType(accounting.getFeeType());
-			paymentTrans.setTransId(rentContract.getId());
-			paymentTrans.setTradeDirection("0");// 出款
-			paymentTrans.setStartDate(rentContract.getStartDate());
-			paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-			paymentTrans.setTradeAmount(accounting.getFeeAmount());
-			paymentTrans.setLastAmount(accounting.getFeeAmount());
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setTransStatus("0");// 未到账登记
-			paymentTrans.setCreateDate(new Date());
-			paymentTrans.setCreateBy(UserUtils.getUser());
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTrans.setDelFlag("0");
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
-
-		/* 核算记录 */
-		accounting.setId(IdGen.uuid());
-		accounting.setRentContract(rentContract);
-		if ("7".equals(tradeType))
-		    accounting.setAccountingType("1");// 正常退租核算
-		else if ("6".equals(tradeType))
-		    accounting.setAccountingType("0");// 提前退租核算
-		else if ("8".equals(tradeType))
-		    accounting.setAccountingType("2");// 逾期退租核算
-		else if ("9".equals(tradeType))
-		    accounting.setAccountingType("3");// 特殊退租核算
-		accounting.setFeeDirection("0");// 应出
-		accounting.setUser(UserUtils.getUser());
-		if (!"9".equals(tradeType)) {// 非特殊退租核算
-		    accounting.setFeeDate(new Date());
-		} else {
-		    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
-			accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
-		    }
-		}
-		accounting.setCreateDate(new Date());
-		accounting.setCreateBy(UserUtils.getUser());
-		accounting.setUpdateDate(new Date());
-		accounting.setUpdateBy(UserUtils.getUser());
-		accounting.setDelFlag("0");
-		accountingDao.insert(accounting);
-	    }
-	}
 	/* 更新房屋/房间状态 */
 	this.changeHouseOrRoomStatusByReturn(rentContract);
     }
@@ -1276,6 +1172,70 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    h.setUpdateDate(new Date());
 		    houseDao.update(h);
 		}
+	    }
+	}
+    }
+
+    /* 保存款项 */
+    private void savePaymentTrans(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
+	PaymentTrans paymentTrans = new PaymentTrans();
+	paymentTrans.setId(IdGen.uuid());
+	paymentTrans.setTradeType(tradeType);
+	paymentTrans.setPaymentType(accounting.getFeeType());
+	paymentTrans.setTransId(rentContract.getId());
+	paymentTrans.setTradeDirection(tradeDirection);
+	paymentTrans.setStartDate(rentContract.getStartDate());
+	paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+	paymentTrans.setTradeAmount(accounting.getFeeAmount());
+	paymentTrans.setLastAmount(accounting.getFeeAmount());
+	paymentTrans.setTransAmount(0D);
+	paymentTrans.setTransStatus("0");// 未到账登记
+	paymentTrans.setCreateDate(new Date());
+	paymentTrans.setCreateBy(UserUtils.getUser());
+	paymentTrans.setUpdateDate(new Date());
+	paymentTrans.setUpdateBy(UserUtils.getUser());
+	paymentTrans.setDelFlag("0");
+	paymentTransDao.insert(paymentTrans);
+
+    }
+
+    private void saveAccounting(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
+	accounting.setId(IdGen.uuid());
+	accounting.setRentContract(rentContract);
+	if ("7".equals(tradeType))
+	    accounting.setAccountingType("1");// 正常退租核算
+	else if ("6".equals(tradeType))
+	    accounting.setAccountingType("0");// 提前退租核算
+	else if ("8".equals(tradeType))
+	    accounting.setAccountingType("2");// 逾期退租核算
+	else if ("9".equals(tradeType))
+	    accounting.setAccountingType("3");// 特殊退租核算
+	accounting.setFeeDirection(tradeDirection);
+	accounting.setUser(UserUtils.getUser());
+	if (!"9".equals(tradeType)) {// 非特殊退租核算
+	    accounting.setFeeDate(new Date());
+	} else {
+	    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
+		accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
+	    }
+	}
+	accounting.setCreateDate(new Date());
+	accounting.setCreateBy(UserUtils.getUser());
+	accounting.setUpdateDate(new Date());
+	accounting.setUpdateBy(UserUtils.getUser());
+	accounting.setDelFlag("0");
+	accountingDao.insert(accounting);
+    }
+
+    private void generatePaymentTransAndAccounts(List<Accounting> accountList, RentContract rentContract, String tradeType, String feeDirection) {
+	for (Accounting accounting : accountList) {
+	    if (accounting != null && accounting.getFeeAmount() != null && accounting.getFeeAmount() != 0) {
+		if (!"9".equals(tradeType)) {// 特殊退租不生成款项
+		    if (accounting.getFeeAmount() > 0) {
+			savePaymentTrans(tradeType, accounting, rentContract, feeDirection);
+		    }
+		}
+		saveAccounting(tradeType, accounting, rentContract, feeDirection);
 	    }
 	}
     }
