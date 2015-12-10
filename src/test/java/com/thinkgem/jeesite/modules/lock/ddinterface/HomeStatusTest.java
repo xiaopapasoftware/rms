@@ -17,7 +17,7 @@ public class HomeStatusTest {
 	
 	
 	
-	@Test
+	//@Test
 	public void findHomeState() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -41,7 +41,7 @@ public class HomeStatusTest {
 	}
 	
 	
-	@Test
+	//@Test
 	public void getCenterInfo() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -63,7 +63,7 @@ public class HomeStatusTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void getLockInfo() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -88,7 +88,7 @@ public class HomeStatusTest {
 	
 	
 
-	@Test
+	//@Test
 	public void fetchPasswords() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -112,7 +112,7 @@ public class HomeStatusTest {
 	}
 	
 	
-	@Test
+	//@Test
 	public void getDefaultPasswordPlaintext() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -136,7 +136,7 @@ public class HomeStatusTest {
 	}
 
 	
-	@Test
+	//@Test
 	public void getDynamicPasswordPlaintext() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();

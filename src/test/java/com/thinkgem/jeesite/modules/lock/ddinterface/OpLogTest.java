@@ -20,7 +20,7 @@ public class OpLogTest {
 	
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	@Test
+	//@Test
 	public void searchDeviceOpLog() throws ParseException {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();

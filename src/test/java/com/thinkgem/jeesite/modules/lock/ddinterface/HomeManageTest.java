@@ -15,7 +15,7 @@ import com.thinkgem.jeesite.modules.lock.utils.HttpRequestUtil;
 
 public class HomeManageTest {
 	
-	@Test
+	//@Test
 	public void delHome() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -38,7 +38,7 @@ public class HomeManageTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void addHome() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -70,7 +70,7 @@ public class HomeManageTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void addRoom() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();

@@ -20,7 +20,7 @@ public class PasswordTest {
 	
 	public SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	@Test
+	//@Test
 	public void addPassword() throws ParseException {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();
@@ -55,7 +55,7 @@ public class PasswordTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	public void getLockEvents() {
 		String token = readToken();
 		Map<String, Object> map = Maps.newHashMap();

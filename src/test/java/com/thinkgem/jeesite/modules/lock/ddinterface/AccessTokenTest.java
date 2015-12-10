@@ -15,7 +15,7 @@ import com.thinkgem.jeesite.modules.lock.utils.HttpRequestUtil;
 
 public class AccessTokenTest {
 
-	@Test
+	//@Test
 	public void fetchAccessToken() {
 		//List<Map<String, Object>> list = Lists.newArrayList();
 		Map<String, Object> map = Maps.newHashMap();
