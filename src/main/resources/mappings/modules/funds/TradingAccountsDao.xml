@@ -85,7 +85,7 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
-	  ) t 
+	  ) t where t.tradeName is not null 
 	  <where>
 	  	<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
