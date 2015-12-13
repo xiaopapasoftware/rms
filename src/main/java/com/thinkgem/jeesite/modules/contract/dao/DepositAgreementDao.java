@@ -17,4 +17,6 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 public interface DepositAgreementDao extends CrudDao<DepositAgreement> {
 
     Integer getTotalValidDACounts(DepositAgreement depositAgreement);
+    
+    DepositAgreement getByHouseId(DepositAgreement depositAgreement);
 }

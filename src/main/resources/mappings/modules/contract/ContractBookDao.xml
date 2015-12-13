@@ -50,7 +50,7 @@
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,tt.house_id,da.agreement_status as "bookStatus",tt.short_desc,
+		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by,tt.house_id,da.agreement_status as "bookStatus",tt.short_desc,
 		tt.short_location,tt.attachment_path,ct.cell_phone from T_DEPOSIT_AGREEMENT da 
 		left join (
 		select DEPOSIT_AGREEMENT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te

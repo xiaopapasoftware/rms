@@ -370,21 +370,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		    }
 		}
 	    }
-	    
-	    /*更改预订数据*/
-	    if("2".equals(depositAgreement.getDataSource())) {
-			String houseId = "";
-			if(null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId()))
-				houseId = depositAgreement.getRoom().getId();
-			else
-				houseId = depositAgreement.getHouse().getId();
-			ContractBook contractBookUpdate = new ContractBook();
-			contractBookUpdate.setHouseId(houseId);
-			contractBookUpdate.setRoomId(houseId);
-			contractBookUpdate = contractBookService.get(contractBookUpdate);
-			contractBookUpdate.setBookStatus("1");//等待用户确认
-			contractBookService.updateStatusByHouseId(contractBookUpdate);
-	    }
 	}
 
 	if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
@@ -471,5 +456,9 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     @Transactional(readOnly = true)
     public Integer getTotalValidDACounts() {
 	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
+    
+    public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
+    	return this.depositAgreementDao.getByHouseId(depositAgreement);
     }
 }

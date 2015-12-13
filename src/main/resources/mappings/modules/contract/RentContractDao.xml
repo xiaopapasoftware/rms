@@ -359,6 +359,9 @@
 	<update id="delete">
 		UPDATE t_rent_contract SET 
 			del_flag = #{DEL_FLAG_DELETE}
+			<if test="updateUser != null and updateUser != ''">
+				,update_by = #{updateUser}
+			</if>
 		WHERE id = #{id}
 	</update>
 	
