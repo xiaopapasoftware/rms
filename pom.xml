@@ -845,7 +845,8 @@
 						static/**,
 						userfiles/**,
 						WEB-INF/tags/**,
-						WEB-INF/tlds/**
+						WEB-INF/tlds/**,
+						WEB-INF/classes/jeesite.properties
 					</packagingExcludes>
 					<warSourceExcludes>
 						static/bootstrap/2.3.1/docs/**,
