@@ -701,6 +701,15 @@ public class AppHouseController {
 			paymentOrder.setCreateDate(new Date());
 			this.contractBookService.saveOrder(paymentOrder);
 			
+			/*更改预订状态*/
+			String houseId = request.getParameter("house_id");
+			ContractBook contractBookUpdate = new ContractBook();
+			contractBookUpdate.setHouseId(houseId);
+			contractBookUpdate.setRoomId(houseId);
+			contractBookUpdate = contractBookService.get(contractBookUpdate);
+			contractBookUpdate.setBookStatus("4");//等待用户支付
+			contractBookService.updateStatusByHouseId(contractBookUpdate);
+			
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("order_id", paymentOrder.getOrderId());
 			map.put("price", paymentOrder.getOrderAmount());
@@ -750,6 +759,7 @@ public class AppHouseController {
 			
 			map.put("house_id", contractBook.getHouseId());
 			map.put("desc", contractBook.getShortDesc());
+			map.put("location", contractBook.getShortLocation());
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 			String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
 			if(null != path && path.length > 0)
@@ -764,6 +774,8 @@ public class AppHouseController {
 			map.put("rent_phone", appUser.getPhone());
 			map.put("note", contractBook.getRemarks());
 			map.put("status", contractBook.getBookStatus().equals("6")?"0":"1");
+			map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(),"yyyy-MM-dd"));
+			map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(),"yyyy-MM-dd"));
 			
 			data.setData(map);
 			data.setCode("200");
@@ -793,7 +805,7 @@ public class AppHouseController {
 			contractBook.setHouseId(houseId);
 			contractBook.setRoomId(houseId);
 			contractBook = contractBookService.get(contractBook);
-			contractBook.setBookStatus("3");//已取消
+			contractBook.setBookStatus("5");//用户已取消
 			contractBookService.updateStatusByHouseId(contractBook);
 			
 			RentContract rentContract = new RentContract();

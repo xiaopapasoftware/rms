@@ -24,6 +24,7 @@ import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
@@ -76,6 +77,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private ReceiptDao receiptDao;
     @Autowired
     private PaymentTradeDao paymentTradeDao;
+    @Autowired
+	private ContractBookService contractBookService;
 
     private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";// 定金协议审批
 
@@ -366,6 +369,21 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 			}
 		    }
 		}
+	    }
+	    
+	    /*更改预订数据*/
+	    if("2".equals(depositAgreement.getDataSource())) {
+			String houseId = "";
+			if(null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId()))
+				houseId = depositAgreement.getRoom().getId();
+			else
+				houseId = depositAgreement.getHouse().getId();
+			ContractBook contractBookUpdate = new ContractBook();
+			contractBookUpdate.setHouseId(houseId);
+			contractBookUpdate.setRoomId(houseId);
+			contractBookUpdate = contractBookService.get(contractBookUpdate);
+			contractBookUpdate.setBookStatus("1");//等待用户确认
+			contractBookService.updateStatusByHouseId(contractBookUpdate);
 	    }
 	}
 
