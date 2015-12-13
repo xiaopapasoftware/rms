@@ -68,6 +68,7 @@
 		<if test="houseId != null and houseId != ''">
 			AND tt.house_id = #{houseId}
 		</if>
+		order by create_date desc
 	</select>
 	
 	<select id="findRentContract" resultType="ContractBook">
