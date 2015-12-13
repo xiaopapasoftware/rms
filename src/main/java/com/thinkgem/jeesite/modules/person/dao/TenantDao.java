@@ -22,4 +22,6 @@ public interface TenantDao extends CrudDao<Tenant> {
 	 * 根据租客证件类型和证件号码查询租客信息
 	 * */
 	List<Tenant> findTenantByIdTypeAndNo(Tenant tenant);
+	
+	List<Tenant> findTenantByPhone(Tenant tenant);
 }

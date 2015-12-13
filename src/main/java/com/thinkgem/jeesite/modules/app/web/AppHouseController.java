@@ -479,9 +479,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 			
 			Tenant tenant = new Tenant();
-			tenant.setIdType("0");//身份证
-			tenant.setIdNo(appUser.getIdCardNo());
-			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			tenant.setCellPhone(appUser.getPhone());
+			List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 			if(null == tenantList || tenantList.size() <= 0) {
 				tenantList = new ArrayList<Tenant>();
 				tenant.setTenantName(appUser.getName());
@@ -772,7 +771,7 @@ public class AppHouseController {
 			map.put("id_no", appUser.getIdCardNo());
 			map.put("rent_gender", appUser.getSex());
 			map.put("rent_phone", appUser.getPhone());
-			map.put("note", contractBook.getRemarks());
+			map.put("note", depositAgreement.getRemarks());
 			map.put("status", contractBook.getBookStatus().equals("6")?"0":"1");
 			map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(),"yyyy-MM-dd"));
 			map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(),"yyyy-MM-dd"));

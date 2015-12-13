@@ -71,4 +71,7 @@ public class TenantService extends CrudService<TenantDao, Tenant> {
 		return dao.findTenantByIdTypeAndNo(tenant);
 	}
 
+	public List<Tenant> findTenantByPhone(Tenant tenant) {
+		return dao.findTenantByPhone(tenant);
+	}
 }
