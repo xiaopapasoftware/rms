@@ -131,3 +131,32 @@ create table T_REPAIRS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '报修记录';
+
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('320','105','0,1,105,','广告活动管理','20107','/inventory/ad',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('321','320','0,1,105,320','查看','30',NULL,NULL,NULL,'0','inventory:ad:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('322','320','0,1,105,320','修改','60',NULL,NULL,NULL,'0','inventory:ad:edit','1',now(),'1',now(),NULL,'0');
+
+drop table if exists t_house_ad;
+create table t_house_ad
+(
+	ID                   varchar(64) NOT NULL,
+	ad_name              varchar(64) comment '广告名称',
+	ad_type              varchar(2) comment '广告类型 0:图片广告 1:房源链接式广告',
+	PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
+  BUILDING_ID          varchar(64) comment '楼宇',
+  HOUSE_ID             varchar(64) comment '房屋',
+  ROOM_ID              varchar(64) comment '房间',
+	ad_value             varchar(64) comment '房源ID',
+	ad_url               varchar(64) comment '广告图片地址',
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME 	COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+	primary key (ID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '广告';
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('370','0','图片广告','ad_type','广告类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','房源链接式广告','ad_type','广告类型','2','0','1',now(),'1',now(),NULL,'0');

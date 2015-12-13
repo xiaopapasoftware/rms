@@ -194,12 +194,12 @@ public class LoginController extends BaseController{
 ////		}
 //		System.out.println("==========================b");
 		
-		Page<PaymentTrans> page = paymentTransService.findRemind(new Page<PaymentTrans>(request, response,-1), new PaymentTrans()); 
+		/*Page<PaymentTrans> page = paymentTransService.findRemind(new Page<PaymentTrans>(request, response,-1), new PaymentTrans()); 
 		model.addAttribute("paymentTrans", page.getList().size());
 		Page<LeaseContract> pageLeaseContract = leaseContractService.findLeaseContractList(new Page<LeaseContract>(request, response,-1), new LeaseContract()); 
 		model.addAttribute("leaseContract", pageLeaseContract.getList().size());
 		Page<RentContract> pageRentContract = rentContractService.findContractList(new Page<RentContract>(request, response,-1), new RentContract()); 
-		model.addAttribute("rentContract", pageRentContract.getList().size());
+		model.addAttribute("rentContract", pageRentContract.getList().size());*/
 		
 		return "modules/sys/sysIndex";
 	}

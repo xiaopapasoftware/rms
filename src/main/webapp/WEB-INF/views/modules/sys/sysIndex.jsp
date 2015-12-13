@@ -262,7 +262,7 @@
 			$.fn.jerichoTab.resize();
 		} // </c:if>
 		
-		var html = "<p>待收房租：<span style='color:red;font-weight:bold;'>"+${paymentTrans}+"</span> 笔</p>";
+		/*var html = "<p>待收房租：<span style='color:red;font-weight:bold;'>"+${paymentTrans}+"</span> 笔</p>";
 		html += "<p>承租合同到期：<span style='color:red;font-weight:bold;'>"+${leaseContract}+"</span> 笔</p>";
 		html += "<p>待续租合同：<span style='color:red;font-weight:bold;'>"+${rentContract}+"</span> 笔</p>";
 		$.jBox.messager(html, '提醒', 60000, {width:350});
@@ -276,7 +276,7 @@
 				html += "<p>待续租合同：<span style='color:red;font-weight:bold;'>"+data.rentContract+"</span> 笔</p>";
 				$.jBox.messager(html, '提醒', 60000, {width:350});
 			});			
-		},600000);
+		},600000);*/
 	</script>
 	<script src="${ctxStatic}/common/wsize.min.js" type="text/javascript"></script>
 </body>

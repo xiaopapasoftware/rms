@@ -1184,9 +1184,9 @@ public class AppHouseController {
 
             Repair repair = new Repair();
             repair.setId(IdGen.uuid());
-            repair.setUserId(mobile);
+//            repair.setUserId(mobile);
             repair.setUserMobile(request.getParameter("user_mobile"));
-            repair.setContractId(request.getParameter("contract_id"));
+//            repair.setContractId(request.getParameter("contract_id"));
             repair.setRoomId(request.getParameter("room_id"));
             repair.setStatus("01");
             repair.setDescription(request.getParameter("description"));
