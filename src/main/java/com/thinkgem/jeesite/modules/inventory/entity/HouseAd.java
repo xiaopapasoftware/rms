@@ -31,7 +31,6 @@ public class HouseAd extends DataEntity<HouseAd> {
 		super(id);
 	}
 
-	@Length(min=0, max=2, message="广告类型 0:图片广告 1:房源链接式广告长度必须介于 0 和 2 之间")
 	public String getAdType() {
 		return adType;
 	}
@@ -58,7 +57,6 @@ public class HouseAd extends DataEntity<HouseAd> {
 		this.adValue = adValue;
 	}
 	
-	@Length(min=0, max=64, message="广告图片地址长度必须介于 0 和 64 之间")
 	public String getAdUrl() {
 		return adUrl;
 	}

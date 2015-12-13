@@ -148,7 +148,7 @@ create table t_house_ad
   HOUSE_ID             varchar(64) comment '房屋',
   ROOM_ID              varchar(64) comment '房间',
 	ad_value             varchar(64) comment '房源ID',
-	ad_url               varchar(64) comment '广告图片地址',
+	ad_url               varchar(255) comment '广告图片地址',
 	CREATE_BY            VARCHAR(64) COMMENT '创建者',
   CREATE_DATE          DATETIME 	COMMENT '创建时间',
   UPDATE_BY            VARCHAR(64) COMMENT '更新者',

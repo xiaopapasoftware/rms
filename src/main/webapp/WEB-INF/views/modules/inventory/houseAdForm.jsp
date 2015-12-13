@@ -7,6 +7,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			//$("#name").focus();
+			adTypeChange();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -173,7 +174,8 @@
 			<label class="control-label">广告图片地址：</label>
 			<div class="controls">
 				<form:hidden id="adUrl" path="adUrl" htmlEscape="false" maxlength="64" class="input-xlarge"/>
-				<sys:ckfinder input="adUrl" type="files" uploadPath="/inventory/ad" selectMultiple="true"/>
+				<sys:ckfinder input="adUrl" type="files" uploadPath="/广告" selectMultiple="false"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

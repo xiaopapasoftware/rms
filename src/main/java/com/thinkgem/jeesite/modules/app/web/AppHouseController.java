@@ -49,9 +49,11 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.HouseAd;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseAdService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
@@ -94,7 +96,51 @@ public class AppHouseController {
 
     @Autowired
     private AttachmentDao attachmentDao;
-
+    
+    @Autowired
+	private HouseAdService houseAdService;
+    
+    @RequestMapping(value = "ad")
+    @ResponseBody
+    public ResponseData ad(HttpServletRequest request, HttpServletResponse response) {
+    	ResponseData data = new ResponseData();
+    	
+    	try {
+			List<HouseAd> listAd = houseAdService.findList(new HouseAd());
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			
+			List<Map<String,String>> list = new ArrayList<Map<String,String>>();
+			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+		    String img_url = proper.getProperty("img.url");
+			for(HouseAd ad : listAd) {
+				Map<String,String> adMap = new HashMap<String,String>();
+				
+				adMap.put("id", ad.getId());
+				adMap.put("type", ad.getAdType());
+				if("1".equals(ad.getAdType())) {
+					String value = "";
+					if(null != ad.getRoom() && !StringUtils.isBlank(ad.getRoom().getId()))
+						value = ad.getRoom().getId();
+					else
+						value = ad.getHouse().getId();
+					adMap.put("value", value);
+				}
+				adMap.put("url", img_url+ad.getAdUrl());
+				list.add(adMap);
+			}
+			
+			map.put("ad", list);
+			data.setData(map);
+			
+			data.setCode("200");
+		} catch (Exception e) {
+			data.setCode("500");
+			log.error("list ad error:",e);
+		}
+    	
+    	return data;
+    }
 
     @RequestMapping(value = "findFeatureList")
     @ResponseBody

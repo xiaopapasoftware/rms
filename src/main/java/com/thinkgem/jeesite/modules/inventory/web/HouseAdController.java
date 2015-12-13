@@ -77,35 +77,41 @@ public class HouseAdController extends BaseController {
 		if (null != houseAd.getPropertyProject()) {
 		    Building building = new Building();
 		    PropertyProject propertyProject = new PropertyProject();
-		    propertyProject.setId(houseAd.getPropertyProject().getId());
-		    building.setPropertyProject(propertyProject);
-		    List<Building> buildingList = buildingService.findList(building);
-		    model.addAttribute("buildingList", buildingList);
+		    if(!StringUtils.isBlank(houseAd.getPropertyProject().getId())) {
+			    propertyProject.setId(houseAd.getPropertyProject().getId());
+			    building.setPropertyProject(propertyProject);
+			    List<Building> buildingList = buildingService.findList(building);
+			    model.addAttribute("buildingList", buildingList);
+		    }
 		}
 		if (null != houseAd.getBuilding()) {
 		    House house = new House();
 		    Building building = new Building();
-		    building.setId(houseAd.getBuilding().getId());
-		    house.setBuilding(building);
-		    house.setChoose("1");
-		    List<House> houseList = houseService.findList(house);
-		    if (null != houseAd.getHouse())
-			houseList.add(houseService.get(houseAd.getHouse()));
-		    model.addAttribute("houseList", houseList);
+		    if(!StringUtils.isBlank(houseAd.getBuilding().getId())) {
+		    	building.setId(houseAd.getBuilding().getId());
+		    	house.setBuilding(building);
+		    	house.setChoose("1");
+		    	List<House> houseList = houseService.findList(house);
+		    	if (null != houseAd.getHouse())
+		    		houseList.add(houseService.get(houseAd.getHouse()));
+		    	model.addAttribute("houseList", houseList);
+		    }
 		}
 		if (null != houseAd.getRoom()) {
 		    Room room = new Room();
 		    House house = new House();
-		    house.setId(houseAd.getHouse().getId());
-		    room.setHouse(house);
-		    room.setChoose("1");
-		    List<Room> roomList = roomServie.findList(room);
-		    if (null != houseAd.getRoom()) {
-			Room rm = roomServie.get(houseAd.getRoom());
-			if (null != rm)
-			    roomList.add(rm);
+		    if(!StringUtils.isBlank(houseAd.getHouse().getId())) {
+		    	house.setId(houseAd.getHouse().getId());
+		    	room.setHouse(house);
+		    	room.setChoose("1");
+		    	List<Room> roomList = roomServie.findList(room);
+		    	if (null != houseAd.getRoom()) {
+		    		Room rm = roomServie.get(houseAd.getRoom());
+		    		if (null != rm)
+		    			roomList.add(rm);
+		    	}
+		    	model.addAttribute("roomList", roomList);
 		    }
-		    model.addAttribute("roomList", roomList);
 		}
 		return "modules/inventory/houseAdForm";
 	}
@@ -117,14 +123,14 @@ public class HouseAdController extends BaseController {
 		}
 		houseAdService.save(houseAd);
 		addMessage(redirectAttributes, "保存广告管理成功");
-		return "redirect:"+Global.getAdminPath()+"/inventory/houseAd/?repage";
+		return "redirect:"+Global.getAdminPath()+"/inventory/ad/?repage";
 	}
 	
 	@RequestMapping(value = "delete")
 	public String delete(HouseAd houseAd, RedirectAttributes redirectAttributes) {
 		houseAdService.delete(houseAd);
 		addMessage(redirectAttributes, "删除广告管理成功");
-		return "redirect:"+Global.getAdminPath()+"/inventory/houseAd/?repage";
+		return "redirect:"+Global.getAdminPath()+"/inventory/ad/?repage";
 	}
 
 }
