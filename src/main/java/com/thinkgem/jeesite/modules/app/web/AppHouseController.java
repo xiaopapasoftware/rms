@@ -724,15 +724,6 @@ public class AppHouseController {
 			paymentOrder.setCreateDate(new Date());
 			this.contractBookService.saveOrder(paymentOrder);
 			
-			/*更改预订状态*/
-			String houseId = request.getParameter("house_id");
-			ContractBook contractBookUpdate = new ContractBook();
-			contractBookUpdate.setHouseId(houseId);
-			contractBookUpdate.setRoomId(houseId);
-			contractBookUpdate = contractBookService.get(contractBookUpdate);
-			contractBookUpdate.setBookStatus("4");//等待用户支付
-			contractBookService.updateStatusByHouseId(contractBookUpdate);
-			
 			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("order_id", paymentOrder.getOrderId());
 			map.put("price", paymentOrder.getOrderAmount());
