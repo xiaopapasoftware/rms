@@ -370,6 +370,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		    }
 		}
 	    }
+	    
+	    /*APP来的数据还是暂存状态???*/
+	    if("2".equals(depositAgreement.getDataSource())) {
+	    	//TODO:
+	    }
 	}
 
 	if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
