@@ -1346,4 +1346,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 	}
     }
+    
+    public RentContract getByHouseId(RentContract rentContract) {
+    	return this.rentContractDao.getByHouseId(rentContract);
+    }
 }

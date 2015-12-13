@@ -30,8 +30,10 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
@@ -90,6 +92,8 @@ public class RentContractController extends BaseController {
     private RoomService roomService;
     @Autowired
     private ElectricFeeService electricFeeService;
+    @Autowired
+	private ContractBookService contractBookService;
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -430,6 +434,23 @@ public class RentContractController extends BaseController {
 	rentContract.setId(null);
 	model.addAttribute("rentContract", rentContract);
 	return "modules/contract/rentContractForm";
+    }
+    
+    @RequestMapping(value = "cancel")
+    public String cancel(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+    	rentContract = this.rentContractService.get(rentContract);
+    	String houseId = "";
+    	if(null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
+    		houseId = rentContract.getRoom().getId();
+    	} else 
+    		houseId = rentContract.getHouse().getId();
+    	this.rentContractService.delete(rentContract);
+    	ContractBook contractBook = new ContractBook();
+    	contractBook.setHouseId(houseId);
+    	contractBook.setBookStatus("3");//已取消
+    	contractBookService.updateStatusByHouseId(contractBook);
+    	addMessage(redirectAttributes, "取消出租合同成功");
+    	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
     // @RequiresPermissions("contract:rentContract:edit")

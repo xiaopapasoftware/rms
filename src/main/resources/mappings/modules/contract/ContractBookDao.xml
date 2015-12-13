@@ -195,6 +195,12 @@
 		WHERE id = #{id}
 	</update>
 	
+	<update id="updateStatusByHouseId">
+		UPDATE t_contract_book SET 	
+			book_status = #{bookStatus}
+		WHERE house_id = #{houseId} or room_id = #{houseId}
+	</update>
+	
 	<update id="delete">
 		UPDATE t_contract_book SET 
 			del_flag = #{DEL_FLAG_DELETE}

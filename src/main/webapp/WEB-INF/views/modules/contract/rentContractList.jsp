@@ -356,6 +356,7 @@
 				<td>${rentContract.createBy.loginName}</td>
 				<td>${rentContract.updateBy.loginName}</td>			
 				<td>
+						<a href="${ctx}/contract/rentContract/cancel?id=${rentContract.id}" onclick="return confirmx('确认要取消吗?', this.href)">取消</a>
 					<shiro:hasPermission name="contract:rentContract:edit">
 						<c:if test="${rentContract.contractStatus=='3'||rentContract.contractStatus=='0'||rentContract.contractStatus=='1'}">
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>

@@ -17,4 +17,5 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 public interface ContractBookDao extends CrudDao<ContractBook> {
 	public List<ContractBook> findBookedContract(ContractBook contractBook);
 	public List<ContractBook> findRentContract(ContractBook contractBook);
+	public void updateStatusByHouseId(ContractBook contractBook);
 }

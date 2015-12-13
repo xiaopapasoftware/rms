@@ -144,4 +144,9 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 	public String generateOrderId() {
 		return DateFormatUtils.format(new Date(),"SSSyyyyMMddHHmmss");
 	}
+	
+	@Transactional(readOnly = false)
+	public void updateStatusByHouseId(ContractBook contractBook) {
+		contractBookDao.updateStatusByHouseId(contractBook);
+	}
 }

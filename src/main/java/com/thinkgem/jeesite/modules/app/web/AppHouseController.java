@@ -776,6 +776,40 @@ public class AppHouseController {
 	}
 	
 	/**
+	 * 取消预订
+	 */
+	@RequestMapping(value="booked_cancel")
+	@ResponseBody
+	public ResponseData bookedCancel(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+		if(null == request.getParameter("house_id")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		try {
+			String houseId = request.getParameter("house_id");
+			ContractBook contractBook = new ContractBook();
+			contractBook.setHouseId(houseId);
+			contractBook.setRoomId(houseId);
+			contractBook = contractBookService.get(contractBook);
+			contractBook.setBookStatus("3");//已取消
+			contractBookService.updateStatusByHouseId(contractBook);
+			
+			RentContract rentContract = new RentContract();
+			rentContract.setHouseNo(houseId);
+			rentContract.setRoomNo(houseId);
+			rentContract = rentContractService.getByHouseId(rentContract);
+			this.rentContractService.delete(rentContract);
+		} catch (Exception e) {
+			log.error("",e);
+		}
+		
+		data.setCode("200");
+		return data;
+	}
+	
+	/**
 	 * 签约
 	 */
 	@RequestMapping(value="sign")
