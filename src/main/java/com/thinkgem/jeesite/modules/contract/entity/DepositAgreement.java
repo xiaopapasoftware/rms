@@ -63,6 +63,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
     private Double refundAmount;// 退费金额
     
     private String dataSource;
+    private String updateUser;
 
     public DepositAgreement() {
 	super();
@@ -315,5 +316,13 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
 	public void setDataSource(String dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
 	}
 }

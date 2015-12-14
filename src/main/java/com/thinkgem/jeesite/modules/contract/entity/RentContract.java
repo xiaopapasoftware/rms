@@ -111,6 +111,8 @@ public class RentContract extends DataEntity<RentContract> {
 	private String returnRemark;//退租备注
 	
 	private String dataSource;
+	
+	private String updateUser;
 
 	public RentContract() {
 		super();
@@ -633,5 +635,13 @@ public class RentContract extends DataEntity<RentContract> {
 
 	public void setDataSource(String dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
 	}
 }

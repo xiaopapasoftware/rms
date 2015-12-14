@@ -162,6 +162,27 @@
 		</where>
 	</select>
 	
+	<select id="findTenantByPhone" resultType="Tenant">
+		SELECT 
+						a.id AS "id",
+						a.user_id AS "user.id",
+						a.company_id AS "company.id",
+						a.tenant_name AS "tenantName",
+						a.gender AS "gender",
+						a.tenant_type AS "tenantType",
+						a.id_type AS "idType",
+						a.id_no AS "idNo",
+						a.birthday AS "birthday",
+						a.degrees AS "degrees",
+						a.cell_phone AS "cellPhone",
+						a.email AS "email",
+						a.house_register AS "houseRegister",
+						a.position AS "position",
+						a.del_flag AS "delFlag"
+		FROM t_tenant a
+		where a.del_flag = #{DEL_FLAG_NORMAL} and cell_phone=#{cellPhone}
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_tenant(
 			id,

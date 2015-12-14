@@ -58,6 +58,11 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="getByHouseId" resultType="RentContract">
+		SELECT * FROM t_rent_contract a
+		WHERE (a.house_id = #{houseNo} or a.room_id = #{roomNo}) and a.del_flag='0' 
+	</select>
+	
 	<select id="findList" resultType="DepositAgreement">
 		SELECT 
 			<include refid="depositAgreementColumns"/>
@@ -218,6 +223,9 @@
 	<update id="delete">
 		UPDATE t_deposit_agreement SET 
 			del_flag = #{DEL_FLAG_DELETE}
+			<if test="updateUser != null and updateUser != ''">
+				,update_by = #{updateUser}
+			</if>
 		WHERE id = #{id}
 	</update>
 	

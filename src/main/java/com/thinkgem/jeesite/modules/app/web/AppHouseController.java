@@ -479,9 +479,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 			
 			Tenant tenant = new Tenant();
-			tenant.setIdType("0");//身份证
-			tenant.setIdNo(appUser.getIdCardNo());
-			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			tenant.setCellPhone(appUser.getPhone());
+			List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 			if(null == tenantList || tenantList.size() <= 0) {
 				tenantList = new ArrayList<Tenant>();
 				tenant.setTenantName(appUser.getName());
@@ -532,7 +531,31 @@ public class AppHouseController {
 				mp.put("house_id", tmpContractBook.getHouseId());
 				mp.put("desc", tmpContractBook.getShortDesc());
 				mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(),"yyyy-MM-dd"));
-				mp.put("status", tmpContractBook.getBookStatus().equals("6")?"0":"1");
+				
+				/*0:等待管家确认
+				  1:等待用户确认
+				  2:支付成功
+				  3:管家已取消
+				  4.等待用户支付
+				  5.用户已取消
+				  6.支付失败*/				
+				String status = "";
+				if ("6".equals(tmpContractBook.getBookStatus())) {
+					status = "0";
+				} else if ("0".equals(tmpContractBook.getBookStatus())) {
+					status = "1";
+				} else if ("1".equals(tmpContractBook.getBookStatus())) {
+					status = "4";
+				} else if ("5".equals(tmpContractBook.getBookStatus())) {
+					status = "2";
+				}
+				if("1".equals(tmpContractBook.getDelFlag())) {
+					status = "3";
+					if(apptoken.getPhone().equals(tmpContractBook.getUpdateBy())) {
+						status = "5";
+					}
+				}
+				mp.put("status", status);
 				
 				String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
 				if(null != path && path.length>0) {
@@ -750,6 +773,7 @@ public class AppHouseController {
 			
 			map.put("house_id", contractBook.getHouseId());
 			map.put("desc", contractBook.getShortDesc());
+			map.put("location", contractBook.getShortLocation());
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 			String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
 			if(null != path && path.length > 0)
@@ -762,8 +786,10 @@ public class AppHouseController {
 			map.put("id_no", appUser.getIdCardNo());
 			map.put("rent_gender", appUser.getSex());
 			map.put("rent_phone", appUser.getPhone());
-			map.put("note", contractBook.getRemarks());
+			map.put("note", depositAgreement.getRemarks());
 			map.put("status", contractBook.getBookStatus().equals("6")?"0":"1");
+			map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(),"yyyy-MM-dd"));
+			map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(),"yyyy-MM-dd"));
 			
 			data.setData(map);
 			data.setCode("200");
@@ -789,18 +815,18 @@ public class AppHouseController {
 		
 		try {
 			String houseId = request.getParameter("house_id");
-			ContractBook contractBook = new ContractBook();
-			contractBook.setHouseId(houseId);
-			contractBook.setRoomId(houseId);
-			contractBook = contractBookService.get(contractBook);
-			contractBook.setBookStatus("3");//已取消
-			contractBookService.updateStatusByHouseId(contractBook);
 			
-			RentContract rentContract = new RentContract();
-			rentContract.setHouseNo(houseId);
-			rentContract.setRoomNo(houseId);
-			rentContract = rentContractService.getByHouseId(rentContract);
-			this.rentContractService.delete(rentContract);
+			String token = (String) request.getHeader("token");
+			AppToken apptoken = new AppToken();
+			apptoken.setToken(token);
+			apptoken = appTokenService.findByToken(apptoken);
+			
+			DepositAgreement depositAgreement = new DepositAgreement();
+			depositAgreement.setHouseNo(houseId);
+			depositAgreement.setRoomNo(houseId);
+			depositAgreement = depositAgreementService.getByHouseId(depositAgreement);
+			depositAgreement.setUpdateUser(apptoken.getPhone());
+			this.depositAgreementService.delete(depositAgreement);
 		} catch (Exception e) {
 			log.error("",e);
 		}

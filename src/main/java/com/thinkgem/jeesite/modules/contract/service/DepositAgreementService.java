@@ -24,6 +24,7 @@ import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
+import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
@@ -76,6 +77,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private ReceiptDao receiptDao;
     @Autowired
     private PaymentTradeDao paymentTradeDao;
+    @Autowired
+	private ContractBookService contractBookService;
 
     private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";// 定金协议审批
 
@@ -367,6 +370,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		    }
 		}
 	    }
+	    
+	    /*APP来的数据还是暂存状态???*/
+	    if("2".equals(depositAgreement.getDataSource())) {
+	    	//TODO:
+	    }
 	}
 
 	if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
@@ -453,5 +461,9 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     @Transactional(readOnly = true)
     public Integer getTotalValidDACounts() {
 	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
+    
+    public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
+    	return this.depositAgreementDao.getByHouseId(depositAgreement);
     }
 }
