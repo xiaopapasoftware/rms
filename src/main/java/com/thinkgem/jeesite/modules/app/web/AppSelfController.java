@@ -113,11 +113,13 @@ public class AppSelfController {
 //			infoMap.put("id_photo_back", "http://218.80.0.218:12301/id_photo_back.jpg");
 
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			String img_url = proper.getProperty("api.img.url");
+			String img_url = proper.getProperty("img.url");
 			String avatar = "";
 			if (!StringUtils.isEmpty(appUser.getAvatar())) {
 				avatar = img_url + appUser.getAvatar();
-			}
+			}else{//default avatar
+                avatar = img_url + "/rms-api/pic/avatar.jpg";
+            }
 			infoMap.put("avatar", avatar);
 			String idCardPhotoFront = "";
 			if (!StringUtils.isEmpty(appUser.getIdCardPhoto＿front())) {
@@ -183,7 +185,7 @@ public class AppSelfController {
 
 
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			String img_url = proper.getProperty("api.img.url");
+			String img_url = proper.getProperty("img.url");
 
 
 			data.setData(img_url + attach_path);
@@ -256,7 +258,7 @@ public class AppSelfController {
 			attachmentDao.insert(attachmentback);
 
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-			String img_url = proper.getProperty("api.img.url");
+			String img_url = proper.getProperty("img.url");
 			Map<String, String> icMap = new HashMap<String, String>();
 			icMap.put("front", img_url + front);
 			icMap.put("back", img_url+back);
