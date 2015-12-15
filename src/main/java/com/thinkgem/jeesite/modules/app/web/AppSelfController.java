@@ -9,8 +9,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +59,22 @@ public class AppSelfController {
 			data.setMsg("用户获取失败");
 			return data;
 		}
+        if(null == request.getParameter("p_n") || null == request.getParameter("p_s")) {
+            data.setCode("101");
+            return data;
+        }
 		try {
+            Integer p_n = Integer.valueOf(request.getParameter("p_n"));
+            Integer p_s = Integer.valueOf(request.getParameter("p_s"));
 
+            Page<Message> page = new Page<Message>();
+            page.setPageSize(p_s);
+            page.setPageNo(p_n);
 			Message message = new Message();
 			message.setDelFlag("0");
 			message.setReceiver(mobile);
-			List<Message> msgs = messageService.findList(message);
+            page =  messageService.findPage(page, message);
+			List<Message> msgs = page.getList();
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			for (Message msg : msgs) {
 				Map<String, Object> mp = new HashMap<String, Object>();
@@ -74,6 +86,7 @@ public class AppSelfController {
 
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("msgs", list);
+            map.put("p_t", page.getCount());
 
 			data.setData(map);
 			data.setCode("200");
@@ -300,8 +313,8 @@ public class AppSelfController {
 			data.setData("");
 			data.setCode("200");
 		} catch (Exception e) {
-			data.setCode("500");
-			log.error("change info error:", e);
+            data.setCode("500");
+            log.error("change info error:", e);
 		}
 		return data;
 	}

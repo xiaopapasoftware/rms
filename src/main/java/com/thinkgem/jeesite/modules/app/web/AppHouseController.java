@@ -155,11 +155,11 @@ public class AppHouseController {
     	}
     	try {
 			Integer p_n = Integer.valueOf(request.getParameter("p_n"));
-			Integer p_s = Integer.valueOf(request.getParameter("p_s"));
-			
-			Page<House> page = new Page<House>();
-			page.setPageSize(p_s);
-			page.setPageNo(p_n);
+            Integer p_s = Integer.valueOf(request.getParameter("p_s"));
+
+            Page<House> page = new Page<House>();
+            page.setPageSize(p_s);
+            page.setPageNo(p_n);
 			page = houseService.findFeaturePage(page, new House());
 			
 			Map<String,Object> map = new HashMap<String,Object>();
