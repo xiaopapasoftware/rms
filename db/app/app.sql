@@ -3,7 +3,7 @@ drop table if exists T_APP_INTERFACE_LOG;
 drop table if exists T_APP_CHECK_CODE;
 drop table if exists T_APP_USER;
 drop table if exists T_APP_TOKEN;
-drop table if exists　T_APP_QUESTIONS;
+drop table if exists T_APP_QUESTIONS;
 
 
 /* Create Tables */
@@ -66,7 +66,7 @@ create table T_APP_QUESTIONS
 (
    ID                   varchar(64) NOT NULL,
    QUESTION    			varchar(2000) comment '问题',
-   ANSWER           	varchar(2000) comment '回签',
+   ANSWER           	varchar(2000) comment '回答',
    TYPE					VARCHAR(1) COMMENT  '类型',
    SORT					INT  COMMENT  '排序',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',

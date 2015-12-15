@@ -1317,8 +1317,10 @@ public class AppHouseController {
             attachment.setDelFlag("0");
             attachment.setBizId(repair.getId());
             attachmentDao.insert(attachment);
-
-
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("steward", "admin");
+            map.put("steward_mobile", "15618820709");
+            data.setData(map);
             data.setCode("200");
             data.setMsg("报修已提交");
         } catch (Exception e) {

@@ -1,15 +1,14 @@
 package com.thinkgem.jeesite.modules.app.web;
 
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.*;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -345,7 +344,40 @@ public class SystemController {
         }
 		return data;
 	}
-	
+
+    // 常见问题
+    @RequestMapping(value = "question")
+    @ResponseBody
+    public ResponseData question(HttpServletRequest request, HttpServletResponse response, Model model) {
+        ResponseData data = new ResponseData();
+        log.debug(request.getParameterMap().toString());
+
+        try {
+
+
+            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+                Map<String, Object> mp = new HashMap<String, Object>();
+                mp.put("question", "如何注册");
+                mp.put("answer", "唐巢账户以手机号作为账号，目前仅支持国内手机号");
+                list.add(mp);
+            Map<String, Object> mp2 = new HashMap<String, Object>();
+            mp2.put("question", "如何使用临时开门");
+            mp2.put("answer", "请入住前联系客服，将账号与门锁绑定，并下发蓝牙钥匙；登陆后下载钥匙，即可使用蓝牙开门功能");
+            list.add(mp2);
+
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("questions", list);
+
+            data.setData(map);
+            data.setCode("200");
+        } catch (Exception e) {
+            data.setCode("500");
+            log.error("get messages error:", e);
+        }
+        return data;
+    }
+
 	
 	/**
 	 * 计算过期时间，单位秒

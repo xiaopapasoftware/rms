@@ -118,6 +118,7 @@ create table T_REPAIRS
    ID                   varchar(64) NOT NULL,
    USER_ID    	 varchar(20) comment '用户ID, APP用户为注册手机号',
    USER_MOBILE          varchar(64) comment '报修填写的联系手机号',
+   CONTRACT_ID  VARCHAR(64) comment '合同号',
    ROOM_ID	 VARCHAR(64) COMMENT '房间号',
    DESCRIPTION	 VARCHAR(18) comment  '描述',
    STEWARD      	 VARCHAR(1)  COMMENT  '管家',
