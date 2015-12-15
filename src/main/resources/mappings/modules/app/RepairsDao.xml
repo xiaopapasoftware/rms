@@ -6,6 +6,7 @@
 		a.id AS "id",
 		a.user_id AS "user.id",
 		a.user_mobile AS "userMobile",
+		a.contract_id as "contractId",
 		a.room_id AS "roomId",
 		a.description AS "description",
 		a.steward AS "steward",
@@ -42,6 +43,9 @@
 			<if test="userMobile != null and userMobile != ''">
 				AND a.user_mobile = #{userMobile}
 			</if>
+            <if test="contractId != null and contractId != ''">
+                AND a.contract_id = #{contractId}
+            </if>
 			<if test="roomId != null and roomId != ''">
 				AND a.room_id = #{roomId}
 			</if>
@@ -88,6 +92,7 @@
 			id,
 			user_id,
 			user_mobile,
+			contract_id,
 			room_id,
 			description,
 			steward,
@@ -103,6 +108,7 @@
 			#{id},
 			#{user.id},
 			#{userMobile},
+			#{contractId},
 			#{roomId},
 			#{description},
 			#{steward},
@@ -121,6 +127,7 @@
 		UPDATE t_repairs SET 	
 			user_id = #{user.id},
 			user_mobile = #{userMobile},
+			contract_id = #{contractId},
 			room_id = #{roomId},
 			description = #{description},
 			steward = #{steward},

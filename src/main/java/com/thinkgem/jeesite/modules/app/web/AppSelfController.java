@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +29,6 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
-import com.thinkgem.jeesite.modules.message.entity.Message;
-import com.thinkgem.jeesite.modules.message.service.MessageService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 @Controller

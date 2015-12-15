@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.app.entity.Repairs;
+import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
-import com.thinkgem.jeesite.modules.repair.entity.Repair;
-import com.thinkgem.jeesite.modules.repair.service.RepairService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -92,14 +92,17 @@ public class AppHouseController {
 	private RentContractService rentContractService;
 
     @Autowired
-    private RepairService repairService;
+    private RepairsService repairService;
 
     @Autowired
     private AttachmentDao attachmentDao;
     
     @Autowired
 	private HouseAdService houseAdService;
-    
+
+    public AppHouseController() {
+    }
+
     @RequestMapping(value = "ad")
     @ResponseBody
     public ResponseData ad(HttpServletRequest request, HttpServletResponse response) {
@@ -1288,11 +1291,10 @@ public class AppHouseController {
         try {
             String mobile = request.getParameter("mobile");
 
-            Repair repair = new Repair();
+            Repairs repair = new Repairs();
             repair.setId(IdGen.uuid());
-//            repair.setUserId(mobile);
             repair.setUserMobile(request.getParameter("user_mobile"));
-//            repair.setContractId(request.getParameter("contract_id"));
+            repair.setContractId(request.getParameter("contract_id"));
             repair.setRoomId(request.getParameter("room_id"));
             repair.setStatus("01");
             repair.setDescription(request.getParameter("description"));

@@ -45,8 +45,7 @@ public class MessageController extends BaseController {
 		}
 		return entity;
 	}
-	
-	@RequiresPermissions("app:message:view")
+
 	@RequestMapping(value = {"list", ""})
 	public String list(Message message, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Message> page = messageService.findPage(new Page<Message>(request, response), message); 
@@ -54,14 +53,12 @@ public class MessageController extends BaseController {
 		return "modules/app/messageList";
 	}
 
-	@RequiresPermissions("app:message:view")
 	@RequestMapping(value = "form")
 	public String form(Message message, Model model) {
 		model.addAttribute("message", message);
 		return "modules/app/messageForm";
 	}
 
-	@RequiresPermissions("app:message:edit")
 	@RequestMapping(value = "save")
 	public String save(Message message, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, message)){
@@ -72,7 +69,6 @@ public class MessageController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/app/message/?repage";
 	}
 	
-	@RequiresPermissions("app:message:edit")
 	@RequestMapping(value = "delete")
 	public String delete(Message message, RedirectAttributes redirectAttributes) {
 		messageService.delete(message);

@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.app.entity.*;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,18 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.druid.util.StringUtils;
-import com.thinkgem.jeesite.modules.app.entity.AppToken;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
-import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.app.entity.TAppCheckCode;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.TAppCheckCodeService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
-import com.thinkgem.jeesite.modules.message.entity.Message;
-import com.thinkgem.jeesite.modules.message.service.MessageService;
 
 @Controller
 @RequestMapping("system")
