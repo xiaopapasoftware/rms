@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.app.service;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.app.util.MessagePushUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,5 +44,15 @@ public class MessageService extends CrudService<MessageDao, Message> {
 	public void delete(Message message) {
 		super.delete(message);
 	}
-	
+
+    //添加消息
+    public void addMessage(Message message, boolean isPush){
+        super.save(message);
+        if(isPush){
+            push(message);
+        }
+    }
+    public void push(Message message){
+        MessagePushUtil.pushAccount(message.getTitle(), message.getContent(), message.getReceiver());
+    }
 }
