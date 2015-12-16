@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.app.entity.Repairs;
+import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
@@ -92,14 +94,17 @@ public class AppHouseController {
 	private RentContractService rentContractService;
 
     @Autowired
-    private RepairService repairService;
+    private RepairsService repairService;
 
     @Autowired
     private AttachmentDao attachmentDao;
     
     @Autowired
 	private HouseAdService houseAdService;
-    
+
+    public AppHouseController() {
+    }
+
     @RequestMapping(value = "ad")
     @ResponseBody
     public ResponseData ad(HttpServletRequest request, HttpServletResponse response) {
@@ -772,6 +777,8 @@ public class AppHouseController {
 			Map<String,Object> map = new HashMap<String,Object>();
 			
 			map.put("house_id", contractBook.getHouseId());
+			map.put("house_no", contractBook.getRoomNo());
+			map.put("pay_way", contractBook.getPayWay());
 			map.put("desc", contractBook.getShortDesc());
 			map.put("location", contractBook.getShortLocation());
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
@@ -1288,11 +1295,10 @@ public class AppHouseController {
         try {
             String mobile = request.getParameter("mobile");
 
-            Repair repair = new Repair();
+            Repairs repair = new Repairs();
             repair.setId(IdGen.uuid());
-//            repair.setUserId(mobile);
             repair.setUserMobile(request.getParameter("user_mobile"));
-//            repair.setContractId(request.getParameter("contract_id"));
+            repair.setContractId(request.getParameter("contract_id"));
             repair.setRoomId(request.getParameter("room_id"));
             repair.setStatus("01");
             repair.setDescription(request.getParameter("description"));
@@ -1315,8 +1321,10 @@ public class AppHouseController {
             attachment.setDelFlag("0");
             attachment.setBizId(repair.getId());
             attachmentDao.insert(attachment);
-
-
+            Map<String,Object> map = new HashMap<String,Object>();
+            map.put("steward", "admin");
+            map.put("steward_mobile", "15618820709");
+            data.setData(map);
             data.setCode("200");
             data.setMsg("报修已提交");
         } catch (Exception e) {
