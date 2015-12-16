@@ -50,18 +50,18 @@
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by,tt.house_id,da.agreement_status as "bookStatus",tt.short_desc,
+		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
 		tt.short_location,tt.attachment_path,ct.cell_phone from T_DEPOSIT_AGREEMENT da 
 		left join (
 		select DEPOSIT_AGREEMENT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
 		) ct on da.id=ct.deposit_agreement_id
 		left join (
-		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
+		select p.project_name,b.building_name,h.pay_way,h.id house_id,concat(h.house_code,'-',h.house_no) house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
 		t_property_project p,t_building b,t_attachment a
 		where h.property_project_id=p.id and h.building_id=b.id and h.id=a.house_id
 		union all 
-		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
+		select p.project_name,b.building_name,r.pay_way,r.id house_id,concat(h.house_code,'-',h.house_no) house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
 		t_property_project p,t_building b,t_house h,t_attachment a
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
 		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
