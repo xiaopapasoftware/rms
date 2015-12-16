@@ -16,8 +16,6 @@ import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
-import com.thinkgem.jeesite.modules.repair.entity.Repair;
-import com.thinkgem.jeesite.modules.repair.service.RepairService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -157,11 +155,11 @@ public class AppHouseController {
     	}
     	try {
 			Integer p_n = Integer.valueOf(request.getParameter("p_n"));
-			Integer p_s = Integer.valueOf(request.getParameter("p_s"));
-			
-			Page<House> page = new Page<House>();
-			page.setPageSize(p_s);
-			page.setPageNo(p_n);
+            Integer p_s = Integer.valueOf(request.getParameter("p_s"));
+
+            Page<House> page = new Page<House>();
+            page.setPageSize(p_s);
+            page.setPageNo(p_n);
 			page = houseService.findFeaturePage(page, new House());
 			
 			Map<String,Object> map = new HashMap<String,Object>();

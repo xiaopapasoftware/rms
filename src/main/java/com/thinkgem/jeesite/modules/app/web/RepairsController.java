@@ -46,7 +46,7 @@ public class RepairsController extends BaseController {
 		return entity;
 	}
 	
-	@RequiresPermissions("app:repairs:view")
+
 	@RequestMapping(value = {"list", ""})
 	public String list(Repairs repairs, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<Repairs> page = repairsService.findPage(new Page<Repairs>(request, response), repairs); 
@@ -54,14 +54,13 @@ public class RepairsController extends BaseController {
 		return "modules/app/repairsList";
 	}
 
-	@RequiresPermissions("app:repairs:view")
+
 	@RequestMapping(value = "form")
 	public String form(Repairs repairs, Model model) {
 		model.addAttribute("repairs", repairs);
 		return "modules/app/repairsForm";
 	}
 
-	@RequiresPermissions("app:repairs:edit")
 	@RequestMapping(value = "save")
 	public String save(Repairs repairs, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, repairs)){
@@ -72,7 +71,7 @@ public class RepairsController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/app/repairs/?repage";
 	}
 	
-	@RequiresPermissions("app:repairs:edit")
+
 	@RequestMapping(value = "delete")
 	public String delete(Repairs repairs, RedirectAttributes redirectAttributes) {
 		repairsService.delete(repairs);

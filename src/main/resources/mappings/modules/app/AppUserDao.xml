@@ -18,10 +18,7 @@
 		a.remarks AS "remarks",
 		a.profession AS "profession",
 		a.del_flag AS "delFlag",
-		a.corp AS "corp",
-		a.avatar AS "avatar",
-		a.id_card_photo＿front AS "idCardPhoto＿front",
-		a.id_card_photo＿back AS "idCardPhoto＿back"
+		a.corp AS "corp"
 	</sql>
 	
 	<sql id="appUserJoins">
@@ -94,10 +91,7 @@
 			remarks,
 			profession,
 			del_flag,
-			corp,
-			avatar,
-			id_card_photo＿front,
-			id_card_photo＿back
+			corp
 		) VALUES (
 			#{id},
 			#{phone},
@@ -114,10 +108,7 @@
 			#{remarks},
 			#{profession},
 			#{delFlag},
-			#{corp},
-			#{avatar},
-			#{idCardPhoto＿front},
-			#{idCardPhoto＿back}
+			#{corp}
 		)
 	</insert>
 	
@@ -134,10 +125,7 @@
 			age = #{age},
 			remarks = #{remarks},
 			profession = #{profession},
-			corp = #{corp},
-			avatar = #{avatar},
-			id_card_photo＿front = #{idCardPhoto＿front},
-			id_card_photo＿back = #{idCardPhoto＿back}
+			corp = #{corp}
 		WHERE id = #{id}
 	</update>
 	
@@ -170,8 +158,8 @@
 		attach3.ATTACHMENT_PATH AS "idCardPhoto＿back"
 		FROM t_app_user a 
         left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='APP_USER_AVATAR' and attach.del_flag = 0
-        left join t_attachment attach2 on a.id=attach2.BIZ_ID and attach2.attachment_type='APP_USER_ID_FRONT' and attach.del_flag = 0
-        left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK' and attach.del_flag = 0
+        left join t_attachment attach2 on a.id=attach2.BIZ_ID and attach2.attachment_type='APP_USER_ID_FRONT' and attach2.del_flag = 0
+        left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK' and attach3.del_flag = 0
 		WHERE a.phone = #{phone}
 	</select>
 </mapper>

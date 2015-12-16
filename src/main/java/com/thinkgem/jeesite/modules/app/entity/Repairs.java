@@ -18,6 +18,7 @@ public class Repairs extends DataEntity<Repairs> {
 	private static final long serialVersionUID = 1L;
 	private User user;		// 用户ID, APP用户为注册手机号
 	private String userMobile;		// 报修填写的联系手机号
+    private String contractId;		// 合同号
 	private String roomId;		// 房间号
 	private String description;		// 描述
 	private String steward;		// 管家
@@ -49,14 +50,23 @@ public class Repairs extends DataEntity<Repairs> {
 		this.userMobile = userMobile;
 	}
 	
-	@Length(min=0, max=64, message="房间号长度必须介于 0 和 64 之间")
-	public String getRoomId() {
-		return roomId;
+	@Length(min=0, max=64, message="合同号长度必须介于 0 和 64 之间")
+	public String getContractId() {
+		return contractId;
 	}
 
-	public void setRoomId(String roomId) {
-		this.roomId = roomId;
+	public void setContractId(String contractId) {
+		this.contractId = contractId;
 	}
+
+    @Length(min=0, max=64, message="房间号长度必须介于 0 和 64 之间")
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
 	
 	@Length(min=0, max=18, message="描述长度必须介于 0 和 18 之间")
 	public String getDescription() {

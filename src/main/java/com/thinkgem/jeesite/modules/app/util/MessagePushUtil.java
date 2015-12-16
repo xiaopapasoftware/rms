@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.message.util;
+package com.thinkgem.jeesite.modules.app.util;
 
 import com.tencent.xinge.XingeApp;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
