@@ -132,6 +132,10 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 		this.paymentOrderDao.insert(paymentOrder);
 	}
 	
+	public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
+		return this.paymentOrderDao.findByHouseId(paymentOrder);
+	}
+	
 	public PaymentOrder findByOrderId(String orderId) {
 		PaymentOrder paymentOrder = new PaymentOrder();
 		paymentOrder.setOrderId(orderId);

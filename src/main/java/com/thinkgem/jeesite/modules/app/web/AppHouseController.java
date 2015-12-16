@@ -725,6 +725,7 @@ public class AppHouseController {
 			paymentOrder.setTradeId(tradingAccounts.getId());
 			paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
 			paymentOrder.setCreateDate(new Date());
+			paymentOrder.setHouseId(request.getParameter("house_id"));
 			this.contractBookService.saveOrder(paymentOrder);
 			
 			Map<String,Object> map = new HashMap<String,Object>();
@@ -792,9 +793,39 @@ public class AppHouseController {
 			map.put("rent_gender", appUser.getSex());
 			map.put("rent_phone", appUser.getPhone());
 			map.put("note", depositAgreement.getRemarks());
-			map.put("status", contractBook.getBookStatus().equals("6")?"0":"1");
+			
+			/*0:等待管家确认
+			  1:等待用户确认
+			  2:支付成功
+			  3:管家已取消
+			  4.等待用户支付
+			  5.用户已取消
+			  6.支付失败*/				
+			String status = "";
+			if ("6".equals(contractBook.getBookStatus())) {
+				status = "0";
+			} else if ("0".equals(contractBook.getBookStatus())) {
+				status = "1";
+			} else if ("1".equals(contractBook.getBookStatus())) {
+				status = "4";
+			} else if ("5".equals(contractBook.getBookStatus())) {
+				status = "2";
+			}
+			if("1".equals(contractBook.getDelFlag())) {
+				status = "3";
+				if(apptoken.getPhone().equals(contractBook.getUpdateBy())) {
+					status = "5";
+				}
+			}
+			map.put("status", status);
 			map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(),"yyyy-MM-dd"));
 			map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(),"yyyy-MM-dd"));
+			
+			PaymentOrder paymentOrder = new PaymentOrder();
+			paymentOrder.setHouseId(contractBook.getHouseId());
+			paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
+			if(null != paymentOrder)
+				map.put("order_id", paymentOrder.getOrderId());
 			
 			data.setData(map);
 			data.setCode("200");

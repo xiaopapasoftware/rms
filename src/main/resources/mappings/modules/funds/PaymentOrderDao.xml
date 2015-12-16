@@ -16,7 +16,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		a.trans_id as "transId",
-		a.trans_date as "transDate"
+		a.trans_date as "transDate",
+		a.house_id as "houseId"
 	</sql>
 	
 	<sql id="paymentOrderJoins">
@@ -30,6 +31,9 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByHouseId" resultType="PaymentOrder">
+		SELECT * from t_payment_order where order_status = '1' and house_id=#{houseId}
+	</select>
 	<select id="findList" resultType="PaymentOrder">
 		SELECT 
 			<include refid="paymentOrderColumns"/>
@@ -39,6 +43,9 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="orderId != null and orderId != ''">
 				AND a.order_id = #{orderId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				AND a.house_id = #{houseId}
 			</if>
 		</where>
 		<choose>
@@ -84,7 +91,8 @@
 			remarks,
 			del_flag,
 			trans_id,
-			trans_date
+			trans_date,
+			house_id
 		) VALUES (
 			#{id},
 			#{orderId},
@@ -99,7 +107,8 @@
 			#{remarks},
 			#{delFlag},
 			#{transId},
-			#{transDate}
+			#{transDate},
+			#{houseId}
 		)
 	</insert>
 	

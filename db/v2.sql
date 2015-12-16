@@ -85,6 +85,8 @@ create table t_payment_order
 	primary key (ID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '支付订单信息';
 
+alter table t_payment_order add house_id varchar(64);
+
 ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_RENT_CONTRACT set data_source = '1';
 

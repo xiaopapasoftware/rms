@@ -22,6 +22,7 @@ public class PaymentOrder extends DataEntity<PaymentOrder> {
 	private String tradeId;		// 账务交易ID
 	private String transId;//交易单号
 	private Date transDate;//交易时间
+	private String houseId;
 	
 	public PaymentOrder() {
 		super();
@@ -86,5 +87,13 @@ public class PaymentOrder extends DataEntity<PaymentOrder> {
 
 	public void setTransDate(Date transDate) {
 		this.transDate = transDate;
+	}
+
+	public String getHouseId() {
+		return houseId;
+	}
+
+	public void setHouseId(String houseId) {
+		this.houseId = houseId;
 	}
 }
