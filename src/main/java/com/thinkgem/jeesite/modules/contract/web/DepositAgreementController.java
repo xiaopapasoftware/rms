@@ -277,7 +277,12 @@ public class DepositAgreementController extends BaseController {
     @RequestMapping(value = "breakContract")
     public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
 	depositAgreementService.breakContract(depositAgreement);
-	model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
+	Double refundAmount = depositAgreement.getRefundAmount();
+	if (refundAmount != null && refundAmount > 0) {
+	    model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
+	}else{
+	    model.addAttribute("message", "定金转违约成功！");
+	}
 	model.addAttribute("messageType", ViewMessageTypeEnum.SUCCESS.getValue());
 	model.addAttribute("depositAgreement", new DepositAgreement());
 	return list(new DepositAgreement(), request, response, model);

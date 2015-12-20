@@ -103,6 +103,9 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	return tenantList;
     }
 
+    /**
+     * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费
+     */
     @Transactional(readOnly = false)
     public void breakContract(DepositAgreement depositAgreement) {
 	Double refundAmount = depositAgreement.getRefundAmount();
@@ -112,31 +115,30 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	}
 	
 	/* 1.生成款项--定金转违约退费 */
-	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.setId(IdGen.uuid());
-	paymentTrans.setTradeType("2");// 定金转违约
-	paymentTrans.setPaymentType("26");// '26'='定金转违约退费'
-	paymentTrans.setTransId(depositAgreement.getId());
-	paymentTrans.setTradeDirection("0");// 出款
-	paymentTrans.setStartDate(new Date());
-	paymentTrans.setExpiredDate(new Date());
-	paymentTrans.setTradeAmount(depositAgreement.getRefundAmount());
-	paymentTrans.setLastAmount(depositAgreement.getRefundAmount());
-	paymentTrans.setTransAmount(0D);
-	paymentTrans.setTransStatus("0");// 未到账登记
-	paymentTrans.setCreateDate(new Date());
-	paymentTrans.setCreateBy(UserUtils.getUser());
-	paymentTrans.setUpdateDate(new Date());
-	paymentTrans.setUpdateBy(UserUtils.getUser());
-	paymentTrans.setDelFlag("0");
-	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0)
-	    paymentTransDao.insert(paymentTrans);
+	// 定金转违约,'26'='定金转违约退费',出款,未到账登记
+	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0) {
+	    generateAndSavePaymentTrans("2", "26", depositAgreement.getId(), "0", depositAgreement.getRefundAmount(), depositAgreement.getRefundAmount(), 0D, "0", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
+	}
 
-	/* 2.更新定金协议为“定金转违约到账待登记” */
-	depositAgreement.setAgreementBusiStatus("3");// '3'='定金转违约到账待登记'
-	depositAgreement.setUpdateDate(new Date());
-	depositAgreement.setUpdateBy(UserUtils.getUser());
-	depositAgreementDao.update(depositAgreement);
+	// 系统生成完全到账的应出定金款项 2=定金转违约；27=应出定金 应出为0，
+	generateAndSavePaymentTrans("2", "27", depositAgreement.getId(), "0", depositAgreement.getDepositAmount(), 0D, depositAgreement.getDepositAmount(), "2", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
+
+	// 系统生成完全到账的应收定金违约金 2=定金转违约；1=定金违约金；应收为1，
+	generateAndSavePaymentTrans("2", "1", depositAgreement.getId(), "1", depositAgreement.getDepositAmount(), 0D, depositAgreement.getDepositAmount(), "2", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
+
+	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0) {
+	    // 更新定金协议为“定金转违约到账待登记”
+	    depositAgreement.setAgreementBusiStatus("3");// '3'='定金转违约到账待登记'
+	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.setUpdateBy(UserUtils.getUser());
+	    depositAgreementDao.update(depositAgreement);
+	} else {
+	    // 更新定金协议为“定金转违约到账待登记”
+	    depositAgreement.setAgreementBusiStatus("1");// '1'= 已转违约
+	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.setUpdateBy(UserUtils.getUser());
+	    depositAgreementDao.update(depositAgreement);
+	}
 
 	/* 3.更新房屋/房间状态 */
 	if ("0".equals(depositAgreement.getRentMode())) {// 整租
@@ -276,25 +278,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    }
 
 	    if (null != depositAgreement.getStartDate() && null != depositAgreement.getExpiredDate() && null != depositAgreement.getDepositAmount()) {
-		PaymentTrans paymentTrans = new PaymentTrans();
-		paymentTrans.setId(IdGen.uuid());
-		paymentTrans.setTradeType("1");// 定金协议
-		paymentTrans.setPaymentType("0");// 应收定金
-		paymentTrans.setTransId(id);
-		paymentTrans.setTradeDirection("1");// 收款
-		paymentTrans.setStartDate(depositAgreement.getStartDate());
-		paymentTrans.setExpiredDate(depositAgreement.getExpiredDate());
-		paymentTrans.setTradeAmount(depositAgreement.getDepositAmount());
-		paymentTrans.setLastAmount(depositAgreement.getDepositAmount());
-		paymentTrans.setTransAmount(0D);
-		paymentTrans.setTransStatus("0");// 未到账登记
-		paymentTrans.setCreateDate(new Date());
-		paymentTrans.setCreateBy(UserUtils.getUser());
-		paymentTrans.setUpdateDate(new Date());
-		paymentTrans.setUpdateBy(UserUtils.getUser());
-		paymentTrans.setDelFlag("0");
-		if (0 != depositAgreement.getDepositAmount())
-		    paymentTransDao.insert(paymentTrans);
+		// 定金协议， 应收定金,收款,未到账登记
+		generateAndSavePaymentTrans("1", "0", id, "1", depositAgreement.getDepositAmount(), depositAgreement.getDepositAmount(), 0D, "0", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
 	    }
 
 	    /* 更新房屋/房间状态 */
@@ -383,45 +368,15 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	}
 
 	if (!StringUtils.isBlank(depositAgreement.getDepositAgreementFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setDepositAgreemId(depositAgreement.getId());
-	    attachment.setAttachmentType(FileType.DEPOSITAGREEMENT_FILE.getValue());
-	    attachment.setAttachmentPath(depositAgreement.getDepositAgreementFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
+	    generateAndSaveAttachment(depositAgreement.getId(), depositAgreement.getDepositAgreementFile(), FileType.DEPOSITAGREEMENT_FILE.getValue());
 	}
 
 	if (!StringUtils.isBlank(depositAgreement.getDepositCustomerIDFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setDepositAgreemId(depositAgreement.getId());
-	    attachment.setAttachmentType(FileType.TENANT_ID.getValue());
-	    attachment.setAttachmentPath(depositAgreement.getDepositCustomerIDFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
+	    generateAndSaveAttachment(depositAgreement.getId(), depositAgreement.getDepositCustomerIDFile(), FileType.TENANT_ID.getValue());
 	}
 
 	if (!StringUtils.isBlank(depositAgreement.getDepositOtherFile())) {
-	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
-	    attachment.setDepositAgreemId(depositAgreement.getId());
-	    attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE_OTHER.getValue());
-	    attachment.setAttachmentPath(depositAgreement.getDepositOtherFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
-	    attachmentDao.insert(attachment);
+	    generateAndSaveAttachment(depositAgreement.getId(), depositAgreement.getDepositOtherFile(), FileType.DEPOSITRECEIPT_FILE_OTHER.getValue());
 	}
     }
 
@@ -438,5 +393,42 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     @Transactional(readOnly = true)
     public Integer getTotalValidDACounts() {
 	return depositAgreementDao.getTotalValidDACounts(new DepositAgreement());
+    }
+
+    private void generateAndSaveAttachment(String id, String filePath, String fileType) {
+	Attachment attachment = new Attachment();
+	attachment.setId(IdGen.uuid());
+	attachment.setDepositAgreemId(id);
+	attachment.setAttachmentType(fileType);
+	attachment.setAttachmentPath(filePath);
+	attachment.setCreateDate(new Date());
+	attachment.setCreateBy(UserUtils.getUser());
+	attachment.setUpdateDate(new Date());
+	attachment.setUpdateBy(UserUtils.getUser());
+	attachment.setDelFlag("0");
+	attachmentDao.insert(attachment);
+    }
+
+    private void generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus, Date startDate, Date expiredDate) {
+	if (tradeAmount != null && tradeAmount > 0D) {
+	    PaymentTrans paymentTrans = new PaymentTrans();
+	    paymentTrans.setId(IdGen.uuid());
+	    paymentTrans.setTradeType(tradeType);
+	    paymentTrans.setPaymentType(paymentType);
+	    paymentTrans.setTransId(transId);
+	    paymentTrans.setTradeDirection(tradeDirection);
+	    paymentTrans.setStartDate(startDate);
+	    paymentTrans.setExpiredDate(expiredDate);
+	    paymentTrans.setTradeAmount(tradeAmount);
+	    paymentTrans.setLastAmount(lastAmount);
+	    paymentTrans.setTransAmount(transAmount);
+	    paymentTrans.setTransStatus(transStatus);
+	    paymentTrans.setCreateDate(new Date());
+	    paymentTrans.setCreateBy(UserUtils.getUser());
+	    paymentTrans.setUpdateDate(new Date());
+	    paymentTrans.setUpdateBy(UserUtils.getUser());
+	    paymentTrans.setDelFlag("0");
+	    paymentTransDao.insert(paymentTrans);
+	}
     }
 }

@@ -345,3 +345,6 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('361','5','工作总结审核','audit_type','审核类型','6','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','6','工作备忘审核','audit_type','审核类型','7','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','7','工作计划审核','audit_type','审核类型','8','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','27','应出定金','payment_type','款项类型','28','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','27','应出定金','fee_type','核算费用类别','28','0','1',now(),'1',now(),NULL,'0');
