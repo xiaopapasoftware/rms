@@ -183,7 +183,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType()) || "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-	    if (!"6".equals(rentContract.getContractStatus())) {
+	    if (!"6".equals(rentContract.getContractStatus())) {//6=到账收据审核通过
 		if ("1".equals(auditHis.getAuditStatus())) {// 账务交易审核成功
 		    if (checkRentContractTransAmountEnough(rentContract)) {
 			rentContract.setContractStatus("6");// 6:到账收据审核通过
