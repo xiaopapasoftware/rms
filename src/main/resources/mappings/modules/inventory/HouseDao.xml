@@ -142,13 +142,13 @@
 		select * from (
 		select h.id,HOUSE_CODE,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path from t_house h 
 		left join t_attachment a on h.id=a.house_id
-		where h.intent_mode='0' and h.is_feature='1' and h.house_status in('1','5'))t1 
+		where h.intent_mode='0' and h.is_feature='1' and h.house_status in('1','5') and h.del_flag='0')t1 
 		union all
 		select * from(
 		select r.id,concat(h.house_code,'-',room_no) house_code,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path from t_room r 
 		left join t_house h on r.house_id=h.id 
 		left join t_attachment a on r.id=a.room_id
-		where r.is_feature='1' and r.room_status in('1','4'))t2
+		where r.is_feature='1' and r.room_status in('1','4') and r.del_flag='0')t2
 	</select>
 	
 	<select id="findAllList" resultType="House">
