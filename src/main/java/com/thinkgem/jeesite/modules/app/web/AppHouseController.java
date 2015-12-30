@@ -198,6 +198,9 @@ public class AppHouseController {
 	return data;
     }
 
+    /**
+     * 获取房屋/房间详情
+     */
     @RequestMapping(value = "getFeatureInfo")
     @ResponseBody
     public ResponseData getFeatureInfo(HttpServletRequest request, HttpServletResponse response) {
@@ -206,16 +209,12 @@ public class AppHouseController {
 	    data.setCode("101");
 	    return data;
 	}
-
 	try {
 	    String house_id = request.getParameter("house_id");
-
 	    House house = new House();
 	    house.setId(house_id);
 	    house = houseService.getFeatureInfo(house);
-
 	    Map<String, Object> map = new HashMap<String, Object>();
-
 	    map.put("house_num", house.getHouseCode());
 	    map.put("id", house.getId());
 	    map.put("title", house.getShortDesc());

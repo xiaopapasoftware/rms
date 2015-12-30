@@ -60,22 +60,60 @@
 	</select>
 	
 	<select id="getFeatureInfo" resultType="House">
-		select * from (
-		select h.id,HOUSE_CODE,h.rental,h.short_desc,h.short_location,h.pay_way,a.attachment_path,
-		  h.DECORA_STRUC_ROOM_NUM,h.DECORA_STRUC_CUSSPAC_NUM,h.DECORA_STRUC_WASHRO_NUM,h.HOUSE_SPACE,h.HOUSE_FLOOR,
-		  '' ORIENTATION,p.PROJECT_ADDR from t_house h 
-		left join t_attachment a on h.id=a.house_id
-		left join T_PROPERTY_PROJECT p on h.PROPERTY_PROJECT_ID=p.id
-		where h.id=#{id})t1 
-		union all
-		select * from(
-		select r.id,concat(house_code,'-',room_no) house_code,r.rental,r.short_desc,r.short_location,r.pay_way,a.attachment_path,
-		  h.DECORA_STRUC_ROOM_NUM,h.DECORA_STRUC_CUSSPAC_NUM,h.DECORA_STRUC_WASHRO_NUM,h.HOUSE_SPACE,h.HOUSE_FLOOR,
-		  r.ORIENTATION,p.PROJECT_ADDR from t_room r 
-		left join t_attachment a on r.id=a.room_id
-		left join t_house h on r.HOUSE_ID=h.id
-		left join T_PROPERTY_PROJECT p on h.PROPERTY_PROJECT_ID=p.id
-		where r.id=#{id})t2
+		SELECT 
+		  * 
+		FROM
+		  (SELECT 
+		    h.id,
+		    HOUSE_CODE,
+		    h.rental,
+		    h.short_desc,
+		    h.short_location,
+		    h.pay_way,
+		    a.attachment_path,
+		    h.DECORA_STRUC_ROOM_NUM,
+		    h.DECORA_STRUC_CUSSPAC_NUM,
+		    h.DECORA_STRUC_WASHRO_NUM,
+		    h.HOUSE_SPACE,
+		    h.HOUSE_FLOOR,
+		    '' ORIENTATION,
+		    p.PROJECT_ADDR 
+		  FROM
+		    t_house h 
+		    LEFT JOIN t_attachment a 
+		      ON h.id = a.house_id 
+		    LEFT JOIN T_PROPERTY_PROJECT p 
+		      ON h.PROPERTY_PROJECT_ID = p.id 
+		  WHERE h.id = #{id})t1 
+		  UNION
+		  ALL 
+		  SELECT 
+		    * 
+		  FROM
+		    (SELECT 
+		      r.id,
+		      CONCAT(house_code, '-', room_no) house_code,
+		      r.rental,
+		      r.short_desc,
+		      r.short_location,
+		      r.pay_way,
+		      a.attachment_path,
+		      h.DECORA_STRUC_ROOM_NUM,
+		      h.DECORA_STRUC_CUSSPAC_NUM,
+		      h.DECORA_STRUC_WASHRO_NUM,
+		      h.HOUSE_SPACE,
+		      h.HOUSE_FLOOR,
+		      r.ORIENTATION,
+		      p.PROJECT_ADDR 
+		    FROM
+		      t_room r 
+		      LEFT JOIN t_attachment a 
+		        ON r.id = a.room_id 
+		      LEFT JOIN t_house h 
+		        ON r.HOUSE_ID = h.id 
+		      LEFT JOIN T_PROPERTY_PROJECT p 
+		        ON h.PROPERTY_PROJECT_ID = p.id 
+		    WHERE r.id = #{id})t2 
 	</select>
 	
 	<select id="getHouseByHouseId" resultType="House">
