@@ -104,6 +104,9 @@
 			<if test="userName != null and userName != ''">
 				AND a.user_name = #{userName}
 			</if>
+			<if test="userId != null and userId != ''">
+				AND a.user_id = #{userId}
+			</if>
 			<if test="userPhone != null and userPhone != ''">
 				AND a.user_phone = #{userPhone}
 			</if>
