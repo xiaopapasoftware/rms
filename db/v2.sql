@@ -1,46 +1,46 @@
-alter table t_house add intent_mode varchar(64) comment 'ÒâÏò×âÁŞÀàĞÍ';
+alter table t_house add intent_mode varchar(64) comment 'æ„å‘ç§Ÿèµç±»å‹';
 
-alter table t_house add is_feature varchar(64) comment 'ÊÇ·ñ¾«Ñ¡·¿Ô´';
-alter table t_room add is_feature varchar(64) comment 'ÊÇ·ñ¾«Ñ¡·¿Ô´';
+alter table t_house add is_feature varchar(64) comment 'æ˜¯å¦ç²¾é€‰æˆ¿æº';
+alter table t_room add is_feature varchar(64) comment 'æ˜¯å¦ç²¾é€‰æˆ¿æº';
 
 update t_house set is_feature='0' where is_feature is null;
 update t_room set is_feature='0' where is_feature is null;
 
-alter table t_house add rental float comment 'ÒâÏò×â½ğ';
-alter table t_room add rental float comment 'ÒâÏò×â½ğ';
+alter table t_house add rental float comment 'æ„å‘ç§Ÿé‡‘';
+alter table t_room add rental float comment 'æ„å‘ç§Ÿé‡‘';
 
-alter table t_house add short_desc varchar(255) comment 'ÃèÊö';
-alter table t_room add short_desc varchar(255) comment 'ÃèÊö';
+alter table t_house add short_desc varchar(255) comment 'æè¿°';
+alter table t_room add short_desc varchar(255) comment 'æè¿°';
 
-alter table t_house add short_location varchar(255) comment 'µØÖ·ÃèÊö';
-alter table t_room add short_location varchar(255) comment 'µØÖ·ÃèÊö';
+alter table t_house add short_location varchar(255) comment 'åœ°å€æè¿°';
+alter table t_room add short_location varchar(255) comment 'åœ°å€æè¿°';
 
-alter table t_house add pay_way varchar(2) comment '¸¶¿î·½Ê½';
-alter table t_room add pay_way varchar(2) comment '¸¶¿î·½Ê½';
+alter table t_house add pay_way varchar(2) comment 'ä»˜æ¬¾æ–¹å¼';
+alter table t_room add pay_way varchar(2) comment 'ä»˜æ¬¾æ–¹å¼';
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('356','0','¸¶ÈıÑºÒ»','rent_fee_type','¸¶¿î·½Ê½','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('357','1','¸¶¶şÑº¶ş','rent_fee_type','¸¶¿î·½Ê½','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('356','0','ä»˜ä¸‰æŠ¼ä¸€','rent_fee_type','ä»˜æ¬¾æ–¹å¼','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('357','1','ä»˜äºŒæŠ¼äºŒ','rent_fee_type','ä»˜æ¬¾æ–¹å¼','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('314','113','0,1,113,','Ô¤Ô¼¹ÜÀí','50106','/contract/book',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('315','314','0,1,96,314','²é¿´','30',NULL,NULL,NULL,'0','contract:contractBook:view','1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('316','314','0,1,96,314','ĞŞ¸Ä','60',NULL,NULL,NULL,'0','contract:contractBook:edit','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('314','113','0,1,113,','é¢„çº¦ç®¡ç†','50106','/contract/book',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('315','314','0,1,96,314','æŸ¥çœ‹','30',NULL,NULL,NULL,'0','contract:contractBook:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('316','314','0,1,96,314','ä¿®æ”¹','60',NULL,NULL,NULL,'0','contract:contractBook:edit','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('358','0','¹Ü¼ÒÈ·ÈÏÖĞ','book_status','Ô¤Ô¼×´Ì¬','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('359','1','Ô¤Ô¼³É¹¦','book_status','Ô¤Ô¼×´Ì¬','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('358','0','ç®¡å®¶ç¡®è®¤ä¸­','book_status','é¢„çº¦çŠ¶æ€','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('359','1','é¢„çº¦æˆåŠŸ','book_status','é¢„çº¦çŠ¶æ€','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('360','1','¹ÜÀíÏµÍ³','data_source','Êı¾İÀ´Ô´','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('361','2','APP','data_source','Êı¾İÀ´Ô´','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('360','1','ç®¡ç†ç³»ç»Ÿ','data_source','æ•°æ®æ¥æº','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('361','2','APP','data_source','æ•°æ®æ¥æº','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','1','Î´Ö§¸¶','order_status','¶©µ¥×´Ì¬','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','2','ÒÑÖ§¸¶','order_status','¶©µ¥×´Ì¬','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','1','æœªæ”¯ä»˜','order_status','è®¢å•çŠ¶æ€','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','2','å·²æ”¯ä»˜','order_status','è®¢å•çŠ¶æ€','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','¹Ü¼ÒÈ·ÈÏÖĞ','booked_status','Ô¤¶¨×´Ì¬','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','1','Ô¤¶¨³É¹¦','booked_status','Ô¤¶¨×´Ì¬','2','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('366','2','ÒÑÖ§¸¶','booked_status','Ô¤¶¨×´Ì¬','3','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','ç®¡å®¶ç¡®è®¤ä¸­','booked_status','é¢„å®šçŠ¶æ€','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','1','é¢„å®šæˆåŠŸ','booked_status','é¢„å®šçŠ¶æ€','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('366','2','å·²æ”¯ä»˜','booked_status','é¢„å®šçŠ¶æ€','3','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('367','0','¹Ü¼ÒÈ·ÈÏÖĞ','sign_status','Ç©Ô¼×´Ì¬','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('368','1','Ç©Ô¼³É¹¦','sign_status','Ç©Ô¼×´Ì¬','2','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('369','2','ÒÑÖ§¸¶','sign_status','Ç©Ô¼×´Ì¬','3','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('367','0','ç®¡å®¶ç¡®è®¤ä¸­','sign_status','ç­¾çº¦çŠ¶æ€','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('368','1','ç­¾çº¦æˆåŠŸ','sign_status','ç­¾çº¦çŠ¶æ€','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('369','2','å·²æ”¯ä»˜','sign_status','ç­¾çº¦çŠ¶æ€','3','0','1',now(),'1',now(),NULL,'0');
 
 create table t_contract_book
 (
@@ -54,16 +54,16 @@ create table t_contract_book
 	book_date            DATETIME,
 	book_status          varchar(64),
 	sales_id             varchar(64),
-	CREATE_BY            VARCHAR(64) COMMENT '´´½¨Õß',
-  CREATE_DATE          DATETIME 	COMMENT '´´½¨Ê±¼ä',
-  UPDATE_BY            VARCHAR(64) COMMENT '¸üĞÂÕß',
-  UPDATE_DATE          TIMESTAMP COMMENT '¸üĞÂÊ±¼ä',
-  REMARKS              VARCHAR(255) COMMENT '±¸×¢ĞÅÏ¢',
-  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'É¾³ı±ê¼Ç',
+	CREATE_BY            VARCHAR(64) COMMENT 'åˆ›å»ºè€…',
+  CREATE_DATE          DATETIME 	COMMENT 'åˆ›å»ºæ—¶é—´',
+  UPDATE_BY            VARCHAR(64) COMMENT 'æ›´æ–°è€…',
+  UPDATE_DATE          TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+  REMARKS              VARCHAR(255) COMMENT 'å¤‡æ³¨ä¿¡æ¯',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'åˆ é™¤æ ‡è®°',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = 'Ô¤Ô¼¿´·¿ĞÅÏ¢';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = 'é¢„çº¦çœ‹æˆ¿ä¿¡æ¯';
 
-ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT 'Êı¾İÀ´Ô´ ¹ÜÀíÏµÍ³/APP';
+ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT 'æ•°æ®æ¥æº ç®¡ç†ç³»ç»Ÿ/APP';
 update T_DEPOSIT_AGREEMENT set data_source = '1';
 
 create table t_payment_order
@@ -73,93 +73,93 @@ create table t_payment_order
 	order_amount         float,
 	order_date           DATETIME,
 	order_status         varchar(2),
-	trade_id             varchar(64) comment 'ÕËÎñ½»Ò×ID',
-	trans_id             varchar(64) comment 'Ö§¸¶½»Ò×µ¥ºÅ',
+	trade_id             varchar(64) comment 'è´¦åŠ¡äº¤æ˜“ID',
+	trans_id             varchar(64) comment 'æ”¯ä»˜äº¤æ˜“å•å·',
 	trans_date           DATETIME,
-	CREATE_BY            VARCHAR(64) COMMENT '´´½¨Õß',
-  CREATE_DATE          DATETIME 	COMMENT '´´½¨Ê±¼ä',
-  UPDATE_BY            VARCHAR(64) COMMENT '¸üĞÂÕß',
-  UPDATE_DATE          TIMESTAMP COMMENT '¸üĞÂÊ±¼ä',
-  REMARKS              VARCHAR(255) COMMENT '±¸×¢ĞÅÏ¢',
-  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'É¾³ı±ê¼Ç',
+	CREATE_BY            VARCHAR(64) COMMENT 'åˆ›å»ºè€…',
+  CREATE_DATE          DATETIME 	COMMENT 'åˆ›å»ºæ—¶é—´',
+  UPDATE_BY            VARCHAR(64) COMMENT 'æ›´æ–°è€…',
+  UPDATE_DATE          TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+  REMARKS              VARCHAR(255) COMMENT 'å¤‡æ³¨ä¿¡æ¯',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'åˆ é™¤æ ‡è®°',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = 'Ö§¸¶¶©µ¥ĞÅÏ¢';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = 'æ”¯ä»˜è®¢å•ä¿¡æ¯';
 
 alter table t_payment_order add house_id varchar(64);
 
-ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT 'Êı¾İÀ´Ô´ ¹ÜÀíÏµÍ³/APP';
+ALTER TABLE T_RENT_CONTRACT ADD data_source VARCHAR(64) default '1' COMMENT 'æ•°æ®æ¥æº ç®¡ç†ç³»ç»Ÿ/APP';
 update T_RENT_CONTRACT set data_source = '1';
 
 
-alter table t_attachment add BIZ_ID varchar(64) comment 'ÒµÎñID';
+alter table t_attachment add BIZ_ID varchar(64) comment 'ä¸šåŠ¡ID';
 
 drop table if exists T_MESSAGE;
 /* Create Tables */
 create table T_MESSAGE
 (
    ID                   varchar(64) NOT NULL,
-   TITLE    	 varchar(200) comment 'ÏûÏ¢±êÌâ',
-   CONTENT           varchar(500) comment 'ÏûÏ¢ÄÚÈİ',
-   TYPE	 VARCHAR(10) comment  'ÏûÏ¢ÀàĞÍ',
-   SENDER	 VARCHAR(30) COMMENT  '·¢ËÍÈË',
-   RECEIVER	 VARCHAR(30)  COMMENT  '½ÓÊÕÈË',
-   STATUS	 VARCHAR(10) COMMENT  '×´Ì¬',
-   CREATE_BY            VARCHAR(64) COMMENT '´´½¨Õß',
-   CREATE_DATE          DATETIME COMMENT '´´½¨Ê±¼ä',
-   UPDATE_BY            VARCHAR(64) COMMENT '¸üĞÂÕß',
-   UPDATE_DATE          TIMESTAMP COMMENT '¸üĞÂÊ±¼ä',
-   REMARKS              VARCHAR(255) COMMENT '±¸×¢ĞÅÏ¢',
-   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'É¾³ı±ê¼Ç',
+   TITLE    	 varchar(200) comment 'æ¶ˆæ¯æ ‡é¢˜',
+   CONTENT           varchar(500) comment 'æ¶ˆæ¯å†…å®¹',
+   TYPE	 VARCHAR(10) comment  'æ¶ˆæ¯ç±»å‹',
+   SENDER	 VARCHAR(30) COMMENT  'å‘é€äºº',
+   RECEIVER	 VARCHAR(30)  COMMENT  'æ¥æ”¶äºº',
+   STATUS	 VARCHAR(10) COMMENT  'çŠ¶æ€',
+   CREATE_BY            VARCHAR(64) COMMENT 'åˆ›å»ºè€…',
+   CREATE_DATE          DATETIME COMMENT 'åˆ›å»ºæ—¶é—´',
+   UPDATE_BY            VARCHAR(64) COMMENT 'æ›´æ–°è€…',
+   UPDATE_DATE          TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+   REMARKS              VARCHAR(255) COMMENT 'å¤‡æ³¨ä¿¡æ¯',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'åˆ é™¤æ ‡è®°',
    primary key (ID)
-) comment = 'ÏûÏ¢±í';
+) comment = 'æ¶ˆæ¯è¡¨';
 
 drop table if exists T_REPAIRS;
 /* Create Tables */
 create table T_REPAIRS
 (
    ID                   varchar(64) NOT NULL,
-   USER_ID    	 varchar(20) comment 'ÓÃ»§ID, APPÓÃ»§Îª×¢²áÊÖ»úºÅ',
-   USER_MOBILE          varchar(64) comment '±¨ĞŞÌîĞ´µÄÁªÏµÊÖ»úºÅ',
-   CONTRACT_ID  VARCHAR(64) comment 'ºÏÍ¬ºÅ',
-   ROOM_ID	 VARCHAR(64) COMMENT '·¿¼äºÅ',
-   DESCRIPTION	 VARCHAR(18) comment  'ÃèÊö',
-   STEWARD      	 VARCHAR(1)  COMMENT  '¹Ü¼Ò',
-   STEWARD_MOBILE	 VARCHAR(10) COMMENT  '¹Ü¼Òµç»°',
-   STATUS	 INT	 COMMENT  '±¨ĞŞ×´Ì¬',
-   CREATE_BY            VARCHAR(64) COMMENT '´´½¨Õß',
-   CREATE_DATE          DATETIME COMMENT '´´½¨Ê±¼ä',
-   UPDATE_BY            VARCHAR(64) COMMENT '¸üĞÂÕß',
-   UPDATE_DATE          TIMESTAMP COMMENT '¸üĞÂÊ±¼ä',
-   REMARKS              VARCHAR(255) COMMENT '±¸×¢ĞÅÏ¢',
-   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'É¾³ı±ê¼Ç',
+   USER_ID    	 varchar(20) comment 'ç”¨æˆ·ID, APPç”¨æˆ·ä¸ºæ³¨å†Œæ‰‹æœºå·',
+   USER_MOBILE          varchar(64) comment 'æŠ¥ä¿®å¡«å†™çš„è”ç³»æ‰‹æœºå·',
+   CONTRACT_ID  VARCHAR(64) comment 'åˆåŒå·',
+   ROOM_ID	 VARCHAR(64) COMMENT 'æˆ¿é—´å·',
+   DESCRIPTION	 VARCHAR(18) comment  'æè¿°',
+   STEWARD      	 VARCHAR(1)  COMMENT  'ç®¡å®¶',
+   STEWARD_MOBILE	 VARCHAR(10) COMMENT  'ç®¡å®¶ç”µè¯',
+   STATUS	 INT	 COMMENT  'æŠ¥ä¿®çŠ¶æ€',
+   CREATE_BY            VARCHAR(64) COMMENT 'åˆ›å»ºè€…',
+   CREATE_DATE          DATETIME COMMENT 'åˆ›å»ºæ—¶é—´',
+   UPDATE_BY            VARCHAR(64) COMMENT 'æ›´æ–°è€…',
+   UPDATE_DATE          TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+   REMARKS              VARCHAR(255) COMMENT 'å¤‡æ³¨ä¿¡æ¯',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'åˆ é™¤æ ‡è®°',
    primary key (ID)
-) comment = '±¨ĞŞ¼ÇÂ¼';
+) comment = 'æŠ¥ä¿®è®°å½•';
 
 
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('320','105','0,1,105,','¹ã¸æ»î¶¯¹ÜÀí','20107','/inventory/ad',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('321','320','0,1,105,320','²é¿´','30',NULL,NULL,NULL,'0','inventory:ad:view','1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('322','320','0,1,105,320','ĞŞ¸Ä','60',NULL,NULL,NULL,'0','inventory:ad:edit','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('320','105','0,1,105,','å¹¿å‘Šæ´»åŠ¨ç®¡ç†','20107','/inventory/ad',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('321','320','0,1,105,320','æŸ¥çœ‹','30',NULL,NULL,NULL,'0','inventory:ad:view','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('322','320','0,1,105,320','ä¿®æ”¹','60',NULL,NULL,NULL,'0','inventory:ad:edit','1',now(),'1',now(),NULL,'0');
 
 drop table if exists t_house_ad;
 create table t_house_ad
 (
 	ID                   varchar(64) NOT NULL,
-	ad_name              varchar(64) comment '¹ã¸æÃû³Æ',
-	ad_type              varchar(2) comment '¹ã¸æÀàĞÍ 0:Í¼Æ¬¹ã¸æ 1:·¿Ô´Á´½ÓÊ½¹ã¸æ',
-	PROPERTY_PROJECT_ID  varchar(64) comment 'ÎïÒµÏîÄ¿',
-  BUILDING_ID          varchar(64) comment 'Â¥Óî',
-  HOUSE_ID             varchar(64) comment '·¿Îİ',
-  ROOM_ID              varchar(64) comment '·¿¼ä',
-	ad_value             varchar(64) comment '·¿Ô´ID',
-	ad_url               varchar(255) comment '¹ã¸æÍ¼Æ¬µØÖ·',
-	CREATE_BY            VARCHAR(64) COMMENT '´´½¨Õß',
-  CREATE_DATE          DATETIME 	COMMENT '´´½¨Ê±¼ä',
-  UPDATE_BY            VARCHAR(64) COMMENT '¸üĞÂÕß',
-  UPDATE_DATE          TIMESTAMP COMMENT '¸üĞÂÊ±¼ä',
-  REMARKS              VARCHAR(255) COMMENT '±¸×¢ĞÅÏ¢',
-  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'É¾³ı±ê¼Ç',
+	ad_name              varchar(64) comment 'å¹¿å‘Šåç§°',
+	ad_type              varchar(2) comment 'å¹¿å‘Šç±»å‹ 0:å›¾ç‰‡å¹¿å‘Š 1:æˆ¿æºé“¾æ¥å¼å¹¿å‘Š',
+	PROPERTY_PROJECT_ID  varchar(64) comment 'ç‰©ä¸šé¡¹ç›®',
+  BUILDING_ID          varchar(64) comment 'æ¥¼å®‡',
+  HOUSE_ID             varchar(64) comment 'æˆ¿å±‹',
+  ROOM_ID              varchar(64) comment 'æˆ¿é—´',
+	ad_value             varchar(64) comment 'æˆ¿æºID',
+	ad_url               varchar(255) comment 'å¹¿å‘Šå›¾ç‰‡åœ°å€',
+	CREATE_BY            VARCHAR(64) COMMENT 'åˆ›å»ºè€…',
+  CREATE_DATE          DATETIME 	COMMENT 'åˆ›å»ºæ—¶é—´',
+  UPDATE_BY            VARCHAR(64) COMMENT 'æ›´æ–°è€…',
+  UPDATE_DATE          TIMESTAMP COMMENT 'æ›´æ–°æ—¶é—´',
+  REMARKS              VARCHAR(255) COMMENT 'å¤‡æ³¨ä¿¡æ¯',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT 'åˆ é™¤æ ‡è®°',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '¹ã¸æ';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = 'å¹¿å‘Š';
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('370','0','Í¼Æ¬¹ã¸æ','ad_type','¹ã¸æÀàĞÍ','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','·¿Ô´Á´½ÓÊ½¹ã¸æ','ad_type','¹ã¸æÀàĞÍ','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('370','0','å›¾ç‰‡å¹¿å‘Š','ad_type','å¹¿å‘Šç±»å‹','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','æˆ¿æºé“¾æ¥å¼å¹¿å‘Š','ad_type','å¹¿å‘Šç±»å‹','2','0','1',now(),'1',now(),NULL,'0');
