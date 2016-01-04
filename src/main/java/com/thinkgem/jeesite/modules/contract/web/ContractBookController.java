@@ -77,4 +77,13 @@ public class ContractBookController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
 	}
 
+	@RequestMapping(value = "cancel")
+	public String cancel(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+		contractBook.setDelFlag("0");
+		contractBook = contractBookService.get(contractBook);
+		contractBook.setBookStatus("3");//管家取消预约
+		contractBookService.save(contractBook);
+		addMessage(redirectAttributes, "取消预约信息成功");
+		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
+	}
 }

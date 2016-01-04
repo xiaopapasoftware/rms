@@ -412,7 +412,8 @@ public class AppHouseController {
 	    ContractBook contractBook = new ContractBook();
 	    contractBook.setHouseId(request.getParameter("house_id"));
 	    contractBook.setRoomId(request.getParameter("house_id"));
-	    contractBookService.delete(contractBook);
+	    contractBook.setBookStatus("2");//用户取消预约
+	    contractBookService.updateStatusByHouseId(contractBook);
 	} catch (Exception e) {
 	    data.setCode("500");
 	    log.error("cancel booking error:", e);
