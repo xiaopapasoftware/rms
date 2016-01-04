@@ -233,23 +233,21 @@ public class AppHouseController {
 			cover = StringUtils.substringBeforeLast(cover, ",");
 		}
 	    }
-	    map.put("previews", cover);
-	    map.put("area", house.getHouseSpace());
+	    map.put("previews", cover);// 预览图片多图`,`拼接
+	    map.put("area", house.getHouseSpace());// 房屋面积
 	    String decorate = "";
-	    map.put("decorate", decorate);
-	    map.put("summary", house.getShortLocation());
-	    map.put("floor", house.getHouseFloor());
+	    map.put("decorate", decorate);// 装修情况=精装修
+	    map.put("summary", house.getShortLocation());// 概况
+	    map.put("floor", house.getHouseFloor());// 楼层
 	    String orientate = "";
 	    if (!StringUtils.isEmpty(house.getOrientation())) {
 		orientate = StringUtils.split(house.getOrientation(), ",")[0];
 		orientate = DictUtils.getDictLabel(orientate, "orientation", "");
 	    }
-	    map.put("orientate", orientate);
-	    map.put("address", house.getProjectAddr());
-	    map.put("equipment", "1101111111");// (宽带、电视、沙发、洗衣机、床、冰箱、空调、衣柜、热水器、写字台)
-					       // 1代表有0代表没有
-	    map.put("contact_phone", "4006-269-069");
-
+	    map.put("orientate", orientate);// 朝向
+	    map.put("address", house.getProjectAddr());// 地址
+	    map.put("equipment", "1101111111");// (宽带、电视、沙发、洗衣机、床、冰箱、空调、衣柜、热水器、写字台)，1代表有0代表没有
+	    map.put("contact_phone", "4006-269-069");// 联系电话
 	    Integer fang = null, ting = null, wei = null;
 	    if (null != this.roomService.get(house.getId())) {
 		house = this.houseService.get(this.roomService.get(house.getId()).getHouse().getId());
@@ -267,7 +265,7 @@ public class AppHouseController {
 	    if (null != wei) {
 		layout += wei + "卫";
 	    }
-	    map.put("layout", layout);
+	    map.put("layout", layout);// 户型
 
 	    data.setData(map);
 	    data.setCode("200");
@@ -1315,7 +1313,7 @@ public class AppHouseController {
 	}
 
 	try {
-	    String mobile = request.getParameter("mobile");
+	    // String mobile = request.getParameter("mobile");
 
 	    Repairs repair = new Repairs();
 	    repair.setId(IdGen.uuid());
