@@ -78,7 +78,7 @@ public class AlipayUtil {
 	String mysign = "";
 	try {
 	    String source = prestr;
-	    byte[] encodedData = RSA.encryptByPrivateKey(source.getBytes(), AlipayConfig.private_key);
+	    byte[] encodedData = RSA.encryptByPrivateKey(source.getBytes("utf-8"), AlipayConfig.private_key);
 	    mysign = RSA.sign(encodedData, AlipayConfig.private_key);
 	} catch (Exception e) {
 	    log.error("sign error:", e);
