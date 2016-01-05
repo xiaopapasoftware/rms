@@ -52,23 +52,6 @@ public class AlipayUtil {
         if(StringUtils.endsWith(signStr,"&"))
         	signStr = StringUtils.substringBeforeLast(signStr, "&");
         
-//        StringBuffer sbHtml = new StringBuffer();
-
-//        sbHtml.append("<form id=\"alipaysubmit\" name=\"alipaysubmit\" action=\"https://mapi.alipay.com/gateway.do?_input_charset=utf-8\" method=\"POST\">");
-//
-//        for (int i = 0; i < keys.size(); i++) {
-//            String name = (String) keys.get(i);
-//            String value = (String) sPara.get(name);
-//
-//            sbHtml.append("<input type=\"hidden\" name=\"" + name + "\" value=\"" + value + "\"/>");
-//        }
-//
-//        //submit按钮控件请不要含有name属性
-//        sbHtml.append("<input type=\"submit\" value=\"支付\" style=\"display:none;\"></form>");
-//        sbHtml.append("<script>document.forms['alipaysubmit'].submit();</script>");
-//
-//        signStr = sbHtml.toString();
-        
         return signStr;
 	}
 	
