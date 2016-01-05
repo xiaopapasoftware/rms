@@ -46,7 +46,7 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE a.house_id = #{houseId} or a.room_id = #{roomId} and del_flag='0' 
+		WHERE a.house_id = #{houseId} or a.room_id = #{roomId} and del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">

@@ -363,13 +363,20 @@ public class AppHouseController {
     public ResponseData bookingInfo(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
+	log.info("booking_info.house_id:"+request.getParameter("house_id"));
 	if (null == request.getParameter("house_id")) {
 	    data.setCode("101");
 	    return data;
 	}
 
 	try {
+		String token = (String) request.getHeader("token");
+	    AppToken apptoken = new AppToken();
+	    apptoken.setToken(token);
+	    apptoken = appTokenService.findByToken(apptoken);
+
 	    ContractBook contractBook = new ContractBook();
+	    contractBook.setUserId(apptoken.getPhone());
 	    contractBook.setHouseId(request.getParameter("house_id"));
 	    contractBook.setRoomId(request.getParameter("house_id"));
 	    contractBook = this.contractBookService.findOne(contractBook);
@@ -743,6 +750,7 @@ public class AppHouseController {
     public ResponseData bookedInfo(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
+	log.info("booked_info.house_id:"+request.getParameter("house_id"));
 	if (null == request.getParameter("house_id")) {
 	    data.setCode("101");
 	    return data;
