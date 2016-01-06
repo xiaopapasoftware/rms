@@ -1,11 +1,8 @@
 package com.thinkgem.jeesite.modules.app.alipay;
 
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.thinkgem.jeesite.modules.app.alipay.RSA;
 
 public class AlipayUtil {
     static Logger log = LoggerFactory.getLogger(AlipayUtil.class);
@@ -40,9 +37,6 @@ public class AlipayUtil {
 	orderString.append("&notify_url=\"");
 	orderString.append(NOTIFY_URL);
 	orderString.append("\"");
-	orderString.append("&return_url=\"");
-	orderString.append(RETURN_URL);
-	orderString.append("\"");
 	orderString.append("&service=\"");
 	orderString.append("mobile.securitypay.pay");
 	orderString.append("\"");
@@ -55,7 +49,12 @@ public class AlipayUtil {
 	orderString.append("&return_url=\"");
 	orderString.append(RETURN_URL);
 	orderString.append("\"");
-
+	orderString.append("&it_b_pay=\"");
+	orderString.append("30m");
+	orderString.append("\"");
+	orderString.append("&show_url=\"");
+	orderString.append("m.alipay.com");
+	orderString.append("\"");
 	String orderSpec = orderString.toString();
 	String sign = buildRequestMysign(orderSpec);
 	orderString.append("&sign=\"");
@@ -118,20 +117,15 @@ public class AlipayUtil {
     }
 
     private static String buildRequestMysign(String orderSpec) {
-	return sign(orderSpec, AlipayConfig.private_key, "utf-8");
-	// String mysign = "";
-
-	// try {
-	// String source = orderSpec;
-	// byte[] encodedData =
-	// RSA.encryptByPrivateKey(source.getBytes("utf-8"),
-	// AlipayConfig.private_key);
-	// mysign = RSA.sign(encodedData, AlipayConfig.private_key);
-	// } catch (Exception e) {
-	// log.error("sign error:", e);
-	// }
-	// return mysign;
-
+	String mysign = "";
+	try {
+	    String source = orderSpec;
+	    byte[] encodedData = RSA.encryptByPrivateKey(source.getBytes("utf-8"), AlipayConfig.private_key);
+	    mysign = RSA.sign(encodedData, AlipayConfig.private_key);
+	} catch (Exception e) {
+	    log.error("sign error:", e);
+	}
+	return mysign;
 	// String prestr = AlipayCore.createLinkString(sPara); //
 	// 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
 	//
@@ -167,22 +161,6 @@ public class AlipayUtil {
 	// log.error("sign error:", e);
 	// }
 	// return mysign;
-    }
-
-    public static String sign(String content, String privateKey, String input_charset) {
-	try {
-	    PKCS8EncodedKeySpec priPKCS8 = new PKCS8EncodedKeySpec(Base64.decode(privateKey));
-	    KeyFactory keyf = KeyFactory.getInstance("RSA");
-	    PrivateKey priKey = keyf.generatePrivate(priPKCS8);
-	    java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS);
-	    signature.initSign(priKey);
-	    signature.update(content.getBytes(input_charset));
-	    byte[] signed = signature.sign();
-	    return Base64.encode(signed);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-	return null;
     }
 
 }
