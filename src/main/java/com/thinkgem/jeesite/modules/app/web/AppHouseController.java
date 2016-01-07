@@ -1302,7 +1302,12 @@ public class AppHouseController {
 	PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
 	DecimalFormat df = new DecimalFormat("######0.00");
 	Double orderAmount = paymentOrder.getOrderAmount();
-	String signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+	String signStr = "";
+	try {
+		signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+	} catch (Exception e) {
+		this.log.error("get alipay sign error:",e);
+	}
 
 	Map<String, Object> map = new HashMap<String, Object>();
 	map.put("sign", signStr);
