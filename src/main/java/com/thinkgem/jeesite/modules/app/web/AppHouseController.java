@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.app.alipay.AlipayNotify;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.entity.AppToken;
 import com.thinkgem.jeesite.modules.app.entity.AppUser;
@@ -33,6 +35,7 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
@@ -1226,6 +1229,63 @@ public class AppHouseController {
 	}
 
 	return data;
+    }
+    
+    @SuppressWarnings("rawtypes")
+	@RequestMapping(value = "alipaynNotify")
+    public void alipaynNotify(HttpServletRequest request, HttpServletResponse response) {
+    	this.log.info("rms start alipay notify......");
+    	try {
+			//获取支付宝POST过来反馈信息
+			Map<String,String> params = new HashMap<String,String>();
+			Map requestParams = request.getParameterMap();
+			for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+				String name = (String) iter.next();
+				String[] values = (String[]) requestParams.get(name);
+				String valueStr = "";
+				for (int i = 0; i < values.length; i++) {
+					valueStr = (i == values.length - 1) ? valueStr + values[i]
+							: valueStr + values[i] + ",";
+				}
+				//乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+				//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
+				params.put(name, valueStr);
+			}
+			
+			//交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"),"UTF-8");
+			this.log.info("trade_status:"+trade_status);
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"),"UTF-8");
+			this.log.info("out_trade_no:"+out_trade_no);
+			if(AlipayNotify.verify(params)){//验证成功
+				this.log.info("verify success");
+				if (trade_status.equals("TRADE_SUCCESS")) {
+					this.log.info("更改订单状态.");
+					//1.更改订单状态
+					PaymentOrder paymentOrder = this.contractBookService.findByOrderId(out_trade_no);
+					paymentOrder.setOrderStatus("2");//已支付
+					this.contractBookService.saveOrder(paymentOrder);
+					//2.根据订单号获取账务交易ID
+					paymentOrder = new PaymentOrder();
+					paymentOrder.setOrderId(out_trade_no);
+					paymentOrder.setOrderStatus("2");//已支付
+					paymentOrder=this.contractBookService.findByOrderId(paymentOrder);
+					//3.走账务交易审核通过流程
+					String tradeId = paymentOrder.getTradeId();
+					AuditHis auditHis = new AuditHis();
+					auditHis.setObjectId(tradeId);
+					auditHis.setAuditMsg("手机在线支付");
+					auditHis.setAuditStatus("1");//通过
+					this.tradingAccountsService.audit(auditHis);
+				}
+			} else {
+				this.log.info("verify success");
+			}
+		} catch (Exception e) {
+			this.log.error("rms alipay notify error:",e);
+		}
+    	
+    	this.log.info("rms end alipay notify......");
     }
 
     @RequestMapping(value = "contract")
