@@ -33,6 +33,9 @@ public class AlipayConfig {
 	public static String private_key = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJ7AxRyagMCWKzRaXOlCp3btTU+L0GXd+eEwFN0bO6p/a9mIDLMaGlRF9Smxxdp/lJTeu6Kr8dohuFiSwnD8S/wTZ9GhU3D+V2SemtFe9XK7AKUNrQNDBgNw6cs3h7EyXYa9vLbZ5B9euHVSyFlknaIw2j7BwudwrkuX14PNx7DvAgMBAAECgYBIAG5mFr0mm/VkfUd+lDiX+/EAjw0p5o+azs/nqJ5bKgekVcxMvx4J8uDK1FJEU3D0REEd+pZqtLiDk6yUyhk7uBiHBqXoTTj/kyCXAuscFkZd0xrNb6DltAqilWpVLaMPrbMWLcRvzjMzJCTqGAYlDjnC5WyJ1m28spI37jvBQQJBANJi75tOerQEaPzylhbAKgzrUndSwN/rdB4YIUhlYCAMDWUAVI4cQmOjuImRHArCAoMZIaLIMYjCFSc2CCcVn3cCQQDBLAamuM0y2jGCuCnjj4SK7EHMH8ISx7IKkuhBFVdOrE7c5dQlllg4niXmQcMdBEQJrYlNSQ6OLvNLMVNoyohJAkEAvTpjjOr/jl7RF4IR4RCiQdB+8fgqpryeSlslxHn6BZkRiyDK7K8aP4iIeKNd94ccv1GhYUpy0zDN2eDNYGogbQJAL2exfiqt2MPpEI5HYVvwB/Owtfo5M0ikbandq1MkaN8qP1V7eXnqzoIpBNewnSdV1xYqMrgyBTyKYjKJqJbDWQJAdSz7VE7ofhCbM7VUhHumH/ikkxFVAtQdFj9wbd9uiWeMb25powYXSWXJlP4eLBLbnfC4v6cN/ob+HOPrHvRu+g==";
 	//↑↑↑↑↑↑↑↑↑↑请在这里配置您的基本信息↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 	
+	// 支付宝的公钥，无需修改该值
+	public static String ali_public_key = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
+
 
 	// 调试用，创建TXT日志文件夹路径
 	public static String log_path = "D:\\";

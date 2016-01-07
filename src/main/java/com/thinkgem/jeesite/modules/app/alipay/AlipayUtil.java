@@ -14,7 +14,10 @@ public class AlipayUtil {
 	private static final String PARTNER = "2088811545435611"; 
 	private static final String SELLER_EMAIL = "tcrcgy@126.com";
 	private static final String NOTIFY_URL = "http://218.80.0.218:12301/rms-api/house/alipaynNotify";
-	private static final String RETURN_URL = "http://218.80.0.218:12301/rms-api/house/alipayReturn";
+	
+	public static void main(String[] args) throws Exception {
+		System.out.println(buildRequest("57620160105-2234532","0.01"));
+	}
 	
 	public static String buildRequest(String orderId,String totalFee) throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
@@ -25,11 +28,10 @@ public class AlipayUtil {
 		map.put("body", "唐巢人才公寓APP支付");
 		map.put("total_fee", totalFee);
 		map.put("notify_url", NOTIFY_URL);
-		map.put("return_url", RETURN_URL);
 		map.put("service", "mobile.securitypay.pay");
 		map.put("payment_type", "1");
         map.put("_input_charset", "utf-8");
-        map.put("it_b_pay", "30m");
+        map.put("it_b_pay", "10m");
         map.put("show_url", "m.alipay.com");
 		
         String params = AlipayCore.createLinkString(map);

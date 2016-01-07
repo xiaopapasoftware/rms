@@ -31,6 +31,21 @@
 		WHERE a.id = #{id}
 	</select>
 	
+	<select id="findByOrderId" resultType="PaymentOrder">
+		SELECT 
+			<include refid="paymentOrderColumns"/>
+		FROM t_payment_order a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="orderId != null and orderId != ''">
+				AND a.order_id = #{orderId}
+			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND a.order_status = #{orderStatus}
+			</if>
+		</where>
+	</select>
+	
 	<select id="findByHouseId" resultType="PaymentOrder">
 		SELECT * from t_payment_order where order_status = '1' and house_id=#{houseId}
 	</select>

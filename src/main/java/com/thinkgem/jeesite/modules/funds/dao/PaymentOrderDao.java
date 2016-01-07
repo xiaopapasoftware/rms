@@ -14,4 +14,5 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 @MyBatisDao
 public interface PaymentOrderDao extends CrudDao<PaymentOrder> {
 	PaymentOrder findByHouseId(PaymentOrder paymentOrder);
+	PaymentOrder findByOrderId(PaymentOrder paymentOrder);
 }
