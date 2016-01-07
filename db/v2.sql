@@ -37,13 +37,21 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','1','未支付','order_status','订单状态','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','2','已支付','order_status','订单状态','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','管家确认中','booked_status','预定状态','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','1','预定成功','booked_status','预定状态','2','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('366','2','已支付','booked_status','预定状态','3','0','1',now(),'1',now(),NULL,'0');
+delete from sys_dict where type = 'booked_status';
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','等待管家确认','booked_status','预定状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('365','1','预定成功等待支付','booked_status','预定状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('366','2','定金支付成功','booked_status','预定状态','3','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('379','3','管家确认成功请您核实','booked_status','预定状态','4','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('380','4','管家取消预定','booked_status','预定状态','5','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('381','5','用户取消预定','booked_status','预定状态','6','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('367','0','管家确认中','sign_status','签约状态','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('368','1','签约成功','sign_status','签约状态','2','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('369','2','已支付','sign_status','签约状态','3','0','1',now(),'1',now(),NULL,'0');
+delete from sys_dict where type = 'sign_status';
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('367','0','等待管家确认','sign_status','签约状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('368','1','在线签约成功等待支付','sign_status','签约状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('369','2','在线签约支付成功','sign_status','签约状态','3','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('376','3','管家取消在线签约','sign_status','签约状态','4','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('377','4','管家确认成功请您核实','sign_status','签约状态','5','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('378','5','用户取消在线签约','sign_status','签约状态','6','0','1',now(),'1',now(),NULL,'0');
 
 create table t_contract_book
 (
