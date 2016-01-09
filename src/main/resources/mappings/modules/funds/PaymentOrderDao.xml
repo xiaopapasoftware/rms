@@ -47,7 +47,7 @@
 	</select>
 	
 	<select id="findByHouseId" resultType="PaymentOrder">
-		SELECT * from t_payment_order where order_status = '1' and house_id=#{houseId}
+		SELECT * from t_payment_order where order_status = '1' and house_id=#{houseId} order by create_date desc
 	</select>
 	<select id="findList" resultType="PaymentOrder">
 		SELECT 
