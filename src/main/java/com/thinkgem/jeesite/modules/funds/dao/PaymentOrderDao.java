@@ -3,6 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.funds.dao;
 
+import java.util.List;
+
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
@@ -13,6 +15,6 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
  */
 @MyBatisDao
 public interface PaymentOrderDao extends CrudDao<PaymentOrder> {
-	PaymentOrder findByHouseId(PaymentOrder paymentOrder);
+	List<PaymentOrder> findByHouseId(PaymentOrder paymentOrder);
 	PaymentOrder findByOrderId(PaymentOrder paymentOrder);
 }
