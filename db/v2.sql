@@ -174,3 +174,5 @@ create table t_house_ad
 
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('370','0','图片广告','ad_type','广告类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','房源链接式广告','ad_type','广告类型','2','0','1',now(),'1',now(),NULL,'0');
+
+alter table t_house add service_user varchar(64) comment '服务管家';

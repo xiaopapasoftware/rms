@@ -18,4 +18,5 @@ public interface ContractBookDao extends CrudDao<ContractBook> {
 	public List<ContractBook> findBookedContract(ContractBook contractBook);
 	public List<ContractBook> findRentContract(ContractBook contractBook);
 	public void updateStatusByHouseId(ContractBook contractBook);
+	public List<ContractBook> findByUser(ContractBook contractBook);
 }

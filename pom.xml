@@ -693,7 +693,7 @@
                 <artifactId>javabase64</artifactId>
                 <version>1.3.1</version>
                 <scope>system</scope>
-                <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/javabase64-1.3.1.jar</systemPath>
+                <systemPath>${project.basedir}/lib/javabase64-1.3.1.jar</systemPath>
             </dependency>
 	</dependencies>
 
@@ -708,50 +708,10 @@
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
+					<encoding>utf-8</encoding>
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
-			
-			<!-- JSP 预编译插件  jspweb.xml
-			<plugin>
-				<groupId>org.jasig.mojo.jspc</groupId>
-				<artifactId>jspc-maven-plugin</artifactId>
-				<version>2.0.0</version>
-				<configuration>
-					<injectString>&lt;!- - [INSERT FRAGMENT HERE] - -&gt;</injectString>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.jasig.mojo.jspc</groupId>
-						<artifactId>jspc-compiler-tomcat6</artifactId>
-						<version>2.0.0</version>
-					</dependency>
-				</dependencies>
-			</plugin>-->
-			
-			<!-- Jetty JSP 预编译插件  web.xml
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-jspc-maven-plugin</artifactId>
-				<version>${jetty.version}</version>
-				<configuration>
-					<insertionMarker>&lt;!- - [INSERT FRAGMENT HERE] - -&gt;</insertionMarker>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jspc</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>-->
 			
 			<!-- 打包jar文件时，配置manifest文件，加入lib包的jar依赖 -->
 			<plugin>
@@ -761,64 +721,7 @@
 				<configuration>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
-				<!-- <executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<classesDirectory>${project.outputDirectory}</classesDirectory>
-							<finalName>jeesite</finalName>
-							<outputDirectory>${project.build.directory}/${project.artifactId}/WEB-INF/lib</outputDirectory>
-							<includes>
-					        	<include>com/thinkgem/jeesite/**</include>
-					       	</includes>
-						</configuration>
-					</execution>
-				</executions> -->
 			</plugin>
-			
-			<!-- 混淆代码
-			<plugin>
-				<groupId>com.github.wvengen</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.6</version>
-				<executions>
-					<execution>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-			        <obfuscate>true</obfuscate>
-			    	<options>
-                        <option>-injars ${project.build.directory}/${project.artifactId}/WEB-INF/lib/jeesite.jar</option>
-                    </options>
-                    <outjar>${project.artifactId}/WEB-INF/lib/jeesite_out.jar</outjar>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
-			        <proguardInclude>${basedir}/proguard.cfg</proguardInclude>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-					<encoding>${project.build.sourceEncoding}</encoding>
-					<libs>
-						<lib>${java.home}/lib/rt.jar</lib>
-						<lib>${java.home}/lib/jsse.jar</lib>
-			            <lib>${java.home}/lib/jce.jar</lib>
-					</libs>
-			        <addMavenDescriptor>false</addMavenDescriptor>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>net.sf.proguard</groupId>
-						<artifactId>proguard-base</artifactId>
-						<version>4.9</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-			</plugin> -->
 
 			<!-- war 打包插件, 设定war包名称不带版本号 -->
 			<plugin>
@@ -865,7 +768,8 @@
 						static/treeTable/demo/**<!-- , -->
 						<!-- userfiles/** --><!-- ,/**/*.jsp -->,
 						test/**,
-						act/**
+						act/**,
+						userfiles/**
 					</warSourceExcludes>
 					<webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory><!-- 
 					<webXml>${project.basedir}/target/jspweb.xml</webXml> -->
@@ -895,30 +799,6 @@
 					<additionalProjectnatures>
 						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
 					</additionalProjectnatures>
-				</configuration>
-			</plugin>
-			
-			<!-- tomcat6插件 -->
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat6-maven-plugin</artifactId>
-				<version>${tomcat.version}</version> 
-				<configuration>
-					<port>${webserver.port}</port>
-					<path>/${project.artifactId}</path>
-					<uriEncoding>${project.build.sourceEncoding}</uriEncoding>
-				</configuration>
-			</plugin>
-			
-			<!-- tomcat7插件 -->
-			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>${tomcat.version}</version> 
-				<configuration>
-					<port>${webserver.port}</port>
-					<path>/${project.artifactId}</path>
-					<uriEncoding>${project.build.sourceEncoding}</uriEncoding>
 				</configuration>
 			</plugin>
 			
@@ -965,20 +845,6 @@
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>2.5</version>
 			</plugin>
-			
-			<!-- ant插件 -->
-			<!--<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-			</plugin>-->
-			
-			<!-- dependency插件 -->
-			<!--<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.5.1</version>
-			</plugin>-->
 		</plugins>
 	</build>
 	

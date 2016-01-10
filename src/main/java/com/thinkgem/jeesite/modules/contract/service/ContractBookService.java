@@ -157,4 +157,12 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 	public void updateStatusByHouseId(ContractBook contractBook) {
 		contractBookDao.updateStatusByHouseId(contractBook);
 	}
+	
+	public boolean checkByUser(ContractBook contractBook) {
+		List<ContractBook> list = contractBookDao.findByUser(contractBook);
+		if(null != list && list.size() > 0) {
+			return false;
+		}
+		return true;
+	}
 }

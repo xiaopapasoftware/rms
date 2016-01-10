@@ -46,7 +46,15 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE a.house_id = #{houseId} or a.room_id = #{roomId} and del_flag='0' AND a.user_id = #{userId}
+		WHERE a.id = #{id} and del_flag='0' AND a.user_id = #{userId}
+	</select>
+	
+	<select id="findByUser" resultType="ContractBook">
+		SELECT 
+			<include refid="contractBookColumns"/>
+		FROM t_contract_book a
+		<include refid="contractBookJoins"/>
+		WHERE (a.house_id = #{houseId} or a.room_id = #{roomId}) and book_status in('0','1') and del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
@@ -66,14 +74,14 @@
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
 		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
 		where ct.cell_phone = #{userPhone} and da.data_source='2' 
-		<if test="houseId != null and houseId != ''">
-			AND tt.house_id = #{houseId}
+		<if test="depositId != null and depositId != ''">
+			AND da.id = #{depositId}
 		</if>
 		order by create_date desc
 	</select>
 	
 	<select id="findRentContract" resultType="ContractBook">
-		select da.id as "depositId",da.CONTRACT_CODE as "contractCode",da.RENTAL as "rent",tt.house_id,da.contract_status as "bookStatus",
+		select da.id as "contractId",da.CONTRACT_CODE as "contractCode",da.RENTAL as "rent",tt.house_id,da.contract_status as "bookStatus",
 		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone from T_RENT_CONTRACT da 
 		left join (
 		select CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
@@ -89,8 +97,8 @@
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
 		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
 		where ct.cell_phone = #{userPhone} and da.data_source='2' 
-		<if test="houseId != null and houseId != ''">
-			AND tt.house_id = #{houseId}
+		<if test="contractId != null and contractId != ''">
+			AND da.id = #{contractId}
 		</if>
 	</select>
 	
@@ -203,7 +211,7 @@
 	<update id="updateStatusByHouseId">
 		UPDATE t_contract_book SET 	
 			book_status = #{bookStatus}
-		WHERE house_id = #{houseId} or room_id = #{houseId}
+		WHERE id = #{id}
 	</update>
 	
 	<update id="delete">

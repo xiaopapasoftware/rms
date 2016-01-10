@@ -35,7 +35,8 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay"
+		a.pay_way as "payWay",
+		a.service_user as "serviceUser"
 	</sql>
 	
 	<sql id="houseJoins">

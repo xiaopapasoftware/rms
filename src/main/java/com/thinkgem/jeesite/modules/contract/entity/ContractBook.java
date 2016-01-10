@@ -34,6 +34,7 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private String attachmentPath;
 	
 	private String depositId;
+	private String contractId;
 	
 	private String contractCode;
 	private Double rent;
@@ -205,5 +206,13 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setPayWay(String payWay) {
 		this.payWay = payWay;
+	}
+
+	public String getContractId() {
+		return contractId;
+	}
+
+	public void setContractId(String contractId) {
+		this.contractId = contractId;
 	}
 }

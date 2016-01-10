@@ -55,6 +55,8 @@ public class House extends DataEntity<House> {
     private String shortDesc;//描述
     private String shortLocation;//地址描述
     private String payWay;//付款方式
+    
+    private String serviceUser;//服务管家
 
     public House() {
 	super();
@@ -308,5 +310,13 @@ public class House extends DataEntity<House> {
 
 	public void setRoomId(String roomId) {
 		this.roomId = roomId;
+	}
+
+	public String getServiceUser() {
+		return serviceUser;
+	}
+
+	public void setServiceUser(String serviceUser) {
+		this.serviceUser = serviceUser;
 	}
 }

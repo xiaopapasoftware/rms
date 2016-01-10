@@ -174,7 +174,7 @@ public class AppHouseController {
 	    for (House h : pageList) {
 		Map<String, Object> mp = new HashMap<String, Object>();
 		mp.put("id", h.getId());
-		mp.put("house_num", h.getHouseCode());
+		mp.put("house_code", h.getHouseCode());
 		mp.put("price", h.getRental());
 		mp.put("short_desc", h.getShortDesc());
 		mp.put("short_location", h.getShortLocation());
@@ -218,7 +218,7 @@ public class AppHouseController {
 	    house.setId(house_id);
 	    house = houseService.getFeatureInfo(house);
 	    Map<String, Object> map = new HashMap<String, Object>();
-	    map.put("house_num", house.getHouseCode());
+	    map.put("house_code", house.getHouseCode());
 	    map.put("id", house.getId());
 	    map.put("title", house.getShortDesc());
 	    map.put("price", house.getRental());
@@ -301,9 +301,17 @@ public class AppHouseController {
 	    House house = new House();
 	    house.setId(request.getParameter("house_id"));
 	    house = this.houseService.getHouseByHouseId(house);
-
+	    
+	    /*同一手机号不能预约同一房*/
 	    contractBook.setHouseId(house.getHouseId());
 	    contractBook.setRoomId(house.getRoomId());
+	    boolean ifCanBook = contractBookService.checkByUser(contractBook);
+	    if(!ifCanBook) {
+	    	data.setCode("400");
+	    	data.setMsg("您已预约该房间,不能重复预约!");
+	    	return data;
+	    }
+
 	    contractBook.setUserName(request.getParameter("b_name"));
 	    contractBook.setUserPhone(request.getParameter("phone"));
 	    contractBook.setUserGender(request.getParameter("sex"));
@@ -338,7 +346,7 @@ public class AppHouseController {
 	    PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	    for (ContractBook tmpContractBook : dataList) {
 		Map<String, Object> mp = new HashMap<String, Object>();
-		mp.put("id", StringUtils.isEmpty(tmpContractBook.getHouseId()) ? tmpContractBook.getRoomId() : tmpContractBook.getHouseId());
+		mp.put("id", tmpContractBook.getId());
 		mp.put("time", DateFormatUtils.format(tmpContractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
 		mp.put("progress", tmpContractBook.getBookStatus());
 		mp.put("short_desc", tmpContractBook.getShortDesc());
@@ -365,9 +373,7 @@ public class AppHouseController {
     @ResponseBody
     public ResponseData bookingInfo(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
-
-	log.info("booking_info.house_id:"+request.getParameter("house_id"));
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
@@ -380,8 +386,7 @@ public class AppHouseController {
 
 	    ContractBook contractBook = new ContractBook();
 	    contractBook.setUserId(apptoken.getPhone());
-	    contractBook.setHouseId(request.getParameter("house_id"));
-	    contractBook.setRoomId(request.getParameter("house_id"));
+	    contractBook.setId(request.getParameter("id"));
 	    contractBook = this.contractBookService.findOne(contractBook);
 
 	    Map<String, Object> map = new HashMap<String, Object>();
@@ -392,7 +397,11 @@ public class AppHouseController {
 		map.put("cover", proper.getProperty("img.url") + path[0]);
 	    map.put("short_desc", contractBook.getShortDesc());
 	    map.put("short_location", contractBook.getShortLocation());
-	    map.put("house_num", contractBook.getHouseId());
+	    map.put("id", contractBook.getId());
+	    String houseCode = contractBook.getHouseCode();
+	    if(!StringUtils.isBlank(contractBook.getRoomNo()))
+	    	houseCode += "-"+contractBook.getRoomNo();
+	    map.put("house_code", houseCode);
 	    map.put("b_time", DateFormatUtils.format(contractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
 	    map.put("b_name", contractBook.getUserName());
 	    map.put("phone", contractBook.getUserPhone());
@@ -413,15 +422,14 @@ public class AppHouseController {
     public ResponseData bookingCancel(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
 
 	try {
 	    ContractBook contractBook = new ContractBook();
-	    contractBook.setHouseId(request.getParameter("house_id"));
-	    contractBook.setRoomId(request.getParameter("house_id"));
+	    contractBook.setId(request.getParameter("id"));
 	    contractBook.setBookStatus("2");//用户取消预约
 	    contractBookService.updateStatusByHouseId(contractBook);
 	} catch (Exception e) {
@@ -541,7 +549,7 @@ public class AppHouseController {
 	    Map<String, Object> map = new HashMap<String, Object>();
 	    for (ContractBook tmpContractBook : list) {
 		Map<String, String> mp = new HashMap<String, String>();
-		mp.put("house_id", tmpContractBook.getHouseId());
+		mp.put("id", tmpContractBook.getDepositId());
 		mp.put("desc", tmpContractBook.getShortDesc());
 		mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(), "yyyy-MM-dd"));
 
@@ -553,7 +561,7 @@ public class AppHouseController {
 		    status = "0";
 		} else if ("0".equals(tmpContractBook.getBookStatus())) {
 		    status = "1";
-		} else if ("1".equals(tmpContractBook.getBookStatus())) {
+		} else if ("1".equals(tmpContractBook.getBookStatus()) || "3".equals(tmpContractBook.getBookStatus())) {
 		    status = "4";
 		} else if ("5".equals(tmpContractBook.getBookStatus())) {
 		    status = "2";
@@ -589,7 +597,7 @@ public class AppHouseController {
     public ResponseData bookedProtocol(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
@@ -601,8 +609,7 @@ public class AppHouseController {
 	    apptoken = appTokenService.findByToken(apptoken);
 
 	    ContractBook contractBook = new ContractBook();
-	    contractBook.setUserPhone(apptoken.getPhone());
-	    contractBook.setHouseId(request.getParameter("house_id"));
+	    contractBook.setDepositId(request.getParameter("id"));
 	    List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
 	    if (null != list && list.size() > 0) {
@@ -617,12 +624,12 @@ public class AppHouseController {
 
 	    Map<String, Object> map = new HashMap<String, Object>();
 
-	    StringBuffer html = new StringBuffer("<div>");
+	    StringBuffer html = new StringBuffer("<div style=\"font-size:25px;\">");
 	    html.append("<p>");
 	    html.append("<h3><center>唐巢人才公寓定金协议</center></h3>");
 	    html.append("&nbsp;&nbsp;今收到<u>" + appUser.getName() + "</u>先生/女士(以下简称'承租人')，");
 	    html.append("为承租上海市<u>" + contractBook.getShortDesc() + "</u>");
-	    html.append("部位房屋所支付的租金定金，人民币：<u>" + depositAgreement.getDepositAmount() + "</u>元整。");
+	    html.append("部位房屋所支付的租金定金，人民币：<u style=\"color:red;\">" + depositAgreement.getDepositAmount() + "</u>元整。");
 
 	    String rentType = "";
 	    if ((new Integer(3)).equals(depositAgreement.getRenMonths()) && (new Integer(1)).equals(depositAgreement.getDepositMonths())) {
@@ -634,7 +641,7 @@ public class AppHouseController {
 	    }
 	    String startDate = (null != depositAgreement.getStartDate()) ? DateFormatUtils.format(depositAgreement.getStartDate(), "yyyy-MM-dd") : "";
 	    String endDate = (null != depositAgreement.getExpiredDate()) ? DateFormatUtils.format(depositAgreement.getExpiredDate(), "yyyy-MM-dd") : "";
-	    html.append("该房屋月租金人民币：<u>" + depositAgreement.getHousingRent() + "</u>元整。付款方式为:<u>" + rentType + "</u>。<br/>");
+	    html.append("该房屋月租金人民币：<u style=\"color:red;\">" + depositAgreement.getHousingRent() + "</u>元整。付款方式为:<u>" + rentType + "</u>。<br/>");
 	    html.append("&nbsp;&nbsp;租期：<u>" + startDate + "</u>");
 	    html.append("至 <u>" + endDate + "</u><br/>");
 	    html.append("&nbsp;&nbsp;承租人：<u>" + appUser.getName() + "</u><br/>");
@@ -663,7 +670,7 @@ public class AppHouseController {
     public ResponseData bookedOrder(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
@@ -679,7 +686,7 @@ public class AppHouseController {
 
 	    ContractBook contractBook = new ContractBook();
 	    contractBook.setUserPhone(apptoken.getPhone());
-	    contractBook.setHouseId(request.getParameter("house_id"));
+	    contractBook.setDepositId(request.getParameter("id"));
 	    List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
 	    if (null != list && list.size() > 0) {
@@ -731,7 +738,7 @@ public class AppHouseController {
 	    paymentOrder.setTradeId(tradingAccounts.getId());
 	    paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
 	    paymentOrder.setCreateDate(new Date());
-	    paymentOrder.setHouseId(request.getParameter("house_id"));
+	    paymentOrder.setHouseId(contractBook.getHouseId());
 	    this.contractBookService.saveOrder(paymentOrder);
 
 	    Map<String, Object> map = new HashMap<String, Object>();
@@ -753,8 +760,7 @@ public class AppHouseController {
     public ResponseData bookedInfo(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
-	log.info("booked_info.house_id:"+request.getParameter("house_id"));
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
@@ -771,7 +777,7 @@ public class AppHouseController {
 
 	    ContractBook contractBook = new ContractBook();
 	    contractBook.setUserPhone(apptoken.getPhone());
-	    contractBook.setHouseId(request.getParameter("house_id"));
+	    contractBook.setDepositId(request.getParameter("id"));
 	    List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
 	    if (null != list && list.size() > 0) {
@@ -782,7 +788,7 @@ public class AppHouseController {
 
 	    Map<String, Object> map = new HashMap<String, Object>();
 
-	    map.put("house_id", contractBook.getHouseId());
+	    map.put("id", contractBook.getDepositId());
 	    map.put("house_no", contractBook.getRoomNo());
 	    map.put("pay_way", contractBook.getPayWay());
 	    map.put("desc", contractBook.getShortDesc());
@@ -847,23 +853,20 @@ public class AppHouseController {
     @ResponseBody
     public ResponseData bookedCancel(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("id")) {
 	    data.setCode("101");
 	    return data;
 	}
 
 	try {
-	    String houseId = request.getParameter("house_id");
-
 	    String token = (String) request.getHeader("token");
 	    AppToken apptoken = new AppToken();
 	    apptoken.setToken(token);
 	    apptoken = appTokenService.findByToken(apptoken);
 
 	    DepositAgreement depositAgreement = new DepositAgreement();
-	    depositAgreement.setHouseNo(houseId);
-	    depositAgreement.setRoomNo(houseId);
-	    depositAgreement = depositAgreementService.getByHouseId(depositAgreement);
+	    depositAgreement.setId(request.getParameter("id"));
+	    depositAgreement = depositAgreementService.get(depositAgreement);
 	    depositAgreement.setUpdateUser(apptoken.getPhone());
 	    this.depositAgreementService.delete(depositAgreement);
 	} catch (Exception e) {
@@ -991,7 +994,7 @@ public class AppHouseController {
     public ResponseData signOrder(HttpServletRequest request, HttpServletResponse response) {
 	ResponseData data = new ResponseData();
 
-	if (null == request.getParameter("house_id")) {
+	if (null == request.getParameter("contract_id")) {
 	    data.setCode("101");
 	    return data;
 	}
@@ -1008,7 +1011,7 @@ public class AppHouseController {
 
 	    ContractBook contractBook = new ContractBook();
 	    contractBook.setUserPhone(apptoken.getPhone());
-	    contractBook.setHouseId(request.getParameter("house_id"));
+	    contractBook.setContractId(request.getParameter("contract_id"));
 	    List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
 
 	    if (null != list && list.size() > 0) {
@@ -1119,7 +1122,7 @@ public class AppHouseController {
 	    Map<String, Object> map = new HashMap<String, Object>();
 	    for (ContractBook tmpContractBook : list) {
 		Map<String, Object> mp = new HashMap<String, Object>();
-		mp.put("contract_id", tmpContractBook.getDepositId());
+		mp.put("contract_id", tmpContractBook.getContractId());
 		mp.put("contract_code", tmpContractBook.getContractCode());
 		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 		String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
@@ -1192,7 +1195,8 @@ public class AppHouseController {
 	    map.put("sign_date", DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd"));
 	    map.put("start_date", DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"));
 	    map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
-	    map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
+	    if(null != rentContract.getRemindTime())
+	    	map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
 	    map.put("status", rentContract.getContractStatus().equals("0") ? "0" : "1");
 
 	    data.setData(map);
@@ -1375,6 +1379,56 @@ public class AppHouseController {
 	data.setData(map);
 	data.setCode("200");
 	return data;
+    }
+    
+    @RequestMapping(value = "bill")
+    @ResponseBody
+    public ResponseData bill(HttpServletRequest request, HttpServletResponse response) {
+    	ResponseData data = new ResponseData();
+    	if (null == request.getParameter("p_n") || null == request.getParameter("p_s")) {
+    	    data.setCode("101");
+    	    return data;
+    	}
+    	if(null == request.getParameter("contract_id")) {
+    		data.setCode("101");
+    		data.setMsg("合同编号'contract_id'不能为空");
+    	    return data;
+    	}
+    	
+    	Map<String, Object> map = new HashMap<String, Object>();
+    	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+    	Map<String, Object> mp = new HashMap<String, Object>();
+    	mp.put("bill_id", "1");
+    	mp.put("bill_month", "2015-09");
+    	mp.put("bill_amount", 2950);
+    	mp.put("bill_start", "2015-09-01");
+    	mp.put("bill_end", "2015-09-30");
+    	mp.put("rent_amount", 2400);
+    	mp.put("water_amount", 50);
+    	mp.put("electric_amount", 500);
+    	mp.put("electric_balance", 110);
+    	mp.put("bill_state", "1");
+    	list.add(mp);
+
+    	mp = new HashMap<String, Object>();
+    	mp.put("bill_id", "2");
+    	mp.put("bill_month", "2015-10");
+    	mp.put("bill_amount", 2950);
+    	mp.put("bill_start", "2015-10-01");
+    	mp.put("bill_end", "2015-10-31");
+    	mp.put("rent_amount", 2400);
+    	mp.put("water_amount", 50);
+    	mp.put("electric_amount", 500);
+    	mp.put("electric_balance", 110);
+    	mp.put("bill_state", "0");
+    	list.add(mp);
+
+    	map.put("bill", list);
+    	map.put("p_t", 2);
+    	
+    	data.setData(map);
+    	data.setCode("200");
+    	return data;
     }
 
     @RequestMapping(value = "repair")
