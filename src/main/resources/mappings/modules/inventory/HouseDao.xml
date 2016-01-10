@@ -36,12 +36,14 @@
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
 		a.pay_way as "payWay",
-		a.service_user as "serviceUser"
+		a.service_user as "serviceUser.id",
+		u3.name as "serviceUser.name"
 	</sql>
 	
 	<sql id="houseJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		left JOIN t_attachment atta on atta.house_id = a.id
@@ -54,6 +56,7 @@
 		SELECT <include refid="houseColumns"/>
 		FROM t_house a LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		left JOIN t_attachment atta on atta.house_id = a.id
@@ -299,7 +302,8 @@
 			rental,
 			short_desc,
 			short_location,
-			pay_way
+			pay_way,
+			service_user
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -328,7 +332,8 @@
 			#{rental},
 			#{shortDesc},
 			#{shortLocation},
-			#{payWay}
+			#{payWay},
+			#{serviceUser.id}
 		)
 	</insert>
 	
@@ -360,7 +365,8 @@
 			rental = #{rental},
 			short_desc = #{shortDesc},
 			short_location = #{shortLocation},
-			pay_way = #{payWay}
+			pay_way = #{payWay},
+			service_user = #{serviceUser.id}
 		WHERE id = #{id}
 	</update>
 	

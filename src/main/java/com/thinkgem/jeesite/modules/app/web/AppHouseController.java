@@ -238,7 +238,7 @@ public class AppHouseController {
 	    }
 	    map.put("previews", cover);// 预览图片多图`,`拼接
 	    map.put("area", house.getHouseSpace());// 房屋面积
-	    String decorate = "";
+	    String decorate = "精装修";
 	    map.put("decorate", decorate);// 装修情况=精装修
 	    map.put("summary", house.getShortLocation());// 概况
 	    map.put("floor", house.getHouseFloor());// 楼层
@@ -789,7 +789,7 @@ public class AppHouseController {
 	    Map<String, Object> map = new HashMap<String, Object>();
 
 	    map.put("id", contractBook.getDepositId());
-	    map.put("house_no", contractBook.getRoomNo());
+	    map.put("house_code", contractBook.getRoomNo());
 	    map.put("pay_way", contractBook.getPayWay());
 	    map.put("desc", contractBook.getShortDesc());
 	    map.put("location", contractBook.getShortLocation());

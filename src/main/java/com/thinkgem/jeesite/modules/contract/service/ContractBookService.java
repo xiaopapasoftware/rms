@@ -133,7 +133,10 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 	}
 	
 	public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
-		return this.paymentOrderDao.findByHouseId(paymentOrder).get(0);
+		List<PaymentOrder> list = this.paymentOrderDao.findByHouseId(paymentOrder);
+		if(null != list && list.size() > 0)
+			return list.get(0);
+		return null;
 	}
 	
 	public PaymentOrder findByOrderId(PaymentOrder paymentOrder) {

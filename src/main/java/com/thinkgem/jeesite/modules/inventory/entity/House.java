@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
  * 房屋信息Entity
@@ -56,7 +57,8 @@ public class House extends DataEntity<House> {
     private String shortLocation;//地址描述
     private String payWay;//付款方式
     
-    private String serviceUser;//服务管家
+    private User serviceUser;//服务管家
+    private String servcieUserName;
 
     public House() {
 	super();
@@ -312,11 +314,19 @@ public class House extends DataEntity<House> {
 		this.roomId = roomId;
 	}
 
-	public String getServiceUser() {
+	public User getServiceUser() {
 		return serviceUser;
 	}
 
-	public void setServiceUser(String serviceUser) {
+	public void setServiceUser(User serviceUser) {
 		this.serviceUser = serviceUser;
+	}
+
+	public String getServcieUserName() {
+		return servcieUserName;
+	}
+
+	public void setServcieUserName(String servcieUserName) {
+		this.servcieUserName = servcieUserName;
 	}
 }
