@@ -35,6 +35,7 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
@@ -61,6 +62,8 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
@@ -102,6 +105,12 @@ public class AppHouseController {
 
     @Autowired
     private HouseAdService houseAdService;
+    
+    @Autowired
+	private SmsService smsService;
+    
+    @Autowired
+    private SystemService systemService;
 
     public AppHouseController() {
     }
@@ -230,7 +239,7 @@ public class AppHouseController {
 		String path[] = StringUtils.split(house.getAttachmentPath(), "|");
 		if (null != path && path.length > 0) {
 		    for (String p : path) {
-			cover = img_url + p + ",";
+			cover += img_url + p + ",";
 		    }
 		    if (cover.endsWith(","))
 			cover = StringUtils.substringBeforeLast(cover, ",");
@@ -238,7 +247,7 @@ public class AppHouseController {
 	    }
 	    map.put("previews", cover);// 预览图片多图`,`拼接
 	    map.put("area", house.getHouseSpace());// 房屋面积
-	    String decorate = "精装修";
+	    String decorate = "1";
 	    map.put("decorate", decorate);// 装修情况=精装修
 	    map.put("summary", house.getShortLocation());// 概况
 	    map.put("floor", house.getHouseFloor());// 楼层
@@ -320,6 +329,17 @@ public class AppHouseController {
 	    contractBook.setBookStatus("0");// 管家确认中
 	    contractBookService.save(contractBook);
 	    data.setCode("200");
+	    
+	    PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+	    /*获取房屋房屋管家手机号码*/
+	    String userId = house.getServcieUserName();
+	    User user = this.systemService.getUser(userId);
+	    String mobile = user.getMobile();
+	    if(StringUtils.isBlank(mobile))
+	    	mobile = proper.getProperty("service.manager.mobile");
+	    /*给服务管家发送短信*/
+	    String content = proper.getProperty("service.sms.content");
+	    this.smsService.sendSms(mobile, content);
 	} catch (Exception e) {
 	    data.setCode("500");
 	    this.log.error("save contractbook error:", e);
@@ -1131,7 +1151,13 @@ public class AppHouseController {
 		mp.put("short_desc", tmpContractBook.getShortDesc());
 		mp.put("house_desc", tmpContractBook.getShortLocation());
 		mp.put("rent", tmpContractBook.getRent());
-		mp.put("status", tmpContractBook.getBookStatus().equals("0") ? "0" : "1");
+		String status = "";
+		if("0".equals(tmpContractBook.getBookStatus()))
+			status = "0";
+		else if("1".equals(tmpContractBook.getBookStatus()))
+			status = "4";
+		//0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实 5:用户取消在线签约
+		mp.put("status", status);
 		dataList.add(mp);
 	    }
 	    map.put("contracts", dataList);
@@ -1161,17 +1187,21 @@ public class AppHouseController {
 
 	    Map<String, Object> map = new HashMap<String, Object>();
 
-	    String shortDesc = "", attachmentPath = "", houseDesc = "";
+	    String shortDesc = "", attachmentPath = "", houseDesc = "", houseCode="";
 	    if (null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
 		Room room = this.roomService.get(rentContract.getRoom().getId());
 		shortDesc = room.getShortDesc();
 		attachmentPath = room.getAttachmentPath();
 		houseDesc = room.getShortLocation();
+		
+		House house = this.houseService.get(rentContract.getHouse().getId());
+		houseCode = house.getHouseCode() + "-" +room.getRoomNo();
 	    } else {
 		House house = this.houseService.get(rentContract.getHouse().getId());
 		shortDesc = house.getShortDesc();
 		attachmentPath = house.getAttachmentPath();
 		houseDesc = house.getShortLocation();
+		houseCode = house.getHouseCode();
 	    }
 
 	    map.put("contract_id", rentContract.getId());
@@ -1197,7 +1227,14 @@ public class AppHouseController {
 	    map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
 	    if(null != rentContract.getRemindTime())
 	    	map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
-	    map.put("status", rentContract.getContractStatus().equals("0") ? "0" : "1");
+	    String status = "";
+		if("0".equals(rentContract.getContractStatus()))
+			status = "0";
+		else if("1".equals(rentContract.getContractStatus()))
+			status = "4";
+		//0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实 5:用户取消在线签约
+		map.put("status", status);
+		map.put("house_code", houseCode);
 
 	    data.setData(map);
 	    data.setCode("200");

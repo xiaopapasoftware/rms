@@ -105,7 +105,7 @@
 		      h.DECORA_STRUC_ROOM_NUM,
 		      h.DECORA_STRUC_CUSSPAC_NUM,
 		      h.DECORA_STRUC_WASHRO_NUM,
-		      h.HOUSE_SPACE,
+		      r.ROOM_SPACE HOUSE_SPACE,
 		      h.HOUSE_FLOOR,
 		      r.ORIENTATION,
 		      p.PROJECT_ADDR 
