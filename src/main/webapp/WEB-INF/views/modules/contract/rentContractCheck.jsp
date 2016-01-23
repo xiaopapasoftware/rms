@@ -5,6 +5,14 @@
 	<title>退租核算</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
+		$(document).ready(function() {
+			$("[id$='_feeAmount']").keypress(function(event) {
+		        if (event.keyCode == 13) {
+		            event.preventDefault();
+		        }
+		    });
+		});
+		
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
@@ -23,6 +31,7 @@
 				}
 			});
 		}
+
 		function addRow(list, idx, tpl, row){
 			$(list).append(Mustache.render(tpl, {
 				idx: idx, delBtn: true, row: row
