@@ -1188,6 +1188,16 @@ public class AppHouseController {
 		ResponseData data = new ResponseData();
 
 		try {
+			//0:查询所有可续签的合同列表；1:查询所有可退租的合同列表；2:查询所有可报修的合同列表；
+			//3：查询我的账单前的所有合同列表；4:查询该登录号名下的所有合同列表
+			String type = request.getParameter("type");
+			if(StringUtils.isBlank(type))
+				type = "4";
+			
+			String contractBusiStatus = "";
+			if("0".equals(type) || "1".equals(type) || "2".equals(type) || "3".equals(type))
+				contractBusiStatus = "0";//有效
+			
 			String token = (String) request.getHeader("token");
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
@@ -1195,6 +1205,8 @@ public class AppHouseController {
 
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
+			if(!StringUtils.isBlank(contractBusiStatus))
+				contractBook.setContractBusiStatus(contractBusiStatus);
 			List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
 
 			List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();

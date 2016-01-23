@@ -40,6 +40,8 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private Double rent;
 	private String payWay;
 	
+	private String contractBusiStatus;
+	
 	public ContractBook() {
 		super();
 	}
@@ -214,5 +216,13 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setContractId(String contractId) {
 		this.contractId = contractId;
+	}
+
+	public String getContractBusiStatus() {
+		return contractBusiStatus;
+	}
+
+	public void setContractBusiStatus(String contractBusiStatus) {
+		this.contractBusiStatus = contractBusiStatus;
 	}
 }

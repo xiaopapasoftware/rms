@@ -100,6 +100,9 @@
 		<if test="contractId != null and contractId != ''">
 			AND da.id = #{contractId}
 		</if>
+		<if test="contractBusiStatus != null and contractBusiStatus != ''">
+			AND da.contract_busi_status = #{contractBusiStatus}
+		</if>
 	</select>
 	
 	<select id="findList" resultType="ContractBook">
