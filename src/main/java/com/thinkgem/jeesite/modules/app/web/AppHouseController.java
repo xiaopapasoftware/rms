@@ -263,7 +263,18 @@ public class AppHouseController {
 			map.put("orientate", orientate);// 朝向
 			map.put("address", house.getProjectAddr());// 地址
 			map.put("equipment", "1101111111");// (宽带、电视、沙发、洗衣机、床、冰箱、空调、衣柜、热水器、写字台)，1代表有0代表没有
-			map.put("contact_phone", "4006-269-069");// 联系电话
+			
+			/* 获取房屋房屋管家手机号码 */
+			String contact_phone = "4006-269-069";
+			String userId = house.getServcieUserName();
+			if(!StringUtils.isBlank(userId)) {
+				User user = this.systemService.getUser(userId);
+				String mobile = user.getMobile();
+				if (!StringUtils.isBlank(mobile))
+					contact_phone = mobile;
+			}
+			
+			map.put("contact_phone", contact_phone);// 联系电话
 			Integer fang = null, ting = null, wei = null;
 			if (null != this.roomService.get(house.getId())) {
 				house = this.houseService.get(this.roomService.get(house.getId()).getHouse().getId());
@@ -337,14 +348,16 @@ public class AppHouseController {
 
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 			/* 获取房屋房屋管家手机号码 */
+			String mobile = proper.getProperty("service.manager.mobile");
 			String userId = house.getServcieUserName();
-			User user = this.systemService.getUser(userId);
-			String mobile = user.getMobile();
-			if (StringUtils.isBlank(mobile))
-				mobile = proper.getProperty("service.manager.mobile");
+			if(!StringUtils.isBlank(userId)) {
+				User user = this.systemService.getUser(userId);
+				if(null != user && !StringUtils.isBlank(user.getMobile()))
+					mobile = user.getMobile();
+			}
 			/* 给服务管家发送短信 */
 			String content = proper.getProperty("service.sms.content");
-			this.smsService.sendSms(mobile, content);
+			this.smsService.sendSms(mobile, content);				
 		} catch (Exception e) {
 			data.setCode("500");
 			this.log.error("save contractbook error:", e);
