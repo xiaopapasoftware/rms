@@ -32,6 +32,7 @@ import com.thinkgem.jeesite.modules.app.entity.Repairs;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -112,6 +113,9 @@ public class AppHouseController {
 	@Autowired
 	private SystemService systemService;
 
+	@Autowired
+	private MessageService messageService;//APP消息推送
+	
 	public AppHouseController() {
 	}
 
@@ -1080,7 +1084,7 @@ public class AppHouseController {
 				contractBook = list.get(0);
 			}
 
-			RentContract rentContract = this.rentContractService.get(contractBook.getDepositId());
+			RentContract rentContract = this.rentContractService.get(contractBook.getContractId());
 
 			/* 款项 */
 			PaymentTrans paymentTrans = new PaymentTrans();
@@ -1198,8 +1202,14 @@ public class AppHouseController {
 					status = "0";
 				else if ("1".equals(tmpContractBook.getBookStatus()))
 					status = "4";
+				else if ("2".equals(tmpContractBook.getBookStatus())||"4".equals(tmpContractBook.getBookStatus()))
+					status = "1";
+				else if ("6".equals(tmpContractBook.getBookStatus()))
+					status = "2";
 				// 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
 				// 5:用户取消在线签约
+				if("1".equals(tmpContractBook.getDelFlag()))
+					status = "5";
 				mp.put("status", status);
 				dataList.add(mp);
 			}
@@ -1277,10 +1287,32 @@ public class AppHouseController {
 				status = "0";
 			else if ("1".equals(rentContract.getContractStatus()))
 				status = "4";
+			else if ("2".equals(rentContract.getContractStatus())||"4".equals(rentContract.getContractStatus()))
+				status = "1";
+			else if ("6".equals(rentContract.getContractStatus()))
+				status = "2";
 			// 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
 			// 5:用户取消在线签约
+			if("1".equals(rentContract.getDelFlag()))
+				status = "5";
 			map.put("status", status);
 			map.put("house_code", houseCode);
+			String hasTv = "0";
+			if("1".equals(rentContract.getHasTv()))
+				hasTv = "1";
+			map.put("has_tv", hasTv);//是否开通有线电视 1:是 0:否
+			double tvFee = 0;
+			if(null != rentContract.getTvFee())
+				tvFee = rentContract.getTvFee();
+			map.put("tv_fee", tvFee);
+			double netFee = 0;
+			if(null != rentContract.getNetFee())
+				netFee = rentContract.getNetFee();
+			map.put("net_fee", netFee);
+			double waterFee = 0;
+			if(null != rentContract.getWaterFee())
+				waterFee = rentContract.getWaterFee();
+			map.put("water_fee", waterFee);
 
 			data.setData(map);
 			data.setCode("200");
@@ -1440,6 +1472,35 @@ public class AppHouseController {
 	@RequestMapping(value = "pay_sign_booked")
 	@ResponseBody
 	public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+
+		if (null == request.getParameter("order_id")) {
+			data.setCode("101");
+			return data;
+		}
+
+		String orderId = request.getParameter("order_id");
+		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		DecimalFormat df = new DecimalFormat("######0.00");
+		Double orderAmount = paymentOrder.getOrderAmount();
+		String signStr = "";
+		try {
+			signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+		} catch (Exception e) {
+			this.log.error("get alipay sign error:", e);
+		}
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("sign", signStr);
+
+		data.setData(map);
+		data.setCode("200");
+		return data;
+	}
+	
+	@RequestMapping(value = "pay_sign_contract")
+	@ResponseBody
+	public ResponseData paysignContract(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 
 		if (null == request.getParameter("order_id")) {

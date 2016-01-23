@@ -158,7 +158,7 @@ public class SystemController {
 			Date expiredate = caculateExpireTime(60);
 			tAppCheckCode.setExprie(expiredate);
 			tAppCheckCodeService.merge(tAppCheckCode);
-			smsService.sendSms(mobile, "验证码"+tAppCheckCode.getCode()+",您正在使用唐巢APP,验证码很重要，请勿谢泄露.");
+			smsService.sendSms(mobile, "验证码"+tAppCheckCode.getCode()+",您正在使用唐巢APP,验证码很重要,请勿泄露.");
 			ResponseData data = new ResponseData(); 
 			data.setCode("200");
 			data.setMsg("成功获取验证码");
