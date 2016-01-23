@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -1540,6 +1541,73 @@ public class AppHouseController {
 		String signStr = "";
 		try {
 			signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+		} catch (Exception e) {
+			this.log.error("get alipay sign error:", e);
+		}
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("sign", signStr);
+
+		data.setData(map);
+		data.setCode("200");
+		return data;
+	}
+	
+	@RequestMapping(value = "recharge")
+	@ResponseBody
+	public ResponseData recharge(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+
+		if (null == request.getParameter("contract_id") || null == request.getParameter("fee")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		data.setCode("200");
+		return data;
+	}
+	
+	@RequestMapping(value = "checkin_bill")
+	@ResponseBody
+	public ResponseData checkinBill(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+
+		if (null == request.getParameter("bill_id")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		PaymentOrder paymentOrder = new PaymentOrder();
+		Map<String, Object> map = new HashMap<String, Object>();
+		//map.put("order_id", paymentOrder.getOrderId());
+		//map.put("price", paymentOrder.getOrderAmount());
+		map.put("order_id", "1111111111");
+	    map.put("price", "0.01");
+
+		data.setData(map);
+		data.setCode("200");
+		return data;
+	}
+	
+	@RequestMapping(value = "pay_bill")
+	@ResponseBody
+	public ResponseData payBill(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+
+		if (null == request.getParameter("order_id")) {
+			data.setCode("101");
+			return data;
+		}
+		
+		String orderId = request.getParameter("order_id");
+		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		DecimalFormat df = new DecimalFormat("######0.00");
+		Double orderAmount = paymentOrder.getOrderAmount();
+		String signStr = "";
+		try {
+			//signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
+			Random random = new Random(10000000);
+			signStr = AlipayUtil.buildRequest(String.valueOf(random.nextLong()), df.format("0.01"));
 		} catch (Exception e) {
 			this.log.error("get alipay sign error:", e);
 		}
