@@ -27,6 +27,8 @@ public class AppUser extends DataEntity<AppUser> {
 	private String avatar;
 	private String idCardPhoto＿front;		// 身份证正面,附件ID
 	private String idCardPhoto＿back;		// 身份证反面,附件ID
+    private String scienerUserName; //科技侠账号
+    private String scienerPassword; //科技侠密码
 	
 	public AppUser() {
 		super();
@@ -142,7 +144,24 @@ public class AppUser extends DataEntity<AppUser> {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
-	
-	
-	
+
+    public String getScienerUserName() {
+        return scienerUserName;
+    }
+    @Length(min=0, max=64, message="科技侠账号,附件ID长度必须介于 0 和 64 之间")
+    public void setScienerUserName(String scienerUserName) {
+        this.scienerUserName = scienerUserName;
+    }
+
+    public String getScienerPassword() {
+        return scienerPassword;
+    }
+    @Length(min=0, max=64, message="科技侠密码,附件ID长度必须介于 0 和 64 之间")
+    public void setScienerPassword(String scienerPassword) {
+        this.scienerPassword = scienerPassword;
+    }
+
+
+
+
 }

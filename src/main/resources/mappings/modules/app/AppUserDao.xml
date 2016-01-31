@@ -18,7 +18,9 @@
 		a.remarks AS "remarks",
 		a.profession AS "profession",
 		a.del_flag AS "delFlag",
-		a.corp AS "corp"
+		a.corp AS "corp",
+		a.scienerUserName AS "scienerUserName",
+		a.scienerPassword AS "scienerPassword"
 	</sql>
 	
 	<sql id="appUserJoins">
@@ -125,7 +127,9 @@
 			age = #{age},
 			remarks = #{remarks},
 			profession = #{profession},
-			corp = #{corp}
+			corp = #{corp},
+			scienerUserName = #{scienerUserName},
+			scienerPassword = #{scienerPassword}
 		WHERE id = #{id}
 	</update>
 	
@@ -153,6 +157,8 @@
 		a.profession AS "profession",
 		a.del_flag AS "delFlag",
 		a.corp AS "corp",
+		a.scienerUserName AS "scienerUserName",
+		a.scienerPassword AS "scienerPassword",
 		attach.ATTACHMENT_PATH AS "avatar",
 		attach2.ATTACHMENT_PATH AS "idCardPhoto＿front",
 		attach3.ATTACHMENT_PATH AS "idCardPhoto＿back"

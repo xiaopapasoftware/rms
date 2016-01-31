@@ -46,12 +46,14 @@ public class MessageService extends CrudService<MessageDao, Message> {
 	}
 
     //添加消息
+    @Transactional(readOnly = false)
     public void addMessage(Message message, boolean isPush){
         super.save(message);
         if(isPush){
             push(message);
         }
     }
+    @Transactional(readOnly = false)
     public void push(Message message){
         MessagePushUtil.pushAccount(message.getTitle(), message.getContent(), message.getReceiver());
     }
