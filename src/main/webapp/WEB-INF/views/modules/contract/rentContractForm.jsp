@@ -127,6 +127,43 @@
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
 					}
+					 
+					var rental = $("#rental").val();
+					if(rental!=null && rental!=undefined && rental!=""){
+						var rentalNum = parseFloat(rental);
+						if(rentalNum <= 0){
+							top.$.jBox.tip('月租金金额不合法！','warning');
+							return;
+						}
+					}
+					
+					var depositAmount = $("#depositAmount").val();
+					if(depositAmount!=null && depositAmount!=undefined && depositAmount!=""){
+						var depositAmountNum = parseFloat(depositAmount);
+						if(depositAmountNum <= 0){
+							top.$.jBox.tip('房租押金金额不合法！','warning');
+							return;
+						}
+					}
+					
+					var renMonths = $("#renMonths").val();
+					if(renMonths!=null && renMonths!=undefined && renMonths!=""){
+						var renMonthsNum = parseFloat(renMonths);
+						if(renMonthsNum <= 0){
+							top.$.jBox.tip('首付房租月数不合法！','warning');
+							return;
+						}
+					}
+					
+					var depositMonths = $("#depositMonths").val();
+					if(depositMonths!=null && depositMonths!=undefined && depositMonths!=""){
+						var depositMonthsNum = parseFloat(depositMonths);
+						if(depositMonthsNum <= 0){
+							top.$.jBox.tip('房租押金月数不合法！','warning');
+							return;
+						}
+					}
+					
 					loading('正在提交，请稍等...');
 					form.submit();
 					$("#saveBtn").attr("disabled",true);
@@ -160,12 +197,6 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${rentContract.contractCode}");
 			}else{
-				/**if($("#contractCode").val().split("-").length>2) {
-					
-					$("#contractCode").val(projectSimpleName + "-" + $("#contractCode").val().split("-")[1]+"-"+$("#contractCode").val().split("-")[2]);	
-				} else {
-					$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");					
-				}**/
 				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
 			}
 			
