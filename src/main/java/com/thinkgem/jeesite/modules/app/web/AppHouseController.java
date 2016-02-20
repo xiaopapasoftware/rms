@@ -862,7 +862,7 @@ public class AppHouseController {
 				status = "0";
 			} else if ("0".equals(contractBook.getBookStatus())) {
 				status = "1";
-			} else if ("1".equals(contractBook.getBookStatus())) {
+			} else if ("1".equals(contractBook.getBookStatus()) || "3".equals(contractBook.getBookStatus())) {
 				status = "4";
 			} else if ("5".equals(contractBook.getBookStatus())) {
 				status = "2";
