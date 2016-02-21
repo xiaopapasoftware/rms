@@ -20,7 +20,7 @@ public class AuditHis extends DataEntity<AuditHis> {
 	private String objectType;		// 审核类型
 	private String objectId;		// 审核对象ID
 	private String auditUser;		// 审核人
-	private Date auditTime;		// 审核时间
+	private Date auditTime;			// 审核时间
 	private String auditStatus;		// 审核状态
 	private String auditMsg;		// 审核意见
 	private String auditUserName;

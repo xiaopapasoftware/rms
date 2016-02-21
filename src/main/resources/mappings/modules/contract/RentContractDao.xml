@@ -111,6 +111,13 @@
 		) t
 	</select>
 	
+	<select id="findContractByCode" resultType="RentContract">
+		SELECT <include refid="rentContractColumns"/>
+		FROM t_rent_contract a
+		<include refid="rentContractJoins"/>
+		WHERE a.contract_code = #{contractCode}
+	</select>
+	
 	<select id="findList" resultType="RentContract">
 		SELECT 
 			<include refid="rentContractColumns"/>
@@ -199,7 +206,7 @@
 	</select>
 	
 	<select id="getAllValidRentContractCounts" resultType="int">
-		SELECT count(*) FROM t_rent_contract where del_flag = #{DEL_FLAG_NORMAL}
+		SELECT count(*) FROM t_rent_contract
 	</select>
 	
 	

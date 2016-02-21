@@ -1,83 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao">
-    
+
 	<sql id="electricFeeColumns">
 		a.id AS "id",
 		a.rent_contract_id AS "rentContractId",
-		a.settle_type AS "settleType",
-		a.start_date AS "startDate",
-		a.end_date AS "endDate",
-		a.meter_value AS "meterValue",
-		a.person_fee AS "personFee",
-		a.muliti_fee AS "mulitiFee",
+		a.payment_trans_id AS "paymentTransId",
+		a.charge_date AS "chargeDate",
+		a.charge_amount AS "chargeAmount",
+		a.charge_status AS "chargeStatus",
 		a.settle_status AS "settleStatus",
+		a.charge_id AS
+		"chargeId",
 		a.create_by AS "createBy.id",
+		u1.login_name AS
+		"createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		a.update_by AS
+		"updateBy.id",
 		a.update_date AS "updateDate",
+		u2.login_name AS
+		"updateBy.loginName",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		tc.contract_name as "contractName",
-		a.paymenttrans_id as "paymentTransId",
-		a.charge_status as "chargeStatus",
-		a.charge_id as "chargeId"
+		tc.contract_name as "contractName"
 	</sql>
-	
+
 	<sql id="electricFeeJoins">
-	left join t_rent_contract tc on a.rent_contract_id=tc.id 
+		left join t_rent_contract tc on a.rent_contract_id = tc.id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON
+		u2.id = a.update_by
 	</sql>
-    
+
 	<select id="get" resultType="ElectricFee">
-		SELECT 
-			<include refid="electricFeeColumns"/>
+		SELECT
+		<include refid="electricFeeColumns" />
 		FROM t_electric_fee a
-		<include refid="electricFeeJoins"/>
-		WHERE a.paymenttrans_id = #{paymentTransId}
+		<include refid="electricFeeJoins" />
+		WHERE a.payment_trans_id = #{paymentTransId}
 	</select>
-	
+
 	<select id="findList" resultType="ElectricFee">
-		SELECT 
-			<include refid="electricFeeColumns"/>
+		SELECT
+		<include refid="electricFeeColumns" />
 		FROM t_electric_fee a
-		<include refid="electricFeeJoins"/>
+		<include refid="electricFeeJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="rentContractId != null and rentContractId != ''">
 				AND a.rent_contract_id = #{rentContractId}
 			</if>
-			<if test="settleType != null and settleType != ''">
-				AND a.settle_type = #{settleType}
+			<if test="paymentTransId != null and paymentTransId != ''">
+				AND a.payment_trans_id = #{paymentTransId}
 			</if>
 			<if test="startDate != null and startDate != ''">
-				AND a.start_date = #{startDate}
+				AND a.charge_date >= str_to_date(#{startDate},'%Y-%m-%d')
 			</if>
 			<if test="endDate != null and endDate != ''">
-				AND a.end_date = #{endDate}
+				<![CDATA[AND a.charge_date <= str_to_date(#{endDate},'%Y-%m-%d')]]>
 			</if>
-			<if test="meterValue != null and meterValue != ''">
-				AND a.meter_value = #{meterValue}
-			</if>
-			<if test="personFee != null and personFee != ''">
-				AND a.person_fee = #{personFee}
-			</if>
-			<if test="mulitiFee != null and mulitiFee != ''">
-				AND a.muliti_fee = #{mulitiFee}
+			<if test="chargeStatus != null and chargeStatus != ''">
+				AND a.charge_status = #{chargeStatus}
 			</if>
 			<if test="settleStatus != null and settleStatus != ''">
 				AND a.settle_status = #{settleStatus}
 			</if>
 			<if test="contractName != null and contractName != ''">
 				AND tc.contract_name like concat('%',#{contractName},'%')
-			</if>
-			<if test="paymentTransId != null and paymentTransId != ''">
-				AND a.paymenttrans_id = #{paymentTransId}
-			</if>
-			<if test="chargeStatus != null and chargeStatus != ''">
-				AND a.charge_status = #{chargeStatus}
-			</if>
-			<if test="chargeId != null and chargeId != ''">
-				AND a.charge_id = #{chargeId}
 			</if>
 		</where>
 		<choose>
@@ -89,15 +79,15 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findAllList" resultType="ElectricFee">
-		SELECT 
-			<include refid="electricFeeColumns"/>
+		SELECT
+		<include refid="electricFeeColumns" />
 		FROM t_electric_fee a
-		<include refid="electricFeeJoins"/>
+		<include refid="electricFeeJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -107,71 +97,60 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO t_electric_fee(
-			id,
-			rent_contract_id,
-			settle_type,
-			start_date,
-			end_date,
-			meter_value,
-			person_fee,
-			muliti_fee,
-			settle_status,
-			create_by,
-			create_date,
-			update_by,
-			update_date,
-			remarks,
-			del_flag,
-			paymenttrans_id,
-			charge_status,
-			charge_id
+		id,
+		rent_contract_id,
+		payment_trans_id,
+		charge_date,
+		charge_amount,
+		charge_status,
+		settle_status,
+		charge_id,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
 		) VALUES (
-			#{id},
-			#{rentContractId},
-			#{settleType},
-			#{startDate},
-			#{endDate},
-			#{meterValue},
-			#{personFee},
-			#{mulitiFee},
-			#{settleStatus},
-			#{createBy.id},
-			#{createDate},
-			#{updateBy.id},
-			#{updateDate},
-			#{remarks},
-			#{delFlag},
-			#{paymentTransId},
-			#{chargeStatus},
-			#{chargeId}
+		#{id},
+		#{rentContractId},
+		#{paymentTransId},
+		#{chargeDate},
+		#{chargeAmount},
+		#{chargeStatus},
+		#{settleStatus},
+		#{chargeId},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
 		)
 	</insert>
-	
+
 	<update id="update">
-		UPDATE t_electric_fee SET 	
-			rent_contract_id = #{rentContractId},
-			settle_type = #{settleType},
-			start_date = #{startDate},
-			end_date = #{endDate},
-			meter_value = #{meterValue},
-			person_fee = #{personFee},
-			muliti_fee = #{mulitiFee},
-			settle_status = #{settleStatus},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks},
-			charge_status = #{chargeStatus},
-			charge_id = #{chargeId}
+		UPDATE t_electric_fee SET
+		rent_contract_id = #{rentContractId},
+		payment_trans_id = #{paymentTransId},
+		charge_date = #{chargeDate},
+		charge_amount = #{chargeAmount},
+		charge_status = #{chargeStatus},
+		settle_status = #{settleStatus},
+		charge_id = #{chargeId},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
-		UPDATE t_electric_fee SET 
-			del_flag = #{DEL_FLAG_DELETE}
+		UPDATE t_electric_fee SET
+		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 </mapper>

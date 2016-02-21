@@ -77,9 +77,12 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label style="width:120px;">账务交易对象：</label>
-				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
-			</li>
+			<li><label style="width:500px;">定金协议名称/出租合同名称/承租合同名称/物业项目名称/楼宇名称/房屋号/房间号：</label>
+				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:500px;"/>
+			</li><br/>
+			<li><label style="width:500px;">出租合同编号/承租合同编号/定金协议编号：</label>
+				<form:input path="tradeObjectNo" htmlEscape="false" maxlength="64" class="input-medium" style="width:500px;"/>
+			</li><br/>
 			<li><label style="width:120px;">账务交易类型：</label>
 				<form:select path="tradeType" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -161,28 +164,26 @@
 				<c:if test="${tradingAccounts.tradeType=='1' || tradingAccounts.tradeType=='3' || tradingAccounts.tradeType=='4' || tradingAccounts.tradeType=='5' || tradingAccounts.tradeType=='6' || tradingAccounts.tradeType=='7' || tradingAccounts.tradeType=='8' || tradingAccounts.tradeType=='9' || tradingAccounts.tradeType == '10' || tradingAccounts.tradeType == '11' || tradingAccounts.tradeType == '12' || tradingAccounts.tradeType == '13' || tradingAccounts.tradeType == '14' || tradingAccounts.tradeType == '15'}">
 					<a href="javascript:void(0);" onclick="viewReceiptAttachmentFiles('${tradingAccounts.id}')">收据凭单</a>
 				</c:if>
-					<!--<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>-->
+					<!--tradeType 账务交易类型  -->
+					<!--transStatus 定金协议审核状态/出租合同审核状态/承租合同审核状态-->
+					<!--tradeStatus 账务记录审核状态 -->
+					<!--transBusiStatus 定金协议业务状态/出租合同业务状态-->
 					<shiro:hasPermission name="funds:tradingAccounts:audit">
-					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
-					<c:if test="${tradingAccounts.tradeType=='2' && tradingAccounts.transStatus=='5' && tradingAccounts.tradeStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
-					<c:if test="${(tradingAccounts.tradeType!='1' && tradingAccounts.tradeType!='2' && (tradingAccounts.transStatus=='4' || tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
-					<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transBusiStatus=='5' && tradingAccounts.tradeStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
-					<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0' && tradingAccounts.transStatus=='6'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
-					<c:if test="${tradingAccounts.tradeType=='0' && tradingAccounts.tradeStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
-					</c:if>
+						<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='3' && tradingAccounts.tradeStatus=='0'}">
+							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+						</c:if><!-- 账务交易类型为“预约定金”，定金协议审核状态为“内容审核通过到账收据待审核” ，账务记录审核状态为“待审核”-->
+						
+						<c:if test="${tradingAccounts.tradeType=='2' && tradingAccounts.transStatus=='5' && tradingAccounts.transBusiStatus =='4' && tradingAccounts.tradeStatus=='0'}">
+							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+						</c:if><!-- 账务交易类型为“定金转违约”，定金协议审核状态为“到账收据审核通过” ，定金协议业务状态为'定金转违约到账待审核' 账务记录审核状态为“待审核”-->
+						
+						<c:if test="${(tradingAccounts.tradeType!='1' && tradingAccounts.tradeType!='2' && (tradingAccounts.transStatus=='4' || tradingAccounts.transStatus=='6') && tradingAccounts.tradeStatus=='0')}">
+							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+						</c:if><!-- 账务交易类型不为“预约定金”和“定金转违约“，出租合同审核状态为“内容审核通过到账收据待审核”或“到账收据审核通过” ，账务记录审核状态为“待审核”-->
+						
+						<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0' && tradingAccounts.transStatus=='6'}">
+							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+						</c:if><!--出租合同业务状态为：特殊退租结算待审核 ，账务记录审核状态为“待审核” ，出租合同审核状态为"到账收据审核通过"-->
 					</shiro:hasPermission>
 					<shiro:hasPermission name="funds:tradingAccounts:receipt">
 					<c:if test="${tradingAccounts.tradeStatus=='1'}">

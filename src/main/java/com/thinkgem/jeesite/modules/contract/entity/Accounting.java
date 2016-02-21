@@ -15,118 +15,126 @@ import com.thinkgem.jeesite.modules.sys.entity.User;
 
 /**
  * 退租核算Entity
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 public class Accounting extends DataEntity<Accounting> {
-	
-	private static final long serialVersionUID = 1L;
-	private RentContract rentContract;		// 出租合同
-	private String rentContractName;
-	private String accountingType;		// 核算类型
-	private String feeDirection;		// 核算费用方向
-	private String feeType;		// 核算费用类别
-	private Double feeAmount;		// 核算金额
-	private User user;		// 核算人
-	private Date feeDate;		// 核算时间
-	
-	private String contractBusiStatus;
-	
-	private String rentContractId;
-	
-	public Accounting() {
-		super();
-	}
 
-	public Accounting(String id){
-		super(id);
-	}
+    private static final long serialVersionUID = 1L;
+    private RentContract rentContract; // 出租合同
+    private String rentContractName;
+    private String accountingType; // 核算类型
+    private String feeDirection; // 核算费用方向
+    private String feeType; // 核算费用类别
+    private Double feeAmount; // 核算金额
+    private User user; // 核算人
+    private Date feeDate; // 核算时间
+    private String feeDateStr; // 核算时间字符串
+    private String contractBusiStatus;
+    private String rentContractId;
 
-	@NotNull(message="出租合同不能为空")
-	public RentContract getRentContract() {
-		return rentContract;
-	}
+    public Accounting() {
+	super();
+    }
 
-	public void setRentContract(RentContract rentContract) {
-		this.rentContract = rentContract;
-	}
-	
-	@Length(min=1, max=64, message="核算类型长度必须介于 1 和 64 之间")
-	public String getAccountingType() {
-		return accountingType;
-	}
+    public Accounting(String id) {
+	super(id);
+    }
 
-	public void setAccountingType(String accountingType) {
-		this.accountingType = accountingType;
-	}
-	
-	@Length(min=1, max=64, message="核算费用方向长度必须介于 1 和 64 之间")
-	public String getFeeDirection() {
-		return feeDirection;
-	}
+    @NotNull(message = "出租合同不能为空")
+    public RentContract getRentContract() {
+	return rentContract;
+    }
 
-	public void setFeeDirection(String feeDirection) {
-		this.feeDirection = feeDirection;
-	}
-	
-	@Length(min=1, max=64, message="核算费用类别长度必须介于 1 和 64 之间")
-	public String getFeeType() {
-		return feeType;
-	}
+    public void setRentContract(RentContract rentContract) {
+	this.rentContract = rentContract;
+    }
 
-	public void setFeeType(String feeType) {
-		this.feeType = feeType;
-	}
-	
-	@NotNull(message="核算金额不能为空")
-	public Double getFeeAmount() {
-		return feeAmount;
-	}
+    @Length(min = 1, max = 64, message = "核算类型长度必须介于 1 和 64 之间")
+    public String getAccountingType() {
+	return accountingType;
+    }
 
-	public void setFeeAmount(Double feeAmount) {
-		this.feeAmount = feeAmount;
-	}
-	
-	@NotNull(message="核算人不能为空")
-	public User getUser() {
-		return user;
-	}
+    public void setAccountingType(String accountingType) {
+	this.accountingType = accountingType;
+    }
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@NotNull(message="核算时间不能为空")
-	public Date getFeeDate() {
-		return feeDate;
-	}
+    @Length(min = 1, max = 64, message = "核算费用方向长度必须介于 1 和 64 之间")
+    public String getFeeDirection() {
+	return feeDirection;
+    }
 
-	public void setFeeDate(Date feeDate) {
-		this.feeDate = feeDate;
-	}
+    public void setFeeDirection(String feeDirection) {
+	this.feeDirection = feeDirection;
+    }
 
-	public String getRentContractName() {
-		return rentContractName;
-	}
+    @Length(min = 1, max = 64, message = "核算费用类别长度必须介于 1 和 64 之间")
+    public String getFeeType() {
+	return feeType;
+    }
 
-	public void setRentContractName(String rentContractName) {
-		this.rentContractName = rentContractName;
-	}
+    public void setFeeType(String feeType) {
+	this.feeType = feeType;
+    }
 
-	public String getContractBusiStatus() {
-		return contractBusiStatus;
-	}
+    @NotNull(message = "核算金额不能为空")
+    public Double getFeeAmount() {
+	return feeAmount;
+    }
 
-	public void setContractBusiStatus(String contractBusiStatus) {
-		this.contractBusiStatus = contractBusiStatus;
-	}
+    public void setFeeAmount(Double feeAmount) {
+	this.feeAmount = feeAmount;
+    }
 
-	public String getRentContractId() {
-		return rentContractId;
-	}
+    @NotNull(message = "核算人不能为空")
+    public User getUser() {
+	return user;
+    }
 
-	public void setRentContractId(String rentContractId) {
-		this.rentContractId = rentContractId;
-	}
+    public void setUser(User user) {
+	this.user = user;
+    }
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "核算时间不能为空")
+    public Date getFeeDate() {
+	return feeDate;
+    }
+
+    public void setFeeDate(Date feeDate) {
+	this.feeDate = feeDate;
+    }
+
+    public String getFeeDateStr() {
+	return feeDateStr;
+    }
+
+    public void setFeeDateStr(String feeDateStr) {
+	this.feeDateStr = feeDateStr;
+    }
+
+    public String getRentContractName() {
+	return rentContractName;
+    }
+
+    public void setRentContractName(String rentContractName) {
+	this.rentContractName = rentContractName;
+    }
+
+    public String getContractBusiStatus() {
+	return contractBusiStatus;
+    }
+
+    public void setContractBusiStatus(String contractBusiStatus) {
+	this.contractBusiStatus = contractBusiStatus;
+    }
+
+    public String getRentContractId() {
+	return rentContractId;
+    }
+
+    public void setRentContractId(String rentContractId) {
+	this.rentContractId = rentContractId;
+    }
 }

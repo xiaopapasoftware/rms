@@ -21,6 +21,8 @@
 					}
 					loading('正在提交，请稍等...');
 					form.submit();
+					$("#btnSubmit").attr("disabled",true);
+					$("#delSubmit").attr("disabled",true);
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
@@ -69,6 +71,8 @@
 			if(confirm("确定要撤销到账?")) {
 				var id = $("#id").val();
 				window.location.href="${ctx}/funds/tradingAccounts/revoke?id="+id;
+				$("#btnSubmit").attr("disabled",true);
+				$("#delSubmit").attr("disabled",true);
 			}
 		}
 	</script>

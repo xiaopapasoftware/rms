@@ -133,7 +133,7 @@
 	</select>
 	
 	<select id="getTotalValidDACounts" resultType="int">
-		SELECT count(*) FROM t_deposit_agreement where del_flag = #{DEL_FLAG_NORMAL}
+		SELECT count(*) FROM t_deposit_agreement
 	</select>
 	
 	<insert id="insert">

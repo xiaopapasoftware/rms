@@ -13,6 +13,7 @@
 		a.trade_amount AS "tradeAmount",
 		a.trans_amount AS "transAmount",
 		a.last_amount AS "lastAmount",
+		a.transfer_deposit_amount AS "transferDepositAmount",
 		a.trans_status AS "transStatus",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
@@ -27,6 +28,13 @@
 				then tl.contract_name 
 			else tc.contract_name 
 		end transName,
+		case 
+			when a.trade_type=1 or a.trade_type=2 
+				then ta.agreement_code 
+			when a.trade_type=0
+				then tl.contract_code
+			else tc.contract_code 
+		end transObjectNo,
 		tl.remittance_date as "remittanceDate"  
 	</sql>
 	
@@ -74,10 +82,14 @@
 				<![CDATA[AND a.expired_date <= #{expiredDate}]]>
 			</if>
 		</where>
-		order by FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'),a.start_date
-	  ) t where t.transName is not null 
+		order by FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','16','18','20','22','24'),a.start_date
+	  ) t 
+	  <where>
 	  	<if test="transName != null and transName != ''">
 			AND t.transName like concat('%',#{transName},'%')
+		</if>
+		<if test="transObjectNo != null and transObjectNo != ''">
+			AND t.transObjectNo like concat('%',#{transObjectNo},'%')
 		</if>
 		<if test="remittanceDate != null and remittanceDate != ''">
 			AND t.remittanceDate = #{remittanceDate}
@@ -137,7 +149,7 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		
-		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'),a.start_date
+		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5', '6','0','1','7','8','9','10','11','12','13','14','16','18','20','22','24'),a.start_date
 	</select>
 	
 	<insert id="insert">
@@ -152,6 +164,7 @@
 			trade_amount,
 			trans_amount,
 			last_amount,
+			transfer_deposit_amount,
 			trans_status,
 			create_by,
 			create_date,
@@ -170,6 +183,7 @@
 			#{tradeAmount},
 			#{transAmount},
 			#{lastAmount},
+			#{transferDepositAmount},
 			#{transStatus},
 			#{createBy.id},
 			#{createDate},
@@ -191,6 +205,7 @@
 			trade_amount = #{tradeAmount},
 			trans_amount = #{transAmount},
 			last_amount = #{lastAmount},
+			transfer_deposit_amount = #{transferDepositAmount},
 			trans_status = #{transStatus},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
