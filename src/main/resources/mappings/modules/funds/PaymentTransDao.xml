@@ -94,6 +94,7 @@
 		<if test="remittanceDate != null and remittanceDate != ''">
 			AND t.remittanceDate = #{remittanceDate}
 		</if>
+	  </where>
 	</select>
 	
 	<select id="findRemindList" resultType="PaymentTrans">

@@ -1633,38 +1633,26 @@ public class AppHouseController {
 
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setTransId(request.getParameter("contract_id"));
-		paymentTransService.findList(paymentTrans);
+		List<PaymentTrans> listPaymentTrans = paymentTransService.findList(paymentTrans);
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		Map<String, Object> mp = new HashMap<String, Object>();
-		mp.put("bill_id", "1");
-		mp.put("bill_month", "2015-09");
-		mp.put("bill_amount", 2950);
-		mp.put("bill_start", "2015-09-01");
-		mp.put("bill_end", "2015-09-30");
-		mp.put("rent_amount", 2400);
-		mp.put("water_amount", 50);
-		mp.put("electric_amount", 500);
-		mp.put("electric_balance", 110);
-		mp.put("bill_state", "1");
-		list.add(mp);
-
-		mp = new HashMap<String, Object>();
-		mp.put("bill_id", "2");
-		mp.put("bill_month", "2015-10");
-		mp.put("bill_amount", 2950);
-		mp.put("bill_start", "2015-10-01");
-		mp.put("bill_end", "2015-10-31");
-		mp.put("rent_amount", 2400);
-		mp.put("water_amount", 50);
-		mp.put("electric_amount", 500);
-		mp.put("electric_balance", 110);
-		mp.put("bill_state", "0");
-		list.add(mp);
+		for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
+			Map<String, Object> mp = new HashMap<String, Object>();
+			mp.put("bill_id", tmpPaymentTrans.getId());
+			mp.put("bill_amount", 2950);
+			mp.put("bill_start", tmpPaymentTrans.getStartDate());
+			mp.put("bill_end", tmpPaymentTrans.getExpiredDate());
+			mp.put("rent_amount", 2400);
+			mp.put("water_amount", 50);
+			mp.put("electric_amount", 500);
+			mp.put("electric_balance", 110);
+			mp.put("bill_state", "1");
+			list.add(mp);
+		}
 
 		map.put("bill", list);
-		map.put("p_t", 2);
+		map.put("p_t", list.size());
 
 		data.setData(map);
 		data.setCode("200");

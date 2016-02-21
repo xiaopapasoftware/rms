@@ -99,7 +99,6 @@
 		<if test="tradeObjectNo != null and tradeObjectNo != ''">
 			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
 		</if>
-	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="TradingAccounts">
