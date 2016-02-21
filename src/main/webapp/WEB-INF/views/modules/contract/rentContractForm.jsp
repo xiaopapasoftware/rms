@@ -136,13 +136,16 @@
 							return;
 						}
 					}
-					
+
 					var depositAmount = $("#depositAmount").val();
 					if(depositAmount!=null && depositAmount!=undefined && depositAmount!=""){
 						var depositAmountNum = parseFloat(depositAmount);
 						if(depositAmountNum <= 0){
-							top.$.jBox.tip('房租押金金额不合法！','warning');
-							return;
+							//增加判断，防止是房屋续租,不限制金额
+							if($("#depositAmount").parent().prev().html() != "房租押金差额："){
+								top.$.jBox.tip('房租押金金额不合法！','warning');
+								return;
+							}
 						}
 					}
 					

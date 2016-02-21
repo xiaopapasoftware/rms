@@ -135,7 +135,6 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	}
 	resultMap.put(0, result);// 直接存放智能电表系统的返回值
 	return resultMap;
-
     }
 
     @Transactional(readOnly = false)

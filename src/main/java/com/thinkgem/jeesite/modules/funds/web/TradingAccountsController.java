@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -99,11 +100,27 @@ public class TradingAccountsController extends BaseController {
     @RequestMapping(value = "form")
     public String form(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
 	String type = tradingAccounts.getTradeType();
+	String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
+
+	boolean check = true;
+	// 防止同时开多个浏览器，需对传进的款项id做查询判断
+	if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
+	    for (String transId : paymentTransIdArray) {
+		PaymentTrans pt = paymentTransService.get(transId);
+		if (pt != null && pt.getDelFlag().equals("1")) {
+		    check = false;
+		    break;
+		}
+	    }
+	}
+	if (!check) {
+	    addMessage(redirectAttributes, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
+	    return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+	}
 	if ("0".equals(type)) {// 承租合同直接处理，不跳转
 	    tradingAccounts.setTradeStatus("1");// 审核通过
 	    tradingAccounts.setTradeDirection("0");// 出账
 	    tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
-	    String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
 	    for (int i = 0; i < paymentTransIdArray.length; i++) {
 		PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
 		tradingAccounts.setId(null);
@@ -117,7 +134,6 @@ public class TradingAccountsController extends BaseController {
 	    addMessage(redirectAttributes, "保存账务交易成功");
 	    return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
 	} else {
-	    String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
 	    double amount = 0;// 实际交易金额
 	    String tradeType = "";// 交易类型
 	    String tradeObjectId = "";// 交易对象ID
@@ -284,7 +300,6 @@ public class TradingAccountsController extends BaseController {
 		return "modules/funds/tradingAccountsForm";
 	    }
 	}
-
 	tradingAccounts.setTradeStatus("0");// 待审核
 	tradingAccountsService.save(tradingAccounts);
 	addMessage(redirectAttributes, "保存账务交易成功");
