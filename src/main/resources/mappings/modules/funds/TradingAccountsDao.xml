@@ -86,11 +86,9 @@
 			</otherwise>
 		</choose>
 	  ) t where t.tradeName is not null 
-	  <where>
 	  	<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
 		</if>
-	  </where>
 	</select>
 	
 	<select id="findAllList" resultType="TradingAccounts">

@@ -1624,16 +1624,17 @@ public class AppHouseController {
 	@ResponseBody
 	public ResponseData bill(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
-		if (null == request.getParameter("p_n") || null == request.getParameter("p_s")) {
-			data.setCode("101");
-			return data;
-		}
+		
 		if (null == request.getParameter("contract_id")) {
 			data.setCode("101");
 			data.setMsg("合同编号'contract_id'不能为空");
 			return data;
 		}
 
+		PaymentTrans paymentTrans = new PaymentTrans();
+		paymentTrans.setTransId(request.getParameter("contract_id"));
+		paymentTransService.findList(paymentTrans);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mp = new HashMap<String, Object>();
