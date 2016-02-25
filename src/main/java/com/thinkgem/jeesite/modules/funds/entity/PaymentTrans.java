@@ -33,6 +33,9 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
     private Double tradeAmount; // 应该交易金额
     private Double transAmount; // 实际交易金额
     private Double lastAmount; // 剩余交易金额
+    private String tradeAmount4Export;// 应该交易金额（导出用）
+    private String transAmount4Export; // 实际交易金额（导出用）
+    private String lastAmount4Export; // 剩余交易金额（导出用）
     private Double transferDepositAmount; // 定金转合同的实转金额
     private String transStatus; // 交易款项状态
     private String remittanceDate;
@@ -125,6 +128,30 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 
     public void setLastAmount(Double lastAmount) {
 	this.lastAmount = lastAmount;
+    }
+
+    public String getTradeAmount4Export() {
+	return tradeAmount4Export;
+    }
+
+    public void setTradeAmount4Export(String tradeAmount4Export) {
+	this.tradeAmount4Export = tradeAmount4Export;
+    }
+
+    public String getTransAmount4Export() {
+	return transAmount4Export;
+    }
+
+    public void setTransAmount4Export(String transAmount4Export) {
+	this.transAmount4Export = transAmount4Export;
+    }
+
+    public String getLastAmount4Export() {
+	return lastAmount4Export;
+    }
+
+    public void setLastAmount4Export(String lastAmount4Export) {
+	this.lastAmount4Export = lastAmount4Export;
     }
 
     public Double getTransferDepositAmount() {

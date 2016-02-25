@@ -7,6 +7,13 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#messageBox").show();
+			
+			$("#btnExport").click(function(){
+				$("#searchForm").attr("action","${ctx}/funds/paymentTrans/exportPaymentTrans");
+				$("#searchForm").submit();
+				$("#searchForm").attr("action","${ctx}/funds/paymentTrans/");
+			});
+			
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
@@ -129,6 +136,7 @@
 			</li>
 			<li class="btns">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
 				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
 			</li>
 			<li class="clearfix"></li>
