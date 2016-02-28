@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,6 +45,7 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
@@ -116,6 +116,8 @@ public class AppHouseController {
 
 	@Autowired
 	private MessageService messageService;//APP消息推送
+	@Autowired
+	private ElectricFeeService electricFeeService;
 	
 	public AppHouseController() {
 	}
@@ -1507,6 +1509,11 @@ public class AppHouseController {
 
 		String orderId = request.getParameter("order_id");
 		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		if(null == paymentOrder) {
+			data.setCode("400");
+			data.setMsg("订单已过期");
+			return data;
+		}
 		DecimalFormat df = new DecimalFormat("######0.00");
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
@@ -1536,6 +1543,11 @@ public class AppHouseController {
 
 		String orderId = request.getParameter("order_id");
 		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		if(null == paymentOrder) {
+			data.setCode("400");
+			data.setMsg("订单已过期");
+			return data;
+		}
 		DecimalFormat df = new DecimalFormat("######0.00");
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
@@ -1577,12 +1589,46 @@ public class AppHouseController {
 			return data;
 		}
 		
+		String token = (String) request.getHeader("token");
+		AppToken apptoken = new AppToken();
+		apptoken.setToken(token);
+		apptoken = appTokenService.findByToken(apptoken);
+		AppUser appUser = new AppUser();
+		appUser.setPhone(apptoken.getPhone());
+		appUser = appUserService.getByPhone(appUser);
+		
+		String billId = request.getParameter("bill_id");
+		
+		PaymentTrans paymentTrans = this.paymentTransService.get(billId);
+
+		/* 生成账务交易 */
+		List<Receipt> receiptList = new ArrayList<Receipt>();
+		TradingAccounts tradingAccounts = new TradingAccounts();
+		tradingAccounts.setTradeId(paymentTrans.getTransId());
+		tradingAccounts.setTransIds(billId);
+		tradingAccounts.setTradeStatus("0");// 待审核
+		tradingAccounts.setTradeType("3");// 新签合同
+		tradingAccounts.setTradeAmount(paymentTrans.getLastAmount());
+		tradingAccounts.setTradeDirection("1");// 入账
+		tradingAccounts.setPayeeType("1");// 个人
+		tradingAccounts.setPayeeName(appUser.getName());
+		tradingAccounts.setReceiptList(receiptList);
+		tradingAccountsService.save(tradingAccounts);
+		
+		/* 订单生成 */
 		PaymentOrder paymentOrder = new PaymentOrder();
+		paymentOrder.setOrderId(contractBookService.generateOrderId());
+		paymentOrder.setOrderDate(new Date());
+		paymentOrder.setOrderStatus("1");// 未支付
+		paymentOrder.setTradeId(tradingAccounts.getId());
+		paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+		paymentOrder.setCreateDate(new Date());
+		paymentOrder.setHouseId("");
+		this.contractBookService.saveOrder(paymentOrder);
+		
 		Map<String, Object> map = new HashMap<String, Object>();
-		//map.put("order_id", paymentOrder.getOrderId());
-		//map.put("price", paymentOrder.getOrderAmount());
-		map.put("order_id", "1111111111");
-	    map.put("price", "0.01");
+		map.put("order_id", paymentOrder.getOrderId());
+	    map.put("price", paymentOrder.getOrderAmount());
 
 		data.setData(map);
 		data.setCode("200");
@@ -1601,13 +1647,16 @@ public class AppHouseController {
 		
 		String orderId = request.getParameter("order_id");
 		PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
+		if(null == paymentOrder) {
+			data.setCode("400");
+			data.setMsg("订单已过期");
+			return data;
+		}
 		DecimalFormat df = new DecimalFormat("######0.00");
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
-			//signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
-			Random random = new Random(10000000);
-			signStr = AlipayUtil.buildRequest(String.valueOf(random.nextLong()), df.format("0.01"));
+			signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
 		} catch (Exception e) {
 			this.log.error("get alipay sign error:", e);
 		}
@@ -1640,14 +1689,50 @@ public class AppHouseController {
 		for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
 			Map<String, Object> mp = new HashMap<String, Object>();
 			mp.put("bill_id", tmpPaymentTrans.getId());
-			mp.put("bill_amount", 2950);
-			mp.put("bill_start", tmpPaymentTrans.getStartDate());
-			mp.put("bill_end", tmpPaymentTrans.getExpiredDate());
-			mp.put("rent_amount", 2400);
-			mp.put("water_amount", 50);
-			mp.put("electric_amount", 500);
-			mp.put("electric_balance", 110);
-			mp.put("bill_state", "1");
+			mp.put("bill_amount", tmpPaymentTrans.getLastAmount());
+			mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
+			mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+			double rent_amount = 0;
+			if("6".equals(tmpPaymentTrans.getPaymentType()))
+				rent_amount = tmpPaymentTrans.getLastAmount();
+			mp.put("rent_amount", rent_amount);//房租金额
+			double deposit_amount = 0;
+			if("4".equals(tmpPaymentTrans.getPaymentType()))
+				deposit_amount = tmpPaymentTrans.getLastAmount();
+			mp.put("deposit_amount", deposit_amount);//房租押金
+			double deposit_water_amount = 0;
+			if("2".equals(tmpPaymentTrans.getPaymentType()))
+				deposit_water_amount = tmpPaymentTrans.getLastAmount();
+			mp.put("deposit_water_amount", deposit_water_amount);//水电费押金
+			double net_amount = 0;
+			if("20".equals(tmpPaymentTrans.getPaymentType()))
+				net_amount = tmpPaymentTrans.getLastAmount();
+			mp.put("net_amount", net_amount);//宽带费
+			double water_amount = 0;
+			if("14".equals(tmpPaymentTrans.getPaymentType()))
+				water_amount = tmpPaymentTrans.getLastAmount();
+			mp.put("water_amount", water_amount);//水费金额
+			Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+			String current_electric_amount = "0", current_electric_balance="0", bill_electric_amount="0", 
+					bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
+			if(null != meterMap) {
+				if(null != meterMap.get(3))
+					current_electric_balance = meterMap.get(3);
+				if(null != meterMap.get(1))
+					bill_electric_balance = meterMap.get(1);
+				if(null != meterMap.get(2))
+					common_electric_balance = meterMap.get(2);
+			}
+			mp.put("current_electric_amount", current_electric_amount);//当前电费余额
+			mp.put("current_electric_balance", current_electric_balance);//当前电费度数
+			mp.put("bill_electric_amount", bill_electric_amount);//本期个人用电金额
+			mp.put("bill_electric_balance", bill_electric_balance);//本期个人用电度数
+			mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
+			mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数
+			String bill_state = "0";
+			if("2".equals(tmpPaymentTrans.getTransStatus()))
+				bill_state = "1";
+			mp.put("bill_state", bill_state);
 			list.add(mp);
 		}
 

@@ -111,4 +111,36 @@
 		<property name="password" value="${jdbc.password}"/>
 	</bean>-->
 	
+	
+	<!-- 要调用的工作类 -->
+    <bean id="quartzJob" class="com.thinkgem.jeesite.modules.app.service.QuartzJob"></bean>
+    <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="jobtask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+    	<!-- 调用的类 -->
+        <property name="targetObject">
+        	<ref bean="quartzJob"/>
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+        	<value>scanPaymentOrder</value>
+        </property>
+    </bean>
+    <!-- 定义触发时间 -->
+    <bean id="doTime" class="org.springframework.scheduling.quartz.CronTriggerBean">
+    	<property name="jobDetail">
+        	<ref bean="jobtask"/>
+        </property>
+        <!-- cron表达式 -->
+        <property name="cronExpression">
+        	<value>0 */1 * * * ?</value>
+        </property>
+    </bean>
+    <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
+    <bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    	<property name="triggers">
+        	<list>
+            	<ref bean="doTime"/>
+            </list>
+        </property>
+    </bean>
 </beans>
