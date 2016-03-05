@@ -18,8 +18,11 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 预约看房信息Controller
@@ -31,6 +34,9 @@ public class ContractBookController extends BaseController {
 
 	@Autowired
 	private ContractBookService contractBookService;
+	
+	@Autowired
+	private MessageService messageService;//APP消息推送
 	
 	@ModelAttribute
 	public ContractBook get(@RequestParam(required=false) String id) {
@@ -62,6 +68,7 @@ public class ContractBookController extends BaseController {
 		if (!beanValidator(model, contractBook)){
 			return form(contractBook, model);
 		}
+		contractBook.setSalesId(UserUtils.getUser().getId());
 		contractBookService.save(contractBook);
 		addMessage(redirectAttributes, "保存预约看房信息成功");
 		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
@@ -72,8 +79,15 @@ public class ContractBookController extends BaseController {
 		contractBook.setDelFlag("0");
 		contractBook = contractBookService.get(contractBook);
 		contractBook.setBookStatus("1");//预约成功
+		contractBook.setSalesId(UserUtils.getUser().getId());
 		contractBookService.save(contractBook);
 		addMessage(redirectAttributes, "确认预约信息成功");
+		Message message = new Message();
+		message.setContent("您的预约申请已被确认,请按约定日期联系管家看房!");
+		message.setTitle("预约提醒");
+		message.setType("预约提醒");
+		message.setReceiver(contractBook.getUserPhone());
+		messageService.addMessage(message, true);
 		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
 	}
 
@@ -82,8 +96,15 @@ public class ContractBookController extends BaseController {
 		contractBook.setDelFlag("0");
 		contractBook = contractBookService.get(contractBook);
 		contractBook.setBookStatus("3");//管家取消预约
+		contractBook.setSalesId(UserUtils.getUser().getId());
 		contractBookService.save(contractBook);
 		addMessage(redirectAttributes, "取消预约信息成功");
+		Message message = new Message();
+		message.setContent("您的预约申请已被管家取消,请联系管家!");
+		message.setTitle("预约提醒");
+		message.setType("预约提醒");
+		message.setReceiver(contractBook.getUserPhone());
+		messageService.addMessage(message, true);
 		return "redirect:"+Global.getAdminPath()+"/contract/book/?repage";
 	}
 }

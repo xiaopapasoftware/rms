@@ -1070,6 +1070,28 @@ public class AppHouseController {
 		data.setCode("200");
 		return data;
 	}
+	
+	/**
+	 * 续签
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "contract_continue")
+	@ResponseBody
+	public ResponseData contractContinue(HttpServletRequest request, HttpServletResponse response) {
+		ResponseData data = new ResponseData();
+		
+		if (StringUtils.isEmpty(request.getParameter("contract_id")) || StringUtils.isEmpty(request.getParameter("end_date"))) {
+			data.setCode("101");
+			return data;
+		}
+		
+		
+		
+		data.setCode("200");
+		return data;
+	}
 
 	@RequestMapping(value = "sign_order")
 	@ResponseBody

@@ -25,7 +25,8 @@
 		t.room_no,
 		t.short_desc,
 		t.short_location,
-		t.attachment_path
+		t.attachment_path,
+		su.login_name salesName
 	</sql>
 	
 	<sql id="contractBookJoins">
@@ -38,7 +39,8 @@
 		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
 		t_property_project p,t_building b,t_house h,t_attachment a
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
-		) t on a.house_id = t.house_id
+		) t on a.house_id = t.house_id 
+		left join sys_user su on a.sales_id = su.id
 	</sql>
     
 	<select id="get" resultType="ContractBook">
@@ -46,7 +48,7 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE a.id = #{id} and del_flag='0' AND a.user_id = #{userId}
+		WHERE a.id = #{id} and a.del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findByUser" resultType="ContractBook">
@@ -54,7 +56,7 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE (a.house_id = #{houseId} or a.room_id = #{roomId}) and book_status in('0','1') and del_flag='0' AND a.user_id = #{userId}
+		WHERE (a.house_id = #{houseId} or a.room_id = #{roomId}) and book_status in('0','1') and a.del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
