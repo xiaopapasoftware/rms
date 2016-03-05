@@ -12,6 +12,8 @@ import javax.annotation.PostConstruct;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.fail;
@@ -106,4 +108,128 @@ public class ScienerLockService {
         return map;
     }
 
+    public List<Map> getLockList() {
+        Map authRes = this.managerAuthorize();
+        if(authRes== null || authRes.get("access_token")== null){
+            log.error("sciener authorize failed");
+            return null;
+        }
+        String accessToken = (String) authRes.get("access_token");
+        int openId = (Integer) authRes.get("openid");
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("client_id", clientId);
+        map.put("access_token", accessToken);
+        map.put("openid",openId);
+        map.put("date", System.currentTimeMillis());
+        try {
+            String s  = HttpRequestUtil.readContentFromPost(lockScienerV1, "room/list", map);
+            Map res = (Map) JsonMapper.fromJsonString(s, Map.class);
+            log.debug("==================getLockList:" + res);
+            if(res!= null && res.get("list")!= null){
+                return (List<Map>) res.get("list");
+            }else{
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Map> getAllKeys() {
+        List<Map> locks= this.getLockList();
+        if(locks== null){
+            return null;
+        }
+        List<Map> keys = new ArrayList<Map>();
+        for(Map lock: locks){
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("clientId", clientId);
+            map.put("accessToken", "3755d1cb1108c528a8803866d44a7c7a");
+            map.put("lockId",lock.get("room_id"));
+            map.put("date", System.currentTimeMillis());
+            try {
+                String s2 = HttpRequestUtil.readContentFromPost(lockScienerV2, "lock/listAllKey", map);
+                Map res2 = (Map) JsonMapper.fromJsonString(s2, Map.class);
+                if(res2.get("list")!= null) {
+                    ArrayList<Map> tmpkeys = (ArrayList<Map>) res2.get("list");
+                    for(Map key: tmpkeys) {
+                        Long keyDate = (Long) key.get("date");
+                        key.putAll(lock);
+                        key.put("date",keyDate );
+                    }
+                    keys.addAll(tmpkeys);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return keys;
+    }
+
+    //分配钥匙
+    //返回参数 errcode int 错误码 0为成功 ; errmsg String 错误信息
+    public Map<String, Object> sendKey(int lockId, String user, long startDate, long endDate, String remarks) {
+        Map authRes = this.managerAuthorize();
+        if(authRes== null || authRes.get("access_token")== null){
+            log.error("sciener authorize failed");
+            return null;
+        }
+        String accessToken = (String) authRes.get("access_token");
+        int openId = (Integer) authRes.get("openid");
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("clientId", clientId);
+        map.put("accessToken", accessToken);
+        map.put("lockId",lockId);
+        map.put("receiverUsername",user);
+        map.put("startDate",startDate);
+        map.put("endDate",endDate);
+        map.put("remarks",remarks);
+        map.put("date", System.currentTimeMillis());
+
+        try {
+            String s  = HttpRequestUtil.readContentFromPost(lockScienerV2, "key/send", map);
+            Map res = (Map) JsonMapper.fromJsonString(s, Map.class);
+            log.debug("==================sendKey:" + res);
+            return res;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    //删除钥匙
+    //返回参数 errcode int 错误码 0为成功 ; errmsg String 错误信息
+    public Map<String, Object> deleteKey(int lockId, int openid, int keyId) {
+        Map authRes = this.managerAuthorize();
+        if(authRes== null || authRes.get("access_token")== null){
+            log.error("sciener authorize failed");
+            return null;
+        }
+        String accessToken = (String) authRes.get("access_token");
+        int openId = (Integer) authRes.get("openid");
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("clientId", clientId);
+        map.put("accessToken", accessToken);
+        map.put("lockId",lockId);
+        map.put("openid",openid);
+        map.put("keyId",keyId);
+        map.put("date", System.currentTimeMillis());
+
+        try {
+            String s  = HttpRequestUtil.readContentFromPost(lockScienerV2, "key/delete", map);
+            Map res = (Map) JsonMapper.fromJsonString(s, Map.class);
+            log.debug("==================deleteKey:" + res);
+            return res;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
