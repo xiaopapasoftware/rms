@@ -517,6 +517,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 
     /**
      * 电表充值
+     * @param meterNo 电表表号
+     * @param value 充值金额
      */
     private String charge(String meterNo, String value) {
 	PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
