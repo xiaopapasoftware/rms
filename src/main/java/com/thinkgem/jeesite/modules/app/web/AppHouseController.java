@@ -497,6 +497,23 @@ public class AppHouseController {
 		}
 
 		try {
+			String token = (String) request.getHeader("token");
+			AppToken apptoken = new AppToken();
+			apptoken.setToken(token);
+			apptoken = appTokenService.findByToken(apptoken);
+			
+			ContractBook contractBook = new ContractBook();
+			contractBook.setUserPhone(apptoken.getPhone());
+			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
+			for(ContractBook tmpContractBook : list) {
+				if("6".equals(tmpContractBook.getBookStatus()) 
+						&& request.getParameter("house_id").equals(tmpContractBook.getHouseId())) {
+					data.setCode("400");
+					data.setMsg("您已预订该房间,不能重复预订!");
+					return data;
+				}
+			}
+			
 			House house = new House();
 			house.setId(request.getParameter("house_id"));
 			house = houseService.get(house);
@@ -535,10 +552,6 @@ public class AppHouseController {
 			depositAgreement.setBuilding(building);
 			depositAgreement.setHouse(house);
 
-			String token = (String) request.getHeader("token");
-			AppToken apptoken = new AppToken();
-			apptoken.setToken(token);
-			apptoken = appTokenService.findByToken(apptoken);
 			AppUser appUser = new AppUser();
 			appUser.setPhone(apptoken.getPhone());
 			appUser = appUserService.getByPhone(appUser);
@@ -565,6 +578,19 @@ public class AppHouseController {
 			depositAgreement.setStartDate(DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd"));
 			depositAgreement.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
 			depositAgreementService.save(depositAgreement);
+			
+			/* 获取房屋房屋管家手机号码 */
+			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+			String mobile = proper.getProperty("service.manager.mobile");
+			String userId = house.getServcieUserName();
+			if(!StringUtils.isBlank(userId)) {
+				User user = this.systemService.getUser(userId);
+				if(null != user && !StringUtils.isBlank(user.getMobile()))
+					mobile = user.getMobile();
+			}
+			/* 给服务管家发送短信 */
+			String content = proper.getProperty("booked.sms.content");
+			this.smsService.sendSms(mobile, content);
 		} catch (Exception e) {
 			data.setCode("500");
 			this.log.error("save contract book error:", e);
@@ -1416,8 +1442,7 @@ public class AppHouseController {
 					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
 				}
 				// 乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
-				// valueStr = new String(valueStr.getBytes("ISO-8859-1"),
-				// "gbk");
+				//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "UTF-8");
 				params.put(name, valueStr);
 			}
 
@@ -1448,7 +1473,7 @@ public class AppHouseController {
 					this.tradingAccountsService.audit(auditHis);
 				}
 			} else {
-				this.log.info("verify success");
+				this.log.info("verify failed.");
 			}
 		} catch (Exception e) {
 			this.log.error("rms alipay notify error:", e);
@@ -1734,16 +1759,20 @@ public class AppHouseController {
 			if("14".equals(tmpPaymentTrans.getPaymentType()))
 				water_amount = tmpPaymentTrans.getLastAmount();
 			mp.put("water_amount", water_amount);//水费金额
-			Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
 			String current_electric_amount = "0", current_electric_balance="0", bill_electric_amount="0", 
 					bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
-			if(null != meterMap) {
-				if(null != meterMap.get(3))
-					current_electric_balance = meterMap.get(3);
-				if(null != meterMap.get(1))
-					bill_electric_balance = meterMap.get(1);
-				if(null != meterMap.get(2))
-					common_electric_balance = meterMap.get(2);
+			try {
+				Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+				if(null != meterMap) {
+					if(null != meterMap.get(3))
+						current_electric_balance = meterMap.get(3);
+					if(null != meterMap.get(1))
+						bill_electric_balance = meterMap.get(1);
+					if(null != meterMap.get(2))
+						common_electric_balance = meterMap.get(2);
+				}
+			} catch (Exception e) {
+				this.log.error("查询电表异常:",e);
 			}
 			mp.put("current_electric_amount", current_electric_amount);//当前电费余额
 			mp.put("current_electric_balance", current_electric_balance);//当前电费度数

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 public class AlipayUtil {
 	static Logger log = LoggerFactory.getLogger(AlipayUtil.class);
 	
-	private static final String PARTNER = "2088811545435611"; 
+	public static final String PARTNER = "2088811545435611"; 
 	private static final String SELLER_EMAIL = "tcrcgy@126.com";
-	private static final String NOTIFY_URL = "http://218.80.0.218:12301/rms-api/house/alipaynNotify";
+	private static final String NOTIFY_URL = "http://tcservice.ngrok.natapp.cn/rms-api/house/alipaynNotify";
 	
 	public static void main(String[] args) throws Exception {
 		System.out.println(buildRequest("57620160105-2234532","0.01"));

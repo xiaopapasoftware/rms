@@ -63,9 +63,9 @@ public class AlipayCore {
             String value = params.get(key);
 
             if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
-                prestr = prestr + key + "=\"" + value + "\"";
+                prestr = prestr + key + "=" + value + "";
             } else {
-                prestr = prestr + key + "=\"" + value + "\"&";
+                prestr = prestr + key + "=" + value + "&";
             }
         }
 

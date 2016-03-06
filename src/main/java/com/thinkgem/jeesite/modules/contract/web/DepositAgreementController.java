@@ -22,6 +22,8 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
@@ -66,6 +68,8 @@ public class DepositAgreementController extends BaseController {
     private TenantService tenantService;
     @Autowired
     private PartnerService partnerService;
+    @Autowired
+	private MessageService messageService;//APP消息推送
 
     @ModelAttribute
     public DepositAgreement get(@RequestParam(required = false) String id) {
@@ -222,6 +226,18 @@ public class DepositAgreementController extends BaseController {
 
 	depositAgreementService.save(depositAgreement);
 	addMessage(redirectAttributes, "保存定金协议成功");
+	
+	try {
+		Message message = new Message();
+		message.setContent("您的预订申请已被管家确认,请联系管家!");
+		message.setTitle("预订提醒");
+		message.setType("预订提醒");
+		message.setReceiver(depositAgreement.getTenantList().get(0).getCellPhone());
+		messageService.addMessage(message, true);
+	} catch (Exception e) {
+		this.logger.error("预订推送异常:",e);
+	}
+	
 	return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
     }
 
