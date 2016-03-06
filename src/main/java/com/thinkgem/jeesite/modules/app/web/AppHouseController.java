@@ -1054,7 +1054,6 @@ public class AppHouseController {
 			rentContract.setContractStatus("0");// 暂存
 
 			/* 判断该用户是否有预订,有则为定金转合同流程 */
-			// TODO:
 			this.rentContractService.save(rentContract);
 
 			data.setCode("200");
