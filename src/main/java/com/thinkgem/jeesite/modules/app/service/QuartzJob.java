@@ -69,12 +69,16 @@ public class QuartzJob {
 				//定金协议/合同删除
 				if(StringUtils.isNoneBlank(tmpPaymentOrder.getTradeId())) {
 					TradingAccounts tradingAccounts = tradingAccountsService.get(tmpPaymentOrder.getTradeId());
-					String depositAgreementId = tradingAccounts.getTradeId();
-					if(StringUtils.isNoneBlank(depositAgreementId)) {
-						DepositAgreement depositAgreement = depositAgreementService.get(depositAgreementId);
-						if(null != depositAgreement) {
-							depositAgreementService.delete(depositAgreement);
+					if(null != tradingAccounts) {
+						String depositAgreementId = tradingAccounts.getTradeId();
+						if(StringUtils.isNoneBlank(depositAgreementId)) {
+							DepositAgreement depositAgreement = depositAgreementService.get(depositAgreementId);
+							if(null != depositAgreement) {
+								depositAgreementService.delete(depositAgreement);
+							}
 						}
+						//删除账务交易
+						tradingAccountsService.delete(tradingAccounts);
 					}
 				}
 			}

@@ -149,7 +149,9 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 		List<PaymentOrder> list = this.paymentOrderDao.findList(paymentOrder);
 		if(null != list && list.size() > 0)
 			paymentOrder = list.get(0);
-		return null;
+		else 
+			paymentOrder = null;
+		return paymentOrder;
 	}
 	
 	public String generateOrderId() {
