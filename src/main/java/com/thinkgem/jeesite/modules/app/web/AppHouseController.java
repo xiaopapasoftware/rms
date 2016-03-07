@@ -502,33 +502,45 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			
-			ContractBook contractBook = new ContractBook();
-			contractBook.setUserPhone(apptoken.getPhone());
-			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
-			for(ContractBook tmpContractBook : list) {
-				if("6".equals(tmpContractBook.getBookStatus()) 
-						&& request.getParameter("house_id").equals(tmpContractBook.getHouseId())) {
-					data.setCode("400");
-					data.setMsg("您已预订该房间,不能重复预订!");
-					return data;
+			String houseId = request.getParameter("house_id");
+			ContractBook contractBookCheck = new ContractBook();
+			contractBookCheck.setId(houseId);
+			contractBookCheck.setUserId(apptoken.getPhone());
+			contractBookCheck = this.contractBookService.get(contractBookCheck);
+			if(null != contractBookCheck) {
+				if(StringUtils.isNoneBlank(contractBookCheck.getRoomId())) {
+					houseId = contractBookCheck.getRoomId();
+				} else {
+					houseId = contractBookCheck.getHouseId();
 				}
 			}
 			
 			House house = new House();
-			house.setId(request.getParameter("house_id"));
+			house.setId(houseId);
 			house = houseService.get(house);
 
 			Room room = null;
 			if (null == house) {
 				room = new Room();
-				room.setId(request.getParameter("house_id"));
+				room.setId(houseId);
 				room = this.roomService.get(room);
 
 				house = new House();
 				house.setId(room.getHouse().getId());
 				house = houseService.get(house);
 			}
-
+			
+			ContractBook contractBook = new ContractBook();
+			contractBook.setUserPhone(apptoken.getPhone());
+			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
+			for(ContractBook tmpContractBook : list) {
+				if(houseId.equals(tmpContractBook.getHouseId())) {
+					data.setCode("400");
+					data.setMsg("您已预订该房间,不能重复预订!");
+					return data;
+				}
+			}
+			
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(house.getPropertyProject().getId());
 			propertyProject = this.propertyProjectService.get(propertyProject);
@@ -1057,6 +1069,19 @@ public class AppHouseController {
 			this.rentContractService.save(rentContract);
 
 			data.setCode("200");
+			
+			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+			/* 获取房屋房屋管家手机号码 */
+			String mobile = proper.getProperty("service.manager.mobile");
+			String userId = house.getServcieUserName();
+			if(!StringUtils.isBlank(userId)) {
+				User user = this.systemService.getUser(userId);
+				if(null != user && !StringUtils.isBlank(user.getMobile()))
+					mobile = user.getMobile();
+			}
+			/* 给服务管家发送短信 */
+			String content = proper.getProperty("sign.sms.content");
+			this.smsService.sendSms(mobile, content);
 		} catch (Exception e) {
 			data.setCode("500");
 			log.error("sign contract error:", e);
@@ -1088,6 +1113,11 @@ public class AppHouseController {
 			rentContract = rentContractService.get(rentContract);
 			rentContract.setUpdateUser(apptoken.getPhone());
 			this.rentContractService.delete(rentContract);
+			
+			AuditHis auditHis = new AuditHis();
+			auditHis.setObjectId(request.getParameter("contract_id"));
+			auditHis.setAuditStatus("3");
+			this.rentContractService.audit(auditHis);
 		} catch (Exception e) {
 			log.error("", e);
 		}
@@ -1216,6 +1246,8 @@ public class AppHouseController {
 			paymentOrder.setOrderStatus("1");// 未支付
 			paymentOrder.setTradeId(tradingAccounts.getId());
 			paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+			paymentOrder.setCreateDate(new Date());
+			paymentOrder.setHouseId(contractBook.getHouseId());
 			this.contractBookService.saveOrder(paymentOrder);
 
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -1316,16 +1348,17 @@ public class AppHouseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			String shortDesc = "", attachmentPath = "", houseDesc = "", houseCode = "";
+			Room room = null;House house = null;
 			if (null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
-				Room room = this.roomService.get(rentContract.getRoom().getId());
+				room = this.roomService.get(rentContract.getRoom().getId());
 				shortDesc = room.getShortDesc();
 				attachmentPath = room.getAttachmentPath();
 				houseDesc = room.getShortLocation();
 
-				House house = this.houseService.get(rentContract.getHouse().getId());
+				house = this.houseService.get(rentContract.getHouse().getId());
 				houseCode = house.getHouseCode() + "-" + room.getRoomNo();
 			} else {
-				House house = this.houseService.get(rentContract.getHouse().getId());
+				house = this.houseService.get(rentContract.getHouse().getId());
 				shortDesc = house.getShortDesc();
 				attachmentPath = house.getAttachmentPath();
 				houseDesc = house.getShortLocation();
@@ -1388,6 +1421,12 @@ public class AppHouseController {
 			if(null != rentContract.getWaterFee())
 				waterFee = rentContract.getWaterFee();
 			map.put("water_fee", waterFee);
+			
+			PaymentOrder paymentOrder = new PaymentOrder();
+			paymentOrder.setHouseId(null != room ? room.getId() : house.getId());
+			paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
+			if (null != paymentOrder)
+				map.put("order_id", paymentOrder.getOrderId());
 
 			data.setData(map);
 			data.setCode("200");
@@ -1456,8 +1495,10 @@ public class AppHouseController {
 					this.log.info("更改订单状态.");
 					// 1.更改订单状态
 					PaymentOrder paymentOrder = this.contractBookService.findByOrderId(out_trade_no);
-					paymentOrder.setOrderStatus("2");// 已支付
-					this.contractBookService.saveOrder(paymentOrder);
+					PaymentOrder updatePaymentOrder = new PaymentOrder();
+					updatePaymentOrder.setOrderId(out_trade_no);
+					updatePaymentOrder.setOrderStatus("2");// 已支付
+					this.contractBookService.updateStatusByOrderId(updatePaymentOrder);
 					// 2.根据订单号获取账务交易ID
 					paymentOrder = new PaymentOrder();
 					paymentOrder.setOrderId(out_trade_no);

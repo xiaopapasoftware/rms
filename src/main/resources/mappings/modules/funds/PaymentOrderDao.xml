@@ -62,6 +62,9 @@
 			<if test="houseId != null and houseId != ''">
 				AND a.house_id = #{houseId}
 			</if>
+			<if test="orderStatus != null and orderStatus != ''">
+				AND a.order_status = #{orderStatus}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -140,6 +143,12 @@
 			trans_id = #{transId},
 			trans_date = #{transDate}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="updateStatusByOrderId">
+		UPDATE t_payment_order SET 	
+			order_status = #{orderStatus}
+		WHERE order_id = #{orderId}
 	</update>
 	
 	<update id="delete">

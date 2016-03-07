@@ -28,6 +28,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
@@ -102,6 +104,9 @@ public class RentContractController extends BaseController {
 	private ContractBookService contractBookService;
     @Autowired
     private DepositAgreementService depositAgreementService;
+    
+    @Autowired
+   	private MessageService messageService;//APP消息推送
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -543,6 +548,19 @@ public class RentContractController extends BaseController {
 
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
+	
+	try {
+		Message message = new Message();
+		message.setContent("您的签约申请已被管家确认,请联系管家!");
+		message.setTitle("签约提醒");
+		message.setType("签约提醒");
+		Tenant tenant = rentContract.getTenantList().get(0);
+		message.setReceiver(this.tenantService.get(tenant).getCellPhone());
+		messageService.addMessage(message, true);
+	} catch (Exception e) {
+		this.logger.error("签约推送异常:",e);
+	}
+	
 	if ("1".equals(rentContract.getSaveSource()))
 	    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 	else

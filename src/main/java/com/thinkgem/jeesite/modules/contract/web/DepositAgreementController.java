@@ -152,7 +152,7 @@ public class DepositAgreementController extends BaseController {
 	    house.setBuilding(building);
 	    house.setChoose("1");
 	    List<House> houseList = houseService.findList(house);
-	    if ("0".equals(depositAgreement.getRentMode()) && null != depositAgreement.getHouse())
+	    //if ("0".equals(depositAgreement.getRentMode()) && null != depositAgreement.getHouse())
 		houseList.add(houseService.get(depositAgreement.getHouse()));
 	    model.addAttribute("houseList", houseList);
 	}
@@ -232,7 +232,8 @@ public class DepositAgreementController extends BaseController {
 		message.setContent("您的预订申请已被管家确认,请联系管家!");
 		message.setTitle("预订提醒");
 		message.setType("预订提醒");
-		message.setReceiver(depositAgreement.getTenantList().get(0).getCellPhone());
+		Tenant tenant = depositAgreement.getTenantList().get(0);
+		message.setReceiver(this.tenantService.get(tenant).getCellPhone());
 		messageService.addMessage(message, true);
 	} catch (Exception e) {
 		this.logger.error("预订推送异常:",e);

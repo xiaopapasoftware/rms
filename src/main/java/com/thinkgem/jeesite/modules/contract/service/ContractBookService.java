@@ -159,6 +159,11 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 	}
 	
 	@Transactional(readOnly = false)
+	public void updateStatusByOrderId(PaymentOrder paymentOrder) {
+		this.paymentOrderDao.updateStatusByOrderId(paymentOrder);
+	}
+	
+	@Transactional(readOnly = false)
 	public void updateStatusByHouseId(ContractBook contractBook) {
 		contractBookDao.updateStatusByHouseId(contractBook);
 	}
