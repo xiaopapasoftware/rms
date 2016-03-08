@@ -116,6 +116,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	String result = "";// 电表系统返回值
 	if (!StringUtils.isBlank(meterNo)) {
 	    String meterurl = new PropertiesLoader("jeesite.properties").getProperty("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
+	    logger.info("meter url:"+meterurl);
 	    try {
 		result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
 		logger.info("call meter get fee result:" + result);

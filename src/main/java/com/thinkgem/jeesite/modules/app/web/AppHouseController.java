@@ -46,6 +46,8 @@ import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
@@ -118,6 +120,8 @@ public class AppHouseController {
 	private MessageService messageService;//APP消息推送
 	@Autowired
 	private ElectricFeeService electricFeeService;
+	@Autowired
+	private TradingAccountsDao tradingAccountsDao;
 	
 	public AppHouseController() {
 	}
@@ -378,6 +382,11 @@ public class AppHouseController {
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
+			if(null == apptoken) {
+				data.setCode("400");
+				data.setMsg("请重新登录");
+				return data;
+			}
 
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserId(apptoken.getPhone());
@@ -533,13 +542,17 @@ public class AppHouseController {
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
-			for(ContractBook tmpContractBook : list) {
-				if(houseId.equals(tmpContractBook.getHouseId())) {
-					data.setCode("400");
-					data.setMsg("您已预订该房间,不能重复预订!");
-					return data;
+			if(null != list && list.size()>0) {
+				for(ContractBook tmpContractBook : list) {
+					if(houseId.equals(tmpContractBook.getHouseId()) && "0".equals(tmpContractBook.getDelFlag())) {
+						data.setCode("400");
+						data.setMsg("您已预订该房间,不能重复预订!");
+						break;
+					}
 				}
 			}
+			if("400".equals(data.getCode()))
+				return data;
 			
 			PropertyProject propertyProject = new PropertyProject();
 			propertyProject.setId(house.getPropertyProject().getId());
@@ -603,12 +616,13 @@ public class AppHouseController {
 			/* 给服务管家发送短信 */
 			String content = proper.getProperty("booked.sms.content");
 			this.smsService.sendSms(mobile, content);
+			
+			data.setCode("200");
 		} catch (Exception e) {
 			data.setCode("500");
 			this.log.error("save contract book error:", e);
 		}
 
-		data.setCode("200");
 		return data;
 	}
 
@@ -622,6 +636,11 @@ public class AppHouseController {
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
+			if(null == apptoken) {
+				data.setCode("400");
+				data.setMsg("请重新登录");
+				return data;
+			}
 
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
@@ -1284,6 +1303,11 @@ public class AppHouseController {
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
+			if(null == apptoken) {
+				data.setCode("400");
+				data.setMsg("请重新登录");
+				return data;
+			}
 
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
@@ -1602,6 +1626,8 @@ public class AppHouseController {
 			return data;
 		}
 		DecimalFormat df = new DecimalFormat("######0.00");
+		//测试用
+		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -1636,6 +1662,8 @@ public class AppHouseController {
 			return data;
 		}
 		DecimalFormat df = new DecimalFormat("######0.00");
+		//测试用
+		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -1662,7 +1690,85 @@ public class AppHouseController {
 			return data;
 		}
 		
-		data.setCode("200");
+		try {
+			RentContract rentContract = this.rentContractService.get(request.getParameter("contract_id"));
+			String meterNo = "";
+			if (null != rentContract && "1".equals(rentContract.getRentMode())) {// 单间
+			    Room room = rentContract.getRoom();
+			    room = this.roomService.get(room);
+			    meterNo = room.getMeterNo();
+			}
+			
+			if(StringUtils.isNoneBlank(meterNo)) {
+				String chargeValue = String.format("%.0f",Double.valueOf(request.getParameter("fee")));
+				this.tradingAccountsService.charge(meterNo, chargeValue);
+				
+				//记录款项
+				PaymentTrans paymentTrans = new PaymentTrans();
+				paymentTrans.setTradeType("11");//电费充值
+				paymentTrans.setTransId(request.getParameter("contract_id"));
+				paymentTrans.setTradeDirection("1");//收款
+				paymentTrans.setStartDate(new Date());
+				paymentTrans.setExpiredDate(new Date());
+				paymentTrans.setTradeAmount(Double.valueOf(chargeValue));
+				paymentTrans.setLastAmount(0d);
+				paymentTrans.setTransAmount(Double.valueOf(chargeValue));
+				paymentTrans.setTransStatus("2");//完全到账登记
+			    paymentTrans.setPaymentType("11");//电费自用金额
+				paymentTrans.setCreateDate(new Date());
+				paymentTrans.setUpdateDate(new Date());
+				paymentTrans.setDelFlag("0");
+				this.paymentTransService.save(paymentTrans);
+				
+				//账务交易
+				TradingAccounts tradingAccounts = new TradingAccounts();
+				tradingAccounts.setId(IdGen.uuid());
+				tradingAccounts.setTradeId(rentContract.getId());
+				tradingAccounts.setTransIds(paymentTrans.getId());
+				tradingAccounts.setTradeStatus("0");//待审核
+				tradingAccounts.setTradeType("11");//电费充值
+				tradingAccounts.setTradeAmount(Double.valueOf(chargeValue));
+				tradingAccounts.setTradeDirection("1");//入账
+				tradingAccounts.setPayeeType("1");//个人
+				String token = (String) request.getHeader("token");
+				AppToken apptoken = new AppToken();
+				apptoken.setToken(token);
+				apptoken = appTokenService.findByToken(apptoken);
+				tradingAccounts.setPayeeName(apptoken.getPhone());
+				List<Receipt> receiptList = new ArrayList<Receipt>();
+				Receipt receipt = new Receipt();
+				receipt.setTradeMode("4");//支付宝
+				receipt.setPaymentType("11");//电费自用金额
+				receipt.setReceiptAmount(Double.valueOf(chargeValue));
+				receiptList.add(receipt);
+				tradingAccounts.setReceiptList(receiptList);
+				tradingAccountsDao.insert(tradingAccounts);
+
+				/* 订单生成 */
+				PaymentOrder paymentOrder = new PaymentOrder();
+				paymentOrder.setOrderId(contractBookService.generateOrderId());
+				paymentOrder.setOrderDate(new Date());
+				paymentOrder.setOrderStatus("1");// 未支付
+				paymentOrder.setTradeId(tradingAccounts.getId());
+				paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+				paymentOrder.setCreateDate(new Date());
+				paymentOrder.setHouseId(rentContract.getHouse().getId());
+				this.contractBookService.saveOrder(paymentOrder);
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("order_id", paymentOrder.getOrderId());
+				map.put("price", paymentOrder.getOrderAmount());
+				
+				data.setData(map);
+				data.setCode("200");
+			}
+			
+		} catch (Exception e) {
+			data.setCode("400");
+			data.setMsg("电费充值失败");
+			this.log.error("电表充值失败",e);
+		}
+		
 		return data;
 	}
 	
@@ -1771,12 +1877,14 @@ public class AppHouseController {
 		paymentTrans.setTransId(request.getParameter("contract_id"));
 		List<PaymentTrans> listPaymentTrans = paymentTransService.findList(paymentTrans);
 		
+		RentContract rentContract = this.rentContractService.get(request.getParameter("contract_id"));
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
 			Map<String, Object> mp = new HashMap<String, Object>();
 			mp.put("bill_id", tmpPaymentTrans.getId());
-			mp.put("bill_amount", tmpPaymentTrans.getLastAmount());
+			mp.put("bill_amount", tmpPaymentTrans.getTradeAmount());
 			mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
 			mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
 			double rent_amount = 0;
@@ -1801,8 +1909,9 @@ public class AppHouseController {
 			mp.put("water_amount", water_amount);//水费金额
 			String current_electric_amount = "0", current_electric_balance="0", bill_electric_amount="0", 
 					bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
+			String electricPrice = "0";
 			try {
-				Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+				Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
 				if(null != meterMap) {
 					if(null != meterMap.get(3))
 						current_electric_balance = meterMap.get(3);
@@ -1810,13 +1919,15 @@ public class AppHouseController {
 						bill_electric_balance = meterMap.get(1);
 					if(null != meterMap.get(2))
 						common_electric_balance = meterMap.get(2);
+					if(null != meterMap.get(4))
+						electricPrice = meterMap.get(4);
 				}
 			} catch (Exception e) {
 				this.log.error("查询电表异常:",e);
 			}
-			mp.put("current_electric_amount", current_electric_amount);//当前电费余额
+			mp.put("current_electric_amount", Double.valueOf(current_electric_balance)*Double.valueOf(electricPrice));//当前电费余额
 			mp.put("current_electric_balance", current_electric_balance);//当前电费度数
-			mp.put("bill_electric_amount", bill_electric_amount);//本期个人用电金额
+			mp.put("bill_electric_amount", Double.valueOf(bill_electric_balance)*Double.valueOf(electricPrice));//本期个人用电金额
 			mp.put("bill_electric_balance", bill_electric_balance);//本期个人用电度数
 			mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
 			mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数

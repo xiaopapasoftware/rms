@@ -16,7 +16,9 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
@@ -38,6 +40,8 @@ public class QuartzJob {
 	private TradingAccountsService tradingAccountsService;
 	@Autowired
 	private DepositAgreementService depositAgreementService;
+	@Autowired
+	private PaymentTransService paymentTransService;
 	
 	@Scheduled(cron="0 */1 * * * ?")
 	public void scanPaymentOrder() {
@@ -79,6 +83,10 @@ public class QuartzJob {
 						}
 						//删除账务交易
 						tradingAccountsService.delete(tradingAccounts);
+						//删除款项
+						PaymentTrans paymentTrans = new PaymentTrans();
+						paymentTrans.setTransId(depositAgreementId);
+						paymentTransService.delete(paymentTrans);
 					}
 				}
 			}
