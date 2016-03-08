@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseAdService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.sys.entity.User;
@@ -1161,9 +1163,92 @@ public class AppHouseController {
 			return data;
 		}
 		
+		try {
+			String token = (String) request.getHeader("token");
+			AppToken apptoken = new AppToken();
+			apptoken.setToken(token);
+			apptoken = appTokenService.findByToken(apptoken);
+			if(null == apptoken) {
+				data.setCode("400");
+				data.setMsg("请重新登录");
+				return data;
+			}
+			AppUser appUser = new AppUser();
+			appUser.setPhone(apptoken.getPhone());
+			appUser = appUserService.getByPhone(appUser);
+			
+			String contractId = request.getParameter("contract_id");
+			RentContract rentContract = this.rentContractService.get(contractId);
+			House house = null;
+			if(null != rentContract && null != rentContract.getHouse()) {
+				house = this.houseService.get(rentContract.getHouse().getId());
+			}
+
+			String contractName = rentContract.getContractName();
+			RentContract rentContractOld = rentContract;
+			rentContract = new RentContract();
+			rentContract.setContractId(contractId);
+			rentContract.setRentMode(rentContractOld.getRentMode());
+			rentContract.setPropertyProject(rentContractOld.getPropertyProject());
+			rentContract.setBuilding(rentContractOld.getBuilding());
+			rentContract.setHouse(rentContractOld.getHouse());
+			rentContract.setRoom(rentContractOld.getRoom());
+			rentContract.setRental(rentContractOld.getRental());
+			rentContract.setDepositElectricAmount(rentContractOld.getDepositElectricAmount());
+			rentContract.setDepositAmount(rentContractOld.getDepositAmount());
+			rentContract.setRenMonths(rentContractOld.getRenMonths());
+			rentContract.setDepositMonths(rentContractOld.getDepositMonths());
+			Tenant tenant = new Tenant();
+			tenant.setIdType("0");// 身份证
+			tenant.setIdNo(appUser.getIdCardNo());
+			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			if (null == tenantList || tenantList.size() <= 0) {
+				tenantList = new ArrayList<Tenant>();
+				tenant.setTenantName(appUser.getName());
+				tenant.setGender(appUser.getSex());
+				tenant.setCellPhone(appUser.getPhone());
+				tenantService.save(tenant);
+
+				tenantList.add(tenant);
+			}
+			rentContract.setTenantList(tenantList);
+			rentContract.setLiveList(tenantList);
+			rentContract.setContractSource("1");// 本部
+			rentContract.setValidatorFlag("0");// 暂存
+			rentContract.setDataSource("2");// APP
+			rentContract.setSignDate(new Date());
+			rentContract.setStartDate(new Date());
+			rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+			rentContract.setRemarks(request.getParameter("msg"));
+			rentContract.setContractStatus("0");// 暂存
+			rentContract.setSignType("1");//正常人工续签
+			rentContract.setContractName(contractName.concat("(续签)"));
+			PropertyProject propertyProject = new PropertyProject();
+			propertyProject.setId(house.getPropertyProject().getId());
+			propertyProject = this.propertyProjectService.get(propertyProject);
+			rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-"
+					+ (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+
+			/* 判断该用户是否有预订,有则为定金转合同流程 */
+			this.rentContractService.save(rentContract);
+			data.setCode("200");
+			
+			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+			/* 获取房屋房屋管家手机号码 */
+			String mobile = proper.getProperty("service.manager.mobile");
+			String userId = house.getServcieUserName();
+			if(!StringUtils.isBlank(userId)) {
+				User user = this.systemService.getUser(userId);
+				if(null != user && !StringUtils.isBlank(user.getMobile()))
+					mobile = user.getMobile();
+			}
+			/* 给服务管家发送短信 */
+			String content = proper.getProperty("sign.sms.content");
+			this.smsService.sendSms(mobile, content);
+		} catch (Exception e) {
+			this.log.error("[续签异常]:",e);
+		}
 		
-		
-		data.setCode("200");
 		return data;
 	}
 
