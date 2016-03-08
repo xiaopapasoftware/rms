@@ -46,7 +46,6 @@ import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -1136,6 +1135,7 @@ public class AppHouseController {
 			AuditHis auditHis = new AuditHis();
 			auditHis.setObjectId(request.getParameter("contract_id"));
 			auditHis.setAuditStatus("3");
+			auditHis.setUpdateUser(apptoken.getPhone());
 			this.rentContractService.audit(auditHis);
 		} catch (Exception e) {
 			log.error("", e);
@@ -1339,8 +1339,12 @@ public class AppHouseController {
 					status = "2";
 				// 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
 				// 5:用户取消在线签约
-				if("1".equals(tmpContractBook.getDelFlag()))
-					status = "5";
+				if("1".equals(tmpContractBook.getDelFlag())) {
+					status = "3";
+					if (apptoken.getPhone().equals(tmpContractBook.getUpdateUser())) {
+						status = "5";
+					}
+				}
 				mp.put("status", status);
 				dataList.add(mp);
 			}

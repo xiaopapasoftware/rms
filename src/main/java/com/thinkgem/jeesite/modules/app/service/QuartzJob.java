@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -42,6 +44,8 @@ public class QuartzJob {
 	private DepositAgreementService depositAgreementService;
 	@Autowired
 	private PaymentTransService paymentTransService;
+	@Autowired
+	private RentContractService rentContractService;
 	
 	@Scheduled(cron="0 */1 * * * ?")
 	public void scanPaymentOrder() {
@@ -79,6 +83,11 @@ public class QuartzJob {
 							DepositAgreement depositAgreement = depositAgreementService.get(depositAgreementId);
 							if(null != depositAgreement) {
 								depositAgreementService.delete(depositAgreement);
+							} else {
+								RentContract rentContract = this.rentContractService.get(depositAgreementId);
+								if(null != rentContract && StringUtils.isBlank(rentContract.getContractBusiStatus())) {
+									this.rentContractService.delete(rentContract);
+								}
 							}
 						}
 						//删除账务交易

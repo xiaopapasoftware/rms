@@ -245,7 +245,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "4" : "3");// 4:内容审核通过到账收据待审核，3:内容审核拒绝
 	}
 	rentContract.setUpdateDate(new Date());
-	rentContract.setUpdateBy(UserUtils.getUser());
+	if(!"3".equals(auditHis.getAuditStatus())) {
+		rentContract.setUpdateUser(UserUtils.getUser().getId());
+	} else {
+		rentContract.setUpdateUser(auditHis.getUpdateUser());
+	}
 	rentContractDao.update(rentContract);
     }
 

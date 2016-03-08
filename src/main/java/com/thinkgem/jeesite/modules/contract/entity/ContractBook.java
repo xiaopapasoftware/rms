@@ -43,6 +43,8 @@ public class ContractBook extends DataEntity<ContractBook> {
 	
 	private String contractBusiStatus;
 	
+	private String updateUser;
+	
 	public ContractBook() {
 		super();
 	}
@@ -233,5 +235,13 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setSalesName(String salesName) {
 		this.salesName = salesName;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
 	}
 }
