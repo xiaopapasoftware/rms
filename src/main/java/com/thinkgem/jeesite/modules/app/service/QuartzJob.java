@@ -12,20 +12,23 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 @Service
 @Lazy(false)
@@ -46,6 +49,12 @@ public class QuartzJob {
 	private PaymentTransService paymentTransService;
 	@Autowired
 	private RentContractService rentContractService;
+	@Autowired
+	private TradingAccountsDao tradingAccountsDao;
+	@Autowired
+	private PaymentTransDao paymentTransDao;
+	@Autowired
+	private PaymentTradeDao paymentTradeDao;
 	
 	@Scheduled(cron="0 */1 * * * ?")
 	public void scanPaymentOrder() {
@@ -60,42 +69,62 @@ public class QuartzJob {
 			if((dateNow.getTime()-tmpPaymentOrder.getOrderDate().getTime())/1000/60>Long.valueOf(orderTimeout)) {
 				paymentOrderDao.delete(tmpPaymentOrder);
 				
-				//房屋、房间状态回退
-				if(StringUtils.isNotBlank(tmpPaymentOrder.getHouseId())) {
-					String houseId = tmpPaymentOrder.getHouseId();
-					House house = houseDao.get(houseId);
-					if(null != house) {
-						house.setHouseStatus("1");//待出租可预订
-						houseDao.updateHouseStatus(house);
-					} else if(null != roomDao.get(houseId)) {
-						Room room = roomDao.get(houseId);
-						room.setRoomStatus("1");//待出租可预订
-						roomDao.updateRoomStatus(room);
-					}
-				}
+//				//房屋、房间状态回退
+//				if(StringUtils.isNotBlank(tmpPaymentOrder.getHouseId())) {
+//					String houseId = tmpPaymentOrder.getHouseId();
+//					House house = houseDao.get(houseId);
+//					if(null != house) {
+//						house.setHouseStatus("1");//待出租可预订
+//						houseDao.updateHouseStatus(house);
+//					} else if(null != roomDao.get(houseId)) {
+//						Room room = roomDao.get(houseId);
+//						room.setRoomStatus("1");//待出租可预订
+//						roomDao.updateRoomStatus(room);
+//					}
+//				}
 				
-				//定金协议/合同删除
-				if(StringUtils.isNoneBlank(tmpPaymentOrder.getTradeId())) {
-					TradingAccounts tradingAccounts = tradingAccountsService.get(tmpPaymentOrder.getTradeId());
-					if(null != tradingAccounts) {
-						String depositAgreementId = tradingAccounts.getTradeId();
-						if(StringUtils.isNoneBlank(depositAgreementId)) {
-							DepositAgreement depositAgreement = depositAgreementService.get(depositAgreementId);
-							if(null != depositAgreement) {
-								depositAgreementService.delete(depositAgreement);
-							} else {
-								RentContract rentContract = this.rentContractService.get(depositAgreementId);
-								if(null != rentContract && StringUtils.isBlank(rentContract.getContractBusiStatus())) {
-									this.rentContractService.delete(rentContract);
+				String[] tradeIds = tmpPaymentOrder.getTradeId().split(",");
+				for(String tradeId : tradeIds) {
+					//定金协议/合同删除
+					if(StringUtils.isNoneBlank(tradeId)) {
+						TradingAccounts tradingAccounts = tradingAccountsService.get(tradeId);
+						if(null != tradingAccounts) {
+							String depositAgreementId = tradingAccounts.getTradeId();
+							if(StringUtils.isNoneBlank(depositAgreementId)) {
+								DepositAgreement depositAgreement = depositAgreementService.get(depositAgreementId);
+								if(null != depositAgreement) {
+									//depositAgreementService.delete(depositAgreement);
+									AuditHis auditHis = new AuditHis();
+									auditHis.setObjectId(depositAgreementId);
+									auditHis.setAuditStatus("2");
+									depositAgreementService.audit(auditHis);
+								} else {
+									RentContract rentContract = this.rentContractService.get(depositAgreementId);
+									if(null != rentContract && StringUtils.isBlank(rentContract.getContractBusiStatus())) {
+										//this.rentContractService.delete(rentContract);
+										AuditHis auditHis = new AuditHis();
+										auditHis.setObjectId(depositAgreementId);
+										auditHis.setAuditStatus("3");
+										this.rentContractService.audit(auditHis);
+									} else {
+										tradingAccounts.setTradeStatus("2");
+										tradingAccountsDao.update(tradingAccounts);
+										
+										PaymentTrade paymentTrade = new PaymentTrade();
+										paymentTrade.setTradeId(tradeId);
+										List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+										
+										for(PaymentTrade tmpPaymentTrade : paymentTradeList) {
+											PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+											paymentTrans.setTransStatus("0");
+											paymentTrans.setTransAmount(0d);
+											paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
+											paymentTransDao.update(paymentTrans);
+										}
+									}
 								}
 							}
 						}
-						//删除账务交易
-						tradingAccountsService.delete(tradingAccounts);
-						//删除款项
-						PaymentTrans paymentTrans = new PaymentTrans();
-						paymentTrans.setTransId(depositAgreementId);
-						paymentTransService.delete(paymentTrans);
 					}
 				}
 			}

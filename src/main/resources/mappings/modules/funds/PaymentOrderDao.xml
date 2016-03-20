@@ -147,7 +147,8 @@
 	
 	<update id="updateStatusByOrderId">
 		UPDATE t_payment_order SET 	
-			order_status = #{orderStatus}
+			order_status = #{orderStatus},
+			trans_id = #{transId}
 		WHERE order_id = #{orderId}
 	</update>
 	

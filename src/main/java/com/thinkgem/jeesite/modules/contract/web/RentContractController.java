@@ -243,6 +243,13 @@ public class RentContractController extends BaseController {
 	rentContractService.audit(auditHis);
 	return list(new RentContract(), request, response, model);
     }
+    
+    @RequestMapping(value = "cancel")
+    public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+    	auditHis.setAuditStatus("2");
+    	rentContractService.audit(auditHis);
+    	return list(new RentContract(), request, response, model);
+    }
 
     // @RequiresPermissions("contract:rentContract:view")
     @RequestMapping(value = "form")
@@ -449,23 +456,6 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractForm";
     }
     
-    @RequestMapping(value = "cancel")
-    public String cancel(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-    	rentContract = this.rentContractService.get(rentContract);
-    	String houseId = "";
-    	if(null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
-    		houseId = rentContract.getRoom().getId();
-    	} else 
-    		houseId = rentContract.getHouse().getId();
-    	this.rentContractService.delete(rentContract);
-    	ContractBook contractBook = new ContractBook();
-    	contractBook.setHouseId(houseId);
-    	contractBook.setBookStatus("3");//已取消
-    	contractBookService.updateStatusByHouseId(contractBook);
-    	addMessage(redirectAttributes, "取消出租合同成功");
-    	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
-    }
-
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "save")
     public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
@@ -495,7 +485,9 @@ public class RentContractController extends BaseController {
 	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
 	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
 	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
-	if (CollectionUtils.isNotEmpty(rentContracts)) {
+	
+	//来自APP的合同不参与该逻辑
+	if ("1".equals(rentContract.getDataSource()) && CollectionUtils.isNotEmpty(rentContracts)) {
 	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
 		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
 		    hasRefusedFlag = true;

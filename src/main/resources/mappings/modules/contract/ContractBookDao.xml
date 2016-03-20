@@ -60,7 +60,7 @@
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
+		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by updateUser,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
 		tt.short_location,tt.attachment_path,ct.cell_phone from T_DEPOSIT_AGREEMENT da 
 		left join (
 		select DEPOSIT_AGREEMENT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
@@ -105,6 +105,7 @@
 		<if test="contractBusiStatus != null and contractBusiStatus != ''">
 			AND da.contract_busi_status = #{contractBusiStatus}
 		</if>
+		order by da.create_date desc
 	</select>
 	
 	<select id="findList" resultType="ContractBook">

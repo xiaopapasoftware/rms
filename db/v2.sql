@@ -84,7 +84,7 @@ create table t_payment_order
 	order_amount         float,
 	order_date           DATETIME,
 	order_status         varchar(2),
-	trade_id             varchar(64) comment '账务交易ID',
+	trade_id             varchar(6400) comment '账务交易ID',
 	trans_id             varchar(64) comment '支付交易单号',
 	trans_date           DATETIME,
 	CREATE_BY            VARCHAR(64) COMMENT '创建者',

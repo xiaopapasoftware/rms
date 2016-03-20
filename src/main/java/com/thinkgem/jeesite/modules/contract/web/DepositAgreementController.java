@@ -287,6 +287,13 @@ public class DepositAgreementController extends BaseController {
 	depositAgreementService.audit(auditHis);
 	return list(new DepositAgreement(), request, response, model);
     }
+    
+    @RequestMapping(value = "cancel")
+    public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+    	auditHis.setAuditStatus("2");
+    	depositAgreementService.audit(auditHis);
+    	return list(new DepositAgreement(), request, response, model);
+    }
 
     /**
      * 转违约
