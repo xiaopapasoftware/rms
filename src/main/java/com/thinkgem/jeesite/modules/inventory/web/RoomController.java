@@ -257,6 +257,11 @@ public class RoomController extends BaseController {
 		    room.setOrientation(convertToStrFromList(room.getOrientationList()));
 		}
 		roomService.save(room);
+		// 新增房间后，如果房屋状态是完全出租，需要把房屋的状态变更为部分出租
+		House house = houseService.get(room.getHouse());
+		if ("4".equals(house.getHouseStatus())) {
+		    houseService.updateHouseStatus(house.getId(), "3");
+		}
 		addMessage(redirectAttributes, "保存房间信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
 	    }

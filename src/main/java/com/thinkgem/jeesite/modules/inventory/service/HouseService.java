@@ -143,7 +143,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
-     * 更新房屋状态
+     * 更新房屋状态为可预订
      */
     @Transactional(readOnly = false)
     public int updateHouseStatus(House house) {
@@ -166,6 +166,17 @@ public class HouseService extends CrudService<HouseDao, House> {
 	} else {
 	    return 0;
 	}
+    }
+
+    /**
+     * 更新房屋状态
+     */
+    @Transactional(readOnly = false)
+    public void updateHouseStatus(String houseId, String status) {
+	House upHouse = new House();
+	upHouse.setId(houseId);
+	upHouse.setHouseStatus(status);
+	dao.updateHouseStatus(upHouse);
     }
 
     @Transactional(readOnly = true)

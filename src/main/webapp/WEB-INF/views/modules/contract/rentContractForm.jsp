@@ -137,32 +137,11 @@
 						}
 					}
 
-					var depositAmount = $("#depositAmount").val();
-					if(depositAmount!=null && depositAmount!=undefined && depositAmount!=""){
-						var depositAmountNum = parseFloat(depositAmount);
-						if(depositAmountNum <= 0){
-							//增加判断，防止是房屋续租,不限制金额
-							if($("#depositAmount").parent().prev().html() != "房租押金差额："){
-								top.$.jBox.tip('房租押金金额不合法！','warning');
-								return;
-							}
-						}
-					}
-					
 					var renMonths = $("#renMonths").val();
 					if(renMonths!=null && renMonths!=undefined && renMonths!=""){
 						var renMonthsNum = parseFloat(renMonths);
 						if(renMonthsNum <= 0){
 							top.$.jBox.tip('首付房租月数不合法！','warning');
-							return;
-						}
-					}
-					
-					var depositMonths = $("#depositMonths").val();
-					if(depositMonths!=null && depositMonths!=undefined && depositMonths!=""){
-						var depositMonthsNum = parseFloat(depositMonths);
-						if(depositMonthsNum <= 0){
-							top.$.jBox.tip('房租押金月数不合法！','warning');
 							return;
 						}
 					}

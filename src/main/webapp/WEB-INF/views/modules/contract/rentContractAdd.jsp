@@ -64,15 +64,6 @@
 						}
 					}
 					
-					var depositAmount = $("#depositAmount").val();
-					if(depositAmount!=null && depositAmount!=undefined && depositAmount!=""){
-						var depositAmountNum = parseFloat(depositAmount);
-						if(depositAmountNum <= 0){
-							top.$.jBox.tip('房租押金金额不合法！','warning');
-							return;
-						}
-					}
-					
 					var renMonths = $("#renMonths").val();
 					if(renMonths!=null && renMonths!=undefined && renMonths!=""){
 						var renMonthsNum = parseFloat(renMonths);
@@ -81,16 +72,7 @@
 							return;
 						}
 					}
-					
-					var depositMonths = $("#depositMonths").val();
-					if(depositMonths!=null && depositMonths!=undefined && depositMonths!=""){
-						var depositMonthsNum = parseFloat(depositMonths);
-						if(depositMonthsNum <= 0){
-							top.$.jBox.tip('房租押金月数不合法！','warning');
-							return;
-						}
-					}
-					
+
 					loading('正在提交，请稍等...');
 					form.submit();
 					$("#btnSubmit").attr("disabled",true);
