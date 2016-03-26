@@ -113,30 +113,36 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
 	    room = roomDao.get(room);
 	    meterNo = room.getMeterNo();
 	}
-	String result = "";// 电表系统返回值
-	if (!StringUtils.isBlank(meterNo)) {
-	    String meterurl = new PropertiesLoader("jeesite.properties").getProperty("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
-	    try {
-		result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
-		logger.info("call meter get fee result:" + result);
-		if (!StringUtils.isBlank(result)) {
-		    result = result + ",";// 人工在结尾添加,
-		    Pattern p = Pattern.compile("(.*?)\\,(.*?)");
-		    Matcher m = p.matcher(result);
-		    int i = 0;
-		    while (m.find()) {
-			i++;
-			resultMap.put(i, StringUtils.isEmpty(m.group(1)) ? "0" : m.group(1));
-		    }
-		}
-	    } catch (Exception e) {
-		this.logger.error("call meter get fee error:", e);
-	    }
-	}
-	resultMap.put(0, result);// 直接存放智能电表系统的返回值
+        getMeterFee(meterNo, beginDate,endDate,resultMap);
 	return resultMap;
 
     }
+
+    public void getMeterFee(String meterNo, String beginDate, String endDate, Map<Integer, String> resultMap) {
+        String result = "";// 电表系统返回值
+        if (!StringUtils.isBlank(meterNo)) {
+            String meterurl = new PropertiesLoader("jeesite.properties").getProperty("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
+            try {
+                result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
+                logger.info("call meter get fee result:" + result);
+                if (!StringUtils.isBlank(result)) {
+                    result = result + ",";// 人工在结尾添加,
+                    Pattern p = Pattern.compile("(.*?)\\,(.*?)");
+                    Matcher m = p.matcher(result);
+                    int i = 0;
+                    while (m.find()) {
+                        i++;
+                        resultMap.put(i, StringUtils.isEmpty(m.group(1)) ? "0" : m.group(1));
+                    }
+                }
+            } catch (Exception e) {
+                this.logger.error("call meter get fee error:", e);
+            }
+        }
+        resultMap.put(0, result);// 直接存放智能电表系统的返回值
+    }
+
+
 
     @Transactional(readOnly = false)
     public void delete(ElectricFee electricFee) {
