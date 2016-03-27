@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1808,12 +1809,12 @@ public class AppHouseController {
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;2-2租赁期满，如乙方需要继续承租该房屋的，则应于租赁期届满前<span style='text-decoration:underline;'> 30 </span>"
 					+ "天提出续租的书面要求，经甲乙双方对续租期间的租金等主要条款协商一致后，双方签订续租合同，否则视为乙方放弃续租。</br>");
 			html.append("&nbsp;&nbsp;三、租金、支付方式和限期</br>"
-					+ "&nbsp;&nbsp;&nbsp;&nbsp;3-1该房屋的月租金为人民币：<span style='text-decoration:underline;'>"+rentContract.getRental()+"</span>元(大写：    万     仟     佰     拾     元整)。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;3-1该房屋的月租金为人民币：<span style='text-decoration:underline;'>"+rentContract.getRental()+"</span>元(大写:<span style='text-decoration:underline;'>"+getChineseNum(rentContract.getRental())+"</span>)。</br>"
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;3-2支付方式：付<span style='text-decoration:underline;'> "+rentContract.getRenMonths()+" </span>押"
 				    + "<span style='text-decoration:underline;'> "+rentContract.getDepositMonths()+" </span>，先付后用。乙方于本合同生效之日向甲方支付首期租金及押金。之后每期租期届满前向甲方支付下一期租金。乙方逾期支付的，按未付款额的日1%支付违约金。</br>");
 			html.append("&nbsp;&nbsp;四、押金和其他费用</br>"
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-1本房屋租赁押金为<span style='text-decoration:underline;'> "+rentContract.getDepositMonths()+" </span>个月的租金，"
-					+ "即人民币：<span style='text-decoration:underline;'> "+rentContract.getDepositAmount()+" </span>元(大写：___万     仟     佰    拾     元整)，押金作为乙方向甲方承诺履行本合同的保证，甲方收取押金后应向乙方开具收款凭证。</br>"
+					+ "即人民币：<span style='text-decoration:underline;'> "+rentContract.getDepositAmount()+" </span>元(大写：<span style='text-decoration:underline;'>"+getChineseNum(rentContract.getDepositAmount())+"</span>)，押金作为乙方向甲方承诺履行本合同的保证，甲方收取押金后应向乙方开具收款凭证。</br>"
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-2租赁关系终止时，甲方收取乙方该房屋的租赁押金除用以抵充合同约定由乙方承担的费用外，剩余部分无息归还乙方。</br>"
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-3智能电表结算：乙方入住前需自行或委托甲方对房间电表进行不少于人民币伍佰元充值，当电量低于20度时需再次充值，若不及时充值智能电表会自动断电，充值后电量方可恢复。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余费用返还乙方。</br>"
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-4非智能电表结算：乙方入住前需支付人民币伍佰元的水电煤、宽带、有线等使用费押金。水电煤、宽带、有线使用费由甲方先代为乙方缴纳，甲方再按固定周期向乙方进行收缴。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余使用费押金返还乙方。</br>"
@@ -1849,13 +1850,13 @@ public class AppHouseController {
 					+ "&nbsp;&nbsp;&nbsp;&nbsp;9-3本合同连同附件一式<span style='text-decoration:underline;'> 贰 </span>份。甲、乙双方各持一份，经甲乙双方签字或盖章之日起生效，并均具有同等效力。</br>");
 			html.append("&nbsp;&nbsp;十、备注</br></br>");
 			html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-			html.append("&nbsp;&nbsp;代理人：丁</br>");
+			html.append("&nbsp;&nbsp;代理人：</br>");
 			html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
 			html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
 			html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd")
 					+ "</br></br>");
 			html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
-			html.append("&nbsp;&nbsp;代理人：丁</br>");
+			html.append("&nbsp;&nbsp;代理人：</br>");
 			html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
 			html.append("&nbsp;&nbsp;联系地址：</br>");
 			html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
@@ -2344,21 +2345,85 @@ public class AppHouseController {
 		return true;
 	}
 	
-	private String getChineseNum(double num) {
-		//单位数组  
-        String[] units = new String[] {"十", "百", "千", "万", "十", "百", "千", "亿"}; 
-        
-        //中文大写数字数组  
-        String[] numeric = new String[] {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};  
-        
-        String s = String.valueOf(num);
-        
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<s.length();i++){
-        	String index=String.valueOf(s.charAt(i));
-        	sb=sb.append(numeric[Integer.parseInt(index)]);
-        }
-        
-        return "";
+	protected static String getChineseNum(double numberMoney) {
+		BigDecimal numberOfMoney = new BigDecimal(numberMoney);
+		//单位数组
+		String[] CN_UPPER_MONETRAY_UNIT = new String[] { "分", "角", "元", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾",
+				"佰", "仟", "兆", "拾", "佰", "仟" };
+		//中文大写数字数组
+		String[] CN_UPPER_NUMBER = new String[] { "零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖" };
+		String CN_FULL = "整";
+		String CN_NEGATIVE = "负";
+		final int MONEY_PRECISION = 2;
+		String CN_ZEOR_FULL = "零元" + CN_FULL;
+
+		StringBuffer sb = new StringBuffer();
+
+		int signum = numberOfMoney.signum();
+		if (signum == 0) {
+			return CN_ZEOR_FULL;
+		}
+
+		long number = numberOfMoney.movePointRight(MONEY_PRECISION).setScale(0, 4).abs().longValue();
+		long scale = number % 100;
+		int numUnit = 0;
+		int numIndex = 0;
+		boolean getZero = false;
+		if (!(scale > 0)) {
+			numIndex = 2;
+			number = number / 100;
+			getZero = true;
+		}
+		if ((scale > 0) && (!(scale % 10 > 0))) {
+			numIndex = 1;
+			number = number / 10;
+			getZero = true;
+		}
+		int zeroSize = 0;
+		while (true) {
+			if (number <= 0) {
+				break;
+			}
+			//每次获取到最后一个数
+			numUnit = (int) (number % 10);
+			if (numUnit > 0) {
+				if ((numIndex == 9) && (zeroSize >= 3)) {
+					sb.insert(0, CN_UPPER_MONETRAY_UNIT[6]);
+				}
+				if ((numIndex == 13) && (zeroSize >= 3)) {
+					sb.insert(0, CN_UPPER_MONETRAY_UNIT[10]);
+				}
+				sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+				sb.insert(0, CN_UPPER_NUMBER[numUnit]);
+				getZero = false;
+				zeroSize = 0;
+			} else {
+				++zeroSize;
+				if (!(getZero)) {
+					sb.insert(0, CN_UPPER_NUMBER[numUnit]);
+				}
+				if (numIndex == 2) {
+					if (number > 0) {
+						sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+					}
+				} else if (((numIndex - 2) % 4 == 0) && (number % 1000 > 0)) {
+					sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+				}
+				getZero = true;
+			}
+			//让number每次都去掉最后一个数
+			number = number / 10;
+			++numIndex;
+		}
+		//如果signum == -1，则说明输入的数字为负数，就在最前面追加特殊字符：负
+		if (signum == -1) {
+			sb.insert(0, CN_NEGATIVE);
+		}
+		//输入的数字小数点后两位为"00"的情况，则要在最后追加特殊字符：整
+		if (!(scale > 0)) {
+			sb.append(CN_FULL);
+		}
+
+		return sb.toString();
 	}
 }
