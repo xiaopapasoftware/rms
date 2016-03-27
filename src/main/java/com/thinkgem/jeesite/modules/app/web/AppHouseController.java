@@ -1234,6 +1234,7 @@ public class AppHouseController {
 		}
 		
 		try {
+			this.log.info("------开始续签------");
 			String token = (String) request.getHeader("token");
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
@@ -1319,6 +1320,7 @@ public class AppHouseController {
 			this.log.error("[续签异常]:",e);
 		}
 		
+		this.log.info("------结束续签------");
 		return data;
 	}
 
@@ -1571,8 +1573,6 @@ public class AppHouseController {
 				rentType = "1";
 			}
 			map.put("rent_type", rentType);
-			map.put("deposit_amount", rentContract.getDepositAmount());
-			map.put("we_deposit_amount", rentContract.getDepositElectricAmount());
 			map.put("sign_date", DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd"));
 			map.put("start_date", DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"));
 			map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
@@ -1612,13 +1612,18 @@ public class AppHouseController {
 			map.put("water_fee", waterFee);
 			
 			//房租押金差额
-			if(!"0".equals(rentContract.getSignType())){
-				if(null != rentContract.getDepositAmount()) {
-					map.put("re_deposit_amount", rentContract.getDepositAmount());
+			if(!"0".equals(rentContract.getSignType())) { 
+				if(!StringUtils.isBlank(rentContract.getContractBusiStatus())) {
+					if(null != rentContract.getDepositAmount()) {
+						map.put("re_deposit_amount", rentContract.getDepositAmount());
+					}
+					if(null != rentContract.getDepositElectricAmount()) {
+						map.put("re_we_deposit_amount", rentContract.getDepositElectricAmount());
+					}
 				}
-				if(null != rentContract.getDepositElectricAmount()) {
-					map.put("re_we_deposit_amount", rentContract.getDepositElectricAmount());
-				}
+			} else {
+				map.put("deposit_amount", rentContract.getDepositAmount());
+				map.put("we_deposit_amount", rentContract.getDepositElectricAmount());
 			}
 			
 			//首付房租月数
@@ -1776,30 +1781,85 @@ public class AppHouseController {
 
 			Map<String, Object> map = new HashMap<String, Object>();
 
+			String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
+			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName();
+			address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo()+"室";
+			if(null != rentContract.getRoom()) {
+				address += this.roomService.get(rentContract.getRoom().getId()).getRoomNo()+"部位";
+			}
+			
 			StringBuffer html = new StringBuffer();
 			html.append("<div><p>");
 			html.append("<h3><center>唐巢人才公寓租赁合同</center></h3>");
-			html.append("&nbsp;&nbsp;合同编号：" + rentContract.getContractCode() + "</br>");
+			html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
 			html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-			html.append("&nbsp;&nbsp;出租方(乙方)：" + appUser.getName() + "</br></br>");
-			html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房租赁管理办法》的规定，");
-			html.append("甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，就乙方承租甲方可依法出租的以下房屋，");
-			html.append("订立本合同。</br>");
-			html.append("&nbsp;&nbsp;一、</br>");
-			html.append("&nbsp;&nbsp;二、</br>");
-			html.append("&nbsp;&nbsp;三、</br>");
-			html.append("&nbsp;&nbsp;四、</br>");
-			html.append("&nbsp;&nbsp;五、</br></br>");
-			html.append("&nbsp;&nbsp;出租方：上海唐巢投资有限公司</br>");
+			html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
+			html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房屋租赁管理办法》的规定，"
+					+ "甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，就乙方承租甲方可依法出租的以下房屋，订立本合同。</br>");
+			html.append("&nbsp;&nbsp;一、出租房屋情况及用途</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;1-1房屋地址：<span style='text-decoration:underline;'>"
+					+address+"</span>【以下简称“该房屋”】。具体配置【详见附件三】。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;1-2乙方向甲方承诺，乙方承租该房屋仅作为乙方居住使用。 </br>");
+			html.append("&nbsp;&nbsp;二、租赁期限</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;2-1该房屋的租赁期为<span style='text-decoration:underline;'>"
+					+DateUtils.getMonthSpace(rentContract.getStartDate(),rentContract.getExpiredDate())+"</span>个月，"
+					+ "自<span style='text-decoration:underline;'>"+DateUtils.formatDate(rentContract.getStartDate(),"yyyy年MM月dd日")
+					+"</span>起至<span style='text-decoration:underline;'>"+DateUtils.formatDate(rentContract.getExpiredDate(),"yyyy年MM月dd日")+"</span>止。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;2-2租赁期满，如乙方需要继续承租该房屋的，则应于租赁期届满前<span style='text-decoration:underline;'> 30 </span>"
+					+ "天提出续租的书面要求，经甲乙双方对续租期间的租金等主要条款协商一致后，双方签订续租合同，否则视为乙方放弃续租。</br>");
+			html.append("&nbsp;&nbsp;三、租金、支付方式和限期</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;3-1该房屋的月租金为人民币：<span style='text-decoration:underline;'>"+rentContract.getRental()+"</span>元(大写：    万     仟     佰     拾     元整)。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;3-2支付方式：付<span style='text-decoration:underline;'> "+rentContract.getRenMonths()+" </span>押"
+				    + "<span style='text-decoration:underline;'> "+rentContract.getDepositMonths()+" </span>，先付后用。乙方于本合同生效之日向甲方支付首期租金及押金。之后每期租期届满前向甲方支付下一期租金。乙方逾期支付的，按未付款额的日1%支付违约金。</br>");
+			html.append("&nbsp;&nbsp;四、押金和其他费用</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-1本房屋租赁押金为<span style='text-decoration:underline;'> "+rentContract.getDepositMonths()+" </span>个月的租金，"
+					+ "即人民币：<span style='text-decoration:underline;'> "+rentContract.getDepositAmount()+" </span>元(大写：___万     仟     佰    拾     元整)，押金作为乙方向甲方承诺履行本合同的保证，甲方收取押金后应向乙方开具收款凭证。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-2租赁关系终止时，甲方收取乙方该房屋的租赁押金除用以抵充合同约定由乙方承担的费用外，剩余部分无息归还乙方。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-3智能电表结算：乙方入住前需自行或委托甲方对房间电表进行不少于人民币伍佰元充值，当电量低于20度时需再次充值，若不及时充值智能电表会自动断电，充值后电量方可恢复。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余费用返还乙方。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-4非智能电表结算：乙方入住前需支付人民币伍佰元的水电煤、宽带、有线等使用费押金。水电煤、宽带、有线使用费由甲方先代为乙方缴纳，甲方再按固定周期向乙方进行收缴。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余使用费押金返还乙方。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;4-5该房屋的使用费说明：电费<span style='text-decoration:underline;'>  </span>；水费<span style='text-decoration:underline;'>  </span>；天燃气费<span style='text-decoration:underline;'>  </span>；宽带费<span style='text-decoration:underline;'>  </span>元/月；有线电视费<span style='text-decoration:underline;'>  </span>元/月；其他<span style='text-decoration:underline;'>  </span>。</br>");
+			html.append("&nbsp;&nbsp;五、房屋使用要求和维修责任</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;5-1租赁期间，乙方发现该房屋及其附属设施有损坏或故障时，应及时通知甲方修复。甲方应在接到乙方通知后：急修在<span style='text-decoration:underline;'> 1 </span>个工作日内；其它维修在<span style='text-decoration:underline;'> 3 </span>个工作日内进行维修。或有特殊情况，甲乙双方另行协商解决。 </br>"            
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;5-2租赁期间，因乙方使用不当或不合理使用，致使该房屋及其附属设施损坏或发生故障的，乙方应负责维修。乙方拒不维修，甲方可代为维修，费用由乙方承担。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;5-3租赁期间，甲方对该房屋及设备设施应进行检查、养护，但应提前<span style='text-decoration:underline;'> 2 </span>日通知乙方。检查养护时，乙方应予以配合。甲方应减少对乙方使用该房屋的影响。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;5-4租赁期间，乙方承诺按照【附件一】《租房须知》中的条款，遵守相关规定，安全、文明租房。如乙方在租房期间发生因违反《租房须知》规定所造成的人员伤亡或安全等问题的，责任由乙方自负。</br>");
+			html.append("&nbsp;&nbsp;六、房屋返还</br>");
+			html.append("&nbsp;&nbsp;&nbsp;&nbsp;6-1除甲方同意乙方续租外，乙方应在本合同的租期届满之日内返还该房屋，未经甲方同意逾期返还房屋的，每逾期一日，乙方需按日租金的<span style='text-decoration:underline;'> 双 </span>倍支付该房屋占用使用费。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;6-2乙方返还该房屋应当符合正常使用后的状态，如该房屋内设施及设备配置的有损坏，乙方应照价赔偿【详见附件二】。返还时，应经甲方验收认可，并相互结清各自应当承担的费用。乙方自行添置的家具等设备设施的，应在乙方返还该房屋之日前自行处置或搬离，如乙方在返还房屋之日仍未搬出该房屋内自行添置的各种家具等设备设施的，所遗留物品甲方视为乙方已经遗弃，甲方有权自行处置，且无须另行支付对价或补偿。如在处置乙方遗弃物件时发生费用的，该费用由乙方另行偿付。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;6-3乙方确认不再续租或在退租前，应积极配合甲方对该房屋招租提供方便。</br>");
+			html.append("&nbsp;&nbsp;七、房屋严禁擅自转租</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;7-1乙方入住六个月以后可以申请接力转让该房间（1月、2月和12月甲方不接受委托转租，办理居住证及社区公共户落户的甲方不接受委托转租），但要同时满足以下条件：</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（一）居住满六个月以上的在原价基础上上涨100元/月；</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（二）通过甲方推荐广告渠道再次成功出租该房屋需向甲方支付500元推荐服务费；</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方自行找到接力租客成功出租的需支付100元合同变更手续费，对于乙方自行寻找的客户必须符合甲方的客户选择标准，确保无空置期；</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（四）甲方不承诺转租时限，转租期间乙方仍需支付房屋租金。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;7-2不办理转租手续擅自让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。擅自转租或让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。</br>");
+			html.append("&nbsp;&nbsp;八、违约责任及解除本合同的条件</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;8-1甲、乙双方同意，在租赁期内，该房屋占用范围内的土地使用权或房屋被依法提前收回或依法征用的；或被依法列入房屋拆迁许可范围的；或发生不可抗力被损毁、灭失的。本合同终止，双方互不承担责任：</br>" 
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;8-2甲、乙双方同意，有下列情形之一的均视作根本违约，守约方有权解除本合同。同时，违约方应向守约方支付相当于      个月租金的违约金；如造成守约方损失的，违约方在支付的违约金不足抵付守约方损失的，还应赔偿相应的损失：</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（一）乙方未征得甲方同意改变该房屋用途、该房屋主体结构损坏的；</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（二）乙方擅自转租该房屋或与他人交换各自承租的房屋的；</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方逾期不支付租金及水电煤、宽带、有线等使用费累计超过<span style='text-decoration:underline;'> 5 </span>天的；</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;（四）乙方不遵守该房屋的公寓管理制度或《租房须知》中相关规定的。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;8-3租赁期间，甲方擅自中途提前收回该房屋的，甲方应向乙方赔偿<span style='text-decoration:underline;'>  </span>个月租金的违约金； </br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;8-4租赁期间，乙方擅自中途提前退租的，乙方的房屋押金不予退回。剩余房款由甲方在与乙方所有费用结清后的 15日 内返还乙方；</br>");
+			html.append("&nbsp;&nbsp;九、其它条款</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;9-1本合同未尽事宜，经甲、乙双方协商一致，可订立补充协议。本合同补充协议及附件均为本合同不可分割的一部分。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;9-2甲、乙双方在履行本合同过程中发生争议，应通过协商解决，协商不成的，可向该房屋所在地的人民法院提出诉讼。</br>"
+					+ "&nbsp;&nbsp;&nbsp;&nbsp;9-3本合同连同附件一式<span style='text-decoration:underline;'> 贰 </span>份。甲、乙双方各持一份，经甲乙双方签字或盖章之日起生效，并均具有同等效力。</br>");
+			html.append("&nbsp;&nbsp;十、备注</br></br>");
+			html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
 			html.append("&nbsp;&nbsp;代理人：丁</br>");
-			html.append("&nbsp;&nbsp;联系地址：上海市创新西路333弄46号</br>");
-			html.append("&nbsp;&nbsp;联系电话：021-31006969</br>");
+			html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
+			html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
 			html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd")
 					+ "</br></br>");
-			html.append("&nbsp;&nbsp;承租方：" + appUser.getName() + "</br>");
-			html.append("&nbsp;&nbsp;身份证：" + appUser.getIdCardNo() + "</br>");
+			html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
+			html.append("&nbsp;&nbsp;代理人：丁</br>");
+			html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
 			html.append("&nbsp;&nbsp;联系地址：</br>");
 			html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
+			html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
 			html.append(
 					"&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br>");
 			html.append("</p></div>");
@@ -2136,6 +2196,8 @@ public class AppHouseController {
 					if("14".equals(tmpPaymentTrans.getPaymentType()))
 						mp.put("water_amount", tmpPaymentTrans.getTradeAmount());//水费金额
 					mp.put("payment_type", tmpPaymentTrans.getPaymentType());
+					if("18".equals(tmpPaymentTrans.getPaymentType()))
+						mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());//有线电视费
 					if("2".equals(tmpPaymentTrans.getTransStatus()))
 						mp.put("bill_state", "1");
 					else
@@ -2172,6 +2234,8 @@ public class AppHouseController {
 				double water_amount = 0;
 				if("14".equals(tmpPaymentTrans.getPaymentType()))
 					water_amount = tmpPaymentTrans.getTradeAmount();
+				if("18".equals(tmpPaymentTrans.getPaymentType()))
+					mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());//有线电视费
 				mp.put("water_amount", water_amount);//水费金额
 				String current_electric_balance="0", bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
 				String electricPrice = "0";
@@ -2278,5 +2342,23 @@ public class AppHouseController {
 			}
 		}
 		return true;
+	}
+	
+	private String getChineseNum(double num) {
+		//单位数组  
+        String[] units = new String[] {"十", "百", "千", "万", "十", "百", "千", "亿"}; 
+        
+        //中文大写数字数组  
+        String[] numeric = new String[] {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};  
+        
+        String s = String.valueOf(num);
+        
+        StringBuffer sb=new StringBuffer();
+        for(int i=0;i<s.length();i++){
+        	String index=String.valueOf(s.charAt(i));
+        	sb=sb.append(numeric[Integer.parseInt(index)]);
+        }
+        
+        return "";
 	}
 }
