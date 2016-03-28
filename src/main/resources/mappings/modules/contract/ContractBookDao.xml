@@ -32,13 +32,16 @@
 	<sql id="contractBookJoins">
 		left join 
 		(
-		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
-		t_property_project p,t_building b,t_attachment a
-		where h.property_project_id=p.id and h.building_id=b.id and h.id=a.house_id
+		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h 
+		left join t_property_project p on h.property_project_id=p.id
+		left join t_building b on h.building_id=b.id
+		left join t_attachment a on h.id=a.house_id
 		union all 
-		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
-		t_property_project p,t_building b,t_house h,t_attachment a
-		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
+		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r 
+		left join t_property_project p on r.property_project_id=p.id 
+		left join t_building b on r.building_id=b.id 
+		left join t_house h on r.house_id=h.id 
+		left join t_attachment a on r.id=a.room_id 
 		) t on a.house_id = t.house_id 
 		left join sys_user su on a.sales_id = su.id
 	</sql>
@@ -84,7 +87,7 @@
 	
 	<select id="findRentContract" resultType="ContractBook">
 		select da.id as "contractId",da.CONTRACT_CODE as "contractCode",da.RENTAL as "rent",tt.house_id,da.contract_status as "bookStatus",
-		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag,da.update_by updateUser from T_RENT_CONTRACT da 
+		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag,da.update_by updateUser,da.expired_date end_date from T_RENT_CONTRACT da 
 		left join (
 		select CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'

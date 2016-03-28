@@ -1095,64 +1095,130 @@ public class AppHouseController {
 			building.setId(house.getBuilding().getId());
 			building = this.buildingService.get(building);
 
-			RentContract rentContract = new RentContract();
-			rentContract.setSignType("0");// 新签
-			rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-"
-					+ (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
-			String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-"
-					+ house.getHouseNo();
-			String payWay = "";
-			if (null != room) {
-				contractName += "-" + room.getRoomNo();
-				rentContract.setRoom(room);
-				rentContract.setRental(room.getRental());
-
-				payWay = room.getPayWay();
-			} else {
-				rentContract.setRental(house.getRental());
-
-				payWay = house.getPayWay();
-			}
-			if ("0".equals(payWay)) {// 付三押一
-				rentContract.setRenMonths(3);
-				rentContract.setDepositMonths(1);
-			} else if ("1".equals(payWay)) {// 付二押二
-				rentContract.setRenMonths(2);
-				rentContract.setDepositMonths(2);
-			}
-			rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
-			rentContract.setContractName(contractName);
-			rentContract.setRentMode(null == room ? "0" : "1");// 0:整租 1:单间
-			rentContract.setPropertyProject(propertyProject);
-			rentContract.setBuilding(building);
-			rentContract.setHouse(house);
-
-			Tenant tenant = new Tenant();
-			tenant.setIdType("0");// 身份证
-			tenant.setIdNo(appUser.getIdCardNo());
-			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
-			if (null == tenantList || tenantList.size() <= 0) {
-				tenantList = new ArrayList<Tenant>();
-				tenant.setTenantName(appUser.getName());
-				tenant.setGender(appUser.getSex());
-				tenant.setCellPhone(appUser.getPhone());
-				tenantService.save(tenant);
-
-				tenantList.add(tenant);
-			}
-			rentContract.setTenantList(tenantList);
-			rentContract.setLiveList(tenantList);
-			rentContract.setContractSource("1");// 本部
-			rentContract.setValidatorFlag("0");// 暂存
-			rentContract.setDataSource("2");// APP
-			rentContract.setSignDate(new Date());
-			rentContract.setStartDate(new Date());
-			rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
-			rentContract.setRemarks(request.getParameter("msg"));
-			rentContract.setContractStatus("0");// 暂存
-
 			/* 判断该用户是否有预订,有则为定金转合同流程 */
-			this.rentContractService.save(rentContract);
+			boolean hasBooked = false; 
+			String depositId = null;
+			ContractBook booked = new ContractBook();
+			booked.setUserPhone(apptoken.getPhone());
+			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
+			for(ContractBook tContractBook : bookedList) {
+				if(request.getParameter("house_id").equals(tContractBook.getHouseId())) {
+					//定金转合同
+					hasBooked = true;
+					depositId = tContractBook.getDepositId();
+					break;
+				}
+			}
+			
+			if(!hasBooked) {
+				RentContract rentContract = new RentContract();
+				rentContract.setSignType("0");// 新签
+				rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-"
+						+ (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+				String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-"
+						+ house.getHouseNo();
+				String payWay = "";
+				if (null != room) {
+					contractName += "-" + room.getRoomNo();
+					rentContract.setRoom(room);
+					rentContract.setRental(room.getRental());
+	
+					payWay = room.getPayWay();
+				} else {
+					rentContract.setRental(house.getRental());
+	
+					payWay = house.getPayWay();
+				}
+				if ("0".equals(payWay)) {// 付三押一
+					rentContract.setRenMonths(3);
+					rentContract.setDepositMonths(1);
+				} else if ("1".equals(payWay)) {// 付二押二
+					rentContract.setRenMonths(2);
+					rentContract.setDepositMonths(2);
+				}
+				rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
+				rentContract.setContractName(contractName);
+				rentContract.setRentMode(null == room ? "0" : "1");// 0:整租 1:单间
+				rentContract.setPropertyProject(propertyProject);
+				rentContract.setBuilding(building);
+				rentContract.setHouse(house);
+	
+				Tenant tenant = new Tenant();
+				tenant.setIdType("0");// 身份证
+				tenant.setIdNo(appUser.getIdCardNo());
+				List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				if (null == tenantList || tenantList.size() <= 0) {
+					tenantList = new ArrayList<Tenant>();
+					tenant.setTenantName(appUser.getName());
+					tenant.setGender(appUser.getSex());
+					tenant.setCellPhone(appUser.getPhone());
+					tenantService.save(tenant);
+	
+					tenantList.add(tenant);
+				}
+				rentContract.setTenantList(tenantList);
+				rentContract.setLiveList(tenantList);
+				rentContract.setContractSource("1");// 本部
+				rentContract.setValidatorFlag("0");// 暂存
+				rentContract.setDataSource("2");// APP
+				rentContract.setSignDate(new Date());
+				rentContract.setStartDate(new Date());
+				rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+				rentContract.setRemarks(request.getParameter("msg"));
+				rentContract.setContractStatus("0");// 暂存
+			
+				this.rentContractService.save(rentContract);
+			} else {
+				DepositAgreement depositAgreement = depositAgreementService.get(depositId);
+				
+				RentContract rentContract = new RentContract();
+				rentContract.setSignType("0");// 新签
+				String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-"
+						+ house.getHouseNo();
+				if (null != room) {
+					contractName += "-" + room.getRoomNo();
+				}
+				rentContract.setContractName(contractName);
+				rentContract.setRentMode(depositAgreement.getRentMode());
+				rentContract.setPropertyProject(depositAgreement.getPropertyProject());
+				rentContract.setBuilding(depositAgreement.getBuilding());
+				rentContract.setHouse(depositAgreement.getHouse());
+				rentContract.setRoom(depositAgreement.getRoom());
+				rentContract.setRental(depositAgreement.getHousingRent());
+				rentContract.setRenMonths(depositAgreement.getRenMonths());
+				rentContract.setDepositMonths(depositAgreement.getDepositMonths());
+				rentContract.setStartDate(new Date());
+				rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+				rentContract.setSignDate(new Date());
+				rentContract.setUser(depositAgreement.getUser());
+				rentContract.setTenantList(depositAgreement.getTenantList());
+				rentContract.setRemarks(depositAgreement.getRemarks());
+				rentContract.setAgreementId(depositAgreement.getId());
+				rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+				rentContract.setContractSource("1");// 本部
+				rentContract.setValidatorFlag("0");// 暂存
+				rentContract.setDataSource("2");// APP
+				rentContract.setRemarks(request.getParameter("msg"));
+				rentContract.setContractStatus("0");// 暂存
+				
+				Tenant tenant = new Tenant();
+				tenant.setIdType("0");// 身份证
+				tenant.setIdNo(appUser.getIdCardNo());
+				List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				if (null == tenantList || tenantList.size() <= 0) {
+					tenantList = new ArrayList<Tenant>();
+					tenant.setTenantName(appUser.getName());
+					tenant.setGender(appUser.getSex());
+					tenant.setCellPhone(appUser.getPhone());
+					tenantService.save(tenant);
+	
+					tenantList.add(tenant);
+				}
+				rentContract.setTenantList(tenantList);
+				rentContract.setLiveList(tenantList);
+				
+				this.rentContractService.save(rentContract);
+			}
 
 			data.setCode("200");
 			
@@ -1508,6 +1574,7 @@ public class AppHouseController {
 						status = "5";
 					}
 				}
+				mp.put("end_date", DateUtils.formatDate(tmpContractBook.getEndDate(), "yyyy-MM-dd"));
 				mp.put("status", status);
 				dataList.add(mp);
 			}
@@ -2333,7 +2400,7 @@ public class AppHouseController {
 		House house = this.houseService.get(houseId);
 		if(null == house) {
 			Room room = this.roomService.get(houseId);
-			if(null == room || "1".equals(room.getRoomStatus())) {
+			if(null == room || !"1".equals(room.getRoomStatus())) {
 				return false;
 			}
 		} else {

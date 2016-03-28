@@ -45,6 +45,8 @@ public class ContractBook extends DataEntity<ContractBook> {
 	
 	private String updateUser;
 	
+	private Date endDate;
+	
 	public ContractBook() {
 		super();
 	}
@@ -243,5 +245,13 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setUpdateUser(String updateUser) {
 		this.updateUser = updateUser;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 }
