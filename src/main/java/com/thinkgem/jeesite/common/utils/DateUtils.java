@@ -39,6 +39,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 得到日期字符串 默认格式（yyyy-MM-dd） pattern可以为："yyyy-MM-dd" "HH:mm:ss" "E"
      */
     public static String formatDate(Date date, Object... pattern) {
+      if(null == date) return "";
 	String formatDate = null;
 	if (pattern != null && pattern.length > 0) {
 	    formatDate = DateFormatUtils.format(date, pattern[0].toString());
@@ -243,6 +244,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 计算两个日期之间相隔的月数
      */
     public static double getMonthSpace(Date startDate, Date endDate) {
+      if(null == startDate || null == endDate) return 0;
 	Calendar startCalendar = Calendar.getInstance();
 	startCalendar.setTime(startDate);
 	startCalendar.clear(Calendar.HOUR);
