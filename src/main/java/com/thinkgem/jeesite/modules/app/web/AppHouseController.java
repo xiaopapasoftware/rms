@@ -1884,8 +1884,11 @@ public class AppHouseController {
 			String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
 			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName();
 			address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo()+"室";
-			if(null != rentContract.getRoom()) {
-				address += this.roomService.get(rentContract.getRoom().getId()).getRoomNo()+"部位";
+			if(null != rentContract.getRoom() && StringUtils.isNotBlank(rentContract.getRoom().getId())) {
+				Room room = this.roomService.get(rentContract.getRoom().getId());
+				if(null != room) {
+					address += room.getRoomNo()+"部位";
+				}
 			}
 			
 			StringBuffer html = new StringBuffer();
