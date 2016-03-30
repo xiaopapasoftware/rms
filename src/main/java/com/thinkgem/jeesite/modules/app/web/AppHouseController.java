@@ -341,7 +341,7 @@ public class AppHouseController {
 
 			/* 同一手机号不能预约同一房 */
 			contractBook.setHouseId(house.getHouseId());
-			contractBook.setRoomId(house.getRoomId());
+			contractBook.setRoomId(StringUtils.isNotBlank(house.getRoomId())?house.getRoomId():null);
 			boolean ifCanBook = contractBookService.checkByUser(contractBook);
 			if (!ifCanBook) {
 				data.setCode("400");
