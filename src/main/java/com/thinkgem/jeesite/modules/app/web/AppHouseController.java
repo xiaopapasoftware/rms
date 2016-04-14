@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -2324,117 +2325,122 @@ public class AppHouseController {
 		String bill_id = "";
 		Double bill_amount = 0d;
 		
-	   int month = Integer.parseInt(DateUtils.getMonth());
-	   int year = Integer.parseInt(DateUtils.getYear());
-		
-		for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
-			if(Integer.parseInt(DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "MM")) > month+2
-					|| Integer.parseInt(DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy")) > year) {
-				continue;
-			}
-			
-			boolean check = true;
-			for(int i=0;i<list.size();i++) {
-				Map<String, Object> tmpMap = list.get(i);
-				if(tmpMap.get("bill_start").equals(DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"))
-						&& tmpMap.get("bill_end").equals(DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"))
-						&& !tmpMap.get("payment_type").equals(tmpPaymentTrans.getPaymentType())) {
-					check = false;
-					mp = tmpMap;
-					bill_id = mp.get("bill_id")+","+tmpPaymentTrans.getId();
+		try {
+			for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
+				boolean check = true;
+				for(int i=0;i<list.size();i++) {
+					Map<String, Object> tmpMap = list.get(i);
+					Date dt = DateUtils.parseDate(tmpMap.get("bill_start").toString(), "yyyy-MM-dd");
+					double monthSpace = DateUtils.getMonthSpace(dt,tmpPaymentTrans.getStartDate());
+					if(monthSpace < rentContract.getRenMonths()) {
+						check = false;
+						mp = tmpMap;
+						bill_id = mp.get("bill_id")+","+tmpPaymentTrans.getId();
+						mp.put("bill_id", bill_id);
+						bill_amount = (Double)mp.get("bill_amount")+tmpPaymentTrans.getTradeAmount();
+						mp.put("bill_amount", bill_amount);
+						if("6".equals(tmpPaymentTrans.getPaymentType()))
+							mp.put("rent_amount", Double.valueOf(mp.get("rent_amount").toString())+tmpPaymentTrans.getTradeAmount());//房租金额
+						if("4".equals(tmpPaymentTrans.getPaymentType())) {
+							mp.put("deposit_amount", Double.valueOf(mp.get("deposit_amount").toString())+tmpPaymentTrans.getTradeAmount());//房租押金
+						}
+						if("2".equals(tmpPaymentTrans.getPaymentType())) {
+							mp.put("deposit_water_amount", Double.valueOf(mp.get("deposit_water_amount").toString())+tmpPaymentTrans.getTradeAmount());//水电费押金
+						}
+						if("20".equals(tmpPaymentTrans.getPaymentType())) {
+							double netAmount = tmpPaymentTrans.getTradeAmount();
+							if(null != mp.get("net_amount"))
+								netAmount += Double.valueOf(mp.get("net_amount").toString());
+							mp.put("net_amount", netAmount);//宽带费
+						}
+						if("14".equals(tmpPaymentTrans.getPaymentType())) {
+							double water_amount = tmpPaymentTrans.getTradeAmount();
+							if(null != mp.get("water_amount"))
+								water_amount += Double.valueOf(mp.get("water_amount").toString());
+							mp.put("water_amount", water_amount);//水费金额
+						}
+						mp.put("payment_type", tmpPaymentTrans.getPaymentType());
+						if("18".equals(tmpPaymentTrans.getPaymentType())) {
+							double tv_amount = tmpPaymentTrans.getTradeAmount();
+							if(null != mp.get("tv_amount"))
+								tv_amount += Double.valueOf(mp.get("tv_amount").toString());
+							mp.put("tv_amount", tv_amount);//有线电视费
+						}
+						if("2".equals(tmpPaymentTrans.getTransStatus()))
+							mp.put("bill_state", "1");
+						else
+							mp.put("bill_state", "0");
+						mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+						list.set(i, mp);
+						break;
+					}
+				}
+				
+				if(check) {
+					mp = new HashMap<String, Object>();
+					bill_id = tmpPaymentTrans.getId();
+					bill_amount = tmpPaymentTrans.getTradeAmount();
 					mp.put("bill_id", bill_id);
-					bill_amount = (Double)mp.get("bill_amount")+tmpPaymentTrans.getTradeAmount();
 					mp.put("bill_amount", bill_amount);
+					mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
+					mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
+					double rent_amount = 0;
 					if("6".equals(tmpPaymentTrans.getPaymentType()))
-						mp.put("rent_amount", tmpPaymentTrans.getTradeAmount());//房租金额
+						rent_amount = tmpPaymentTrans.getTradeAmount();
+					mp.put("rent_amount", rent_amount);//房租金额
+					double deposit_amount = 0;
 					if("4".equals(tmpPaymentTrans.getPaymentType())) {
-						mp.put("deposit_amount", tmpPaymentTrans.getTradeAmount());//房租押金
-						continue;
+						deposit_amount = tmpPaymentTrans.getTradeAmount();
 					}
+					mp.put("deposit_amount", deposit_amount);//房租押金
+					double deposit_water_amount = 0;
 					if("2".equals(tmpPaymentTrans.getPaymentType())) {
-						mp.put("deposit_water_amount", tmpPaymentTrans.getTradeAmount());//水电费押金
-						continue;
+						deposit_water_amount = tmpPaymentTrans.getTradeAmount();
 					}
+					mp.put("deposit_water_amount", deposit_water_amount);//水电费押金
+					double net_amount = 0;
 					if("20".equals(tmpPaymentTrans.getPaymentType()))
-						mp.put("net_amount", tmpPaymentTrans.getTradeAmount());//宽带费
+						net_amount = tmpPaymentTrans.getTradeAmount();
+					mp.put("net_amount", net_amount);//宽带费
+					double water_amount = 0;
 					if("14".equals(tmpPaymentTrans.getPaymentType()))
-						mp.put("water_amount", tmpPaymentTrans.getTradeAmount());//水费金额
-					mp.put("payment_type", tmpPaymentTrans.getPaymentType());
+						water_amount = tmpPaymentTrans.getTradeAmount();
 					if("18".equals(tmpPaymentTrans.getPaymentType()))
 						mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());//有线电视费
-					if("2".equals(tmpPaymentTrans.getTransStatus()))
-						mp.put("bill_state", "1");
-					else
-						mp.put("bill_state", "0");
-					list.set(i, mp);
-					break;
-				}
-			}
-			
-			if(check) {
-				mp = new HashMap<String, Object>();
-				bill_id = tmpPaymentTrans.getId();
-				bill_amount = tmpPaymentTrans.getTradeAmount();
-				mp.put("bill_id", bill_id);
-				mp.put("bill_amount", bill_amount);
-				mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
-				mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
-				double rent_amount = 0;
-				if("6".equals(tmpPaymentTrans.getPaymentType()))
-					rent_amount = tmpPaymentTrans.getTradeAmount();
-				mp.put("rent_amount", rent_amount);//房租金额
-				double deposit_amount = 0;
-				if("4".equals(tmpPaymentTrans.getPaymentType())) {
-					deposit_amount = tmpPaymentTrans.getTradeAmount();
-					continue;
-				}
-				mp.put("deposit_amount", deposit_amount);//房租押金
-				double deposit_water_amount = 0;
-				if("2".equals(tmpPaymentTrans.getPaymentType())) {
-					deposit_water_amount = tmpPaymentTrans.getTradeAmount();
-					continue;
-				}
-				mp.put("deposit_water_amount", deposit_water_amount);//水电费押金
-				double net_amount = 0;
-				if("20".equals(tmpPaymentTrans.getPaymentType()))
-					net_amount = tmpPaymentTrans.getTradeAmount();
-				mp.put("net_amount", net_amount);//宽带费
-				double water_amount = 0;
-				if("14".equals(tmpPaymentTrans.getPaymentType()))
-					water_amount = tmpPaymentTrans.getTradeAmount();
-				if("18".equals(tmpPaymentTrans.getPaymentType()))
-					mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());//有线电视费
-				mp.put("water_amount", water_amount);//水费金额
-				String current_electric_balance="0", bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
-				String electricPrice = "0";
-				try {
-					Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
-					if(null != meterMap) {
-						if(null != meterMap.get(3))
-							current_electric_balance = meterMap.get(3);
-						if(null != meterMap.get(1))
-							bill_electric_balance = meterMap.get(1);
-						if(null != meterMap.get(2))
-							common_electric_balance = meterMap.get(2);
-						if(null != meterMap.get(4))
-							electricPrice = meterMap.get(4);
+					mp.put("water_amount", water_amount);//水费金额
+					String current_electric_balance="0", bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
+					String electricPrice = "0";
+					try {
+						Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
+						if(null != meterMap) {
+							if(null != meterMap.get(3))
+								current_electric_balance = meterMap.get(3);
+							if(null != meterMap.get(1))
+								bill_electric_balance = meterMap.get(1);
+							if(null != meterMap.get(2))
+								common_electric_balance = meterMap.get(2);
+							if(null != meterMap.get(4))
+								electricPrice = meterMap.get(4);
+						}
+					} catch (Exception e) {
+						this.log.error("查询电表异常:",e);
 					}
-				} catch (Exception e) {
-					this.log.error("查询电表异常:",e);
+					mp.put("current_electric_amount", Double.valueOf(current_electric_balance)*Double.valueOf(electricPrice));//当前电费余额
+					mp.put("current_electric_balance", current_electric_balance);//当前电费度数
+					mp.put("bill_electric_amount", Double.valueOf(bill_electric_balance)*Double.valueOf(electricPrice));//本期个人用电金额
+					mp.put("bill_electric_balance", bill_electric_balance);//本期个人用电度数
+					mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
+					mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数
+					String bill_state = "0";
+					if("2".equals(tmpPaymentTrans.getTransStatus()))
+						bill_state = "1";
+					mp.put("bill_state", bill_state);//0:未付 1:已付
+					mp.put("payment_type", tmpPaymentTrans.getPaymentType());
+					list.add(mp);
 				}
-				mp.put("current_electric_amount", Double.valueOf(current_electric_balance)*Double.valueOf(electricPrice));//当前电费余额
-				mp.put("current_electric_balance", current_electric_balance);//当前电费度数
-				mp.put("bill_electric_amount", Double.valueOf(bill_electric_balance)*Double.valueOf(electricPrice));//本期个人用电金额
-				mp.put("bill_electric_balance", bill_electric_balance);//本期个人用电度数
-				mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
-				mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数
-				String bill_state = "0";
-				if("2".equals(tmpPaymentTrans.getTransStatus()))
-					bill_state = "1";
-				mp.put("bill_state", bill_state);//0:未付 1:已付
-				mp.put("payment_type", tmpPaymentTrans.getPaymentType());
-				list.add(mp);
 			}
+		} catch (Exception e) {
+			log.error("",e);
 		}
 
 		map.put("bill", list);
