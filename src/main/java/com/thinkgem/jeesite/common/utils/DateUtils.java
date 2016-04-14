@@ -338,6 +338,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     public static void main(String[] args) throws ParseException {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	System.out.println(getMonthSpace(sdf.parse("2016-1-31"), sdf.parse("2016-02-28")));
+	System.out.println(getMonthSpace(sdf.parse("2016-2-29"), sdf.parse("2017-02-28")));
     }
 }

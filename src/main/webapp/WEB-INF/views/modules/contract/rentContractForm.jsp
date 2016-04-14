@@ -549,7 +549,7 @@
 			<label class="control-label"><c:if test="${empty renew}">水电押金金额：</c:if><c:if test="${not empty renew}">水电押金差额：</c:if></label>
 			<div class="controls">
 				<form:input path="depositElectricAmount" htmlEscape="false" class="input-xlarge  number required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*注意：如果是智能电表充值合同，这里不需要填写！</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

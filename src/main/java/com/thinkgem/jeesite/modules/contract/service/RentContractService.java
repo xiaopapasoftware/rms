@@ -1006,7 +1006,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 
 	    if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
-
 		if (null != rentContract.getWaterFee() && rentContract.getWaterFee() > 0) {
 		    PaymentTrans paymentTrans = new PaymentTrans();
 		    paymentTrans.setId(IdGen.uuid());
@@ -1113,12 +1112,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	expiredC.setTime(expiredDate);
 
 	if (stratC.get(Calendar.MONTH) == 1 || expiredC.get(Calendar.MONTH) == 1) {// 含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.095)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.15)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}
 	if (stratC.get(Calendar.MONTH) != 1 && expiredC.get(Calendar.MONTH) != 1) {// 都不含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.095)) < 0) {
+	    if (doubledMonthCounts.compareTo(new BigDecimal(0.15)) < 0) {
 		return BigDecimal.ZERO;
 	    }
 	}

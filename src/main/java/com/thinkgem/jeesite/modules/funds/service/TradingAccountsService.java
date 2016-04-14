@@ -183,7 +183,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType()) || "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-	    if (!"6".equals(rentContract.getContractStatus())) {//6=到账收据审核通过
+	    if (!"6".equals(rentContract.getContractStatus())) {// 6=到账收据审核通过
 		if ("1".equals(auditHis.getAuditStatus())) {// 账务交易审核成功
 		    if (checkRentContractTransAmountEnough(rentContract)) {
 			rentContract.setContractStatus("6");// 6:到账收据审核通过
@@ -197,6 +197,55 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    rentContract.setUpdateBy(UserUtils.getUser());
 		    rentContract.setUpdateDate(new Date());
 		    rentContractDao.update(rentContract);
+		}
+	    }
+	    // 如果同时有电费充值的交易类型
+	    PaymentTrade paymentTrade = new PaymentTrade();
+	    paymentTrade.setDelFlag("0");
+	    paymentTrade.setTradeId(tradingAccounts.getId());
+	    List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+	    for (PaymentTrade tmpPaymentTrade : list) { /* 更新充值记录 */
+		PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+		if ("11".equals(paymentTrans.getPaymentType())) {// 电费自用金额类型
+		    ElectricFee electricFee = new ElectricFee();
+		    electricFee.setPaymentTransId(paymentTrans.getId());
+		    electricFee.setDelFlag("0");
+		    electricFee = electricFeeDao.get(electricFee);
+		    if (null != electricFee) {
+			if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
+			    if (null != rentContract && "1".equals(rentContract.getRentMode())) {// 单间
+				Room room = rentContract.getRoom();
+				room = roomDao.get(room);
+				String meterNo = room.getMeterNo();
+				DecimalFormat df = new DecimalFormat("0");
+				String id = charge(meterNo, df.format(electricFee.getChargeAmount()));
+				if (!StringUtils.isBlank(id)) {// 充值成功
+				    Pattern pattern = Pattern.compile("[0-9]*");
+				    Matcher isNum = pattern.matcher(id);
+				    if (isNum.matches()) {
+					electricFee.setChargeId(id);
+					electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
+					electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
+					electricFee.setUpdateBy(UserUtils.getUser());
+					electricFee.setUpdateDate(new Date());
+					electricFeeDao.update(electricFee);
+				    }
+				} else {// 充值失败
+				    electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
+				    electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+				    electricFee.setUpdateBy(UserUtils.getUser());
+				    electricFee.setUpdateDate(new Date());
+				    electricFeeDao.update(electricFee);
+				}
+			    }
+			} else {// 审核不通过
+			    electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
+			    electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+			    electricFee.setUpdateBy(UserUtils.getUser());
+			    electricFee.setUpdateDate(new Date());
+			    electricFeeDao.update(electricFee);
+			}
+		    }
 		}
 	    }
 	} else if ("7".equals(tradingAccounts.getTradeType())) {
@@ -232,7 +281,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    paymentTrade.setDelFlag("0");
 	    paymentTrade.setTradeId(tradingAccounts.getId());
 	    List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
-
 	    /* 更新充值记录 */
 	    for (PaymentTrade tmpPaymentTrade : list) {
 		PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
@@ -277,7 +325,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     @Transactional(readOnly = false)
     public void save(TradingAccounts tradingAccounts) {
 	String id = super.saveAndReturnId(tradingAccounts);
-
+	// 有可能用户同时选中了电费充值和新签合同的款项，设立一个是否有选中的电费充值的款项标示。
+	boolean isChoosedEleFlag = false;
+	String elePaymentTransId = "";// 电费充值的那笔款项
 	/* 更新款项状态 */
 	if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
 	    String[] transIds = tradingAccounts.getTransIds().split(",");
@@ -285,6 +335,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    PaymentTrade paymentTrade = new PaymentTrade();
 	    paymentTrade.setTradeId(id);
 	    paymentTradeDao.delete(paymentTrade);
+
 	    for (int i = 0; i < transIds.length; i++) {
 		PaymentTrans paymentTrans = paymentTransDao.get(transIds[i]);
 		paymentTrans.setTransStatus("2");// 完全到账登记
@@ -293,7 +344,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		paymentTrans.setUpdateBy(UserUtils.getUser());
 		paymentTrans.setUpdateDate(new Date());
 		paymentTransDao.update(paymentTrans);
-
+		if ("11".equals(paymentTrans.getPaymentType())) {// 如果有电费充值的款项
+		    isChoosedEleFlag = true;
+		    elePaymentTransId = paymentTrans.getId();
+		}
 		paymentTrade.setTransId(paymentTrans.getId());
 		paymentTrade.setId(IdGen.uuid());
 		paymentTrade.setCreateDate(new Date());
@@ -304,10 +358,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		paymentTradeDao.insert(paymentTrade);
 	    }
 	}
-
 	String tradeId = tradingAccounts.getTradeId();
 	String tradeType = tradingAccounts.getTradeType();
-
 	if ("1".equals(tradeType)) {// 预约定金
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
 	    depositAgreement.setUpdateBy(UserUtils.getUser());
@@ -343,6 +395,17 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    rentContractDao.update(rentContract);
 		}
 	    }
+	    // 如果带有电费充值的款项
+	    if (isChoosedEleFlag) {
+		ElectricFee fee = new ElectricFee();
+		fee.setPaymentTransId(elePaymentTransId);
+		ElectricFee upFee = electricFeeDao.get(fee);
+		upFee.setChargeStatus("0");// 0=充值中
+		upFee.setSettleStatus("1");// '1'='结算待审核'
+		upFee.setUpdateBy(UserUtils.getUser());
+		upFee.setUpdateDate(new Date());
+		electricFeeDao.update(upFee);
+	    }
 	} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {// '6''提前退租';'7''正常退租';'8''逾期退租'
 	    RentContract rentContract = rentContractDao.get(tradeId);
 	    rentContract.setUpdateBy(UserUtils.getUser());
@@ -360,14 +423,40 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	} else if ("11".equals(tradeType)) { // 11=电费充值
 	    if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
 		String[] transIds = tradingAccounts.getTransIds().split(",");
-		ElectricFee fee = new ElectricFee();
-		fee.setPaymentTransId(transIds[0]);
-		ElectricFee upFee = electricFeeDao.get(fee);
-		upFee.setChargeStatus("0");// 0=充值中
-		upFee.setSettleStatus("1");// '1'='结算待审核'
-		upFee.setUpdateBy(UserUtils.getUser());
-		upFee.setUpdateDate(new Date());
-		electricFeeDao.update(upFee);
+		List<String> eleTransIds = new ArrayList<String>();// 电费充值的款项ID列表
+		boolean isChoosed = false;// 除了电费充值外，是否还有其他的款项
+		for (String transId : transIds) {
+		    PaymentTrans paymentTrans = paymentTransDao.get(transId);
+		    if (!"11".equals(paymentTrans.getPaymentType())) {// 含有别的款项，说明是有新签合同和电费充值混合的款项
+			isChoosed = true;
+		    } else {
+			eleTransIds.add(transId);
+		    }
+		}
+		if (isChoosed) {
+		    RentContract rentContract = rentContractDao.get(tradeId);
+		    rentContract.setUpdateBy(UserUtils.getUser());
+		    rentContract.setUpdateDate(new Date());
+		    if ("1".equals(rentContract.getContractStatus())) {// '1':'录入完成到账收据待登记'
+			rentContract.setContractStatus("2");// '2':'到账收据完成合同内容待审核'
+			rentContractDao.update(rentContract);
+		    } else {
+			if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
+			    rentContract.setContractStatus("4");// 内容审核通过到账收据待审核
+			    rentContractDao.update(rentContract);
+			}
+		    }
+		}
+		for (String eleTransId : eleTransIds) {//
+		    ElectricFee fee = new ElectricFee();
+		    fee.setPaymentTransId(eleTransId);
+		    ElectricFee upFee = electricFeeDao.get(fee);
+		    upFee.setChargeStatus("0");// 0=充值中
+		    upFee.setSettleStatus("1");// '1'='结算待审核'
+		    upFee.setUpdateBy(UserUtils.getUser());
+		    upFee.setUpdateDate(new Date());
+		    electricFeeDao.update(upFee);
+		}
 	    }
 	}
 
@@ -517,8 +606,11 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 
     /**
      * 电表充值
-     * @param meterNo 电表表号
-     * @param value 充值金额
+     * 
+     * @param meterNo
+     *            电表表号
+     * @param value
+     *            充值金额
      */
     private String charge(String meterNo, String value) {
 	PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
@@ -535,7 +627,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    }
 	    logger.info("call meter charge result:" + result);
 	} catch (Exception e) {
-	    this.logger.error("call meter charge error:", e);
+	    this.logger.error("call meter charge error:", e);// 捕获到异常，充值失败，则更新充值记录状态为
 	} finally {
 	    try {
 		if (null != read)
