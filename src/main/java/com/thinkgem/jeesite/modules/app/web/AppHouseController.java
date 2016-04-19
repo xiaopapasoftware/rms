@@ -33,7 +33,6 @@ import com.thinkgem.jeesite.modules.app.entity.Repairs;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -116,8 +115,6 @@ public class AppHouseController {
 	@Autowired
 	private SystemService systemService;
 
-	@Autowired
-	private MessageService messageService;//APP消息推送
 	@Autowired
 	private ElectricFeeService electricFeeService;
 	@Autowired
