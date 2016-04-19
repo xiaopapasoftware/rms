@@ -2,7 +2,6 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +33,6 @@ import com.thinkgem.jeesite.modules.app.entity.Repairs;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.app.service.RepairsService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -117,8 +115,6 @@ public class AppHouseController {
 	@Autowired
 	private SystemService systemService;
 
-	@Autowired
-	private MessageService messageService;//APP消息推送
 	@Autowired
 	private ElectricFeeService electricFeeService;
 	@Autowired
@@ -510,8 +506,7 @@ public class AppHouseController {
 	public ResponseData booked(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 
-		if (null == request.getParameter("house_id") || null == request.getParameter("sign_date")
-				|| null == request.getParameter("end_date")) {
+		if (null == request.getParameter("house_id") || null == request.getParameter("sign_date") || null == request.getParameter("book_cycle")) {
 			data.setCode("101");
 			return data;
 		}
@@ -615,15 +610,16 @@ public class AppHouseController {
 
 				tenantList.add(tenant);
 			}
-			depositAgreement.setTenantList(tenantList);
-			depositAgreement.setSignDate(new Date());
-			depositAgreement.setAgreementDate(DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd"));
-			depositAgreement.setValidatorFlag("0");// 暂存
-			depositAgreement.setDataSource("2");// APP
-			depositAgreement.setRemarks(request.getParameter("msg"));
-			depositAgreement.setAgreementStatus("6");// 暂存
-			depositAgreement.setStartDate(DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd"));
-			depositAgreement.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+            	    	Date signDate = DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd");
+                	depositAgreement.setTenantList(tenantList);
+                	depositAgreement.setSignDate(new Date());
+                	depositAgreement.setAgreementDate(signDate);
+                	depositAgreement.setValidatorFlag("0");// 暂存
+                	depositAgreement.setDataSource("2");// APP
+                	depositAgreement.setRemarks(request.getParameter("msg"));
+                	depositAgreement.setAgreementStatus("6");// 暂存
+                	depositAgreement.setStartDate(signDate);
+                	depositAgreement.setExpiredDate(DateUtils.dateAddMonth2(signDate, Integer.valueOf(request.getParameter("book_cycle"))));
 			depositAgreementService.save(depositAgreement);
 			
 			/* 获取房屋房屋管家手机号码 */
@@ -1045,7 +1041,7 @@ public class AppHouseController {
 	public ResponseData sign(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 
-		if (null == request.getParameter("house_id") || null == request.getParameter("end_date")) {
+		if (null == request.getParameter("house_id") || null == request.getParameter("contract_cycle")) {
 			data.setCode("101");
 			return data;
 		}
@@ -1173,9 +1169,10 @@ public class AppHouseController {
 				rentContract.setContractSource("1");// 本部
 				rentContract.setValidatorFlag("0");// 暂存
 				rentContract.setDataSource("2");// APP
-				rentContract.setSignDate(new Date());
-				rentContract.setStartDate(new Date());
-				rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+				Date d = new Date();
+				rentContract.setSignDate(d);
+				rentContract.setStartDate(d);
+				rentContract.setExpiredDate(DateUtils.dateAddMonth2(d, Integer.valueOf(request.getParameter("contract_cycle"))));
 				rentContract.setRemarks(request.getParameter("msg"));
 				rentContract.setContractStatus("0");// 暂存
 			
@@ -1199,9 +1196,10 @@ public class AppHouseController {
 				rentContract.setRental(depositAgreement.getHousingRent());
 				rentContract.setRenMonths(depositAgreement.getRenMonths());
 				rentContract.setDepositMonths(depositAgreement.getDepositMonths());
-				rentContract.setStartDate(new Date());
-				rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
-				rentContract.setSignDate(new Date());
+				Date d = new Date();
+				rentContract.setSignDate(d);
+				rentContract.setStartDate(d);
+				rentContract.setExpiredDate(DateUtils.dateAddMonth2(d, Integer.valueOf(request.getParameter("contract_cycle"))));
 				rentContract.setUser(depositAgreement.getUser());
 				rentContract.setTenantList(depositAgreement.getTenantList());
 				rentContract.setRemarks(depositAgreement.getRemarks());
@@ -1307,7 +1305,7 @@ public class AppHouseController {
 	public ResponseData contractContinue(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 		
-		if (StringUtils.isEmpty(request.getParameter("contract_id")) || StringUtils.isEmpty(request.getParameter("end_date"))) {
+		if (StringUtils.isEmpty(request.getParameter("contract_id")) || StringUtils.isEmpty(request.getParameter("contract_cycle"))) {
 			data.setCode("101");
 			return data;
 		}
@@ -1331,10 +1329,10 @@ public class AppHouseController {
 			RentContract rentContract = this.rentContractService.get(contractId);
 			House house = null;
 			if(null != rentContract && null != rentContract.getHouse()) {
-				house = this.houseService.get(rentContract.getHouse().getId());
+			  house = this.houseService.get(rentContract.getHouse().getId());
 			}
-
 			String contractName = rentContract.getContractName();
+			Date originalEndDate = rentContract.getExpiredDate();//原来合同的结束日期
 			RentContract rentContractOld = rentContract;
 			rentContract = new RentContract();
 			rentContract.setContractId(contractId);
@@ -1367,8 +1365,9 @@ public class AppHouseController {
 			rentContract.setValidatorFlag("0");// 暂存
 			rentContract.setDataSource("2");// APP
 			rentContract.setSignDate(new Date());
-			rentContract.setStartDate(new Date());
-			rentContract.setExpiredDate(DateUtils.parseDate(request.getParameter("end_date"), "yyyy-MM-dd"));
+			Date beginDate = DateUtils.dateAddDay(originalEndDate, 1);
+			rentContract.setStartDate(beginDate);
+			rentContract.setExpiredDate(DateUtils.dateAddMonth2(beginDate, Integer.valueOf(request.getParameter("contract_cycle"))));
 			rentContract.setRemarks(request.getParameter("msg"));
 			rentContract.setContractStatus("0");// 暂存
 			rentContract.setSignType("1");//正常人工续签
@@ -1457,6 +1456,7 @@ public class AppHouseController {
 			int rentMonthes = rentContract.getRenMonths();// 首付房租月数
 			int rentMonthesCount = 0;
 			for (PaymentTrans tmpPaymentTrans : paymentTransList) {
+				if(rentMonthesCount >= rentMonthes) break;
 				if ("2".equals(tmpPaymentTrans.getPaymentType()) || "3".equals(tmpPaymentTrans.getPaymentType())) {// 水电押金/续补水电费押金
 					transIds += tmpPaymentTrans.getId() + ",";
 					tradeAmount += tmpPaymentTrans.getTradeAmount();
@@ -1475,7 +1475,55 @@ public class AppHouseController {
 					receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
 					receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
 					receiptList.add(receipt);
-				} else if ("6".equals(tmpPaymentTrans.getPaymentType()) && rentMonthesCount < rentMonthes) {// 房租
+				} else if ("6".equals(tmpPaymentTrans.getPaymentType())) {// 房租
+					transIds += tmpPaymentTrans.getId() + ",";
+					tradeAmount += tmpPaymentTrans.getTradeAmount();
+
+					Receipt receipt = new Receipt();
+					receipt.setTradeMode("4");// 支付宝
+					receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
+					receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
+					receiptList.add(receipt);
+
+					rentMonthesCount++;
+				}
+			}
+			rentMonthesCount = 0;
+			for (PaymentTrans tmpPaymentTrans : paymentTransList) {
+				if(rentMonthesCount >= rentMonthes) break;
+				if ("18".equals(tmpPaymentTrans.getPaymentType())) {//电视费
+					transIds += tmpPaymentTrans.getId() + ",";
+					tradeAmount += tmpPaymentTrans.getTradeAmount();
+
+					Receipt receipt = new Receipt();
+					receipt.setTradeMode("4");// 支付宝
+					receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
+					receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
+					receiptList.add(receipt);
+
+					rentMonthesCount++;
+				}
+			}
+			rentMonthesCount = 0;
+			for (PaymentTrans tmpPaymentTrans : paymentTransList) {
+				if(rentMonthesCount >= rentMonthes) break;
+				if ("20".equals(tmpPaymentTrans.getPaymentType())) {//宽带费
+					transIds += tmpPaymentTrans.getId() + ",";
+					tradeAmount += tmpPaymentTrans.getTradeAmount();
+
+					Receipt receipt = new Receipt();
+					receipt.setTradeMode("4");// 支付宝
+					receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
+					receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
+					receiptList.add(receipt);
+
+					rentMonthesCount++;
+				}
+			}
+			rentMonthesCount = 0;
+			for (PaymentTrans tmpPaymentTrans : paymentTransList) {
+				if(rentMonthesCount >= rentMonthes) break;
+				if ("14".equals(tmpPaymentTrans.getPaymentType())) {//水费
 					transIds += tmpPaymentTrans.getId() + ",";
 					tradeAmount += tmpPaymentTrans.getTradeAmount();
 
