@@ -308,6 +308,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				    electricFee.setUpdateDate(new Date());
 				    electricFeeDao.update(electricFee);
 				}
+			    } else {// 充值失败
+				electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
+				electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+				electricFee.setUpdateBy(UserUtils.getUser());
+				electricFee.setUpdateDate(new Date());
+				electricFeeDao.update(electricFee);
 			    }
 			}
 		    } else {// 审核不通过
