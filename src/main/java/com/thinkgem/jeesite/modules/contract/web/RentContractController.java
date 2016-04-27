@@ -34,10 +34,6 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -100,8 +96,6 @@ public class RentContractController extends BaseController {
     private RoomService roomService;
     @Autowired
     private ElectricFeeService electricFeeService;
-    @Autowired
-	private ContractBookService contractBookService;
     @Autowired
     private DepositAgreementService depositAgreementService;
     
@@ -482,33 +476,33 @@ public class RentContractController extends BaseController {
 	conditionRentContract.setPropertyProject(rentContract.getPropertyProject());
 	conditionRentContract.setHouse(rentContract.getHouse());
 	conditionRentContract.setRoom(rentContract.getRoom());
-	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
-	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
-	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
-	
-	//来自APP的合同不参与该逻辑
-	if ("1".equals(rentContract.getDataSource()) && CollectionUtils.isNotEmpty(rentContracts)) {
-	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
-		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
-		    hasRefusedFlag = true;
-		}
-		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
-		    hasTempExistFlag = true;
-		}
-	    }
-	}
-	if (hasRefusedFlag) {
-	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
-	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-	    initExceptionedModel(model, rentContract);
-	    return "modules/contract/rentContractForm";
-	}
-	if (hasTempExistFlag) {
-	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
-	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-	    initExceptionedModel(model, rentContract);
-	    return "modules/contract/rentContractForm";
-	}
+//	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
+//	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
+//	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
+//	
+//	//来自APP的合同不参与该逻辑
+//	if ("1".equals(rentContract.getDataSource()) && CollectionUtils.isNotEmpty(rentContracts)) {
+//	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
+//		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+//		    hasRefusedFlag = true;
+//		}
+//		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+//		    hasTempExistFlag = true;
+//		}
+//	    }
+//	}
+//	if (hasRefusedFlag) {
+//	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
+//	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+//	    initExceptionedModel(model, rentContract);
+//	    return "modules/contract/rentContractForm";
+//	}
+//	if (hasTempExistFlag) {
+//	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
+//	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+//	    initExceptionedModel(model, rentContract);
+//	    return "modules/contract/rentContractForm";
+//	}
 
 	// 保存合同时检查如果该房屋或房间还有定金协议未转合同，则强迫操作者先把定金转合同。
 	DepositAgreement conditionDepositAgreement = new DepositAgreement();
