@@ -1546,7 +1546,10 @@ public class AppHouseController {
 			tradingAccountsService.delete(tradingAccounts);
 			tradingAccounts.setTradeStatus("0");// 待审核
 			tradingAccounts.setTransIds(transIds);
-			tradingAccounts.setTradeType("3");// 新签合同
+			if("0".equals(rentContract.getSignType()))
+				tradingAccounts.setTradeType("3");// 新签合同
+			else
+				tradingAccounts.setTradeType("4");//正常人工续签
 			tradingAccounts.setTradeAmount(tradeAmount);
 			tradingAccounts.setTradeDirection("1");// 入账
 			tradingAccounts.setPayeeType("1");// 个人
