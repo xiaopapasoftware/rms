@@ -144,10 +144,17 @@ public class ScienerLockService {
             return null;
         }
         List<Map> keys = new ArrayList<Map>();
+        Map authRes = this.managerAuthorize();
+        if(authRes== null || authRes.get("access_token")== null){
+            log.error("sciener authorize failed");
+            return null;
+        }
+        String accessToken = (String) authRes.get("access_token");
+
         for(Map lock: locks){
             Map<String, Object> map = Maps.newHashMap();
             map.put("clientId", clientId);
-            map.put("accessToken", "3755d1cb1108c528a8803866d44a7c7a");
+            map.put("accessToken", accessToken);
             map.put("lockId",lock.get("room_id"));
             map.put("date", System.currentTimeMillis());
             try {

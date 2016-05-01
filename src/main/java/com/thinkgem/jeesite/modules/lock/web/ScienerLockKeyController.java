@@ -8,7 +8,9 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.AppUser;
+import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
@@ -42,6 +44,9 @@ public class ScienerLockKeyController extends BaseController {
 
     @Autowired
     private AppUserService appUserService;
+
+    @Autowired
+    private MessageService messageService;
 
 
     @ModelAttribute
@@ -143,6 +148,12 @@ public class ScienerLockKeyController extends BaseController {
         //调用科技侠分配钥匙接口
         scienerLockService.sendKey(Integer.parseInt(key.getLockId()), key.getUsername(), key.getStartDate().getTime(), key.getEndDate().getTime(), key.getRemark());
         addMessage(redirectAttributes, "分配钥匙成功");
+        Message message = new Message();
+        message.setContent("您收到管理员分配的门锁钥匙");
+        message.setTitle("门锁钥匙");
+        message.setType("门锁钥匙");
+        message.setReceiver(key.getUsername().substring("tangchao_".length()));
+        messageService.addMessage(message,true);
         return "redirect:" + Global.getAdminPath() + "/lock/scienerLockKey/?repage";
     }
 
