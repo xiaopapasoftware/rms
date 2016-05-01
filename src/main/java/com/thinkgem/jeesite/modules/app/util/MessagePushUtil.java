@@ -14,20 +14,21 @@ public class MessagePushUtil {
 	private static String androidSecretKey;
 	private static long iosAccessId;
 	private static String iosSecretKey;
-	
+	private static int iosEnv;
 	static{
 		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 		androidAccessId = Long.parseLong(proper.getProperty("app.android.accessid"));
 		androidSecretKey = proper.getProperty("app.android.secretkey");
 		iosAccessId = Long.parseLong(proper.getProperty("app.ios.accessid"));
 		iosSecretKey = proper.getProperty("app.ios.secretkey");
+        iosEnv = Integer.parseInt(proper.getProperty("app.ios.env"));
 	}
 	
 	public static void pushAccount(String title, String content, String account){
 		//XingeApp.pushAccountAndroid(androidAccessId, androidSecretKey, title, content, account);
         //发送ios消息
         try {
-            XingeApp.pushAccountIos(iosAccessId, iosSecretKey, content, account, XingeApp.IOSENV_PROD);
+            XingeApp.pushAccountIos(iosAccessId, iosSecretKey, content, account, iosEnv);
         }catch(Exception e){
             log.error("pushAccountIos error: " + e);
         }
