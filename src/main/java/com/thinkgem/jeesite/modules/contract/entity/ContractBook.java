@@ -23,6 +23,7 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private Date bookDate;		// book_date
 	private String bookStatus;		// book_status
 	private String salesId;		// sales_id
+	private String salesName;
 	
 	private String projectName;
 	private String buildingName;
@@ -41,6 +42,10 @@ public class ContractBook extends DataEntity<ContractBook> {
 	private String payWay;
 	
 	private String contractBusiStatus;
+	
+	private String updateUser;
+	
+	private Date endDate;
 	
 	public ContractBook() {
 		super();
@@ -224,5 +229,29 @@ public class ContractBook extends DataEntity<ContractBook> {
 
 	public void setContractBusiStatus(String contractBusiStatus) {
 		this.contractBusiStatus = contractBusiStatus;
+	}
+
+	public String getSalesName() {
+		return salesName;
+	}
+
+	public void setSalesName(String salesName) {
+		this.salesName = salesName;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 }

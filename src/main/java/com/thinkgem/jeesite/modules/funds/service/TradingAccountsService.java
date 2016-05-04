@@ -518,7 +518,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     /**
      * 电表充值
      */
-    private String charge(String meterNo, String value) {
+    public String charge(String meterNo, String value) {
 	PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	String meterurl = proper.getProperty("meter.url") + "pay.action?addr=" + meterNo + "&pay_value=" + value;
 	String result = "";

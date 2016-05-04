@@ -240,7 +240,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "3" : auditHis.getAuditStatus());// 2:内容审核拒绝
 														     // 3:内容审核通过到账收据待审核
 	depositAgreement.setUpdateDate(new Date());
-	depositAgreement.setUpdateBy(UserUtils.getUser());
+	if("2".equals(depositAgreement.getDataSource()))
+		depositAgreement.setUpdateUser(auditHis.getUpdateUser());
+	else
+		depositAgreement.setUpdateUser(UserUtils.getUser().getId());
 	depositAgreementDao.update(depositAgreement);
     }
 
