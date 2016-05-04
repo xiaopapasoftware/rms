@@ -25,20 +25,25 @@
 		t.room_no,
 		t.short_desc,
 		t.short_location,
-		t.attachment_path
+		t.attachment_path,
+		su.login_name salesName
 	</sql>
 	
 	<sql id="contractBookJoins">
 		left join 
 		(
-		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
-		t_property_project p,t_building b,t_attachment a
-		where h.property_project_id=p.id and h.building_id=b.id and h.id=a.house_id
+		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h 
+		left join t_property_project p on h.property_project_id=p.id
+		left join t_building b on h.building_id=b.id
+		left join t_attachment a on h.id=a.house_id
 		union all 
-		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
-		t_property_project p,t_building b,t_house h,t_attachment a
-		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
-		) t on a.house_id = t.house_id
+		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r 
+		left join t_property_project p on r.property_project_id=p.id 
+		left join t_building b on r.building_id=b.id 
+		left join t_house h on r.house_id=h.id 
+		left join t_attachment a on r.id=a.room_id 
+		) t on a.house_id = t.house_id 
+		left join sys_user su on a.sales_id = su.id
 	</sql>
     
 	<select id="get" resultType="ContractBook">
@@ -46,7 +51,7 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE a.id = #{id} and del_flag='0' AND a.user_id = #{userId}
+		WHERE a.id = #{id} and a.del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findByUser" resultType="ContractBook">
@@ -54,14 +59,14 @@
 			<include refid="contractBookColumns"/>
 		FROM t_contract_book a
 		<include refid="contractBookJoins"/>
-		WHERE (a.house_id = #{houseId} or a.room_id = #{roomId}) and book_status in('0','1') and del_flag='0' AND a.user_id = #{userId}
+		WHERE (a.house_id = #{houseId} or a.room_id = #{roomId}) and book_status in('0','1') and a.del_flag='0' AND a.user_id = #{userId}
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
+		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by updateUser,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
 		tt.short_location,tt.attachment_path,ct.cell_phone from T_DEPOSIT_AGREEMENT da 
 		left join (
-		select DEPOSIT_AGREEMENT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
+		select DEPOSIT_AGREEMENT_ID,te.id_no from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
 		) ct on da.id=ct.deposit_agreement_id
 		left join (
@@ -73,7 +78,7 @@
 		t_property_project p,t_building b,t_house h,t_attachment a
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
 		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
-		where ct.cell_phone = #{userPhone} and da.data_source='2' 
+		where ct.id_no = #{idNo} and da.data_source='2' 
 		<if test="depositId != null and depositId != ''">
 			AND da.id = #{depositId}
 		</if>
@@ -82,7 +87,7 @@
 	
 	<select id="findRentContract" resultType="ContractBook">
 		select da.id as "contractId",da.CONTRACT_CODE as "contractCode",da.RENTAL as "rent",tt.house_id,da.contract_status as "bookStatus",
-		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag from T_RENT_CONTRACT da 
+		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag,da.update_by updateUser,da.expired_date end_date from T_RENT_CONTRACT da 
 		left join (
 		select CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
@@ -103,6 +108,7 @@
 		<if test="contractBusiStatus != null and contractBusiStatus != ''">
 			AND da.contract_busi_status = #{contractBusiStatus}
 		</if>
+		order by da.create_date desc
 	</select>
 	
 	<select id="findList" resultType="ContractBook">
