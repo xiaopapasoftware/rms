@@ -323,6 +323,9 @@
 						<c:if test="${depositAgreement.agreementStatus=='0' || depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
 	    				</c:if>
+	    				<c:if test="${depositAgreement.agreementStatus=='6'||depositAgreement.agreementStatus=='0'}">
+	    					<a href="${ctx}/contract/depositAgreement/cancel?objectId=${depositAgreement.id}">取消</a>
+	    				</c:if>
 					</shiro:hasPermission>
 				<shiro:hasPermission name="contract:depositAgreement:return">
 					<c:if test="${depositAgreement.agreementStatus=='5' && depositAgreement.agreementBusiStatus=='0'}">

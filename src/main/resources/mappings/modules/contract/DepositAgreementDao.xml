@@ -215,6 +215,9 @@
 			agreement_status = #{agreementStatus},
 			agreement_busi_status = #{agreementBusiStatus},
 			update_by = #{updateBy.id},
+			<if test="updateUser != null and updateUser != ''">
+				update_by = #{updateUser},
+			</if>
 			update_date = #{updateDate},
 			remarks = #{remarks}
 		WHERE id = #{id}

@@ -17,4 +17,5 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 public interface PaymentOrderDao extends CrudDao<PaymentOrder> {
 	List<PaymentOrder> findByHouseId(PaymentOrder paymentOrder);
 	PaymentOrder findByOrderId(PaymentOrder paymentOrder);
+	void updateStatusByOrderId(PaymentOrder paymentOrder);
 }

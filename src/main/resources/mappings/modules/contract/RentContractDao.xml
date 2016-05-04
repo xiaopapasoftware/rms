@@ -354,7 +354,9 @@
 			remind_time = #{remindTime},
 			contract_status = #{contractStatus},
 			contract_busi_status = #{contractBusiStatus},
-			update_by = #{updateBy.id},
+			<if test="updateUser != null and updateUser != ''">
+				update_by = #{updateUser},
+			</if>
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			charge_type = #{chargeType},

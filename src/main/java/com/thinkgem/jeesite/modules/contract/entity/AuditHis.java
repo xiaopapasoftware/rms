@@ -24,6 +24,7 @@ public class AuditHis extends DataEntity<AuditHis> {
 	private String auditStatus;		// 审核状态
 	private String auditMsg;		// 审核意见
 	private String auditUserName;
+	private String updateUser;
 	
 	private String type;
 	
@@ -103,5 +104,13 @@ public class AuditHis extends DataEntity<AuditHis> {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getUpdateUser() {
+		return updateUser;
+	}
+
+	public void setUpdateUser(String updateUser) {
+		this.updateUser = updateUser;
 	}	
 }

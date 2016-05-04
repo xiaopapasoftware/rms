@@ -228,5 +228,4 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE house_id = #{houseId} or room_id = #{roomId}
 	</update>
-	
 </mapper>

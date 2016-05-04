@@ -57,6 +57,7 @@
 				<th>预约电话</th>
 				<th>预约时间</th>
 				<th>预约状态</th>
+				<th>房屋管家</th>
 				<th>备注信息</th>
 				<th>操作</th>
 			</tr>
@@ -87,6 +88,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(contractBook.bookStatus, 'book_status', '')}
+				</td>
+				<td>
+					${contractBook.salesName}
 				</td>
 				<td>
 					${contractBook.remarks}

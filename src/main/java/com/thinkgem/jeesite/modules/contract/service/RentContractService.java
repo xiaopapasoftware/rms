@@ -238,6 +238,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    this.receiptDao.delete(receipt);
 		}
 	    }
+	    
+	    rentContract.setContractBusiStatus("0");//有效
 	}
 	if ("2".equals(auditHis.getType())) {// 如果是特殊退租
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "10" : "18");// 10:特殊退租待结算，18:特殊退租内容审核拒绝
@@ -245,7 +247,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "4" : "3");// 4:内容审核通过到账收据待审核，3:内容审核拒绝
 	}
 	rentContract.setUpdateDate(new Date());
-	rentContract.setUpdateBy(UserUtils.getUser());
+	if(!"3".equals(auditHis.getAuditStatus())) {
+		rentContract.setUpdateUser(UserUtils.getUser().getId());
+	} else {
+		rentContract.setUpdateUser(auditHis.getUpdateUser());
+	}
 	rentContractDao.update(rentContract);
     }
 
