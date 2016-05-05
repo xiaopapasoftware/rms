@@ -18,8 +18,8 @@ alter table t_room add short_location varchar(255) comment '地址描述';
 alter table t_house add pay_way varchar(2) comment '付款方式';
 alter table t_room add pay_way varchar(2) comment '付款方式';
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('356','0','付三押一','rent_fee_type','付款方式','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('357','1','付二押二','rent_fee_type','付款方式','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('500','0','付三押一','rent_fee_type','付款方式','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('501','1','付二押二','rent_fee_type','付款方式','2','0','1',now(),'1',now(),NULL,'0');
 
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('314','113','0,1,113,','预约管理','50106','/contract/book',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('315','314','0,1,96,314','查看','30',NULL,NULL,NULL,'0','contract:contractBook:view','1',now(),'1',now(),NULL,'0');
@@ -31,11 +31,11 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('374','2','用户取消预约','book_status','预约状态','3','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('375','3','管家取消预约','book_status','预约状态','4','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('360','1','管理系统','data_source','数据来源','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('361','2','APP','data_source','数据来源','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('502','1','管理系统','data_source','数据来源','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('503','2','APP','data_source','数据来源','2','0','1',now(),'1',now(),NULL,'0');
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('362','1','未支付','order_status','订单状态','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('363','2','已支付','order_status','订单状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('504','1','未支付','order_status','订单状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('505','2','已支付','order_status','订单状态','2','0','1',now(),'1',now(),NULL,'0');
 
 delete from sys_dict where type = 'booked_status';
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('364','0','等待管家确认','booked_status','预定状态','1','0','1',now(),'1',now(),NULL,'0');
@@ -53,6 +53,7 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('377','4','管家确认成功请您核实','sign_status','签约状态','5','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('378','5','用户取消在线签约','sign_status','签约状态','6','0','1',now(),'1',now(),NULL,'0');
 
+DROP TABLE IF EXISTS t_contract_book;
 create table t_contract_book
 (
 	ID                   varchar(64) NOT NULL,
@@ -77,6 +78,7 @@ create table t_contract_book
 ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_DEPOSIT_AGREEMENT set data_source = '1';
 
+DROP TABLE IF EXISTS t_payment_order;
 create table t_payment_order
 (
 	ID                   varchar(64) NOT NULL,

@@ -910,6 +910,7 @@
 									<transaction src="db/fee/fee.sql"/>
 									<transaction src="db/sys/sys_compay.sql"/>
 									<transaction src="db/sys/sys_menu.sql"/>
+									<transaction src="db/v2.sql"/>
 								</sql>
 								
 								<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
