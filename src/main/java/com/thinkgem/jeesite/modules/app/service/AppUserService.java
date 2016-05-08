@@ -66,5 +66,13 @@ public class AppUserService extends CrudService<AppUserDao, AppUser> {
         User  user = userDao.get(sysUserId);
         return user;
     }
-	
+
+    public User getServiceUserByContractId(String contract_id) {
+        String sysUserId = appUserDao.getServiceUserByContractId(contract_id);
+        if(sysUserId == null){
+            return null;
+        }
+        User  user = userDao.get(sysUserId);
+        return user;
+    }
 }

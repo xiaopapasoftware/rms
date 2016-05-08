@@ -2533,6 +2533,14 @@ public class AppHouseController {
 			repair.setRoomId(request.getParameter("room_id"));
 			repair.setStatus("01");
 			repair.setDescription(request.getParameter("description"));
+            User user = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
+            if(user == null){
+                data.setCode("400");
+                data.setMsg("合同没有匹配的服务管家");
+                return data;
+            }
+            repair.setSteward(user.getName());
+            repair.setStewardMobile(user.getMobile());
 			repairService.save(repair);
 
 			String attach_path = request.getParameter("attach_path");
@@ -2553,8 +2561,8 @@ public class AppHouseController {
 			attachment.setBizId(repair.getId());
 			attachmentDao.insert(attachment);
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("steward", "admin");
-			map.put("steward_mobile", "15618820709");
+			map.put("steward", repair.getSteward());
+			map.put("steward_mobile", repair.getStewardMobile());
 			data.setData(map);
 			data.setCode("200");
 			data.setMsg("报修已提交");
@@ -2690,7 +2698,7 @@ public class AppHouseController {
                 map.put("name", serviceUser.getName());
                 map.put("phone", serviceUser.getMobile());
                 map.put("photo", serviceUser.getPhoto());
-                map.put("level","");
+                map.put("level", "");
                 map.put("agency", serviceUser.getCompany().getName());
                 data.setData(map);
                 data.setCode("200");

@@ -180,4 +180,10 @@
         and rc.CONTRACT_BUSI_STATUS = '0'
         limit 1
     </select>
+    <select id="getServiceUserByContractId" resultType="string">
+        select h.service_user from t_rent_contract rc
+        join t_house h on h.ID = rc.HOUSE_ID
+        where rc.id = #{contract_id}
+        and rc.CONTRACT_BUSI_STATUS = '0'
+    </select>
 </mapper>

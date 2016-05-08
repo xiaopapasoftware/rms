@@ -17,4 +17,5 @@ public interface AppUserDao extends CrudDao<AppUser> {
 	public AppUser getByPhone(AppUser appUser);
     public String getServiceUserByPhone(AppUser appUser);
 
+    public String getServiceUserByContractId(String contract_id);
 }
