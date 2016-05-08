@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.app.entity;
 
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -29,6 +30,7 @@ public class AppUser extends DataEntity<AppUser> {
 	private String idCardPhoto＿back;		// 身份证反面,附件ID
     private String scienerUserName; //科技侠账号
     private String scienerPassword; //科技侠密码
+    private String phoneAndName;
 	
 	public AppUser() {
 		super();
@@ -162,6 +164,22 @@ public class AppUser extends DataEntity<AppUser> {
     }
 
 
+    public String getPhoneAndName(){
+        if(StringUtils.isNotEmpty(name)){
+            phoneAndName = phone + "-" + name;
+        }else{
+            phoneAndName = phone;
+        }
 
+        return phoneAndName;
+    }
+
+    public void setPhoneAndName(){
+        if(StringUtils.isNotEmpty(name)){
+            phoneAndName = phone + "-" + name;
+        }else{
+            phoneAndName = phone;
+        }
+    }
 
 }

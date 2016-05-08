@@ -36,7 +36,7 @@
             <li><label>用户：</label>
                 <form:select path="username" class="input-medium">
                     <form:option value="" label="请选择..."/>
-                    <form:options items="${users}" itemLabel="name" itemValue="scienerUserName" />
+                    <form:options items="${users}" itemLabel="phoneAndName" itemValue="scienerUserName" />
                 </form:select>
             </li>
             <li><label>钥匙状态：</label>

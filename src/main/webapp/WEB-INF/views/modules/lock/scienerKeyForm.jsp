@@ -64,7 +64,7 @@
             <div class="controls">
                 <form:select path="username" class="input-xlarge required">
                     <form:option value="" label="请选择..."/>
-                    <form:options items="${users}" itemLabel="name" itemValue="scienerUserName" htmlEscape="false"/>
+                    <form:options items="${users}" itemLabel="phoneAndName" itemValue="scienerUserName" htmlEscape="false"/>
                 </form:select>
                 <span class="help-inline"><font color="red">*</font> </span>
             </div>
