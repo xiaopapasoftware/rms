@@ -2662,4 +2662,44 @@ public class AppHouseController {
 
 		return sb.toString();
 	}
+
+    @RequestMapping(value = "keeper")
+    @ResponseBody
+    public ResponseData keeper(HttpServletRequest request, HttpServletResponse response) {
+        ResponseData data = new ResponseData();
+
+        try {
+            String token = (String) request.getHeader("token");
+            AppToken apptoken = new AppToken();
+            apptoken.setToken(token);
+            apptoken = appTokenService.findByToken(apptoken);
+            if(null == apptoken) {
+                data.setCode("400");
+                data.setMsg("请重新登录");
+                return data;
+            }
+            AppUser appUser = new AppUser();
+            appUser.setPhone(apptoken.getPhone());
+            User serviceUser = appUserService.getServiceUserByPhone(appUser);
+            if(serviceUser == null){
+                data.setCode("400");
+                data.setMsg("未分配管家!");
+            }else{
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("id", serviceUser.getId());
+                map.put("name", serviceUser.getName());
+                map.put("phone", serviceUser.getMobile());
+                map.put("photo", serviceUser.getPhoto());
+                map.put("level","");
+                map.put("agency", serviceUser.getCompany().getName());
+                data.setData(map);
+                data.setCode("200");
+            }
+        } catch (Exception e) {
+            data.setCode("500");
+            this.log.error("get house keeper error:", e);
+        }
+        return data;
+
+    }
 }

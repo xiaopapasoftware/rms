@@ -15,4 +15,6 @@ import com.thinkgem.jeesite.modules.app.entity.AppUser;
 @MyBatisDao
 public interface AppUserDao extends CrudDao<AppUser> {
 	public AppUser getByPhone(AppUser appUser);
+    public String getServiceUserByPhone(AppUser appUser);
+
 }

@@ -168,4 +168,16 @@
         left join t_attachment attach3 on a.id=attach3.BIZ_ID and attach3.attachment_type='APP_USER_ID_BACK' and attach3.del_flag = 0
 		WHERE a.phone = #{phone}
 	</select>
+    <select id="getServiceUserByPhone" resultType="string">
+        select h.service_user
+        from t_rent_contract rc
+        left join (select CONTRACT_ID, te.CELL_PHONE from t_contract_tenant cte, t_tenant te
+                    where cte.TENANT_ID = te.id and cte.del_flag='0' and te.del_flag='0') ct
+        on rc.id = ct.contract_id
+        join t_house h on h.ID = rc.HOUSE_ID
+        where ct.cell_phone = #{phone}
+        and rc.data_source = '2'
+        and rc.CONTRACT_BUSI_STATUS = '0'
+        limit 1
+    </select>
 </mapper>

@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.modules.app.service;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.sys.dao.UserDao;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,9 @@ public class AppUserService extends CrudService<AppUserDao, AppUser> {
 
 	@Autowired
 	private AppUserDao appUserDao;
+
+    @Autowired
+    private UserDao userDao;
 
 	public AppUser get(String id) {
 		return super.get(id);
@@ -52,5 +57,14 @@ public class AppUserService extends CrudService<AppUserDao, AppUser> {
 	public AppUser getByPhone(AppUser appUser) {
 		return appUserDao.getByPhone(appUser);
 	}
+
+    public User getServiceUserByPhone(AppUser appUser){
+        String sysUserId = appUserDao.getServiceUserByPhone(appUser);
+        if(sysUserId == null){
+            return null;
+        }
+        User  user = userDao.get(sysUserId);
+        return user;
+    }
 	
 }
