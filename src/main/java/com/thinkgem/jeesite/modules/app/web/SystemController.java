@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.*;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -20,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.druid.util.StringUtils;
-import com.thinkgem.jeesite.modules.app.service.AppTokenService;
-import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.TAppCheckCodeService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -46,6 +43,9 @@ public class SystemController {
     private MessageService messageService;
     @Autowired
     private ScienerLockService scienerLockService;
+
+    @Autowired
+    private QuestionsService questionsService;
 
     @RequestMapping(value="checkToken")
     @ResponseBody
@@ -372,17 +372,18 @@ public class SystemController {
 
         try {
 
-
             List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-
-            Map<String, Object> mp = new HashMap<String, Object>();
-            mp.put("question", "如何注册");
-            mp.put("answer", "唐巢账户以手机号作为账号，目前仅支持国内手机号");
-            list.add(mp);
-            Map<String, Object> mp2 = new HashMap<String, Object>();
-            mp2.put("question", "如何使用临时开门");
-            mp2.put("answer", "请入住前联系客服，将账号与门锁绑定，并下发蓝牙钥匙；登陆后下载钥匙，即可使用蓝牙开门功能");
-            list.add(mp2);
+            Questions que = new Questions();
+            Page p = new Page<Questions>();
+            p.setOrderBy("sort");
+            que.setPage(p);
+            List<Questions> qeustions = questionsService.findList(que);
+            for(Questions q: qeustions){
+                Map<String, Object> mp = new HashMap<String, Object>();
+                mp.put("question", q.getQuestion());
+                mp.put("answer", q.getAnswer());
+                list.add(mp);
+            }
 
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("questions", list);
