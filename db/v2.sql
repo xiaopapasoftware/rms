@@ -77,7 +77,7 @@ create table t_contract_book
   REMARKS              VARCHAR(255) COMMENT '备注信息',
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '预约看房信息';
+) comment = '预约看房信息';
 
 ALTER TABLE T_DEPOSIT_AGREEMENT ADD data_source VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP';
 update T_DEPOSIT_AGREEMENT set data_source = '1';
@@ -100,7 +100,7 @@ create table t_payment_order
   REMARKS              VARCHAR(255) COMMENT '备注信息',
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '支付订单信息';
+) comment = '支付订单信息';
 
 alter table t_payment_order add house_id varchar(64);
 
@@ -176,7 +176,7 @@ create table t_house_ad
   REMARKS              VARCHAR(255) COMMENT '备注信息',
   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
 	primary key (ID)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci comment = '广告';
+) comment = '广告';
 
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('370','0','图片广告','ad_type','广告类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','房源链接式广告','ad_type','广告类型','2','0','1',now(),'1',now(),NULL,'0');
