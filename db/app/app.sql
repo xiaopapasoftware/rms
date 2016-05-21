@@ -22,6 +22,8 @@ create table T_APP_USER
    AVATAR				VARCHAR(64)  COMMENT '头像,附件ID',
    ID_CARD_PHOTO＿FRONT		VARCHAR(64)comment  '身份证正面,附件ID',
    ID_CARD_PHOTO＿BACK		VARCHAR(64)comment  '身份证反面,附件ID',
+   scienerUserName    varchar(64) comment  '科技侠账号',
+   scienerUserPassword varchar(128) comment  '科技侠密码',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
