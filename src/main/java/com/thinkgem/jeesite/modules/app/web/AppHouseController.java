@@ -2527,7 +2527,7 @@ public class AppHouseController {
 			// String mobile = request.getParameter("mobile");
 
 			Repairs repair = new Repairs();
-			repair.setId(IdGen.uuid());
+			//repair.setId(IdGen.uuid());
 			repair.setUserMobile(request.getParameter("user_mobile"));
 			repair.setContractId(request.getParameter("contract_id"));
 			repair.setRoomId(request.getParameter("room_id"));
