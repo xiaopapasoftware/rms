@@ -646,6 +646,7 @@ public class AppHouseController {
 			data.setCode("200");
 		} catch (Exception e) {
 			data.setCode("500");
+			data.setMsg("预订失败,请重新预订!");
 			this.log.error("save contract book error:", e);
 		}
 
