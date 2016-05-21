@@ -249,17 +249,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 
     @Transactional(readOnly = false)
     public void save(DepositAgreement depositAgreement) {
-    	String houseId = "";
-    	if ("0".equals(depositAgreement.getRentMode())) {// 整租
-    		houseId = depositAgreement.getHouse().getId();
-    	} else {
-    		houseId = depositAgreement.getRoom().getId();
-    	}
-    	if(!checkHouseStatus(houseId)) {
-    		this.logger.error("[预订失败,房屋已出租.]");
-    		return;
-    	}
-    	
 	String id = super.saveAndReturnId(depositAgreement);
 
 	if ("1".equals(depositAgreement.getValidatorFlag())) {// 正常保存，而非暂存,暂存为0
@@ -503,20 +492,4 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
     	return this.depositAgreementDao.getByHouseId(depositAgreement);
     }
-    
-    private boolean checkHouseStatus(String houseId) {
-		House house = this.houseDao.get(houseId);
-		if(null == house) {
-			Room room = this.roomDao.get(houseId);
-			if(null == room || !"1".equals(room.getRoomStatus())) {
-				return false;
-			}
-		} else {
-			String houseStatus = house.getHouseStatus();
-			if(!"1".equals(houseStatus)) {
-				return false;
-			}
-		}
-		return true;
-	}
 }
