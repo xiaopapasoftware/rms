@@ -3,9 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -513,9 +511,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		genDepositAmountPayTrans(tradeType, id, rentContract);
 	    }
 
-	    // 合同日期间隔月数，带小数
-	    double monthCountDiff = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());
-	    logger.info("monthDiff : " + monthCountDiff);
+	    // 合同日期间隔月数
+	    int monthCountDiff = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());
 
 	    // 生成合同期内所有的房租款项
 	    genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff);
@@ -768,22 +765,21 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     /**
      * 生成合同期内的所有房租款项
      */
-    private void genContractRentalPayTrans(String tradeType, String transObjId, RentContract rentContract, double monthCountDiff) {
+    private void genContractRentalPayTrans(String tradeType, String transObjId, RentContract rentContract, int monthCountDiff) {
 
 	Date startD = rentContract.getStartDate();// 开始日期
 
 	boolean depositTransContractFlag = false;
 	Double depositAgreementAmount = 0d;
 	if (!StringUtils.isBlank(rentContract.getAgreementId())) {
-	    DepositAgreement depositAgreement = this.depositAgreementDao.get(rentContract.getAgreementId());
+	    DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getAgreementId());
 	    depositAgreementAmount = depositAgreement.getDepositAmount();
 	    depositTransContractFlag = true;
 	}
 
 	// 先生成整数房租款项列表
-	int intergeredMonthCounts = (int) monthCountDiff;// 合同期间间隔的月份整数个数
-	if (intergeredMonthCounts > 0) {
-	    for (int i = 0; i < intergeredMonthCounts; i++) {
+	if (monthCountDiff > 0) {
+	    for (int i = 0; i < monthCountDiff; i++) {
 		PaymentTrans paymentTrans = new PaymentTrans();
 		paymentTrans.setId(IdGen.uuid());
 		paymentTrans.setTradeType(tradeType);
@@ -792,7 +788,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		paymentTrans.setTradeDirection("1");// 收款
 		paymentTrans.setTradeAmount(rentContract.getRental());
 		paymentTrans.setStartDate(startD);
-		if (i != (intergeredMonthCounts - 1))
+		if (i != (monthCountDiff - 1))
 		    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
 		else
 		    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
@@ -818,6 +814,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    paymentTrans.setLastAmount(rentContract.getRental());
 		    paymentTrans.setTransAmount(0D);
 		    paymentTrans.setTransStatus("0");// 未到账登记
+		    paymentTrans.setTransferDepositAmount(0d);
 		}
 		paymentTrans.setCreateDate(new Date());
 		paymentTrans.setCreateBy(UserUtils.getUser());
@@ -830,74 +827,16 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		startD = DateUtils.dateAddMonth(startD, 1);
 	    }
 	}
-
-	// 生成零头的房租款项
-	BigDecimal doubledMonthCounts = new BigDecimal(monthCountDiff - intergeredMonthCounts).setScale(2, BigDecimal.ROUND_HALF_UP);// 合同期间间隔的月份零头数
-
-	// 特殊预先处理
-	if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
-	    doubledMonthCounts = specialProcess(doubledMonthCounts, rentContract.getStartDate(), rentContract.getExpiredDate());
-	}
-
-	if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
-	    PaymentTrans paymentTrans = new PaymentTrans();
-	    paymentTrans.setId(IdGen.uuid());
-	    paymentTrans.setTradeType(tradeType);
-	    paymentTrans.setPaymentType("6");// 房租金额
-	    paymentTrans.setTransId(transObjId);
-	    paymentTrans.setTradeDirection("1");// 收款
-	    paymentTrans.setTradeAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
-	    paymentTrans.setStartDate(startD);
-	    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-
-	    if (depositTransContractFlag) {// 定金转合同
-		if (depositAgreementAmount <= 0) {// 定金已经被分配完毕
-		    paymentTrans.setLastAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setTransAmount(0D);
-		    paymentTrans.setTransStatus("0");// 未到账登记
-		} else {// 定金还有剩余
-		    if (depositAgreementAmount >= rentContract.getRental() * doubledMonthCounts.doubleValue()) {
-			paymentTrans.setLastAmount(0D);
-			paymentTrans.setTransAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
-			paymentTrans.setTransStatus("2");// 完全到账登记
-			depositAgreementAmount = depositAgreementAmount - rentContract.getRental() * doubledMonthCounts.doubleValue();
-		    } else {
-			paymentTrans.setLastAmount(rentContract.getRental() * doubledMonthCounts.doubleValue() - depositAgreementAmount);
-			paymentTrans.setTransAmount(depositAgreementAmount);
-			paymentTrans.setTransStatus("1");// 部分到账登记
-			depositAgreementAmount = 0d;
-		    }
-		}
-	    } else {// 正常保存，无定金
-		paymentTrans.setLastAmount(rentContract.getRental() * doubledMonthCounts.doubleValue());
-		paymentTrans.setTransAmount(0D);
-		paymentTrans.setTransStatus("0");// 未到账登记
-	    }
-	    paymentTrans.setCreateDate(new Date());
-	    paymentTrans.setCreateBy(UserUtils.getUser());
-	    paymentTrans.setUpdateDate(new Date());
-	    paymentTrans.setUpdateBy(UserUtils.getUser());
-	    paymentTrans.setDelFlag("0");
-	    if (paymentTrans.getTradeAmount() > 0) {
-		paymentTransDao.insert(paymentTrans);
-	    }
-	}
     }
 
     /**
      * 生成合同期内的所有费用款项
      */
-    private void genContractFeesPayTrans(String tradeType, String transObjId, RentContract rentContract, double monthCountDiff) {
-
+    private void genContractFeesPayTrans(String tradeType, String transObjId, RentContract rentContract, int monthCountDiff) {
 	if ("0".equals(rentContract.getChargeType())) {// 预付
-
 	    Date startD = rentContract.getStartDate();// 开始日期
-
-	    // 先生成整数费用款项列表
-	    int intergeredMonthCounts = (int) monthCountDiff;
-	    if (intergeredMonthCounts > 0) {
-		for (int i = 0; i < intergeredMonthCounts; i++) {
-
+	    if (monthCountDiff > 0) { // 先生成整数费用款项列表
+		for (int i = 0; i < monthCountDiff; i++) {
 		    if (null != rentContract.getWaterFee() && rentContract.getWaterFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -906,7 +845,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			if (i != (intergeredMonthCounts - 1))
+			if (i != (monthCountDiff - 1))
 			    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
 			else
 			    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
@@ -923,7 +862,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			    paymentTransDao.insert(paymentTrans);
 			}
 		    }
-
 		    if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -946,7 +884,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			    paymentTransDao.insert(paymentTrans);
 			}
 		    }
-
 		    if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee() && rentContract.getNetFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -969,7 +906,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			    paymentTransDao.insert(paymentTrans);
 			}
 		    }
-
 		    if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
 			paymentTrans.setId(IdGen.uuid());
@@ -992,136 +928,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			    paymentTransDao.insert(paymentTrans);
 			}
 		    }
-
 		    startD = DateUtils.dateAddMonth(startD, 1);
 		}
 	    }
-
-	    // 生成零头的费用款项
-	    BigDecimal doubledMonthCounts = new BigDecimal(monthCountDiff - intergeredMonthCounts).setScale(2, BigDecimal.ROUND_HALF_UP);// 合同期间间隔的月份零头数
-
-	    // 特殊预先处理
-	    if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
-		doubledMonthCounts = specialProcess(doubledMonthCounts, rentContract.getStartDate(), rentContract.getExpiredDate());
-	    }
-
-	    if (doubledMonthCounts.compareTo(BigDecimal.ZERO) > 0 && doubledMonthCounts.compareTo(new BigDecimal(1)) < 0) {
-		if (null != rentContract.getWaterFee() && rentContract.getWaterFee() > 0) {
-		    PaymentTrans paymentTrans = new PaymentTrans();
-		    paymentTrans.setId(IdGen.uuid());
-		    paymentTrans.setTradeType(tradeType);
-		    paymentTrans.setPaymentType("14");// 水费金额
-		    paymentTrans.setTransId(transObjId);
-		    paymentTrans.setTradeDirection("1");// 收款
-		    paymentTrans.setStartDate(startD);
-		    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-		    paymentTrans.setTradeAmount(rentContract.getWaterFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setLastAmount(rentContract.getWaterFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setTransAmount(0D);
-		    paymentTrans.setTransStatus("0");// 未到账登记
-		    paymentTrans.setCreateDate(new Date());
-		    paymentTrans.setCreateBy(UserUtils.getUser());
-		    paymentTrans.setUpdateDate(new Date());
-		    paymentTrans.setUpdateBy(UserUtils.getUser());
-		    paymentTrans.setDelFlag("0");
-		    if (paymentTrans.getTradeAmount() > 0) {
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
-
-		if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
-		    PaymentTrans paymentTrans = new PaymentTrans();
-		    paymentTrans.setId(IdGen.uuid());
-		    paymentTrans.setTradeType(tradeType);
-		    paymentTrans.setPaymentType("18");// 有线电视费
-		    paymentTrans.setTransId(transObjId);
-		    paymentTrans.setTradeDirection("1");// 收款
-		    paymentTrans.setStartDate(startD);
-		    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-		    paymentTrans.setTradeAmount(rentContract.getTvFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setLastAmount(rentContract.getTvFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setTransAmount(0D);
-		    paymentTrans.setTransStatus("0");// 未到账登记
-		    paymentTrans.setCreateDate(new Date());
-		    paymentTrans.setCreateBy(UserUtils.getUser());
-		    paymentTrans.setUpdateDate(new Date());
-		    paymentTrans.setUpdateBy(UserUtils.getUser());
-		    paymentTrans.setDelFlag("0");
-		    if (paymentTrans.getTradeAmount() > 0) {
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
-
-		if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee() && rentContract.getNetFee() > 0) {
-		    PaymentTrans paymentTrans = new PaymentTrans();
-		    paymentTrans.setId(IdGen.uuid());
-		    paymentTrans.setTradeType(tradeType);
-		    paymentTrans.setPaymentType("20");// 宽带费
-		    paymentTrans.setTransId(transObjId);
-		    paymentTrans.setTradeDirection("1");// 收款
-		    paymentTrans.setStartDate(startD);
-		    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-		    paymentTrans.setTradeAmount(rentContract.getNetFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setLastAmount(rentContract.getNetFee() * doubledMonthCounts.doubleValue());
-		    paymentTrans.setTransAmount(0D);
-		    paymentTrans.setTransStatus("0");// 未到账登记
-		    paymentTrans.setCreateDate(new Date());
-		    paymentTrans.setCreateBy(UserUtils.getUser());
-		    paymentTrans.setUpdateDate(new Date());
-		    paymentTrans.setUpdateBy(UserUtils.getUser());
-		    paymentTrans.setDelFlag("0");
-		    if (paymentTrans.getTradeAmount() > 0) {
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
-
-		if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
-		    PaymentTrans paymentTrans = new PaymentTrans();
-		    paymentTrans.setId(IdGen.uuid());
-		    paymentTrans.setTradeType(tradeType);
-		    paymentTrans.setPaymentType("22");// 服务费
-		    paymentTrans.setTransId(transObjId);
-		    paymentTrans.setTradeDirection("1");// 收款
-		    paymentTrans.setStartDate(startD);
-		    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-		    paymentTrans.setTradeAmount((rentContract.getServiceFee() / 100 * rentContract.getRental()) * doubledMonthCounts.doubleValue());
-		    paymentTrans.setLastAmount((rentContract.getServiceFee() / 100 * rentContract.getRental()) * doubledMonthCounts.doubleValue());
-		    paymentTrans.setTransAmount(0D);
-		    paymentTrans.setTransStatus("0");// 未到账登记
-		    paymentTrans.setCreateDate(new Date());
-		    paymentTrans.setCreateBy(UserUtils.getUser());
-		    paymentTrans.setUpdateDate(new Date());
-		    paymentTrans.setUpdateBy(UserUtils.getUser());
-		    paymentTrans.setDelFlag("0");
-		    if (paymentTrans.getTradeAmount() > 0) {
-			paymentTransDao.insert(paymentTrans);
-		    }
-		}
-	    }
 	}
-    }
-
-    /**
-     * 特殊处理月份间隔的小数部分 如果开始、结束日期都不含2月份，则误差范围在0.01 如果开始、结束日期 含有2月份，则误差范围在0.05
-     */
-    private BigDecimal specialProcess(BigDecimal doubledMonthCounts, Date startDate, Date expiredDate) {
-	Calendar stratC = Calendar.getInstance();
-	stratC.setTime(startDate);
-
-	Calendar expiredC = Calendar.getInstance();
-	expiredC.setTime(expiredDate);
-
-	if (stratC.get(Calendar.MONTH) == 1 || expiredC.get(Calendar.MONTH) == 1) {// 含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.15)) < 0) {
-		return BigDecimal.ZERO;
-	    }
-	}
-	if (stratC.get(Calendar.MONTH) != 1 && expiredC.get(Calendar.MONTH) != 1) {// 都不含有2月份
-	    if (doubledMonthCounts.compareTo(new BigDecimal(0.15)) < 0) {
-		return BigDecimal.ZERO;
-	    }
-	}
-	return doubledMonthCounts;
     }
 
     /**

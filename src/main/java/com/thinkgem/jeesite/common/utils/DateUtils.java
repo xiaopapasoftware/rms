@@ -3,9 +3,7 @@
  */
 package com.thinkgem.jeesite.common.utils;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -243,101 +241,18 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 计算两个日期之间相隔的月数
      */
-    public static double getMonthSpace(Date startDate, Date endDate) {
-	Calendar startCalendar = Calendar.getInstance();
-	startCalendar.setTime(startDate);
-	startCalendar.clear(Calendar.HOUR);
-	startCalendar.clear(Calendar.MINUTE);
-	startCalendar.clear(Calendar.SECOND);
-	startCalendar.clear(Calendar.MILLISECOND);
-
-	Calendar endCalendar = Calendar.getInstance();
-	endCalendar.setTime(endDate);
-	endCalendar.clear(Calendar.HOUR);
-	endCalendar.clear(Calendar.MINUTE);
-	endCalendar.clear(Calendar.SECOND);
-	endCalendar.clear(Calendar.MILLISECOND);
-
-	if (startCalendar.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)) {
-	    return calculateSameYearMonthDiff(startCalendar, endCalendar);
+    public static int getMonthSpace(Date startDate, Date endDate) {
+	int count = 0;
+	if (startDate.before(endDate)) {
+	    Date nextStartDate = dateAddMonth2(startDate, 1);
+	    while (!nextStartDate.after(endDate)) {
+		count++;
+		nextStartDate = dateAddMonth(nextStartDate, 1);
+	    }
 	} else {
-	    // 开始日期所在年份的最后一天日期
-	    Calendar lastDayOfStartYearCalendar = Calendar.getInstance();
-	    lastDayOfStartYearCalendar.clear();
-	    lastDayOfStartYearCalendar.set(Calendar.YEAR, startCalendar.get(Calendar.YEAR));
-	    lastDayOfStartYearCalendar.roll(Calendar.DAY_OF_YEAR, -1);
-
-	    // 结束日期所在年份的第一天的日期
-	    Calendar firstDayOfEndYearCalendar = Calendar.getInstance();
-	    firstDayOfEndYearCalendar.clear();
-	    firstDayOfEndYearCalendar.set(Calendar.YEAR, endCalendar.get(Calendar.YEAR));
-	    return new BigDecimal(calculateSameYearMonthDiff(startCalendar, lastDayOfStartYearCalendar) + calculateSameYearMonthDiff(firstDayOfEndYearCalendar, endCalendar)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + (endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR) - 1) * 12;
+	    count = -1;
 	}
+	return count;
     }
 
-    // 计算同年的任意日期月份间隔数
-    private static double calculateSameYearMonthDiff(Calendar startCalendar, Calendar endCalendar) {
-	if (startCalendar.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH)) {// 同月
-	    Integer days = endCalendar.get(Calendar.DAY_OF_MONTH) - startCalendar.get(Calendar.DAY_OF_MONTH) + 1;// 天数
-	    double monthdiff = days.doubleValue() / new Integer(endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)).doubleValue();// 比例
-	    return new BigDecimal(monthdiff).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
-	}
-	if (startCalendar.get(Calendar.MONTH) < endCalendar.get(Calendar.MONTH)) {// 不同月
-	    Calendar tempC = Calendar.getInstance();
-	    tempC.setTime(dateAddMonth(startCalendar.getTime(), 1));// 先加一个月
-	    tempC.add(Calendar.DAY_OF_MONTH, -1);// 按照房屋租赁习惯，到日期应为系统计算的前一天
-	    if (tempC.after(endCalendar)) {// 间隔不足一个月，返回月份比例
-		Double diffDays = getDistanceOfTwoDate(startCalendar.getTime(), endCalendar.getTime());// 两日期间隔天数
-		double towMonthAvgDays = (((Integer) (startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-		return new BigDecimal(diffDays / towMonthAvgDays).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数
-	    }
-	    if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR) && tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH) && tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
-		return 1.0f;
-	    }
-	    if (tempC.before(endCalendar)) {// 开始日期和结束日期时间间隔超过一个月
-		double monthCount = 0d;// 相差月份的整数间隔
-		int dayOfMonth = startCalendar.get(Calendar.DAY_OF_MONTH);// 循环外保存日期，防止变化
-		if (dayOfMonth == 1) {// 如果恰好是月初第一天，做特殊处理
-		    while (tempC.before(endCalendar)) {
-			monthCount++;
-			tempC.add(Calendar.DAY_OF_MONTH, 1);
-			tempC.add(Calendar.MONTH, 1);
-			tempC.add(Calendar.DAY_OF_MONTH, -1);
-		    }
-		    if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR) && tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH) && tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
-			return monthCount + 1;
-		    } else {// 计算该日期开始到截止日期的天数，是零头
-			tempC.set(Calendar.DAY_OF_MONTH, 1);
-			Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
-			Double towMonthAvgDays = (((Integer) (tempC.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-			double remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数,整月除外的零头的天数
-			return monthCount + remainNum;
-		    }
-		} else {
-		    while (tempC.before(endCalendar)) {
-			monthCount++;
-			tempC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-			tempC.add(Calendar.MONTH, 1);
-			tempC.add(Calendar.DAY_OF_MONTH, -1);
-		    }
-		    if (tempC.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR) && tempC.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH) && tempC.get(Calendar.DAY_OF_MONTH) == endCalendar.get(Calendar.DAY_OF_MONTH)) {// 开始日期一个月后正好与结束日期相等
-			return monthCount + 1;
-		    } else {// 计算该日期开始到截止日期的天数，是零头
-			tempC.add(Calendar.MONTH, -1);
-			tempC.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-			Double diffDays = getDistanceOfTwoDate(tempC.getTime(), endCalendar.getTime());// 两日期间隔天数
-			Double towMonthAvgDays = (((Integer) (tempC.getActualMaximum(Calendar.DAY_OF_MONTH) + endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH))).doubleValue()) / 2d; // 前后2个月的平均天数
-			double remainNum = new BigDecimal(diffDays / towMonthAvgDays).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue(); // 保留两位小数,整月除外的零头的天数
-			return monthCount + remainNum;
-		    }
-		}
-	    }
-	}
-	return 0f;
-    }
-
-    public static void main(String[] args) throws ParseException {
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	System.out.println(getMonthSpace(sdf.parse("2016-2-29"), sdf.parse("2017-02-28")));
-    }
 }

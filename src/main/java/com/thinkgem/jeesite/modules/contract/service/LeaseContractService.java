@@ -155,7 +155,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 
 	    for (LeaseContractDtl tmpLeaseContractDtl : list) {
 		// 计算开始日期与结束日期之间的月数
-		double month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(), tmpLeaseContractDtl.getEndDate());
+		int month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(), tmpLeaseContractDtl.getEndDate());
 		month = (month == 0 ? month++ : month);
 		for (int i = 1; i <= month; i++) {
 		    paymentTrans = new PaymentTrans();
@@ -178,7 +178,6 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 		    paymentTrans.setUpdateBy(UserUtils.getUser());
 		    paymentTrans.setDelFlag("0");
 		    if (0 != tmpLeaseContractDtl.getDeposit()) {
-			// paymentTransDao.insert(paymentTrans);
 			listPaymentTrans.add(paymentTrans);
 		    }
 		}
