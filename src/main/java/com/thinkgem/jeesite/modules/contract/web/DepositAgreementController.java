@@ -186,6 +186,31 @@ public class DepositAgreementController extends BaseController {
 	if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
 	    return form(depositAgreement, model);
 	}
+	
+	//检查房屋、房间状态
+	if("0".equals(depositAgreement.getRentMode())) {
+		//整租
+		String houseId = depositAgreement.getHouse().getId();
+		House house = houseService.get(houseId);
+		String houseStatus = house.getHouseStatus();
+		if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
+			//1:待出租可预订 3:部分出租 5:已退待租
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房屋已预订或出租");
+			return form(depositAgreement, model);
+		}
+	} else {
+		//单间
+		String roomId = depositAgreement.getRoom().getId();
+		Room room = roomServie.get(roomId);
+		String roomStatus = room.getRoomStatus();
+		if(!"1".equals(roomStatus) && !"4".equals(roomStatus)) {
+			//1:待出租可预订 4:已退租可预订
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房间已预订或出租");
+			return form(depositAgreement, model);
+		}
+	}
 
 	if (depositAgreement.getIsNewRecord()) {
 	    String[] codeArr = depositAgreement.getAgreementCode().split("-");
