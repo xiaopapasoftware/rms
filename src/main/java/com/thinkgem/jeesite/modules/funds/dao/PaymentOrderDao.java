@@ -18,4 +18,5 @@ public interface PaymentOrderDao extends CrudDao<PaymentOrder> {
 	List<PaymentOrder> findByHouseId(PaymentOrder paymentOrder);
 	PaymentOrder findByOrderId(PaymentOrder paymentOrder);
 	void updateStatusByOrderId(PaymentOrder paymentOrder);
+	void deleteByTradeId(PaymentOrder paymentOrder);
 }

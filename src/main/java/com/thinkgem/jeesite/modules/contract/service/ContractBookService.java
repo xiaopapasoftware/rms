@@ -132,6 +132,11 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 		this.paymentOrderDao.insert(paymentOrder);
 	}
 	
+	@Transactional(readOnly = false)
+	public void deleteByTradeId(PaymentOrder paymentOrder) {
+		paymentOrderDao.deleteByTradeId(paymentOrder);
+	}
+	
 	public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
 		List<PaymentOrder> list = this.paymentOrderDao.findByHouseId(paymentOrder);
 		if(null != list && list.size() > 0)

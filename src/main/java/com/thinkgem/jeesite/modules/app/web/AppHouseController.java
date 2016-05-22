@@ -764,7 +764,7 @@ public class AppHouseController {
 			String address = this.propertyProjectService.get(depositAgreement.getPropertyProject().getId()).getProjectAddr();
 			address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName();
 			address += this.houseService.get(depositAgreement.getHouse().getId()).getHouseNo()+"室";
-			if(null != depositAgreement.getRoom()) {
+			if(null != depositAgreement.getRoom() && StringUtils.isNoneBlank(depositAgreement.getRoom().getId())) {
 				address += this.roomService.get(depositAgreement.getRoom().getId()).getRoomNo()+"部位";
 			}
 			
@@ -783,8 +783,10 @@ public class AppHouseController {
 					+address+"</span>房屋，特向甲方支付房屋定金人民币：<span style='text-decoration:underline;'> "+depositAgreement.getDepositAmount()+" </span>元,"
 					+ "大写:<span style='text-decoration:underline;'>"+getChineseNum(depositAgreement.getDepositAmount())+"</span>。且双方达成以下约定：</br>");
 			html.append("&nbsp;&nbsp;一、该房屋月租金为人民币：<span style='text-decoration:underline;'>"+depositAgreement.getHousingRent()+"</span>元,大写:<span style='text-decoration:underline;'>"+getChineseNum(depositAgreement.getHousingRent())+"</span>元整；"
-					+ "付款方式为付<span style='text-decoration:underline;'>"+depositAgreement.getRenMonths()+"</span>押<span style='text-decoration:underline;'>"+depositAgreement.getDepositMonths()+"</span>；"
-					+ "租期为<span style='text-decoration:underline;'>  </span>个月；"
+					+ "付款方式为付<span style='text-decoration:underline;'>"
+					+(null==depositAgreement.getRenMonths()?"":depositAgreement.getRenMonths())+"</span>押<span style='text-decoration:underline;'>"
+					+(null==depositAgreement.getDepositMonths()?"":depositAgreement.getDepositMonths())+"</span>；"
+					+ "租期为<span style='text-decoration:underline;'>"+DateUtils.getMonthSpace(depositAgreement.getStartDate(),depositAgreement.getExpiredDate())+"</span>个月；"
 					+ "期限为<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getStartDate(),"yyyy年MM月dd日")+"</span>至<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getExpiredDate(),"yyyy年MM月dd日")+"</span>并于<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getAgreementDate(),"yyyy年MM月dd日")+"</span>前甲、乙双方签订此房屋租赁合同。</br>");
 			html.append("&nbsp;&nbsp;二、若甲方在约定的签约时间内将该房屋出租给他人，则需双倍退还乙方租房定金；</br>");
 			html.append("&nbsp;&nbsp;三、若因乙方原因未能如期与甲方签订租赁合同（签约标准按房屋现状且承租人无转租权），则视为乙方放弃承租该房屋，该笔定金作为违约金处理。若签订租赁合同后,该笔定金自动转为部分租金。</br>");
@@ -877,7 +879,16 @@ public class AppHouseController {
 			/* 生成账务交易 */
 			TradingAccounts tradingAccounts = new TradingAccounts();
 			tradingAccounts.setTradeId(depositAgreement.getId());
+			List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
+			if(null != listTradingAccounts && listTradingAccounts.size() > 0) {
+				String oldTradingAccountsId = listTradingAccounts.get(0).getId();
+				
+				PaymentOrder delPaymentOrder = new PaymentOrder();
+				delPaymentOrder.setTradeId(oldTradingAccountsId);
+				contractBookService.deleteByTradeId(delPaymentOrder);
+			}
 			tradingAccountsService.delete(tradingAccounts);
+			
 			tradingAccounts.setTransIds(transIds);
 			tradingAccounts.setTradeStatus("0");// 待审核
 			tradingAccounts.setTradeType("1");// 预约定金
@@ -889,6 +900,11 @@ public class AppHouseController {
 			tradingAccountsService.save(tradingAccounts);
 
 			/* 订单生成 */
+			String houseId = "";
+			if(StringUtils.isNotBlank(contractBook.getRoomId()))
+				houseId = contractBook.getRoomId();
+			else
+				houseId = contractBook.getHouseId();
 			PaymentOrder paymentOrder = new PaymentOrder();
 			paymentOrder.setOrderId(contractBookService.generateOrderId());
 			paymentOrder.setOrderDate(new Date());
@@ -896,7 +912,7 @@ public class AppHouseController {
 			paymentOrder.setTradeId(tradingAccounts.getId());
 			paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
 			paymentOrder.setCreateDate(new Date());
-			paymentOrder.setHouseId(contractBook.getHouseId());
+			paymentOrder.setHouseId(houseId);
 			this.contractBookService.saveOrder(paymentOrder);
 
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -1556,7 +1572,16 @@ public class AppHouseController {
 			/* 生成账务交易 */
 			TradingAccounts tradingAccounts = new TradingAccounts();
 			tradingAccounts.setTradeId(rentContract.getId());
+			List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
+			if(null != listTradingAccounts && listTradingAccounts.size() > 0) {
+				String oldTradingAccountsId = listTradingAccounts.get(0).getId();
+				
+				PaymentOrder delPaymentOrder = new PaymentOrder();
+				delPaymentOrder.setTradeId(oldTradingAccountsId);
+				contractBookService.deleteByTradeId(delPaymentOrder);
+			}
 			tradingAccountsService.delete(tradingAccounts);
+			
 			tradingAccounts.setTradeStatus("0");// 待审核
 			tradingAccounts.setTransIds(transIds);
 			if("0".equals(rentContract.getSignType()))
@@ -1571,6 +1596,12 @@ public class AppHouseController {
 			tradingAccountsService.save(tradingAccounts);
 
 			/* 订单生成 */
+			String houseId = "";
+			if(StringUtils.isNoneBlank(contractBook.getRoomId()))
+				houseId = contractBook.getRoomId();
+			else
+				houseId = contractBook.getHouseId();
+			
 			PaymentOrder paymentOrder = new PaymentOrder();
 			paymentOrder.setOrderId(contractBookService.generateOrderId());
 			paymentOrder.setOrderDate(new Date());
@@ -1578,7 +1609,7 @@ public class AppHouseController {
 			paymentOrder.setTradeId(tradingAccounts.getId());
 			paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
 			paymentOrder.setCreateDate(new Date());
-			paymentOrder.setHouseId(contractBook.getHouseId());
+			paymentOrder.setHouseId(houseId);
 			this.contractBookService.saveOrder(paymentOrder);
 
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -2232,6 +2263,12 @@ public class AppHouseController {
 				tradingAccountsDao.insert(tradingAccounts);
 
 				/* 订单生成 */
+				String houseId = "";
+				if(null != rentContract.getRoom())
+					houseId = rentContract.getRoom().getId();
+				else
+					houseId = rentContract.getHouse().getId();
+				
 				PaymentOrder paymentOrder = new PaymentOrder();
 				paymentOrder.setOrderId(contractBookService.generateOrderId());
 				paymentOrder.setOrderDate(new Date());
@@ -2239,7 +2276,7 @@ public class AppHouseController {
 				paymentOrder.setTradeId(tradingAccounts.getId());
 				paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
 				paymentOrder.setCreateDate(new Date());
-				paymentOrder.setHouseId(rentContract.getHouse().getId());
+				paymentOrder.setHouseId(houseId);
 				this.contractBookService.saveOrder(paymentOrder);
 
 				Map<String, Object> map = new HashMap<String, Object>();
