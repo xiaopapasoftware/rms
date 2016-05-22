@@ -2211,6 +2211,12 @@ public class AppHouseController {
 			    Room room = rentContract.getRoom();
 			    room = this.roomService.get(room);
 			    meterNo = room.getMeterNo();
+			} 
+			
+			if(StringUtils.isBlank(meterNo)) {
+				data.setCode("400");
+				data.setMsg("没有电表需要充值");
+				return data;
 			}
 			
 			if(StringUtils.isNoneBlank(meterNo)) {
