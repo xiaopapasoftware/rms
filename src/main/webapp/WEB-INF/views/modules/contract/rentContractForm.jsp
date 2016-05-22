@@ -145,11 +145,10 @@
 							return;
 						}
 					}
-					
 					loading('正在提交，请稍等...');
-					form.submit();
 					$("#saveBtn").attr("disabled",true);
-					$("#btnSubmit").attr("disabled",true); 
+					$("#btnSubmit").attr("disabled",true);
+					form.submit();
 				},
 				errorContainer: "#messageBox",
 				errorPlacement: function(error, element) {
