@@ -503,14 +503,13 @@ public class SqlSessionFactoryBean implements FactoryBean<SqlSessionFactory>,
 		// TODO 增加location 获取加载xml的路径，也可配置
 		String location = null;
 		if (!isEmpty(this.mapperLocations)) {
-			for (Resource mapperLocation : this.mapperLocations) {
-				if (location == null) {
-					location = mapperLocation.toString();
-				}
-				if (mapperLocation == null) {
+        			for (Resource mapperLocation : this.mapperLocations) {
+        			    if (mapperLocation == null) {
 					continue;
-				}
-
+    				    }
+    				    if (location == null) {
+    					location = mapperLocation.toString();
+    				    }
 				try {
 					XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(
 							mapperLocation.getInputStream(), configuration,
