@@ -618,16 +618,24 @@ public class AppHouseController {
 
 				tenantList.add(tenant);
 			}
-            	    	Date signDate = DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd");
-                	depositAgreement.setTenantList(tenantList);
-                	depositAgreement.setSignDate(new Date());
-                	depositAgreement.setAgreementDate(signDate);
-                	depositAgreement.setValidatorFlag("0");// 暂存
-                	depositAgreement.setDataSource("2");// APP
-                	depositAgreement.setRemarks(request.getParameter("msg"));
-                	depositAgreement.setAgreementStatus("6");// 暂存
-                	depositAgreement.setStartDate(signDate);
-                	depositAgreement.setExpiredDate(DateUtils.dateAddMonth2(signDate, Integer.valueOf(request.getParameter("book_cycle"))));
+	    	Date signDate = DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd");
+        	depositAgreement.setTenantList(tenantList);
+        	depositAgreement.setSignDate(new Date());
+        	depositAgreement.setAgreementDate(signDate);
+        	depositAgreement.setValidatorFlag("0");// 暂存
+        	depositAgreement.setDataSource("2");// APP
+        	depositAgreement.setRemarks(request.getParameter("msg"));
+        	depositAgreement.setAgreementStatus("6");// 暂存
+        	depositAgreement.setStartDate(signDate);
+        	depositAgreement.setExpiredDate(DateUtils.dateAddMonth2(signDate, Integer.valueOf(request.getParameter("book_cycle"))));
+        	
+        	//租客身份证照片
+        	if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
+        		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+    			String img_url = proper.getProperty("img.url");
+        		depositAgreement.setDepositCustomerIDFile(img_url+appUser.getIdCardPhoto＿front());
+        	}
+        	
 			depositAgreementService.save(depositAgreement);
 			
 			/* 获取房屋房屋管家手机号码 */
