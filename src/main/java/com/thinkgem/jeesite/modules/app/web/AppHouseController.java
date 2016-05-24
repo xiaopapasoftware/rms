@@ -634,6 +634,10 @@ public class AppHouseController {
         		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
     			String img_url = proper.getProperty("img.url");
         		depositAgreement.setDepositCustomerIDFile(img_url+appUser.getIdCardPhoto＿front());
+        		
+        		if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
+        			depositAgreement.setDepositCustomerIDFile(depositAgreement.getDepositCustomerIDFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
+        		}
         	}
         	
 			depositAgreementService.save(depositAgreement);
@@ -1276,6 +1280,10 @@ public class AppHouseController {
 	        		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	    			String img_url = proper.getProperty("img.url");
 	    			rentContract.setRentContractOtherFile(img_url+appUser.getIdCardPhoto＿front());
+	    			
+	    			if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
+	    				rentContract.setRentContractOtherFile(rentContract.getRentContractOtherFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
+	        		}
 	        	}
 	        	
 				this.rentContractService.save(rentContract);
