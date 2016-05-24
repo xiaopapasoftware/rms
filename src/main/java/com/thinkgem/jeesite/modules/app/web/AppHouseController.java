@@ -795,9 +795,9 @@ public class AppHouseController {
 					+address+"</span>房屋，特向甲方支付房屋定金人民币：<span style='text-decoration:underline;'> "+depositAgreement.getDepositAmount()+" </span>元,"
 					+ "大写:<span style='text-decoration:underline;'>"+getChineseNum(depositAgreement.getDepositAmount())+"</span>。且双方达成以下约定：</br>");
 			html.append("&nbsp;&nbsp;一、该房屋月租金为人民币：<span style='text-decoration:underline;'>"+depositAgreement.getHousingRent()+"</span>元,大写:<span style='text-decoration:underline;'>"+getChineseNum(depositAgreement.getHousingRent())+"</span>元整；"
-					+ "付款方式为付<span style='text-decoration:underline;'>"
-					+(null==depositAgreement.getRenMonths()?"":depositAgreement.getRenMonths())+"</span>押<span style='text-decoration:underline;'>"
-					+(null==depositAgreement.getDepositMonths()?"":depositAgreement.getDepositMonths())+"</span>；"
+					+ "付款方式为付<span style='text-decoration:underline;'>&nbsp;"
+					+(null==depositAgreement.getRenMonths()?"":depositAgreement.getRenMonths())+"&nbsp;</span>押<span style='text-decoration:underline;'>&nbsp;"
+					+(null==depositAgreement.getDepositMonths()?"":depositAgreement.getDepositMonths())+"&nbsp;</span>；"
 					+ "租期为<span style='text-decoration:underline;'>"+DateUtils.getMonthSpace(depositAgreement.getStartDate(),depositAgreement.getExpiredDate())+"</span>个月；"
 					+ "期限为<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getStartDate(),"yyyy年MM月dd日")+"</span>至<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getExpiredDate(),"yyyy年MM月dd日")+"</span>并于<span style='text-decoration:underline;'>"+DateUtils.formatDate(depositAgreement.getAgreementDate(),"yyyy年MM月dd日")+"</span>前甲、乙双方签订此房屋租赁合同。</br>");
 			html.append("&nbsp;&nbsp;二、若甲方在约定的签约时间内将该房屋出租给他人，则需双倍退还乙方租房定金；</br>");
