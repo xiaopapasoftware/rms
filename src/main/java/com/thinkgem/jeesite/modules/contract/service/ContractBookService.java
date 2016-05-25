@@ -97,16 +97,6 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 	
 	public List<ContractBook> findBookedContract(ContractBook contractBook) {
 		List<ContractBook> listContractBook = contractBookDao.findBookedContract(contractBook);
-		for(ContractBook tmpContractBook : listContractBook) {
-			if(!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-				Room room = this.roomDao.get(tmpContractBook.getRoomId());
-				tmpContractBook.setRoomNo(room.getRoomNo());
-				tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-				tmpContractBook.setShortDesc(room.getShortDesc());
-				tmpContractBook.setShortLocation(room.getShortLocation());
-				tmpContractBook.setHouseId(room.getId());
-			}
-		}
 		return listContractBook;
 	}
 	

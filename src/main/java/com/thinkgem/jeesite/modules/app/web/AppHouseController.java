@@ -980,7 +980,7 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
-			contractBook.setUserPhone(apptoken.getPhone());
+			contractBook.setIdNo(appUser.getIdCardNo());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
