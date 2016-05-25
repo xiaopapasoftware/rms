@@ -512,12 +512,6 @@ public class AppHouseController {
 		}
 
 		try {
-			if(!checkHouseStatus(request.getParameter("house_id"))) {
-				data.setCode("400");
-				data.setMsg("房屋已出租");
-				return data;
-			}
-			
 			String token = (String) request.getHeader("token");
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
@@ -527,8 +521,36 @@ public class AppHouseController {
 				data.setMsg("请重新登录");
 				return data;
 			}
+			AppUser appUser = new AppUser();
+			appUser.setPhone(apptoken.getPhone());
+			appUser = appUserService.getByPhone(appUser);
+			
+			if(null != appUser && StringUtils.isBlank(appUser.getIdCardNo())) {
+				data.setCode("400");
+				data.setMsg("请填写身份证号码");
+				return data;
+			}
 			
 			String houseId = request.getParameter("house_id");
+			//如何是从预约过来,house_id实际是预约的id
+			ContractBook hasContractBook = new ContractBook();
+			hasContractBook.setId(houseId);
+			hasContractBook.setUserId(appUser.getPhone());
+			hasContractBook = contractBookService.get(hasContractBook);
+			if(null != hasContractBook) {
+				if(StringUtils.isNotBlank(hasContractBook.getRoomId()))
+					houseId = hasContractBook.getRoomId();
+				else
+					houseId = hasContractBook.getHouseId();
+			}
+			log.info("------houseId:"+houseId);
+			
+			if(!checkHouseStatus(houseId)) {
+				data.setCode("400");
+				data.setMsg("房屋已出租");
+				return data;
+			}
+			
 			ContractBook contractBookCheck = new ContractBook();
 			contractBookCheck.setId(houseId);
 			contractBookCheck.setUserId(apptoken.getPhone());
@@ -557,7 +579,7 @@ public class AppHouseController {
 			}
 			
 			ContractBook contractBook = new ContractBook();
-			contractBook.setUserPhone(apptoken.getPhone());
+			contractBook.setIdNo(appUser.getIdCardNo());
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 			if(null != list && list.size()>0) {
 				for(ContractBook tmpContractBook : list) {
@@ -594,15 +616,6 @@ public class AppHouseController {
 			depositAgreement.setBuilding(building);
 			depositAgreement.setHouse(house);
 
-			AppUser appUser = new AppUser();
-			appUser.setPhone(apptoken.getPhone());
-			appUser = appUserService.getByPhone(appUser);
-
-			if(StringUtils.isBlank(appUser.getIdCardNo())) {
-				data.setCode("400");
-				data.setMsg("身份证不能为空");
-				return data;
-			}
 			Tenant tenant = new Tenant();
 			tenant.setIdNo(appUser.getIdCardNo());
 			tenant.setIdType("0");//身份证
@@ -2651,12 +2664,14 @@ public class AppHouseController {
 		House house = this.houseService.get(houseId);
 		if(null == house) {
 			Room room = this.roomService.get(houseId);
-			if(null == room || !"1".equals(room.getRoomStatus())) {
+			if(null == room || (!"1".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) {
+				//1:待出租可预订 4:已退租可预订
 				return false;
 			}
 		} else {
 			String houseStatus = house.getHouseStatus();
-			if(!"1".equals(houseStatus)) {
+			if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
+				//1:待出租可预订 3:部分出租 5:已退待租
 				return false;
 			}
 		}
