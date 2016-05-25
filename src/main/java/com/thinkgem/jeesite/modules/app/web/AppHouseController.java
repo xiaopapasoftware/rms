@@ -769,8 +769,12 @@ public class AppHouseController {
 				data.setMsg("请重新登录");
 				return data;
 			}
+			AppUser appUser = new AppUser();
+			appUser.setPhone(apptoken.getPhone());
+			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
+			contractBook.setIdNo(appUser.getIdCardNo());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
@@ -779,10 +783,6 @@ public class AppHouseController {
 			}
 
 			DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
-
-			AppUser appUser = new AppUser();
-			appUser.setPhone(apptoken.getPhone());
-			appUser = appUserService.getByPhone(appUser);
 
 			Map<String, Object> map = new HashMap<String, Object>();
 
@@ -870,7 +870,7 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
-			contractBook.setUserPhone(apptoken.getPhone());
+			contractBook.setIdNo(appUser.getIdCardNo());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
@@ -1161,7 +1161,7 @@ public class AppHouseController {
 			boolean hasBooked = false; 
 			String depositId = null;
 			ContractBook booked = new ContractBook();
-			booked.setUserPhone(apptoken.getPhone());
+			booked.setIdNo(appUser.getIdCardNo());
 			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
 			for(ContractBook tContractBook : bookedList) {
 				if(request.getParameter("house_id").equals(tContractBook.getHouseId())) {
