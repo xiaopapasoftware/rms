@@ -324,7 +324,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -385,7 +385,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -436,7 +436,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -517,7 +517,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -689,7 +689,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -765,7 +765,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -861,7 +861,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -970,7 +970,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1068,7 +1068,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1112,7 +1112,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1342,7 +1342,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1389,7 +1389,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1497,7 +1497,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1690,7 +1690,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -2007,7 +2007,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -2297,7 +2297,7 @@ public class AppHouseController {
 				apptoken.setToken(token);
 				apptoken = appTokenService.findByToken(apptoken);
 				if(null == apptoken) {
-					data.setCode("400");
+					data.setCode("401");
 					data.setMsg("请重新登录");
 					return data;
 				}
@@ -2360,7 +2360,7 @@ public class AppHouseController {
 		apptoken.setToken(token);
 		apptoken = appTokenService.findByToken(apptoken);
 		if(null == apptoken) {
-			data.setCode("400");
+			data.setCode("401");
 			data.setMsg("请重新登录");
 			return data;
 		}
@@ -2771,7 +2771,7 @@ public class AppHouseController {
             apptoken.setToken(token);
             apptoken = appTokenService.findByToken(apptoken);
             if(null == apptoken) {
-                data.setCode("400");
+                data.setCode("401");
                 data.setMsg("请重新登录");
                 return data;
             }
