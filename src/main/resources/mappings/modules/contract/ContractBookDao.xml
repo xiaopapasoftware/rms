@@ -63,8 +63,8 @@
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by updateUser,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) room_no,da.agreement_status as "bookStatus",tt.short_desc,
-		tt.short_location,tt.attachment_path,ct.cell_phone from T_DEPOSIT_AGREEMENT da 
+		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by updateUser,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) "roomNo",da.agreement_status as "bookStatus",tt.short_desc "shortDesc",
+		tt.short_location,tt.attachment_path "attachmentPath",ct.cell_phone from T_DEPOSIT_AGREEMENT da 
 		left join (
 		select DEPOSIT_AGREEMENT_ID,te.cell_phone,te.id_no from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'

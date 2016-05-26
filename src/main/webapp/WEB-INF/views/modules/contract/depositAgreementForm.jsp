@@ -455,13 +455,15 @@
 		<div class="control-group">
 			<label class="control-label">首付房租月数：</label>
 			<div class="controls">
-				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
+				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
-				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
+				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

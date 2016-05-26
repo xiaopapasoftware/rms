@@ -457,6 +457,31 @@ public class RentContractController extends BaseController {
 	if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 	    return form(rentContract, model);
 	}
+	
+	//检查房屋、房间状态
+	if("0".equals(rentContract.getRentMode())) {
+		//整租
+		String houseId = rentContract.getHouse().getId();
+		House house = houseService.get(houseId);
+		String houseStatus = house.getHouseStatus();
+		if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
+			//1:待出租可预订 3:部分出租 5:已退待租
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房屋已出租");
+			return form(rentContract, model);
+		}
+	} else {
+		//单间
+		String roomId = rentContract.getRoom().getId();
+		Room room = roomServie.get(roomId);
+		String roomStatus = room.getRoomStatus();
+		if(!"1".equals(roomStatus) && !"1".equals(roomStatus) && !"4".equals(roomStatus)) {
+			//1:待出租可预订 2:已预定 4:已退租可预订
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房间已出租");
+			return form(rentContract, model);
+		}
+	}
 
 	/* 出租合同的结束时间不能超过承租合同的结束时间 */
 	LeaseContract leaseContract = new LeaseContract();
