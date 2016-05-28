@@ -464,8 +464,9 @@ public class RentContractController extends BaseController {
 		String houseId = rentContract.getHouse().getId();
 		House house = houseService.get(houseId);
 		String houseStatus = house.getHouseStatus();
-		if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
-			//1:待出租可预订 3:部分出租 5:已退待租
+		if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus) 
+				&& !"2".equals(houseStatus)) {
+			//1:待出租可预订 3:部分出租 5:已退待租 2:已预定
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 			addMessage(model, "房屋已出租");
 			return form(rentContract, model);
@@ -475,7 +476,7 @@ public class RentContractController extends BaseController {
 		String roomId = rentContract.getRoom().getId();
 		Room room = roomServie.get(roomId);
 		String roomStatus = room.getRoomStatus();
-		if(!"1".equals(roomStatus) && !"1".equals(roomStatus) && !"4".equals(roomStatus)) {
+		if(!"1".equals(roomStatus) && !"2".equals(roomStatus) && !"4".equals(roomStatus)) {
 			//1:待出租可预订 2:已预定 4:已退租可预订
 			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 			addMessage(model, "房间已出租");
