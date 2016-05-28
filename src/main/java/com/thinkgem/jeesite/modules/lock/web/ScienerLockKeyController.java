@@ -69,7 +69,7 @@ public class ScienerLockKeyController extends BaseController {
         appUser.setDelFlag("0");
         List<AppUser> users = appUserService.findList(appUser);
         model.addAttribute("users", users);
-        List<Map> keys = scienerLockService.getAllKeys();
+
         List<Map> resKeys = new ArrayList<Map>();
         //用户科技侠账号与用户名的关系map
         Map scienerAccountMap = new HashMap();
@@ -87,34 +87,37 @@ public class ScienerLockKeyController extends BaseController {
             username = keyparam.getUsername();
             keyStatus = keyparam.getKeyStatus();
         }
-        if(keys!= null){
-            for(Map key: keys){
-                if(StringUtils.isNotBlank(lockId)){
-                    if(!lockId.equals(""+key.get("lockId"))) continue;
-                }
-                if(StringUtils.isNotBlank(username)){
-                    if(!username.equals(""+key.get("username"))) continue;
-                }
-                if(StringUtils.isNotBlank(keyStatus)){
-                    if(!keyStatus.equals(""+key.get("keyStatus"))) continue;
-                }
+        List<Map> keys = new ArrayList<Map>();
+        if(lockId != null) {
+            keys = scienerLockService.getAllKeysByLockId(lockId);
+            if (keys != null) {
+                for (Map key : keys) {
+                    if (StringUtils.isNotBlank(lockId)) {
+                        if (!lockId.equals("" + key.get("lockId"))) continue;
+                    }
+                    if (StringUtils.isNotBlank(username)) {
+                        if (!username.equals("" + key.get("username"))) continue;
+                    }
+                    if (StringUtils.isNotBlank(keyStatus)) {
+                        if (!keyStatus.equals("" + key.get("keyStatus"))) continue;
+                    }
 
-                if(key.get("date")!= null){
-                    key.put("date", new Date((Long)key.get("date")));
-                }
-                if(key.get("startDate")!= null && !"0".equals(""+key.get("startDate"))){
-                    key.put("startDate", new Date((Long)key.get("startDate")));
-                    key.put("endDate", new Date((Long)key.get("endDate")));
-                    key.put("keyType", "1");//限时
-                }else{
-                    key.put("keyType", "0");//永久
-                }
+                    if (key.get("date") != null) {
+                        key.put("date", new Date((Long) key.get("date")));
+                    }
+                    if (key.get("startDate") != null && !"0".equals("" + key.get("startDate"))) {
+                        key.put("startDate", new Date((Long) key.get("startDate")));
+                        key.put("endDate", new Date((Long) key.get("endDate")));
+                        key.put("keyType", "1");//限时
+                    } else {
+                        key.put("keyType", "0");//永久
+                    }
 
-                key.put("appUserName", scienerAccountMap.get(key.get("username")));
-                resKeys.add(key);
+                    key.put("appUserName", scienerAccountMap.get(key.get("username")));
+                    resKeys.add(key);
+                }
             }
         }
-
         Collections.sort(resKeys, new Comparator<Map>() {
             public int compare(Map arg0, Map arg1) {
                 return ((Date)arg0.get("date")).compareTo((Date)arg1.get("date"));

@@ -151,28 +151,28 @@ public class ScienerLockService {
         }
         String accessToken = (String) authRes.get("access_token");
 
-        for(Map lock: locks){
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("clientId", clientId);
-            map.put("accessToken", accessToken);
-            map.put("lockId",lock.get("room_id"));
-            map.put("date", System.currentTimeMillis());
-            try {
-                String s2 = HttpRequestUtil.readContentFromPost(lockScienerV2, "lock/listAllKey", map);
-                Map res2 = (Map) JsonMapper.fromJsonString(s2, Map.class);
-                if(res2.get("list")!= null) {
-                    ArrayList<Map> tmpkeys = (ArrayList<Map>) res2.get("list");
-                    for(Map key: tmpkeys) {
-                        Long keyDate = (Long) key.get("date");
-                        key.putAll(lock);
-                        key.put("date",keyDate );
-                    }
-                    keys.addAll(tmpkeys);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        for(Map lock: locks){
+//            Map<String, Object> map = Maps.newHashMap();
+//            map.put("clientId", clientId);
+//            map.put("accessToken", accessToken);
+//            map.put("lockId",lock.get("room_id"));
+//            map.put("date", System.currentTimeMillis());
+//            try {
+//                String s2 = HttpRequestUtil.readContentFromPost(lockScienerV2, "lock/listAllKey", map);
+//                Map res2 = (Map) JsonMapper.fromJsonString(s2, Map.class);
+//                if(res2.get("list")!= null) {
+//                    ArrayList<Map> tmpkeys = (ArrayList<Map>) res2.get("list");
+//                    for(Map key: tmpkeys) {
+//                        Long keyDate = (Long) key.get("date");
+//                        key.putAll(lock);
+//                        key.put("date",keyDate );
+//                    }
+//                    keys.addAll(tmpkeys);
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
         return keys;
     }
 
@@ -238,5 +238,39 @@ public class ScienerLockService {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public List<Map> getAllKeysByLockId(String lockId) {
+        List<Map> tmpkeys = null;
+        Map authRes = this.managerAuthorize();
+        if(authRes== null || authRes.get("access_token")== null){
+            log.error("sciener authorize failed");
+            return null;
+        }
+        String accessToken = (String) authRes.get("access_token");
+
+
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("clientId", clientId);
+            map.put("accessToken", accessToken);
+            map.put("lockId",lockId);
+            map.put("date", System.currentTimeMillis());
+            try {
+                String s2 = HttpRequestUtil.readContentFromPost(lockScienerV2, "lock/listAllKey", map);
+                Map res2 = (Map) JsonMapper.fromJsonString(s2, Map.class);
+
+                if(res2.get("list")!= null) {
+                    tmpkeys = (ArrayList<Map>) res2.get("list");
+                    for(Map key: tmpkeys) {
+                        Long keyDate = (Long) key.get("date");
+                        //key.putAll(lock);
+                        key.put("date",keyDate );
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        return tmpkeys;
     }
 }
