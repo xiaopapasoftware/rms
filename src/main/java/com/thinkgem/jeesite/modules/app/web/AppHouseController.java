@@ -1268,6 +1268,8 @@ public class AppHouseController {
 				if (null != room) {
 					contractName += "-" + room.getRoomNo();
 				}
+				rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-"
+						+ (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 				rentContract.setContractName(contractName);
 				rentContract.setRentMode(depositAgreement.getRentMode());
 				rentContract.setPropertyProject(depositAgreement.getPropertyProject());
@@ -1285,12 +1287,12 @@ public class AppHouseController {
 				rentContract.setTenantList(depositAgreement.getTenantList());
 				rentContract.setRemarks(depositAgreement.getRemarks());
 				rentContract.setAgreementId(depositAgreement.getId());
-				rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 				rentContract.setContractSource("1");// 本部
 				rentContract.setValidatorFlag("0");// 暂存
 				rentContract.setDataSource("2");// APP
 				rentContract.setRemarks(request.getParameter("msg"));
 				rentContract.setContractStatus("0");// 暂存
+				rentContract.setSaveSource("1");//定金协议转合同
 				
 				Tenant tenant = new Tenant();
 				tenant.setIdType("0");// 身份证
@@ -1651,6 +1653,12 @@ public class AppHouseController {
 				tradingAccounts.setTradeType("3");// 新签合同
 			else
 				tradingAccounts.setTradeType("4");//正常人工续签
+			
+			//定金转合同,则扣除定金
+			if(StringUtils.isNotBlank(rentContract.getAgreementId())) {
+				DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
+				tradeAmount -= depositAgreement.getDepositAmount();
+			}
 			tradingAccounts.setTradeAmount(tradeAmount);
 			tradingAccounts.setTradeDirection("1");// 入账
 			tradingAccounts.setPayeeType("1");// 个人
