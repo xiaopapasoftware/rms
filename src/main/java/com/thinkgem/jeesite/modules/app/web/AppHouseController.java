@@ -994,7 +994,14 @@ public class AppHouseController {
 
 			map.put("id", contractBook.getDepositId());
 			map.put("house_code", contractBook.getRoomNo());
-			map.put("pay_way", contractBook.getPayWay());
+			String pay_way = contractBook.getPayWay();//0:付三押一 1:付二押二
+			if(null != depositAgreement.getRenMonths()) {
+				if(3 == depositAgreement.getRenMonths()) {
+					pay_way = "0";
+				} else 
+					pay_way = "1";
+			}
+			map.put("pay_way", pay_way);
 			map.put("desc", contractBook.getShortDesc());
 			map.put("location", contractBook.getShortLocation());
 			PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
@@ -1101,10 +1108,15 @@ public class AppHouseController {
 		}
 
 		try {
-			if(!checkHouseStatus(request.getParameter("house_id"))) {
-				data.setCode("400");
-				data.setMsg("房屋已出租");
-				return data;
+			String houseId = request.getParameter("house_id");
+			
+			//houseId从预订过来的实际为预订的id
+			DepositAgreement  fromDepositAgreement = depositAgreementService.get(houseId);
+			if(null != fromDepositAgreement) {
+				if(StringUtils.isNoneBlank(fromDepositAgreement.getRoom().getId()))
+					houseId = fromDepositAgreement.getRoom().getId();
+				else
+					houseId = fromDepositAgreement.getHouse().getId();
 			}
 			
 			String token = (String) request.getHeader("token");
@@ -1120,11 +1132,34 @@ public class AppHouseController {
 			appUser.setPhone(apptoken.getPhone());
 			appUser = appUserService.getByPhone(appUser);
 			
+			/* 判断该用户是否有预订,有则为定金转合同流程 */
+			boolean hasBooked = false; 
+			String depositId = null;
+			ContractBook booked = new ContractBook();
+			booked.setIdNo(appUser.getIdCardNo());
+			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
+			for(ContractBook tContractBook : bookedList) {
+				if(houseId.equals(tContractBook.getHouseId())) {
+					//定金转合同
+					hasBooked = true;
+					depositId = tContractBook.getDepositId();
+					break;
+				}
+			}
+			
+			if(!hasBooked) {
+				if(!checkHouseStatus(houseId)) {
+					data.setCode("400");
+					data.setMsg("房屋已出租");
+					return data;
+				}
+			}			
+			
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
 			List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
 			for(ContractBook tmpContractBook : list) {
-				if(StringUtils.isNoneBlank(tmpContractBook.getHouseId()) && tmpContractBook.getHouseId().equals(request.getParameter("house_id")) 
+				if(StringUtils.isNoneBlank(tmpContractBook.getHouseId()) && tmpContractBook.getHouseId().equals(houseId) 
 						&& !"3".equals(tmpContractBook.getBookStatus())) {
 					data.setCode("400");
 					data.setMsg("您已签约该房间,不能重复签约.");
@@ -1135,13 +1170,13 @@ public class AppHouseController {
 				return data;
 			
 			House house = new House();
-			house.setId(request.getParameter("house_id"));
+			house.setId(houseId);
 			house = houseService.get(house);
 
 			Room room = null;
 			if (null == house) {
 				room = new Room();
-				room.setId(request.getParameter("house_id"));
+				room.setId(houseId);
 				room = this.roomService.get(room);
 
 				house = new House();
@@ -1157,21 +1192,6 @@ public class AppHouseController {
 			building.setId(house.getBuilding().getId());
 			building = this.buildingService.get(building);
 
-			/* 判断该用户是否有预订,有则为定金转合同流程 */
-			boolean hasBooked = false; 
-			String depositId = null;
-			ContractBook booked = new ContractBook();
-			booked.setIdNo(appUser.getIdCardNo());
-			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
-			for(ContractBook tContractBook : bookedList) {
-				if(request.getParameter("house_id").equals(tContractBook.getHouseId())) {
-					//定金转合同
-					hasBooked = true;
-					depositId = tContractBook.getDepositId();
-					break;
-				}
-			}
-			
 			if(!hasBooked) {
 				RentContract rentContract = new RentContract();
 				rentContract.setSignType("0");// 新签
