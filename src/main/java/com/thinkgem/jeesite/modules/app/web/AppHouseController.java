@@ -46,8 +46,10 @@ import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
@@ -74,6 +76,8 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @RequestMapping("house")
 public class AppHouseController {
 	Logger log = LoggerFactory.getLogger(AppHouseController.class);
+	
+	DecimalFormat df = new DecimalFormat("######0.00");
 
 	@Autowired
 	private HouseService houseService;
@@ -119,6 +123,8 @@ public class AppHouseController {
 	private ElectricFeeService electricFeeService;
 	@Autowired
 	private TradingAccountsDao tradingAccountsDao;
+	@Autowired
+	private PaymentTradeDao paymentTradeDao;
 	
 	public AppHouseController() {
 	}
@@ -192,7 +198,7 @@ public class AppHouseController {
 				Map<String, Object> mp = new HashMap<String, Object>();
 				mp.put("id", h.getId());
 				mp.put("house_code", h.getHouseCode());
-				mp.put("price", h.getRental());
+				mp.put("price", df.format(h.getRental()));
 				mp.put("short_desc", h.getShortDesc());
 				mp.put("short_location", h.getShortLocation());
 				mp.put("pay_way", h.getPayWay());
@@ -238,7 +244,7 @@ public class AppHouseController {
 			map.put("house_code", house.getHouseCode());
 			map.put("id", house.getId());
 			map.put("title", house.getShortDesc());
-			map.put("price", house.getRental());
+			map.put("price", df.format(house.getRental()));
 			map.put("pay_way", house.getPayWay());
 			String cover = "";
 			if (!StringUtils.isEmpty(house.getAttachmentPath())) {
@@ -324,7 +330,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -385,7 +391,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -436,7 +442,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -517,7 +523,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -689,7 +695,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -765,7 +771,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -861,7 +867,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -942,7 +948,7 @@ public class AppHouseController {
 
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("order_id", paymentOrder.getOrderId());
-			map.put("price", paymentOrder.getOrderAmount());
+			map.put("price", df.format(paymentOrder.getOrderAmount()));
 
 			data.setData(map);
 			data.setCode("200");
@@ -970,7 +976,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1075,7 +1081,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1124,7 +1130,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1139,8 +1145,8 @@ public class AppHouseController {
 			booked.setIdNo(appUser.getIdCardNo());
 			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
 			for(ContractBook tContractBook : bookedList) {
-				if(houseId.equals(tContractBook.getHouseId())) {
-					//定金转合同
+				if(houseId.equals(tContractBook.getHouseId()) && "0".equals(tContractBook.getContractBusiStatus())) {
+					//定金转合同&&待转合同
 					hasBooked = true;
 					depositId = tContractBook.getDepositId();
 					break;
@@ -1153,7 +1159,9 @@ public class AppHouseController {
 					data.setMsg("房屋已出租");
 					return data;
 				}
-			}			
+			}
+			
+			//
 			
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
@@ -1293,6 +1301,7 @@ public class AppHouseController {
 				rentContract.setRemarks(request.getParameter("msg"));
 				rentContract.setContractStatus("0");// 暂存
 				rentContract.setSaveSource("1");//定金协议转合同
+				rentContract.setDepositAmount(depositAgreement.getDepositAmount());
 				
 				Tenant tenant = new Tenant();
 				tenant.setIdType("0");// 身份证
@@ -1364,7 +1373,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1411,7 +1420,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1519,7 +1528,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -1685,7 +1694,7 @@ public class AppHouseController {
 
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("order_id", paymentOrder.getOrderId());
-			map.put("price", paymentOrder.getOrderAmount());
+			map.put("price", df.format(paymentOrder.getOrderAmount()));
 
 			data.setData(map);
 			data.setCode("200");
@@ -1709,29 +1718,31 @@ public class AppHouseController {
 			if(StringUtils.isBlank(type))
 				type = "4";
 			
-			String contractBusiStatus = "";
-			if("0".equals(type) || "1".equals(type) || "2".equals(type) || "3".equals(type))
-				contractBusiStatus = "0";//有效
+			//String contractBusiStatus = "";
+			//if("0".equals(type) || "1".equals(type) || "2".equals(type) || "3".equals(type))
+				//contractBusiStatus = "0";//有效
 			
 			String token = (String) request.getHeader("token");
 			AppToken apptoken = new AppToken();
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
 
 			ContractBook contractBook = new ContractBook();
 			contractBook.setUserPhone(apptoken.getPhone());
-			if(!StringUtils.isBlank(contractBusiStatus))
-				contractBook.setContractBusiStatus(contractBusiStatus);
+			//if(!StringUtils.isBlank(contractBusiStatus))
+				//contractBook.setContractBusiStatus(contractBusiStatus);
 			List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
 
 			List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
 			Map<String, Object> map = new HashMap<String, Object>();
 			for (ContractBook tmpContractBook : list) {
+				if(!"4".equals(type) && StringUtils.isBlank(tmpContractBook.getContractBusiStatus()))//我的账单
+					continue;
 				Map<String, Object> mp = new HashMap<String, Object>();
 				mp.put("contract_id", tmpContractBook.getContractId());
 				mp.put("contract_code", tmpContractBook.getContractCode());
@@ -2035,7 +2046,7 @@ public class AppHouseController {
 			apptoken.setToken(token);
 			apptoken = appTokenService.findByToken(apptoken);
 			if(null == apptoken) {
-				data.setCode("400");
+				data.setCode("401");
 				data.setMsg("请重新登录");
 				return data;
 			}
@@ -2210,9 +2221,8 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		DecimalFormat df = new DecimalFormat("######0.00");
 		//测试用
-		paymentOrder.setOrderAmount(0.01d);
+		//paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2246,9 +2256,8 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		DecimalFormat df = new DecimalFormat("######0.00");
 		//测试用
-		paymentOrder.setOrderAmount(0.01d);
+		//paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2325,7 +2334,7 @@ public class AppHouseController {
 				apptoken.setToken(token);
 				apptoken = appTokenService.findByToken(apptoken);
 				if(null == apptoken) {
-					data.setCode("400");
+					data.setCode("401");
 					data.setMsg("请重新登录");
 					return data;
 				}
@@ -2358,7 +2367,7 @@ public class AppHouseController {
 
 				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("order_id", paymentOrder.getOrderId());
-				map.put("price", paymentOrder.getOrderAmount());
+				map.put("price", df.format(paymentOrder.getOrderAmount()));
 				
 				data.setData(map);
 				data.setCode("200");
@@ -2388,7 +2397,7 @@ public class AppHouseController {
 		apptoken.setToken(token);
 		apptoken = appTokenService.findByToken(apptoken);
 		if(null == apptoken) {
-			data.setCode("400");
+			data.setCode("401");
 			data.setMsg("请重新登录");
 			return data;
 		}
@@ -2404,12 +2413,28 @@ public class AppHouseController {
 		Double orderAmount = 0d;
 		for(String bId : billIdArr) {
 			PaymentTrans tmpPaymentTrans = this.paymentTransService.get(bId);
-			if(!"2".equals(tmpPaymentTrans.getTransStatus()))
-				orderAmount += tmpPaymentTrans.getLastAmount();
+			
+			String paymentTransId = tmpPaymentTrans.getId();
+			PaymentTrade paymentTrade = new PaymentTrade();
+			paymentTrade.setTransId(paymentTransId);
+			List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+			TradingAccounts tradingAccounts = null;
+			if(null != paymentTradeList && paymentTradeList.size() > 0) {
+				paymentTrade = paymentTradeList.get(0);
+				tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
+			}
+			
+			orderAmount += tmpPaymentTrans.getTradeAmount();
+			if(null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus())) {
+				data.setCode("400");
+				break;
+			}
+			//if(!"2".equals(tmpPaymentTrans.getTransStatus()))
+				//orderAmount += tmpPaymentTrans.getLastAmount();
 		}
 		
-		if(orderAmount <= 0) {
-			data.setCode("400");
+		if("400".equals(data.getCode())) {
+			//data.setCode("400");
 			data.setMsg("账单已付清");
 			return data;
 		}
@@ -2439,7 +2464,7 @@ public class AppHouseController {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("order_id", paymentOrder.getOrderId());
-	    map.put("price", paymentOrder.getOrderAmount());
+	    map.put("price", df.format(paymentOrder.getOrderAmount()));
 
 		data.setData(map);
 		data.setCode("200");
@@ -2463,7 +2488,6 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		DecimalFormat df = new DecimalFormat("######0.00");
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2505,6 +2529,8 @@ public class AppHouseController {
 		
 		try {
 			for(PaymentTrans tmpPaymentTrans : listPaymentTrans) {
+				if("11".equals(tmpPaymentTrans.getPaymentType()))//电费自用金额
+					continue;
 				boolean check = true;
 				for(int i=0;i<list.size();i++) {
 					Map<String, Object> tmpMap = list.get(i);
@@ -2515,8 +2541,8 @@ public class AppHouseController {
 						mp = tmpMap;
 						bill_id = mp.get("bill_id")+","+tmpPaymentTrans.getId();
 						mp.put("bill_id", bill_id);
-						bill_amount = (Double)mp.get("bill_amount")+tmpPaymentTrans.getTradeAmount();
-						mp.put("bill_amount", bill_amount);
+						bill_amount = Double.valueOf(mp.get("bill_amount").toString())+tmpPaymentTrans.getTradeAmount();
+						mp.put("bill_amount", df.format(bill_amount));
 						if("6".equals(tmpPaymentTrans.getPaymentType()))
 							mp.put("rent_amount", Double.valueOf(mp.get("rent_amount").toString())+tmpPaymentTrans.getTradeAmount());//房租金额
 						if("4".equals(tmpPaymentTrans.getPaymentType())) {
@@ -2544,7 +2570,18 @@ public class AppHouseController {
 								tv_amount += Double.valueOf(mp.get("tv_amount").toString());
 							mp.put("tv_amount", tv_amount);//有线电视费
 						}
-						if("2".equals(tmpPaymentTrans.getTransStatus()))
+						
+						String paymentTransId = tmpPaymentTrans.getId();
+						PaymentTrade paymentTrade = new PaymentTrade();
+						paymentTrade.setTransId(paymentTransId);
+						List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+						TradingAccounts tradingAccounts = null;
+						if(null != paymentTradeList && paymentTradeList.size() > 0) {
+							paymentTrade = paymentTradeList.get(0);
+							tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
+						}
+						
+						if(null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus()))
 							mp.put("bill_state", "1");
 						else
 							mp.put("bill_state", "0");
@@ -2559,7 +2596,7 @@ public class AppHouseController {
 					bill_id = tmpPaymentTrans.getId();
 					bill_amount = tmpPaymentTrans.getTradeAmount();
 					mp.put("bill_id", bill_id);
-					mp.put("bill_amount", bill_amount);
+					mp.put("bill_amount", df.format(bill_amount));
 					mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
 					mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
 					double rent_amount = 0;
@@ -2610,7 +2647,18 @@ public class AppHouseController {
 					mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
 					mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数
 					String bill_state = "0";
-					if("2".equals(tmpPaymentTrans.getTransStatus()))
+					
+					String paymentTransId = tmpPaymentTrans.getId();
+					PaymentTrade paymentTrade = new PaymentTrade();
+					paymentTrade.setTransId(paymentTransId);
+					List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+					TradingAccounts tradingAccounts = null;
+					if(null != paymentTradeList && paymentTradeList.size() > 0) {
+						paymentTrade = paymentTradeList.get(0);
+						tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
+					}
+					
+					if(null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus()))
 						bill_state = "1";
 					mp.put("bill_state", bill_state);//0:未付 1:已付
 					mp.put("payment_type", tmpPaymentTrans.getPaymentType());
@@ -2631,7 +2679,7 @@ public class AppHouseController {
 
 	@RequestMapping(value = "repair")
 	@ResponseBody
-	public ResponseData avatar(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 		if (null == request.getParameter("mobile")) {
 			data.setCode("101");
@@ -2642,7 +2690,7 @@ public class AppHouseController {
 			// String mobile = request.getParameter("mobile");
 
 			Repairs repair = new Repairs();
-			repair.setId(IdGen.uuid());
+			//repair.setId(IdGen.uuid());
 			repair.setUserMobile(request.getParameter("user_mobile"));
 			repair.setContractId(request.getParameter("contract_id"));
 			repair.setRoomId(request.getParameter("room_id"));
@@ -2799,13 +2847,13 @@ public class AppHouseController {
             apptoken.setToken(token);
             apptoken = appTokenService.findByToken(apptoken);
             if(null == apptoken) {
-                data.setCode("400");
+                data.setCode("401");
                 data.setMsg("请重新登录");
                 return data;
             }
             AppUser appUser = new AppUser();
             appUser.setPhone(apptoken.getPhone());
-            User serviceUser = appUserService.getServiceUserByPhone(appUser);
+            User serviceUser = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
             if(serviceUser == null){
                 data.setCode("400");
                 data.setMsg("未分配管家!");

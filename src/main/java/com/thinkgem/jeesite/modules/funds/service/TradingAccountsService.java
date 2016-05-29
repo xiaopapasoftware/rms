@@ -161,6 +161,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setUpdateBy(UserUtils.getUser());
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
 	tradingAccountsDao.update(tradingAccounts);
+	
+	if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
+		//款项做到账
+	} else {
+		//删除电费充值款项
+	}
 
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
