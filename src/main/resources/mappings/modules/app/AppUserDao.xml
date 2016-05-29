@@ -184,6 +184,11 @@
         select h.service_user from t_rent_contract rc
         join t_house h on h.ID = rc.HOUSE_ID
         where rc.id = #{contract_id}
-        and rc.CONTRACT_BUSI_STATUS = '0'
+        union
+        select  house.service_user
+        from t_rent_contract rc
+        join t_room h on h.ID = rc.ROOM_ID
+		join t_house house on house.ID = h.HOUSE_ID
+		and rc.ID =  #{contract_id}
     </select>
 </mapper>

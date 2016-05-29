@@ -71,8 +71,7 @@ public class HttpRequestUtil {
     public static String readContentFromPost(String url, String method,  Map<String, Object> paramsMap) throws Exception {
         logger.debug("=============" + method);
         logger.debug("Get params:" + paramsMap);
-        // 拼凑get请求的URL字串，使用URLEncoder.encode对特殊和不可见字符进行编码
-        //String getURL = GET_URL + "&activatecode=" + URLEncoder.encode("aaa", "utf-8");
+
         String fullUrl = url + "/" + method + "/" + "?random="+Math.random();
         for (String key : paramsMap.keySet()) {
             fullUrl = fullUrl + "&" + key + "=" + paramsMap.get(key);

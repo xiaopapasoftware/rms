@@ -53,7 +53,6 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-                <th>门锁名称</th>
                 <th>钥匙编号</th>
                 <th>用户</th>
                 <th>用户科技侠账号</th>
@@ -69,9 +68,6 @@
 		<tbody>
 		<c:forEach items="${keys}" var="key">
 			<tr>
-				<td>
-				    ${key.lock_alias}
-				</td>
 				<td>
                     ${key.keyId}
 				</td>

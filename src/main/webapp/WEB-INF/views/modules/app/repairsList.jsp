@@ -25,7 +25,7 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label>报修填写的联系手机号：</label>
+			<li><label>手机号：</label>
 				<form:input path="userMobile" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
 			<li><label>房间号：</label>
