@@ -2631,7 +2631,7 @@ public class AppHouseController {
 
 	@RequestMapping(value = "repair")
 	@ResponseBody
-	public ResponseData avatar(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
 		ResponseData data = new ResponseData();
 		if (null == request.getParameter("mobile")) {
 			data.setCode("101");
@@ -2805,7 +2805,7 @@ public class AppHouseController {
             }
             AppUser appUser = new AppUser();
             appUser.setPhone(apptoken.getPhone());
-            User serviceUser = appUserService.getServiceUserByPhone(appUser);
+            User serviceUser = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
             if(serviceUser == null){
                 data.setCode("400");
                 data.setMsg("未分配管家!");

@@ -155,7 +155,7 @@ public class ScienerLockKeyController extends BaseController {
         message.setContent("您收到管理员分配的门锁钥匙");
         message.setTitle("门锁钥匙");
         message.setType("门锁钥匙");
-        message.setReceiver(key.getUsername().substring("tangchao2_".length()));
+        message.setReceiver(key.getUsername().substring("tangchaotwo_".length()));
         messageService.addMessage(message,true);
         return "redirect:" + Global.getAdminPath() + "/lock/scienerLockKey/?repage";
     }
