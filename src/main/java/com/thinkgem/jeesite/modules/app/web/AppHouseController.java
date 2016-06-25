@@ -1429,6 +1429,17 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 			
 			String contractId = request.getParameter("contract_id");
+			
+			//检查此合同是否已续签
+			RentContract reNewRentContract = new RentContract();
+			reNewRentContract.setContractId(contractId);
+			List<RentContract> reNewRentContractList = rentContractService.findList(reNewRentContract);
+			if(null != reNewRentContractList && reNewRentContractList.size() > 0) {
+				data.setCode("400");
+				data.setMsg("您已续签本合同,不能重复续签.");
+				return data;
+			}
+			
 			RentContract rentContract = this.rentContractService.get(contractId);
 			House house = null;
 			if(null != rentContract && null != rentContract.getHouse()) {
@@ -2222,7 +2233,7 @@ public class AppHouseController {
 			return data;
 		}
 		//测试用
-		//paymentOrder.setOrderAmount(0.01d);
+		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2257,7 +2268,7 @@ public class AppHouseController {
 			return data;
 		}
 		//测试用
-		//paymentOrder.setOrderAmount(0.01d);
+		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
