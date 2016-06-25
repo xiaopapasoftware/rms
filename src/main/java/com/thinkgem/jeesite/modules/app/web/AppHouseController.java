@@ -78,6 +78,7 @@ public class AppHouseController {
 	Logger log = LoggerFactory.getLogger(AppHouseController.class);
 	
 	DecimalFormat df = new DecimalFormat("######0.00");
+	DecimalFormat df1 = new DecimalFormat("######0.##");
 
 	@Autowired
 	private HouseService houseService;
@@ -244,7 +245,7 @@ public class AppHouseController {
 			map.put("house_code", house.getHouseCode());
 			map.put("id", house.getId());
 			map.put("title", house.getShortDesc());
-			map.put("price", df.format(house.getRental()));
+			map.put("price", df1.format(house.getRental()));
 			map.put("pay_way", house.getPayWay());
 			String cover = "";
 			if (!StringUtils.isEmpty(house.getAttachmentPath())) {
@@ -319,7 +320,7 @@ public class AppHouseController {
 		ResponseData data = new ResponseData();
 
 		if (null == request.getParameter("house_id") || null == request.getParameter("b_time")
-				|| null == request.getParameter("b_name") || null == request.getParameter("phone")) {
+				|| null == request.getParameter("phone")) {
 			data.setCode("101");
 			return data;
 		}
@@ -352,7 +353,8 @@ public class AppHouseController {
 				return data;
 			}
 
-			contractBook.setUserName(request.getParameter("b_name"));
+			String b_name = StringUtils.isBlank(request.getParameter("b_name")) ? request.getParameter("phone") : request.getParameter("b_name");
+			contractBook.setUserName(b_name);
 			contractBook.setUserPhone(request.getParameter("phone"));
 			contractBook.setUserGender(request.getParameter("sex"));
 			contractBook.setRemarks(request.getParameter("msg"));
