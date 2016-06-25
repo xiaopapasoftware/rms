@@ -585,7 +585,8 @@ public class AppHouseController {
 			}
 			
 			ContractBook contractBook = new ContractBook();
-			contractBook.setIdNo(appUser.getIdCardNo());
+			//contractBook.setIdNo(appUser.getIdCardNo());
+			contractBook.setUserPhone(appUser.getPhone());
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 			if(null != list && list.size()>0) {
 				for(ContractBook tmpContractBook : list) {
@@ -623,9 +624,11 @@ public class AppHouseController {
 			depositAgreement.setHouse(house);
 
 			Tenant tenant = new Tenant();
-			tenant.setIdNo(appUser.getIdCardNo());
-			tenant.setIdType("0");//身份证
-			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			//tenant.setIdNo(appUser.getIdCardNo());
+			//tenant.setIdType("0");//身份证
+			//List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			tenant.setCellPhone(appUser.getPhone());
+			List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 			if (null == tenantList || tenantList.size() <= 0) {
 				tenantList = new ArrayList<Tenant>();
 				tenant.setTenantName(appUser.getName());
@@ -705,7 +708,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 			
 			ContractBook contractBook = new ContractBook();
-			contractBook.setIdNo(appUser.getIdCardNo());
+			//contractBook.setIdNo(appUser.getIdCardNo());
+			contractBook.setUserPhone(appUser.getPhone());
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
 			List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
@@ -780,7 +784,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
-			contractBook.setIdNo(appUser.getIdCardNo());
+			//contractBook.setIdNo(appUser.getIdCardNo());
+			contractBook.setUserPhone(appUser.getPhone());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
@@ -876,7 +881,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
-			contractBook.setIdNo(appUser.getIdCardNo());
+			//contractBook.setIdNo(appUser.getIdCardNo());
+			contractBook.setUserPhone(appUser.getPhone());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
@@ -986,7 +992,8 @@ public class AppHouseController {
 			appUser = appUserService.getByPhone(appUser);
 
 			ContractBook contractBook = new ContractBook();
-			contractBook.setIdNo(appUser.getIdCardNo());
+			//contractBook.setIdNo(appUser.getIdCardNo());
+			contractBook.setUserPhone(appUser.getPhone());
 			contractBook.setDepositId(request.getParameter("id"));
 			List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
 
@@ -1142,7 +1149,8 @@ public class AppHouseController {
 			boolean hasBooked = false; 
 			String depositId = null;
 			ContractBook booked = new ContractBook();
-			booked.setIdNo(appUser.getIdCardNo());
+			//booked.setIdNo(appUser.getIdCardNo());
+			booked.setUserPhone(appUser.getPhone());
 			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
 			for(ContractBook tContractBook : bookedList) {
 				if(houseId.equals(tContractBook.getHouseId()) && "0".equals(tContractBook.getContractBusiStatus())) {
@@ -1234,9 +1242,11 @@ public class AppHouseController {
 				rentContract.setHouse(house);
 	
 				Tenant tenant = new Tenant();
-				tenant.setIdType("0");// 身份证
-				tenant.setIdNo(appUser.getIdCardNo());
-				List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				//tenant.setIdType("0");// 身份证
+				//tenant.setIdNo(appUser.getIdCardNo());
+				//List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				tenant.setCellPhone(appUser.getPhone());
+				List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 				if (null == tenantList || tenantList.size() <= 0) {
 					tenantList = new ArrayList<Tenant>();
 					tenant.setTenantName(appUser.getName());
@@ -1308,9 +1318,11 @@ public class AppHouseController {
 				rentContract.setDepositAmount(depositAgreement.getDepositAmount());
 				
 				Tenant tenant = new Tenant();
-				tenant.setIdType("0");// 身份证
-				tenant.setIdNo(appUser.getIdCardNo());
-				List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				//tenant.setIdType("0");// 身份证
+				//tenant.setIdNo(appUser.getIdCardNo());
+				//List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+				tenant.setCellPhone(appUser.getPhone());
+				List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 				if (null == tenantList || tenantList.size() <= 0) {
 					tenantList = new ArrayList<Tenant>();
 					tenant.setTenantName(appUser.getName());
@@ -1465,9 +1477,11 @@ public class AppHouseController {
 			rentContract.setRenMonths(rentContractOld.getRenMonths());
 			rentContract.setDepositMonths(rentContractOld.getDepositMonths());
 			Tenant tenant = new Tenant();
-			tenant.setIdType("0");// 身份证
-			tenant.setIdNo(appUser.getIdCardNo());
-			List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			//tenant.setIdType("0");// 身份证
+			//tenant.setIdNo(appUser.getIdCardNo());
+			//List<Tenant> tenantList = tenantService.findTenantByIdTypeAndNo(tenant);
+			tenant.setCellPhone(appUser.getPhone());
+			List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
 			if (null == tenantList || tenantList.size() <= 0) {
 				tenantList = new ArrayList<Tenant>();
 				tenant.setTenantName(appUser.getName());

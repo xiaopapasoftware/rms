@@ -78,7 +78,7 @@
 		t_property_project p,t_building b,t_house h,t_attachment a
 		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
 		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
-		where ct.id_no = #{idNo} and da.data_source='2' 
+		where ct.cell_phone = #{userPhone} and da.data_source='2' 
 		<if test="depositId != null and depositId != ''">
 			AND da.id = #{depositId}
 		</if>
