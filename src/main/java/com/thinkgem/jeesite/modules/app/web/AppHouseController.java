@@ -1258,11 +1258,15 @@ public class AppHouseController {
 				rentContract.setRemarks(request.getParameter("msg"));
 				rentContract.setContractStatus("0");// 暂存
 			
-				//租客身份证照片
+	        	//租客身份证照片
 	        	if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
 	        		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	    			String img_url = proper.getProperty("img.url");
-	    			rentContract.setRentContractOtherFile(img_url+appUser.getIdCardPhoto＿front());
+	    			rentContract.setRentContractCusIDFile(img_url+appUser.getIdCardPhoto＿front());
+	    			
+	    			if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
+	    				rentContract.setRentContractCusIDFile(rentContract.getRentContractCusIDFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
+	        		}
 	        	}
 	        	
 				this.rentContractService.save(rentContract);
@@ -1323,10 +1327,10 @@ public class AppHouseController {
 	        	if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
 	        		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	    			String img_url = proper.getProperty("img.url");
-	    			rentContract.setRentContractOtherFile(img_url+appUser.getIdCardPhoto＿front());
+	    			rentContract.setRentContractCusIDFile(img_url+appUser.getIdCardPhoto＿front());
 	    			
 	    			if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
-	    				rentContract.setRentContractOtherFile(rentContract.getRentContractOtherFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
+	    				rentContract.setRentContractCusIDFile(rentContract.getRentContractCusIDFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
 	        		}
 	        	}
 	        	
@@ -1498,6 +1502,17 @@ public class AppHouseController {
 			rentContract.setHasNet(rentContractOld.getHasNet());
 			rentContract.setNetFee(rentContractOld.getNetFee());
 			rentContract.setWaterFee(rentContractOld.getWaterFee());
+			
+        	//租客身份证照片
+        	if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
+        		PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+    			String img_url = proper.getProperty("img.url");
+    			rentContract.setRentContractCusIDFile(img_url+appUser.getIdCardPhoto＿front());
+    			
+    			if(StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
+    				rentContract.setRentContractCusIDFile(rentContract.getRentContractCusIDFile()+"|"+img_url+appUser.getIdCardPhoto＿back());
+        		}
+        	}
 			
 			/* 判断该用户是否有预订,有则为定金转合同流程 */
 			this.rentContractService.save(rentContract);
@@ -1981,7 +1996,6 @@ public class AppHouseController {
 				for (int i = 0; i < values.length; i++) {
 					valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
 				}
-				// 乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
 				//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "UTF-8");
 				params.put(name, valueStr);
 			}

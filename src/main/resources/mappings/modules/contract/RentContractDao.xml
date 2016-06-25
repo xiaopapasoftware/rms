@@ -176,6 +176,9 @@
 			<if test="contractBusiStatus != null and contractBusiStatus != ''">
 				AND a.contract_busi_status = #{contractBusiStatus}
 			</if>
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
