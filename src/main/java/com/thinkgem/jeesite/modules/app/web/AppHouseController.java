@@ -2977,7 +2977,7 @@ public class AppHouseController {
 						mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());//有线电视费
 					mp.put("water_amount", water_amount);//水费金额
 					String current_electric_balance="0", bill_electric_balance="0", common_electric_amount="0", common_electric_balance="0";
-					String electricPrice = "0";
+					String electricPrice = "0",electricPublicPric="0";
 					try {
 						Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"),DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"),DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
 						if(null != meterMap) {
@@ -2989,6 +2989,8 @@ public class AppHouseController {
 								common_electric_balance = meterMap.get(2);
 							if(null != meterMap.get(4))
 								electricPrice = meterMap.get(4);
+							if(null != meterMap.get(5))
+								electricPublicPric=meterMap.get(5);
 						}
 					} catch (Exception e) {
 						this.log.error("查询电表异常:",e);
@@ -2997,7 +2999,7 @@ public class AppHouseController {
 					mp.put("current_electric_balance", current_electric_balance);//当前电费度数
 					mp.put("bill_electric_amount", Double.valueOf(bill_electric_balance)*Double.valueOf(electricPrice));//本期个人用电金额
 					mp.put("bill_electric_balance", bill_electric_balance);//本期个人用电度数
-					mp.put("common_electric_amount", common_electric_amount);//本期公共用电金额
+					mp.put("common_electric_amount", Double.valueOf(common_electric_balance)*Double.valueOf(electricPublicPric));//本期公共用电金额
 					mp.put("common_electric_balance", common_electric_balance);//本期公共用电度数
 					String bill_state = "0";
 					
