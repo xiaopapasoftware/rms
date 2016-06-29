@@ -804,7 +804,7 @@ public class AppHouseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			String address = this.propertyProjectService.get(depositAgreement.getPropertyProject().getId()).getProjectAddr();
-			address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName();
+			address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName()+"号楼";
 			address += this.houseService.get(depositAgreement.getHouse().getId()).getHouseNo()+"室";
 			if(null != depositAgreement.getRoom() && StringUtils.isNoneBlank(depositAgreement.getRoom().getId())) {
 				address += this.roomService.get(depositAgreement.getRoom().getId()).getRoomNo()+"部位";
@@ -906,7 +906,7 @@ public class AppHouseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			String address = this.propertyProjectService.get(depositAgreement.getPropertyProject().getId()).getProjectAddr();
-			address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName();
+			address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName()+"号楼";
 			address += this.houseService.get(depositAgreement.getHouse().getId()).getHouseNo()+"室";
 			if(null != depositAgreement.getRoom() && StringUtils.isNoneBlank(depositAgreement.getRoom().getId())) {
 				address += this.roomService.get(depositAgreement.getRoom().getId()).getRoomNo()+"部位";
@@ -2226,7 +2226,7 @@ public class AppHouseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
-			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName();
+			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName()+"号楼";
 			address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo()+"室";
 			if(null != rentContract.getRoom() && StringUtils.isNotBlank(rentContract.getRoom().getId())) {
 				Room room = this.roomService.get(rentContract.getRoom().getId());
@@ -2408,7 +2408,7 @@ public class AppHouseController {
 			Map<String, Object> map = new HashMap<String, Object>();
 
 			String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
-			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName();
+			address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName()+"号楼";
 			address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo()+"室";
 			if(null != rentContract.getRoom() && StringUtils.isNotBlank(rentContract.getRoom().getId())) {
 				Room room = this.roomService.get(rentContract.getRoom().getId());
