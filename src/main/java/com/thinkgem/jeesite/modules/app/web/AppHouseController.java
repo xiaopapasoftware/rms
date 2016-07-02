@@ -1138,7 +1138,7 @@ public class AppHouseController {
 			map.put("rent_gender", appUser.getSex());
 			map.put("rent_phone", appUser.getPhone());
 			map.put("note", depositAgreement.getRemarks());
-
+			map.put("agreement_code", depositAgreement.getAgreementCode());
 			/*
 			 * 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
 			 */
