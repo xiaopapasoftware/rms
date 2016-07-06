@@ -38,6 +38,7 @@
 				<form:input path="steward" htmlEscape="false" maxlength="1" class="input-medium"/>
 			</li>
 			<li><label>管家电话：</label>
+
 				<form:select path="stewardMobile" class="input-medium">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
@@ -77,7 +78,7 @@
 					${repairs.steward}
 				</td>
 				<td>
-					${fns:getDictLabel(repairs.stewardMobile, '', '')}
+					${repairs.stewardMobile}
 				</td>
 				<td>
 					<fmt:formatDate value="${repairs.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

@@ -182,3 +182,28 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('371','1','房源链接式广告','ad_type','广告类型','2','0','1',now(),'1',now(),NULL,'0');
 
 alter table t_house add service_user varchar(64) comment '服务管家';
+
+drop table if exists T_REPAIR;
+/* Create Tables */
+create table T_REPAIR
+(
+   ID                   varchar(64) NOT NULL,
+   USER_ID    	 varchar(20) comment '报修人ID',
+   USER_NAME    	 varchar(20) comment '报修人',
+   USER_MOBILE           varchar(20) comment '报修电话',
+   REPAIR_MOBILE	 VARCHAR(20) comment  '报修联系电话',
+	EXPECT_REPAIR_TIME	VARCHAR(50) comment '期望维修时间',
+   CONTRACT_ID	 VARCHAR(64) COMMENT  '合同号',
+   ROOM_ID	 VARCHAR(64)  COMMENT  '房间号',
+   DESCRIPTION	 VARCHAR(500) COMMENT  '报修描述',
+   KEEPER	 VARCHAR(20) COMMENT  '管家',
+   KEEPER_MOBILE	 VARCHAR(20) COMMENT  '管家电话',
+   STATUS	 VARCHAR(10) COMMENT  '状态',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '报修表';
