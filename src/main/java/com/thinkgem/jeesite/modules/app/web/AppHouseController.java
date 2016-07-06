@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.app.entity.*;
+import com.thinkgem.jeesite.modules.app.service.ServiceUserComplainService;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +29,9 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayNotify;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
-import com.thinkgem.jeesite.modules.app.entity.AppToken;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
-import com.thinkgem.jeesite.modules.app.entity.Repairs;
-import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.RepairsService;
+import com.thinkgem.jeesite.modules.app.service.RepairService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -74,6 +72,7 @@ import com.thinkgem.jeesite.modules.sys.service.SystemService;
 import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
+
 @Controller
 @RequestMapping("house")
 public class AppHouseController {
@@ -110,7 +109,7 @@ public class AppHouseController {
 	private RentContractService rentContractService;
 
 	@Autowired
-	private RepairsService repairService;
+	private RepairService repairService;
 
 	@Autowired
 	private AttachmentDao attachmentDao;
@@ -130,6 +129,9 @@ public class AppHouseController {
 	private TradingAccountsDao tradingAccountsDao;
 	@Autowired
 	private PaymentTradeDao paymentTradeDao;
+
+    @Autowired
+    private ServiceUserComplainService serviceUserComplainService;
 	
 	public AppHouseController() {
 	}
@@ -3032,64 +3034,71 @@ public class AppHouseController {
 		return data;
 	}
 
-	@RequestMapping(value = "repair")
-	@ResponseBody
-	public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
-		ResponseData data = new ResponseData();
-		if (null == request.getParameter("mobile")) {
-			data.setCode("101");
-			return data;
-		}
+    @RequestMapping(value = "repair")
+    @ResponseBody
+    public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
+        ResponseData data = new ResponseData();
+        if (null == request.getParameter("mobile")) {
+            data.setCode("101");
+            return data;
+        }
 
-		try {
-			// String mobile = request.getParameter("mobile");
+        try {
+            String mobile = request.getParameter("mobile");
+            AppUser appUser = new AppUser();
+            appUser.setPhone(mobile);
+            appUser = appUserService.getByPhone(appUser);
 
-			Repairs repair = new Repairs();
-			//repair.setId(IdGen.uuid());
-			repair.setUserMobile(request.getParameter("user_mobile"));
-			repair.setContractId(request.getParameter("contract_id"));
-			repair.setRoomId(request.getParameter("room_id"));
-			repair.setStatus("01");
-			repair.setDescription(request.getParameter("description"));
+            Repair repair = new Repair();
+            //repair.setId(IdGen.uuid());
+            repair.setUserId(appUser.getId());
+            repair.setUserMobile(appUser.getPhone());
+            repair.setUserName(appUser.getName());
+            repair.setRepairMobile(request.getParameter("user_mobile"));
+            repair.setContractId(request.getParameter("contract_id"));
+            repair.setRoomId(request.getParameter("room_id"));
+            repair.setExpectRepairTime(request.getParameter("expected_time"));
+            repair.setStatus("01");
+            repair.setDescription(request.getParameter("description"));
             User user = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
-            if(user == null){
+            if (user == null) {
                 data.setCode("400");
                 data.setMsg("合同没有匹配的服务管家");
                 return data;
             }
-            repair.setSteward(user.getName());
-            repair.setStewardMobile(user.getMobile());
-			repairService.save(repair);
+            repair.setKeeper(user.getName());
+            repair.setKeeperMobile(user.getMobile());
+            repairService.save(repair);
 
-			String attach_path = request.getParameter("attach_path");
-			if (attach_path == null) {
-				data.setCode("500");
-				data.setMsg("上传有误");
-				return data;
-			}
-			Attachment attachment = new Attachment();
-			attachment.setId(IdGen.uuid());
-			attachment.setAttachmentType(FileType.REPAIR_PICTURE.getValue());
-			attachment.setAttachmentPath(attach_path);
-			attachment.setCreateDate(new Date());
-			attachment.setCreateBy(UserUtils.getUser());
-			attachment.setUpdateDate(new Date());
-			attachment.setUpdateBy(UserUtils.getUser());
-			attachment.setDelFlag("0");
-			attachment.setBizId(repair.getId());
-			attachmentDao.insert(attachment);
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("steward", repair.getSteward());
-			map.put("steward_mobile", repair.getStewardMobile());
-			data.setData(map);
-			data.setCode("200");
-			data.setMsg("报修已提交");
-		} catch (Exception e) {
-			data.setCode("500");
-			log.error("create repair error:", e);
-		}
-		return data;
-	}
+            String attach_path = request.getParameter("attach_path");
+            if (attach_path == null) {
+                data.setCode("500");
+                data.setMsg("上传有误");
+                return data;
+            }
+            Attachment attachment = new Attachment();
+            attachment.setId(IdGen.uuid());
+            attachment.setAttachmentType(FileType.REPAIR_PICTURE.getValue());
+            attachment.setAttachmentPath(attach_path);
+            attachment.setCreateDate(new Date());
+            attachment.setCreateBy(UserUtils.getUser());
+            attachment.setUpdateDate(new Date());
+            attachment.setUpdateBy(UserUtils.getUser());
+            attachment.setDelFlag("0");
+            attachment.setBizId(repair.getId());
+            attachmentDao.insert(attachment);
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("steward", repair.getKeeper());
+            map.put("steward_mobile", repair.getKeeperMobile());
+            data.setData(map);
+            data.setCode("200");
+            data.setMsg("报修已提交");
+        } catch (Exception e) {
+            data.setCode("500");
+            log.error("create repair error:", e);
+        }
+        return data;
+    }
 	
 	private boolean checkHouseStatus(String houseId) {
 		House house = this.houseService.get(houseId);
@@ -3229,5 +3238,37 @@ public class AppHouseController {
         }
         return data;
 
+    }
+
+    @RequestMapping(value = "complain")
+    @ResponseBody
+    public ResponseData complain(HttpServletRequest request, HttpServletResponse response) {
+        ResponseData data = new ResponseData();
+        if (null == request.getParameter("mobile") || null==request.getParameter("id") ) {
+            data.setCode("101");
+            return data;
+        }
+
+        try {
+            String mobile = request.getParameter("mobile");
+            AppUser appUser = new AppUser();
+            appUser.setPhone(mobile);
+            appUser = appUserService.getByPhone(appUser);
+
+            ServiceUserComplain serviceUserComplain = new ServiceUserComplain();
+            serviceUserComplain.setUserId(appUser.getId());
+            User user = this.systemService.getUser(request.getParameter("id"));
+            serviceUserComplain.setServiceUser(user);
+            serviceUserComplain.setContent(request.getParameter("desc"));
+
+            serviceUserComplainService.save(serviceUserComplain);
+
+            data.setCode("200");
+            data.setMsg("已提交");
+        } catch (Exception e) {
+            data.setCode("500");
+            log.error("create complain error:", e);
+        }
+        return data;
     }
 }
