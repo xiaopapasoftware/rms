@@ -25,7 +25,7 @@ import com.thinkgem.jeesite.modules.app.service.ServiceUserComplainService;
 /**
  * 管家投拆Controller
  * @author daniel
- * @version 2016-05-30
+ * @version 2016-07-07
  */
 @Controller
 @RequestMapping(value = "${adminPath}/app/serviceUserComplain")
@@ -45,7 +45,8 @@ public class ServiceUserComplainController extends BaseController {
 		}
 		return entity;
 	}
-    //@RequiresPermissions("app:serviceUserComplain:view")
+	
+
 	@RequestMapping(value = {"list", ""})
 	public String list(ServiceUserComplain serviceUserComplain, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<ServiceUserComplain> page = serviceUserComplainService.findPage(new Page<ServiceUserComplain>(request, response), serviceUserComplain); 
@@ -53,14 +54,14 @@ public class ServiceUserComplainController extends BaseController {
 		return "modules/app/serviceUserComplainList";
 	}
 
-	//@RequiresPermissions("app:serviceUserComplain:view")
+
 	@RequestMapping(value = "form")
 	public String form(ServiceUserComplain serviceUserComplain, Model model) {
 		model.addAttribute("serviceUserComplain", serviceUserComplain);
 		return "modules/app/serviceUserComplainForm";
 	}
 
-	//@RequiresPermissions("app:serviceUserComplain:edit")
+
 	@RequestMapping(value = "save")
 	public String save(ServiceUserComplain serviceUserComplain, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, serviceUserComplain)){
@@ -71,7 +72,7 @@ public class ServiceUserComplainController extends BaseController {
 		return "redirect:"+Global.getAdminPath()+"/app/serviceUserComplain/?repage";
 	}
 	
-	//@RequiresPermissions("app:serviceUserComplain:edit")
+
 	@RequestMapping(value = "delete")
 	public String delete(ServiceUserComplain serviceUserComplain, RedirectAttributes redirectAttributes) {
 		serviceUserComplainService.delete(serviceUserComplain);

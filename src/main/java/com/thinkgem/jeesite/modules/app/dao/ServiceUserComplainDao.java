@@ -10,7 +10,7 @@ import com.thinkgem.jeesite.modules.app.entity.ServiceUserComplain;
 /**
  * 管家投拆DAO接口
  * @author daniel
- * @version 2016-05-30
+ * @version 2016-07-07
  */
 @MyBatisDao
 public interface ServiceUserComplainDao extends CrudDao<ServiceUserComplain> {

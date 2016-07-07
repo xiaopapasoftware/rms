@@ -11,13 +11,15 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 /**
  * 管家投拆Entity
  * @author daniel
- * @version 2016-05-30
+ * @version 2016-07-07
  */
 public class ServiceUserComplain extends DataEntity<ServiceUserComplain> {
 	
 	private static final long serialVersionUID = 1L;
 	private String userId;		// 投拆人
-	private User serviceUser;		// 被投拆服务管家
+    private String userPhone;		// 投拆人
+    private String userName;		// 投拆人
+	private User serviceUser;		// 被投拆人,服务管家
 	private String content;		// 投拆内容
 	
 	public ServiceUserComplain() {
@@ -53,5 +55,20 @@ public class ServiceUserComplain extends DataEntity<ServiceUserComplain> {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
+
+    public String getUserPhone() {
+        return userPhone;
+    }
+
+    public void setUserPhone(String userPhone) {
+        this.userPhone = userPhone;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 }

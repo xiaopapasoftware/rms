@@ -16,7 +16,7 @@ import com.thinkgem.jeesite.modules.app.dao.ServiceUserComplainDao;
 /**
  * 管家投拆Service
  * @author daniel
- * @version 2016-05-30
+ * @version 2016-07-07
  */
 @Service
 @Transactional(readOnly = true)
