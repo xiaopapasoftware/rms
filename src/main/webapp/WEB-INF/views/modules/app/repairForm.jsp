@@ -28,7 +28,7 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/app/repair/">报修记录列表</a></li>
-		<li class="active"><a href="${ctx}/app/repair/form?id=${repair.id}">报修记录${not empty repair.id?'修改':'添加'}查看</a></li>
+		<li class="active"><a href="${ctx}/app/repair/form?id=${repair.id}">报修记录修改</a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="repair" action="${ctx}/app/repair/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
@@ -36,55 +36,44 @@
 		<div class="control-group">
 			<label class="control-label">报修人：</label>
 			<div class="controls">
-				<form:input path="userName" htmlEscape="false" maxlength="20" class="input-xlarge "/>
+				<form:input path="userName" htmlEscape="false" maxlength="20" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">报修电话：</label>
 			<div class="controls">
-				<form:input path="userMobile" htmlEscape="false" maxlength="20" class="input-xlarge "/>
+				<form:input path="userMobile" htmlEscape="false" maxlength="20" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">报修联系电话：</label>
 			<div class="controls">
-				<form:input path="repairMobile" htmlEscape="false" maxlength="20" class="input-xlarge "/>
+				<form:input path="repairMobile" htmlEscape="false" maxlength="20" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">期望维修时间：</label>
 			<div class="controls">
-				<form:input path="expectRepairTime" htmlEscape="false" maxlength="50" class="input-xlarge "/>
+				<form:input path="expectRepairTime" htmlEscape="false" maxlength="50" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
-		<div class="control-group">
-			<label class="control-label">合同号：</label>
-			<div class="controls">
-				<form:input path="contractId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">房间号：</label>
-			<div class="controls">
-				<form:input path="roomId" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div>
+
 		<div class="control-group">
 			<label class="control-label">报修描述：</label>
 			<div class="controls">
-				<form:input path="description" htmlEscape="false" maxlength="500" class="input-xlarge "/>
+				<form:input path="description" htmlEscape="false" maxlength="500" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">管家：</label>
 			<div class="controls">
-				<form:input path="keeper" htmlEscape="false" maxlength="20" class="input-xlarge "/>
+				<form:input path="keeper" htmlEscape="false" maxlength="20" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">管家电话：</label>
 			<div class="controls">
-				<form:input path="keeperMobile" htmlEscape="false" maxlength="20" class="input-xlarge "/>
+				<form:input path="keeperMobile" htmlEscape="false" maxlength="20" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
 		<div class="control-group">

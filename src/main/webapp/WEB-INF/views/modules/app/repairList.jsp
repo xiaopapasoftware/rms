@@ -19,7 +19,6 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/app/repair/">报修记录列表</a></li>
-		<li><a href="${ctx}/app/repair/form">报修记录添加</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="repair" action="${ctx}/app/repair/" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
@@ -61,8 +60,6 @@
 				<th>报修人电话</th>
 				<th>联系电话</th>
 				<th>期望维修时间</th>
-				<th>合同号</th>
-				<th>房间号</th>
 				<th>报修描述</th>
 				<th>管家</th>
 				<th>管家电话</th>
@@ -89,12 +86,6 @@
 				</td>
 				<td>
 					${repair.expectRepairTime}
-				</td>
-				<td>
-					${repair.contractId}
-				</td>
-				<td>
-					${repair.roomId}
 				</td>
 				<td>
 					${repair.description}

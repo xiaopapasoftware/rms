@@ -3058,7 +3058,7 @@ public class AppHouseController {
             repair.setContractId(request.getParameter("contract_id"));
             repair.setRoomId(request.getParameter("room_id"));
             repair.setExpectRepairTime(request.getParameter("expected_time"));
-            repair.setStatus("01");
+            repair.setStatus("0");
             repair.setDescription(request.getParameter("description"));
             User user = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
             if (user == null) {
