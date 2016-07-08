@@ -130,27 +130,7 @@ create table T_MESSAGE
    primary key (ID)
 ) comment = '消息表';
 
-drop table if exists T_REPAIRS;
-/* Create Tables */
-create table T_REPAIRS
-(
-   ID                   varchar(64) NOT NULL,
-   USER_ID    	 varchar(20) comment '用户ID, APP用户为注册手机号',
-   USER_MOBILE          varchar(64) comment '报修填写的联系手机号',
-   CONTRACT_ID  VARCHAR(64) comment '合同号',
-   ROOM_ID	 VARCHAR(64) COMMENT '房间号',
-   DESCRIPTION	 VARCHAR(18) comment  '描述',
-   STEWARD      	 VARCHAR(1)  COMMENT  '管家',
-   STEWARD_MOBILE	 VARCHAR(10) COMMENT  '管家电话',
-   STATUS	 INT	 COMMENT  '报修状态',
-   CREATE_BY            VARCHAR(64) COMMENT '创建者',
-   CREATE_DATE          DATETIME COMMENT '创建时间',
-   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
-   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
-   REMARKS              VARCHAR(255) COMMENT '备注信息',
-   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
-   primary key (ID)
-) comment = '报修记录';
+
 
 
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('320','105','0,1,105,','广告活动管理','20107','/inventory/ad',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
@@ -188,7 +168,7 @@ drop table if exists T_REPAIR;
 create table T_REPAIR
 (
    ID                   varchar(64) NOT NULL,
-   USER_ID    	 varchar(20) comment '报修人ID',
+   USER_ID    	 varchar(64) comment '报修人ID',
    USER_NAME    	 varchar(20) comment '报修人',
    USER_MOBILE           varchar(20) comment '报修电话',
    REPAIR_MOBILE	 VARCHAR(20) comment  '报修联系电话',
@@ -207,3 +187,25 @@ create table T_REPAIR
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '报修表';
+drop table if exists t_service_user_complain;
+CREATE TABLE t_service_user_complain (
+  ID varchar(64) NOT NULL,
+  USER_ID varchar(64) COMMENT '投拆人',
+  service_user varchar(64) COMMENT '被投拆人,服务管家',
+  content varchar(500) COMMENT '投拆内容',
+  CREATE_BY varchar(64) COMMENT '创建者',
+  CREATE_DATE datetime COMMENT '创建时间',
+  UPDATE_BY varchar(64) COMMENT '更新者',
+  UPDATE_DATE timestamp COMMENT '更新时间',
+  REMARKS varchar(255) COMMENT '备注信息',
+  DEL_FLAG char(1) DEFAULT '0' COMMENT '删除标记',
+  PRIMARY KEY (ID)
+)  COMMENT='管家投拆记录';
+
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('380','0','用户提交','repair_status','报修状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('381','1','已派单','repair_status','报修状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('382','2','已处理','repair_status','报修状态','3','0','1',now(),'1',now(),NULL,'0');
+
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('330','1','0,1,','门锁管理','810','','','','1','','1',now(),'1',now(),'','0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('331','330','0,1,330,','门锁管理','30',NULL,NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('332','331','0,1,330,331','科技侠门锁钥匙管理','30','/lock/scienerLockKey',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
