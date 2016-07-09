@@ -202,10 +202,6 @@ CREATE TABLE t_service_user_complain (
   PRIMARY KEY (ID)
 )  COMMENT='管家投拆记录';
 
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('380','0','用户提交','repair_status','报修状态','1','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('381','1','已派单','repair_status','报修状态','2','0','1',now(),'1',now(),NULL,'0');
-insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('382','2','已处理','repair_status','报修状态','3','0','1',now(),'1',now(),NULL,'0');
-
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('330','1','0,1,','门锁管理','810','','','','1','','1',now(),'1',now(),'','0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('331','330','0,1,330,','门锁管理','30',NULL,NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('332','331','0,1,330,331','科技侠门锁钥匙管理','30','/lock/scienerLockKey',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('510','0','用户提交','repair_status','报修状态','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('511','1','已派单','repair_status','报修状态','2','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('512','2','已处理','repair_status','报修状态','3','0','1',now(),'1',now(),NULL,'0');

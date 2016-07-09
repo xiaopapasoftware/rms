@@ -28,16 +28,16 @@
     
 	<select id="get" resultType="Repair">
 		SELECT 
-			<include refid="repairColumns"/>
-		FROM t_repair a
+			<include refid="repairColumns"/>, attach.ATTACHMENT_PATH AS "picture"
+		FROM t_repair a left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='REPAIR_PICTURE' and attach.del_flag = 0
 		<include refid="repairJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="Repair">
 		SELECT 
-			<include refid="repairColumns"/>
-		FROM t_repair a
+			<include refid="repairColumns"/>, attach.ATTACHMENT_PATH AS "picture"
+		FROM t_repair a left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='REPAIR_PICTURE' and attach.del_flag = 0
 		<include refid="repairJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

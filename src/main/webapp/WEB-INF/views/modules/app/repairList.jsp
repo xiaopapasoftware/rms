@@ -61,6 +61,7 @@
 				<th>联系电话</th>
 				<th>期望维修时间</th>
 				<th>报修描述</th>
+                <th>报修图片</th>
 				<th>管家</th>
 				<th>管家电话</th>
 				<th>状态</th>
@@ -90,6 +91,12 @@
 				<td>
 					${repair.description}
 				</td>
+                <td>
+                    <c:forEach items="${repair.pictures}" var="image">
+                        <img src="${image}">
+                    </c:forEach>
+                </td>
+
 				<td>
 					${repair.keeper}
 				</td>

@@ -7,6 +7,8 @@ import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.List;
+
 /**
  * 报修Entity
  * @author daniel
@@ -26,6 +28,8 @@ public class Repair extends DataEntity<Repair> {
 	private String keeper;		// 管家
 	private String keeperMobile;		// 管家电话
 	private String status;		// 状态
+    private String picture;
+    private List<String> pictures;
 	
 	public Repair() {
 		super();
@@ -133,5 +137,20 @@ public class Repair extends DataEntity<Repair> {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public List<String> getPictures() {
+        return pictures;
+    }
+
+    public void setPictures(List<String> pictures) {
+        this.pictures = pictures;
+    }
 }

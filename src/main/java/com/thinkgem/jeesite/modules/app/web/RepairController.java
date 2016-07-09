@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.app.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,9 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.entity.Repair;
 import com.thinkgem.jeesite.modules.app.service.RepairService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 报修Controller
@@ -49,7 +53,22 @@ public class RepairController extends BaseController {
 
 	@RequestMapping(value = {"list", ""})
 	public String list(Repair repair, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Repair> page = repairService.findPage(new Page<Repair>(request, response), repair); 
+		Page<Repair> page = repairService.findPage(new Page<Repair>(request, response), repair);
+        PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+        String img_url = proper.getProperty("img.url");
+        logger.debug("list:" + page.getList());
+        for(Repair re: page.getList()){
+            String picture = re.getPicture();
+            if(StringUtils.isNotEmpty(picture)){
+                String[] pics = picture.split("\\|");
+                List picList = new ArrayList();
+                for(String pic: pics){
+                    picList.add(img_url+pic);
+                }
+                re.setPictures(picList);
+            }
+        }
+        logger.debug("list after:" + page.getList());
 		model.addAttribute("page", page);
 		return "modules/app/repairList";
 	}

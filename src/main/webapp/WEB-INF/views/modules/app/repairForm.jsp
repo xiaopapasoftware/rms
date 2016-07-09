@@ -64,6 +64,8 @@
 				<form:input path="description" htmlEscape="false" maxlength="500" class="input-xlarge " readonly="true"/>
 			</div>
 		</div>
+
+
 		<div class="control-group">
 			<label class="control-label">管家：</label>
 			<div class="controls">
