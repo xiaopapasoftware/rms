@@ -32,6 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="repair" action="${ctx}/app/repair/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+        <form:hidden path="userId"/>
 		<sys:message content="${message}"/>		
 		<div class="control-group">
 			<label class="control-label">报修人：</label>

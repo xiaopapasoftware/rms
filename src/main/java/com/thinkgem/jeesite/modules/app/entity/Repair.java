@@ -39,7 +39,7 @@ public class Repair extends DataEntity<Repair> {
 		super(id);
 	}
 
-	@Length(min=0, max=20, message="报修人ID长度必须介于 0 和 20 之间")
+	@Length(min=0, max=64, message="报修人ID长度必须介于 0 和 64 之间")
 	public String getUserId() {
 		return userId;
 	}
