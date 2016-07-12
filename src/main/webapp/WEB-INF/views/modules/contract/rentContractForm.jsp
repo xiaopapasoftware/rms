@@ -178,7 +178,8 @@
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
 				$("#contractCode").val("${rentContract.contractCode}");
 			}else{
-				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
+				var code = $("#contractCode").val().split("-");
+				$("#contractCode").val(projectSimpleName + "-" + code[1]+"-"+code[2]);	
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";
