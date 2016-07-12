@@ -24,11 +24,14 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
  * 电费结算Controller
@@ -41,8 +44,9 @@ import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 public class ElectricFeeController extends BaseController {
 
     @Autowired
+    private RoomService roomServie;
+    @Autowired
     private ElectricFeeService electricFeeService;
-
     @Autowired
     private RentContractService rentContractService;
 
@@ -126,6 +130,18 @@ public class ElectricFeeController extends BaseController {
 	if (!beanValidator(model, electricFee)) {
 	    return form(electricFee, model);
 	}
+	String rentContractId = electricFee.getRentContractId();
+	RentContract rc = rentContractService.get(rentContractId);
+	if ("0".equals(rc.getRentMode())) {// 租赁方式为“整套”
+	    return setValues(model, rc, electricFee.getChargeAmount().intValue(), "整租不能充值电费！");
+	} else {// 租赁方式为“单间”
+	    Room room = roomServie.get(rc.getRoom().getId());
+	    if (room != null) {
+		if (StringUtils.isEmpty(room.getMeterNo())) {// 房间号为空
+		    return setValues(model, rc, electricFee.getChargeAmount().intValue(), "该房间的电表号还没有进行设置，请先设置电表号!");
+		}
+	    }
+	}
 	electricFeeService.save(electricFee);
 	addMessage(redirectAttributes, "电费充值申请成功提交！请等待审核结果。");
 	return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
@@ -137,6 +153,15 @@ public class ElectricFeeController extends BaseController {
 	electricFeeService.delete(electricFee);
 	addMessage(redirectAttributes, "删除电费结算成功");
 	return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
+    }
+
+    private String setValues(Model model, RentContract rc, int chargeAmount, String message) {
+	model.addAttribute("message", message);
+	model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+	model.addAttribute("rentContractId", rc.getId());
+	model.addAttribute("contractName", rc.getContractName());
+	model.addAttribute("chargeAmount", chargeAmount);
+	return "modules/fee/electricFeeForm";
     }
 
 }

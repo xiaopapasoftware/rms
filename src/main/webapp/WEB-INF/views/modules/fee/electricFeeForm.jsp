@@ -42,8 +42,8 @@
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
 				<div class="input-append">
-					<input id="rentContractId" name="rentContractId" class="" type="hidden" value="">
-					<input id="contractName" readonly="readonly" type="text" value="" data-msg-required="" class="" style="">
+					<input id="rentContractId" name="rentContractId" class="" type="hidden" value="${rentContractId}">
+					<input id="contractName" readonly="readonly" type="text"  value="${contractName}" data-msg-required="" class="" style="">
 					<a id="rentContractButton" href="javascript:" class="btn" style="">&nbsp;<i class="icon-search"></i>&nbsp;</a>&nbsp;&nbsp;
 				</div>
 				<span class="help-inline"><font color="red">*</font></span>
@@ -68,7 +68,7 @@
 		<div class="control-group">
 			<label class="control-label">充值金额：</label>
 			<div class="controls">
-				<form:input path="chargeAmount" htmlEscape="false" class="input-xlarge required digits"/>
+				<form:input path="chargeAmount" htmlEscape="false" class="input-xlarge number required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
