@@ -528,6 +528,18 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    house.setUpdateBy(UserUtils.getUser());
 		    house.setUpdateDate(new Date());
 		    houseDao.update(house);
+		    // 同时把房间的状态都更新为“已出租”
+		    Room parameterRoom = new Room();
+		    parameterRoom.setHouse(house);
+		    List<Room> rooms = roomDao.findList(parameterRoom);
+		    if (CollectionUtils.isNotEmpty(rooms)) {
+			for (Room r : rooms) {
+			    r.setRoomStatus("3");// 已出租
+			    r.setUpdateBy(UserUtils.getUser());
+			    r.setUpdateDate(new Date());
+			    roomDao.update(r);
+			}
+		    }
 		}
 	    } else {// 单间
 		Room room = roomDao.get(rentContract.getRoom().getId());
@@ -948,6 +960,19 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    house.setCreateBy(UserUtils.getUser());
 	    house.setUpdateDate(new Date());
 	    houseDao.update(house);
+	    // 把所有房间状态变更为“已退租可预订”
+	    Room parameterRoom = new Room();
+	    parameterRoom.setHouse(house);
+	    List<Room> rooms = roomDao.findList(parameterRoom);
+	    if (CollectionUtils.isNotEmpty(rooms)) {
+		for (Room r : rooms) {
+		    r.setRoomStatus("4");// 已退租可预订
+		    r.setUpdateBy(UserUtils.getUser());
+		    r.setUpdateDate(new Date());
+		    roomDao.update(r);
+		}
+	    }
+
 	} else {// 单间
 	    Room room = roomDao.get(rentContract.getRoom().getId());
 	    if ("1".equals(rentContract.getBreakDown()))

@@ -113,7 +113,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	if (refundAmount != null && refundAmount > 0) {
 	    depositAgreement.setRefundAmount(refundAmount);
 	}
-	
+
 	/* 1.生成款项--定金转违约退费 */
 	// 定金转违约,'26'='定金转违约退费',出款,未到账登记
 	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0) {
@@ -147,6 +147,18 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    house.setCreateBy(UserUtils.getUser());
 	    house.setUpdateDate(new Date());
 	    houseDao.update(house);
+	    // 同时把房间的状态都更新为“待出租可预订”
+	    Room parameterRoom = new Room();
+	    parameterRoom.setHouse(house);
+	    List<Room> rooms = roomDao.findList(parameterRoom);
+	    if (CollectionUtils.isNotEmpty(rooms)) {
+		for (Room r : rooms) {
+		    r.setRoomStatus("1");// “待出租可预订”
+		    r.setUpdateBy(UserUtils.getUser());
+		    r.setUpdateDate(new Date());
+		    roomDao.update(r);
+		}
+	    }
 	} else {// 单间
 	    Room room = roomDao.get(depositAgreement.getRoom().getId());
 	    room.setRoomStatus("1");// 待出租可预订
@@ -290,6 +302,18 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		    house.setCreateBy(UserUtils.getUser());
 		    house.setUpdateDate(new Date());
 		    houseDao.update(house);
+		    // 同时把所属的房间状态都更新为“已预定”
+		    Room parameterRoom = new Room();
+		    parameterRoom.setHouse(house);
+		    List<Room> rooms = roomDao.findList(parameterRoom);
+		    if (CollectionUtils.isNotEmpty(rooms)) {
+			for (Room r : rooms) {
+			    r.setRoomStatus("2");// 已预定
+			    r.setUpdateBy(UserUtils.getUser());
+			    r.setUpdateDate(new Date());
+			    roomDao.update(r);
+			}
+		    }
 		}
 	    } else {// 单间
 		if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {

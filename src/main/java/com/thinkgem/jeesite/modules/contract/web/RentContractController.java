@@ -637,6 +637,9 @@ public class RentContractController extends BaseController {
 	return "modules/contract/additionalContract";
     }
 
+    /**
+     * 正常退租核算
+     */
     @RequestMapping(value = "toReturnCheck")
     public String toReturnCheck(RentContract rentContract, Model model) {
 	rentContract = rentContractService.get(rentContract.getId());
@@ -651,6 +654,9 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractCheck";
     }
 
+    /**
+     * 提前退租核算
+     */
     @RequestMapping(value = "toEarlyReturnCheck")
     public String toEarlyReturnCheck(RentContract rentContract, Model model) {
 	rentContract = rentContractService.get(rentContract.getId());
@@ -669,6 +675,9 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractCheck";
     }
 
+    /**
+     * 逾期退租核算
+     */
     @RequestMapping(value = "toLateReturnCheck")
     public String toLateReturnCheck(RentContract rentContract, Model model) {
 	rentContract = rentContractService.get(rentContract.getId());
@@ -968,6 +977,15 @@ public class RentContractController extends BaseController {
 	    for (PaymentTrans pt : rentalPaymentTrans) {
 		if (pt.getTradeAmount() != null && paymentType.equals(pt.getPaymentType())) {// 款项类型为“房租金额”
 		    totalAmount = totalAmount + pt.getTradeAmount();
+		}
+	    }
+	}
+	// 特殊的，当合同为定金转过来的时候，用户已经支付的定金金额需要额外补充计算
+	if ("6".equals(paymentType)) {// 应退房租
+	    if (!StringUtils.isBlank(rentContract.getAgreementId())) {
+		DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
+		if (depositAgreement.getDepositAmount() > 0d) {
+		    totalAmount = totalAmount + depositAgreement.getDepositAmount();
 		}
 	    }
 	}

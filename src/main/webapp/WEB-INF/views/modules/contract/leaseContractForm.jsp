@@ -112,7 +112,15 @@
 				$("#contractCode").val("${leaseContract.contractCode}");
 			}else{
 				var code = $("#contractCode").val().split("-");
-				$("#contractCode").val(projectSimpleName + "-" + code[1]+"-"+code[2]);		
+				//合同修改，合同编号的初始格式为“DJHT-15-CZ”
+				if(code[1]!=null&&code[1]!=""&&code[1]!=undefined&&code[2]!=null&&code[2]!=""&&code[2]!=undefined){
+					$("#contractCode").val(projectSimpleName + "-" + code[1]+"-"+code[2]);	
+				}
+				//合同新增，合同编号的初始格式为“15-CZ”
+				if(code[0]!=null&&code[0]!=""&&code[0]!=undefined&&code[1]!=null&&code[1]!=""&&code[1]!=undefined&&
+				  (code[2]==null||code[2]==""||code[2]==undefined)){
+					$("#contractCode").val(projectSimpleName + "-" + code[0]+"-"+code[1]);	
+				}		
 			}
 			
 			var html = "<option value='' selected='selected'>请选择...</option>";
