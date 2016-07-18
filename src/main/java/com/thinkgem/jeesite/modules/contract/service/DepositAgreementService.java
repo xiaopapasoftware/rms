@@ -202,6 +202,18 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		house.setUpdateBy(UserUtils.getUser());
 		house.setUpdateDate(new Date());
 		houseDao.update(house);
+		// 同时把房间的状态都更新为“待出租可预订”
+		Room parameterRoom = new Room();
+		parameterRoom.setHouse(house);
+		List<Room> rooms = roomDao.findList(parameterRoom);
+		if (CollectionUtils.isNotEmpty(rooms)) {
+		    for (Room r : rooms) {
+			r.setRoomStatus("1");// 待出租可预订
+			r.setUpdateBy(UserUtils.getUser());
+			r.setUpdateDate(new Date());
+			roomDao.update(r);
+		    }
+		}
 	    } else {// 单间
 		Room room = roomDao.get(depositAgreement.getRoom().getId());
 		room.setRoomStatus("1");// 待出租可预订
@@ -230,10 +242,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    List<TradingAccounts> list = tradingAccountsDao.findList(tradingAccounts);
 	    if (null != list && list.size() > 0) {
 		for (TradingAccounts tmpTradingAccounts : list) {
-		    tmpTradingAccounts.setUpdateBy(UserUtils.getUser());
-		    tmpTradingAccounts.setUpdateDate(new Date());
-		    tmpTradingAccounts.setDelFlag("1");
-		    tradingAccountsDao.delete(tradingAccounts);
+		    // 删除账务和款项关联关系记录
+		    PaymentTrade pt = new PaymentTrade();
+		    pt.setTradeId(tmpTradingAccounts.getId());
+		    paymentTradeDao.delete(pt);
 
 		    /* 删除收据 */
 		    Receipt receipt = new Receipt();
@@ -244,6 +256,12 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		    receipt.setUpdateDate(new Date());
 		    this.receiptDao.delete(receipt);
 		}
+
+		// 删除账务交易
+		tradingAccounts.setUpdateBy(UserUtils.getUser());
+		tradingAccounts.setUpdateDate(new Date());
+		tradingAccounts.setDelFlag("1");
+		tradingAccountsDao.delete(tradingAccounts);
 	    }
 	}
 

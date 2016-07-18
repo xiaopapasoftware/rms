@@ -107,7 +107,7 @@ public class TradingAccountsController extends BaseController {
 	if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
 	    for (String transId : paymentTransIdArray) {
 		PaymentTrans pt = paymentTransService.get(transId);
-		if (pt != null && pt.getDelFlag().equals("1")) {
+		if (pt == null || (pt != null && pt.getDelFlag().equals("1"))) {
 		    check = false;
 		    break;
 		}

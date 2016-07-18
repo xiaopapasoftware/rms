@@ -163,13 +163,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		tempPaymentTrans.setTransId(auditHis.getObjectId());
 		tempPaymentTrans.setPaymentType("6");// 房租金额
 		tempPaymentTrans.setTransStatus("0");// 未到账登记的
-		tempPaymentTrans.setTradeType("3");// 交易类型为“新签合同”3
+		tempPaymentTrans.setTradeType("3");// 交易类型为“新签合同”
 		tempPaymentTrans.setTradeDirection("1");// 入账
 		paymentTransService.delete(tempPaymentTrans);
 		tempPaymentTrans.setTradeType("4");// 交易类型为“续签合同”4
 		paymentTransService.delete(tempPaymentTrans);
 	    }
-	} else {// 审核失败的时候，需要把房屋状态回滚到原先状态
+	} else {// 内容审核失败的时候，需要把房屋状态回滚到原先状态
 	    /* 更新房屋/房间状态 */
 	    if ("0".equals(rentContract.getRentMode())) {// 整租
 		House house = houseDao.get(rentContract.getHouse().getId());
@@ -177,6 +177,18 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		house.setCreateBy(UserUtils.getUser());
 		house.setUpdateDate(new Date());
 		houseDao.update(house);
+		// 同时把房间的状态都更新为“待出租可预订”
+		Room parameterRoom = new Room();
+		parameterRoom.setHouse(house);
+		List<Room> rooms = roomDao.findList(parameterRoom);
+		if (CollectionUtils.isNotEmpty(rooms)) {
+		    for (Room r : rooms) {
+			r.setRoomStatus("1");// 待出租可预订
+			r.setUpdateBy(UserUtils.getUser());
+			r.setUpdateDate(new Date());
+			roomDao.update(r);
+		    }
+		}
 	    } else {// 单间
 		Room room = roomDao.get(rentContract.getRoom().getId());
 		if (null != room) {
@@ -210,6 +222,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		}
 	    }
 
+	    // 删除生成的款项
 	    PaymentTrans delPaymentTrans = new PaymentTrans();
 	    delPaymentTrans.setTransId(auditHis.getObjectId());
 	    paymentTransDao.delete(delPaymentTrans);
@@ -221,10 +234,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    List<TradingAccounts> list = tradingAccountsDao.findList(tradingAccounts);
 	    if (null != list && list.size() > 0) {
 		for (TradingAccounts tmpTradingAccounts : list) {
-		    tmpTradingAccounts.setUpdateBy(UserUtils.getUser());
-		    tmpTradingAccounts.setUpdateDate(new Date());
-		    tmpTradingAccounts.setDelFlag("1");
-		    tradingAccountsDao.delete(tradingAccounts);
+		    // 删除账务和款项关联关系记录
+		    PaymentTrade pt = new PaymentTrade();
+		    pt.setTradeId(tmpTradingAccounts.getId());
+		    paymentTradeDao.delete(pt);
 
 		    /* 删除收据 */
 		    Receipt receipt = new Receipt();
@@ -233,8 +246,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    receipt.setTradingAccounts(delTradingAccounts);
 		    receipt.setUpdateBy(UserUtils.getUser());
 		    receipt.setUpdateDate(new Date());
-		    this.receiptDao.delete(receipt);
+		    receiptDao.delete(receipt);
 		}
+
+		// 删除账务交易
+		tradingAccounts.setUpdateBy(UserUtils.getUser());
+		tradingAccounts.setUpdateDate(new Date());
+		tradingAccounts.setDelFlag("1");
+		tradingAccountsDao.delete(tradingAccounts);
 	    }
 	}
 	if ("2".equals(auditHis.getType())) {// 如果是特殊退租
@@ -882,7 +901,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			if (i != (monthCountDiff - 1))
+			    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			else
+			    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 			paymentTrans.setTradeAmount(rentContract.getTvFee());
 			paymentTrans.setLastAmount(rentContract.getTvFee());
 			paymentTrans.setTransAmount(0D);
@@ -904,7 +926,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			if (i != (monthCountDiff - 1))
+			    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			else
+			    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 			paymentTrans.setTradeAmount(rentContract.getNetFee());
 			paymentTrans.setLastAmount(rentContract.getNetFee());
 			paymentTrans.setTransAmount(0D);
@@ -926,7 +951,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransId(transObjId);
 			paymentTrans.setTradeDirection("1");// 收款
 			paymentTrans.setStartDate(startD);
-			paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			if (i != (monthCountDiff - 1))
+			    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
+			else
+			    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 			paymentTrans.setTradeAmount(rentContract.getServiceFee() / 100 * rentContract.getRental());
 			paymentTrans.setLastAmount(rentContract.getServiceFee() / 100 * rentContract.getRental());
 			paymentTrans.setTransAmount(0D);

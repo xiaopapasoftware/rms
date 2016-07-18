@@ -299,7 +299,7 @@ public class RentContractController extends BaseController {
 	rentContract.setOriEndDate(DateUtils.formatDate(rentContract.getExpiredDate()));// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
 	rentContract.setContractId(contractId);
 	rentContract.setSignType("1");// 正常续签
-	rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
+	rentContract.setContractName(rentContract.getContractName().concat("(XU)"));
 	rentContract.setDepositElectricAmount(null);
 	rentContract.setDepositAmount(null);
 	rentContract.setRental(null);
@@ -376,7 +376,7 @@ public class RentContractController extends BaseController {
 	rentContract = rentContractService.get(contractId);
 	rentContract.setContractId(contractId);
 	rentContract.setSignType("2");// 逾租续签
-	rentContract.setContractName(rentContract.getContractName().concat("(续签)"));
+	rentContract.setContractName(rentContract.getContractName().concat("(XU)"));
 	rentContract.setStartDate(null);
 	rentContract.setExpiredDate(null);
 	rentContract.setSignDate(null);
