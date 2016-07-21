@@ -455,13 +455,15 @@
 		<div class="control-group">
 			<label class="control-label">首付房租月数：</label>
 			<div class="controls">
-				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
+				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
-				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge digits"/>
+				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge required digits"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -474,8 +476,13 @@
 		<div class="control-group">
 			<label class="control-label">定金协议：</label>
 			<div class="controls">
-				<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/定金协议" selectMultiple="true"/>
+				<c:if test="${'2'==depositAgreement.dataSource && not empty depositAgreement.agreementBusiStatus}">
+					<a target="_blank" href="http://tangchao.vip.natapp.cn/rms-api/depositAgreement.html?id=${depositAgreement.id}">定金协议附件</a>
+				</c:if>
+				<c:if test="${'2'!=depositAgreement.dataSource}">
+					<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+					<sys:ckfinder input="depositAgreementFile" type="files" uploadPath="/定金协议" selectMultiple="true"/>
+				</c:if>
 			</div>
 		</div>
 		<div class="control-group">

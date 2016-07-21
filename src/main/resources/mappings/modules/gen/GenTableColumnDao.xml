@@ -137,5 +137,4 @@
 			del_flag = '1'
 		WHERE gen_table_id = #{deleteByGenTableId}
 	</update>
-	
 </mapper>

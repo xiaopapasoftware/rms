@@ -78,6 +78,43 @@
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
 		}
+		
+		function isFeatureChange() {
+			var isFeature = $("#isFeature").val();
+			if("1" == isFeature) {
+				$("#rental").addClass("required");
+				$("#rental").next("label").remove();
+				$("#rental").next("span").show();
+				
+				$("#shortDesc").addClass("required");
+				$("#shortDesc").next("label").remove();
+				$("#shortDesc").next("span").show();
+				
+				$("#shortLocation").addClass("required");
+				$("#shortLocation").next("label").remove();
+				$("#shortLocation").next("span").show();
+				
+				$("#payWay").addClass("required");
+				$("#payWay").next("label").remove();
+				$("#payWay").next("span").show();
+			} else {
+				$("#rental").removeClass("required");
+				$("#rental").next("label").remove();
+				$("#rental").next("span").hide();
+				
+				$("#shortDesc").removeClass("required");
+				$("#shortDesc").next("label").remove();
+				$("#shortDesc").next("span").hide();
+				
+				$("#shortLocation").removeClass("required");
+				$("#shortLocation").next("label").remove();
+				$("#shortLocation").next("span").hide();
+				
+				$("#payWay").removeClass("required");
+				$("#payWay").next("label").remove();
+				$("#payWay").next("span").hide();
+			}
+		}
 	</script>
 </head>
 <body>
@@ -154,6 +191,48 @@
 			<div class="controls">
 				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/房间图片" selectMultiple="true"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">是否精选房源：</label>
+			<div class="controls">
+				<form:select path="isFeature" class="input-xlarge required" onchange="isFeatureChange()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">意向租金：</label>
+			<div class="controls">
+				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">描述：</label>
+			<div class="controls">
+				<form:input path="shortDesc" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">地址描述：</label>
+			<div class="controls">
+				<form:input path="shortLocation" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">付款方式：</label>
+			<div class="controls">
+				<form:select path="payWay" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('rent_fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">

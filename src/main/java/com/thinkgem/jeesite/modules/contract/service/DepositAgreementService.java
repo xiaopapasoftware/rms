@@ -269,7 +269,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "3" : auditHis.getAuditStatus());// 2:内容审核拒绝
 														     // 3:内容审核通过到账收据待审核
 	depositAgreement.setUpdateDate(new Date());
-	depositAgreement.setUpdateBy(UserUtils.getUser());
+	if ("2".equals(depositAgreement.getDataSource()))
+	    depositAgreement.setUpdateUser(auditHis.getUpdateUser());
+	else
+	    depositAgreement.setUpdateUser(UserUtils.getUser().getId());
 	depositAgreementDao.update(depositAgreement);
     }
 
@@ -379,6 +382,49 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    audit.setUpdateBy(UserUtils.getUser());
 	    audit.setDelFlag("0");
 	    auditDao.insert(audit);
+
+	    /* 更新房屋/房间状态 */
+	    if ("0".equals(depositAgreement.getRentMode())) {// 整租
+		House house = houseDao.get(depositAgreement.getHouse().getId());
+		house.setHouseStatus("2");// 已预定
+		house.setCreateBy(UserUtils.getUser());
+		house.setUpdateDate(new Date());
+		houseDao.update(house);
+	    } else {// 单间
+		if (null != depositAgreement.getRoom() && !StringUtils.isBlank(depositAgreement.getRoom().getId())) {
+		    Room room = roomDao.get(depositAgreement.getRoom().getId());
+		    room.setRoomStatus("2");// 已预定
+		    room.setCreateBy(UserUtils.getUser());
+		    room.setUpdateDate(new Date());
+		    roomDao.update(room);
+		    // 同时更新该房间所属房屋的状态
+		    House h = houseDao.get(room.getHouse().getId());
+		    if ("1".equals(h.getHouseStatus())) {// 待出租可预订
+			Room queryRoom = new Room();
+			queryRoom.setHouse(h);
+			List<Room> roomsOfHouse = roomDao.findList(queryRoom);
+			if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+			    int depositCount = 0;// 预定或出租的数量
+			    for (Room depositedRoom : roomsOfHouse) {
+				if ("2".equals(depositedRoom.getRoomStatus()) || "3".equals(depositedRoom.getRoomStatus())) {// 房间已预定
+				    depositCount = depositCount + 1;
+				}
+			    }
+			    if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
+				h.setHouseStatus("2");// 已预定
+				h.setCreateBy(UserUtils.getUser());
+				h.setUpdateDate(new Date());
+				houseDao.update(h);
+			    }
+			}
+		    }
+		}
+	    }
+
+	    /* APP来的数据还是暂存状态??? */
+	    if ("2".equals(depositAgreement.getDataSource())) {
+		// TODO:
+	    }
 	}
 
 	if (null != depositAgreement.getTenantList() && depositAgreement.getTenantList().size() > 0) {
@@ -472,5 +518,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	    paymentTrans.setDelFlag("0");
 	    paymentTransDao.insert(paymentTrans);
 	}
+    }
+
+    public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
+	return this.depositAgreementDao.getByHouseId(depositAgreement);
+
     }
 }

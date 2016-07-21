@@ -103,15 +103,13 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
-		) t
-		<where>
-			<if test="tradeName != null and tradeName != ''">
-				AND t.tradeName like concat('%',#{tradeName},'%')
-			</if>
-			<if test="tradeObjectNo != null and tradeObjectNo != ''">
-				AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
-			</if>
-		</where>
+	  ) t where t.tradeName is not null 
+	  	<if test="tradeName != null and tradeName != ''">
+			AND t.tradeName like concat('%',#{tradeName},'%')
+		</if>
+		<if test="tradeObjectNo != null and tradeObjectNo != ''">
+			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
+		</if>
 	</select>
 
 	<select id="findAllList" resultType="TradingAccounts">

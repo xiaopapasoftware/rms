@@ -275,5 +275,4 @@ public class StreamUtils {
 	public static ByteArrayOutputStream getByteArrayOutputStream() {
 		return new ByteArrayOutputStream();
 	}
-
 }

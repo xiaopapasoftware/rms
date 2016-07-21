@@ -500,7 +500,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">付费方式：</label>
+			<label class="control-label">公用事业费付费方式：</label>
 			<div class="controls">
 				<form:select path="chargeType" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>

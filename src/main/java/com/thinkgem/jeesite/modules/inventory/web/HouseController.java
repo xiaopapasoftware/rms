@@ -4,7 +4,9 @@
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,8 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -128,7 +132,7 @@ public class HouseController extends BaseController {
 	List<House> list = houseService.findList(house);
 	return list;
     }
-
+    
     // @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = "form")
     public String form(House house, Model model) {
@@ -293,5 +297,4 @@ public class HouseController extends BaseController {
 	}
 	return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
     }
-
 }

@@ -97,6 +97,8 @@ public class RentContract extends DataEntity<RentContract> {
     private String oriEndDate;// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
     private String returnDate;
     private String returnRemark;// 退租备注
+    private String dataSource;
+    private String updateUser;
 
     public RentContract() {
 	super();
@@ -462,22 +464,6 @@ public class RentContract extends DataEntity<RentContract> {
 	this.roomNo = roomNo;
     }
 
-    public String getTenantName() {
-	return tenantName;
-    }
-
-    public void setTenantName(String tenantName) {
-	this.tenantName = tenantName;
-    }
-
-    public String getLiveName() {
-	return liveName;
-    }
-
-    public void setLiveName(String liveName) {
-	this.liveName = liveName;
-    }
-
     public String getValidatorFlag() {
 	return validatorFlag;
     }
@@ -566,6 +552,22 @@ public class RentContract extends DataEntity<RentContract> {
 	this.name = name;
     }
 
+    public String getTenantName() {
+	return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+	this.tenantName = tenantName;
+    }
+
+    public String getLiveName() {
+	return liveName;
+    }
+
+    public void setLiveName(String liveName) {
+	this.liveName = liveName;
+    }
+
     public String getRefAgreementName() {
 	return refAgreementName;
     }
@@ -636,5 +638,21 @@ public class RentContract extends DataEntity<RentContract> {
 
     public void setReturnRemark(String returnRemark) {
 	this.returnRemark = returnRemark;
+    }
+
+    public String getDataSource() {
+	return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+	this.dataSource = dataSource;
+    }
+
+    public String getUpdateUser() {
+	return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+	this.updateUser = updateUser;
     }
 }

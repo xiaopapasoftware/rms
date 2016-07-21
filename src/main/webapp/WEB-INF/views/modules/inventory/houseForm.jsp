@@ -55,6 +55,43 @@
 			$("[id='building.id']").val("");
 			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
 		}
+		
+		function isFeatureChange() {
+			var isFeature = $("#isFeature").val();
+			if("1" == isFeature) {
+				$("#rental").addClass("required");
+				$("#rental").next("label").remove();
+				$("#rental").next("span").show();
+				
+				$("#shortDesc").addClass("required");
+				$("#shortDesc").next("label").remove();
+				$("#shortDesc").next("span").show();
+				
+				$("#shortLocation").addClass("required");
+				$("#shortLocation").next("label").remove();
+				$("#shortLocation").next("span").show();
+				
+				$("#payWay").addClass("required");
+				$("#payWay").next("label").remove();
+				$("#payWay").next("span").show();
+			} else {
+				$("#rental").removeClass("required");
+				$("#rental").next("label").remove();
+				$("#rental").next("span").hide();
+				
+				$("#shortDesc").removeClass("required");
+				$("#shortDesc").next("label").remove();
+				$("#shortDesc").next("span").hide();
+				
+				$("#shortLocation").removeClass("required");
+				$("#shortLocation").next("label").remove();
+				$("#shortLocation").next("span").hide();
+				
+				$("#payWay").removeClass("required");
+				$("#payWay").next("label").remove();
+				$("#payWay").next("span").hide();
+			}
+		}
 	</script>
 </head>
 <body>
@@ -96,6 +133,13 @@
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">服务管家：</label>
+			<div class="controls">
+				<sys:treeselect id="serviceUser" name="serviceUser" value="${house.serviceUser.id}" labelName="serviceUser.name" labelValue="${house.serviceUser.name}"
+					title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true" notAllowSelectParent="true"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -167,6 +211,57 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">意向租赁类型：</label>
+			<div class="controls">
+				<form:select path="intentMode" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('rent_mode')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">是否精选房源：</label>
+			<div class="controls">
+				<form:select path="isFeature" class="input-xlarge required" onchange="isFeatureChange()">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">意向租金：</label>
+			<div class="controls">
+				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">描述：</label>
+			<div class="controls">
+				<form:input path="shortDesc" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">地址描述：</label>
+			<div class="controls">
+				<form:input path="shortLocation" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">付款方式：</label>
+			<div class="controls">
+				<form:select path="payWay" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('rent_fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
@@ -178,4 +273,4 @@
 		</div>
 	</form:form>
 </body>
-</html>
+ </html>

@@ -317,5 +317,4 @@ public class TradingAccountsController extends BaseController {
 	addMessage(redirectAttributes, "删除账务交易成功");
 	return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
     }
-
 }

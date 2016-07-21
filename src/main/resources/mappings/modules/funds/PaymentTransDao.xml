@@ -228,4 +228,7 @@
 		</where>
 	</update>
 	
+	<update id="delById">
+	  UPDATE t_payment_trans SET del_flag = #{DEL_FLAG_DELETE} where id=#{id}
+	</update>
 </mapper>

@@ -39,7 +39,15 @@ public enum FileType {
 	
 	DEPOSITRECEIPT_FILE_OTHER("定金协议其他附件", "18"),
 	
-	RENTCONTRACT_FILE_OTHER("出租合同其他附件", "19");
+	RENTCONTRACT_FILE_OTHER("出租合同其他附件", "19"),
+	
+	APP_USER_AVATAR("APP用户头像","APP_USER_AVATAR" ),
+	
+	APP_USER_ID_FRONT("app用户身份证正面","APP_USER_ID_FRONT"),
+	
+	APP_USER_ID_BACK("app用户身份证背面","APP_USER_ID_BACK"),
+
+    REPAIR_PICTURE("维修图片","REPAIR_PICTURE");
 	
 	private String name;
 	private String value;

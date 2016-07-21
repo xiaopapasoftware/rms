@@ -108,5 +108,4 @@
 		DELETE FROM oa_notify_record 
 		WHERE oa_notify_id = #{oaNotifyId}
 	</delete>
-	
 </mapper>

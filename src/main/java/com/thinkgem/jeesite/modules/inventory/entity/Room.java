@@ -39,6 +39,12 @@ public class Room extends DataEntity<Room> {
 	private String attachmentPath;// 房间图片
 	
 	private String choose;
+	
+    private String isFeature;//是否精选房源
+    private Double rental;//意向租金
+    private String shortDesc;//描述
+    private String shortLocation;//地址描述
+    private String payWay;//付款方式
 
 	public Room() {
 		super();
@@ -153,5 +159,45 @@ public class Room extends DataEntity<Room> {
 
 	public void setChoose(String choose) {
 		this.choose = choose;
+	}
+
+	public String getIsFeature() {
+		return isFeature;
+	}
+
+	public void setIsFeature(String isFeature) {
+		this.isFeature = isFeature;
+	}
+
+	public Double getRental() {
+		return rental;
+	}
+
+	public void setRental(Double rental) {
+		this.rental = rental;
+	}
+
+	public String getShortDesc() {
+		return shortDesc;
+	}
+
+	public void setShortDesc(String shortDesc) {
+		this.shortDesc = shortDesc;
+	}
+
+	public String getShortLocation() {
+		return shortLocation;
+	}
+
+	public void setShortLocation(String shortLocation) {
+		this.shortLocation = shortLocation;
+	}
+
+	public String getPayWay() {
+		return payWay;
+	}
+
+	public void setPayWay(String payWay) {
+		this.payWay = payWay;
 	}
 }

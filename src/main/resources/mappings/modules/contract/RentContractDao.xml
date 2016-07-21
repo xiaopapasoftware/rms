@@ -63,7 +63,8 @@
 		a.break_down as breakDown,
 		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
-		at4.attachment_path as "rentContractOtherFile"
+		at4.attachment_path as "rentContractOtherFile",
+		a.data_source as "dataSource"
 	</sql>
 	
 	<sql id="rentContractJoins">
@@ -88,6 +89,11 @@
 		FROM t_rent_contract a
 		<include refid="rentContractJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByHouseId" resultType="RentContract">
+		SELECT * FROM t_rent_contract a
+		WHERE (a.house_id = #{houseNo} or a.room_id = #{roomNo}) and a.del_flag='0' 
 	</select>
 	
 	<select id="findContractList" resultType="RentContract">
@@ -169,6 +175,9 @@
 			</if>
 			<if test="contractBusiStatus != null and contractBusiStatus != ''">
 				AND a.contract_busi_status = #{contractBusiStatus}
+			</if>
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
 			</if>
 		</where>
 		<choose>
@@ -253,7 +262,8 @@
 			del_flag,
 			charge_type,
 			break_down,
-			return_remark
+			return_remark,
+			data_source
 		) VALUES (
 			#{id},
 			#{agreementId},
@@ -302,7 +312,8 @@
 			#{delFlag},
 			#{chargeType},
 			#{breakDown},
-			#{returnRemark}
+			#{returnRemark},
+			#{dataSource}
 		)
 	</insert>
 	
@@ -346,7 +357,9 @@
 			remind_time = #{remindTime},
 			contract_status = #{contractStatus},
 			contract_busi_status = #{contractBusiStatus},
-			update_by = #{updateBy.id},
+			<if test="updateUser != null and updateUser != ''">
+				update_by = #{updateUser},
+			</if>
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			charge_type = #{chargeType},
@@ -358,6 +371,9 @@
 	<update id="delete">
 		UPDATE t_rent_contract SET 
 			del_flag = #{DEL_FLAG_DELETE}
+			<if test="updateUser != null and updateUser != ''">
+				,update_by = #{updateUser}
+			</if>
 		WHERE id = #{id}
 	</update>
 	

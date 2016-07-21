@@ -28,6 +28,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
@@ -96,6 +98,9 @@ public class RentContractController extends BaseController {
     private ElectricFeeService electricFeeService;
     @Autowired
     private DepositAgreementService depositAgreementService;
+    
+    @Autowired
+   	private MessageService messageService;//APP消息推送
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -231,6 +236,13 @@ public class RentContractController extends BaseController {
     public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
 	rentContractService.audit(auditHis);
 	return list(new RentContract(), request, response, model);
+    }
+    
+    @RequestMapping(value = "cancel")
+    public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+    	auditHis.setAuditStatus("2");
+    	rentContractService.audit(auditHis);
+    	return list(new RentContract(), request, response, model);
     }
 
     // @RequiresPermissions("contract:rentContract:view")
@@ -437,13 +449,39 @@ public class RentContractController extends BaseController {
 	model.addAttribute("rentContract", rentContract);
 	return "modules/contract/rentContractForm";
     }
-
+    
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "save")
     public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
 
 	if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 	    return form(rentContract, model);
+	}
+	
+	//检查房屋、房间状态
+	if("0".equals(rentContract.getRentMode())) {
+		//整租
+		String houseId = rentContract.getHouse().getId();
+		House house = houseService.get(houseId);
+		String houseStatus = house.getHouseStatus();
+		if(StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus) 
+				&& !"2".equals(houseStatus)) {
+			//1:待出租可预订 3:部分出租 5:已退待租 2:已预定
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房屋已出租");
+			return form(rentContract, model);
+		}
+	} else {
+		//单间
+		String roomId = rentContract.getRoom().getId();
+		Room room = roomServie.get(roomId);
+		String roomStatus = room.getRoomStatus();
+		if(StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(roomStatus) && !"2".equals(roomStatus) && !"4".equals(roomStatus)) {
+			//1:待出租可预订 2:已预定 4:已退租可预订
+			model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+			addMessage(model, "房间已出租");
+			return form(rentContract, model);
+		}
 	}
 
 	/* 出租合同的结束时间不能超过承租合同的结束时间 */
@@ -464,31 +502,33 @@ public class RentContractController extends BaseController {
 	conditionRentContract.setPropertyProject(rentContract.getPropertyProject());
 	conditionRentContract.setHouse(rentContract.getHouse());
 	conditionRentContract.setRoom(rentContract.getRoom());
-	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
-	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
-	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
-	if (CollectionUtils.isNotEmpty(rentContracts)) {
-	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
-		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
-		    hasRefusedFlag = true;
-		}
-		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
-		    hasTempExistFlag = true;
-		}
-	    }
-	}
-	if (hasRefusedFlag) {
-	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
-	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-	    initExceptionedModel(model, rentContract);
-	    return "modules/contract/rentContractForm";
-	}
-	if (hasTempExistFlag) {
-	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
-	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-	    initExceptionedModel(model, rentContract);
-	    return "modules/contract/rentContractForm";
-	}
+//	List<RentContract> rentContracts = rentContractService.findList(conditionRentContract);
+//	boolean hasRefusedFlag = false;// 是否存在内容审核拒绝的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在审核拒绝的合同时又新增合同）
+//	boolean hasTempExistFlag = false; // 是否存在暂存的合同（默认不存在）且合同编号根据原始合同编号不一致（表明是在存在暂存状态的合同时又新增合同）
+//	
+//	//来自APP的合同不参与该逻辑
+//	if ("1".equals(rentContract.getDataSource()) && CollectionUtils.isNotEmpty(rentContracts)) {
+//	    for (RentContract rc : rentContracts) { // 3'='内容审核拒绝';'0'='暂存';
+//		if ("3".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+//		    hasRefusedFlag = true;
+//		}
+//		if ("0".equals(rc.getContractStatus()) && !rc.getContractCode().equals(rentContract.getContractCode())) {
+//		    hasTempExistFlag = true;
+//		}
+//	    }
+//	}
+//	if (hasRefusedFlag) {
+//	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经存在且被内容已经被审核拒绝，请直接修改该合同内容后再提交！");
+//	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+//	    initExceptionedModel(model, rentContract);
+//	    return "modules/contract/rentContractForm";
+//	}
+//	if (hasTempExistFlag) {
+//	    model.addAttribute("message", "当前选择的房屋或房间所对应的合同已经是暂存状态，请直接补充该合同内容后再提交！");
+//	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+//	    initExceptionedModel(model, rentContract);
+//	    return "modules/contract/rentContractForm";
+//	}
 
 	// 保存合同时检查如果该房屋或房间还有定金协议未转合同，则强迫操作者先把定金转合同。
 	DepositAgreement conditionDepositAgreement = new DepositAgreement();
@@ -520,6 +560,19 @@ public class RentContractController extends BaseController {
 
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
+	
+	try {
+		Message message = new Message();
+		message.setContent("您的签约申请已被管家确认,请联系管家!");
+		message.setTitle("签约提醒");
+		message.setType("签约提醒");
+		Tenant tenant = rentContract.getTenantList().get(0);
+		message.setReceiver(this.tenantService.get(tenant).getCellPhone());
+		messageService.addMessage(message, true);
+	} catch (Exception e) {
+		this.logger.error("签约推送异常:",e);
+	}
+	
 	if ("1".equals(rentContract.getSaveSource()))
 	    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 	else

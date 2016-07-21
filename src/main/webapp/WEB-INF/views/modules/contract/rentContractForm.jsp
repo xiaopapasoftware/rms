@@ -616,7 +616,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">付费方式：</label>
+			<label class="control-label">公用事业费付费方式：</label>
 			<div class="controls">
 				<form:select path="chargeType" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
@@ -732,8 +732,13 @@
 		<div class="control-group">
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
-				<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
+				<c:if test="${'2'==rentContract.dataSource && rentContract.contractStatus != '0'}">
+					<a target="_blank" href="http://tangchao.vip.natapp.cn/rms-api/rentContractAgreement.html?id=${rentContract.id}">合同附件</a>
+				</c:if>
+				<c:if test="${'2'!=rentContract.dataSource}">
+					<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+					<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
+				</c:if>
 			</div>
 		</div>
 		<div class="control-group">

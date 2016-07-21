@@ -27,6 +27,7 @@ public class Attachment extends DataEntity<Attachment> {
     private String attachmentName; // 附件名称
     private String attachmentType; // 附件类型
     private String attachmentPath; // 附件地址
+    private String bizId;
 
     public Attachment() {
 	super();
@@ -132,5 +133,13 @@ public class Attachment extends DataEntity<Attachment> {
     public void setAttachmentPath(String attachmentPath) {
 	this.attachmentPath = attachmentPath;
     }
+
+	public String getBizId() {
+		return bizId;
+	}
+
+	public void setBizId(String bizId) {
+		this.bizId = bizId;
+	}
 
 }

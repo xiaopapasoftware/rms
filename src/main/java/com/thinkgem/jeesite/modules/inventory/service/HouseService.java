@@ -57,6 +57,19 @@ public class HouseService extends CrudService<HouseDao, House> {
 	return super.findPage(page, house);
     }
 
+    /**
+     * 精选房源 
+     */
+    public Page<House> findFeaturePage(Page<House> page, House house) {
+    	house.setPage(page);
+		page.setList(dao.findFeatureList(house));
+		return page;
+    }
+    
+    public House getFeatureInfo(House house) {
+    	return dao.getFeatureInfo(house);
+    }
+    
     @Transactional(readOnly = false)
     public void save(House house) {
 	if (house.getIsNewRecord()) {// 新增
@@ -187,5 +200,9 @@ public class HouseService extends CrudService<HouseDao, House> {
     @Transactional(readOnly = true)
     public int getCurrentValidHouseNum() {
 	return dao.getCurrentValidHouseNum(new House());
+    }
+    
+    public House getHouseByHouseId(House house) {
+    	return dao.getHouseByHouseId(house);
     }
 }

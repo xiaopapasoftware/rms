@@ -162,6 +162,37 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
 	tradingAccountsDao.update(tradingAccounts);
 
+	if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
+	    // 款项做到账
+	    PaymentTrade paymentTrade = new PaymentTrade();
+	    paymentTrade.setTradeId(tradingAccounts.getId());
+	    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+	    if (null != paymentTradeList && paymentTradeList.size() > 0) {
+		for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+		    String transId = tmpPaymentTradeList.getTransId();
+		    PaymentTrans paymentTrans = paymentTransDao.get(transId);
+		    paymentTrans.setTransStatus("2");// 完全到账登记
+		    paymentTrans.setLastAmount(0d);// 剩余交易金额
+		    paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
+		    paymentTransDao.update(paymentTrans);
+		}
+	    }
+	} else {//TODO 待确认 从trunk合并到master，为何账务审核拒绝，要删掉充电费的款项？？？！！！是否会影响到其他的问题
+	    // 删除电费充值款项
+	    PaymentTrade paymentTrade = new PaymentTrade();
+	    paymentTrade.setTradeId(tradingAccounts.getId());
+	    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+	    if (null != paymentTradeList && paymentTradeList.size() > 0) {
+		for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+		    String transId = tmpPaymentTradeList.getTransId();
+		    PaymentTrans paymentTrans = paymentTransDao.get(transId);
+		    if ("11".equals(paymentTrans.getPaymentType())) {
+			paymentTransDao.delById(paymentTrans);
+		    }
+		}
+	    }
+	}
+	
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
@@ -618,7 +649,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
      * @param value
      *            充值金额
      */
-    private String charge(String meterNo, String value) {
+    public String charge(String meterNo, String value) {
 	PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
 	String meterurl = proper.getProperty("meter.url") + "pay.action?addr=" + meterNo + "&pay_value=" + value;
 	String result = "";

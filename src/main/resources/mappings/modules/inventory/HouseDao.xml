@@ -29,12 +29,21 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		atta.attachment_path AS "attachmentPath"
+		atta.attachment_path AS "attachmentPath",
+		a.intent_mode as "intentMode",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay",
+		a.service_user as "serviceUser.id",
+		u3.name as "serviceUser.name"
 	</sql>
 	
 	<sql id="houseJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		left JOIN t_attachment atta on atta.house_id = a.id
@@ -47,10 +56,74 @@
 		SELECT <include refid="houseColumns"/>
 		FROM t_house a LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
 		left JOIN t_attachment atta on atta.house_id = a.id
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getFeatureInfo" resultType="House">
+		SELECT 
+		  * 
+		FROM
+		  (SELECT 
+		    h.id,
+		    HOUSE_CODE,
+		    h.rental,
+		    h.short_desc,
+		    h.short_location,
+		    h.pay_way,
+		    a.attachment_path,
+		    h.DECORA_STRUC_ROOM_NUM,
+		    h.DECORA_STRUC_CUSSPAC_NUM,
+		    h.DECORA_STRUC_WASHRO_NUM,
+		    h.HOUSE_SPACE,
+		    h.HOUSE_FLOOR,
+		    '' ORIENTATION,
+		    p.PROJECT_ADDR 
+		  FROM
+		    t_house h 
+		    LEFT JOIN t_attachment a 
+		      ON h.id = a.house_id 
+		    LEFT JOIN T_PROPERTY_PROJECT p 
+		      ON h.PROPERTY_PROJECT_ID = p.id 
+		  WHERE h.id = #{id})t1 
+		  UNION
+		  ALL 
+		  SELECT 
+		    * 
+		  FROM
+		    (SELECT 
+		      r.id,
+		      CONCAT(house_code, '-', room_no) house_code,
+		      r.rental,
+		      r.short_desc,
+		      r.short_location,
+		      r.pay_way,
+		      a.attachment_path,
+		      h.DECORA_STRUC_ROOM_NUM,
+		      h.DECORA_STRUC_CUSSPAC_NUM,
+		      h.DECORA_STRUC_WASHRO_NUM,
+		      r.ROOM_SPACE HOUSE_SPACE,
+		      h.HOUSE_FLOOR,
+		      r.ORIENTATION,
+		      p.PROJECT_ADDR 
+		    FROM
+		      t_room r 
+		      LEFT JOIN t_attachment a 
+		        ON r.id = a.room_id 
+		      LEFT JOIN t_house h 
+		        ON r.HOUSE_ID = h.id 
+		      LEFT JOIN T_PROPERTY_PROJECT p 
+		        ON h.PROPERTY_PROJECT_ID = p.id 
+		    WHERE r.id = #{id})t2 
+	</select>
+	
+	<select id="getHouseByHouseId" resultType="House">
+		select h.id house_id,'' room_id from t_house h where h.id=#{id}
+		union all
+		select r.house_id,r.id room_id from t_room r where r.id=#{id}
 	</select>
 	
 	<select id="findList" resultType="House">
@@ -90,6 +163,12 @@
 			<if test="choose != null and choose != ''">
 				and a.house_status not in('0','2','4','6') 
 			</if>
+			<if test="intentMode != null and intentMode != ''">
+				and a.intent_mode = #{intentMode}
+			</if>
+			<if test="isFeature != null and isFeature != ''">
+				and a.is_feature = #{isFeature}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -99,6 +178,50 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
+	</select>
+	
+	<select id="findFeatureList" resultType="House">
+		SELECT 
+		  * 
+		FROM
+		  (SELECT 
+		    h.id,
+		    HOUSE_CODE,
+		    h.rental,
+		    h.short_desc,
+		    h.short_location,
+		    h.pay_way,
+		    a.attachment_path 
+		  FROM
+		    t_house h 
+		    LEFT JOIN t_attachment a 
+		      ON h.id = a.house_id 
+		  WHERE h.intent_mode = '0' 
+		    AND h.is_feature = '1' 
+		    AND h.house_status IN ('1', '5') 
+		    AND h.del_flag = '0') t1 
+		UNION
+		ALL 
+		SELECT 
+		  * 
+		FROM
+		  (SELECT 
+		    r.id,
+		    CONCAT(h.house_code, '-', room_no) house_code,
+		    r.rental,
+		    r.short_desc,
+		    r.short_location,
+		    r.pay_way,
+		    a.attachment_path 
+		  FROM
+		    t_room r 
+		    LEFT JOIN t_house h 
+		      ON r.house_id = h.id 
+		    LEFT JOIN t_attachment a 
+		      ON r.id = a.room_id 
+		  WHERE r.is_feature = '1' 
+		    AND r.room_status IN ('1', '4') 
+		    AND r.del_flag = '0') t2 
 	</select>
 	
 	<select id="findAllList" resultType="House">
@@ -130,7 +253,12 @@
 			a.house_status AS "houseStatus",
 			a.house_floor AS "houseFloor",
 			a.house_space AS "houseSpace",
-			a.decoration_spance AS "decorationSpance"
+			a.decoration_spance AS "decorationSpance",
+			a.is_feature as "isFeature",
+			a.rental as "rental",
+			a.short_desc as "shortDesc",
+			a.short_location as "shortLocation",
+			a.pay_way as "payWay"
 		FROM t_house a	
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -168,7 +296,14 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			intent_mode,
+			is_feature,
+			rental,
+			short_desc,
+			short_location,
+			pay_way,
+			service_user
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -191,7 +326,14 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{intentMode},
+			#{isFeature},
+			#{rental},
+			#{shortDesc},
+			#{shortLocation},
+			#{payWay},
+			#{serviceUser.id}
 		)
 	</insert>
 	
@@ -217,7 +359,14 @@
 			</if>
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			intent_mode = #{intentMode},
+			is_feature = #{isFeature},
+			rental = #{rental},
+			short_desc = #{shortDesc},
+			short_location = #{shortLocation},
+			pay_way = #{payWay},
+			service_user = #{serviceUser.id}
 		WHERE id = #{id}
 	</update>
 	

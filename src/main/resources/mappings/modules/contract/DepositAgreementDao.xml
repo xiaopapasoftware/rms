@@ -35,7 +35,8 @@
 		tm.room_no as "roomNo",
 		at1.attachment_path as "depositAgreementFile",
 		at3.attachment_path as "depositCustomerIDFile",
-		at4.attachment_path as "depositOtherFile"
+		at4.attachment_path as "depositOtherFile",
+		a.data_source as "dataSource"
 	</sql>
 	
 	<sql id="depositAgreementJoins">
@@ -55,6 +56,11 @@
 		FROM t_deposit_agreement a
 		<include refid="depositAgreementJoins"/>
 		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getByHouseId" resultType="RentContract">
+		SELECT * FROM t_rent_contract a
+		WHERE (a.house_id = #{houseNo} or a.room_id = #{roomNo}) and a.del_flag='0' 
 	</select>
 	
 	<select id="findList" resultType="DepositAgreement">
@@ -156,7 +162,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			data_source
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -182,7 +189,8 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{dataSource}
 		)
 	</insert>
 	
@@ -207,6 +215,9 @@
 			agreement_status = #{agreementStatus},
 			agreement_busi_status = #{agreementBusiStatus},
 			update_by = #{updateBy.id},
+			<if test="updateUser != null and updateUser != ''">
+				update_by = #{updateUser},
+			</if>
 			update_date = #{updateDate},
 			remarks = #{remarks}
 		WHERE id = #{id}
@@ -215,6 +226,9 @@
 	<update id="delete">
 		UPDATE t_deposit_agreement SET 
 			del_flag = #{DEL_FLAG_DELETE}
+			<if test="updateUser != null and updateUser != ''">
+				,update_by = #{updateUser}
+			</if>
 		WHERE id = #{id}
 	</update>
 	

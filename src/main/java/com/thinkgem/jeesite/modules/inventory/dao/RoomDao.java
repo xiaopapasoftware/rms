@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 /**
@@ -27,4 +28,6 @@ public interface RoomDao extends CrudDao<Room> {
 	 * 更新房间状态
 	 * */
 	int updateRoomStatus(Room room);
+	
+	List<House> findFeatureList();
 }

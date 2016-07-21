@@ -218,6 +218,11 @@ public class RoomController extends BaseController {
 		}
 		upRoom.setAttachmentPath(room.getAttachmentPath());
 		upRoom.setRemarks(room.getRemarks());
+		upRoom.setIsFeature(room.getIsFeature());
+		upRoom.setRental(room.getRental());
+		upRoom.setShortDesc(room.getShortDesc());
+		upRoom.setShortLocation(room.getShortLocation());
+		upRoom.setPayWay(room.getPayWay());
 		roomService.save(upRoom);
 	    } else {
 		if (CollectionUtils.isNotEmpty(room.getStructureList())) {
@@ -351,5 +356,12 @@ public class RoomController extends BaseController {
 	} else {
 	    return Lists.newArrayList();
 	}
+    }
+    
+    public Page<House> listFeature(int p_n,int p_c) {
+    	Page<House> page = new Page<House>();
+    	page.setPageNo(p_n);
+    	page.setPageSize(p_c);
+    	return roomService.findFeaturePage(page);
     }
 }

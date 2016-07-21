@@ -256,6 +256,7 @@
 				<th style="width:150px;">定金协议审核状态</th>
 				<th style="width:40px;">定金协议业务状态</th>
 				<th style="width:130px;">更新时间</th>
+				<th>备注信息</th>
 				<th style="width:150px;">操作</th>
 			</tr>
 		</thead>
@@ -264,6 +265,9 @@
 			<tr>
 				<td>
 					${depositAgreement.agreementCode}
+				</a>
+				<td>
+					${fns:getDictLabel(depositAgreement.dataSource, 'data_source', '管理系统')}
 				</a>
 				<td><a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">
 					${depositAgreement.agreementName}
@@ -320,9 +324,15 @@
 					<fmt:formatDate value="${depositAgreement.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
+					${depositAgreement.remarks}
+				</td>
+				<td>
 					<shiro:hasPermission name="contract:depositAgreement:edit">
 						<c:if test="${depositAgreement.agreementStatus=='0' || depositAgreement.agreementStatus=='2' || depositAgreement.agreementStatus=='6'}">
 	    					<a href="${ctx}/contract/depositAgreement/form?id=${depositAgreement.id}">修改</a>
+	    				</c:if>
+	    				<c:if test="${depositAgreement.agreementStatus=='6'||depositAgreement.agreementStatus=='0'}">
+	    					<a href="${ctx}/contract/depositAgreement/cancel?objectId=${depositAgreement.id}">取消</a>
 	    				</c:if>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="contract:depositAgreement:return">
