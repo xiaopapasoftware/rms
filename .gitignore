@@ -3,3 +3,4 @@
 /.project
 /target/
 /.gitignore
+/src/main/webapp/userfiles
