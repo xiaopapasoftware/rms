@@ -255,9 +255,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		tradingAccounts.setDelFlag("1");
 		tradingAccountsDao.delete(tradingAccounts);
 	    }
-	    
-	    // rentContract.setContractBusiStatus("0");//有效 
-	    // TODO 在把trunk合并到master上的时候，发现多了这行代码，需要check是否有特殊的用途，从上下文看这行代码是不可以加的。
 	}
 	if ("2".equals(auditHis.getType())) {// 如果是特殊退租
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "10" : "18");// 10:特殊退租待结算，18:特殊退租内容审核拒绝

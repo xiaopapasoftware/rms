@@ -177,8 +177,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    paymentTransDao.update(paymentTrans);
 		}
 	    }
-	} else {//TODO 待确认 从trunk合并到master，为何账务审核拒绝，要删掉充电费的款项？？？！！！是否会影响到其他的问题
-	    // 删除电费充值款项
+	} else {// 删除电费充值款项
 	    PaymentTrade paymentTrade = new PaymentTrade();
 	    paymentTrade.setTradeId(tradingAccounts.getId());
 	    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
