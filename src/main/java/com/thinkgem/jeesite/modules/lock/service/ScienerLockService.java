@@ -1,22 +1,20 @@
 package com.thinkgem.jeesite.modules.lock.service;
 
-import com.google.common.collect.Maps;
-import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.utils.PropertiesLoader;
-import com.thinkgem.jeesite.modules.lock.utils.HttpRequestUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.modules.lock.utils.HttpRequestUtil;
 
 /**
  * Created by mabindong on 2016/1/10.
@@ -49,6 +47,7 @@ public class ScienerLockService {
     }
 
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Map<String, Object> managerAuthorize() {
         Map<String, Object> map = Maps.newHashMap();
         map.put("redirect_uri", redirectUri);
@@ -69,6 +68,7 @@ public class ScienerLockService {
         return  map;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Map<String, Object> authorize(String userName, String password) {
         Map<String, Object> map = Maps.newHashMap();
         map.put("redirect_uri", redirectUri);
@@ -90,6 +90,7 @@ public class ScienerLockService {
     }
 
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Map<String, Object> regUser(String userName, String password) {
         Map<String, Object> map = Maps.newHashMap();
         map.put("client_id", clientId);
@@ -108,6 +109,7 @@ public class ScienerLockService {
         return map;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Map> getLockList() {
         Map authRes = this.managerAuthorize();
         if(authRes== null || authRes.get("access_token")== null){
@@ -138,6 +140,7 @@ public class ScienerLockService {
         return null;
     }
 
+    @SuppressWarnings("rawtypes")
     public List<Map> getAllKeys() {
         List<Map> locks= this.getLockList();
         if(locks== null){
@@ -149,7 +152,6 @@ public class ScienerLockService {
             log.error("sciener authorize failed");
             return null;
         }
-        String accessToken = (String) authRes.get("access_token");
 
 //        for(Map lock: locks){
 //            Map<String, Object> map = Maps.newHashMap();
@@ -178,6 +180,7 @@ public class ScienerLockService {
 
     //分配钥匙
     //返回参数 errcode int 错误码 0为成功 ; errmsg String 错误信息
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Map<String, Object> sendKey(int lockId, String user, long startDate, long endDate, String remarks) {
         Map authRes = this.managerAuthorize();
         if(authRes== null || authRes.get("access_token")== null){
@@ -185,7 +188,6 @@ public class ScienerLockService {
             return null;
         }
         String accessToken = (String) authRes.get("access_token");
-        int openId = (Integer) authRes.get("openid");
         Map<String, Object> map = Maps.newHashMap();
         map.put("clientId", clientId);
         map.put("accessToken", accessToken);
@@ -211,6 +213,7 @@ public class ScienerLockService {
 
     //删除钥匙
     //返回参数 errcode int 错误码 0为成功 ; errmsg String 错误信息
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Map<String, Object> deleteKey(int lockId, int openid, int keyId) {
         Map authRes = this.managerAuthorize();
         if(authRes== null || authRes.get("access_token")== null){
@@ -218,7 +221,6 @@ public class ScienerLockService {
             return null;
         }
         String accessToken = (String) authRes.get("access_token");
-        int openId = (Integer) authRes.get("openid");
         Map<String, Object> map = Maps.newHashMap();
         map.put("clientId", clientId);
         map.put("accessToken", accessToken);
@@ -241,6 +243,7 @@ public class ScienerLockService {
     }
 
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<Map> getAllKeysByLockId(String lockId) {
         List<Map> tmpkeys = null;
         Map authRes = this.managerAuthorize();

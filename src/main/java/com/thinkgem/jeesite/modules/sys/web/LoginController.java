@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.security.shiro.session.SessionDAO;
 import com.thinkgem.jeesite.common.servlet.ValidateCodeServlet;
 import com.thinkgem.jeesite.common.utils.CacheUtils;
@@ -28,12 +27,6 @@ import com.thinkgem.jeesite.common.utils.CookieUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
-import com.thinkgem.jeesite.modules.contract.service.RentContractService;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.sys.security.FormAuthenticationFilter;
 import com.thinkgem.jeesite.modules.sys.security.SystemAuthorizingRealm.Principal;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -48,12 +41,6 @@ public class LoginController extends BaseController{
 	
 	@Autowired
 	private SessionDAO sessionDAO;
-	@Autowired
-	private PaymentTransService paymentTransService;
-	@Autowired
-	private LeaseContractService leaseContractService;
-	@Autowired
-	private RentContractService rentContractService;
 	
 	/**
 	 * 管理登录

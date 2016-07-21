@@ -1,20 +1,16 @@
 package com.thinkgem.jeesite.modules.lock.utils;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
+
+import org.apache.log4j.Logger;
 
 public class HttpRequestUtil {
 	//public static final String GET_URL = "http://115.28.141.204:8090/openapi/v1";

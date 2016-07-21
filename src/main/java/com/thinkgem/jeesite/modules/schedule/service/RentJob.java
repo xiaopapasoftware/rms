@@ -1,7 +1,6 @@
 package com.thinkgem.jeesite.modules.schedule.service;
 
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**

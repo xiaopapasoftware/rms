@@ -3,23 +3,17 @@
  */
 package com.thinkgem.jeesite.modules.lock.web;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
-import com.thinkgem.jeesite.modules.app.entity.Message;
-import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
-import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
-import com.thinkgem.jeesite.modules.lock.entity.ScienerKey;
-import com.thinkgem.jeesite.modules.lock.service.ScienerLockKeyService;
-import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
-import com.thinkgem.jeesite.modules.person.entity.NeighborhoodContact;
-import com.thinkgem.jeesite.modules.person.service.NeighborhoodContactService;
-import org.apache.commons.collections.CollectionUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,9 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.AppUser;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.AppUserService;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.lock.entity.ScienerKey;
+import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
 
 /**
  * 钥匙管理Controller
@@ -62,6 +62,7 @@ public class ScienerLockKeyController extends BaseController {
     }
 
     // @RequiresPermissions("person:neighborhoodContact:view")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @RequestMapping(value = { "list", "" })
     public String list(ScienerKey keyparam, HttpServletRequest request, HttpServletResponse response, Model model) {
         model.addAttribute("lockList", scienerLockService.getLockList());
