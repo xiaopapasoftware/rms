@@ -2576,8 +2576,6 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		//测试用
-		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2611,8 +2609,6 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		//测试用
-		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
