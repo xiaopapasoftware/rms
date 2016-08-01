@@ -559,7 +559,7 @@ public class AppHouseController {
 			}
 			log.info("------houseId:"+houseId);
 			
-			if(!checkHouseStatus(houseId)) {
+			if(!checkHouseStatus(houseId,"0")) {
 				data.setCode("400");
 				data.setMsg("房屋已出租");
 				return data;
@@ -1272,7 +1272,7 @@ public class AppHouseController {
 			}
 			
 			if(!hasBooked) {
-				if(!checkHouseStatus(houseId)) {
+				if(!checkHouseStatus(houseId,"1")) {
 					data.setCode("400");
 					data.setMsg("房屋已出租");
 					return data;
@@ -3100,23 +3100,44 @@ public class AppHouseController {
         return data;
     }
 	
-	private boolean checkHouseStatus(String houseId) {
-		House house = this.houseService.get(houseId);
-		if(null == house) {
-			Room room = this.roomService.get(houseId);
-			if(null == room || (!"1".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) {
-				//1:待出租可预订 4:已退租可预订
-				return false;
-			}
-		} else {
-			String houseStatus = house.getHouseStatus();
-			if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
-				//1:待出租可预订 3:部分出租 5:已退待租
-				return false;
-			}
+    /**
+     * @param actFlag
+     *            0表示预定，1表示签约
+     */
+    private boolean checkHouseStatus(String houseId, String actFlag) {
+	House house = this.houseService.get(houseId);
+	if ("0".equals(actFlag)) {// 预定
+	    if (null == house) {
+		Room room = this.roomService.get(houseId);
+		if (null == room || (!"1".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) { // 1:待出租可预订
+														// 4:已退租可预订
+		    return false;
 		}
-		return true;
+	    } else {
+		String houseStatus = house.getHouseStatus();
+		if (!"1".equals(houseStatus) && !"5".equals(houseStatus)) {
+		    // 1:待出租可预订 5:已退待租
+		    return false;
+		}
+	    }
+	    return true;
+	} else {// 签约
+	    if (null == house) {
+		Room room = this.roomService.get(houseId);
+		// 1:待出租可预订 2:已预定 4:已退租可预订
+		if (null == room || (!"1".equals(room.getRoomStatus()) && !"2".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) {
+		    return false;
+		}
+	    } else {
+		// 1:待出租可预订 2已预定 5:已退待租
+		String houseStatus = house.getHouseStatus();
+		if (!"1".equals(houseStatus) && !"2".equals(houseStatus) && !"5".equals(houseStatus)) {
+		    return false;
+		}
+	    }
+	    return true;
 	}
+    }
 	
 	protected static String getChineseNum(double numberMoney) {
 		BigDecimal numberOfMoney = new BigDecimal(numberMoney);
