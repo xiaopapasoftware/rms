@@ -465,7 +465,7 @@ public class RentContractController extends BaseController {
 	    House house = houseService.get(houseId);
 	    String houseStatus = house.getHouseStatus();
 	    // 非续签，非修改合同
-	    if (StringUtils.isBlank(rentContract.getId()) && StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus) && !"2".equals(houseStatus)) {
+	    if (StringUtils.isBlank(rentContract.getId()) && StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(houseStatus) && !"5".equals(houseStatus) && !"2".equals(houseStatus)) {
 		// 1:待出租可预订 3:部分出租 5:已退待租 2:已预定
 		model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
 		addMessage(model, "房屋已出租");
