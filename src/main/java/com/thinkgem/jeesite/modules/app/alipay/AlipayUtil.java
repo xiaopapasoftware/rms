@@ -13,7 +13,7 @@ public class AlipayUtil {
 	
 	public static final String PARTNER = "2088811545435611"; 
 	private static final String SELLER_EMAIL = "tcrcgy@126.com";
-	private static final String NOTIFY_URL = "http://tcservice.vip.natapp.cn/rms-api/house/alipaynNotify";
+	private static final String NOTIFY_URL = "http://rms.tangroom.com:12301/rms-api/house/alipaynNotify";
 	
 	public static void main(String[] args) throws Exception {
 		System.out.println(buildRequest("57620160105-2234532","0.01"));
