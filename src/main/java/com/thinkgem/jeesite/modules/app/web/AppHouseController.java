@@ -1263,7 +1263,7 @@ public class AppHouseController {
 			booked.setUserPhone(appUser.getPhone());
 			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
 			for(ContractBook tContractBook : bookedList) {
-				if(houseId.equals(tContractBook.getHouseId()) && "0".equals(tContractBook.getContractBusiStatus())) {
+				if(houseId.equals(tContractBook.getHouseId()) && "5".equals(tContractBook.getBookStatus())) {
 					//定金转合同&&待转合同
 					hasBooked = true;
 					depositId = tContractBook.getDepositId();
