@@ -90,9 +90,9 @@
 		da.contract_busi_status as "contractBusiStatus",
 		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag,da.update_by updateUser,da.expired_date end_date from T_RENT_CONTRACT da 
 		left join (
-		select CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
+		select LEASE_CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
 		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
-		) ct on da.id=ct.CONTRACT_ID
+		) ct on da.id=ct.LEASE_CONTRACT_ID
 		left join (
 		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
 		t_property_project p,t_building b,t_attachment a

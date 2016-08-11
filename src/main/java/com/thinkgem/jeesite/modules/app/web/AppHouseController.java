@@ -1923,20 +1923,18 @@ public class AppHouseController {
 				mp.put("house_desc", tmpContractBook.getShortLocation());
 				mp.put("rent", tmpContractBook.getRent());
 				String status = "";
-				if ("0".equals(tmpContractBook.getBookStatus()))
-					status = "0";
-				else if ("1".equals(tmpContractBook.getBookStatus()))
-					status = "4";
-				else if ("2".equals(tmpContractBook.getBookStatus())||"4".equals(tmpContractBook.getBookStatus()))
-					status = "1";
-				else if ("6".equals(tmpContractBook.getBookStatus()))
-					status = "2";
-				// 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
-				// 5:用户取消在线签约
-				if("3".equals(tmpContractBook.getBookStatus())) {
-					status = "3";
+				if ("0".equals(tmpContractBook.getBookStatus()))//暂存
+					status = "0";//等待管家确认
+				else if ("1".equals(tmpContractBook.getBookStatus()))//录入完成到账收据待登记
+					status = "4";//管家确认成功请您核实
+				else if ("2".equals(tmpContractBook.getBookStatus())||"4".equals(tmpContractBook.getBookStatus()))//2=到账收据完成合同内容待审核;4=内容审核通过到账收据待审核
+					status = "1";//在线签约成功等待支付
+				else if ("6".equals(tmpContractBook.getBookStatus()))//到账收据审核通过
+					status = "2";//在线签约支付成功
+				if("3".equals(tmpContractBook.getBookStatus())) {//内容审核拒绝
+					status = "3";//管家取消在线签约
 					if (apptoken.getPhone().equals(tmpContractBook.getUpdateUser())) {
-						status = "5";
+						status = "5";//用户取消在线签约
 					}
 				}
 				mp.put("end_date", DateUtils.formatDate(tmpContractBook.getEndDate(), "yyyy-MM-dd"));
@@ -1944,14 +1942,12 @@ public class AppHouseController {
 				dataList.add(mp);
 			}
 			map.put("contracts", dataList);
-
 			data.setData(map);
 			data.setCode("200");
 		} catch (Exception e) {
 			data.setCode("500");
 			log.error("contractList error:", e);
 		}
-
 		return data;
 	}
 
