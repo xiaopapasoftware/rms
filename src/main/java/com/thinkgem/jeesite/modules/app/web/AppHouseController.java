@@ -559,7 +559,7 @@ public class AppHouseController {
 			}
 			log.info("------houseId:"+houseId);
 			
-			if(!checkHouseStatus(houseId)) {
+			if(!checkHouseStatus(houseId,"0")) {
 				data.setCode("400");
 				data.setMsg("房屋已出租");
 				return data;
@@ -1263,7 +1263,7 @@ public class AppHouseController {
 			booked.setUserPhone(appUser.getPhone());
 			List<ContractBook> bookedList = this.contractBookService.findBookedContract(booked);
 			for(ContractBook tContractBook : bookedList) {
-				if(houseId.equals(tContractBook.getHouseId()) && "0".equals(tContractBook.getContractBusiStatus())) {
+				if(houseId.equals(tContractBook.getHouseId()) && "5".equals(tContractBook.getBookStatus())) {
 					//定金转合同&&待转合同
 					hasBooked = true;
 					depositId = tContractBook.getDepositId();
@@ -1272,7 +1272,7 @@ public class AppHouseController {
 			}
 			
 			if(!hasBooked) {
-				if(!checkHouseStatus(houseId)) {
+				if(!checkHouseStatus(houseId,"1")) {
 					data.setCode("400");
 					data.setMsg("房屋已出租");
 					return data;
@@ -1923,20 +1923,18 @@ public class AppHouseController {
 				mp.put("house_desc", tmpContractBook.getShortLocation());
 				mp.put("rent", tmpContractBook.getRent());
 				String status = "";
-				if ("0".equals(tmpContractBook.getBookStatus()))
-					status = "0";
-				else if ("1".equals(tmpContractBook.getBookStatus()))
-					status = "4";
-				else if ("2".equals(tmpContractBook.getBookStatus())||"4".equals(tmpContractBook.getBookStatus()))
-					status = "1";
-				else if ("6".equals(tmpContractBook.getBookStatus()))
-					status = "2";
-				// 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
-				// 5:用户取消在线签约
-				if("3".equals(tmpContractBook.getBookStatus())) {
-					status = "3";
+				if ("0".equals(tmpContractBook.getBookStatus()))//暂存
+					status = "0";//等待管家确认
+				else if ("1".equals(tmpContractBook.getBookStatus()))//录入完成到账收据待登记
+					status = "4";//管家确认成功请您核实
+				else if ("2".equals(tmpContractBook.getBookStatus())||"4".equals(tmpContractBook.getBookStatus()))//2=到账收据完成合同内容待审核;4=内容审核通过到账收据待审核
+					status = "1";//在线签约成功等待支付
+				else if ("6".equals(tmpContractBook.getBookStatus()))//到账收据审核通过
+					status = "2";//在线签约支付成功
+				if("3".equals(tmpContractBook.getBookStatus())) {//内容审核拒绝
+					status = "3";//管家取消在线签约
 					if (apptoken.getPhone().equals(tmpContractBook.getUpdateUser())) {
-						status = "5";
+						status = "5";//用户取消在线签约
 					}
 				}
 				mp.put("end_date", DateUtils.formatDate(tmpContractBook.getEndDate(), "yyyy-MM-dd"));
@@ -1944,14 +1942,12 @@ public class AppHouseController {
 				dataList.add(mp);
 			}
 			map.put("contracts", dataList);
-
 			data.setData(map);
 			data.setCode("200");
 		} catch (Exception e) {
 			data.setCode("500");
 			log.error("contractList error:", e);
 		}
-
 		return data;
 	}
 
@@ -2576,8 +2572,6 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		//测试用
-		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -2611,8 +2605,6 @@ public class AppHouseController {
 			data.setMsg("订单已过期");
 			return data;
 		}
-		//测试用
-		paymentOrder.setOrderAmount(0.01d);
 		Double orderAmount = paymentOrder.getOrderAmount();
 		String signStr = "";
 		try {
@@ -3100,23 +3092,44 @@ public class AppHouseController {
         return data;
     }
 	
-	private boolean checkHouseStatus(String houseId) {
-		House house = this.houseService.get(houseId);
-		if(null == house) {
-			Room room = this.roomService.get(houseId);
-			if(null == room || (!"1".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) {
-				//1:待出租可预订 4:已退租可预订
-				return false;
-			}
-		} else {
-			String houseStatus = house.getHouseStatus();
-			if(!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
-				//1:待出租可预订 3:部分出租 5:已退待租
-				return false;
-			}
+    /**
+     * @param actFlag
+     *            0表示预定，1表示签约
+     */
+    private boolean checkHouseStatus(String houseId, String actFlag) {
+	House house = this.houseService.get(houseId);
+	if ("0".equals(actFlag)) {// 预定
+	    if (null == house) {
+		Room room = this.roomService.get(houseId);
+		if (null == room || (!"1".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) { // 1:待出租可预订
+														// 4:已退租可预订
+		    return false;
 		}
-		return true;
+	    } else {
+		String houseStatus = house.getHouseStatus();
+		if (!"1".equals(houseStatus) && !"5".equals(houseStatus)) {
+		    // 1:待出租可预订 5:已退待租
+		    return false;
+		}
+	    }
+	    return true;
+	} else {// 签约
+	    if (null == house) {
+		Room room = this.roomService.get(houseId);
+		// 1:待出租可预订 2:已预定 4:已退租可预订
+		if (null == room || (!"1".equals(room.getRoomStatus()) && !"2".equals(room.getRoomStatus()) && !"4".equals(room.getRoomStatus()))) {
+		    return false;
+		}
+	    } else {
+		// 1:待出租可预订 2已预定 5:已退待租
+		String houseStatus = house.getHouseStatus();
+		if (!"1".equals(houseStatus) && !"2".equals(houseStatus) && !"5".equals(houseStatus)) {
+		    return false;
+		}
+	    }
+	    return true;
 	}
+    }
 	
 	protected static String getChineseNum(double numberMoney) {
 		BigDecimal numberOfMoney = new BigDecimal(numberMoney);
