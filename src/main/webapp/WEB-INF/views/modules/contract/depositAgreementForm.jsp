@@ -477,7 +477,7 @@
 			<label class="control-label">定金协议：</label>
 			<div class="controls">
 				<c:if test="${'2'==depositAgreement.dataSource && not empty depositAgreement.agreementBusiStatus}">
-					<a target="_blank" href="http://tangchao.vip.natapp.cn/rms-api/depositAgreement.html?id=${depositAgreement.id}">定金协议附件</a>
+					<a target="_blank" href="http://rms.tangroom.com:12302/rms-api/depositAgreement.html?id=${depositAgreement.id}">定金协议附件</a>
 				</c:if>
 				<c:if test="${'2'!=depositAgreement.dataSource}">
 					<form:hidden id="depositAgreementFile" path="depositAgreementFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>

@@ -733,7 +733,7 @@
 			<label class="control-label">出租合同：</label>
 			<div class="controls">
 				<c:if test="${'2'==rentContract.dataSource && rentContract.contractStatus != '0'}">
-					<a target="_blank" href="http://tangchao.vip.natapp.cn/rms-api/rentContractAgreement.html?id=${rentContract.id}">合同附件</a>
+					<a target="_blank" href="http://rms.tangroom.com:12302/rms-api/rentContractAgreement.html?id=${rentContract.id}">合同附件</a>
 				</c:if>
 				<c:if test="${'2'!=rentContract.dataSource}">
 					<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
