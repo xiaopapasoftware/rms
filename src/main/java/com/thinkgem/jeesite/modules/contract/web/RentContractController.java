@@ -524,7 +524,7 @@ public class RentContractController extends BaseController {
 	    String[] codeArr = rentContract.getContractCode().split("-");
 	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	}
-
+	rentContract.setDataSource("1");//默认管理系统后台添加的合同的数据来源为“管理系统”
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
 	
