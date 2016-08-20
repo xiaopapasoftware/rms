@@ -734,7 +734,8 @@
 						<!-- WEB-INF/classes/com/thinkgem/jeesite/** -->
 						WEB-INF/classes/org/apache/ibatis/**,
 						WEB-INF/classes/org/mybatis/spring/**,
-						WEB-INF/classes/act/**
+						WEB-INF/classes/act/**,
+						WEB-INF/lib/commons-logging-1.1.1.jar
 					</packagingExcludes>
 					<warSourceExcludes>
 						static/bootstrap/2.3.1/docs/**,
@@ -753,7 +754,8 @@
 						static/treeTable/demo/**<!-- , -->
 						<!-- userfiles/** --><!-- ,/**/*.jsp -->,
 						test/**,
-						act/**
+						act/**,
+					    rms/WEB-INF/lib/commons-logging-1.1.1.jar
 					</warSourceExcludes>
 					<webappDirectory>${project.build.directory}/${project.artifactId}</webappDirectory><!-- 
 					<webXml>${project.basedir}/target/jspweb.xml</webXml> -->
