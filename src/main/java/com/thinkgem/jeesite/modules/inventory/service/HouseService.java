@@ -177,8 +177,6 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    if (CollectionUtils.isNotEmpty(listRoom)) {
 		for (Room m1 : listRoom) {
 		    m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-		    m1.setUpdateBy(cuUser);
-		    m1.setUpdateDate(nowDate);
 		    int roomUpCount = roomService.update(m1);
 		    roomCounts = roomCounts + roomUpCount;
 		}

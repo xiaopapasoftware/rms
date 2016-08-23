@@ -42,6 +42,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
@@ -299,14 +300,18 @@ public class DepositAgreementController extends BaseController {
 	}
 	depositAgreementService.update(depositAgreement);
 
-	// 更新房源状态
+	// 更新房源状态,需校验房源状态为已预定才可以变更
 	if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租,释放房源
 	    House house = houseService.get(depositAgreement.getHouse().getId());
-	    houseService.releaseHouseAndRooms(house);
+	    if (HouseStatusEnum.BE_RESERVED.getValue().equals(house.getHouseStatus())) {
+		houseService.releaseHouseAndRooms(house);
+	    }
 	} else {// 单间
 	    Room room = roomServie.get(depositAgreement.getRoom().getId());
-	    room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-	    roomServie.update(room);
+	    if (RoomStatusEnum.BE_RESERVED.getValue().equals(room.getRoomStatus())) {
+		room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+		roomServie.update(room);
+	    }
 	}
 
 	if (refundAmount != null && refundAmount > 0) {
