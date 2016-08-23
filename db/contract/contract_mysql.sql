@@ -6,7 +6,6 @@ drop table if exists T_ACCOUNTING;
 drop table if exists T_AGREEMENT_CHANGE;
 drop table if exists T_ATTACHMENT;
 drop table if exists T_LEASE_CONTRACT_DTL;
-drop table if exists T_AUDIT;
 drop table if exists T_AUDIT_HIS;
 drop table if exists T_CONTRACT_TENANT;
 drop table if exists t_contract_book;
@@ -17,21 +16,22 @@ create table T_LEASE_CONTRACT
 (
    ID                   varchar(64) NOT NULL,
    PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
-   BUILDING_ID  varchar(64) comment '楼宇',
-   HOUSE_ID  varchar(64) comment '房屋',
-   REMITTANCER_ID  varchar(64) comment '汇款人',
+   BUILDING_ID  		varchar(64) comment '楼宇',
+   HOUSE_ID  			varchar(64) comment '房屋',
+   REMITTANCER_ID  		varchar(64) comment '汇款人',
    CONTRACT_CODE		varchar(64) comment '承租合同编号',
    CONTRACT_NAME        VARCHAR(100) comment '承租合同名称',
    EFFECTIVE_DATE       date comment '合同生效时间',
    LESSOR_NAME			varchar(255)  comment '出租人姓名',
    LESSOR_ID_NO			varchar(255)  comment '出租人身份证号码',
    LESSOR_CELL_NO		varchar(255)  comment '出租人手机号',
-   FIRST_REMITTANCE_DATE       date comment '首次打款日期',
+   FIRST_REMITTANCE_DATE date comment '首次打款日期',
    REMITTANCE_DATE      varchar(64) comment '打款日期',
    EXPIRED_DATE         date comment '合同过期时间',
    CONTRACT_DATE        date comment '合同签订时间',
    DEPOSIT              float comment '承租押金',
    CONTRACT_STATUS      VARCHAR(64) COMMENT '合同审核状态',
+   month_space			VARCHAR(64) COMMENT '打款月份间隔',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -148,6 +148,7 @@ create table T_RENT_CONTRACT
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
    CHARGE_TYPE          VARCHAR(64) COMMENT '付费方式',
    BREAK_DOWN            varchar(64) comment '房屋是否损坏',
+   return_remark 		VARCHAR(64) COMMENT '退租备注',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -156,7 +157,6 @@ create table T_RENT_CONTRACT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '出租合同';
-
 
 create table T_ACCOUNTING
 (
@@ -210,6 +210,7 @@ create table T_ATTACHMENT
    ATTACHMENT_NAME      varchar(64) comment '附件名称',
    ATTACHMENT_TYPE      varchar(64) comment '附件类型',
    ATTACHMENT_PATH      varchar(4000) comment '附件地址',
+   trading_accounts_id  VARCHAR(64) COMMENT '账务交易ID',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -221,9 +222,9 @@ create table T_ATTACHMENT
 
 create table T_AUDIT
 (
-	 ID                   varchar(64) NOT NULL,
-	 OBJECT_TYPE          varchar(64) comment '审核类型',
-	 OBJECT_ID            varchar(64) comment '审核对象ID',
+   ID                   varchar(64) NOT NULL,
+   OBJECT_TYPE          varchar(64) comment '审核类型',
+   OBJECT_ID            varchar(64) comment '审核对象ID',
    NEXT_ROLE            varchar(100) comment '下一级审核角色',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
@@ -236,9 +237,9 @@ create table T_AUDIT
 
 create table T_AUDIT_HIS
 (
-	 ID                   varchar(64) NOT NULL,
-	 OBJECT_TYPE          varchar(64) comment '审核类型',
-	 OBJECT_ID            varchar(64) comment '审核对象ID',
+   ID                   varchar(64) NOT NULL,
+   OBJECT_TYPE          varchar(64) comment '审核类型',
+   OBJECT_ID            varchar(64) comment '审核对象ID',
    AUDIT_USER           varchar(100) comment '审核人',
    AUDIT_TIME           datetime comment '审核时间',
    AUDIT_STATUS         varchar(100) comment '审核状态',
@@ -251,10 +252,6 @@ create table T_AUDIT_HIS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '审核历史表';
-
-ALTER TABLE t_lease_contract ADD month_space VARCHAR(64) COMMENT '打款月份间隔';
-ALTER TABLE t_rent_contract ADD return_remark VARCHAR(64) COMMENT '退租备注';
-ALTER TABLE t_attachment ADD trading_accounts_id VARCHAR(64) COMMENT '账务交易ID';
 
 create table t_contract_book
 (

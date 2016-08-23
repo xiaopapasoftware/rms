@@ -22,7 +22,6 @@ import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
-import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
@@ -34,6 +33,7 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
@@ -54,8 +54,8 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 /**
  * 出租合同Service
  * 
- * @author huangsc
- * @version 2015-06-11
+ * @author huangsc @version 2015-06-11
+ * @author wangshujin @version 2016-08-22
  */
 @Service
 @Transactional(readOnly = true)
@@ -68,8 +68,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     private PaymentTransDao paymentTransDao;
     @Autowired
     private TenantDao tenantDao;
-    @Autowired
-    private AuditHisDao auditHisDao;
     @Autowired
     private RentContractDao rentContractDao;
     @Autowired
@@ -89,6 +87,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     @Autowired
     private PaymentTransService paymentTransService;
     @Autowired
+    private AuditHisService auditHisService;
+    @Autowired
     private AttachmentDao attachmentDao;
     @Autowired
     private PaymentTradeDao paymentTradeDao;
@@ -102,20 +102,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
-	AuditHis saveAuditHis = new AuditHis();
-	saveAuditHis.setId(IdGen.uuid());
-	saveAuditHis.setObjectType("2");// 出租合同
-	saveAuditHis.setObjectId(auditHis.getObjectId());
-	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
-	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
-	saveAuditHis.setCreateDate(new Date());
-	saveAuditHis.setCreateBy(UserUtils.getUser());
-	saveAuditHis.setUpdateDate(new Date());
-	saveAuditHis.setUpdateBy(UserUtils.getUser());
-	saveAuditHis.setAuditTime(new Date());
-	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
-	saveAuditHis.setDelFlag("0");
-	auditHisDao.insert(saveAuditHis);
+	auditHisService.saveAuditHis(auditHis, AuditTypeEnum.RENT_CONTRACT_CONTENT.getValue());
 	RentContract rentContract = this.rentContractDao.get(auditHis.getObjectId());
 	if ("1".equals(auditHis.getAuditStatus())) {
 	    // 审核
@@ -125,7 +112,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    audit.setUpdateDate(new Date());
 	    audit.setUpdateBy(UserUtils.getUser());
 	    auditDao.update(audit);
-
 	    if ("2".equals(auditHis.getType())) {// 特殊退租审核通过则生成款项
 		Accounting accounting = new Accounting();
 		accounting.setRentContractId(auditHis.getObjectId());
@@ -262,7 +248,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContract.setContractStatus("1".equals(auditHis.getAuditStatus()) ? "4" : "3");// 4:内容审核通过到账收据待审核，3:内容审核拒绝
 	}
 	rentContract.setUpdateDate(new Date());
-	if (!"3".equals(auditHis.getAuditStatus())) {//非内容审核拒绝
+	if (!"3".equals(auditHis.getAuditStatus())) {// 非内容审核拒绝
 	    rentContract.setUpdateUser(UserUtils.getUser().getId());
 	} else {
 	    rentContract.setUpdateUser(auditHis.getUpdateUser());
@@ -1105,7 +1091,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    }
 	}
     }
-    
+
     public RentContract getByHouseId(RentContract rentContract) {
 	return this.rentContractDao.getByHouseId(rentContract);
     }

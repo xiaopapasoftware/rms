@@ -23,7 +23,10 @@ import com.thinkgem.jeesite.modules.inventory.dao.HouseOwnerDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
+import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
+import com.thinkgem.jeesite.modules.sys.entity.User;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -58,18 +61,18 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
-     * 精选房源 
+     * 精选房源
      */
     public Page<House> findFeaturePage(Page<House> page, House house) {
-    	house.setPage(page);
-		page.setList(dao.findFeatureList(house));
-		return page;
+	house.setPage(page);
+	page.setList(dao.findFeatureList(house));
+	return page;
     }
-    
+
     public House getFeatureInfo(House house) {
-    	return dao.getFeatureInfo(house);
+	return dao.getFeatureInfo(house);
     }
-    
+
     @Transactional(readOnly = false)
     public void save(House house) {
 	if (house.getIsNewRecord()) {// 新增
@@ -156,22 +159,27 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
-     * 更新房屋状态为可预订
+     * 释放房屋以及房屋下所有房间，房屋及房间状态都设置为“可预订”。
      */
     @Transactional(readOnly = false)
-    public int updateHouseStatus(House house) {
-	House upHouse = new House();
-	upHouse.setId(house.getId());
-	upHouse.setHouseStatus("1");
-	int updHouseCount = dao.updateHouseStatus(upHouse);
-	int roomCounts = 0;
+    public int releaseHouseAndRooms(House house) {
+	User cuUser = UserUtils.getUser();
+	Date nowDate = new Date();
+	house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
+	house.setUpdateBy(cuUser);
+	house.setUpdateDate(nowDate);
+	int updHouseCount = dao.update(house);
 	if (updHouseCount > 0) {
+	    int roomCounts = 0;
 	    Room m = new Room();
 	    m.setHouse(house);
 	    List<Room> listRoom = roomService.findList(m);
 	    if (CollectionUtils.isNotEmpty(listRoom)) {
 		for (Room m1 : listRoom) {
-		    int roomUpCount = roomService.updateRoomStatus(m1);
+		    m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+		    m1.setUpdateBy(cuUser);
+		    m1.setUpdateDate(nowDate);
+		    int roomUpCount = roomService.update(m1);
 		    roomCounts = roomCounts + roomUpCount;
 		}
 	    }
@@ -179,17 +187,6 @@ public class HouseService extends CrudService<HouseDao, House> {
 	} else {
 	    return 0;
 	}
-    }
-
-    /**
-     * 更新房屋状态
-     */
-    @Transactional(readOnly = false)
-    public void updateHouseStatus(String houseId, String status) {
-	House upHouse = new House();
-	upHouse.setId(houseId);
-	upHouse.setHouseStatus(status);
-	dao.updateHouseStatus(upHouse);
     }
 
     @Transactional(readOnly = true)
@@ -201,8 +198,14 @@ public class HouseService extends CrudService<HouseDao, House> {
     public int getCurrentValidHouseNum() {
 	return dao.getCurrentValidHouseNum(new House());
     }
-    
+
     public House getHouseByHouseId(House house) {
-    	return dao.getHouseByHouseId(house);
+	return dao.getHouseByHouseId(house);
+    }
+
+    public void update(House house) {
+	house.setUpdateBy(UserUtils.getUser());
+	house.setUpdateDate(new Date());
+	dao.update(house);
     }
 }

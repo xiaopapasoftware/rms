@@ -52,7 +52,7 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	page.setList(dao.findFeatureList());
 	return page;
     }
-    
+
     @Transactional(readOnly = false)
     public void save(Room room) {
 	if (room.getIsNewRecord()) {// 新增
@@ -108,12 +108,10 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	return dao.findRoomByPrjAndBldAndHouNoAndRomNo(room);
     }
 
-    /**
-     * 更新房间状态
-     */
     @Transactional(readOnly = false)
-    public int updateRoomStatus(Room room) {
-	room.setRoomStatus("1");
-	return dao.updateRoomStatus(room);
+    public int update(Room room) {
+	room.setUpdateBy(UserUtils.getUser());
+	room.setUpdateDate(new Date());
+	return dao.update(room);
     }
 }

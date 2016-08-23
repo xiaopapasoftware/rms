@@ -1,62 +1,75 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.RoomDao">
-    
+
 	<sql id="roomColumns">
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
-		a.building_id AS "building.id",
+		a.building_id AS
+		"building.id",
 		tb.building_name AS "building.buildingName",
-		a.house_id AS "house.id",
+		a.house_id
+		AS "house.id",
 		th.house_no AS "house.houseNo",
 		a.room_no AS "roomNo",
 		a.meter_no AS "meterNo",
 		a.room_space AS "roomSpace",
-		a.orientation AS "orientation",
+		a.orientation AS
+		"orientation",
 		a.structure AS "structure",
-		a.room_status AS "roomStatus",
+		a.room_status AS
+		"roomStatus",
 		a.create_by AS "createBy.id",
-		u1.login_name AS "createBy.loginName",
+		u1.login_name AS
+		"createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
+		a.update_by AS
+		"updateBy.id",
 		u2.login_name AS "updateBy.loginName",
-		a.update_date AS "updateDate",
+		a.update_date AS
+		"updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		atta.attachment_path AS "attachmentPath",
 		a.is_feature as "isFeature",
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
-		a.short_location as "shortLocation",
+		a.short_location as
+		"shortLocation",
 		a.pay_way as "payWay"
 	</sql>
-	
+
 	<sql id="roomJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN sys_user u2 ON u2.id = a.update_by
-		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
-		LEFT JOIN t_building tb on tb.id = a.building_id
+		LEFT JOIN
+		sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN t_property_project pp on
+		pp.id = a.property_project_id
+		LEFT JOIN t_building tb on tb.id =
+		a.building_id
 		LEFT JOIN t_house th on th.id = a.house_id
-		left join t_attachment atta on atta.room_id = a.id
+		left join
+		t_attachment atta on atta.room_id = a.id
 	</sql>
-    
+
 	<select id="get" resultType="Room">
-		SELECT 
-			<include refid="roomColumns"/>
+		SELECT
+		<include refid="roomColumns" />
 		FROM t_room a
-		<include refid="roomJoins"/>
+		<include refid="roomJoins" />
 		WHERE a.id = #{id}
 	</select>
-	
+
 	<select id="findList" resultType="Room">
-		SELECT 
-			<include refid="roomColumns"/>
+		SELECT
+		<include refid="roomColumns" />
 		FROM t_room a
-		<include refid="roomJoins"/>
+		<include refid="roomJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			<if
+				test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
 				AND a.property_project_id = #{propertyProject.id}
 			</if>
 			<if test="building != null and building.id != null and building.id != ''">
@@ -66,16 +79,16 @@
 				AND a.house_id = #{house.id}
 			</if>
 			<if test="roomNo != null and roomNo != ''">
-				AND a.room_no LIKE 
-					<if test="dbName == 'oracle'">'%'||#{roomNo}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{roomNo}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{roomNo},'%')</if>
+				AND a.room_no LIKE
+				<if test="dbName == 'oracle'">'%'||#{roomNo}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{roomNo}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{roomNo},'%')</if>
 			</if>
 			<if test="roomStatus != null and roomStatus != ''">
 				AND a.room_status = #{roomStatus}
 			</if>
 			<if test="choose !=null and choose != ''">
-				and a.room_status not in('0','2','3','5') 
+				and a.room_status not in('0','2','3','5')
 			</if>
 			<if test="isFeature != null and isFeature != ''">
 				and a.is_feature = #{isFeature}
@@ -90,37 +103,37 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="findRoomByPrjAndBldAndHouNoAndRomNo" resultType="Room">
 		SELECT
-				a.id AS "id",
-				a.property_project_id AS "propertyProject.id",
-				a.building_id AS "building.id",
-				a.house_id AS "house.id",
-				a.room_no AS "roomNo",
-				a.room_status AS "roomStatus",
-				a.del_flag AS "delFlag",
-				a.is_feature as "isFeature",
-				a.rental as "rental",
-				a.short_desc as "shortDesc",
-				a.short_location as "shortLocation",
-				a.pay_way as "payWay"
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.room_no AS "roomNo",
+		a.room_status AS "roomStatus",
+		a.del_flag AS "delFlag",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay"
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
-			  AND a.property_project_id = #{propertyProject.id}
-			  AND a.building_id = #{building.id}
-			  AND a.house_id = #{house.id}
-			  AND a.room_no = #{roomNo}
+		AND a.property_project_id = #{propertyProject.id}
+		AND a.building_id = #{building.id}
+		AND a.house_id = #{house.id}
+		AND a.room_no = #{roomNo}
 	</select>
-	
+
 	<select id="findAllList" resultType="Room">
-		SELECT 
-			<include refid="roomColumns"/>
+		SELECT
+		<include refid="roomColumns" />
 		FROM t_room a
-		<include refid="roomJoins"/>
+		<include refid="roomJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -130,87 +143,83 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO t_room(
-			id,
-			property_project_id,
-			building_id,
-			house_id,
-			room_no,
-			meter_no,
-			room_space,
-			orientation,
-			structure,
-			room_status,
-			create_by,
-			create_date,
-			update_by,
-			update_date,
-			remarks,
-			del_flag,
-			is_feature,
-			rental,
-			short_desc,
-			short_location,
-			pay_way
+		id,
+		property_project_id,
+		building_id,
+		house_id,
+		room_no,
+		meter_no,
+		room_space,
+		orientation,
+		structure,
+		room_status,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag,
+		is_feature,
+		rental,
+		short_desc,
+		short_location,
+		pay_way
 		) VALUES (
-			#{id},
-			#{propertyProject.id},
-			#{building.id},
-			#{house.id},
-			#{roomNo},
-			#{meterNo},
-			#{roomSpace},
-			#{orientation},
-			#{structure},
-			#{roomStatus},
-			#{createBy.id},
-			#{createDate},
-			#{updateBy.id},
-			#{updateDate},
-			#{remarks},
-			#{delFlag},
-			#{isFeature},
-			#{rental},
-			#{shortDesc},
-			#{shortLocation},
-			#{payWay}
+		#{id},
+		#{propertyProject.id},
+		#{building.id},
+		#{house.id},
+		#{roomNo},
+		#{meterNo},
+		#{roomSpace},
+		#{orientation},
+		#{structure},
+		#{roomStatus},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag},
+		#{isFeature},
+		#{rental},
+		#{shortDesc},
+		#{shortLocation},
+		#{payWay}
 		)
 	</insert>
-	
+
 	<update id="update">
-		UPDATE t_room SET 	
-			property_project_id = #{propertyProject.id},
-			building_id = #{building.id},
-			house_id = #{house.id},
-			room_no = #{roomNo},
-			meter_no = #{meterNo},
-			room_space = #{roomSpace},
-			orientation = #{orientation},
-			structure = #{structure},
-			<if test="roomStatus != null and roomStatus != ''">
-			    room_status = #{roomStatus},
-			</if>
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks},
-			is_feature = #{isFeature},
-			rental = #{rental},
-			short_desc = #{shortDesc},
-			short_location = #{shortLocation},
-			pay_way = #{payWay}
+		UPDATE t_room SET
+		property_project_id = #{propertyProject.id},
+		building_id = #{building.id},
+		house_id = #{house.id},
+		room_no = #{roomNo},
+		meter_no = #{meterNo},
+		room_space = #{roomSpace},
+		orientation = #{orientation},
+		structure = #{structure},
+		<if test="roomStatus != null and roomStatus != ''">
+			room_status = #{roomStatus},
+		</if>
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		is_feature = #{isFeature},
+		rental = #{rental},
+		short_desc = #{shortDesc},
+		short_location = #{shortLocation},
+		pay_way = #{payWay}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="delete">
-		UPDATE t_room SET 
-			del_flag = #{DEL_FLAG_DELETE}
+		UPDATE t_room SET
+		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="updateRoomStatus">
-		UPDATE t_room SET room_status = #{roomStatus}
-		WHERE del_flag = #{DEL_FLAG_NORMAL} and id = #{id}
-	</update>
+
 </mapper>

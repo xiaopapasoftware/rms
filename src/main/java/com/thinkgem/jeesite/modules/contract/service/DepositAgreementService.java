@@ -19,7 +19,6 @@ import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
-import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
@@ -27,6 +26,9 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
@@ -46,8 +48,8 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 /**
  * 定金协议Service
  * 
- * @author huangsc
- * @version 2015-06-09
+ * @author huangsc @version 2015-06-09
+ * @author wangshujin @version 2016-08-22
  */
 @Service
 @Transactional(readOnly = true)
@@ -59,7 +61,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     @Autowired
     private AuditDao auditDao;
     @Autowired
-    private AuditHisDao auditHisDao;
+    private AuditHisService auditHisService;
     @Autowired
     private ContractTenantDao contractTenantDao;
     @Autowired
@@ -80,15 +82,15 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private static final String DEPOSIT_AGREEMENT_ROLE = "deposit_agreement_role";// 定金协议审批
 
     public DepositAgreement get(String id) {
-	return super.get(id);
+	return get(id);
     }
 
     public List<DepositAgreement> findList(DepositAgreement depositAgreement) {
-	return super.findList(depositAgreement);
+	return findList(depositAgreement);
     }
 
     public Page<DepositAgreement> findPage(Page<DepositAgreement> page, DepositAgreement depositAgreement) {
-	return super.findPage(page, depositAgreement);
+	return findPage(page, depositAgreement);
     }
 
     public List<Tenant> findTenant(DepositAgreement depositAgreement) {
@@ -96,107 +98,28 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	ContractTenant contractTenant = new ContractTenant();
 	contractTenant.setDepositAgreementId(depositAgreement.getId());
 	List<ContractTenant> list = contractTenantDao.findList(contractTenant);
-	for (ContractTenant tmpContractTenant : list) {
-	    Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
-	    tenantList.add(tenant);
+	if (CollectionUtils.isNotEmpty(list)) {
+	    for (ContractTenant tmpContractTenant : list) {
+		tenantList.add(tenantDao.get(tmpContractTenant.getTenantId()));
+	    }
 	}
 	return tenantList;
     }
 
-    /**
-     * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费
-     */
-    @Transactional(readOnly = false)
-    public void breakContract(DepositAgreement depositAgreement) {
-	Double refundAmount = depositAgreement.getRefundAmount();
-	depositAgreement = depositAgreementDao.get(depositAgreement.getId());
-	if (refundAmount != null && refundAmount > 0) {
-	    depositAgreement.setRefundAmount(refundAmount);
-	}
-
-	/* 1.生成款项--定金转违约退费 */
-	// 定金转违约,'26'='定金转违约退费',出款,未到账登记
-	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0) {
-	    generateAndSavePaymentTrans("2", "26", depositAgreement.getId(), "0", depositAgreement.getRefundAmount(), depositAgreement.getRefundAmount(), 0D, "0", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
-	}
-
-	// 系统生成完全到账的应出定金款项 2=定金转违约；27=应出定金 应出为0，
-	generateAndSavePaymentTrans("2", "27", depositAgreement.getId(), "0", depositAgreement.getDepositAmount(), 0D, depositAgreement.getDepositAmount(), "2", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
-
-	// 系统生成完全到账的应收定金违约金 2=定金转违约；1=定金违约金；应收为1，
-	generateAndSavePaymentTrans("2", "1", depositAgreement.getId(), "1", depositAgreement.getDepositAmount(), 0D, depositAgreement.getDepositAmount(), "2", depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
-
-	if (null != depositAgreement.getRefundAmount() && depositAgreement.getRefundAmount() > 0) {
-	    // 更新定金协议为“定金转违约到账待登记”
-	    depositAgreement.setAgreementBusiStatus("3");// '3'='定金转违约到账待登记'
-	    depositAgreement.setUpdateDate(new Date());
-	    depositAgreement.setUpdateBy(UserUtils.getUser());
-	    depositAgreementDao.update(depositAgreement);
-	} else {
-	    // 更新定金协议为“定金转违约到账待登记”
-	    depositAgreement.setAgreementBusiStatus("1");// '1'= 已转违约
-	    depositAgreement.setUpdateDate(new Date());
-	    depositAgreement.setUpdateBy(UserUtils.getUser());
-	    depositAgreementDao.update(depositAgreement);
-	}
-
-	/* 3.更新房屋/房间状态 */
-	if ("0".equals(depositAgreement.getRentMode())) {// 整租
-	    House house = houseDao.get(depositAgreement.getHouse().getId());
-	    house.setHouseStatus("1");// 待出租可预订
-	    house.setCreateBy(UserUtils.getUser());
-	    house.setUpdateDate(new Date());
-	    houseDao.update(house);
-	    // 同时把房间的状态都更新为“待出租可预订”
-	    Room parameterRoom = new Room();
-	    parameterRoom.setHouse(house);
-	    List<Room> rooms = roomDao.findList(parameterRoom);
-	    if (CollectionUtils.isNotEmpty(rooms)) {
-		for (Room r : rooms) {
-		    r.setRoomStatus("1");// “待出租可预订”
-		    r.setUpdateBy(UserUtils.getUser());
-		    r.setUpdateDate(new Date());
-		    roomDao.update(r);
-		}
-	    }
-	} else {// 单间
-	    Room room = roomDao.get(depositAgreement.getRoom().getId());
-	    room.setRoomStatus("1");// 待出租可预订
-	    room.setCreateBy(UserUtils.getUser());
-	    room.setUpdateDate(new Date());
-	    roomDao.update(room);
-	}
-    }
-
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
-	AuditHis saveAuditHis = new AuditHis();
-	saveAuditHis.setId(IdGen.uuid());
-	saveAuditHis.setObjectType("1");// 定金协议
-	saveAuditHis.setObjectId(auditHis.getObjectId());
-	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
-	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
-	saveAuditHis.setCreateDate(new Date());
-	saveAuditHis.setCreateBy(UserUtils.getUser());
-	saveAuditHis.setUpdateDate(new Date());
-	saveAuditHis.setUpdateBy(UserUtils.getUser());
-	saveAuditHis.setAuditTime(new Date());
-	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
-	saveAuditHis.setDelFlag("0");
-	auditHisDao.insert(saveAuditHis);
-
-	if ("1".equals(auditHis.getAuditStatus())) {
-	    // 审核
+	auditHisService.saveAuditHis(auditHis, AuditTypeEnum.DEPOSIT_AGREEMENT_CONTENT.getValue());
+	DepositAgreement depositAgreement = depositAgreementDao.get(auditHis.getObjectId());
+	if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {// 审核通过
 	    Audit audit = new Audit();
 	    audit.setObjectId(auditHis.getObjectId());
 	    audit.setNextRole("");
 	    audit.setUpdateDate(new Date());
 	    audit.setUpdateBy(UserUtils.getUser());
 	    auditDao.update(audit);
-	} else {// 审核拒绝时，需要把房屋和房间的状态回滚到原先状态
+	} else { // 审核拒绝时，需要把房屋和房间的状态回滚到原先状态
 	    /* 更新房屋/房间状态 */
-	    DepositAgreement depositAgreement = this.depositAgreementDao.get(auditHis.getObjectId());
-	    if ("0".equals(depositAgreement.getRentMode())) {// 整租
+	    if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租
 		House house = houseDao.get(depositAgreement.getHouse().getId());
 		house.setHouseStatus("1");// 待出租可预订
 		house.setUpdateBy(UserUtils.getUser());
@@ -264,10 +187,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 		tradingAccountsDao.delete(tradingAccounts);
 	    }
 	}
-
-	DepositAgreement depositAgreement = depositAgreementDao.get(auditHis.getObjectId());
 	depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "3" : auditHis.getAuditStatus());// 2:内容审核拒绝
-														     // 3:内容审核通过到账收据待审核
 	depositAgreement.setUpdateDate(new Date());
 	if ("2".equals(depositAgreement.getDataSource()))
 	    depositAgreement.setUpdateUser(auditHis.getUpdateUser());
@@ -522,6 +442,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 
     public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
 	return this.depositAgreementDao.getByHouseId(depositAgreement);
+    }
 
+    public void update(DepositAgreement depositAgreement) {
+	depositAgreement.setUpdateBy(UserUtils.getUser());
+	depositAgreement.setUpdateDate(new Date());
+	dao.update(depositAgreement);
     }
 }

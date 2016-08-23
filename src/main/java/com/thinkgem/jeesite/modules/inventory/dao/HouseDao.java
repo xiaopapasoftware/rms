@@ -24,18 +24,13 @@ public interface HouseDao extends CrudDao<House> {
     List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
 
     /**
-     * 更新房屋状态
-     */
-    int updateHouseStatus(House house);
-
-    /**
      * 获取当前有效房屋的总数量
      */
     int getCurrentValidHouseNum(House house);
-    
+
     List<House> findFeatureList(House house);
-    
+
     House getFeatureInfo(House house);
-    
+
     House getHouseByHouseId(House house);
 }

@@ -61,7 +61,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
     private List<Tenant> tenantList = new ArrayList<Tenant>();
 
     private Double refundAmount;// 退费金额
-    
+
     private String dataSource;
     private String updateUser;
 
@@ -310,19 +310,19 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 	this.refundAmount = refundAmount;
     }
 
-	public String getDataSource() {
-		return dataSource;
-	}
+    public String getDataSource() {
+	return dataSource;
+    }
 
-	public void setDataSource(String dataSource) {
-		this.dataSource = dataSource;
-	}
+    public void setDataSource(String dataSource) {
+	this.dataSource = dataSource;
+    }
 
-	public String getUpdateUser() {
-		return updateUser;
-	}
+    public String getUpdateUser() {
+	return updateUser;
+    }
 
-	public void setUpdateUser(String updateUser) {
-		this.updateUser = updateUser;
-	}
+    public void setUpdateUser(String updateUser) {
+	this.updateUser = updateUser;
+    }
 }
