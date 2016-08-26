@@ -196,12 +196,8 @@ public class HouseController extends BaseController {
     @ResponseBody
     public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
 	House h = houseService.get(house);
-	int i = houseService.releaseHouseAndRooms(h);
-	if (i > 0) {
-	    return "SUCCESS";
-	} else {
-	    return "FAIL";
-	}
+	houseService.finishHouseDirect4Status(h);
+	return "SUCCESS";
     }
 
     // @RequiresPermissions("inventory:house:edit")

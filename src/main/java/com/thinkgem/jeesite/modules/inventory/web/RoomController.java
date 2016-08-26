@@ -31,7 +31,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
-import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -181,17 +180,8 @@ public class RoomController extends BaseController {
     @ResponseBody
     public String finishDirect(Room room, Model model, RedirectAttributes redirectAttributes) {
 	Room r = roomService.get(room);
-	r.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-	int i = roomService.update(r);
-	House h = houseService.get(r.getHouse().getId());
-	if (HouseStatusEnum.TO_RENOVATION.getValue().equals(h.getHouseStatus())) {// 如果房屋状态为待装修，则更新为装修完成。
-	    houseService.releaseHouseAndRooms(h);
-	}
-	if (i > 0) {
-	    return "SUCCESS";
-	} else {
-	    return "FAIL";
-	}
+	houseService.finishSingleRoomDirect4Status(r);
+	return "SUCCESS";
     }
 
     // @RequiresPermissions("inventory:room:edit")

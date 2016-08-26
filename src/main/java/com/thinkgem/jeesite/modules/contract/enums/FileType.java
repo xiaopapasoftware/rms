@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.contract.entity;
+package com.thinkgem.jeesite.modules.contract.enums;
 
 public enum FileType {
 	OWNER_ID("业主身份证", "0"),

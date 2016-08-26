@@ -17,5 +17,4 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 @MyBatisDao
 public interface PaymentTransDao extends CrudDao<PaymentTrans> {
 	public List<PaymentTrans> findRemindList(PaymentTrans paymentTrans);
-	public void delById(PaymentTrans paymentTrans);
 }

@@ -3,7 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -14,14 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
-import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.common.service.AttachmentService;
+import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 房间信息Service
@@ -35,6 +33,9 @@ public class RoomService extends CrudService<RoomDao, Room> {
 
     @Autowired
     private AttachmentDao attachmentDao;
+
+    @Autowired
+    private AttachmentService attachmentService;
 
     public Room get(String id) {
 	return super.get(id);
@@ -59,14 +60,10 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	    String id = super.saveAndReturnId(room);
 	    if (StringUtils.isNotEmpty(room.getAttachmentPath())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setRoomId(id);
 		attachment.setAttachmentType(FileType.ROOM_MAP.getValue());
 		attachment.setAttachmentPath(room.getAttachmentPath());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
 		attachmentDao.insert(attachment);
 	    }
 	} else {// 更新
@@ -79,17 +76,13 @@ public class RoomService extends CrudService<RoomDao, Room> {
 		Attachment atta = new Attachment();
 		atta.setRoomId(id);
 		atta.setAttachmentPath(room.getAttachmentPath());
-		attachmentDao.updateAttachmentPathByType(atta);
+		attachmentService.updateAttachmentPathByType(atta);
 	    } else {// 修改时，新增附件
 		Attachment toAddattachment = new Attachment();
-		toAddattachment.setId(IdGen.uuid());
+		toAddattachment.preInsert();
 		toAddattachment.setRoomId(id);
 		toAddattachment.setAttachmentType(FileType.ROOM_MAP.getValue());
 		toAddattachment.setAttachmentPath(room.getAttachmentPath());
-		toAddattachment.setCreateDate(new Date());
-		toAddattachment.setCreateBy(UserUtils.getUser());
-		toAddattachment.setUpdateDate(new Date());
-		toAddattachment.setUpdateBy(UserUtils.getUser());
 		attachmentDao.insert(toAddattachment);
 	    }
 	}
@@ -100,6 +93,7 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	super.delete(room);
 	Attachment atta = new Attachment();
 	atta.setRoomId(room.getId());
+	atta.preUpdate();
 	attachmentDao.delete(atta);
     }
 
@@ -110,8 +104,6 @@ public class RoomService extends CrudService<RoomDao, Room> {
 
     @Transactional(readOnly = false)
     public int update(Room room) {
-	room.setUpdateBy(UserUtils.getUser());
-	room.setUpdateDate(new Date());
 	return dao.update(room);
     }
 }

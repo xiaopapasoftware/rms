@@ -3,7 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -14,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
-import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.common.service.AttachmentService;
+import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseOwnerDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -26,8 +25,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
-import com.thinkgem.jeesite.modules.sys.entity.User;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 房屋信息Service
@@ -44,6 +41,9 @@ public class HouseService extends CrudService<HouseDao, House> {
 
     @Autowired
     private AttachmentDao attachmentDao;
+
+    @Autowired
+    private AttachmentService attachmentService;
 
     @Autowired
     private HouseOwnerDao houseOwnerDao;
@@ -79,14 +79,10 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    String id = super.saveAndReturnId(house);
 	    if (StringUtils.isNotEmpty(house.getAttachmentPath())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setHouseId(id);
 		attachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
 		attachment.setAttachmentPath(house.getAttachmentPath());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
 		attachmentDao.insert(attachment);
 	    }
 	} else {// 修改
@@ -99,35 +95,29 @@ public class HouseService extends CrudService<HouseDao, House> {
 		Attachment atta = new Attachment();
 		atta.setHouseId(id);
 		atta.setAttachmentPath(house.getAttachmentPath());
-		attachmentDao.updateAttachmentPathByType(atta);
+		atta.preUpdate();
+		attachmentService.updateAttachmentPathByType(atta);
 	    } else {// 新增附件
 		Attachment toAddattachment = new Attachment();
-		toAddattachment.setId(IdGen.uuid());
+		toAddattachment.preInsert();
 		toAddattachment.setHouseId(id);
 		toAddattachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
 		toAddattachment.setAttachmentPath(house.getAttachmentPath());
-		toAddattachment.setCreateDate(new Date());
-		toAddattachment.setCreateBy(UserUtils.getUser());
-		toAddattachment.setUpdateDate(new Date());
-		toAddattachment.setUpdateBy(UserUtils.getUser());
 		attachmentDao.insert(toAddattachment);
 	    }
 	}
 	// 房屋业主关系信息
 	HouseOwner houseOwner = new HouseOwner();
 	houseOwner.setHouseId(house.getId());
+	houseOwner.preUpdate();
 	houseOwnerDao.delete(houseOwner);
 
 	List<Owner> ownerList = house.getOwnerList();
 	for (Owner owner : ownerList) {
 	    houseOwner = new HouseOwner();
-	    houseOwner.setId(IdGen.uuid());
+	    houseOwner.preInsert();
 	    houseOwner.setOwnerId(owner.getId());
 	    houseOwner.setHouseId(house.getId());
-	    houseOwner.setCreateDate(new Date());
-	    houseOwner.setCreateBy(UserUtils.getUser());
-	    houseOwner.setUpdateDate(new Date());
-	    houseOwner.setUpdateBy(UserUtils.getUser());
 	    houseOwnerDao.insert(houseOwner);
 	}
     }
@@ -138,6 +128,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	super.delete(house);
 	Attachment atta = new Attachment();
 	atta.setHouseId(house.getId());
+	atta.preUpdate();
 	attachmentDao.delete(atta);
 
 	Room r = new Room();
@@ -159,31 +150,144 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
-     * 释放房屋以及房屋下所有房间，房屋及房间状态都设置为“可预订”。
+     * 取消整套房屋的预定，更新房屋状态，房屋及其所属的房间状态都设置为“待出租可预订”
      */
     @Transactional(readOnly = false)
-    public int releaseHouseAndRooms(House house) {
-	User cuUser = UserUtils.getUser();
-	Date nowDate = new Date();
-	house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
-	house.setUpdateBy(cuUser);
-	house.setUpdateDate(nowDate);
-	int updHouseCount = dao.update(house);
-	if (updHouseCount > 0) {
-	    int roomCounts = 0;
+    public void releaseWholeHouse(House house) {
+	if (HouseStatusEnum.BE_RESERVED.getValue().equals(house.getHouseStatus())) {
+	    house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
+	    house.preUpdate();
+	    dao.update(house);
 	    Room m = new Room();
 	    m.setHouse(house);
-	    List<Room> listRoom = roomService.findList(m);
-	    if (CollectionUtils.isNotEmpty(listRoom)) {
-		for (Room m1 : listRoom) {
-		    m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-		    int roomUpCount = roomService.update(m1);
-		    roomCounts = roomCounts + roomUpCount;
+	    List<Room> rooms = roomService.findList(m);
+	    if (CollectionUtils.isNotEmpty(rooms)) {
+		for (Room m1 : rooms) {
+		    if (RoomStatusEnum.BE_RESERVED.getValue().equals(m1.getRoomStatus())) {
+			m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+			m1.preUpdate();
+			roomService.update(m1);
+		    }
 		}
 	    }
-	    return updHouseCount + roomCounts;
-	} else {
-	    return 0;
+	}
+    }
+
+    /**
+     * 取消单间的预定，更新单间状态，单间及其所属的房屋状态都设置为“待出租可预订”
+     */
+    @Transactional(readOnly = false)
+    public void releaseSingleRoom(Room room) {
+	if (RoomStatusEnum.BE_RESERVED.getValue().equals(room.getRoomStatus())) {// 更新房间状态
+	    room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+	    room.preUpdate();
+	    roomService.update(room);
+	}
+	House h = dao.get(room.getHouse().getId());// 同时更新房屋状态
+	if (HouseStatusEnum.BE_RESERVED.getValue().equals(h.getHouseStatus())) {// 如果房屋状态是“已预定”
+	    h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());// 待出租可预订
+	    h.preUpdate();
+	    dao.update(h);
+	}
+    }
+
+    /**
+     * 房屋装修完成，变更房屋及其房间的状态
+     */
+    @Transactional(readOnly = false)
+    public void finishHouseDirect4Status(House house) {
+	if (HouseStatusEnum.TO_RENOVATION.getValue().equals(house.getHouseStatus())) {
+	    house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
+	    house.preUpdate();
+	    dao.update(house);
+	    Room m = new Room();
+	    m.setHouse(house);
+	    List<Room> rooms = roomService.findList(m);
+	    if (CollectionUtils.isNotEmpty(rooms)) {
+		for (Room m1 : rooms) {
+		    if (RoomStatusEnum.TO_RENOVATION.getValue().equals(m1.getRoomStatus())) {
+			m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+			m1.preUpdate();
+			roomService.update(m1);
+		    }
+		}
+	    }
+	}
+
+    }
+
+    /**
+     * 单间装修完成，变更单间及其所属房屋的状态
+     */
+    @Transactional(readOnly = false)
+    public void finishSingleRoomDirect4Status(Room r) {
+	if (RoomStatusEnum.TO_RENOVATION.getValue().equals(r.getRoomStatus())) {
+	    r.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+	    r.preUpdate();
+	    roomService.update(r);
+	}
+	House h = dao.get(r.getHouse().getId());// 同时更新房屋状态
+	if (HouseStatusEnum.TO_RENOVATION.getValue().equals(h.getHouseStatus())) {
+	    h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());// 待出租可预订
+	    h.preUpdate();
+	    dao.update(h);
+	}
+    }
+
+    /**
+     * 整租房屋预定，变更房屋及其房间的状态
+     */
+    @Transactional(readOnly = false)
+    public void depositWholeHouse(House house) {
+	if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus()) || HouseStatusEnum.RETURN_FOR_RENT.getValue().equals(house.getHouseStatus())) {
+	    house.setHouseStatus(HouseStatusEnum.BE_RESERVED.getValue());
+	    house.preUpdate();
+	    dao.update(house);
+	}
+	// 同时把所属的房间状态都更新为“已预定”
+	Room parameterRoom = new Room();
+	parameterRoom.setHouse(house);
+	List<Room> rooms = roomService.findList(parameterRoom);
+	if (CollectionUtils.isNotEmpty(rooms)) {
+	    for (Room r : rooms) {
+		if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(r.getRoomStatus())) {
+		    r.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
+		    r.preUpdate();
+		    roomService.update(r);
+		}
+	    }
+	}
+    }
+
+    /**
+     * 单间预定，变更单间及其所属房屋的状态
+     */
+    @Transactional(readOnly = false)
+    public void depositSingleRoom(Room room) {
+	if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
+	    room.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
+	    room.preUpdate();
+	    roomService.update(room);
+	}
+	// 同时更新该房间所属房屋的状态
+	House h = dao.get(room.getHouse().getId());
+	if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(h.getHouseStatus()) || HouseStatusEnum.PART_RENT.getValue().equals(h.getHouseStatus()) || HouseStatusEnum.RETURN_FOR_RENT.getValue().equals(h.getHouseStatus())) {
+	    Room queryRoom = new Room();
+	    queryRoom.setHouse(h);
+	    List<Room> roomsOfHouse = roomService.findList(queryRoom);
+	    if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
+		int depositCount = 0;// 预定或出租的数量
+		for (Room depositedRoom : roomsOfHouse) {
+		    if (RoomStatusEnum.BE_RESERVED.getValue().equals(depositedRoom.getRoomStatus()) || RoomStatusEnum.RENTED.getValue().equals(depositedRoom.getRoomStatus())) {
+			depositCount = depositCount + 1;
+		    }
+		}
+		if (depositCount == roomsOfHouse.size()) {// 房屋内房间全部出租或预定，房屋状态更新为“已预定”
+		    h.preUpdate();
+		    h.setHouseStatus(HouseStatusEnum.BE_RESERVED.getValue());// 已预定
+		    dao.update(h);
+		}
+	    }
 	}
     }
 
@@ -202,8 +306,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     public void update(House house) {
-	house.setUpdateBy(UserUtils.getUser());
-	house.setUpdateDate(new Date());
+	house.preUpdate();
 	dao.update(house);
     }
 }

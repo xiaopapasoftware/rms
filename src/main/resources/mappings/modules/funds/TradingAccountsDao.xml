@@ -60,10 +60,16 @@
 
 	<sql id="tradingAccountsJoins">
 		left join t_deposit_agreement ta on a.trade_id=ta.id
-		left join t_rent_contract tc on a.trade_id=tc.id
-		left join t_lease_contract tlc on a.trade_id = tlc.id
-		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
-		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
+		left
+		join t_rent_contract tc on a.trade_id=tc.id
+		left join t_lease_contract
+		tlc on a.trade_id = tlc.id
+		left join t_attachment at2 on
+		a.id=at2.trading_accounts_id and at2.attachment_type='15' and
+		at2.del_flag='0'
+		left join t_attachment at3 on
+		a.id=at3.trading_accounts_id and at3.attachment_type='17' and
+		at3.del_flag='0'
 	</sql>
 
 	<select id="get" resultType="TradingAccounts">
@@ -76,10 +82,8 @@
 
 	<select id="findList" resultType="TradingAccounts">
 		select * from(
-		SELECT
-		<include refid="tradingAccountsColumns" />
-		FROM t_trading_accounts a
-		<include refid="tradingAccountsJoins" />
+		SELECT <include refid="tradingAccountsColumns" />
+		FROM t_trading_accounts a <include refid="tradingAccountsJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="tradeId != null and tradeId != ''">
@@ -103,8 +107,8 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
-	  ) t where t.tradeName is not null 
-	  	<if test="tradeName != null and tradeName != ''">
+		) t where t.tradeName is not null
+		<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
 		</if>
 		<if test="tradeObjectNo != null and tradeObjectNo != ''">
@@ -171,7 +175,8 @@
 		trade_direction = #{tradeDirection},
 		trade_amount = #{tradeAmount},
 		payee_name = #{payeeName},
-		payee_type = #{payeeType},
+		payee_type =
+		#{payeeType},
 		trade_status = #{tradeStatus},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate},
@@ -180,21 +185,19 @@
 	</update>
 
 	<update id="delete">
-		UPDATE t_trading_accounts SET
-		del_flag = #{DEL_FLAG_DELETE}
+		UPDATE t_trading_accounts 
+		SET del_flag = #{DEL_FLAG_DELETE}, update_by = #{updateBy.id}, update_date = #{updateDate}
 		<where>
-			trade_id = #{tradeId}
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="tradeId != null and tradeId != ''">
+				and trade_id = #{tradeId}
+			</if>
 			<if test="tradeStatus != null and tradeStatus != ''">
 				and trade_status = #{tradeStatus}
 			</if>
 		</where>
-	</update>
-
-	<update id="deleteById">
-		UPDATE t_trading_accounts SET
-		del_flag =
-		#{DEL_FLAG_DELETE}
-		WHERE id = #{id}
 	</update>
 
 </mapper>

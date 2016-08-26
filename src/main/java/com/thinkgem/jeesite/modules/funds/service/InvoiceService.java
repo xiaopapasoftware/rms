@@ -18,42 +18,43 @@ import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 
 /**
  * 发票信息Service
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 @Service
 @Transactional(readOnly = true)
 public class InvoiceService extends CrudService<InvoiceDao, Invoice> {
-	@Autowired
-	private TradingAccountsDao tradingAccountsDao;
+    @Autowired
+    private TradingAccountsDao tradingAccountsDao;
 
-	public Invoice get(String id) {
-		return super.get(id);
+    public Invoice get(String id) {
+	return super.get(id);
+    }
+
+    public List<Invoice> findList(Invoice invoice) {
+	return super.findList(invoice);
+    }
+
+    public Page<Invoice> findPage(Page<Invoice> page, Invoice invoice) {
+	return super.findPage(page, invoice);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(Invoice invoice) {
+	TradingAccounts tradingAccounts = tradingAccountsDao.get(invoice.getTradingAccountsId());
+	invoice.setTradingAccounts(tradingAccounts);
+	super.save(invoice);
+	if (null != tradingAccounts) {
+	    tradingAccounts.setTradeStatus("3");// 发票已开
+	    tradingAccounts.preUpdate();
+	    tradingAccountsDao.update(tradingAccounts);
 	}
-	
-	public List<Invoice> findList(Invoice invoice) {
-		return super.findList(invoice);
-	}
-	
-	public Page<Invoice> findPage(Page<Invoice> page, Invoice invoice) {
-		return super.findPage(page, invoice);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Invoice invoice) {
-		TradingAccounts tradingAccounts = tradingAccountsDao.get(invoice.getTradingAccountsId());
-		invoice.setTradingAccounts(tradingAccounts);
-		super.save(invoice);
-		
-		if(null != tradingAccounts) {
-			tradingAccounts.setTradeStatus("3");//发票已开
-			tradingAccountsDao.update(tradingAccounts);
-		}
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Invoice invoice) {
-		super.delete(invoice);
-	}
-	
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(Invoice invoice) {
+	super.delete(invoice);
+    }
+
 }

@@ -29,7 +29,7 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
-import com.thinkgem.jeesite.modules.contract.entity.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 @Controller
@@ -182,6 +182,7 @@ public class AppSelfController {
 			Attachment attachment = new Attachment();
 			attachment.setAttachmentType(FileType.APP_USER_AVATAR.getValue());
 			attachment.setBizId(appUser.getId());
+			attachment.preUpdate();
 			attachmentDao.delete(attachment);
 			
 			attachment.setId(IdGen.uuid());
@@ -239,6 +240,7 @@ public class AppSelfController {
 			Attachment attachment = new Attachment();
 			attachment.setAttachmentType(FileType.APP_USER_ID_FRONT.getValue());
 			attachment.setBizId(appUser.getId());
+			attachment.preUpdate();
 			attachmentDao.delete(attachment);
 			
 			attachment.setId(IdGen.uuid());
@@ -256,6 +258,7 @@ public class AppSelfController {
 			Attachment attachmentback = new Attachment();
 			attachmentback.setAttachmentType(FileType.APP_USER_ID_BACK.getValue());
 			attachmentback.setBizId(appUser.getId());
+			attachmentback.preUpdate();
 			attachmentDao.delete(attachmentback);
 			
 			attachmentback.setId(IdGen.uuid());

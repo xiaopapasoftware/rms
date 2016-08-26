@@ -1,11 +1,9 @@
 package com.thinkgem.jeesite.modules.inventory.enums;
 
 /**
- * 
  * 房屋状态
  * 
  * @author wangshujin
- *
  */
 public enum HouseStatusEnum {
 

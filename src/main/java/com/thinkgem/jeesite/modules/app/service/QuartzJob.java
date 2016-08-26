@@ -58,6 +58,7 @@ public class QuartzJob {
 		String orderTimeout = proper.getProperty("order.timeout");
 		for(PaymentOrder tmpPaymentOrder : list) {
 			if((dateNow.getTime()-tmpPaymentOrder.getOrderDate().getTime())/1000/60>Long.valueOf(orderTimeout)) {
+			    	tmpPaymentOrder.preUpdate();
 				paymentOrderDao.delete(tmpPaymentOrder);
 				
 				String[] tradeIds = tmpPaymentOrder.getTradeId().split(",");

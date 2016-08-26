@@ -147,7 +147,9 @@
 	
 	<update id="delete">
 		UPDATE t_receipt SET 
-			del_flag = #{DEL_FLAG_DELETE}
+			del_flag = #{DEL_FLAG_DELETE},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
 		WHERE trading_accounts_id = #{tradingAccounts.id}
 	</update>
 	
