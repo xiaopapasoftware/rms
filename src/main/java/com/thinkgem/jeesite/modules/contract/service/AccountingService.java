@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
@@ -29,18 +28,6 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
 
     @Autowired
     private PaymentTransService paymentTransService;
-
-    public Accounting get(String id) {
-	return super.get(id);
-    }
-
-    public List<Accounting> findList(Accounting accounting) {
-	return super.findList(accounting);
-    }
-
-    public Page<Accounting> findPage(Page<Accounting> page, Accounting accounting) {
-	return super.findPage(page, accounting);
-    }
 
     @Transactional(readOnly = false)
     public int delByRent(Accounting accounting) {
@@ -78,11 +65,6 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
 		paymentTransService.save(pt);
 	    }
 	}
-    }
-
-    @Transactional(readOnly = false)
-    public void delete(Accounting accounting) {
-	super.delete(accounting);
     }
 
 }

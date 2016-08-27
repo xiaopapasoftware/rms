@@ -13,16 +13,4 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 @Service
 @Transactional(readOnly = true)
 public class ContractTenantService extends CrudService<ContractTenantDao, ContractTenant> {
-
-    @Transactional(readOnly = false)
-    public void delete(ContractTenant contractTenant) {
-	contractTenant.preUpdate();
-	dao.delete(contractTenant);
-    }
-
-    @Transactional(readOnly = false)
-    public void save(ContractTenant contractTenant) {
-	contractTenant.preInsert();
-	dao.insert(contractTenant);
-    }
 }

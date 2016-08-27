@@ -28,9 +28,4 @@ public class AttachmentService extends CrudService<AttachmentDao, Attachment> {
 	dao.delete(attachment);
     }
 
-    @Transactional(readOnly = false)
-    public void save(Attachment attachment) {
-	attachment.preInsert();
-	dao.insert(attachment);
-    }
 }

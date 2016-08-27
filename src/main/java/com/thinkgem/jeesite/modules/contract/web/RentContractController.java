@@ -754,6 +754,7 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "delete")
     public String delete(RentContract rentContract, RedirectAttributes redirectAttributes) {
+	rentContract.preUpdate();
 	rentContractService.delete(rentContract);
 	addMessage(redirectAttributes, "删除出租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";

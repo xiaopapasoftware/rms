@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
-import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
@@ -35,27 +33,13 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Transactional(readOnly = true)
 public class AgreementChangeService extends CrudService<AgreementChangeDao, AgreementChange> {
     @Autowired
-    private AuditHisDao auditHisDao;
+    private AuditHisService auditHisService;
     @Autowired
     private AuditDao auditDao;
-    @Autowired
-    private AgreementChangeDao agreementChangeDao;
     @Autowired
     private ContractTenantDao contractTenantDao;
     @Autowired
     private TenantDao tenantDao;
-
-    public AgreementChange get(String id) {
-	return super.get(id);
-    }
-
-    public List<AgreementChange> findList(AgreementChange agreementChange) {
-	return super.findList(agreementChange);
-    }
-
-    public Page<AgreementChange> findPage(Page<AgreementChange> page, AgreementChange agreementChange) {
-	return super.findPage(page, agreementChange);
-    }
 
     @Transactional(readOnly = false)
     public void save(AgreementChange agreementChange) {
@@ -93,14 +77,10 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
 	}
     }
 
-    @Transactional(readOnly = false)
-    public void delete(AgreementChange agreementChange) {
-	super.delete(agreementChange);
-    }
-
     /**
      * 入住人信息
      */
+    @Transactional(readOnly = true)
     public List<Tenant> findLiveTenant(AgreementChange agreementChange) {
 	List<Tenant> tenantList = new ArrayList<Tenant>();
 	ContractTenant contractTenant = new ContractTenant();
@@ -116,6 +96,7 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
     /**
      * 承租人信息
      */
+    @Transactional(readOnly = true)
     public List<Tenant> findTenant(AgreementChange agreementChange) {
 	List<Tenant> tenantList = new ArrayList<Tenant>();
 	ContractTenant contractTenant = new ContractTenant();
@@ -130,16 +111,15 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
-	AgreementChange agreementChange = agreementChangeDao.get(auditHis.getObjectId());
+	AgreementChange agreementChange = get(auditHis.getObjectId());
 	AuditHis saveAuditHis = new AuditHis();
-	saveAuditHis.preInsert();
 	saveAuditHis.setObjectType("3");// 变更协议
 	saveAuditHis.setObjectId(auditHis.getObjectId());
 	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
 	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
 	saveAuditHis.setAuditTime(new Date());
 	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
-	auditHisDao.insert(saveAuditHis);
+	auditHisService.save(saveAuditHis);
 
 	if ("1".equals(auditHis.getAuditStatus())) {
 	    // 审核
@@ -183,6 +163,6 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
 
 	agreementChange.setAgreementStatus(auditHis.getAuditStatus());
 	agreementChange.preUpdate();
-	agreementChangeDao.update(agreementChange);
+	dao.update(agreementChange);
     }
 }

@@ -17,11 +17,11 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
-import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
+import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
+import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
-import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
@@ -41,22 +41,14 @@ import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
-import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
-import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.funds.entity.Receipt;
-import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
-import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
-import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -69,19 +61,15 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Transactional(readOnly = true)
 public class RentContractService extends CrudService<RentContractDao, RentContract> {
     @Autowired
-    private ContractTenantDao contractTenantDao;
+    private ContractTenantService contractTenantService;
     @Autowired
     private AuditService auditService;
     @Autowired
-    private PaymentTransDao paymentTransDao;
-    @Autowired
-    private TenantDao tenantDao;
+    private TenantService tenantService;
     @Autowired
     private AccountingService accountingService;
     @Autowired
     private AgreementChangeDao agreementChangeDao;
-    @Autowired
-    private HouseDao houseDao;
     @Autowired
     private HouseService houseService;
     @Autowired
@@ -89,21 +77,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     @Autowired
     private DepositAgreementDao depositAgreementDao;
     @Autowired
-    private TradingAccountsDao tradingAccountsDao;
-    @Autowired
-    private ReceiptDao receiptDao;
-    @Autowired
     private PaymentTransService paymentTransService;
     @Autowired
     private AuditHisService auditHisService;
     @Autowired
-    private AttachmentDao attachmentDao;
-    @Autowired
-    private PaymentTradeDao paymentTradeDao;
-
-    public RentContract get(String id) {
-	return super.get(id);
-    }
+    private AttachmentService attachmentService;
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
@@ -169,9 +147,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	List<Tenant> tenantList = new ArrayList<Tenant>();
 	ContractTenant contractTenant = new ContractTenant();
 	contractTenant.setLeaseContractId(rentContract.getId());
-	List<ContractTenant> list = contractTenantDao.findList(contractTenant);
+	List<ContractTenant> list = contractTenantService.findList(contractTenant);
 	for (ContractTenant tmpContractTenant : list) {
-	    Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
+	    Tenant tenant = tenantService.get(tmpContractTenant.getTenantId());
 	    tenantList.add(tenant);
 	}
 	return tenantList;
@@ -181,24 +159,16 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	List<Tenant> tenantList = new ArrayList<Tenant>();
 	ContractTenant contractTenant = new ContractTenant();
 	contractTenant.setContractId(rentContract.getId());
-	List<ContractTenant> list = contractTenantDao.findList(contractTenant);
+	List<ContractTenant> list = contractTenantService.findList(contractTenant);
 	for (ContractTenant tmpContractTenant : list) {
-	    Tenant tenant = tenantDao.get(tmpContractTenant.getTenantId());
+	    Tenant tenant = tenantService.get(tmpContractTenant.getTenantId());
 	    tenantList.add(tenant);
 	}
 	return tenantList;
     }
 
-    public List<RentContract> findList(RentContract rentContract) {
-	return super.findList(rentContract);
-    }
-
     public RentContract findContractByCode(String contractCode) {
 	return dao.findContractByCode(contractCode);
-    }
-
-    public Page<RentContract> findPage(Page<RentContract> page, RentContract rentContract) {
-	return super.findPage(page, rentContract);
     }
 
     public Page<RentContract> findContractList(Page<RentContract> page, RentContract rentContract) {
@@ -288,89 +258,51 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     @Transactional(readOnly = false)
     public void saveAdditional(AgreementChange agreementChange) {
 	String id = IdGen.uuid();
-
+	/* 合同租客关联信息 */
+	ContractTenant delContractTenant = new ContractTenant();
+	delContractTenant.setLeasagremChangeId(id);// 承租的 变更协议
+	delContractTenant.preUpdate();
+	contractTenantService.delete(delContractTenant);
+	List<Tenant> list = agreementChange.getTenantList();// 承租人
+	if (null != list && list.size() > 0) {
+	    for (Tenant tenant : list) {
+		ContractTenant contractTenant = new ContractTenant();
+		contractTenant.setTenantId(tenant.getId());
+		contractTenant.setLeasagremChangeId(id);
+		contractTenantService.save(contractTenant);
+	    }
+	}
+	ContractTenant delContractTenant2 = new ContractTenant();
+	delContractTenant2.setAgreementChangeId(id);// 入住的 变更协议
+	delContractTenant2.preUpdate();
+	contractTenantService.delete(delContractTenant2);
+	list = agreementChange.getLiveList();// 入住人
+	if (null != list && list.size() > 0) {
+	    for (Tenant tenant : list) {
+		ContractTenant contractTenant = new ContractTenant();
+		contractTenant.setTenantId(tenant.getId());
+		contractTenant.setAgreementChangeId(id);
+		contractTenantService.save(contractTenant);
+	    }
+	}
 	agreementChange.setAgreementStatus("0");// 待审核
 	agreementChange.setCreateDate(new Date());
 	agreementChange.setCreateBy(UserUtils.getUser());
 	agreementChange.setUpdateDate(new Date());
 	agreementChange.setUpdateBy(UserUtils.getUser());
 	agreementChange.setDelFlag("0");
-
-	/* 合同租客关联信息 */
-	ContractTenant delContractTenant = new ContractTenant();
-	delContractTenant.setLeasagremChangeId(id);// 承租的 变更协议
-	delContractTenant.preUpdate();
-	contractTenantDao.delete(delContractTenant);
-	List<Tenant> list = agreementChange.getTenantList();// 承租人
-	if (null != list && list.size() > 0) {
-	    for (Tenant tenant : list) {
-		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.preInsert();
-		contractTenant.setTenantId(tenant.getId());
-		contractTenant.setLeasagremChangeId(id);
-		contractTenantDao.insert(contractTenant);
-	    }
-	}
-
-	ContractTenant delContractTenant2 = new ContractTenant();
-	delContractTenant2.setAgreementChangeId(id);// 入住的 变更协议
-	delContractTenant2.preUpdate();
-	contractTenantDao.delete(delContractTenant2);
-	list = agreementChange.getLiveList();// 入住人
-	if (null != list && list.size() > 0) {
-	    for (Tenant tenant : list) {
-		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.preInsert();
-		contractTenant.setTenantId(tenant.getId());
-		contractTenant.setAgreementChangeId(id);
-		contractTenantDao.insert(contractTenant);
-	    }
-	}
-
 	agreementChange.setId(id);
 	agreementChange.setAgreementStatus("0");// 待审核
 	agreementChange.setRentContract(dao.get(agreementChange.getContractId()));
 	agreementChangeDao.insert(agreementChange);
-
 	auditService.insert(AuditTypeEnum.RENT_CONTRACT_CHANGE.getValue(), "change_agreement_role", id, "");
     }
 
     @Transactional(readOnly = false)
     public void save(RentContract rentContract) {
-	String id = super.saveAndReturnId(rentContract);
-	if ("1".equals(rentContract.getValidatorFlag())) {// 正常保存，而非暂存
-	    PaymentTrans delPaymentTrans = new PaymentTrans();// 款项
-	    delPaymentTrans.setTransId(id);
-	    delPaymentTrans.preUpdate();
-	    paymentTransDao.delete(delPaymentTrans);
-
-	    TradingAccounts delTradingAccounts = new TradingAccounts();
-	    delTradingAccounts.setTradeId(id);
-	    List<TradingAccounts> list = tradingAccountsDao.findList(delTradingAccounts);
-	    for (TradingAccounts dTradingAccounts : list) {
-		// 删除已经上传的收据附件
-		Attachment attachment3 = new Attachment();
-		attachment3.setTradingAccountsId(dTradingAccounts.getId());
-		attachment3.preUpdate();
-		attachmentDao.delete(attachment3);
-
-		// 同时删除已经录入的收据记录
-		Receipt r = new Receipt();
-		r.setTradingAccounts(dTradingAccounts);
-		r.preUpdate();
-		receiptDao.delete(r);
-
-		// 删除账务记录
-		dTradingAccounts.preUpdate();
-		tradingAccountsDao.delete(dTradingAccounts);
-
-		// 删除账务记录款项关联信息
-		PaymentTrade delPaymentTrade = new PaymentTrade();
-		delPaymentTrade.setTradeId(dTradingAccounts.getId());
-		delPaymentTrade.preUpdate();
-		paymentTradeDao.delete(delPaymentTrade);
-	    }
-
+	String id = saveAndReturnId(rentContract);
+	if (ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {// 正常保存
+	    paymentTransService.deletePaymentTransAndTradingAcctouns(id);
 	    String tradeType = "";// 交易类型
 	    if ("0".equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
 		tradeType = "3";// 新签合同
@@ -379,122 +311,60 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    } else if ("2".equals(rentContract.getSignType())) {
 		tradeType = "5";// 逾期自动续签
 	    }
-
-	    // 新签合同、正常人工续签合同时，才需要生成水电费押金/水电押金差额
-	    if ("3".equals(tradeType) || "4".equals(tradeType)) {
+	    if ("3".equals(tradeType) || "4".equals(tradeType)) {// 新签合同、正常人工续签合同时，才需要生成水电费押金/水电押金差额
 		genDepositElectricPayTrans(tradeType, id, rentContract);
 	    }
-
-	    // 新签合同、正常人工续签合同时，才需要生成房租押金/房租押金差额
-	    if ("3".equals(tradeType) || "4".equals(tradeType)) {
+	    if ("3".equals(tradeType) || "4".equals(tradeType)) { // 新签合同、正常人工续签合同时，才需要生成房租押金/房租押金差额
 		genDepositAmountPayTrans(tradeType, id, rentContract);
 	    }
-
-	    // 合同日期间隔月数
-	    int monthCountDiff = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());
-
-	    // 生成合同期内所有的房租款项
-	    genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff);
-
-	    // 生成合同期内所有的费用款项
-	    genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff);
-
+	    int monthCountDiff = DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate());// 合同日期间隔月数
+	    genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff);// 生成合同期内所有的房租款项
+	    genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
 	    /* 更新房屋/房间状态 */
-	    if ("0".equals(rentContract.getRentMode())) {// 整租
-		House house = houseDao.get(rentContract.getHouse().getId());
-		if (house != null) {
-		    house.setHouseStatus("4");// 完全出租
-		    house.preUpdate();
-		    houseDao.update(house);
-		    // 同时把房间的状态都更新为“已出租”
-		    Room parameterRoom = new Room();
-		    parameterRoom.setHouse(house);
-		    List<Room> rooms = roomService.findList(parameterRoom);
-		    if (CollectionUtils.isNotEmpty(rooms)) {
-			for (Room r : rooms) {
-			    r.setRoomStatus("3");// 已出租
-			    r.preUpdate();
-			    roomService.update(r);
-			}
-		    }
-		}
+	    if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+		House house = houseService.get(rentContract.getHouse().getId());
+		houseService.signWholeHouse(house);
 	    } else {// 单间
 		Room room = roomService.get(rentContract.getRoom().getId());
-		if (null != room) {
-		    room.setRoomStatus("3");// 已出租
-		    room.preUpdate();
-		    roomService.update(room);
-		}
-
-		// 同时更新该房间所属房屋的状态
-		if (room != null && room.getHouse() != null) {
-		    House h = houseDao.get(room.getHouse().getId());
-		    Room queryRoom = new Room();
-		    queryRoom.setHouse(h);
-		    List<Room> roomsOfHouse = roomService.findList(queryRoom);
-		    if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-			int rentedRoomCount = 0;
-			for (Room rentedRoom : roomsOfHouse) {
-			    if ("3".equals(rentedRoom.getRoomStatus())) {// 房间已出租
-				rentedRoomCount = rentedRoomCount + 1;
-			    }
-			}
-			String updatedHouseSts = "";
-			if (rentedRoomCount < roomsOfHouse.size()) {
-			    updatedHouseSts = "3";// 房屋为部分出租状态
-			} else if (rentedRoomCount == roomsOfHouse.size()) {
-			    updatedHouseSts = "4";// 房屋为完全出租
-			}
-			h.setHouseStatus(updatedHouseSts);
-			h.preUpdate();
-			houseDao.update(h);
-		    }
-		}
+		houseService.signSingleRoom(room);
 	    }
-
 	    auditService.delete(id);
 	    auditService.insert(AuditTypeEnum.RENT_CONTRACT_CONTENT.getValue(), "rent_contract_role", id, "");
 	}
-
 	/* 合同承租人关联信息 */
 	ContractTenant delContractTenant = new ContractTenant();
 	delContractTenant.setLeaseContractId(id);
 	delContractTenant.preUpdate();
-	contractTenantDao.delete(delContractTenant);
+	contractTenantService.delete(delContractTenant);
 	List<Tenant> list = rentContract.getTenantList();// 承租人
 	if (null != list && list.size() > 0) {
 	    for (Tenant tenant : list) {
 		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.preInsert();
 		contractTenant.setTenantId(tenant.getId());
 		contractTenant.setLeaseContractId(id);
-		contractTenantDao.insert(contractTenant);
+		contractTenantService.save(contractTenant);
 	    }
 	}
-
 	/* 合同入住人关联信息 */
 	ContractTenant delContractTenant2 = new ContractTenant();
 	delContractTenant2.setContractId(id);
 	delContractTenant2.preUpdate();
-	contractTenantDao.delete(delContractTenant2);
+	contractTenantService.delete(delContractTenant2);
 	list = rentContract.getLiveList();// 入住人
 	if (null != list && list.size() > 0) {
 	    for (Tenant tenant : list) {
 		ContractTenant contractTenant = new ContractTenant();
-		contractTenant.preInsert();
 		contractTenant.setTenantId(tenant.getId());
 		contractTenant.setContractId(id);
-		contractTenantDao.insert(contractTenant);
+		contractTenantService.save(contractTenant);
 	    }
 	}
-
 	if ("1".equals(rentContract.getSaveSource())) {// 定金协议转合同，更新原定金协议状态
 	    DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getAgreementId());
 	    depositAgreement.setAgreementBusiStatus("2");// 已转合同
 	    depositAgreement.preUpdate();
 	    depositAgreementDao.update(depositAgreement);
 	}
-
 	/* 当前合同为续签合同，则把原合同业务状态改成“正常人工续签” */
 	if ("1".equals(rentContract.getSignType())) {
 	    RentContract rentContractOld = dao.get(rentContract.getContractId());
@@ -502,7 +372,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContractOld.preUpdate();
 	    dao.update(rentContractOld);
 	}
-
 	/* 当前合同为逾期自动续签，则把原合同业务状态改成“逾期自动续签” */
 	if ("2".equals(rentContract.getSignType())) {
 	    RentContract rentContractOld = dao.get(rentContract.getContractId());
@@ -510,47 +379,36 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    rentContractOld.preUpdate();
 	    dao.update(rentContractOld);
 	}
-
 	// 非新增，修改合同，首先清空所有的合同附件
 	if (!rentContract.getIsNewRecord()) {
 	    Attachment attachment = new Attachment();
 	    attachment.setRentContractId(rentContract.getId());
-	    attachment.preUpdate();
-	    attachmentDao.delete(attachment);
+	    attachmentService.delete(attachment);
 	}
 	// 出租合同文件
 	if (!StringUtils.isBlank(rentContract.getRentContractFile())) {
 	    Attachment attachment = new Attachment();
-	    attachment.preInsert();
 	    attachment.setRentContractId(rentContract.getId());
 	    attachment.setAttachmentType(FileType.RENTCONTRACT_FILE.getValue());
 	    attachment.setAttachmentPath(rentContract.getRentContractFile());
-	    attachmentDao.insert(attachment);
+	    attachmentService.save(attachment);
 	}
 	// 租客身份证
 	if (!StringUtils.isBlank(rentContract.getRentContractCusIDFile())) {
 	    Attachment attachment = new Attachment();
-	    attachment.preInsert();
 	    attachment.setRentContractId(rentContract.getId());
 	    attachment.setAttachmentType(FileType.TENANT_ID.getValue());
 	    attachment.setAttachmentPath(rentContract.getRentContractCusIDFile());
-	    attachmentDao.insert(attachment);
+	    attachmentService.save(attachment);
 	}
 	// 出租合同其他附件
 	if (!StringUtils.isBlank(rentContract.getRentContractOtherFile())) {
 	    Attachment attachment = new Attachment();
-	    attachment.preInsert();
 	    attachment.setRentContractId(rentContract.getId());
 	    attachment.setAttachmentType(FileType.RENTCONTRACT_FILE_OTHER.getValue());
 	    attachment.setAttachmentPath(rentContract.getRentContractOtherFile());
-	    attachmentDao.insert(attachment);
+	    attachmentService.save(attachment);
 	}
-    }
-
-    @Transactional(readOnly = false)
-    public void delete(RentContract rentContract) {
-	rentContract.preUpdate();
-	super.delete(rentContract);
     }
 
     /**
@@ -558,7 +416,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
      */
     private void genDepositElectricPayTrans(String tradeType, String transObjId, RentContract rentContract) {
 	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.preInsert();
 	paymentTrans.setTradeType(tradeType);
 	paymentTrans.setTradeAmount(rentContract.getDepositElectricAmount());// 应该交易金额
 	paymentTrans.setLastAmount(rentContract.getDepositElectricAmount());// 剩余交易金额
@@ -575,7 +432,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	paymentTrans.setStartDate(rentContract.getStartDate());
 	paymentTrans.setExpiredDate(rentContract.getExpiredDate());
 	if (rentContract.getDepositElectricAmount() > 0) {
-	    paymentTransDao.insert(paymentTrans);
+	    paymentTransService.save(paymentTrans);
 	}
     }
 
@@ -584,7 +441,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
      */
     private void genDepositAmountPayTrans(String tradeType, String transObjId, RentContract rentContract) {
 	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.preInsert();
 	paymentTrans.setTradeType(tradeType);
 	paymentTrans.setTransId(transObjId);
 	paymentTrans.setTradeDirection("1");// 收款
@@ -601,7 +457,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	    paymentTrans.setPaymentType("5");// 续补房租押金
 	}
 	if (paymentTrans.getTradeAmount() > 0) {
-	    paymentTransDao.insert(paymentTrans);
+	    paymentTransService.save(paymentTrans);
 	}
     }
 
@@ -624,7 +480,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	if (monthCountDiff > 0) {
 	    for (int i = 0; i < monthCountDiff; i++) {
 		PaymentTrans paymentTrans = new PaymentTrans();
-		paymentTrans.preInsert();
 		paymentTrans.setTradeType(tradeType);
 		paymentTrans.setPaymentType("6");// 房租金额
 		paymentTrans.setTransId(transObjId);
@@ -660,7 +515,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		    paymentTrans.setTransferDepositAmount(0d);
 		}
 		if (paymentTrans.getTradeAmount() > 0) {
-		    paymentTransDao.insert(paymentTrans);
+		    paymentTransService.save(paymentTrans);
 		}
 		startD = DateUtils.dateAddMonth(startD, 1);
 	    }
@@ -677,7 +532,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 		for (int i = 0; i < monthCountDiff; i++) {
 		    if (null != rentContract.getWaterFee() && rentContract.getWaterFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.preInsert();
 			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("14");// 水费金额
 			paymentTrans.setTransId(transObjId);
@@ -692,12 +546,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransAmount(0D);
 			paymentTrans.setTransStatus("0");// 未到账登记
 			if (paymentTrans.getTradeAmount() > 0) {
-			    paymentTransDao.insert(paymentTrans);
+			    paymentTransService.save(paymentTrans);
 			}
 		    }
 		    if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.preInsert();
 			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("18");// 有线电视费
 			paymentTrans.setTransId(transObjId);
@@ -712,12 +565,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransAmount(0D);
 			paymentTrans.setTransStatus("0");// 未到账登记
 			if (paymentTrans.getTradeAmount() > 0) {
-			    paymentTransDao.insert(paymentTrans);
+			    paymentTransService.save(paymentTrans);
 			}
 		    }
 		    if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee() && rentContract.getNetFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.preInsert();
 			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("20");// 宽带费
 			paymentTrans.setTransId(transObjId);
@@ -732,12 +584,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransAmount(0D);
 			paymentTrans.setTransStatus("0");// 未到账登记
 			if (paymentTrans.getTradeAmount() > 0) {
-			    paymentTransDao.insert(paymentTrans);
+			    paymentTransService.save(paymentTrans);
 			}
 		    }
 		    if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
 			PaymentTrans paymentTrans = new PaymentTrans();
-			paymentTrans.preInsert();
 			paymentTrans.setTradeType(tradeType);
 			paymentTrans.setPaymentType("22");// 服务费
 			paymentTrans.setTransId(transObjId);
@@ -752,7 +603,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 			paymentTrans.setTransAmount(0D);
 			paymentTrans.setTransStatus("0");// 未到账登记
 			if (paymentTrans.getTradeAmount() > 0) {
-			    paymentTransDao.insert(paymentTrans);
+			    paymentTransService.save(paymentTrans);
 			}
 		    }
 		    startD = DateUtils.dateAddMonth(startD, 1);
@@ -769,7 +620,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     /* 保存款项 */
     private void savePaymentTrans(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
 	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.preInsert();
 	paymentTrans.setTradeType(tradeType);
 	paymentTrans.setPaymentType(accounting.getFeeType());
 	paymentTrans.setTransId(rentContract.getId());
@@ -780,7 +630,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	paymentTrans.setLastAmount(accounting.getFeeAmount());
 	paymentTrans.setTransAmount(0D);
 	paymentTrans.setTransStatus("0");// 未到账登记
-	paymentTransDao.insert(paymentTrans);
+	paymentTransService.save(paymentTrans);
 
     }
 
@@ -833,7 +683,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 	dao.update(rentContract);
 	boolean damagedFlag = "1".equals(rentContract.getBreakDown()) ? true : false;
 	if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-	    House house = houseDao.get(rentContract.getHouse().getId());
+	    House house = houseService.get(rentContract.getHouse().getId());
 	    houseService.returnWholeHouse(house, damagedFlag);
 	} else {// 单间
 	    Room room = roomService.get(rentContract.getRoom().getId());

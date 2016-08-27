@@ -40,18 +40,6 @@ public class HouseService extends CrudService<HouseDao, House> {
     @Autowired
     private HouseOwnerService houseOwnerService;
 
-    public House get(String id) {
-	return super.get(id);
-    }
-
-    public List<House> findList(House house) {
-	return super.findList(house);
-    }
-
-    public Page<House> findPage(Page<House> page, House house) {
-	return super.findPage(page, house);
-    }
-
     /**
      * 精选房源
      */
@@ -285,6 +273,43 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
+     * 签约（整租房屋）
+     */
+    @Transactional(readOnly = false)
+    public void signWholeHouse(House house) {
+	if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus()) || HouseStatusEnum.BE_RESERVED.getValue().equals(house.getHouseStatus()) || HouseStatusEnum.RETURN_FOR_RENT.getValue().equals(house.getHouseStatus())) {
+	    house.setHouseStatus(HouseStatusEnum.WHOLE_RENT.getValue());
+	    house.preUpdate();
+	    dao.update(house);
+	}
+	Room parameterRoom = new Room();
+	parameterRoom.setHouse(house);
+	List<Room> rooms = roomService.findList(parameterRoom);
+	if (CollectionUtils.isNotEmpty(rooms)) {
+	    for (Room r : rooms) {
+		if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.BE_RESERVED.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(r.getRoomStatus())) {
+		    r.setRoomStatus(RoomStatusEnum.RENTED.getValue());
+		    r.preUpdate();
+		    roomService.update(r);
+		}
+	    }
+	}
+    }
+
+    /**
+     * 签约（单间）
+     */
+    @Transactional(readOnly = false)
+    public void signSingleRoom(Room room) {
+	if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.BE_RESERVED.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
+	    room.setRoomStatus(RoomStatusEnum.RENTED.getValue());
+	    room.preUpdate();
+	    roomService.update(room);
+	}
+	calculateHouseStatus(room, true);
+    }
+
+    /**
      * 退租（整租房屋）
      * 
      * @param isDamaged
@@ -398,7 +423,7 @@ public class HouseService extends CrudService<HouseDao, House> {
      * 根据单间的状态变更，改变房屋的状态（适用于合租的情况）
      * 
      * @param flag
-     *            true=退租 ；false=取消预定
+     *            true=退租/签约 ；false=取消预定/取消签约
      */
     private void calculateHouseStatus(Room room, boolean flag) {
 	House h = dao.get(room.getHouse().getId());
@@ -436,6 +461,9 @@ public class HouseService extends CrudService<HouseDao, House> {
 		} else {
 		    h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
 		}
+	    }
+	    if (rentedRoomCount == roomCount) {
+		h.setHouseStatus(HouseStatusEnum.WHOLE_RENT.getValue());
 	    }
 	    h.preUpdate();
 	    dao.update(h);

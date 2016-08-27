@@ -5,7 +5,6 @@ import java.util.Date;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
@@ -17,10 +16,6 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Service
 @Transactional(readOnly = true)
 public class AuditHisService extends CrudService<AuditHisDao, AuditHis> {
-
-    public Page<AuditHis> findPage(Page<AuditHis> page, AuditHis auditHis) {
-	return super.findPage(page, auditHis);
-    }
 
     // 保存审核历史记录
     @Transactional(readOnly = false)

@@ -24,150 +24,141 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 /**
  * 预约看房信息Service
+ * 
  * @author huangsc
  */
 @Service
 @Transactional(readOnly = true)
 public class ContractBookService extends CrudService<ContractBookDao, ContractBook> {
-	@Autowired
-	private ContractBookDao contractBookDao;
-	@Autowired
-	private PaymentOrderDao paymentOrderDao;
-	@Autowired
-	private RoomDao roomDao;
-	
-	public ContractBook get(String id) {
-		return super.get(id);
+    @Autowired
+    private ContractBookDao contractBookDao;
+    @Autowired
+    private PaymentOrderDao paymentOrderDao;
+    @Autowired
+    private RoomDao roomDao;
+
+    public ContractBook get(String id) {
+	return super.get(id);
+    }
+
+    public List<ContractBook> findList(ContractBook contractBook) {
+	List<ContractBook> listResult = super.findList(contractBook);
+	for (ContractBook tmpContractBook : listResult) {
+	    if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
+		Room room = this.roomDao.get(tmpContractBook.getRoomId());
+		tmpContractBook.setRoomNo(room.getRoomNo());
+		tmpContractBook.setAttachmentPath(room.getAttachmentPath());
+		tmpContractBook.setShortDesc(room.getShortDesc());
+		tmpContractBook.setShortLocation(room.getShortLocation());
+		tmpContractBook.setHouseId(room.getId());
+	    }
 	}
-	
-	public List<ContractBook> findList(ContractBook contractBook) {
-		List<ContractBook> listResult = super.findList(contractBook);
-		for(ContractBook tmpContractBook : listResult) {
-			if(!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-				Room room = this.roomDao.get(tmpContractBook.getRoomId());
-				tmpContractBook.setRoomNo(room.getRoomNo());
-				tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-				tmpContractBook.setShortDesc(room.getShortDesc());
-				tmpContractBook.setShortLocation(room.getShortLocation());
-				tmpContractBook.setHouseId(room.getId());
-			}
-		}
-		return listResult;
+	return listResult;
+    }
+
+    public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
+	Page<ContractBook> pageResult = super.findPage(page, contractBook);
+	List<ContractBook> listContractBook = pageResult.getList();
+	for (ContractBook tmpContractBook : listContractBook) {
+	    if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
+		Room room = this.roomDao.get(tmpContractBook.getRoomId());
+		tmpContractBook.setRoomNo(room.getRoomNo());
+		tmpContractBook.setAttachmentPath(room.getAttachmentPath());
+		tmpContractBook.setShortDesc(room.getShortDesc());
+		tmpContractBook.setShortLocation(room.getShortLocation());
+		tmpContractBook.setHouseId(room.getId());
+	    }
 	}
-	
-	public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
-		Page<ContractBook> pageResult = super.findPage(page, contractBook);
-		List<ContractBook> listContractBook = pageResult.getList();
-		for(ContractBook tmpContractBook : listContractBook) {
-			if(!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-				Room room = this.roomDao.get(tmpContractBook.getRoomId());
-				tmpContractBook.setRoomNo(room.getRoomNo());
-				tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-				tmpContractBook.setShortDesc(room.getShortDesc());
-				tmpContractBook.setShortLocation(room.getShortLocation());
-				tmpContractBook.setHouseId(room.getId());
-			}
-		}
-		pageResult.setList(listContractBook);
-		return pageResult;
+	pageResult.setList(listContractBook);
+	return pageResult;
+    }
+
+    public ContractBook findOne(ContractBook contractBook) {
+	ContractBook contractBookResult = super.get(contractBook);
+	if (!StringUtils.isBlank(contractBookResult.getRoomId())) {
+	    Room room = this.roomDao.get(contractBookResult.getRoomId());
+	    contractBookResult.setRoomNo(room.getRoomNo());
+	    contractBookResult.setAttachmentPath(room.getAttachmentPath());
+	    contractBookResult.setShortDesc(room.getShortDesc());
+	    contractBookResult.setShortLocation(room.getShortLocation());
+	    contractBookResult.setHouseId(room.getId());
 	}
-	
-	@Transactional(readOnly = false)
-	public void save(ContractBook contractBook) {
-		super.save(contractBook);
+	return contractBookResult;
+    }
+
+    public List<ContractBook> findBookedContract(ContractBook contractBook) {
+	List<ContractBook> listContractBook = contractBookDao.findBookedContract(contractBook);
+	return listContractBook;
+    }
+
+    public List<ContractBook> findRentContract(ContractBook contractBook) {
+	List<ContractBook> listContractBook = contractBookDao.findRentContract(contractBook);
+
+	for (ContractBook tmpContractBook : listContractBook) {
+	    if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
+		Room room = this.roomDao.get(tmpContractBook.getRoomId());
+		tmpContractBook.setRoomNo(room.getRoomNo());
+		tmpContractBook.setAttachmentPath(room.getAttachmentPath());
+		tmpContractBook.setShortDesc(room.getShortDesc());
+		tmpContractBook.setShortLocation(room.getShortLocation());
+		tmpContractBook.setHouseId(room.getId());
+	    }
 	}
-	
-	@Transactional(readOnly = false)
-	public void delete(ContractBook contractBook) {
-		super.delete(contractBook);
+	return listContractBook;
+    }
+
+    @Transactional(readOnly = false)
+    public void saveOrder(PaymentOrder paymentOrder) {
+	paymentOrder.setId(IdGen.uuid());
+	this.paymentOrderDao.insert(paymentOrder);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteByTradeId(PaymentOrder paymentOrder) {
+	paymentOrderDao.deleteByTradeId(paymentOrder);
+    }
+
+    public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
+	List<PaymentOrder> list = this.paymentOrderDao.findByHouseId(paymentOrder);
+	if (null != list && list.size() > 0)
+	    return list.get(0);
+	return null;
+    }
+
+    public PaymentOrder findByOrderId(PaymentOrder paymentOrder) {
+	return this.paymentOrderDao.findByOrderId(paymentOrder);
+    }
+
+    public PaymentOrder findByOrderId(String orderId) {
+	PaymentOrder paymentOrder = new PaymentOrder();
+	paymentOrder.setOrderId(orderId);
+	List<PaymentOrder> list = this.paymentOrderDao.findList(paymentOrder);
+	if (null != list && list.size() > 0)
+	    paymentOrder = list.get(0);
+	else
+	    paymentOrder = null;
+	return paymentOrder;
+    }
+
+    public String generateOrderId() {
+	return DateFormatUtils.format(new Date(), "SSSyyyyMMddHHmmss");
+    }
+
+    @Transactional(readOnly = false)
+    public void updateStatusByOrderId(PaymentOrder paymentOrder) {
+	this.paymentOrderDao.updateStatusByOrderId(paymentOrder);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateStatusByHouseId(ContractBook contractBook) {
+	contractBookDao.updateStatusByHouseId(contractBook);
+    }
+
+    public boolean checkByUser(ContractBook contractBook) {
+	List<ContractBook> list = contractBookDao.findByUser(contractBook);
+	if (null != list && list.size() > 0) {
+	    return false;
 	}
-	
-	public ContractBook findOne(ContractBook contractBook) {
-		ContractBook contractBookResult = super.get(contractBook);
-		if(!StringUtils.isBlank(contractBookResult.getRoomId())) {
-			Room room = this.roomDao.get(contractBookResult.getRoomId());
-			contractBookResult.setRoomNo(room.getRoomNo());
-			contractBookResult.setAttachmentPath(room.getAttachmentPath());
-			contractBookResult.setShortDesc(room.getShortDesc());
-			contractBookResult.setShortLocation(room.getShortLocation());
-			contractBookResult.setHouseId(room.getId());
-		}
-		return contractBookResult;
-	}
-	
-	public List<ContractBook> findBookedContract(ContractBook contractBook) {
-		List<ContractBook> listContractBook = contractBookDao.findBookedContract(contractBook);
-		return listContractBook;
-	}
-	
-	public List<ContractBook> findRentContract(ContractBook contractBook) {
-		List<ContractBook> listContractBook = contractBookDao.findRentContract(contractBook);
-		
-		for(ContractBook tmpContractBook : listContractBook) {
-			if(!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-				Room room = this.roomDao.get(tmpContractBook.getRoomId());
-				tmpContractBook.setRoomNo(room.getRoomNo());
-				tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-				tmpContractBook.setShortDesc(room.getShortDesc());
-				tmpContractBook.setShortLocation(room.getShortLocation());
-				tmpContractBook.setHouseId(room.getId());
-			}
-		}
-		return listContractBook;
-	}
-	
-	@Transactional(readOnly = false)
-	public void saveOrder(PaymentOrder paymentOrder) {
-		paymentOrder.setId(IdGen.uuid());
-		this.paymentOrderDao.insert(paymentOrder);
-	}
-	
-	@Transactional(readOnly = false)
-	public void deleteByTradeId(PaymentOrder paymentOrder) {
-		paymentOrderDao.deleteByTradeId(paymentOrder);
-	}
-	
-	public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
-		List<PaymentOrder> list = this.paymentOrderDao.findByHouseId(paymentOrder);
-		if(null != list && list.size() > 0)
-			return list.get(0);
-		return null;
-	}
-	
-	public PaymentOrder findByOrderId(PaymentOrder paymentOrder) {
-		return this.paymentOrderDao.findByOrderId(paymentOrder);
-	}
-	
-	public PaymentOrder findByOrderId(String orderId) {
-		PaymentOrder paymentOrder = new PaymentOrder();
-		paymentOrder.setOrderId(orderId);
-		List<PaymentOrder> list = this.paymentOrderDao.findList(paymentOrder);
-		if(null != list && list.size() > 0)
-			paymentOrder = list.get(0);
-		else 
-			paymentOrder = null;
-		return paymentOrder;
-	}
-	
-	public String generateOrderId() {
-		return DateFormatUtils.format(new Date(),"SSSyyyyMMddHHmmss");
-	}
-	
-	@Transactional(readOnly = false)
-	public void updateStatusByOrderId(PaymentOrder paymentOrder) {
-		this.paymentOrderDao.updateStatusByOrderId(paymentOrder);
-	}
-	
-	@Transactional(readOnly = false)
-	public void updateStatusByHouseId(ContractBook contractBook) {
-		contractBookDao.updateStatusByHouseId(contractBook);
-	}
-	
-	public boolean checkByUser(ContractBook contractBook) {
-		List<ContractBook> list = contractBookDao.findByUser(contractBook);
-		if(null != list && list.size() > 0) {
-			return false;
-		}
-		return true;
-	}
+	return true;
+    }
 }

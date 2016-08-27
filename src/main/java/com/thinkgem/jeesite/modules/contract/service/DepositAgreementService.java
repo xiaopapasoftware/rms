@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
@@ -66,18 +65,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private RoomService roomService;
     @Autowired
     private AttachmentService attachmentService;
-
-    public DepositAgreement get(String id) {
-	return super.get(id);
-    }
-
-    public List<DepositAgreement> findList(DepositAgreement depositAgreement) {
-	return findList(depositAgreement);
-    }
-
-    public Page<DepositAgreement> findPage(Page<DepositAgreement> page, DepositAgreement depositAgreement) {
-	return findPage(page, depositAgreement);
-    }
 
     public List<Tenant> findTenant(DepositAgreement depositAgreement) {
 	List<Tenant> tenantList = new ArrayList<Tenant>();
@@ -152,6 +139,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	if (CollectionUtils.isNotEmpty(tenants)) {
 	    ContractTenant delTenant = new ContractTenant();
 	    delTenant.setDepositAgreementId(id);
+	    delTenant.preUpdate();
 	    contractTenantService.delete(delTenant);
 	    for (Tenant tenant : tenants) {
 		ContractTenant contractTenant = new ContractTenant();
@@ -182,12 +170,10 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	super.delete(depositAgreement);
     }
 
-    @Transactional(readOnly = true)
     public List<DepositAgreement> findAllValidAgreements() {
 	return dao.findAllList(new DepositAgreement());
     }
 
-    @Transactional(readOnly = true)
     public Integer getTotalValidDACounts() {
 	return dao.getTotalValidDACounts(new DepositAgreement());
     }
@@ -200,7 +186,6 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 	return attachment;
     }
 
-    @Transactional(readOnly = true)
     public DepositAgreement getByHouseId(DepositAgreement depositAgreement) {
 	return dao.getByHouseId(depositAgreement);
     }
