@@ -808,7 +808,9 @@
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:rentContract:edit">
 				<c:if test="${ rentContract.contractStatus=='0' || rentContract.contractStatus=='3'|| rentContract.contractStatus=='1' || empty rentContract.id}">
-					<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
+					<c:if test="${rentContract.dataSource!='2'}"><!-- 手机来源的合同不显示暂存 -->
+						<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>&nbsp;
+					</c:if>
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
 				</c:if>
 			</shiro:hasPermission>

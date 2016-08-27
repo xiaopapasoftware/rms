@@ -47,32 +47,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     @Autowired
     private AttachmentService attachmentService;
 
-    public PaymentTrans get(String id) {
-	return super.get(id);
-    }
-
-    public List<PaymentTrans> findList(PaymentTrans paymentTrans) {
-	return super.findList(paymentTrans);
-    }
-
+    @Transactional(readOnly = true)
     public Page<PaymentTrans> findRemind(Page<PaymentTrans> page, PaymentTrans paymentTrans) {
 	paymentTrans.setPage(page);
 	page.setList(dao.findRemindList(paymentTrans));
 	return page;
-    }
-
-    public Page<PaymentTrans> findPage(Page<PaymentTrans> page, PaymentTrans paymentTrans) {
-	return super.findPage(page, paymentTrans);
-    }
-
-    @Transactional(readOnly = false)
-    public void save(PaymentTrans paymentTrans) {
-	super.save(paymentTrans);
-    }
-
-    @Transactional(readOnly = false)
-    public void delete(PaymentTrans paymentTrans) {
-	super.delete(paymentTrans);
     }
 
     @Transactional(readOnly = false)

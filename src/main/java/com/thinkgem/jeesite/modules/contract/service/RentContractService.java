@@ -102,7 +102,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     private PaymentTradeDao paymentTradeDao;
 
     public RentContract get(String id) {
-	return dao.get(id);
+	return super.get(id);
     }
 
     @Transactional(readOnly = false)

@@ -68,7 +68,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     private AttachmentService attachmentService;
 
     public DepositAgreement get(String id) {
-	return dao.get(id);
+	return super.get(id);
     }
 
     public List<DepositAgreement> findList(DepositAgreement depositAgreement) {
