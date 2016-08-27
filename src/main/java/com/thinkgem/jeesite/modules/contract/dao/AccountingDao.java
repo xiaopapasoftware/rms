@@ -9,10 +9,11 @@ import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 
 /**
  * 退租核算DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 @MyBatisDao
 public interface AccountingDao extends CrudDao<Accounting> {
-	public int delByRent(Accounting accounting);
+    public int delByRent(Accounting accounting);
 }

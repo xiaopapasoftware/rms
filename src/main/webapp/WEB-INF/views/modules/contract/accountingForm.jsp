@@ -37,7 +37,7 @@
 		<div class="control-group">
 			<label class="control-label">核算费用方向：</label>
 			<div class="controls">
-				<form:select path="feeDirection" class="input-xlarge required">
+				<form:select path="feeDirection" class="input-xlarge required" readonly="true">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('fee_dirction')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
@@ -47,7 +47,7 @@
 		<div class="control-group">
 			<label class="control-label">核算费用类别：</label>
 			<div class="controls">
-				<form:select path="feeType" class="input-xlarge required">
+				<form:select path="feeType" class="input-xlarge required" readonly="true">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>

@@ -51,6 +51,7 @@ public enum TradeTypeEnum {
      * 逾期退租
      */
     OVERDUE_RETURN_RENT("8"),
+
     /**
      * 特殊退租
      */

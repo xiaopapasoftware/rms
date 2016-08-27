@@ -1467,7 +1467,6 @@ public class AppHouseController {
 	    data.setCode("101");
 	    return data;
 	}
-
 	try {
 	    String token = (String) request.getHeader("token");
 	    AppToken apptoken = new AppToken();
@@ -1478,22 +1477,14 @@ public class AppHouseController {
 		data.setMsg("请重新登录");
 		return data;
 	    }
-
-	    // RentContract rentContract = new RentContract();
-	    // rentContract.setId(request.getParameter("contract_id"));
-	    // rentContract = rentContractService.get(rentContract);
-	    // rentContract.setUpdateUser(apptoken.getPhone());
-	    // this.rentContractService.delete(rentContract);
-
 	    AuditHis auditHis = new AuditHis();
 	    auditHis.setObjectId(request.getParameter("contract_id"));
-	    auditHis.setAuditStatus("3");
+	    auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
 	    auditHis.setUpdateUser(apptoken.getPhone());
-	    this.rentContractService.audit(auditHis);
+	    rentContractService.audit(auditHis);
 	} catch (Exception e) {
 	    log.error("", e);
 	}
-
 	data.setCode("200");
 	return data;
     }

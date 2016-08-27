@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
@@ -30,9 +29,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 @Service
 @Transactional(readOnly = true)
 public class RoomService extends CrudService<RoomDao, Room> {
-
-    @Autowired
-    private AttachmentDao attachmentDao;
 
     @Autowired
     private AttachmentService attachmentService;
@@ -60,17 +56,16 @@ public class RoomService extends CrudService<RoomDao, Room> {
 	    String id = super.saveAndReturnId(room);
 	    if (StringUtils.isNotEmpty(room.getAttachmentPath())) {
 		Attachment attachment = new Attachment();
-		attachment.preInsert();
 		attachment.setRoomId(id);
 		attachment.setAttachmentType(FileType.ROOM_MAP.getValue());
 		attachment.setAttachmentPath(room.getAttachmentPath());
-		attachmentDao.insert(attachment);
+		attachmentService.save(attachment);
 	    }
 	} else {// 更新
 		// 先查询原先该房间下是否有附件，有的话则直接更新。
 	    Attachment attachment = new Attachment();
 	    attachment.setRoomId(room.getId());
-	    List<Attachment> attachmentList = attachmentDao.findList(attachment);
+	    List<Attachment> attachmentList = attachmentService.findList(attachment);
 	    String id = super.saveAndReturnId(room);
 	    if (CollectionUtils.isNotEmpty(attachmentList)) {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
 		Attachment atta = new Attachment();
@@ -79,22 +74,21 @@ public class RoomService extends CrudService<RoomDao, Room> {
 		attachmentService.updateAttachmentPathByType(atta);
 	    } else {// 修改时，新增附件
 		Attachment toAddattachment = new Attachment();
-		toAddattachment.preInsert();
 		toAddattachment.setRoomId(id);
 		toAddattachment.setAttachmentType(FileType.ROOM_MAP.getValue());
 		toAddattachment.setAttachmentPath(room.getAttachmentPath());
-		attachmentDao.insert(toAddattachment);
+		attachmentService.save(toAddattachment);
 	    }
 	}
     }
 
     @Transactional(readOnly = false)
     public void delete(Room room) {
-	super.delete(room);
+	room.preUpdate();
+	dao.delete(room);
 	Attachment atta = new Attachment();
 	atta.setRoomId(room.getId());
-	atta.preUpdate();
-	attachmentDao.delete(atta);
+	attachmentService.delete(atta);
     }
 
     @Transactional(readOnly = true)

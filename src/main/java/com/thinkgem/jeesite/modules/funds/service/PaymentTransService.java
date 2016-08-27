@@ -13,12 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.common.service.AttachmentService;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
-import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -26,9 +29,6 @@ import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 
 /**
- * 款项交易Service
- * 
- * @author huangsc @version 2015-06-11
  * @author wangshujin @version 2016-08-23
  */
 @Service
@@ -42,10 +42,10 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     private PaymentTradeDao paymentTradeDao;
 
     @Autowired
-    private ReceiptDao receiptDao;
+    private ReceiptService receiptService;
 
     @Autowired
-    private AttachmentDao attachmentDao;
+    private AttachmentService attachmentService;
 
     public PaymentTrans get(String id) {
 	return super.get(id);
@@ -116,15 +116,48 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 		Receipt receipt = new Receipt();
 		receipt.setTradingAccounts(tmpTradingAccounts);
 		receipt.preUpdate();
-		receiptDao.delete(receipt);
+		receiptService.delete(receipt);
 		Attachment attachment = new Attachment();
 		attachment.setTradingAccountsId(tmpTradingAccounts.getId());
-		attachment.preUpdate();
-		attachmentDao.delete(attachment);
+		attachmentService.delete(attachment);
 	    }
 	}
 	// 删除账务交易记录
 	tradingAccounts.preUpdate();
 	tradingAccountsDao.delete(tradingAccounts);
+    }
+
+    /**
+     * 退租，删除未到账的款项，包括：
+     * 交易类型【新签合同、正常人工续签、逾期自动续签】；款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
+     */
+    @Transactional(readOnly = false)
+    public void deleteNotSignPaymentTrans(String rentContractId) {
+	PaymentTrans p = new PaymentTrans();
+	p.preUpdate();
+	p.setTransId(rentContractId);
+	p.setTradeDirection(TradeDirectionEnum.IN.getValue());
+	p.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+	p.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
+	delete3TradeType(p);
+	p.setPaymentType(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
+	delete3TradeType(p);
+	p.setPaymentType(PaymentTransTypeEnum.GAS_AMOUNT.getValue());
+	delete3TradeType(p);
+	p.setPaymentType(PaymentTransTypeEnum.TV_AMOUNT.getValue());
+	delete3TradeType(p);
+	p.setPaymentType(PaymentTransTypeEnum.NET_AMOUNT.getValue());
+	delete3TradeType(p);
+	p.setPaymentType(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
+	delete3TradeType(p);
+    }
+
+    private void delete3TradeType(PaymentTrans p) {
+	p.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
+	dao.delete(p);
+	p.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
+	dao.delete(p);
+	p.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
+	dao.delete(p);
     }
 }

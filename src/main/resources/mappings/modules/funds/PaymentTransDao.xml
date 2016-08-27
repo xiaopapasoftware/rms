@@ -240,8 +240,7 @@
 	<update id="delete">
 		UPDATE t_payment_trans SET
 		del_flag = #{DEL_FLAG_DELETE},
-		update_by =
-		#{updateBy.id},
+		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		<where>
 			<if test="id != null and id != ''">
@@ -252,6 +251,12 @@
 			</if>
 			<if test="tradeType != null and tradeType != ''">
 				and trade_type = #{tradeType}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+				and payment_type = #{paymentType}
+			</if>
+			<if test="tradeDirection != null and tradeDirection != ''">
+				and trade_direction = #{tradeDirection}
 			</if>
 			<if test="transStatus != null and transStatus != ''">
 				and trans_status = #{transStatus}

@@ -172,7 +172,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    paymentTransDao.update(paymentTrans);
 		}
 	    }
-	} else {// 删除电费充值款项
+	} else {
 	    PaymentTrade paymentTrade = new PaymentTrade();
 	    paymentTrade.setTradeId(tradingAccounts.getId());
 	    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);

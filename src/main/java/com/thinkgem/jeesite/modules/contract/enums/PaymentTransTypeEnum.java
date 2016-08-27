@@ -8,6 +8,7 @@ package com.thinkgem.jeesite.modules.contract.enums;
  *
  */
 public enum PaymentTransTypeEnum {
+
     /**
      * 应收定金
      */

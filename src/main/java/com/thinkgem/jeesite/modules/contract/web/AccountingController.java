@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 
 /**
  * 退租核算Controller
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
@@ -30,60 +31,63 @@ import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 @RequestMapping(value = "${adminPath}/contract/accounting")
 public class AccountingController extends BaseController {
 
-	@Autowired
-	private AccountingService accountingService;
-	
-	@ModelAttribute
-	public Accounting get(@RequestParam(required=false) String id) {
-		Accounting entity = null;
-		if (StringUtils.isNotBlank(id)){
-			entity = accountingService.get(id);
-		}
-		if (entity == null){
-			entity = new Accounting();
-		}
-		return entity;
-	}
-	
-	//@RequiresPermissions("contract:accounting:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting); 
-		model.addAttribute("page", page);
-		return "modules/contract/accountingList";
-	}
-	
-	@RequestMapping(value = {"listByContract"})
-	public String listByContract(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting); 
-		model.addAttribute("page", page);
-		return "modules/contract/accountingViewList";
-	}
+    @Autowired
+    private AccountingService accountingService;
 
-	//@RequiresPermissions("contract:accounting:view")
-	@RequestMapping(value = "form")
-	public String form(Accounting accounting, Model model) {
-		model.addAttribute("accounting", accounting);
-		return "modules/contract/accountingForm";
+    @ModelAttribute
+    public Accounting get(@RequestParam(required = false) String id) {
+	Accounting entity = null;
+	if (StringUtils.isNotBlank(id)) {
+	    entity = accountingService.get(id);
 	}
+	if (entity == null) {
+	    entity = new Accounting();
+	}
+	return entity;
+    }
 
-	//@RequiresPermissions("contract:accounting:edit")
-	@RequestMapping(value = "save")
-	public String save(Accounting accounting, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, accounting)){
-			return form(accounting, model);
-		}
-		accountingService.save(accounting);
-		addMessage(redirectAttributes, "保存退租核算成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/accounting/?repage";
+    // @RequiresPermissions("contract:accounting:view")
+    @RequestMapping(value = { "list", "" })
+    public String list(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
+	Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting);
+	model.addAttribute("page", page);
+	return "modules/contract/accountingList";
+    }
+
+    @RequestMapping(value = { "listByContract" })
+    public String listByContract(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
+	Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting);
+	model.addAttribute("page", page);
+	return "modules/contract/accountingViewList";
+    }
+
+    // @RequiresPermissions("contract:accounting:view")
+    @RequestMapping(value = "form")
+    public String form(Accounting accounting, Model model) {
+	model.addAttribute("accounting", accounting);
+	return "modules/contract/accountingForm";
+    }
+
+    /**
+     * 后台直接修改退租核算记录
+     */
+    // @RequiresPermissions("contract:accounting:edit")
+    @RequestMapping(value = "save")
+    public String save(Accounting accounting, Model model, RedirectAttributes redirectAttributes) {
+	if (!beanValidator(model, accounting)) {
+	    return form(accounting, model);
 	}
-	
-	//@RequiresPermissions("contract:accounting:edit")
-	@RequestMapping(value = "delete")
-	public String delete(Accounting accounting, RedirectAttributes redirectAttributes) {
-		accountingService.delete(accounting);
-		addMessage(redirectAttributes, "删除退租核算成功");
-		return "redirect:"+Global.getAdminPath()+"/contract/accounting/?repage";
-	}
+	accountingService.updateAccountingAndPaymentTrans(accounting);
+	addMessage(redirectAttributes, "保存退租核算成功");
+	return "redirect:" + Global.getAdminPath() + "/contract/accounting/?repage";
+    }
+
+    // @RequiresPermissions("contract:accounting:edit")
+    @RequestMapping(value = "delete")
+    public String delete(Accounting accounting, RedirectAttributes redirectAttributes) {
+	accountingService.delete(accounting);
+	addMessage(redirectAttributes, "删除退租核算成功");
+	return "redirect:" + Global.getAdminPath() + "/contract/accounting/?repage";
+    }
 
 }

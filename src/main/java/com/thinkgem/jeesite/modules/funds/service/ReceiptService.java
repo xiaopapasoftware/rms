@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 
 /**
  * 账务收据Service
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
@@ -22,26 +23,26 @@ import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 @Transactional(readOnly = true)
 public class ReceiptService extends CrudService<ReceiptDao, Receipt> {
 
-	public Receipt get(String id) {
-		return super.get(id);
-	}
-	
-	public List<Receipt> findList(Receipt receipt) {
-		return super.findList(receipt);
-	}
-	
-	public Page<Receipt> findPage(Page<Receipt> page, Receipt receipt) {
-		return super.findPage(page, receipt);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Receipt receipt) {
-		super.save(receipt);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Receipt receipt) {
-		super.delete(receipt);
-	}
-	
+    public Receipt get(String id) {
+	return super.get(id);
+    }
+
+    public List<Receipt> findList(Receipt receipt) {
+	return super.findList(receipt);
+    }
+
+    public Page<Receipt> findPage(Page<Receipt> page, Receipt receipt) {
+	return super.findPage(page, receipt);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(Receipt receipt) {
+	super.save(receipt);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(Receipt receipt) {
+	super.delete(receipt);
+    }
+
 }
