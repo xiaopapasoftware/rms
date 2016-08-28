@@ -3,85 +3,68 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
+import com.thinkgem.jeesite.modules.contract.enums.AccountingTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 
 /**
  * 退租核算Service
- * @author huangsc
- * @version 2015-06-11
  */
 @Service
 @Transactional(readOnly = true)
 public class AccountingService extends CrudService<AccountingDao, Accounting> {
-	@Autowired
-	private PaymentTransDao paymentTransDao;
-	
-	public Accounting get(String id) {
-		return super.get(id);
+
+    @Autowired
+    private PaymentTransService paymentTransService;
+
+    @Transactional(readOnly = false)
+    public int delByRent(Accounting accounting) {
+	return dao.delByRent(accounting);
+    }
+
+    /**
+     * 后台直接修改退租核算记录ACCOUNTING,同时对应的修改款项.只允许修改核算记录的金额，核算类型及方向都不可以修改
+     */
+    @Transactional(readOnly = false)
+    public void updateAccountingAndPaymentTrans(Accounting accounting) {
+	super.save(accounting);
+	String accountingType = accounting.getAccountingType();
+	String tradeType = "";
+	if (AccountingTypeEnum.ADVANCE_RETURN_ACCOUNT.getValue().equals(accountingType)) {
+	    tradeType = TradeTypeEnum.ADVANCE_RETURN_RENT.getValue();
+	} else if (AccountingTypeEnum.NORMAL_RETURN_ACCOUNT.getValue().equals(accountingType)) {
+	    tradeType = TradeTypeEnum.NORMAL_RETURN_RENT.getValue();
+	} else if (AccountingTypeEnum.LATE_RETURN_ACCOUNT.getValue().equals(accountingType)) {
+	    tradeType = TradeTypeEnum.OVERDUE_RETURN_RENT.getValue();
+	} else {
+	    tradeType = TradeTypeEnum.SPECIAL_RETURN_RENT.getValue();
 	}
-	
-	public List<Accounting> findList(Accounting accounting) {
-		return super.findList(accounting);
+	PaymentTrans paymentTrans = new PaymentTrans();
+	paymentTrans.setTransId(accounting.getRentContract().getId());
+	paymentTrans.setTradeType(tradeType);
+	paymentTrans.setPaymentType(accounting.getFeeType());
+	paymentTrans.setTradeDirection(accounting.getFeeDirection());
+	List<PaymentTrans> trans = paymentTransService.findList(paymentTrans);
+	if (CollectionUtils.isNotEmpty(trans)) {
+	    PaymentTrans pt = trans.get(0);
+	    if (PaymentTransStatusEnum.NO_SIGN.getValue().equals(pt.getTransStatus())) {
+		pt.setTradeAmount(accounting.getFeeAmount());
+		pt.setLastAmount(accounting.getFeeAmount());
+		paymentTransService.save(pt);
+	    }
 	}
-	
-	public Page<Accounting> findPage(Page<Accounting> page, Accounting accounting) {
-		return super.findPage(page, accounting);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(Accounting accounting) {
-		super.save(accounting);
-		
-		/*更新款项*/
-		PaymentTrans paymentTrans = new PaymentTrans();
-		paymentTrans.setTransId(accounting.getRentContract().getId());
-		paymentTrans.setTradeType("7");//正常退租
-		paymentTransDao.delete(paymentTrans);
-		
-		Accounting tmpAccounting = new Accounting();
-		tmpAccounting.setRentContract(accounting.getRentContract());
-		tmpAccounting.setAccountingType(accounting.getAccountingType());
-		List<Accounting> list = super.findList(tmpAccounting);
-		for(Accounting saveAccounting : list) {
-			paymentTrans = new PaymentTrans();
-			paymentTrans.setId(IdGen.uuid());
-			paymentTrans.setTradeType("7");//正常退租
-			paymentTrans.setPaymentType(saveAccounting.getFeeType());
-			paymentTrans.setTransId(saveAccounting.getRentContract().getId());
-			paymentTrans.setTradeDirection("1");//收款
-			paymentTrans.setStartDate(saveAccounting.getFeeDate());
-			paymentTrans.setExpiredDate(saveAccounting.getFeeDate());
-			paymentTrans.setTradeAmount(saveAccounting.getFeeAmount());
-			paymentTrans.setLastAmount(saveAccounting.getFeeAmount());
-			paymentTrans.setTransAmount(0D);
-			paymentTrans.setTransStatus("0");//未到账登记
-			paymentTrans.setCreateDate(new Date());
-			paymentTrans.setCreateBy(UserUtils.getUser());
-			paymentTrans.setUpdateDate(new Date());
-			paymentTrans.setUpdateBy(UserUtils.getUser());
-			paymentTrans.setDelFlag("0");
-			if(0!=saveAccounting.getFeeAmount())
-				paymentTransDao.insert(paymentTrans);
-		}
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(Accounting accounting) {
-		super.delete(accounting);
-	}
-	
+    }
+
 }

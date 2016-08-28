@@ -224,7 +224,10 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE t_attachment SET del_flag = #{DEL_FLAG_DELETE}
+		UPDATE 	t_attachment 
+		SET 	del_flag = #{DEL_FLAG_DELETE},
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
 		WHERE  del_flag = #{DEL_FLAG_NORMAL}
 		<if test="leaseContractId != null and leaseContractId != ''">
 			and lease_contract_id = #{leaseContractId}

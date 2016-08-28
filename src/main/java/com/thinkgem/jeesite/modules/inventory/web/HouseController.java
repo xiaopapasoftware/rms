@@ -128,7 +128,7 @@ public class HouseController extends BaseController {
 	List<House> list = houseService.findList(house);
 	return list;
     }
-    
+
     // @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = "form")
     public String form(House house, Model model) {
@@ -195,12 +195,9 @@ public class HouseController extends BaseController {
     @RequestMapping(value = "finishDirect")
     @ResponseBody
     public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
-	int i = houseService.updateHouseStatus(house);
-	if (i > 0) {
-	    return "SUCCESS";
-	} else {
-	    return "FAIL";
-	}
+	House h = houseService.get(house);
+	houseService.finishHouseDirect4Status(h);
+	return "SUCCESS";
     }
 
     // @RequiresPermissions("inventory:house:edit")

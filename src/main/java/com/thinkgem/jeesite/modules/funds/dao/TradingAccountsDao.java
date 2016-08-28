@@ -9,10 +9,10 @@ import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 
 /**
  * 账务交易DAO接口
+ * 
  * @author huangsc
  * @version 2015-06-11
  */
 @MyBatisDao
 public interface TradingAccountsDao extends CrudDao<TradingAccounts> {
-	public void deleteById(TradingAccounts tradingAccounts);
 }

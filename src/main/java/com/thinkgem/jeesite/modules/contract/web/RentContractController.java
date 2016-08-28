@@ -98,9 +98,9 @@ public class RentContractController extends BaseController {
     private ElectricFeeService electricFeeService;
     @Autowired
     private DepositAgreementService depositAgreementService;
-    
+
     @Autowired
-   	private MessageService messageService;//APP消息推送
+    private MessageService messageService;// APP消息推送
 
     @ModelAttribute
     public RentContract get(@RequestParam(required = false) String id) {
@@ -237,12 +237,12 @@ public class RentContractController extends BaseController {
 	rentContractService.audit(auditHis);
 	return list(new RentContract(), request, response, model);
     }
-    
+
     @RequestMapping(value = "cancel")
     public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
-    	auditHis.setAuditStatus("2");
-    	rentContractService.audit(auditHis);
-    	return list(new RentContract(), request, response, model);
+	auditHis.setAuditStatus("2");
+	rentContractService.audit(auditHis);
+	return list(new RentContract(), request, response, model);
     }
 
     // @RequiresPermissions("contract:rentContract:view")
@@ -449,7 +449,7 @@ public class RentContractController extends BaseController {
 	model.addAttribute("rentContract", rentContract);
 	return "modules/contract/rentContractForm";
     }
-    
+
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "save")
     public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
@@ -457,7 +457,7 @@ public class RentContractController extends BaseController {
 	if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
 	    return form(rentContract, model);
 	}
-	
+
 	// 检查房屋、房间状态
 	if ("0".equals(rentContract.getRentMode())) {
 	    // 整租
@@ -524,22 +524,22 @@ public class RentContractController extends BaseController {
 	    String[] codeArr = rentContract.getContractCode().split("-");
 	    rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
 	}
-
+	rentContract.setDataSource("1");// 默认管理系统后台添加的合同的数据来源为“管理系统”
 	rentContractService.save(rentContract);
 	addMessage(redirectAttributes, "保存出租合同成功");
-	
+
 	try {
-		Message message = new Message();
-		message.setContent("您的签约申请已被管家确认,请联系管家!");
-		message.setTitle("签约提醒");
-		message.setType("签约提醒");
-		Tenant tenant = rentContract.getTenantList().get(0);
-		message.setReceiver(this.tenantService.get(tenant).getCellPhone());
-		messageService.addMessage(message, true);
+	    Message message = new Message();
+	    message.setContent("您的签约申请已被管家确认,请联系管家!");
+	    message.setTitle("签约提醒");
+	    message.setType("签约提醒");
+	    Tenant tenant = rentContract.getTenantList().get(0);
+	    message.setReceiver(this.tenantService.get(tenant).getCellPhone());
+	    messageService.addMessage(message, true);
 	} catch (Exception e) {
-		this.logger.error("签约推送异常:",e);
+	    this.logger.error("签约推送异常:", e);
 	}
-	
+
 	if ("1".equals(rentContract.getSaveSource()))
 	    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
 	else
@@ -599,6 +599,9 @@ public class RentContractController extends BaseController {
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
+    /**
+     * 点击“正常退租”按钮触发的业务
+     */
     @RequestMapping(value = "returnContract")
     public String returnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	/* 检查款项是否都入账 */
@@ -616,6 +619,9 @@ public class RentContractController extends BaseController {
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
+    /**
+     * 点击“提前退租”按钮触发的业务
+     */
     @RequestMapping(value = "earlyReturnContract")
     public String earlyReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	rentContractService.earylReturnContract(rentContract);
@@ -623,6 +629,9 @@ public class RentContractController extends BaseController {
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
+    /**
+     * 点击“逾期退租”按钮触发的业务
+     */
     @RequestMapping(value = "lateReturnContract")
     public String lateReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	/* 检查款项是否都入账 */
@@ -635,12 +644,14 @@ public class RentContractController extends BaseController {
 	    addMessage(redirectAttributes, "有款项未到账,不能逾期退租.");
 	    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 	}
-
 	rentContractService.lateReturnContract(rentContract);
 	addMessage(redirectAttributes, "逾期退租成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
+    /**
+     * 点击“特殊退租”按钮触发的业务
+     */
     @RequestMapping(value = "specialReturnContract")
     public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
 	rentContract.setIsSpecial("1");
@@ -658,7 +669,7 @@ public class RentContractController extends BaseController {
     }
 
     /**
-     * 正常退租核算
+     * 点击“正常退租核算”按钮触发的业务
      */
     @RequestMapping(value = "toReturnCheck")
     public String toReturnCheck(RentContract rentContract, Model model) {
@@ -675,7 +686,7 @@ public class RentContractController extends BaseController {
     }
 
     /**
-     * 提前退租核算
+     * 点击“提前退租核算”按钮触发的业务
      */
     @RequestMapping(value = "toEarlyReturnCheck")
     public String toEarlyReturnCheck(RentContract rentContract, Model model) {
@@ -696,7 +707,7 @@ public class RentContractController extends BaseController {
     }
 
     /**
-     * 逾期退租核算
+     * 点击“逾期退租核算”按钮触发的业务
      */
     @RequestMapping(value = "toLateReturnCheck")
     public String toLateReturnCheck(RentContract rentContract, Model model) {
@@ -712,8 +723,7 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractCheck";
     }
 
-    @RequestMapping(value = "toSpecialReturnCheck")
-    public String toSpecialReturnCheck(RentContract rentContractParam, Model model) {
+    private String toSpecialReturnCheck(RentContract rentContractParam, Model model) {
 	RentContract rentContract = rentContractService.get(rentContractParam.getId());
 	rentContract.setIsSpecial(rentContractParam.getIsSpecial());
 	rentContract.setReturnDate(rentContractParam.getReturnDate());
@@ -728,6 +738,9 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractCheck";
     }
 
+    /**
+     * 在退租核算的页面，点保存按钮，跳转的处理方法
+     */
     @RequestMapping(value = "returnCheck")
     public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	rentContractService.returnCheck(rentContract, rentContract.getTradeType());
@@ -741,6 +754,7 @@ public class RentContractController extends BaseController {
     // @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "delete")
     public String delete(RentContract rentContract, RedirectAttributes redirectAttributes) {
+	rentContract.preUpdate();
 	rentContractService.delete(rentContract);
 	addMessage(redirectAttributes, "删除出租合同成功");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";

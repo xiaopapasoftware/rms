@@ -24,7 +24,7 @@
 	
 	<sql id="accountingJoins">
 		LEFT JOIN sys_user u7 ON u7.id = a.user_id 
-		left join t_rent_contract c on a.rent_contract_id=c.id 
+		left join t_rent_contract c on a.rent_contract_id=c.id
 	</sql>
     
 	<select id="get" resultType="Accounting">
@@ -36,10 +36,9 @@
 	</select>
 	
 	<select id="findList" resultType="Accounting">
-		SELECT 
-			<include refid="accountingColumns"/>
-		FROM t_accounting a
-		<include refid="accountingJoins"/>
+		SELECT  <include refid="accountingColumns"/>
+		FROM    t_accounting a
+				<include refid="accountingJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="rentContractName != null and rentContractName != ''">

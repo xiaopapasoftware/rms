@@ -26,9 +26,9 @@ import com.thinkgem.jeesite.modules.contract.dao.LeaseContractDao;
 import com.thinkgem.jeesite.modules.contract.dao.LeaseContractDtlDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
+import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -69,42 +69,28 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	return leaseContract;
     }
 
-    public List<LeaseContract> findList(LeaseContract leaseContract) {
-	return super.findList(leaseContract);
-    }
-
     public Page<LeaseContract> findLeaseContractList(Page<LeaseContract> page, LeaseContract leaseContract) {
 	leaseContract.setPage(page);
 	page.setList(dao.findLeaseContractList(leaseContract));
 	return page;
     }
 
-    public Page<LeaseContract> findPage(Page<LeaseContract> page, LeaseContract leaseContract) {
-	return super.findPage(page, leaseContract);
-    }
-
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
 	AuditHis saveAuditHis = new AuditHis();
-	saveAuditHis.setId(IdGen.uuid());
+	saveAuditHis.preInsert();
 	saveAuditHis.setObjectType("0");// 承租合同
 	saveAuditHis.setObjectId(auditHis.getObjectId());
 	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
 	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
-	saveAuditHis.setCreateDate(new Date());
-	saveAuditHis.setCreateBy(UserUtils.getUser());
-	saveAuditHis.setUpdateDate(new Date());
-	saveAuditHis.setUpdateBy(UserUtils.getUser());
 	saveAuditHis.setAuditTime(new Date());
 	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
-	saveAuditHis.setDelFlag("0");
 	auditHisDao.insert(saveAuditHis);
 
 	LeaseContract leaseContract = new LeaseContract();
 	leaseContract = leaseContractDao.get(auditHis.getObjectId());
 	leaseContract.setContractStatus(auditHis.getAuditStatus());
-	leaseContract.setUpdateDate(new Date());
-	leaseContract.setUpdateBy(UserUtils.getUser());
+	leaseContract.preUpdate();
 	leaseContractDao.update(leaseContract);
 
 	// 审核通过，生成款项
@@ -113,19 +99,19 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	    Audit audit = new Audit();
 	    audit.setObjectId(auditHis.getObjectId());
 	    audit.setNextRole("");
-	    audit.setUpdateDate(new Date());
-	    audit.setUpdateBy(UserUtils.getUser());
+	    audit.preUpdate();
 	    auditDao.update(audit);
 
 	    PaymentTrans delPaymentTrans = new PaymentTrans();
 	    delPaymentTrans.setTransId(leaseContract.getId());
+	    delPaymentTrans.preUpdate();
 	    paymentTransDao.delete(delPaymentTrans);
 
 	    // 1.押金款项
 	    Double deposit = leaseContract.getDeposit();
 
 	    PaymentTrans paymentTrans = new PaymentTrans();
-	    paymentTrans.setId(IdGen.uuid());
+	    paymentTrans.preInsert();
 	    paymentTrans.setTradeType("0");// 承租合同
 	    paymentTrans.setPaymentType("4");// 房租押金
 	    paymentTrans.setTransId(leaseContract.getId());
@@ -136,11 +122,6 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	    paymentTrans.setTransAmount(0d);
 	    paymentTrans.setLastAmount(deposit);
 	    paymentTrans.setTransStatus("0");// 未支付
-	    paymentTrans.setCreateDate(new Date());
-	    paymentTrans.setCreateBy(UserUtils.getUser());
-	    paymentTrans.setUpdateDate(new Date());
-	    paymentTrans.setUpdateBy(UserUtils.getUser());
-	    paymentTrans.setDelFlag("0");
 	    if (0 != deposit)
 		paymentTransDao.insert(paymentTrans);
 
@@ -227,74 +208,48 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 
 	String id = super.saveAndReturnId(leaseContract);
 	if (StringUtils.isEmpty(leaseContract.getId())) {
-
 	    // 审核
 	    Audit audit = new Audit();
-	    audit.setId(IdGen.uuid());
+	    audit.preInsert();
 	    audit.setObjectId(id);
 	    audit.setObjectType("0");// 承租合同
 	    audit.setNextRole(LEASE_CONTRACT_ROLE);
-	    audit.setCreateDate(new Date());
-	    audit.setCreateBy(UserUtils.getUser());
-	    audit.setUpdateDate(new Date());
-	    audit.setUpdateBy(UserUtils.getUser());
-	    audit.setDelFlag("0");
 	    auditDao.insert(audit);
 
 	    // 保存附件
 	    if (!StringUtils.isBlank(leaseContract.getLandlordId())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(id);
 		attachment.setAttachmentType(FileType.OWNER_ID.getValue());
 		attachment.setAttachmentPath(leaseContract.getLandlordId());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getProfile())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(id);
 		attachment.setAttachmentType(FileType.CERTIFICATE_FILE.getValue());
 		attachment.setAttachmentPath(leaseContract.getProfile());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getCertificate())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(id);
 		attachment.setAttachmentType(FileType.HOUSE_CERTIFICATE.getValue());
 		attachment.setAttachmentPath(leaseContract.getCertificate());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getRelocation())) {
 		Attachment attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(id);
 		attachment.setAttachmentType(FileType.HOUSE_AGREEMENT_CERTIFICATE.getValue());
 		attachment.setAttachmentPath(leaseContract.getRelocation());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
@@ -302,13 +257,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	    List<LeaseContractDtl> leaseContractDtlList = leaseContract.getLeaseContractDtlList();
 	    if (null != leaseContractDtlList && leaseContractDtlList.size() > 0) {
 		for (LeaseContractDtl leaseContractDtl : leaseContractDtlList) {
-		    leaseContractDtl.setId(IdGen.uuid());
+		    leaseContractDtl.preInsert();
 		    leaseContractDtl.setLeaseContractId(id);
-		    leaseContractDtl.setCreateDate(new Date());
-		    leaseContractDtl.setCreateBy(UserUtils.getUser());
-		    leaseContractDtl.setUpdateDate(new Date());
-		    leaseContractDtl.setUpdateBy(UserUtils.getUser());
-		    leaseContractDtl.setDelFlag("0");
 		    leaseContractDtlDao.insert(leaseContractDtl);
 		}
 	    }
@@ -317,68 +267,48 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	    Audit audit = new Audit();
 	    audit.setObjectId(leaseContract.getId());
 	    audit.setNextRole(LEASE_CONTRACT_ROLE);
-	    audit.setUpdateDate(new Date());
-	    audit.setUpdateBy(UserUtils.getUser());
+	    audit.preUpdate();
 	    auditDao.update(audit);
 
 	    // 保存附件
 	    Attachment attachment = new Attachment();
 	    attachment.setLeaseContractId(leaseContract.getId());
+	    attachment.preUpdate();
 	    attachmentDao.delete(attachment);
 
 	    if (!StringUtils.isBlank(leaseContract.getLandlordId())) {
 		attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(leaseContract.getId());
 		attachment.setAttachmentType(FileType.OWNER_ID.getValue());
 		attachment.setAttachmentPath(leaseContract.getLandlordId());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getProfile())) {
 		attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(leaseContract.getId());
 		attachment.setAttachmentType(FileType.CERTIFICATE_FILE.getValue());
 		attachment.setAttachmentPath(leaseContract.getProfile());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getCertificate())) {
 		attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(leaseContract.getId());
 		attachment.setAttachmentType(FileType.HOUSE_CERTIFICATE.getValue());
 		attachment.setAttachmentPath(leaseContract.getCertificate());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
 	    if (!StringUtils.isBlank(leaseContract.getRelocation())) {
 		attachment = new Attachment();
-		attachment.setId(IdGen.uuid());
+		attachment.preInsert();
 		attachment.setLeaseContractId(id);
 		attachment.setAttachmentType(FileType.HOUSE_AGREEMENT_CERTIFICATE.getValue());
 		attachment.setAttachmentPath(leaseContract.getRelocation());
-		attachment.setCreateDate(new Date());
-		attachment.setCreateBy(UserUtils.getUser());
-		attachment.setUpdateDate(new Date());
-		attachment.setUpdateBy(UserUtils.getUser());
-		attachment.setDelFlag("0");
 		attachmentDao.insert(attachment);
 	    }
 
@@ -399,18 +329,14 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 	    }
 	    if (CollectionUtils.isNotEmpty(delLeaseContractDtlList)) {
 		for (LeaseContractDtl l : delLeaseContractDtlList) {
+		    l.preUpdate();
 		    leaseContractDtlDao.delete(l);
 		}
 	    }
 	    if (CollectionUtils.isNotEmpty(addLeaseContractDtlList)) {
 		for (LeaseContractDtl l : addLeaseContractDtlList) {
-		    l.setId(IdGen.uuid());
+		    l.preInsert();
 		    l.setLeaseContractId(leaseContract.getId());
-		    l.setCreateDate(new Date());
-		    l.setCreateBy(UserUtils.getUser());
-		    l.setUpdateDate(new Date());
-		    l.setUpdateBy(UserUtils.getUser());
-		    l.setDelFlag("0");
 		    leaseContractDtlDao.insert(l);
 		}
 	    }

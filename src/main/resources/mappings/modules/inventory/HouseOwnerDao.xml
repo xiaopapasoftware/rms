@@ -52,8 +52,10 @@
 	</insert>
 	
 	<update id="delete">
-		UPDATE t_house_owner SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE house_id = #{houseId}
+		UPDATE t_house_owner 
+		SET    del_flag = #{DEL_FLAG_DELETE},
+			   update_by = #{updateBy.id},
+			   update_date = #{updateDate}
+		WHERE  house_id = #{houseId}
 	</update>
 </mapper>

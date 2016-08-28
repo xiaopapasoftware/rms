@@ -30,6 +30,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -178,19 +179,9 @@ public class RoomController extends BaseController {
     @RequestMapping(value = "finishDirect")
     @ResponseBody
     public String finishDirect(Room room, Model model, RedirectAttributes redirectAttributes) {
-	int i = roomService.updateRoomStatus(room);
-
-	Room r = roomService.get(room.getId());
-	House h = houseService.get(r.getHouse().getId());
-	if ("0".equals(h.getHouseStatus())) {// 如果房屋状态为待装修，则更新为装修完成。
-	    houseService.updateHouseStatus(h);
-	}
-
-	if (i > 0) {
-	    return "SUCCESS";
-	} else {
-	    return "FAIL";
-	}
+	Room r = roomService.get(room);
+	houseService.finishSingleRoomDirect4Status(r);
+	return "SUCCESS";
     }
 
     // @RequiresPermissions("inventory:room:edit")
@@ -264,8 +255,9 @@ public class RoomController extends BaseController {
 		roomService.save(room);
 		// 新增房间后，如果房屋状态是完全出租，需要把房屋的状态变更为部分出租
 		House house = houseService.get(room.getHouse());
-		if ("4".equals(house.getHouseStatus())) {
-		    houseService.updateHouseStatus(house.getId(), "3");
+		if (HouseStatusEnum.WHOLE_RENT.getValue().equals(house.getHouseStatus())) {
+		    house.setHouseStatus(HouseStatusEnum.PART_RENT.getValue());
+		    houseService.update(house);
 		}
 		addMessage(redirectAttributes, "保存房间信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
@@ -357,11 +349,11 @@ public class RoomController extends BaseController {
 	    return Lists.newArrayList();
 	}
     }
-    
-    public Page<House> listFeature(int p_n,int p_c) {
-    	Page<House> page = new Page<House>();
-    	page.setPageNo(p_n);
-    	page.setPageSize(p_c);
-    	return roomService.findFeaturePage(page);
+
+    public Page<House> listFeature(int p_n, int p_c) {
+	Page<House> page = new Page<House>();
+	page.setPageNo(p_n);
+	page.setPageSize(p_c);
+	return roomService.findFeaturePage(page);
     }
 }

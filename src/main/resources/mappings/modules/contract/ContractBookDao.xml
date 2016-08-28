@@ -63,53 +63,170 @@
 	</select>
 	
 	<select id="findBookedContract" resultType="ContractBook">
-		select da.id as "depositId",da.CREATE_DATE,da.del_flag,da.update_by updateUser,tt.pay_way,tt.house_id,concat(tt.house_code,tt.room_no) "roomNo",da.agreement_status as "bookStatus",tt.short_desc "shortDesc",
-		tt.short_location,tt.attachment_path "attachmentPath",ct.cell_phone from T_DEPOSIT_AGREEMENT da 
-		left join (
-		select DEPOSIT_AGREEMENT_ID,te.cell_phone,te.id_no from t_contract_tenant cte,t_tenant te
-		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
-		) ct on da.id=ct.deposit_agreement_id
-		left join (
-		select p.project_name,b.building_name,h.pay_way,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
-		t_property_project p,t_building b,t_attachment a
-		where h.property_project_id=p.id and h.building_id=b.id and h.id=a.house_id
-		union all 
-		select p.project_name,b.building_name,r.pay_way,r.id house_id,h.house_code,concat('-',r.room_no) room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
-		t_property_project p,t_building b,t_house h,t_attachment a
-		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
-		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
-		where ct.cell_phone = #{userPhone} and da.data_source='2' 
-		<if test="depositId != null and depositId != ''">
-			AND da.id = #{depositId}
-		</if>
-		order by create_date desc
+		SELECT 
+		  da.id AS "depositId",
+		  da.CREATE_DATE,
+		  da.del_flag,
+		  da.update_by updateUser,
+		  tt.pay_way,
+		  tt.house_id,
+		  CONCAT(tt.house_code, tt.room_no) "roomNo",
+		  da.agreement_status AS "bookStatus",
+		  tt.short_desc "shortDesc",
+		  tt.short_location,
+		  tt.attachment_path "attachmentPath",
+		  ct.cell_phone 
+		FROM
+		  T_DEPOSIT_AGREEMENT da 
+		  LEFT JOIN 
+		    (SELECT 
+		      DEPOSIT_AGREEMENT_ID,
+		      te.cell_phone,
+		      te.id_no 
+		    FROM
+		      t_contract_tenant cte,
+		      t_tenant te 
+		    WHERE cte.tenant_id = te.id 
+		      AND cte.del_flag = '0' 
+		      AND te.del_flag = '0') ct 
+		    ON da.id = ct.deposit_agreement_id 
+		  LEFT JOIN 
+		    (SELECT 
+		      p.project_name,
+		      b.building_name,
+		      h.pay_way,
+		      h.id house_id,
+		      h.house_code,
+		      '' room_no,
+		      h.short_desc,
+		      h.short_location,
+		      a.attachment_path 
+		    FROM
+		      t_house h 
+		      LEFT JOIN t_attachment a 
+		        ON h.`ID` = a.`HOUSE_ID`,
+		      t_property_project p,
+		      t_building b 
+		    WHERE h.property_project_id = p.id 
+		      AND h.building_id = b.id 
+		    UNION
+		    ALL 
+		    SELECT 
+		      p.project_name,
+		      b.building_name,
+		      r.pay_way,
+		      r.id house_id,
+		      h.house_code,
+		      CONCAT('-', r.room_no) room_no,
+		      r.short_desc,
+		      r.short_location,
+		      a.attachment_path 
+		    FROM
+		      t_room r 
+		      LEFT JOIN t_attachment a 
+		        ON r.id = a.`ROOM_ID`,
+		      t_property_project p,
+		      t_building b,
+		      t_house h 
+		    WHERE r.property_project_id = p.id 
+		      AND r.building_id = b.id 
+		      AND r.house_id = h.id) tt 
+		    ON (
+		      (
+		        da.house_id = tt.house_id 
+		        AND da.rent_mode = '0'
+		      ) 
+		      OR da.room_id = tt.house_id
+		    ) 
+	  WHERE ct.cell_phone = #{userPhone} and da.data_source='2' 
+	  <if test = "depositId != null and depositId != ''" > 
+	  	AND da.id = #{depositId}
+	  </if>
+	  ORDER BY create_date DESC
 	</select>
 	
 	<select id="findRentContract" resultType="ContractBook">
-		select da.id as "contractId",da.CONTRACT_CODE as "contractCode",da.RENTAL as "rent",tt.house_id,da.contract_status as "bookStatus",
-		da.contract_busi_status as "contractBusiStatus",
-		tt.short_desc,tt.short_location,tt.attachment_path,ct.cell_phone,da.del_flag,da.update_by updateUser,da.expired_date end_date from T_RENT_CONTRACT da 
-		left join (
-		select LEASE_CONTRACT_ID,te.cell_phone from t_contract_tenant cte,t_tenant te
-		where cte.tenant_id=te.id and cte.del_flag='0' and te.del_flag='0'
-		) ct on da.id=ct.LEASE_CONTRACT_ID
-		left join (
-		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h,
-		t_property_project p,t_building b,t_attachment a
-		where h.property_project_id=p.id and h.building_id=b.id and h.id=a.house_id
-		union all 
-		select p.project_name,b.building_name,r.id house_id,h.house_code,r.room_no,r.short_desc,r.short_location,a.attachment_path from t_room r,
-		t_property_project p,t_building b,t_house h,t_attachment a
-		where r.property_project_id=p.id and r.building_id=b.id and r.house_id=h.id and r.id=a.room_id
-		) tt on ((da.house_id=tt.house_id and da.rent_mode='0') or da.room_id=tt.house_id) 
-		where ct.cell_phone = #{userPhone} and da.data_source='2' 
-		<if test="contractId != null and contractId != ''">
-			AND da.id = #{contractId}
-		</if>
-		<if test="contractBusiStatus != null and contractBusiStatus != ''">
-			AND da.contract_busi_status = #{contractBusiStatus}
-		</if>
-		order by da.create_date desc
+	 	SELECT 
+		  da.id AS "contractId",
+		  da.CONTRACT_CODE AS "contractCode",
+		  da.RENTAL AS "rent",
+		  tt.house_id,
+		  da.contract_status AS "bookStatus",
+		  da.contract_busi_status AS "contractBusiStatus",
+		  tt.short_desc,
+		  tt.short_location,
+		  tt.attachment_path,
+		  ct.cell_phone,
+		  da.del_flag,
+		  da.update_by updateUser,
+		  da.expired_date end_date 
+		FROM
+		  T_RENT_CONTRACT da 
+		  LEFT JOIN 
+		    (SELECT 
+		      LEASE_CONTRACT_ID,
+		      te.cell_phone 
+		    FROM
+		      t_contract_tenant cte,
+		      t_tenant te 
+		    WHERE cte.tenant_id = te.id 
+		      AND cte.del_flag = '0' 
+		      AND te.del_flag = '0') ct 
+		    ON da.id = ct.LEASE_CONTRACT_ID 
+		  LEFT JOIN 
+		    (SELECT 
+		      p.project_name,
+		      b.building_name,
+		      h.id house_id,
+		      h.house_code,
+		      '' room_no,
+		      h.short_desc,
+		      h.short_location,
+		      a.attachment_path 
+		    FROM
+		      t_house h 
+		      LEFT JOIN t_attachment a 
+		        ON h.`ID` = a.`HOUSE_ID`,
+		      t_property_project p,
+		      t_building b 
+		    WHERE h.property_project_id = p.id 
+		      AND h.building_id = b.id 
+		    UNION
+		    ALL 
+		    SELECT 
+		      p.project_name,
+		      b.building_name,
+		      r.id house_id,
+		      h.house_code,
+		      r.room_no,
+		      r.short_desc,
+		      r.short_location,
+		      a.attachment_path 
+		    FROM
+		      t_room r 
+		      LEFT JOIN t_attachment a 
+		        ON r.id = a.`ROOM_ID`,
+		      t_property_project p,
+		      t_building b,
+		      t_house h 
+		    WHERE r.property_project_id = p.id 
+		      AND r.building_id = b.id 
+		      AND r.house_id = h.id) tt 
+		    ON (
+		      (
+		        da.house_id = tt.house_id 
+		        AND da.rent_mode = '0'
+		      ) 
+		      OR da.room_id = tt.house_id
+		    ) 
+			WHERE ct.cell_phone = #{userPhone} and da.data_source='2'
+			<if test="contractId != null and contractId != ''">
+				AND da.id = #{contractId}
+			</if>
+			<if test="contractBusiStatus != null and contractBusiStatus != ''">
+				AND da.contract_busi_status = #{contractBusiStatus}
+			</if>
+			order by da.create_date desc
 	</select>
 	
 	<select id="findList" resultType="ContractBook">

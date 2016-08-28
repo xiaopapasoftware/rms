@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -36,8 +35,8 @@ import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.FileType;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
@@ -129,36 +128,31 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		paymentTrans.setTransStatus("0");// 未到账登记
 	    }
 	    paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
-	    paymentTrans.setUpdateDate(new Date());
-	    paymentTrans.setUpdateBy(UserUtils.getUser());
+	    paymentTrans.preUpdate();
 	    paymentTransDao.update(paymentTrans);
 	}
 	Receipt receipt = new Receipt();
 	receipt.setTradingAccounts(tradingAccounts);
+	receipt.preUpdate();
 	this.receiptDao.delete(receipt);
-	tradingAccountsDao.deleteById(tradingAccounts);
+	tradingAccounts.preUpdate();
+	tradingAccountsDao.delete(tradingAccounts);
     }
 
     @Transactional(readOnly = false)
     public void audit(AuditHis auditHis) {
 	AuditHis saveAuditHis = new AuditHis();
-	saveAuditHis.setId(IdGen.uuid());
+	saveAuditHis.preInsert();
 	saveAuditHis.setObjectType("4");// 账务
 	saveAuditHis.setObjectId(auditHis.getObjectId());
 	saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
 	saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
-	saveAuditHis.setCreateDate(new Date());
-	saveAuditHis.setCreateBy(UserUtils.getUser());
-	saveAuditHis.setUpdateDate(new Date());
-	saveAuditHis.setUpdateBy(UserUtils.getUser());
 	saveAuditHis.setAuditTime(new Date());
 	saveAuditHis.setAuditUser(UserUtils.getUser().getId());
-	saveAuditHis.setDelFlag("0");
 	auditHisDao.insert(saveAuditHis);
 
 	TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
-	tradingAccounts.setUpdateDate(new Date());
-	tradingAccounts.setUpdateBy(UserUtils.getUser());
+	tradingAccounts.preUpdate();
 	tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
 	tradingAccountsDao.update(tradingAccounts);
 
@@ -174,10 +168,11 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    paymentTrans.setTransStatus("2");// 完全到账登记
 		    paymentTrans.setLastAmount(0d);// 剩余交易金额
 		    paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
+		    paymentTrans.preUpdate();
 		    paymentTransDao.update(paymentTrans);
 		}
 	    }
-	} else {// 删除电费充值款项
+	} else {
 	    PaymentTrade paymentTrade = new PaymentTrade();
 	    paymentTrade.setTradeId(tradingAccounts.getId());
 	    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
@@ -186,29 +181,29 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    String transId = tmpPaymentTradeList.getTransId();
 		    PaymentTrans paymentTrans = paymentTransDao.get(transId);
 		    if ("11".equals(paymentTrans.getPaymentType())) {
-			paymentTransDao.delById(paymentTrans);
+			paymentTrans.preUpdate();
+			paymentTransDao.delete(paymentTrans);
 		    }
 		}
 	    }
 	}
-	
+
 	if ("1".equals(tradingAccounts.getTradeType())) {// 预约定金
 	    // 5:到账收据审核通过 4:到账收据审核拒绝
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
 	    if (!"5".equals(depositAgreement.getAgreementStatus())) {
-		depositAgreement.setUpdateBy(UserUtils.getUser());
-		depositAgreement.setUpdateDate(new Date());
+		depositAgreement.preUpdate();
 		depositAgreement.setAgreementStatus("1".equals(auditHis.getAuditStatus()) ? "5" : "4");
 		if ("1".equals(auditHis.getAuditStatus())) {
 		    depositAgreement.setAgreementBusiStatus("0");// 待转合同
 		}
+		depositAgreement.preUpdate();
 		depositAgreementDao.update(depositAgreement);
 	    }
 	} else if ("2".equals(tradingAccounts.getTradeType())) {// 定金转违约
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
 	    // 1=已转违约；6=定金转违约到账审核拒绝
-	    depositAgreement.setUpdateBy(UserUtils.getUser());
-	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.preUpdate();
 	    depositAgreement.setAgreementBusiStatus("1".equals(auditHis.getAuditStatus()) ? "1" : "6");
 	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradingAccounts.getTradeType()) || "4".equals(tradingAccounts.getTradeType()) || "5".equals(tradingAccounts.getTradeType())) {// 新签合同、正常人工续签、逾期自动续签
@@ -218,14 +213,12 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    if (checkRentContractTransAmountEnough(rentContract)) {
 			rentContract.setContractStatus("6");// 6:到账收据审核通过
 			rentContract.setContractBusiStatus("0");// 有效
-			rentContract.setUpdateBy(UserUtils.getUser());
-			rentContract.setUpdateDate(new Date());
+			rentContract.preUpdate();
 			rentContractDao.update(rentContract);
 		    }
 		} else {
 		    rentContract.setContractStatus("5");// 5:到账收据审核拒绝
-		    rentContract.setUpdateBy(UserUtils.getUser());
-		    rentContract.setUpdateDate(new Date());
+		    rentContract.preUpdate();
 		    rentContractDao.update(rentContract);
 		}
 	    }
@@ -256,23 +249,20 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 					electricFee.setChargeId(id);
 					electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
 					electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
-					electricFee.setUpdateBy(UserUtils.getUser());
-					electricFee.setUpdateDate(new Date());
+					electricFee.preUpdate();
 					electricFeeDao.update(electricFee);
 				    }
 				} else {// 充值失败
 				    electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
 				    electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
-				    electricFee.setUpdateBy(UserUtils.getUser());
-				    electricFee.setUpdateDate(new Date());
+				    electricFee.preUpdate();
 				    electricFeeDao.update(electricFee);
 				}
 			    }
 			} else {// 审核不通过
 			    electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
 			    electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
-			    electricFee.setUpdateBy(UserUtils.getUser());
-			    electricFee.setUpdateDate(new Date());
+			    electricFee.preUpdate();
 			    electricFeeDao.update(electricFee);
 			}
 		    }
@@ -282,29 +272,25 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    // 正常退租 8:正常退租 6:退租款项审核拒绝
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "8" : "6");
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    rentContractDao.update(rentContract);
 	} else if ("6".equals(tradingAccounts.getTradeType())) {
 	    // 提前退租 7:提前退租 6:退租款项审核拒绝
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "7" : "6");
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    rentContractDao.update(rentContract);
 	} else if ("8".equals(tradingAccounts.getTradeType())) {
 	    // 逾期退租 9:逾期退租 6:退租款项审核拒绝
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "9" : "6");
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    rentContractDao.update(rentContract);
 	} else if ("9".equals(tradingAccounts.getTradeType())) {
 	    // 特殊退租 16:特殊退租 6:退租款项审核拒绝
 	    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
 	    rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "16" : "6");
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    rentContractDao.update(rentContract);
 	} else if ("11".equals(tradingAccounts.getTradeType())) {// 电费充值
 	    PaymentTrade paymentTrade = new PaymentTrade();
@@ -334,23 +320,20 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 				    electricFee.setChargeId(id);
 				    electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
 				    electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
-				    electricFee.setUpdateBy(UserUtils.getUser());
-				    electricFee.setUpdateDate(new Date());
+				    electricFee.preUpdate();
 				    electricFeeDao.update(electricFee);
 				}
 			    } else {// 充值失败
 				electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
 				electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
-				electricFee.setUpdateBy(UserUtils.getUser());
-				electricFee.setUpdateDate(new Date());
+				electricFee.preUpdate();
 				electricFeeDao.update(electricFee);
 			    }
 			}
 		    } else {// 审核不通过
 			electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
 			electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
-			electricFee.setUpdateBy(UserUtils.getUser());
-			electricFee.setUpdateDate(new Date());
+			electricFee.preUpdate();
 			electricFeeDao.update(electricFee);
 		    }
 		}
@@ -370,6 +353,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    /* 款项账务关联 */
 	    PaymentTrade paymentTrade = new PaymentTrade();
 	    paymentTrade.setTradeId(id);
+	    paymentTrade.preUpdate();
 	    paymentTradeDao.delete(paymentTrade);
 
 	    for (int i = 0; i < transIds.length; i++) {
@@ -377,20 +361,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		paymentTrans.setTransStatus("2");// 完全到账登记
 		paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
 		paymentTrans.setLastAmount(0D);// 剩余交易金额
-		paymentTrans.setUpdateBy(UserUtils.getUser());
-		paymentTrans.setUpdateDate(new Date());
+		paymentTrans.preUpdate();
 		paymentTransDao.update(paymentTrans);
 		if ("11".equals(paymentTrans.getPaymentType())) {// 如果有电费充值的款项
 		    isChoosedEleFlag = true;
 		    elePaymentTransId = paymentTrans.getId();
 		}
 		paymentTrade.setTransId(paymentTrans.getId());
-		paymentTrade.setId(IdGen.uuid());
-		paymentTrade.setCreateDate(new Date());
-		paymentTrade.setCreateBy(UserUtils.getUser());
-		paymentTrade.setUpdateDate(new Date());
-		paymentTrade.setUpdateBy(UserUtils.getUser());
-		paymentTrade.setDelFlag("0");
+		paymentTrade.preInsert();
 		paymentTradeDao.insert(paymentTrade);
 	    }
 	}
@@ -398,8 +376,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	String tradeType = tradingAccounts.getTradeType();
 	if ("1".equals(tradeType)) {// 预约定金
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
-	    depositAgreement.setUpdateBy(UserUtils.getUser());
-	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.preUpdate();
 	    if ("0".equals(depositAgreement.getAgreementStatus())) {// 定金协议状态为“录入完成到账收据待登记”
 		depositAgreement.setAgreementStatus("1");// '1':'到账收据登记完成内容待审核'
 		depositAgreementDao.update(depositAgreement);
@@ -412,16 +389,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    }
 	} else if ("2".equals(tradeType)) {// 定金转违约
 	    DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
-	    depositAgreement.setUpdateBy(UserUtils.getUser());
-	    depositAgreement.setUpdateDate(new Date());
+	    depositAgreement.preUpdate();
 	    if ("3".equals(depositAgreement.getAgreementBusiStatus()) || "6".equals(depositAgreement.getAgreementBusiStatus())) { // '3','定金转违约到账待登记';'6'='定金转违约到账审核拒绝'
 		depositAgreement.setAgreementBusiStatus("4");// '4'='定金转违约到账待审核';
 	    }
 	    depositAgreementDao.update(depositAgreement);
 	} else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
 	    RentContract rentContract = rentContractDao.get(tradeId);
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    if ("1".equals(rentContract.getContractStatus())) {// '1':'录入完成到账收据待登记'
 		rentContract.setContractStatus("2");// '2':'到账收据完成合同内容待审核'
 		rentContractDao.update(rentContract);
@@ -438,22 +413,19 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		ElectricFee upFee = electricFeeDao.get(fee);
 		upFee.setChargeStatus("0");// 0=充值中
 		upFee.setSettleStatus("1");// '1'='结算待审核'
-		upFee.setUpdateBy(UserUtils.getUser());
-		upFee.setUpdateDate(new Date());
+		upFee.preUpdate();
 		electricFeeDao.update(upFee);
 	    }
 	} else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {// '6''提前退租';'7''正常退租';'8''逾期退租'
 	    RentContract rentContract = rentContractDao.get(tradeId);
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    if ("6".equals(rentContract.getContractStatus())) {// '6''到账收据审核通过'
 		rentContract.setContractBusiStatus("5");// 退租款项待审核
 		rentContractDao.update(rentContract);
 	    }
 	} else if ("9".equals(tradeType)) {// 特殊退租
 	    RentContract rentContract = rentContractDao.get(tradeId);
-	    rentContract.setUpdateBy(UserUtils.getUser());
-	    rentContract.setUpdateDate(new Date());
+	    rentContract.preUpdate();
 	    rentContract.setContractBusiStatus("11");// 特殊退租结算待审核
 	    rentContractDao.update(rentContract);
 	} else if ("11".equals(tradeType)) { // 11=电费充值
@@ -471,8 +443,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		}
 		if (isChoosed) {
 		    RentContract rentContract = rentContractDao.get(tradeId);
-		    rentContract.setUpdateBy(UserUtils.getUser());
-		    rentContract.setUpdateDate(new Date());
+		    rentContract.preUpdate();
 		    if ("1".equals(rentContract.getContractStatus())) {// '1':'录入完成到账收据待登记'
 			rentContract.setContractStatus("2");// '2':'到账收据完成合同内容待审核'
 			rentContractDao.update(rentContract);
@@ -489,8 +460,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 		    ElectricFee upFee = electricFeeDao.get(fee);
 		    upFee.setChargeStatus("0");// 0=充值中
 		    upFee.setSettleStatus("1");// '1'='结算待审核'
-		    upFee.setUpdateBy(UserUtils.getUser());
-		    upFee.setUpdateDate(new Date());
+		    upFee.preUpdate();
 		    electricFeeDao.update(upFee);
 		}
 	    }
@@ -498,15 +468,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 
 	// 审核
 	Audit audit = new Audit();
-	audit.setId(IdGen.uuid());
+	audit.preInsert();
 	audit.setObjectId(id);
 	audit.setObjectType("2");// 账务
 	audit.setNextRole(TRADING_ACCOUNTS_ROLE);
-	audit.setCreateDate(new Date());
-	audit.setCreateBy(UserUtils.getUser());
-	audit.setUpdateDate(new Date());
-	audit.setUpdateBy(UserUtils.getUser());
-	audit.setDelFlag("0");
 	auditDao.insert(audit);
 
 	/* 收据 */
@@ -515,15 +480,11 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	    TradingAccounts delTradingAccounts = new TradingAccounts();
 	    delTradingAccounts.setId(id);
 	    delReceipt.setTradingAccounts(delTradingAccounts);
+	    delReceipt.preUpdate();
 	    receiptDao.delete(delReceipt);
 	    for (Receipt receipt : tradingAccounts.getReceiptList()) {
-		receipt.setId(IdGen.uuid());
+		receipt.preInsert();
 		receipt.setTradingAccounts(tradingAccounts);
-		receipt.setCreateDate(new Date());
-		receipt.setCreateBy(UserUtils.getUser());
-		receipt.setUpdateDate(new Date());
-		receipt.setUpdateBy(UserUtils.getUser());
-		receipt.setDelFlag("0");
 		receiptDao.insert(receipt);
 	    }
 	}
@@ -532,36 +493,27 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 	if (!tradingAccounts.getIsNewRecord() && !"0".equals(tradingAccounts.getTradeType())) {
 	    Attachment attachment = new Attachment();
 	    attachment.setTradingAccountsId(id);
+	    attachment.preUpdate();
 	    attachmentDao.delete(attachment);
 	}
 
 	// 出租合同收据附件
 	if (!StringUtils.isBlank(tradingAccounts.getRentContractReceiptFile())) {
 	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
+	    attachment.preInsert();
 	    attachment.setTradingAccountsId(id);
 	    attachment.setAttachmentType(FileType.RENTCONTRACTRECEIPT_FILE.getValue());
 	    attachment.setAttachmentPath(tradingAccounts.getRentContractReceiptFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
 	    attachmentDao.insert(attachment);
 	}
 
 	// 定金协议收据附件
 	if (!StringUtils.isBlank(tradingAccounts.getDepositReceiptFile())) {
 	    Attachment attachment = new Attachment();
-	    attachment.setId(IdGen.uuid());
+	    attachment.preInsert();
 	    attachment.setTradingAccountsId(id);
 	    attachment.setAttachmentType(FileType.DEPOSITRECEIPT_FILE.getValue());
 	    attachment.setAttachmentPath(tradingAccounts.getDepositReceiptFile());
-	    attachment.setCreateDate(new Date());
-	    attachment.setCreateBy(UserUtils.getUser());
-	    attachment.setUpdateDate(new Date());
-	    attachment.setUpdateBy(UserUtils.getUser());
-	    attachment.setDelFlag("0");
 	    attachmentDao.insert(attachment);
 	}
 

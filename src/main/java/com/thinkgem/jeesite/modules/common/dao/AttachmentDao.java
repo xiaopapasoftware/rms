@@ -16,8 +16,5 @@ import com.thinkgem.jeesite.modules.common.entity.Attachment;
 @MyBatisDao
 public interface AttachmentDao extends CrudDao<Attachment> {
 
-	/**
-	 * 根据承租合同、出租合同、物业项目、楼宇、房屋、房间的ID来更新对应的文件路径
-	 * */
-	int updateAttachmentPathByType(Attachment attachment);
+    int updateAttachmentPathByType(Attachment attachment);
 }

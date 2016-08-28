@@ -3,12 +3,9 @@
 <html>
 <head>
 	<title>${fns:getConfig('productName')}</title>
-	<meta name="decorator" content="blank"/>
-	<c:set var="tabmode" value="${empty cookie.tabmode.value ? '1' : cookie.tabmode.value}"/>
-    <c:if test="${tabmode eq '1'}"><!-- 页签模式 -->
-    	<link rel="Stylesheet" href="${ctxStatic}/jerichotab/css/jquery.jerichotab.css" />
-    	<script type="text/javascript" src="${ctxStatic}/jerichotab/js/jquery.jerichotab.js"></script>
-    </c:if>
+	<meta name="decorator" content="blank"/><c:set var="tabmode" value="${empty cookie.tabmode.value ? '0' : cookie.tabmode.value}"/>
+    <c:if test="${tabmode eq '1'}"><link rel="Stylesheet" href="${ctxStatic}/jerichotab/css/jquery.jerichotab.css" />
+    <script type="text/javascript" src="${ctxStatic}/jerichotab/js/jquery.jerichotab.js"></script></c:if>
 	<style type="text/css">
 		#main {padding:0;margin:0;} #main .container-fluid{padding:0 4px 0 6px;}
 		#header {margin:0 0 8px;position:static;} #header li {font-size:14px;_font-size:12px;}
@@ -21,15 +18,10 @@
 		$(document).ready(function() {
 			// <c:if test="${tabmode eq '1'}"> 初始化页签
 			$.fn.initJerichoTab({
-                renderTo: '#right', 
-                uniqueId: 'jerichotab',
+                renderTo: '#right', uniqueId: 'jerichotab',
                 contentCss: { 'height': $('#right').height() - tabTitleHeight },
-                tabs: [], 
-                loadOnce: true, 
-                tabWidth: 110, 
-                titleHeight: tabTitleHeight
-            });
-			//</c:if>
+                tabs: [], loadOnce: true, tabWidth: 110, titleHeight: tabTitleHeight
+            });//</c:if>
 			// 绑定菜单单击事件
 			$("#menu a.menu").click(function(){
 				// 一级菜单焦点
@@ -157,9 +149,9 @@
 	<div id="main">
 		<div id="header" class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
-				<div class="brand"><span id="productName"><!-- ${fns:getConfig('productName')} --></span></div>
+				<!-- <div class="brand"><span id="productName">${fns:getConfig('productName')}</span></div> -->
 				<ul id="userControl" class="nav pull-right">
-					<!-- <li><a href="${pageContext.request.contextPath}${fns:getFrontPath()}/index-${fnc:getCurrentSiteId()}.html" target="_blank" title="访问网站主页"><i class="icon-home"></i></a></li> -->
+					<li><a href="${pageContext.request.contextPath}${fns:getFrontPath()}/index-${fnc:getCurrentSiteId()}.html" target="_blank" title="访问网站主页"><i class="icon-home"></i></a></li>
 					<li id="themeSwitch" class="dropdown">
 						<a class="dropdown-toggle" data-toggle="dropdown" href="#" title="主题切换"><i class="icon-th-large"></i></a>
 						<ul class="dropdown-menu">
@@ -173,7 +165,7 @@
 						<ul class="dropdown-menu">
 							<li><a href="${ctx}/sys/user/info" target="mainFrame"><i class="icon-user"></i>&nbsp; 个人信息</a></li>
 							<li><a href="${ctx}/sys/user/modifyPwd" target="mainFrame"><i class="icon-lock"></i>&nbsp;  修改密码</a></li>
-							<!--<li><a href="${ctx}/oa/oaNotify/self" target="mainFrame"><i class="icon-bell"></i>&nbsp;  我的通知 <span id="notifyNum2" class="label label-info hide"></span></a></li>-->
+							<li><a href="${ctx}/oa/oaNotify/self" target="mainFrame"><i class="icon-bell"></i>&nbsp;  我的通知 <span id="notifyNum2" class="label label-info hide"></span></a></li>
 						</ul>
 					</li>
 					<li><a href="${ctx}/logout" title="退出登录">退出</a></li>
@@ -192,8 +184,8 @@
 					<ul id="menu" class="nav" style="*white-space:nowrap;float:none;">
 						<c:set var="firstMenu" value="true"/>
 						<c:forEach items="${fns:getMenuList()}" var="menu" varStatus="idxStatus">
-							<c:if test="${menu.parent.id eq '1'&& menu.isShow eq '1'}">
-								<li class="menu ${not empty firstMenu && firstMenu ? 'active' : ''}">
+							<c:if test="${menu.parent.id eq '1'&&menu.isShow eq '1'}">
+								<li class="menu ${not empty firstMenu && firstMenu ? ' active' : ''}">
 									<c:if test="${empty menu.href}">
 										<a class="menu" href="javascript:" data-href="${ctx}/sys/menu/tree?parentId=${menu.id}" data-id="${menu.id}"><span>${menu.name}</span></a>
 									</c:if>
@@ -206,8 +198,8 @@
 								</c:if>
 								<c:set var="firstMenu" value="false"/>
 							</c:if>
-						</c:forEach>
-						<%--<shiro:hasPermission name="cms:site:select">
+						</c:forEach><%--
+						<shiro:hasPermission name="cms:site:select">
 						<li class="dropdown">
 							<a class="dropdown-toggle" data-toggle="dropdown" href="#">${fnc:getSite(fnc:getCurrentSiteId()).name}<b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -230,7 +222,7 @@
 				</div>
 			</div>
 		    <div id="footer" class="row-fluid">
-	            Copyright &copy; 2015 ${fns:getConfig('productName')} - Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
+	            Copyright &copy; 2012-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')} - Powered By <a href="http://jeesite.com" target="_blank">JeeSite</a> ${fns:getConfig('version')}
 			</div>
 		</div>
 	</div>
@@ -261,22 +253,6 @@
 		function openCloseClickCallBack(b){
 			$.fn.jerichoTab.resize();
 		} // </c:if>
-		
-		/*var html = "<p>待收房租：<span style='color:red;font-weight:bold;'>"+${paymentTrans}+"</span> 笔</p>";
-		html += "<p>承租合同到期：<span style='color:red;font-weight:bold;'>"+${leaseContract}+"</span> 笔</p>";
-		html += "<p>待续租合同：<span style='color:red;font-weight:bold;'>"+${rentContract}+"</span> 笔</p>";
-		$.jBox.messager(html, '提醒', 60000, {width:350});
-		
-		setInterval(function(){
-			$.ajaxSetup({ cache: false });
-			$.get("${ctx}/sys/remind/remind", function(data){
-			    data = eval("("+data+")");
-				var html = "<p>待收房租：<span style='color:red;font-weight:bold;'>"+data.paymentTrans+"</span> 笔</p>";
-				html += "<p>承租合同到期：<span style='color:red;font-weight:bold;'>"+data.leaseContract+"</span> 笔</p>";
-				html += "<p>待续租合同：<span style='color:red;font-weight:bold;'>"+data.rentContract+"</span> 笔</p>";
-				$.jBox.messager(html, '提醒', 60000, {width:350});
-			});			
-		},600000);*/
 	</script>
 	<script src="${ctxStatic}/common/wsize.min.js" type="text/javascript"></script>
 </body>
