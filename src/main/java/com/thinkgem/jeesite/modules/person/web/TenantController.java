@@ -111,7 +111,7 @@ public class TenantController extends BaseController {
 	    return "redirect:" + Global.getAdminPath() + "/person/tenant/?repage";
 	} else {// 是新增
 	    if (CollectionUtils.isNotEmpty(tenants)) {
-		model.addAttribute("message", "该证件类型租客的证件号码已被占用，不能重复添加");
+		model.addAttribute("message", "该证件类型租客的证件号码或手机号已被占用，不能重复添加");
 		model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 		model.addAttribute("listCompany", companyService.findList(new Company()));
 		model.addAttribute("listUser", systemService.findUser(new User()));
@@ -132,7 +132,7 @@ public class TenantController extends BaseController {
 	if (CollectionUtils.isNotEmpty(tenants)) {
 	    model.addAttribute("listCompany", companyService.findList(new Company()));
 	    model.addAttribute("listUser", systemService.findUser(new User()));
-	    jsonObject.put("message", "该证件类型租客的证件号码已被占用，不能重复添加");
+	    jsonObject.put("message", "该证件类型租客的证件号码或手机号已被占用，不能重复添加");
 	} else {
 	    tenantService.save(tenant);
 	    jsonObject.put("id", tenant.getId());

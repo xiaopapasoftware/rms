@@ -148,7 +148,7 @@ public class CustomerController extends BaseController {
     public String saveTenant(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
 	List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);
 	if (CollectionUtils.isNotEmpty(tenants)) {
-	    model.addAttribute("message", "该证件类型租客的证件号码已被占用，不能重复添加");
+	    model.addAttribute("message", "该证件类型租客的证件号码或手机号已被占用，不能重复添加");
 	    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
 	    model.addAttribute("listCompany", companyService.findList(new Company()));
 	    model.addAttribute("listUser", systemService.findUser(new User()));
