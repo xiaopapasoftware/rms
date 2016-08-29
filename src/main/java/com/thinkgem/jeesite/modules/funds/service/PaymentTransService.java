@@ -139,4 +139,20 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 	p.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
 	dao.delete(p);
     }
+
+    /**
+     * 检查退租时，合同下是否还有未到账的款项，有返回true，无返回false
+     */
+    @Transactional(readOnly = true)
+    public boolean checkNotSignedPaymentTrans(String rentContractId) {
+	PaymentTrans paymentTrans = new PaymentTrans();
+	paymentTrans.setTransId(rentContractId);
+	paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+	List<PaymentTrans> list = super.findList(paymentTrans);
+	if (CollectionUtils.isNotEmpty(list)) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
 }

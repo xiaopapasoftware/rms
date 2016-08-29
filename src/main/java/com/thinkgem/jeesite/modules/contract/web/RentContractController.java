@@ -37,6 +37,8 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -604,18 +606,14 @@ public class RentContractController extends BaseController {
      */
     @RequestMapping(value = "returnContract")
     public String returnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
-	/* 检查款项是否都入账 */
-	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.setTransId(rentContract.getId());
-	paymentTrans.setTransStatus("0");// 未到账登记
-	paymentTrans.setDelFlag("0");
-	List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
-	if (null != list && list.size() > 0) {
-	    addMessage(redirectAttributes, "有款项未到账,不能正常退租.");
+	if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
+	    addMessage(redirectAttributes, "有款项未到账,不能正常退租。");
 	    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 	}
-	rentContractService.returnContract(rentContract);
-	addMessage(redirectAttributes, "正常退租成功");
+	rentContract = rentContractService.get(rentContract.getId());
+	rentContract.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RETURN_ACCOUNT.getValue());
+	rentContractService.update(rentContract);
+	addMessage(redirectAttributes, "正常退租成功，接下来请进行正常退租核算！");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -624,8 +622,12 @@ public class RentContractController extends BaseController {
      */
     @RequestMapping(value = "earlyReturnContract")
     public String earlyReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
-	rentContractService.earylReturnContract(rentContract);
-	addMessage(redirectAttributes, "提前退租成功");
+	String rentContractId = rentContract.getId();
+	rentContract = rentContractService.get(rentContractId);
+	rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
+	rentContractService.update(rentContract);
+	paymentTransService.deleteNotSignPaymentTrans(rentContractId);
+	addMessage(redirectAttributes, "提前退租成功，接下来请进行提前退租核算！");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -634,18 +636,14 @@ public class RentContractController extends BaseController {
      */
     @RequestMapping(value = "lateReturnContract")
     public String lateReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
-	/* 检查款项是否都入账 */
-	PaymentTrans paymentTrans = new PaymentTrans();
-	paymentTrans.setTransId(rentContract.getId());
-	paymentTrans.setTransStatus("0");// 未到账登记
-	paymentTrans.setDelFlag("0");
-	List<PaymentTrans> list = paymentTransService.findList(paymentTrans);
-	if (null != list && list.size() > 0) {
-	    addMessage(redirectAttributes, "有款项未到账,不能逾期退租.");
+	if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
+	    addMessage(redirectAttributes, "有款项未到账,不能逾期退租。");
 	    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
 	}
-	rentContractService.lateReturnContract(rentContract);
-	addMessage(redirectAttributes, "逾期退租成功");
+	rentContract = rentContractService.get(rentContract.getId());
+	rentContract.setContractBusiStatus(ContractBusiStatusEnum.LATE_RETURN_ACCOUNT.getValue());
+	rentContractService.update(rentContract);
+	addMessage(redirectAttributes, "逾期退租成功，接下来请进行逾期退租核算！");
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -654,8 +652,21 @@ public class RentContractController extends BaseController {
      */
     @RequestMapping(value = "specialReturnContract")
     public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+	String returnDate = rentContract.getReturnDate();
+	String contractId = rentContract.getId();
+	rentContract = rentContractService.get(contractId);
 	rentContract.setIsSpecial("1");
-	return toSpecialReturnCheck(rentContract, model);
+	rentContract.setReturnDate(returnDate);
+	rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());// 特殊退租
+	List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
+	List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
+	model.addAttribute("outAccountList", outAccountList);
+	model.addAttribute("outAccountSize", outAccountList.size());
+	model.addAttribute("accountList", inAccountList);
+	model.addAttribute("accountSize", inAccountList.size());
+	model.addAttribute("rentContract", rentContract);
+	return "modules/contract/rentContractCheck";
+
     }
 
     @RequestMapping(value = "changeContract")
@@ -723,31 +734,17 @@ public class RentContractController extends BaseController {
 	return "modules/contract/rentContractCheck";
     }
 
-    private String toSpecialReturnCheck(RentContract rentContractParam, Model model) {
-	RentContract rentContract = rentContractService.get(rentContractParam.getId());
-	rentContract.setIsSpecial(rentContractParam.getIsSpecial());
-	rentContract.setReturnDate(rentContractParam.getReturnDate());
-	List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
-	List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
-	model.addAttribute("outAccountList", outAccountList);
-	model.addAttribute("outAccountSize", outAccountList.size());
-	model.addAttribute("accountList", inAccountList);
-	model.addAttribute("accountSize", inAccountList.size());
-	rentContract.setTradeType("9");// 特殊退租
-	model.addAttribute("rentContract", rentContract);
-	return "modules/contract/rentContractCheck";
-    }
-
     /**
-     * 在退租核算的页面，点保存按钮，跳转的处理方法
+     * 在退租核算页面，点保存按钮
      */
     @RequestMapping(value = "returnCheck")
     public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
 	rentContractService.returnCheck(rentContract, rentContract.getTradeType());
-	if (!StringUtils.isBlank(rentContract.getIsSpecial()))
+	if (!StringUtils.isBlank(rentContract.getIsSpecial())) {
 	    addMessage(redirectAttributes, "特殊退租成功！");
-	else
+	} else {
 	    addMessage(redirectAttributes, "退租核算成功！");
+	}
 	return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -898,15 +895,6 @@ public class RentContractController extends BaseController {
 		}
 		outAccountings.add(netAcc);
 	    }
-
-	    // 预付 ---应退 燃气费
-	    // Accounting hotAirAcc = new Accounting();
-	    // hotAirAcc.setRentContract(rentContract);
-	    // hotAirAcc.setAccountingType(accountingType);
-	    // hotAirAcc.setFeeDirection("0");// 0 : 应出
-	    // hotAirAcc.setFeeType("17");// 燃气费剩余金额
-	    // hotAirAcc.setFeeAmount(0D);
-	    // outAccountings.add(hotAirAcc);
 
 	    // 预付 ---应退 服务费
 	    if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
@@ -1170,15 +1158,6 @@ public class RentContractController extends BaseController {
 	}
 	inAccountings.add(waterSelAcc);
 
-	// 应收---燃气金额
-	// Accounting hotAirAcc = new Accounting();
-	// hotAirAcc.setRentContract(rentContract);
-	// hotAirAcc.setAccountingType(accountingType);// '0':'提前退租核算
-	// hotAirAcc.setFeeDirection("1");// 1 : 应收
-	// hotAirAcc.setFeeType("16");// 燃气金额
-	// hotAirAcc.setFeeAmount(0D);// 人工计算
-	// inAccountings.add(hotAirAcc);
-
 	// 应收---有线电视费
 	Accounting tvAcc = new Accounting();
 	tvAcc.setRentContract(rentContract);
@@ -1225,4 +1204,5 @@ public class RentContractController extends BaseController {
 	inAccountings.add(servAcc);
 	return inAccountings;
     }
+
 }
