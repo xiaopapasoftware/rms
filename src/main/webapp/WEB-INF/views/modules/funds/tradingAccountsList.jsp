@@ -178,6 +178,13 @@
 							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 						</c:if><!-- 账务交易类型为“预约定金”，定金协议审核状态为“内容审核通过到账收据待审核” ，账务记录审核状态为“待审核”-->
 						
+						<!-- APP前端的定金，从后台直接审核 -->
+						<c:if test="${tradingAccounts.agreementDataSource == '2'}">
+							<c:if test="${tradingAccounts.tradeType=='1' && tradingAccounts.transStatus=='1' && tradingAccounts.tradeStatus=='0'}">
+								<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+							</c:if><!-- 账务交易类型为“预约定金”，定金协议审核状态为“到账收据登记完成内容待审核” ，账务记录审核状态为“待审核”-->
+						</c:if>
+						
 						<c:if test="${tradingAccounts.tradeType=='2' && tradingAccounts.transStatus=='5' && tradingAccounts.transBusiStatus =='4' && tradingAccounts.tradeStatus=='0'}">
 							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 						</c:if><!-- 账务交易类型为“定金转违约”，定金协议审核状态为“到账收据审核通过” ，定金协议业务状态为'定金转违约到账待审核' 账务记录审核状态为“待审核”-->
@@ -186,9 +193,17 @@
 							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 						</c:if><!-- 账务交易类型不为“预约定金”和“定金转违约“，出租合同审核状态为“内容审核通过到账收据待审核”或“到账收据审核通过” ，账务记录审核状态为“待审核”-->
 						
+						<!-- APP前端的合同，从后台直接审核 -->
+						<c:if test="${tradingAccounts.contractDataSource == '2'}">
+							<c:if test="${(tradingAccounts.tradeType!='1' && tradingAccounts.tradeType!='2' && tradingAccounts.transStatus=='2' && tradingAccounts.tradeStatus=='0')}">
+								<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
+							</c:if><!-- 账务交易类型不为“预约定金”和“定金转违约“，出租合同审核状态为“到账收据完成合同内容待审核	” ，账务记录审核状态为“待审核”-->
+						</c:if>
+						
 						<c:if test="${tradingAccounts.transBusiStatus=='11' && tradingAccounts.tradeStatus=='0' && tradingAccounts.transStatus=='6'}">
 							<a href="javascript:void(0);" onclick="toAudit('${tradingAccounts.id}')">审核</a>
 						</c:if><!--出租合同业务状态为：特殊退租结算待审核 ，账务记录审核状态为“待审核” ，出租合同审核状态为"到账收据审核通过"-->
+						
 					</shiro:hasPermission>
 					<shiro:hasPermission name="funds:tradingAccounts:receipt">
 					<c:if test="${tradingAccounts.tradeStatus=='1'}">

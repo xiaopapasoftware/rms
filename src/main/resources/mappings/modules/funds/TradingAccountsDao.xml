@@ -22,54 +22,31 @@
 		"delFlag",
 		at3.attachment_path as "rentContractReceiptFile",
 		at2.attachment_path as "depositReceiptFile",
-		case
-		when a.trade_type=0
-		then tlc.contract_name
-		when a.trade_type=1 or a.trade_type =2
-		then
-		ta.agreement_name
-		else tc.contract_name
-		end tradeName,
-		case
-		when
-		a.trade_type=0
-		then tlc.contract_code
-		when a.trade_type=1 or
-		a.trade_type =2
-		then ta.agreement_code
-		else tc.contract_code
-		end
-		tradeObjectNo,
-		case
-		when a.trade_type=0
-		then tlc.contract_status
-		when
-		a.trade_type=1 or a.trade_type =2
-		then ta.agreement_status
-		else
-		tc.contract_status
-		end transStatus,
-		case
-		when a.trade_type=1 or
-		a.trade_type=2
-		then ta.agreement_busi_status
-		else
-		tc.contract_busi_status
-		end transBusiStatus
+		case 
+			 when a.trade_type=0 then tlc.contract_name
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_name 
+			 else tc.contract_name end tradeName,
+		case 
+			 when a.trade_type=0 then tlc.contract_code
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_code 
+			 else tc.contract_code end tradeObjectNo,
+		case 
+			 when a.trade_type=0 then tlc.contract_status
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_status 
+			 else tc.contract_status end transStatus,
+		case 
+			 when a.trade_type=1 or a.trade_type=2 then ta.agreement_busi_status 
+			 else tc.contract_busi_status end transBusiStatus,
+		tc.data_source as "contractDataSource",
+		ta.data_source as "agreementDataSource"
 	</sql>
 
 	<sql id="tradingAccountsJoins">
 		left join t_deposit_agreement ta on a.trade_id=ta.id
-		left
-		join t_rent_contract tc on a.trade_id=tc.id
-		left join t_lease_contract
-		tlc on a.trade_id = tlc.id
-		left join t_attachment at2 on
-		a.id=at2.trading_accounts_id and at2.attachment_type='15' and
-		at2.del_flag='0'
-		left join t_attachment at3 on
-		a.id=at3.trading_accounts_id and at3.attachment_type='17' and
-		at3.del_flag='0'
+		left join t_rent_contract tc on a.trade_id=tc.id
+		left join t_lease_contract tlc on a.trade_id = tlc.id
+		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
+		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
 	</sql>
 
 	<select id="get" resultType="TradingAccounts">
