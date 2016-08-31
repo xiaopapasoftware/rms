@@ -54,7 +54,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     @Transactional(readOnly = false)
-    public void save(House house) {
+    public void saveHouse(House house) {
 	String id = saveAndReturnId(house);
 	if (house.getIsNewRecord()) {// 新增
 	    if (StringUtils.isNotEmpty(house.getAttachmentPath())) {
@@ -65,7 +65,6 @@ public class HouseService extends CrudService<HouseDao, House> {
 		attachmentService.save(attachment);
 	    }
 	} else {// 修改
-		// 先查询原先该房屋下是否有附件，有的话则直接更新。
 	    Attachment attachment = new Attachment();
 	    attachment.setHouseId(house.getId());
 	    List<Attachment> attachmentList = attachmentService.findList(attachment);
@@ -88,7 +87,6 @@ public class HouseService extends CrudService<HouseDao, House> {
 	houseOwner.setHouseId(house.getId());
 	houseOwner.preUpdate();
 	houseOwnerService.delete(houseOwner);
-
 	List<Owner> ownerList = house.getOwnerList();
 	for (Owner owner : ownerList) {
 	    houseOwner = new HouseOwner();
@@ -101,7 +99,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     @Transactional(readOnly = false)
     public void delete(House house) {
 	house.preUpdate();
-	dao.delete(house);
+	super.delete(house);
 
 	// 删除房屋业主关系信息
 	HouseOwner houseOwner = new HouseOwner();
@@ -149,8 +147,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 		for (Room m1 : rooms) {
 		    if (RoomStatusEnum.BE_RESERVED.getValue().equals(m1.getRoomStatus())) {
 			m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-			m1.preUpdate();
-			roomService.update(m1);
+			roomService.save(m1);
 		    }
 		}
 	    }
@@ -164,8 +161,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void releaseSingleRoom(Room room) {
 	if (RoomStatusEnum.BE_RESERVED.getValue().equals(room.getRoomStatus())) {// 更新房间状态
 	    room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-	    room.preUpdate();
-	    roomService.update(room);
+	    roomService.save(room);
 	}
 	calculateHouseStatus(room, false);
     }
@@ -186,8 +182,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 		for (Room m1 : rooms) {
 		    if (RoomStatusEnum.TO_RENOVATION.getValue().equals(m1.getRoomStatus())) {
 			m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-			m1.preUpdate();
-			roomService.update(m1);
+			roomService.save(m1);
 		    }
 		}
 	    }
@@ -201,14 +196,12 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void finishSingleRoomDirect4Status(Room r) {
 	if (RoomStatusEnum.TO_RENOVATION.getValue().equals(r.getRoomStatus())) {
 	    r.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-	    r.preUpdate();
-	    roomService.update(r);
+	    roomService.save(r);
 	}
 	House h = dao.get(r.getHouse().getId());// 同时更新房屋状态
 	if (HouseStatusEnum.TO_RENOVATION.getValue().equals(h.getHouseStatus())) {
-	    h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());// 待出租可预订
-	    h.preUpdate();
-	    dao.update(h);
+	    h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
+	    super.save(h);
 	}
     }
 
@@ -229,8 +222,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    for (Room r : rooms) {
 		if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(r.getRoomStatus())) {
 		    r.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
-		    r.preUpdate();
-		    roomService.update(r);
+		    roomService.save(r);
 		}
 	    }
 	}
@@ -243,8 +235,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void depositSingleRoom(Room room) {
 	if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
 	    room.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
-	    room.preUpdate();
-	    roomService.update(room);
+	    roomService.save(room);
 	}
 	// 同时更新该房间所属房屋的状态
 	House h = dao.get(room.getHouse().getId());
@@ -266,8 +257,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 		if (depositCount == roomCount) {
 		    h.setHouseStatus(HouseStatusEnum.BE_RESERVED.getValue());
 		}
-		h.preUpdate();
-		dao.update(h);
+		super.save(h);
 	    }
 	}
     }
@@ -289,8 +279,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    for (Room r : rooms) {
 		if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.BE_RESERVED.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(r.getRoomStatus())) {
 		    r.setRoomStatus(RoomStatusEnum.RENTED.getValue());
-		    r.preUpdate();
-		    roomService.update(r);
+		    roomService.save(r);
 		}
 	    }
 	}
@@ -303,8 +292,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void signSingleRoom(Room room) {
 	if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.BE_RESERVED.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
 	    room.setRoomStatus(RoomStatusEnum.RENTED.getValue());
-	    room.preUpdate();
-	    roomService.update(room);
+	    roomService.save(room);
 	}
 	calculateHouseStatus(room, true);
     }
@@ -323,8 +311,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    } else {
 		house.setHouseStatus(HouseStatusEnum.RETURN_FOR_RENT.getValue());
 	    }
-	    house.preUpdate();
-	    dao.update(house);
+	    super.save(house);
 	    Room m = new Room();
 	    m.setHouse(house);
 	    List<Room> rooms = roomService.findList(m);
@@ -336,8 +323,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 			} else {
 			    m1.setRoomStatus(RoomStatusEnum.RETURN_FOR_RESERVE.getValue());
 			}
-			m1.preUpdate();
-			roomService.update(m1);
+			roomService.save(m1);
 		    }
 		}
 	    }
@@ -355,8 +341,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 	    } else {
 		room.setRoomStatus(RoomStatusEnum.RETURN_FOR_RESERVE.getValue());
 	    }
-	    room.preUpdate();
-	    roomService.update(room);
+	    roomService.save(room);
 	}
 	calculateHouseStatus(room, true);
     }
@@ -368,8 +353,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void cancelSign4WholeHouse(House house) {
 	if (HouseStatusEnum.WHOLE_RENT.getValue().equals(house.getHouseStatus())) {
 	    house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
-	    house.preUpdate();
-	    dao.update(house);
+	    super.save(house);
 	    Room m = new Room();
 	    m.setHouse(house);
 	    List<Room> rooms = roomService.findList(m);
@@ -377,8 +361,7 @@ public class HouseService extends CrudService<HouseDao, House> {
 		for (Room m1 : rooms) {
 		    if (RoomStatusEnum.RENTED.getValue().equals(m1.getRoomStatus())) {
 			m1.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-			m1.preUpdate();
-			roomService.update(m1);
+			roomService.save(m1);
 		    }
 		}
 	    }
@@ -392,15 +375,9 @@ public class HouseService extends CrudService<HouseDao, House> {
     public void cancelSign4SingleRoom(Room room) {
 	if (RoomStatusEnum.RENTED.getValue().equals(room.getRoomStatus())) {
 	    room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-	    room.preUpdate();
-	    roomService.update(room);
+	    roomService.save(room);
 	}
 	calculateHouseStatus(room, false);
-    }
-
-    @Transactional(readOnly = true)
-    public List<House> findAllHouses() {
-	return dao.findAllList(new House());
     }
 
     @Transactional(readOnly = true)
@@ -411,12 +388,6 @@ public class HouseService extends CrudService<HouseDao, House> {
     @Transactional(readOnly = true)
     public House getHouseByHouseId(House house) {
 	return dao.getHouseByHouseId(house);
-    }
-
-    @Transactional(readOnly = false)
-    public void update(House house) {
-	house.preUpdate();
-	dao.update(house);
     }
 
     /**

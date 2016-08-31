@@ -33,25 +33,13 @@ public class RoomService extends CrudService<RoomDao, Room> {
     @Autowired
     private AttachmentService attachmentService;
 
-    public Room get(String id) {
-	return super.get(id);
-    }
-
-    public List<Room> findList(Room room) {
-	return super.findList(room);
-    }
-
-    public Page<Room> findPage(Page<Room> page, Room room) {
-	return super.findPage(page, room);
-    }
-
     public Page<House> findFeaturePage(Page<House> page) {
 	page.setList(dao.findFeatureList());
 	return page;
     }
 
     @Transactional(readOnly = false)
-    public void save(Room room) {
+    public void saveRoom(Room room) {
 	if (room.getIsNewRecord()) {// 新增
 	    String id = super.saveAndReturnId(room);
 	    if (StringUtils.isNotEmpty(room.getAttachmentPath())) {
@@ -62,7 +50,6 @@ public class RoomService extends CrudService<RoomDao, Room> {
 		attachmentService.save(attachment);
 	    }
 	} else {// 更新
-		// 先查询原先该房间下是否有附件，有的话则直接更新。
 	    Attachment attachment = new Attachment();
 	    attachment.setRoomId(room.getId());
 	    List<Attachment> attachmentList = attachmentService.findList(attachment);
@@ -85,7 +72,7 @@ public class RoomService extends CrudService<RoomDao, Room> {
     @Transactional(readOnly = false)
     public void delete(Room room) {
 	room.preUpdate();
-	dao.delete(room);
+	super.delete(room);
 	Attachment atta = new Attachment();
 	atta.setRoomId(room.getId());
 	attachmentService.delete(atta);
@@ -94,10 +81,5 @@ public class RoomService extends CrudService<RoomDao, Room> {
     @Transactional(readOnly = true)
     public List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room) {
 	return dao.findRoomByPrjAndBldAndHouNoAndRomNo(room);
-    }
-
-    @Transactional(readOnly = false)
-    public int update(Room room) {
-	return dao.update(room);
     }
 }

@@ -211,7 +211,7 @@ public class HouseController extends BaseController {
 	    if (CollectionUtils.isNotEmpty(houses)) {
 		house.setId(houses.get(0).getId());
 	    }
-	    houseService.save(house);
+	    houseService.saveHouse(house);
 	    addMessage(redirectAttributes, "修改房屋信息成功");
 	    return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
 	} else {// 新增
@@ -234,7 +234,7 @@ public class HouseController extends BaseController {
 		} else {
 		    house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
 		}
-		houseService.save(house);
+		houseService.saveHouse(house);
 		addMessage(redirectAttributes, "保存房屋信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
 	    }
@@ -268,7 +268,7 @@ public class HouseController extends BaseController {
 	    } else {
 		house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
 	    }
-	    houseService.save(house);
+	    houseService.saveHouse(house);
 	    jsonObject.put("id", house.getId());
 	    jsonObject.put("name", house.getHouseNo());
 	}

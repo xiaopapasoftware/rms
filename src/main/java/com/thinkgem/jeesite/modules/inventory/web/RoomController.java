@@ -31,6 +31,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
+import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -214,7 +215,7 @@ public class RoomController extends BaseController {
 		upRoom.setShortDesc(room.getShortDesc());
 		upRoom.setShortLocation(room.getShortLocation());
 		upRoom.setPayWay(room.getPayWay());
-		roomService.save(upRoom);
+		roomService.saveRoom(upRoom);
 	    } else {
 		if (CollectionUtils.isNotEmpty(room.getStructureList())) {
 		    room.setStructure(convertToStrFromList(room.getStructureList()));
@@ -222,7 +223,7 @@ public class RoomController extends BaseController {
 		if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
 		    room.setOrientation(convertToStrFromList(room.getOrientationList()));
 		}
-		roomService.save(room);
+		roomService.saveRoom(room);
 	    }
 	    addMessage(redirectAttributes, "修改房间信息成功");
 	    return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
@@ -245,19 +246,19 @@ public class RoomController extends BaseController {
 		model.addAttribute("listStructure", DictUtils.getDictList("structure"));
 		return "modules/inventory/roomForm";
 	    } else {// 可以新增
-		room.setRoomStatus("1");// 房间状态默认改为“待出租可预订”
+		room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
 		if (CollectionUtils.isNotEmpty(room.getStructureList())) {
 		    room.setStructure(convertToStrFromList(room.getStructureList()));
 		}
 		if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
 		    room.setOrientation(convertToStrFromList(room.getOrientationList()));
 		}
-		roomService.save(room);
+		roomService.saveRoom(room);
 		// 新增房间后，如果房屋状态是完全出租，需要把房屋的状态变更为部分出租
 		House house = houseService.get(room.getHouse());
 		if (HouseStatusEnum.WHOLE_RENT.getValue().equals(house.getHouseStatus())) {
 		    house.setHouseStatus(HouseStatusEnum.PART_RENT.getValue());
-		    houseService.update(house);
+		    houseService.save(house);
 		}
 		addMessage(redirectAttributes, "保存房间信息成功");
 		return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
@@ -299,7 +300,7 @@ public class RoomController extends BaseController {
 	    if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
 		room.setOrientation(convertToStrFromList(room.getOrientationList()));
 	    }
-	    roomService.save(room);
+	    roomService.saveRoom(room);
 	    jsonObject.put("id", room.getId());
 	    jsonObject.put("name", room.getRoomNo());
 	}
