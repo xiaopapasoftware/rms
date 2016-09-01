@@ -274,7 +274,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     agreementChange.setDelFlag("0");
     agreementChange.setId(id);
     agreementChange.setAgreementStatus("0");// 待审核
-    agreementChange.setRentContract(dao.get(agreementChange.getContractId()));
+    agreementChange.setRentContract(super.get(agreementChange.getContractId()));
     agreementChangeDao.insert(agreementChange);
     auditService.insert(AuditTypeEnum.RENT_CONTRACT_CHANGE.getValue(), "change_agreement_role", id, "");
   }
