@@ -463,17 +463,19 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
 		<li class="active">
-		<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
-			出租合同<shiro:hasPermission name="contract:rentContract:edit"><c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'||rentContract.contractStatus=='1'}">修改</c:if><c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='3' && rentContract.contractStatus!='1'}">${not empty rentContract.id?'查看':'添加'}</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission>
-		</a>
+			<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
+				出租合同<shiro:hasPermission name="contract:rentContract:edit"><c:if test="${rentContract.contractStatus=='0' || rentContract.contractStatus=='3'||rentContract.contractStatus=='1'}">修改</c:if><c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='3' && rentContract.contractStatus!='1'}">${not empty rentContract.id?'查看':'添加'}</c:if></shiro:hasPermission><shiro:lacksPermission name="contract:rentContract:edit">查看</shiro:lacksPermission>
+			</a>
 		</li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
+		<form:hidden path="dataSource"/>
 		<form:hidden path="contractStatus" value="1"/>
 		<form:hidden path="validatorFlag" value="1"/><!-- 表示：默认为保存，而不是暂存 -->
 		<form:hidden path="saveSource" value="0"/><!-- 表示：非定金转合同 -->
 		<form:hidden path="contractId"/>
+		<form:hidden path="agreementId"/>
 		<form:hidden path="signType"/>
 		<form:hidden path="oriEndDate"/><!-- 如是续签，则原合同的结束日期 -->
 		<sys:message content="${message}" type="${messageType}"/>

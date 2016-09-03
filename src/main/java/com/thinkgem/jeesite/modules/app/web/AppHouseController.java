@@ -1278,7 +1278,7 @@ public class AppHouseController {
       data.setMsg("您设置的签约周期过长，请重新设置！");
     } else {// 房子状态不合法，为已出租
       data.setCode("400");
-      data.setMsg("房子已出租！");
+      data.setMsg("房源已出租！");
     }
   }
 
@@ -1648,9 +1648,7 @@ public class AppHouseController {
       }
       ContractBook contractBook = new ContractBook();
       contractBook.setUserPhone(apptoken.getPhone());
-      // if(!StringUtils.isBlank(contractBusiStatus))
-      // contractBook.setContractBusiStatus(contractBusiStatus);
-      List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
+      List<ContractBook> list = contractBookService.findRentContract(contractBook);
       List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
       Map<String, Object> map = new HashMap<String, Object>();
       for (ContractBook tmpContractBook : list) {

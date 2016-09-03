@@ -356,7 +356,7 @@
 				<td>${rentContract.createBy.loginName}</td>
 				<td>${rentContract.updateBy.loginName}</td>			
 				<td>
-					<c:if test="${rentContract.dataSource=='2' && (rentContract.contractStatus=='0'||rentContract.contractStatus=='1')}">
+					<c:if test="${rentContract.dataSource=='2' && rentContract.contractStatus=='0'}">
 						<a href="${ctx}/contract/rentContract/cancel?objectId=${rentContract.id}" onclick="return confirmx('确认要取消吗?', this.href)">取消</a>
 					</c:if>
 					<shiro:hasPermission name="contract:rentContract:edit">
