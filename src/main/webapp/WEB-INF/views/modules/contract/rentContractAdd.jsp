@@ -227,12 +227,12 @@
 		}
 		
 		function rentModeChange() {
-			if($("#rentMode").val()=="0") {
+			if($("#rentMode").val()=="0") {//整租
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
 				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 				$("[id='room.id']").next("a").hide();
-			} else {
+			} else {//单间
 				$("[id='room.id']").removeAttr("disabled");
 				$("[id='room.id']").next("a").show();
 			}
@@ -354,10 +354,10 @@
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="contractStatus" value="1"/>
-		<form:hidden path="validatorFlag" value="1"/>
-		<form:hidden path="saveSource" value="1"/>
+		<form:hidden path="validatorFlag" value="1"/><!-- 正常保存，而非暂存 -->
+		<form:hidden path="saveSource" value="1"/><!-- 标识为定金协议转合同 -->
 		<form:hidden path="contractId"/>
-		<form:hidden path="agreementId"/>
+		<form:hidden path="agreementId"/><!-- 定金转合同，保存定金ID -->
 		<form:hidden path="depositAgreementAmount" value="${depositAmount}"/>
 		<form:hidden path="signType"/>
 		<sys:message content="${message}" type="${messageType}"/>

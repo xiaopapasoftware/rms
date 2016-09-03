@@ -72,6 +72,7 @@
 		  tt.house_id,
 		  CONCAT(tt.house_code, tt.room_no) "roomNo",
 		  da.agreement_status AS "bookStatus",
+		  da.agreement_busi_status AS "bookBusiStatus",
 		  tt.short_desc "shortDesc",
 		  tt.short_location,
 		  tt.attachment_path "attachmentPath",

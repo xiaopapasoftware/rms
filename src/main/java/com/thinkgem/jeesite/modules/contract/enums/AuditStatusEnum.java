@@ -9,24 +9,24 @@ package com.thinkgem.jeesite.modules.contract.enums;
  */
 public enum AuditStatusEnum {
 
-    /**
-     * 通过
-     */
-    PASS("1"),
+  /**
+   * 通过
+   */
+  PASS("1"),
 
-    /**
-     * 拒绝
-     */
-    REFUSE("2");
+  /**
+   * 拒绝
+   */
+  REFUSE("2");
 
-    AuditStatusEnum(String value) {
-	this.value = value;
-    }
+  AuditStatusEnum(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  private String value;
 
-    public String getValue() {
-	return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
 }

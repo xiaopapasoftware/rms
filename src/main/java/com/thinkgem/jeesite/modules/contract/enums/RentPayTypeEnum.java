@@ -1,23 +1,23 @@
 package com.thinkgem.jeesite.modules.contract.enums;
 
 /**
- * 租赁类型
+ * 租赁付费方式
  * 
  * @author wangshujin
  */
-public enum RentModelTypeEnum {
+public enum RentPayTypeEnum {
 
   /**
-   * 整套整租
+   * 付三押一
    */
-  WHOLE_RENT("0"),
+  PAY_3_DEPOSIT_3("0"),
 
   /**
-   * 单间合租
+   * 付二押二
    */
-  JOINT_RENT("1");
+  PAY_2_DEPOSIT_2("1");
 
-  RentModelTypeEnum(String value) {
+  RentPayTypeEnum(String value) {
     this.value = value;
   }
 
@@ -26,5 +26,4 @@ public enum RentModelTypeEnum {
   public String getValue() {
     return value;
   }
-
 }

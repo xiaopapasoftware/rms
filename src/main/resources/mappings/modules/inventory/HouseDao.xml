@@ -6,63 +6,49 @@
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
-		a.building_id AS
-		"building.id",
+		a.building_id AS "building.id",
 		tb.building_name AS "building.buildingName",
 		a.house_code AS "houseCode",
 		a.house_no AS "houseNo",
-		a.certificate_no
-		AS "certificateNo",
+		a.certificate_no AS "certificateNo",
 		a.house_floor AS "houseFloor",
-		a.house_space AS
-		"houseSpace",
+		a.house_space AS "houseSpace",
 		a.decoration_spance AS "decorationSpance",
 		a.ORI_STRUC_ROOM_NUM AS "oriStrucRoomNum",
-		a.ORI_STRUC_CUSSPAC_NUM AS
-		"oriStrucCusspacNum",
+		a.ORI_STRUC_CUSSPAC_NUM AS "oriStrucCusspacNum",
 		a.ORI_STRUC_WASHRO_NUM AS "oriStrucWashroNum",
 		a.DECORA_STRUC_ROOM_NUM AS "decoraStrucRoomNum",
 		a.DECORA_STRUC_CUSSPAC_NUM AS "decoraStrucCusspacNum",
 		a.DECORA_STRUC_WASHRO_NUM AS "decoraStrucWashroNum",
-		a.house_status AS
-		"houseStatus",
+		a.house_status AS "houseStatus",
 		a.create_by AS "createBy.id",
-		u1.login_name AS
-		"createBy.loginName",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS
-		"updateBy.id",
+		a.update_by AS "updateBy.id",
 		u2.login_name AS "updateBy.loginName",
-		a.update_date AS
-		"updateDate",
+		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		atta.attachment_path AS "attachmentPath",
-		a.intent_mode as
-		"intentMode",
+		a.intent_mode as "intentMode",
 		a.is_feature as "isFeature",
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
 		a.pay_way as "payWay",
 		a.service_user as "serviceUser.id",
-		u3.name as
-		"serviceUser.name"
+		u3.name as "serviceUser.name"
 	</sql>
 
 	<sql id="houseJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN sys_user u2 ON
-		u2.id = a.update_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
-		LEFT
-		JOIN t_building tb on tb.id = a.building_id
-		left JOIN t_attachment atta
-		on atta.house_id = a.id
+		LEFT JOIN t_building tb on tb.id = a.building_id
+		left JOIN t_attachment atta on atta.house_id = a.id
 		<if test="owner != null and owner.id != null and owner.id != ''">
-			join t_house_owner tho on tho.house_id = a.id AND tho.owner_id =
-			#{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
+			join t_house_owner tho on tho.house_id = a.id AND tho.owner_id = #{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
 		</if>
 	</sql>
 
@@ -405,6 +391,36 @@
 		UPDATE t_house SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
+	</update>
+	
+	<update id="updateHouseStatus4NewSign">
+		UPDATE  t_house 
+		SET 	house_status = '4',
+			    update_by = #{updateBy.id},
+			    update_date = #{updateDate}
+		WHERE   id = #{id} 
+		and     (house_status = '1' or house_status = '5')
+		and 	del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+
+	<update id="updateHouseStatus4ReNewSign">
+		UPDATE  t_house 
+		SET 	house_status = '4',
+			    update_by = #{updateBy.id},
+			    update_date = #{updateDate}
+		WHERE   id = #{id} 
+		and     house_status = '4'
+		and 	del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+	
+	<update id="updateHouseStatusFromDepositToContract">
+		UPDATE  t_house 
+		SET 	house_status = '4',
+			    update_by = #{updateBy.id},
+			    update_date = #{updateDate}
+		WHERE   id = #{id} 
+		and     house_status = '2'
+		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
 </mapper>

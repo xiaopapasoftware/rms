@@ -1,5 +1,6 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
+ * reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
@@ -18,19 +19,34 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
 @MyBatisDao
 public interface HouseDao extends CrudDao<House> {
 
-    /**
-     * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
-     */
-    List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
+  /**
+   * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
+   */
+  List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
 
-    /**
-     * 获取当前有效房屋的总数量
-     */
-    int getCurrentValidHouseNum(House house);
+  /**
+   * 获取当前有效房屋的总数量
+   */
+  int getCurrentValidHouseNum(House house);
 
-    List<House> findFeatureList(House house);
+  List<House> findFeatureList(House house);
 
-    House getFeatureInfo(House house);
+  House getFeatureInfo(House house);
 
-    House getHouseByHouseId(House house);
+  House getHouseByHouseId(House house);
+
+  /**
+   * 新签-整租,更新房屋状态
+   */
+  int updateHouseStatus4NewSign(House house);
+
+  /**
+   * 续签-整租,更新房屋状态
+   */
+  int updateHouseStatus4RenewSign(House house);
+
+  /**
+   * 定金转合同-整租，更新房屋状态
+   */
+  int updateHouseStatusFromDepositToContract(House house);
 }

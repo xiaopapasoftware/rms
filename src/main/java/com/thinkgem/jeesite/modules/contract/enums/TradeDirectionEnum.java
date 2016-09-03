@@ -7,24 +7,24 @@ package com.thinkgem.jeesite.modules.contract.enums;
  */
 public enum TradeDirectionEnum {
 
-    /**
-     * 应出
-     */
-    OUT("0"),
+  /**
+   * 应出
+   */
+  OUT("0"),
 
-    /**
-     * 应收
-     */
-    IN("1");
+  /**
+   * 应收
+   */
+  IN("1");
 
-    TradeDirectionEnum(String value) {
-	this.value = value;
-    }
+  TradeDirectionEnum(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  private String value;
 
-    public String getValue() {
-	return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
 }

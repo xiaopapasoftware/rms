@@ -1,5 +1,6 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
+ * reserved.
  */
 package com.thinkgem.jeesite.modules.contract.dao;
 
@@ -18,11 +19,11 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 @MyBatisDao
 public interface RentContractDao extends CrudDao<RentContract> {
 
-    public List<RentContract> findContractList(RentContract rentContract);
+  public List<RentContract> findContractList(RentContract rentContract);
 
-    Integer getAllValidRentContractCounts(RentContract rentContract);
+  Integer getAllValidRentContractCounts();
 
-    RentContract getByHouseId(RentContract rentContract);
+  RentContract getByHouseId(RentContract rentContract);
 
-    RentContract findContractByCode(String contractCode);
+  RentContract findContractByCode(String contractCode);
 }

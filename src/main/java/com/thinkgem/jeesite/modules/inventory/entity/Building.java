@@ -1,5 +1,6 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
+ * reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
@@ -17,52 +18,52 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  */
 public class Building extends DataEntity<Building> {
 
-	private static final long serialVersionUID = 1L;
-	private PropertyProject propertyProject; // 物业项目
-	private String buildingName; // 楼宇名称
-	private String attachmentPath; // 楼宇图片路径
-	
-	private String choose;
+  private static final long serialVersionUID = 1L;
+  private PropertyProject propertyProject; // 物业项目
+  private String buildingName; // 楼宇名称
+  private String attachmentPath; // 楼宇图片路径
 
-	public Building() {
-		super();
-	}
+  private String choose;
 
-	public Building(String id) {
-		super(id);
-	}
+  public Building() {
+    super();
+  }
 
-	@NotNull(message = "物业项目不能为空")
-	public PropertyProject getPropertyProject() {
-		return propertyProject;
-	}
+  public Building(String id) {
+    super(id);
+  }
 
-	public void setPropertyProject(PropertyProject propertyProject) {
-		this.propertyProject = propertyProject;
-	}
+  @NotNull(message = "物业项目不能为空")
+  public PropertyProject getPropertyProject() {
+    return propertyProject;
+  }
 
-	@Length(min = 1, max = 100, message = "楼宇名称长度必须介于 1 和 100 之间")
-	public String getBuildingName() {
-		return buildingName;
-	}
+  public void setPropertyProject(PropertyProject propertyProject) {
+    this.propertyProject = propertyProject;
+  }
 
-	public void setBuildingName(String buildingName) {
-		this.buildingName = buildingName;
-	}
+  @Length(min = 1, max = 100, message = "楼宇名称长度必须介于 1 和 100 之间")
+  public String getBuildingName() {
+    return buildingName;
+  }
 
-	public String getAttachmentPath() {
-		return attachmentPath;
-	}
+  public void setBuildingName(String buildingName) {
+    this.buildingName = buildingName;
+  }
 
-	public void setAttachmentPath(String attachmentPath) {
-		this.attachmentPath = attachmentPath;
-	}
+  public String getAttachmentPath() {
+    return attachmentPath;
+  }
 
-	public String getChoose() {
-		return choose;
-	}
+  public void setAttachmentPath(String attachmentPath) {
+    this.attachmentPath = attachmentPath;
+  }
 
-	public void setChoose(String choose) {
-		this.choose = choose;
-	}
+  public String getChoose() {
+    return choose;
+  }
+
+  public void setChoose(String choose) {
+    this.choose = choose;
+  }
 }

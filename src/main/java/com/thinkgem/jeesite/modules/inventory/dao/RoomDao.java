@@ -1,5 +1,6 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
+ * reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
@@ -19,15 +20,21 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 @MyBatisDao
 public interface RoomDao extends CrudDao<Room> {
 
-	/**
-	 * 根据物业项目ID+楼宇ID+房屋ID+房间号 查询房间信息
-	 * */
-	List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room);
+  /**
+   * 根据物业项目ID+楼宇ID+房屋ID+房间号 查询房间信息
+   */
+  List<Room> findRoomByPrjAndBldAndHouNoAndRomNo(Room room);
 
-	/**
-	 * 更新房间状态
-	 * */
-	int updateRoomStatus(Room room);
-	
-	List<House> findFeatureList();
+  /**
+   * 更新房间状态
+   */
+  int updateRoomStatus(Room room);
+
+  List<House> findFeatureList();
+
+  int updateRoomStatus4NewSign(Room paRoom);
+
+  int updateRoomStatus4RenewSign(Room paRoom);
+
+  int updateRoomStatusFromDepositToContract(Room paRoom);
 }

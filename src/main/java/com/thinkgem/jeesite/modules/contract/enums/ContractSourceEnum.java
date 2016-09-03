@@ -1,23 +1,24 @@
 package com.thinkgem.jeesite.modules.contract.enums;
 
 /**
- * 租赁类型
+ * 合同来源
  * 
  * @author wangshujin
  */
-public enum RentModelTypeEnum {
+public enum ContractSourceEnum {
 
   /**
-   * 整套整租
+   * 合作
    */
-  WHOLE_RENT("0"),
+  PARTENER("0"),
+
 
   /**
-   * 单间合租
+   * 本部
    */
-  JOINT_RENT("1");
+  SELF("1");
 
-  RentModelTypeEnum(String value) {
+  ContractSourceEnum(String value) {
     this.value = value;
   }
 
@@ -26,5 +27,6 @@ public enum RentModelTypeEnum {
   public String getValue() {
     return value;
   }
+
 
 }

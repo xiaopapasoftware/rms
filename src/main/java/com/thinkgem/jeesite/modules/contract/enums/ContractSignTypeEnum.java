@@ -1,23 +1,28 @@
 package com.thinkgem.jeesite.modules.contract.enums;
 
 /**
- * 租赁类型
+ * 合同签订类型
  * 
  * @author wangshujin
  */
-public enum RentModelTypeEnum {
+public enum ContractSignTypeEnum {
 
   /**
-   * 整套整租
+   * 新签
    */
-  WHOLE_RENT("0"),
+  NEW_SIGN("0"),
 
   /**
-   * 单间合租
+   * 正常续签
    */
-  JOINT_RENT("1");
+  RENEW_SIGN("1"),
 
-  RentModelTypeEnum(String value) {
+  /**
+   * 逾租续签
+   */
+  LATE_RENEW_SIGN("2");
+
+  ContractSignTypeEnum(String value) {
     this.value = value;
   }
 

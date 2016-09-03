@@ -122,7 +122,7 @@
 		});
 		function submitData() {
 			$("#inputForm").validate({
-				submitHandler: function(form){
+				submitHandler: function(form){//单间
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
@@ -164,7 +164,7 @@
 		
 		function saveData() {
 			$("#contractStatus").val("0");
-			$("#validatorFlag").val("0");
+			$("#validatorFlag").val("0");//表示暂存
 			$("#inputForm").submit();
 			$("#saveBtn").attr("disabled",true);
 			$("#btnSubmit").attr("disabled",true); 
@@ -471,8 +471,8 @@
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="contractStatus" value="1"/>
-		<form:hidden path="validatorFlag" value="1"/>
-		<form:hidden path="saveSource" value="0"/>
+		<form:hidden path="validatorFlag" value="1"/><!-- 表示：默认为保存，而不是暂存 -->
+		<form:hidden path="saveSource" value="0"/><!-- 表示：非定金转合同 -->
 		<form:hidden path="contractId"/>
 		<form:hidden path="signType"/>
 		<form:hidden path="oriEndDate"/><!-- 如是续签，则原合同的结束日期 -->

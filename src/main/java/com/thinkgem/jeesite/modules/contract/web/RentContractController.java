@@ -36,12 +36,10 @@ import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
-import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
@@ -89,8 +87,6 @@ public class RentContractController extends BaseController {
   private PaymentTransService paymentTransService;
   @Autowired
   private PartnerService partnerService;
-  @Autowired
-  private LeaseContractService leaseContractService;
   @Autowired
   private TradingAccountsService tradingAccountsService;
   @Autowired
@@ -381,6 +377,9 @@ public class RentContractController extends BaseController {
     return "modules/contract/rentContractForm";
   }
 
+  /**
+   * 点击“逾期自动续签”
+   */
   @RequestMapping(value = "autoRenewContract")
   public String autoRenewContract(RentContract rentContract, Model model) {
     String contractId = rentContract.getId();
@@ -399,10 +398,8 @@ public class RentContractController extends BaseController {
     rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
     rentContract.setTenantList(rentContractService.findTenant(rentContract));
-
     if (null != rentContract.getPropertyProject()) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -411,7 +408,6 @@ public class RentContractController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != rentContract.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -422,7 +418,6 @@ public class RentContractController extends BaseController {
       if (null != rentContract.getHouse()) houseList.add(houseService.get(rentContract.getHouse()));
       model.addAttribute("houseList", houseList);
     }
-
     if (null != rentContract.getRoom()) {
       Room room = new Room();
       House house = new House();
@@ -436,12 +431,9 @@ public class RentContractController extends BaseController {
       }
       model.addAttribute("roomList", roomList);
     }
-
     List<Tenant> tenantList = tenantService.findList(new Tenant());
     model.addAttribute("tenantList", tenantList);
-
     model.addAttribute("partnerList", partnerService.findList(new Partner()));
-
     rentContract.setId(null);
     model.addAttribute("rentContract", rentContract);
     return "modules/contract/rentContractForm";
@@ -449,99 +441,45 @@ public class RentContractController extends BaseController {
 
   // @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "save")
+  // TODO 这个方法还有后台点修改保存，会走，所以要doubleCheck
   public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-
     if (!beanValidator(model, rentContract) && "1".equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model);
     }
-
-    // 检查房屋、房间状态
-    if ("0".equals(rentContract.getRentMode())) {
-      // 整租
-      String houseId = rentContract.getHouse().getId();
-      House house = houseService.get(houseId);
-      String houseStatus = house.getHouseStatus();
-      // 非续签，非修改合同
-      if (StringUtils.isBlank(rentContract.getId()) && StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(houseStatus) && !"5".equals(houseStatus) && !"2".equals(houseStatus)) {
-        // 1:待出租可预订 3:部分出租 5:已退待租 2:已预定
-        model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-        addMessage(model, "房屋已出租");
-        return form(rentContract, model);
-      }
-    } else {
-      // 单间 非续签，非修改合同
-      String roomId = rentContract.getRoom().getId();
-      Room room = roomServie.get(roomId);
-      String roomStatus = room.getRoomStatus();
-      if (StringUtils.isBlank(rentContract.getId()) && StringUtils.isBlank(rentContract.getContractId()) && !"1".equals(roomStatus) && !"2".equals(roomStatus) && !"4".equals(roomStatus)) {
-        // 1:待出租可预订 2:已预定 4:已退租可预订
-        model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-        addMessage(model, "房间已出租");
-        return form(rentContract, model);
-      }
-    }
-
-    /* 出租合同的结束时间不能超过承租合同的结束时间 */
-    LeaseContract leaseContract = new LeaseContract();
-    leaseContract.setHouse(rentContract.getHouse());
-    List<LeaseContract> list = leaseContractService.findList(leaseContract);
-    if (CollectionUtils.isNotEmpty(list)) {
-      if (list.get(0).getExpiredDate().before(rentContract.getExpiredDate())) {
-        model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
-        model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-        initExceptionedModel(model, rentContract);
-        return "modules/contract/rentContractForm";
-      }
-    }
-
-    // 保存合同时检查如果该房屋或房间还有定金协议未转合同，则强迫操作者先把定金转合同。
-    DepositAgreement conditionDepositAgreement = new DepositAgreement();
-    conditionDepositAgreement.setPropertyProject(rentContract.getPropertyProject());
-    conditionDepositAgreement.setHouse(rentContract.getHouse());
-    conditionDepositAgreement.setRoom(rentContract.getRoom());
-    boolean hasToBeTransedDepositFlag = false;// 该合同存在未转的定金协议，默认为不存在
-    List<DepositAgreement> das = depositAgreementService.findList(conditionDepositAgreement);
-    if (CollectionUtils.isNotEmpty(das)) {
-      for (DepositAgreement da : das) {
-        if ("5".equals(da.getAgreementStatus()) && "0".equals(da.getAgreementBusiStatus()) && StringUtils.isEmpty(rentContract.getAgreementId())) {// 定金协议的审核状态为“账务审核通过”，业务状态为“待转合同”,且该合同不是从定金协议转过来的
-          hasToBeTransedDepositFlag = true;
-          break;
-        }
-      }
-    }
-    if (hasToBeTransedDepositFlag) {
-      model.addAttribute("message", "当前选择的房屋或房间有未转的定金协议，请先转定金！");
-      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-      initExceptionedModel(model, rentContract);
-      return "modules/contract/rentContractForm";
-    }
-
-    // 设置出租合同编码
-    if (rentContract.getIsNewRecord()) {
+    if (rentContract.getIsNewRecord()) {// 设置出租合同编号
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     }
     rentContract.setDataSource("1");// 默认管理系统后台添加的合同的数据来源为“管理系统”
-    rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "保存出租合同成功");
-
-    try {
-      Message message = new Message();
-      message.setContent("您的签约申请已被管家确认,请联系管家!");
-      message.setTitle("签约提醒");
-      message.setType("签约提醒");
-      Tenant tenant = rentContract.getTenantList().get(0);
-      message.setReceiver(this.tenantService.get(tenant).getCellPhone());
-      messageService.addMessage(message, true);
-    } catch (Exception e) {
-      this.logger.error("签约推送异常:", e);
+    int result = rentContractService.saveContract(rentContract);
+    if (result == -2) {
+      model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
+      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+      initExceptionedModel(model, rentContract);
+      return "modules/contract/rentContractForm";
+    } else if (result == -1) {
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, "房子已出租！");
+      return form(rentContract, model);
+    } else {
+      addMessage(redirectAttributes, "保存出租合同成功");
+      try {
+        Message message = new Message();
+        message.setContent("您的签约申请已被管家确认,请联系管家!");
+        message.setTitle("签约提醒");
+        message.setType("签约提醒");
+        Tenant tenant = rentContract.getTenantList().get(0);
+        message.setReceiver(this.tenantService.get(tenant).getCellPhone());
+        messageService.addMessage(message, true);
+      } catch (Exception e) {
+        this.logger.error("签约推送异常:", e);
+      }
+      if ("1".equals(rentContract.getSaveSource())) {
+        return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+      } else {
+        return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+      }
     }
-
-    if ("1".equals(rentContract.getSaveSource()))
-      return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
-    else
-      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
-
   }
 
   private void initExceptionedModel(Model model, RentContract rentContract) {
@@ -605,7 +543,7 @@ public class RentContractController extends BaseController {
     }
     rentContract = rentContractService.get(rentContract.getId());
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RETURN_ACCOUNT.getValue());
-    rentContractService.update(rentContract);
+    rentContractService.save(rentContract);
     addMessage(redirectAttributes, "正常退租成功，接下来请进行正常退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
@@ -618,7 +556,7 @@ public class RentContractController extends BaseController {
     String rentContractId = rentContract.getId();
     rentContract = rentContractService.get(rentContractId);
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
-    rentContractService.update(rentContract);
+    rentContractService.save(rentContract);
     paymentTransService.deleteNotSignPaymentTrans(rentContractId);
     addMessage(redirectAttributes, "提前退租成功，接下来请进行提前退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
@@ -635,7 +573,7 @@ public class RentContractController extends BaseController {
     }
     rentContract = rentContractService.get(rentContract.getId());
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.LATE_RETURN_ACCOUNT.getValue());
-    rentContractService.update(rentContract);
+    rentContractService.save(rentContract);
     addMessage(redirectAttributes, "逾期退租成功，接下来请进行逾期退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }

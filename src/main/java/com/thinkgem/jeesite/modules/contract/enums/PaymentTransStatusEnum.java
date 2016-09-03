@@ -8,29 +8,29 @@ package com.thinkgem.jeesite.modules.contract.enums;
  */
 public enum PaymentTransStatusEnum {
 
-    /**
-     * 未到账登记
-     */
-    NO_SIGN("0"),
+  /**
+   * 未到账登记
+   */
+  NO_SIGN("0"),
 
-    /**
-     * 部分到账登记
-     */
-    PART_SIGN("1"),
+  /**
+   * 部分到账登记
+   */
+  PART_SIGN("1"),
 
-    /**
-     * 完全到账登记
-     */
-    WHOLE_SIGN("2");
+  /**
+   * 完全到账登记
+   */
+  WHOLE_SIGN("2");
 
-    PaymentTransStatusEnum(String value) {
-	this.value = value;
-    }
+  PaymentTransStatusEnum(String value) {
+    this.value = value;
+  }
 
-    private String value;
+  private String value;
 
-    public String getValue() {
-	return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
 }

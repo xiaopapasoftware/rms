@@ -221,5 +221,36 @@
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+	
+	<update id="updateRoomStatus4NewSign">
+		UPDATE 		t_room 
+		SET 		room_status = '3',
+					update_by = #{updateBy.id},
+					update_date = #{updateDate}
+		WHERE 		id = #{id}
+		AND 		(room_status = '1' OR room_status = '4')
+		and 		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
 
+	<update id="updateRoomStatus4RenewSign">
+		UPDATE 		t_room 
+		SET 		room_status = '3',
+					update_by = #{updateBy.id},
+					update_date = #{updateDate}
+		WHERE 		id = #{id}
+		AND 		room_status = '3'
+		and 		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+	
+	<update id="updateRoomStatusFromDepositToContract">
+		UPDATE 		t_room 
+		SET 		room_status = '3',
+					update_by = #{updateBy.id},
+					update_date = #{updateDate}
+		WHERE 		id = #{id}
+		AND 		room_status = '2'
+		and 		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
+	
+	
 </mapper>
