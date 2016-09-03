@@ -459,10 +459,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
 
     // 合同承租人关联信，如果是从APP过来的需要新增租客信息
-    if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(contractSignType) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
+    if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(contractSignType) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())
+        && ValidatorFlagEnum.TEMP_SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       List<Tenant> leaseTenants = rentContract.getTenantList();
-      List<Tenant> liveTenant = rentContract.getLiveList();
-      if (CollectionUtils.isNotEmpty(leaseTenants) || CollectionUtils.isNotEmpty(liveTenant)) {
+      if (CollectionUtils.isNotEmpty(leaseTenants)) {
         Tenant leaseTenat = leaseTenants.get(0);
         Tenant queryTenant = new Tenant();
         queryTenant.setCellPhone(leaseTenat.getCellPhone());

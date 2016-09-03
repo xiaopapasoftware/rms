@@ -1162,25 +1162,72 @@ public class AppHouseController {
       Building building = new Building();
       building.setId(house.getBuilding().getId());
       building = buildingService.get(building);
+      // 构建出租合同
+      RentContract rentContract = new RentContract();
+      rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
+      rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
+      rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
+      rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
+      rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+      Date nowDate = new Date();
+      rentContract.setSignDate(nowDate);
+      rentContract.setStartDate(nowDate);
+      rentContract.setExpiredDate(DateUtils.dateAddMonth2(nowDate, Integer.valueOf(request.getParameter("contract_cycle"))));
+      rentContract.setRemarks(request.getParameter("msg"));
+      rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
+      // APP用户转租客
+      List<Tenant> tenantList = new ArrayList<Tenant>();
+      Tenant tenant = new Tenant();
+      tenant.setTenantName(appUser.getName());
+      if ("1".equals(appUser.getSex())) {// 男
+        tenant.setGender("1");
+      }
+      if ("0".equals(appUser.getSex())) {// 女
+        tenant.setGender("2");
+      }
+      tenant.setCellPhone(appUser.getPhone());
+      tenant.setIdType(CertTypeEnum.CERT_ID.getValue());
+      tenant.setIdNo(appUser.getIdCardNo());
+      if (StringUtils.isNotEmpty(appUser.getBirth())) {
+        tenant.setBirthday(DateUtils.parseDate(appUser.getBirth()));
+      }
+      tenant.setPosition(appUser.getProfession());
+      tenantList.add(tenant);
+      rentContract.setTenantList(tenantList);
+      // 租客身份证照片挂载到合同上
+      String rentContractCusIDFile = "";
+      PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+      String img_url = proper.getProperty("img.url");
+      String idCardFrontPhoto = appUser.getIdCardPhoto＿front();
+      if (StringUtils.isNotBlank(idCardFrontPhoto)) {
+        rentContractCusIDFile = img_url + idCardFrontPhoto;
+      }
+      String idCardBackPhoto = appUser.getIdCardPhoto＿back();
+      if (StringUtils.isNotBlank(idCardBackPhoto)) {
+        rentContractCusIDFile = rentContractCusIDFile + "|" + img_url + idCardBackPhoto;
+      }
+      rentContract.setRentContractCusIDFile(rentContractCusIDFile);
+      rentContract.setHouse(house);
+      String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
+      if (null != room) {
+        contractName += "-" + room.getRoomNo();
+        rentContract.setRentMode(RentModelTypeEnum.JOINT_RENT.getValue());
+        rentContract.setRoom(room);
+      } else {
+        rentContract.setRentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
+      }
+      rentContract.setContractName(contractName);
+      rentContract.setPropertyProject(propertyProject);
+      rentContract.setBuilding(building);
       if (!hasBooked) {// 新签
-        RentContract rentContract = new RentContract();
-        rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
-        rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
-        rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
-        String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
         String payWay = "";// 意向租赁方式
         if (null != room) {
-          contractName += "-" + room.getRoomNo();
-          rentContract.setRoom(room);
           rentContract.setRental(room.getRental());// 在管家确认前，房租取值于“意向房租”
           payWay = room.getPayWay();
-          rentContract.setRentMode(RentModelTypeEnum.JOINT_RENT.getValue());
         } else {
           rentContract.setRental(house.getRental());// 在管家确认前，房租取值于“意向房租”
           payWay = house.getPayWay();
-          rentContract.setRentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
         }
-        rentContract.setContractName(contractName);
         if (RentPayTypeEnum.PAY_3_DEPOSIT_3.getValue().equals(payWay)) {
           rentContract.setRenMonths(3);
           rentContract.setDepositMonths(1);
@@ -1189,121 +1236,20 @@ public class AppHouseController {
           rentContract.setDepositMonths(2);
         }
         rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
-        rentContract.setPropertyProject(propertyProject);
-        rentContract.setBuilding(building);
-        rentContract.setHouse(house);
-        rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
-        rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
-        Date nowDate = new Date();
-        rentContract.setSignDate(nowDate);
-        rentContract.setStartDate(nowDate);
-        rentContract.setExpiredDate(DateUtils.dateAddMonth2(nowDate, Integer.valueOf(request.getParameter("contract_cycle"))));
-        rentContract.setRemarks(request.getParameter("msg"));
-        rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
-        List<Tenant> tenantList = new ArrayList<Tenant>();
-        Tenant tenant = new Tenant();
-        tenant.setTenantName(appUser.getName());
-        if ("1".equals(appUser.getSex())) {// 男
-          tenant.setGender("1");
-        }
-        if ("0".equals(appUser.getSex())) {// 女
-          tenant.setGender("2");
-        }
-        tenant.setCellPhone(appUser.getPhone());
-        tenant.setIdType(CertTypeEnum.CERT_ID.getValue());
-        tenant.setIdNo(appUser.getIdCardNo());
-        if (StringUtils.isNotEmpty(appUser.getBirth())) {
-          tenant.setBirthday(DateUtils.parseDate(appUser.getBirth()));
-        }
-        tenant.setPosition(appUser.getProfession());
-        tenantList.add(tenant);
-        rentContract.setTenantList(tenantList);
-        rentContract.setLiveList(tenantList);
-        // 租客身份证照片挂载到合同上
-        String rentContractCusIDFile = "";
-        PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-        String img_url = proper.getProperty("img.url");
-        String idCardFrontPhoto = appUser.getIdCardPhoto＿front();
-        if (StringUtils.isNotBlank(idCardFrontPhoto)) {
-          rentContractCusIDFile = img_url + idCardFrontPhoto;
-        }
-        String idCardBackPhoto = appUser.getIdCardPhoto＿back();
-        if (StringUtils.isNotBlank(idCardBackPhoto)) {
-          rentContractCusIDFile = rentContractCusIDFile + "|" + img_url + idCardBackPhoto;
-        }
-        rentContract.setRentContractCusIDFile(rentContractCusIDFile);
         int result = rentContractService.saveContract(rentContract);
-        if (result == 0) {// 签约成功
-          data.setCode("200");
-          sendSMSToHouseServer(house);// 发送短信
-        } else if (result == -2) {// 选择的租赁期限过长
-          data.setCode("400");
-          data.setMsg("您设置的签约周期过长，请重新设置！");
-        } else {// 房子状态不合法，为已出租
-          data.setCode("400");
-          data.setMsg("房子已出租！");
-        }
+        tailProcess(house, result, data);// 结果处理
       } else {// 定金转合同
         DepositAgreement depositAgreement = depositAgreementService.get(depositId);
         if (depositAgreement != null) {
-          RentContract rentContract = new RentContract();
-          rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
-          String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
-          if (null != room) {
-            contractName += "-" + room.getRoomNo();
-          }
-          rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
-          rentContract.setContractName(contractName);
-          rentContract.setRentMode(depositAgreement.getRentMode());
-          rentContract.setPropertyProject(depositAgreement.getPropertyProject());
-          rentContract.setBuilding(depositAgreement.getBuilding());
-          rentContract.setHouse(depositAgreement.getHouse());
-          rentContract.setRoom(depositAgreement.getRoom());
           rentContract.setRental(depositAgreement.getHousingRent());
           rentContract.setRenMonths(depositAgreement.getRenMonths());
           rentContract.setDepositMonths(depositAgreement.getDepositMonths());
-          Date d = new Date();
-          rentContract.setSignDate(d);
-          rentContract.setStartDate(d);
-          rentContract.setExpiredDate(DateUtils.dateAddMonth2(d, Integer.valueOf(request.getParameter("contract_cycle"))));
           rentContract.setUser(depositAgreement.getUser());
-          rentContract.setTenantList(depositAgreement.getTenantList());
-          rentContract.setRemarks(depositAgreement.getRemarks());
-          rentContract.setAgreementId(depositAgreement.getId());
-          rentContract.setContractSource("1");// 本部
-          rentContract.setValidatorFlag("0");// 暂存
-          rentContract.setDataSource("2");// APP
-          rentContract.setRemarks(request.getParameter("msg"));
-          rentContract.setContractStatus("0");// 暂存
-          rentContract.setSaveSource("1");// 定金协议转合同
+          rentContract.setAgreementId(depositId);
           rentContract.setDepositAmount(depositAgreement.getDepositAmount());
-          Tenant tenant = new Tenant();
-          // tenant.setIdType("0");// 身份证
-          // tenant.setIdNo(appUser.getIdCardNo());
-          // List<Tenant> tenantList =
-          // tenantService.findTenantByIdTypeAndNo(tenant);
-          tenant.setCellPhone(appUser.getPhone());
-          List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
-          if (null == tenantList || tenantList.size() <= 0) {
-            tenantList = new ArrayList<Tenant>();
-            tenant.setTenantName(appUser.getName());
-            tenant.setGender(appUser.getSex());
-            tenant.setCellPhone(appUser.getPhone());
-            tenantService.save(tenant);
-            tenantList.add(tenant);
-          }
-          rentContract.setTenantList(tenantList);
-          rentContract.setLiveList(tenantList);
-          // 租客身份证照片
-          if (StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
-            PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-            String img_url = proper.getProperty("img.url");
-            rentContract.setRentContractCusIDFile(img_url + appUser.getIdCardPhoto＿front());
-            if (StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
-              rentContract.setRentContractCusIDFile(rentContract.getRentContractCusIDFile() + "|" + img_url + appUser.getIdCardPhoto＿back());
-            }
-          }
-          rentContractService.save(rentContract);
+          rentContract.setSaveSource("1");// 定金转合同
+          int result = rentContractService.saveContract(rentContract);
+          tailProcess(house, result, data);// 结果处理
         } else {
           data.setCode("400");
           data.setMsg("系统繁忙，请稍后再试！");
@@ -1316,17 +1262,24 @@ public class AppHouseController {
     return data;
   }
 
-  /**
-   * 处理完发短信给管理员
-   */
-  private void sendSMSToHouseServer(House house) {
-    PropertiesLoader proper = new PropertiesLoader("jeesite.properties"); /* 获取房屋房屋管家手机号码 */
-    String mobile = proper.getProperty("service.manager.mobile");// 默认配置的大总管的手机
-    User user = house.getServiceUser();
-    if (user != null && StringUtils.isNotEmpty(user.getId()) && StringUtils.isNotEmpty(user.getName()) && StringUtils.isNotBlank(user.getMobile())) {
-      mobile = user.getMobile();
+  private void tailProcess(House house, int result, ResponseData data) {
+    if (result == 0) {// 签约成功
+      data.setCode("200");
+      // 发送短信
+      PropertiesLoader proper = new PropertiesLoader("jeesite.properties"); /* 获取房屋房屋管家手机号码 */
+      String mobile = proper.getProperty("service.manager.mobile");// 默认配置的大总管的手机
+      User user = house.getServiceUser();
+      if (user != null && StringUtils.isNotEmpty(user.getId()) && StringUtils.isNotEmpty(user.getName()) && StringUtils.isNotBlank(user.getMobile())) {
+        mobile = user.getMobile();
+      }
+      smsService.sendSms(mobile, proper.getProperty("sign.sms.content"));
+    } else if (result == -2) {// 选择的租赁期限过长
+      data.setCode("400");
+      data.setMsg("您设置的签约周期过长，请重新设置！");
+    } else {// 房子状态不合法，为已出租
+      data.setCode("400");
+      data.setMsg("房子已出租！");
     }
-    smsService.sendSms(mobile, proper.getProperty("sign.sms.content"));
   }
 
   /**
