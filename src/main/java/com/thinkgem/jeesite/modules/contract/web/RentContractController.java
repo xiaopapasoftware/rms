@@ -66,10 +66,8 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
- * 出租合同Controller
- * 
  * @author huangsc
- * @version 2015-06-11
+ * @author wangshujin
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/rentContract")

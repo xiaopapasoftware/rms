@@ -31,8 +31,7 @@
 	
 	<sql id="contractBookJoins">
 		left join 
-		(
-		select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h 
+		(select p.project_name,b.building_name,h.id house_id,h.house_code,'' room_no,h.short_desc,h.short_location,a.attachment_path from t_house h 
 		left join t_property_project p on h.property_project_id=p.id
 		left join t_building b on h.building_id=b.id
 		left join t_attachment a on h.id=a.house_id
@@ -41,8 +40,7 @@
 		left join t_property_project p on r.property_project_id=p.id 
 		left join t_building b on r.building_id=b.id 
 		left join t_house h on r.house_id=h.id 
-		left join t_attachment a on r.id=a.room_id 
-		) t on a.house_id = t.house_id 
+		left join t_attachment a on r.id=a.room_id) t on a.house_id = t.house_id 
 		left join sys_user su on a.sales_id = su.id
 	</sql>
     

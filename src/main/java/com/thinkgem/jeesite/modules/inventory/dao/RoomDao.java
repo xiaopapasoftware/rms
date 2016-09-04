@@ -15,7 +15,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
  * 房间信息DAO接口
  * 
  * @author huangsc
- * @version 2015-06-09
+ * @author wangshujin
  */
 @MyBatisDao
 public interface RoomDao extends CrudDao<Room> {
@@ -37,4 +37,6 @@ public interface RoomDao extends CrudDao<Room> {
   int updateRoomStatus4RenewSign(Room paRoom);
 
   int updateRoomStatusFromDepositToContract(Room paRoom);
+
+  int updateRoomStatus4Deposit(Room paRoom);
 }

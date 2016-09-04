@@ -207,70 +207,21 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 预定（整租房屋）
+   * 预定-整租，是否成功锁定房源
+   * 
+   * @return true表示已经成功锁定房源，false表示未能锁定房源
    */
   @Transactional(readOnly = false)
-  public void depositWholeHouse(House house) {
-    if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus()) || HouseStatusEnum.RETURN_FOR_RENT.getValue().equals(house.getHouseStatus())) {
-      house.setHouseStatus(HouseStatusEnum.BE_RESERVED.getValue());
-      house.preUpdate();
-      dao.update(house);
+  public boolean isLockWholeHouse4Deposit(String houseId) {
+    House paHouse = new House();
+    paHouse.preUpdate();
+    paHouse.setId(houseId);
+    int updatedCount = dao.updateHouseStatus4Deposit(paHouse);
+    if (updatedCount > 0) {
+      return true;
+    } else {
+      return false;
     }
-    Room parameterRoom = new Room();
-    parameterRoom.setHouse(house);
-    List<Room> rooms = roomService.findList(parameterRoom);
-    if (CollectionUtils.isNotEmpty(rooms)) {
-      for (Room r : rooms) {
-        if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(r.getRoomStatus())) {
-          r.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
-          roomService.save(r);
-        }
-      }
-    }
-  }
-
-  /**
-   * 预定（单间）
-   */
-  @Transactional(readOnly = false)
-  public void depositSingleRoom(Room room) {
-    if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus()) || RoomStatusEnum.RETURN_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
-      room.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());// 已预定
-      roomService.save(room);
-    }
-    // 同时更新该房间所属房屋的状态
-    House h = dao.get(room.getHouse().getId());
-    if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(h.getHouseStatus()) || HouseStatusEnum.PART_RENT.getValue().equals(h.getHouseStatus())
-        || HouseStatusEnum.RETURN_FOR_RENT.getValue().equals(h.getHouseStatus())) {
-      Room queryRoom = new Room();
-      queryRoom.setHouse(h);
-      List<Room> roomsOfHouse = roomService.findList(queryRoom);
-      if (CollectionUtils.isNotEmpty(roomsOfHouse)) {
-        int depositCount = 0;// 预定或出租的数量
-        int roomCount = roomsOfHouse.size();// 总的房间数
-        for (Room depositedRoom : roomsOfHouse) {
-          if (RoomStatusEnum.BE_RESERVED.getValue().equals(depositedRoom.getRoomStatus()) || RoomStatusEnum.RENTED.getValue().equals(depositedRoom.getRoomStatus())) {
-            depositCount = depositCount + 1;
-          }
-        }
-        if (depositCount > 0 && depositCount < roomCount) {
-          h.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
-        }
-        if (depositCount == roomCount) {
-          h.setHouseStatus(HouseStatusEnum.BE_RESERVED.getValue());
-        }
-        super.save(h);
-      }
-    }
-  }
-
-  /**
-   * 签约（单间）
-   */
-  @Transactional(readOnly = false)
-  public void signSingleRoom(Room room) {
-
-    calculateHouseStatus(room.getId(), true);
   }
 
   /**

@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -33,6 +36,7 @@ import com.thinkgem.jeesite.modules.app.service.AppTokenService;
 import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import com.thinkgem.jeesite.modules.app.service.RepairService;
 import com.thinkgem.jeesite.modules.app.service.ServiceUserComplainService;
+import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.CertTypeEnum;
@@ -52,8 +56,14 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSourceEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentPayTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeModeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -477,7 +487,7 @@ public class AppHouseController {
   }
 
   /**
-   * 预定
+   * APP在线申请预定
    */
   @RequestMapping(value = "booked")
   @ResponseBody
@@ -487,51 +497,40 @@ public class AppHouseController {
       data.setCode("101");
       return data;
     }
-    try {
-      String token = (String) request.getHeader("token");
-      AppToken apptoken = new AppToken();
-      apptoken.setToken(token);
-      apptoken = appTokenService.findByToken(apptoken);
-      if (null == apptoken) {
-        data.setCode("401");
-        data.setMsg("请重新登录");
-        return data;
-      }
-      AppUser appUser = new AppUser();
-      appUser.setPhone(apptoken.getPhone());
-      appUser = appUserService.getByPhone(appUser);
-      if (null != appUser && StringUtils.isBlank(appUser.getIdCardNo())) {
+    String token = (String) request.getHeader("token");
+    AppToken apptoken = new AppToken();
+    apptoken.setToken(token);
+    apptoken = appTokenService.findByToken(apptoken);
+    if (null == apptoken) {
+      data.setCode("401");
+      data.setMsg("请重新登录");
+      return data;
+    }
+    AppUser appUser = new AppUser();
+    appUser.setPhone(apptoken.getPhone());
+    appUser = appUserService.getByPhone(appUser);
+    if (appUser == null) {
+      data.setCode("400");
+      data.setMsg("请注册账号！");
+      return data;
+    } else {
+      if (StringUtils.isBlank(appUser.getIdCardNo())) {
         data.setCode("400");
-        data.setMsg("请填写身份证号码");
+        data.setMsg("请填写身份证号码！");
         return data;
       }
-      String houseId = request.getParameter("house_id");
-      // 如何是从预约过来,house_id实际是预约的id
+    }
+    try {
+      String houseId = request.getParameter("house_id"); // 如何是从预约过来,house_id实际是预约的id
       ContractBook hasContractBook = new ContractBook();
       hasContractBook.setId(houseId);
       hasContractBook.setUserId(appUser.getPhone());
       hasContractBook = contractBookService.get(hasContractBook);
       if (null != hasContractBook) {
-        if (StringUtils.isNotBlank(hasContractBook.getRoomId()))
+        if (StringUtils.isNotBlank(hasContractBook.getRoomId())) {
           houseId = hasContractBook.getRoomId();
-        else
-          houseId = hasContractBook.getHouseId();
-      }
-      log.info("------houseId:" + houseId);
-      if (!checkHouseStatus(houseId, "0")) {
-        data.setCode("400");
-        data.setMsg("房屋已出租");
-        return data;
-      }
-      ContractBook contractBookCheck = new ContractBook();
-      contractBookCheck.setId(houseId);
-      contractBookCheck.setUserId(apptoken.getPhone());
-      contractBookCheck = this.contractBookService.get(contractBookCheck);
-      if (null != contractBookCheck) {
-        if (StringUtils.isNoneBlank(contractBookCheck.getRoomId())) {
-          houseId = contractBookCheck.getRoomId();
         } else {
-          houseId = contractBookCheck.getHouseId();
+          houseId = hasContractBook.getHouseId();
         }
       }
       House house = new House();
@@ -541,31 +540,20 @@ public class AppHouseController {
       if (null == house) {
         room = new Room();
         room.setId(houseId);
-        room = this.roomService.get(room);
+        room = roomService.get(room);
         house = new House();
         house.setId(room.getHouse().getId());
         house = houseService.get(house);
       }
-      ContractBook contractBook = new ContractBook();
-      // contractBook.setIdNo(appUser.getIdCardNo());
-      contractBook.setUserPhone(appUser.getPhone());
-      List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
-      if (null != list && list.size() > 0) {
-        for (ContractBook tmpContractBook : list) {
-          if (houseId.equals(tmpContractBook.getHouseId()) && !"2".equals(tmpContractBook.getBookStatus())) {
-            data.setCode("400");
-            data.setMsg("您已预订该房间,不能重复预订!");
-            break;
-          }
-        }
-      }
-      if ("400".equals(data.getCode())) return data;
+      // 物业项目
       PropertyProject propertyProject = new PropertyProject();
       propertyProject.setId(house.getPropertyProject().getId());
-      propertyProject = this.propertyProjectService.get(propertyProject);
+      propertyProject = propertyProjectService.get(propertyProject);
+      // 楼宇
       Building building = new Building();
       building.setId(house.getBuilding().getId());
-      building = this.buildingService.get(building);
+      building = buildingService.get(building);
+      // 预定协议
       DepositAgreement depositAgreement = new DepositAgreement();
       depositAgreement.setAgreementCode(propertyProject.getProjectSimpleName() + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-XY");
       String agreementName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
@@ -574,63 +562,27 @@ public class AppHouseController {
         depositAgreement.setRoom(room);
       }
       depositAgreement.setAgreementName(agreementName);
-      depositAgreement.setRentMode(null == room ? "0" : "1");// 0:整租 1:单间
+      depositAgreement.setRentMode(null == room ? RentModelTypeEnum.WHOLE_RENT.getValue() : RentModelTypeEnum.JOINT_RENT.getValue());
       depositAgreement.setPropertyProject(propertyProject);
       depositAgreement.setBuilding(building);
       depositAgreement.setHouse(house);
-      Tenant tenant = new Tenant();
-      // tenant.setIdNo(appUser.getIdCardNo());
-      // tenant.setIdType("0");//身份证
-      // List<Tenant> tenantList =
-      // tenantService.findTenantByIdTypeAndNo(tenant);
-      tenant.setCellPhone(appUser.getPhone());
-      List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
-      if (null == tenantList || tenantList.size() <= 0) {
-        tenantList = new ArrayList<Tenant>();
-        tenant.setTenantName(appUser.getName());
-        tenant.setGender(appUser.getSex());
-        tenant.setCellPhone(appUser.getPhone());
-        tenant.setIdType("0");
-        tenant.setIdNo(appUser.getIdCardNo());
-        tenantService.save(tenant);
-        tenantList.add(tenant);
-      }
+      depositAgreement.setTenantList(appUserToTenant(appUser)); // APP用户转租客
       Date signDate = DateUtils.parseDate(request.getParameter("sign_date"), "yyyy-MM-dd");
-      depositAgreement.setTenantList(tenantList);
       depositAgreement.setSignDate(new Date());
       depositAgreement.setAgreementDate(signDate);
-      depositAgreement.setValidatorFlag("0");// 暂存
-      depositAgreement.setDataSource("2");// APP
+      depositAgreement.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
+      depositAgreement.setDataSource(DataSourceEnum.FRONT_APP.getValue());
       depositAgreement.setRemarks(request.getParameter("msg"));
-      depositAgreement.setAgreementStatus("6");// 暂存
+      depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.TEMP_EXIST.getValue());
       depositAgreement.setStartDate(signDate);
       depositAgreement.setExpiredDate(DateUtils.dateAddMonth2(signDate, Integer.valueOf(request.getParameter("book_cycle"))));
-      // 租客身份证照片
-      if (StringUtils.isNotBlank(appUser.getIdCardPhoto＿front())) {
-        PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-        String img_url = proper.getProperty("img.url");
-        depositAgreement.setDepositCustomerIDFile(img_url + appUser.getIdCardPhoto＿front());
-        if (StringUtils.isNotBlank(appUser.getIdCardPhoto＿back())) {
-          depositAgreement.setDepositCustomerIDFile(depositAgreement.getDepositCustomerIDFile() + "|" + img_url + appUser.getIdCardPhoto＿back());
-        }
-      }
-      depositAgreementService.save(depositAgreement);
-      /* 获取房屋房屋管家手机号码 */
-      PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-      String mobile = proper.getProperty("service.manager.mobile");
-      String userId = house.getServcieUserName();
-      if (!StringUtils.isBlank(userId)) {
-        User user = this.systemService.getUser(userId);
-        if (null != user && !StringUtils.isBlank(user.getMobile())) mobile = user.getMobile();
-      }
-      /* 给服务管家发送短信 */
-      String content = proper.getProperty("booked.sms.content");
-      this.smsService.sendSms(mobile, content);
-      data.setCode("200");
+      depositAgreement.setDepositCustomerIDFile(generateIdFilePath(appUser));// 租客身份证照片
+      int result = depositAgreementService.saveDepositAgreement(depositAgreement);
+      tailProcess(house, result, data);// 结果处理
     } catch (Exception e) {
       data.setCode("500");
-      data.setMsg("预订失败,请重新预订!");
-      this.log.error("save contract book error:", e);
+      data.setMsg("预订失败,请咨询人工客服!");
+      log.error("save contract book error:", e);
     }
     return data;
   }
@@ -890,14 +842,13 @@ public class AppHouseController {
       appUser.setPhone(apptoken.getPhone());
       appUser = appUserService.getByPhone(appUser);
       ContractBook contractBook = new ContractBook();
-      // contractBook.setIdNo(appUser.getIdCardNo());
       contractBook.setUserPhone(appUser.getPhone());
       contractBook.setDepositId(request.getParameter("id"));
       List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
       if (null != list && list.size() > 0) {
         contractBook = list.get(0);
       }
-      DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
+      DepositAgreement depositAgreement = depositAgreementService.get(contractBook.getDepositId());
       /* 款项 */
       PaymentTrans paymentTrans = new PaymentTrans();
       paymentTrans.setTransId(depositAgreement.getId());
@@ -1175,38 +1126,8 @@ public class AppHouseController {
       rentContract.setExpiredDate(DateUtils.dateAddMonth2(nowDate, Integer.valueOf(request.getParameter("contract_cycle"))));
       rentContract.setRemarks(request.getParameter("msg"));
       rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
-      // APP用户转租客
-      List<Tenant> tenantList = new ArrayList<Tenant>();
-      Tenant tenant = new Tenant();
-      tenant.setTenantName(appUser.getName());
-      if ("1".equals(appUser.getSex())) {// 男
-        tenant.setGender("1");
-      }
-      if ("0".equals(appUser.getSex())) {// 女
-        tenant.setGender("2");
-      }
-      tenant.setCellPhone(appUser.getPhone());
-      tenant.setIdType(CertTypeEnum.CERT_ID.getValue());
-      tenant.setIdNo(appUser.getIdCardNo());
-      if (StringUtils.isNotEmpty(appUser.getBirth())) {
-        tenant.setBirthday(DateUtils.parseDate(appUser.getBirth()));
-      }
-      tenant.setPosition(appUser.getProfession());
-      tenantList.add(tenant);
-      rentContract.setTenantList(tenantList);
-      // 租客身份证照片挂载到合同上
-      String rentContractCusIDFile = "";
-      PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-      String img_url = proper.getProperty("img.url");
-      String idCardFrontPhoto = appUser.getIdCardPhoto＿front();
-      if (StringUtils.isNotBlank(idCardFrontPhoto)) {
-        rentContractCusIDFile = img_url + idCardFrontPhoto;
-      }
-      String idCardBackPhoto = appUser.getIdCardPhoto＿back();
-      if (StringUtils.isNotBlank(idCardBackPhoto)) {
-        rentContractCusIDFile = rentContractCusIDFile + "|" + img_url + idCardBackPhoto;
-      }
-      rentContract.setRentContractCusIDFile(rentContractCusIDFile);
+      rentContract.setTenantList(appUserToTenant(appUser)); // APP用户转租客
+      rentContract.setRentContractCusIDFile(generateIdFilePath(appUser));// 租客身份证照片挂载到合同上
       rentContract.setHouse(house);
       String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
       if (null != room) {
@@ -1262,6 +1183,42 @@ public class AppHouseController {
     return data;
   }
 
+  private String generateIdFilePath(AppUser appUser) {
+    String rentContractCusIDFile = "";
+    PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+    String img_url = proper.getProperty("img.url");
+    String idCardFrontPhoto = appUser.getIdCardPhoto＿front();
+    if (StringUtils.isNotBlank(idCardFrontPhoto)) {
+      rentContractCusIDFile = img_url + idCardFrontPhoto;
+    }
+    String idCardBackPhoto = appUser.getIdCardPhoto＿back();
+    if (StringUtils.isNotBlank(idCardBackPhoto)) {
+      rentContractCusIDFile = rentContractCusIDFile + "|" + img_url + idCardBackPhoto;
+    }
+    return rentContractCusIDFile;
+  }
+
+  private List<Tenant> appUserToTenant(AppUser appUser) {
+    List<Tenant> tenantList = new ArrayList<Tenant>();
+    Tenant tenant = new Tenant();
+    tenant.setTenantName(appUser.getName());
+    if ("1".equals(appUser.getSex())) {// 男
+      tenant.setGender("1");
+    }
+    if ("0".equals(appUser.getSex())) {// 女
+      tenant.setGender("2");
+    }
+    tenant.setCellPhone(appUser.getPhone());
+    tenant.setIdType(CertTypeEnum.CERT_ID.getValue());
+    tenant.setIdNo(appUser.getIdCardNo());
+    if (StringUtils.isNotEmpty(appUser.getBirth())) {
+      tenant.setBirthday(DateUtils.parseDate(appUser.getBirth()));
+    }
+    tenant.setPosition(appUser.getProfession());
+    tenantList.add(tenant);
+    return tenantList;
+  }
+
   private void tailProcess(House house, int result, ResponseData data) {
     if (result == 0) {// 签约成功
       data.setCode("200");
@@ -1293,16 +1250,16 @@ public class AppHouseController {
       data.setCode("101");
       return data;
     }
+    String token = (String) request.getHeader("token");
+    AppToken apptoken = new AppToken();
+    apptoken.setToken(token);
+    apptoken = appTokenService.findByToken(apptoken);
+    if (null == apptoken) {
+      data.setCode("401");
+      data.setMsg("请重新登录");
+      return data;
+    }
     try {
-      String token = (String) request.getHeader("token");
-      AppToken apptoken = new AppToken();
-      apptoken.setToken(token);
-      apptoken = appTokenService.findByToken(apptoken);
-      if (null == apptoken) {
-        data.setCode("401");
-        data.setMsg("请重新登录");
-        return data;
-      }
       AuditHis auditHis = new AuditHis();
       auditHis.setObjectId(request.getParameter("contract_id"));
       auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
@@ -1389,10 +1346,6 @@ public class AppHouseController {
       rentContract.setRenMonths(rentContractOld.getRenMonths());
       rentContract.setDepositMonths(rentContractOld.getDepositMonths());
       Tenant tenant = new Tenant();
-      // tenant.setIdType("0");// 身份证
-      // tenant.setIdNo(appUser.getIdCardNo());
-      // List<Tenant> tenantList =
-      // tenantService.findTenantByIdTypeAndNo(tenant);
       tenant.setCellPhone(appUser.getPhone());
       List<Tenant> tenantList = tenantService.findTenantByPhone(tenant);
       if (null == tenantList || tenantList.size() <= 0) {
@@ -1456,6 +1409,9 @@ public class AppHouseController {
     return data;
   }
 
+  /**
+   * 用户在APP客户端进行签约信息确认，生成首期账单（包括账务交易记录和订单记录）
+   */
   @RequestMapping(value = "sign_order")
   @ResponseBody
   public ResponseData signOrder(HttpServletRequest request, HttpServletResponse response) {
@@ -1464,159 +1420,107 @@ public class AppHouseController {
       data.setCode("101");
       return data;
     }
+    String token = (String) request.getHeader("token");
+    AppToken apptoken = new AppToken();
+    apptoken.setToken(token);
+    apptoken = appTokenService.findByToken(apptoken);
+    if (null == apptoken) {
+      data.setCode("401");
+      data.setMsg("请重新登录！");
+      return data;
+    }
+    AppUser appUser = new AppUser();
+    appUser.setPhone(apptoken.getPhone());
+    appUser = appUserService.getByPhone(appUser);
+    if (appUser == null) {
+      data.setCode("400");
+      data.setMsg("请注册账号！");
+      return data;
+    }
     try {
-      String token = (String) request.getHeader("token");
-      AppToken apptoken = new AppToken();
-      apptoken.setToken(token);
-      apptoken = appTokenService.findByToken(apptoken);
-      if (null == apptoken) {
-        data.setCode("401");
-        data.setMsg("请重新登录");
-        return data;
-      }
-      AppUser appUser = new AppUser();
-      appUser.setPhone(apptoken.getPhone());
-      appUser = appUserService.getByPhone(appUser);
       ContractBook contractBook = new ContractBook();
       contractBook.setUserPhone(apptoken.getPhone());
       contractBook.setContractId(request.getParameter("contract_id"));
-      List<ContractBook> list = this.contractBookService.findRentContract(contractBook);
-      if (null != list && list.size() > 0) {
+      List<ContractBook> list = contractBookService.findRentContract(contractBook);
+      if (CollectionUtils.isNotEmpty(list)) {
         contractBook = list.get(0);
       }
-      RentContract rentContract = this.rentContractService.get(contractBook.getContractId());
-      /* 款项 */
-      PaymentTrans paymentTrans = new PaymentTrans();
-      paymentTrans.setTransId(rentContract.getId());
-      List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
-      String transIds = "";
-      double tradeAmount = 0;
-      List<Receipt> receiptList = new ArrayList<Receipt>();
-      // 首次需付费：水电押金、房租押金、房租*n
-      int rentMonthes = rentContract.getRenMonths();// 首付房租月数
-      int rentMonthesCount = 0;
-      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
-        if (rentMonthesCount >= rentMonthes) break;
-        if ("2".equals(tmpPaymentTrans.getPaymentType()) || "3".equals(tmpPaymentTrans.getPaymentType())) {// 水电押金/续补水电费押金
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-        } else if ("4".equals(tmpPaymentTrans.getPaymentType()) || "5".equals(tmpPaymentTrans.getPaymentType())) {// 房租押金/续补房租押金
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-        } else if ("6".equals(tmpPaymentTrans.getPaymentType())) {// 房租
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-          rentMonthesCount++;
+      RentContract rentContract = rentContractService.get(contractBook.getContractId());
+      // 安全性校验
+      if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource()) && ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
+        PaymentTrans paymentTrans = new PaymentTrans();
+        paymentTrans.setTransId(rentContract.getId());
+        List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans); // 查询出来的结果是先按照款项类型排序，款项类型相同的再按照款项开始日期排序
+        int rentMonthes = rentContract.getRenMonths();// 要首付房租的月数
+        String transIds = "";// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
+        double totalTradeAmount = 0;// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
+        List<Receipt> receiptList = new ArrayList<Receipt>();// 款项类型为：'2', '3', '4', '5','6'的所有收据
+        if (CollectionUtils.isNotEmpty(paymentTransList)) {// 筛选对应款项类型的id及累计金额
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
+          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
         }
-      }
-      rentMonthesCount = 0;
-      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
-        if (rentMonthesCount >= rentMonthes) break;
-        if ("18".equals(tmpPaymentTrans.getPaymentType())) {// 电视费
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-          rentMonthesCount++;
+        if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
+          transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
         }
-      }
-      rentMonthesCount = 0;
-      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
-        if (rentMonthesCount >= rentMonthes) break;
-        if ("20".equals(tmpPaymentTrans.getPaymentType())) {// 宽带费
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-          rentMonthesCount++;
+
+        // 生成账务交易记录，同时完成到账登记
+        TradingAccounts tradingAccounts = new TradingAccounts();
+        tradingAccounts.setTradeId(rentContract.getId());
+        List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
+        if (CollectionUtils.isNotEmpty(listTradingAccounts)) {
+          String oldTradingAccountsId = listTradingAccounts.get(0).getId();
+          PaymentOrder delPaymentOrder = new PaymentOrder();
+          delPaymentOrder.setTradeId(oldTradingAccountsId);
+          contractBookService.deleteByTradeId(delPaymentOrder);
         }
-      }
-      rentMonthesCount = 0;
-      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
-        if (rentMonthesCount >= rentMonthes) break;
-        if ("14".equals(tmpPaymentTrans.getPaymentType())) {// 水费
-          transIds += tmpPaymentTrans.getId() + ",";
-          tradeAmount += tmpPaymentTrans.getTradeAmount();
-          Receipt receipt = new Receipt();
-          receipt.setTradeMode("4");// 支付宝
-          receipt.setPaymentType(tmpPaymentTrans.getPaymentType());
-          receipt.setReceiptAmount(tmpPaymentTrans.getTradeAmount());
-          receiptList.add(receipt);
-          rentMonthesCount++;
+        tradingAccountsService.delete(tradingAccounts);
+        tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
+        tradingAccounts.setTransIds(transIds);
+        if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
+          tradingAccounts.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
+        } else {
+          tradingAccounts.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
         }
+        if (StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同,则扣除定金
+          DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
+          totalTradeAmount -= depositAgreement.getDepositAmount();
+        }
+        tradingAccounts.setTradeAmount(totalTradeAmount);
+        tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
+        tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
+        tradingAccounts.setPayeeName(appUser.getName());
+        tradingAccounts.setReceiptList(receiptList);
+        tradingAccountsService.save(tradingAccounts);
+
+        /* 订单生成 */
+        String houseId = "";
+        if (StringUtils.isNoneBlank(contractBook.getRoomId())) {
+          houseId = contractBook.getRoomId();
+        } else {
+          houseId = contractBook.getHouseId();
+        }
+        PaymentOrder paymentOrder = new PaymentOrder();
+        paymentOrder.setOrderId(contractBookService.generateOrderId());
+        paymentOrder.setOrderDate(new Date());
+        paymentOrder.setOrderStatus("1");// 未支付
+        paymentOrder.setTradeId(tradingAccounts.getId());
+        paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+        paymentOrder.setCreateDate(new Date());
+        paymentOrder.setHouseId(houseId);
+        contractBookService.saveOrder(paymentOrder);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("order_id", paymentOrder.getOrderId());
+        map.put("price", df.format(paymentOrder.getOrderAmount()));
+        data.setData(map);
+        data.setCode("200");
       }
-      if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
-        transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
-      }
-      /* 生成账务交易 */
-      TradingAccounts tradingAccounts = new TradingAccounts();
-      tradingAccounts.setTradeId(rentContract.getId());
-      List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
-      if (null != listTradingAccounts && listTradingAccounts.size() > 0) {
-        String oldTradingAccountsId = listTradingAccounts.get(0).getId();
-        PaymentOrder delPaymentOrder = new PaymentOrder();
-        delPaymentOrder.setTradeId(oldTradingAccountsId);
-        contractBookService.deleteByTradeId(delPaymentOrder);
-      }
-      tradingAccountsService.delete(tradingAccounts);
-      tradingAccounts.setTradeStatus("0");// 待审核
-      tradingAccounts.setTransIds(transIds);
-      if ("0".equals(rentContract.getSignType()))
-        tradingAccounts.setTradeType("3");// 新签合同
-      else
-        tradingAccounts.setTradeType("4");// 正常人工续签
-      // 定金转合同,则扣除定金
-      if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
-        DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
-        tradeAmount -= depositAgreement.getDepositAmount();
-      }
-      tradingAccounts.setTradeAmount(tradeAmount);
-      tradingAccounts.setTradeDirection("1");// 入账
-      tradingAccounts.setPayeeType("1");// 个人
-      tradingAccounts.setPayeeName(appUser.getName());
-      tradingAccounts.setReceiptList(receiptList);
-      tradingAccountsService.save(tradingAccounts);
-      /* 订单生成 */
-      String houseId = "";
-      if (StringUtils.isNoneBlank(contractBook.getRoomId()))
-        houseId = contractBook.getRoomId();
-      else
-        houseId = contractBook.getHouseId();
-      PaymentOrder paymentOrder = new PaymentOrder();
-      paymentOrder.setOrderId(contractBookService.generateOrderId());
-      paymentOrder.setOrderDate(new Date());
-      paymentOrder.setOrderStatus("1");// 未支付
-      paymentOrder.setTradeId(tradingAccounts.getId());
-      paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
-      paymentOrder.setCreateDate(new Date());
-      paymentOrder.setHouseId(houseId);
-      this.contractBookService.saveOrder(paymentOrder);
-      Map<String, Object> map = new HashMap<String, Object>();
-      map.put("order_id", paymentOrder.getOrderId());
-      map.put("price", df.format(paymentOrder.getOrderAmount()));
-      data.setData(map);
-      data.setCode("200");
     } catch (Exception e) {
       data.setCode("500");
       log.error("signOrder error:", e);
@@ -1624,6 +1528,39 @@ public class AppHouseController {
     return data;
   }
 
+  /**
+   * 累计款项ID列表及金额汇总
+   * 
+   * @param targetPaymentType 需要过滤的款项类型
+   * @param transIds 过滤出来的款项ID，按照,隔开
+   * @param tradeAmount 过滤出来的款项，累计金额
+   * @param rentMonthes 需要过滤的款项数量
+   * @param receiptList 每笔款项对应生成一笔收据
+   */
+  private void processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, String transIds, double tradeAmount, int rentMonthes) {
+    int count = 0;
+    for (PaymentTrans tempPT : paymentTransList) {
+      if (count >= rentMonthes) {
+        break;
+      }
+      if (targetPaymentType.equals(tempPT.getPaymentType())) {
+        transIds += tempPT.getId() + ",";
+        tradeAmount += tempPT.getTradeAmount();
+        Receipt receipt = new Receipt();
+        receipt.setReceiptNo(RandomStrUtil.generateCode(true, 12));
+        receipt.setReceiptDate(new Date());
+        receipt.setTradeMode(TradeModeTypeEnum.ALIPAY.getValue());
+        receipt.setPaymentType(tempPT.getPaymentType());
+        receipt.setReceiptAmount(tempPT.getTradeAmount());
+        receiptList.add(receipt);
+        count++;
+      }
+    }
+  }
+
+  /**
+   * 我的合同列表
+   */
   @RequestMapping(value = "contract_list")
   @ResponseBody
   public ResponseData contractList(HttpServletRequest request, HttpServletResponse response) {
@@ -1633,10 +1570,6 @@ public class AppHouseController {
       // 3：查询我的账单前的所有合同列表；4:查询该登录号名下的所有合同列表
       String type = request.getParameter("type");
       if (StringUtils.isBlank(type)) type = "4";
-      // String contractBusiStatus = "";
-      // if("0".equals(type) || "1".equals(type) || "2".equals(type) ||
-      // "3".equals(type))
-      // contractBusiStatus = "0";//有效
       String token = (String) request.getHeader("token");
       AppToken apptoken = new AppToken();
       apptoken.setToken(token);
@@ -1664,15 +1597,17 @@ public class AppHouseController {
         mp.put("house_desc", tmpContractBook.getShortLocation());
         mp.put("rent", tmpContractBook.getRent());
         String status = "";
-        if ("0".equals(tmpContractBook.getBookStatus()))// 暂存
+        if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(tmpContractBook.getBookStatus())) {// 暂存
           status = "0";// 等待管家确认
-        else if ("1".equals(tmpContractBook.getBookStatus()))// 录入完成到账收据待登记
+        } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(tmpContractBook.getBookStatus())) {
           status = "4";// 管家确认成功请您核实
-        else if ("2".equals(tmpContractBook.getBookStatus()) || "4".equals(tmpContractBook.getBookStatus()))// 2=到账收据完成合同内容待审核;4=内容审核通过到账收据待审核
+        } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(tmpContractBook.getBookStatus())
+            || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(tmpContractBook.getBookStatus())) {
           status = "1";// 在线签约成功等待支付
-        else if ("6".equals(tmpContractBook.getBookStatus()))// 到账收据审核通过
+        } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tmpContractBook.getBookStatus())) {
           status = "2";// 在线签约支付成功
-        if ("3".equals(tmpContractBook.getBookStatus())) {// 内容审核拒绝
+        }
+        if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(tmpContractBook.getBookStatus())) {
           status = "3";// 管家取消在线签约
           if (apptoken.getPhone().equals(tmpContractBook.getUpdateUser())) {
             status = "5";// 用户取消在线签约

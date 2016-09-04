@@ -471,8 +471,8 @@
 	<form:form id="inputForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<form:hidden path="dataSource"/>
-		<form:hidden path="contractStatus" value="1"/>
-		<form:hidden path="validatorFlag" value="1"/><!-- 表示：默认为保存，而不是暂存 -->
+		<form:hidden path="contractStatus" value="1"/><!-- 合同审核状态：录入完成到账收据待登记 -->
+		<form:hidden path="validatorFlag" value="1"/><!-- 表示：保存 -->
 		<form:hidden path="saveSource" value="0"/><!-- 表示：非定金转合同 -->
 		<form:hidden path="contractId"/>
 		<form:hidden path="agreementId"/>

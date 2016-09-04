@@ -26,11 +26,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
+import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
@@ -51,6 +54,7 @@ import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
  * 定金协议Controller
@@ -192,64 +196,48 @@ public class DepositAgreementController extends BaseController {
     return "modules/contract/depositAgreementForm";
   }
 
+  /**
+   * 牵涉到后台定金协议的新增、修改；以及APP端合同的修改保存
+   */
   // @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "save")
   public String save(DepositAgreement depositAgreement, Model model, RedirectAttributes redirectAttributes) {
-    if (!beanValidator(model, depositAgreement) && "1".equals(depositAgreement.getValidatorFlag())) {
+    if (!beanValidator(model, depositAgreement) && ValidatorFlagEnum.SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
       return form(depositAgreement, model);
     }
-
-    // 检查房屋、房间状态
-    if ("0".equals(depositAgreement.getRentMode())) {
-      // 整租
-      String houseId = depositAgreement.getHouse().getId();
-      House house = houseService.get(houseId);
-      String houseStatus = house.getHouseStatus();
-      if (!"1".equals(houseStatus) && !"3".equals(houseStatus) && !"5".equals(houseStatus)) {
-        // 1:待出租可预订 3:部分出租 5:已退待租
-        model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-        addMessage(model, "房屋已预订或出租");
-        return form(depositAgreement, model);
-      }
-    } else {
-      // 单间
-      String roomId = depositAgreement.getRoom().getId();
-      Room room = roomServie.get(roomId);
-      String roomStatus = room.getRoomStatus();
-      if (!"1".equals(roomStatus) && !"4".equals(roomStatus)) {
-        // 1:待出租可预订 4:已退租可预订
-        model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-        addMessage(model, "房间已预订或出租");
-        return form(depositAgreement, model);
-      }
-    }
-
-    if (depositAgreement.getIsNewRecord()) {
+    if (depositAgreement.getIsNewRecord()) {// 设置定金协议编号
       String[] codeArr = depositAgreement.getAgreementCode().split("-");
       depositAgreement.setAgreementCode(codeArr[0] + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-" + "XY");
     }
-
-    // 若系统里面已经存在了定金协议，且状态为暂存或者内容审核拒绝，再添加定金协议时候不能选择当前房屋或房间，而强迫用户去补充暂存数据和修改内容审核拒绝的数据
-    DepositAgreement conditionDepositAgreement = new DepositAgreement();
-    conditionDepositAgreement.setPropertyProject(depositAgreement.getPropertyProject());
-    conditionDepositAgreement.setHouse(depositAgreement.getHouse());
-    conditionDepositAgreement.setRoom(depositAgreement.getRoom());
-    depositAgreementService.save(depositAgreement);
-    addMessage(redirectAttributes, "保存定金协议成功");
-
-    try {
-      Message message = new Message();
-      message.setContent("您的预订申请已被管家确认,请联系管家!");
-      message.setTitle("预订提醒");
-      message.setType("预订提醒");
-      Tenant tenant = depositAgreement.getTenantList().get(0);
-      message.setReceiver(this.tenantService.get(tenant).getCellPhone());
-      messageService.addMessage(message, true);
-    } catch (Exception e) {
-      this.logger.error("预订推送异常:", e);
+    if (StringUtils.isNotEmpty(depositAgreement.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {} else {
+      depositAgreement.setDataSource(DataSourceEnum.BACK_SYSTEM.getValue());
     }
-
-    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+    int result = depositAgreementService.saveDepositAgreement(depositAgreement);
+    if (result == -2) {
+      model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
+      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+      return "modules/contract/depositAgreementForm";
+    } else if (result == -1) {
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, "房源已出租！");
+      return form(depositAgreement, model);
+    } else {
+      if (StringUtils.isNotEmpty(depositAgreement.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {// APP订单后台保存
+        try {
+          Message message = new Message();
+          message.setContent("您的预订申请已被管家确认,请联系管家!");
+          message.setTitle("预订提醒");
+          message.setType("预订提醒");
+          Tenant tenant = depositAgreement.getTenantList().get(0);
+          message.setReceiver(tenantService.get(tenant).getCellPhone());
+          messageService.addMessage(message, true);
+        } catch (Exception e) {
+          logger.error("预订推送异常:", e);
+        }
+      }
+      addMessage(redirectAttributes, "保存定金协议成功");
+      return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+    }
   }
 
   @RequestMapping(value = "audit")
@@ -260,7 +248,8 @@ public class DepositAgreementController extends BaseController {
 
   @RequestMapping(value = "cancel")
   public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
-    auditHis.setAuditStatus("2");
+    auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
+    auditHis.setUpdateUser(UserUtils.getUser().getId());
     depositAgreementService.audit(auditHis);
     return list(new DepositAgreement(), request, response, model);
   }

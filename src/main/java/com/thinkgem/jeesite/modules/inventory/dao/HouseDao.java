@@ -49,4 +49,9 @@ public interface HouseDao extends CrudDao<House> {
    * 定金转合同-整租，更新房屋状态
    */
   int updateHouseStatusFromDepositToContract(House house);
+
+  /**
+   * 预定-整租，更新房屋状态
+   */
+  int updateHouseStatus4Deposit(House house);
 }

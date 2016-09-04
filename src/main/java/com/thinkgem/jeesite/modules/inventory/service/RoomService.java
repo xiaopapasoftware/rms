@@ -150,4 +150,39 @@ public class RoomService extends CrudService<RoomDao, Room> {
       }
     }
   }
+
+  /**
+   * 整租，在房屋状态成功锁定后，锁定房屋下所有的房间状态
+   */
+  @Transactional(readOnly = false)
+  public void depositAllRooms(String houseId) {
+    House h = new House();
+    h.setId(houseId);
+    Room parameterRoom = new Room();
+    parameterRoom.setHouse(h);
+    List<Room> rooms = super.findList(parameterRoom);
+    if (CollectionUtils.isNotEmpty(rooms)) {
+      for (Room r : rooms) {
+        r.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());
+        super.save(r);
+      }
+    }
+  }
+
+
+  /**
+   * 预定-单间，是否成功锁定房源
+   */
+  @Transactional(readOnly = false)
+  public boolean isLockSingleRoom4Deposit(String roomId) {
+    Room paRoom = new Room();
+    paRoom.preUpdate();
+    paRoom.setId(roomId);
+    int updatedCount = dao.updateRoomStatus4Deposit(paRoom);
+    if (updatedCount > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

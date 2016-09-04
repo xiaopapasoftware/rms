@@ -5,56 +5,37 @@
 	<sql id="paymentTransColumns">
 		a.id AS "id",
 		a.trade_type AS "tradeType",
-		a.payment_type AS
-		"paymentType",
+		a.payment_type AS "paymentType",
 		a.trans_id AS "transId",
-		a.trade_direction AS
-		"tradeDirection",
+		a.trade_direction AS "tradeDirection",
 		a.start_date AS "startDate",
-		a.expired_date AS
-		"expiredDate",
+		a.expired_date AS "expiredDate",
 		a.trade_amount AS "tradeAmount",
-		a.trans_amount AS
-		"transAmount",
+		a.trans_amount AS "transAmount",
 		a.last_amount AS "lastAmount",
-		a.transfer_deposit_amount
-		AS "transferDepositAmount",
+		a.transfer_deposit_amount AS "transferDepositAmount",
 		a.trans_status AS "transStatus",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks
-		AS "remarks",
+		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		case
-		when a.trade_type=1 or
-		a.trade_type=2
-		then ta.agreement_name
-		when a.trade_type=0
-		then
-		tl.contract_name
-		else tc.contract_name
-		end transName,
-		case
-		when
-		a.trade_type=1 or a.trade_type=2
-		then ta.agreement_code
-		when
-		a.trade_type=0
-		then tl.contract_code
-		else tc.contract_code
-		end
-		transObjectNo,
+		case when a.trade_type=1 or a.trade_type=2 then ta.agreement_name
+			 when a.trade_type=0 then tl.contract_name
+			 else tc.contract_name
+			 end transName,
+		case when a.trade_type=1 or a.trade_type=2 then ta.agreement_code
+			 when a.trade_type=0 then tl.contract_code
+			 else tc.contract_code
+			 end transObjectNo,
 		tl.remittance_date as "remittanceDate"
 	</sql>
 
 	<sql id="paymentTransJoins">
 		left join t_deposit_agreement ta on a.trans_id=ta.id
-		left
-		join t_rent_contract tc on a.trans_id=tc.id
-		left join t_lease_contract
-		tl on a.trans_id=tl.id
+		left join t_rent_contract tc on a.trans_id=tc.id
+		left join t_lease_contract tl on a.trans_id=tl.id
 	</sql>
 
 	<select id="get" resultType="PaymentTrans">
@@ -67,9 +48,8 @@
 
 	<select id="findList" resultType="PaymentTrans">
 		select * from(
-		SELECT
-		<include refid="paymentTransColumns" />
-		FROM t_payment_trans a
+		SELECT <include refid="paymentTransColumns" />
+		FROM 	t_payment_trans a
 		<include refid="paymentTransJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

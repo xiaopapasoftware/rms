@@ -252,5 +252,13 @@
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 	
-	
+	<update id="updateRoomStatus4Deposit">
+		UPDATE 		t_room 
+		SET 		room_status = '2',
+					update_by = #{updateBy.id},
+					update_date = #{updateDate}
+		WHERE 		id = #{id}
+		AND 		(room_status = '1' OR room_status = '4')
+		and 		del_flag = #{DEL_FLAG_NORMAL}
+	</update>
 </mapper>

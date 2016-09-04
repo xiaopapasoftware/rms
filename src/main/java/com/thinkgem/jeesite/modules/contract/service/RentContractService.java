@@ -457,54 +457,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       auditService.delete(id);
       auditService.insert(AuditTypeEnum.RENT_CONTRACT_CONTENT.getValue(), "rent_contract_role", id, "");
     }
-
-    // 合同承租人关联信，如果是从APP过来的需要新增租客信息
-    if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(contractSignType) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())
-        && ValidatorFlagEnum.TEMP_SAVE.getValue().equals(rentContract.getValidatorFlag())) {
-      List<Tenant> leaseTenants = rentContract.getTenantList();
-      if (CollectionUtils.isNotEmpty(leaseTenants)) {
-        Tenant leaseTenat = leaseTenants.get(0);
-        Tenant queryTenant = new Tenant();
-        queryTenant.setCellPhone(leaseTenat.getCellPhone());
-        List<Tenant> tenantList = tenantService.findTenantByPhone(queryTenant);
-        if (CollectionUtils.isEmpty(tenantList)) {
-          String tenatId = tenantService.saveAndReturnId(leaseTenat);
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenatId);
-          contractTenant.setLeaseContractId(id);
-          contractTenant.setContractId(id);
-          contractTenantService.save(contractTenant);
-        }
-      }
-    } else {// 后台管理系统直接保存合同，承租人信息
-      ContractTenant delContractTenant = new ContractTenant();
-      delContractTenant.setLeaseContractId(id);
-      delContractTenant.preUpdate();
-      contractTenantService.delete(delContractTenant);
-      List<Tenant> list = rentContract.getTenantList();
-      if (CollectionUtils.isNotEmpty(list)) {
-        for (Tenant tenant : list) {
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenant.getId());
-          contractTenant.setLeaseContractId(id);
-          contractTenantService.save(contractTenant);
-        }
-      }
-      // 合同入住人关联信息
-      ContractTenant delContractTenant2 = new ContractTenant();
-      delContractTenant2.setContractId(id);
-      delContractTenant2.preUpdate();
-      contractTenantService.delete(delContractTenant2);
-      List<Tenant> list2 = rentContract.getLiveList();
-      if (CollectionUtils.isNotEmpty(list2)) {
-        for (Tenant tenant : list2) {
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenant.getId());
-          contractTenant.setContractId(id);
-          contractTenantService.save(contractTenant);
-        }
-      }
-    }
+    // 处理承租人/入住人关系
+    contractTenantService.doProcess4RentContract(rentContract);
     // 修改合同，首先清空所有的合同附件
     if (!rentContract.getIsNewRecord()) {
       Attachment attachment = new Attachment();
