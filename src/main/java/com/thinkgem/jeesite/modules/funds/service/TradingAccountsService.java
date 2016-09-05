@@ -36,10 +36,14 @@ import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.AgreementAuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
@@ -363,36 +367,39 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     }
     String tradeId = tradingAccounts.getTradeId();
     String tradeType = tradingAccounts.getTradeType();
-    if ("1".equals(tradeType)) {// 预约定金
+    if (TradeTypeEnum.DEPOSIT_AGREEMENT.getValue().equals(tradeType)) {
       DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
       depositAgreement.preUpdate();
-      if ("0".equals(depositAgreement.getAgreementStatus())) {// 定金协议状态为“录入完成到账收据待登记”
-        depositAgreement.setAgreementStatus("1");// '1':'到账收据登记完成内容待审核'
+      if (AgreementAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(depositAgreement.getAgreementStatus())) {
+        depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue());
         depositAgreementDao.update(depositAgreement);
       } else {
-        if (!"3".equals(depositAgreement.getAgreementStatus())// '3':'内容审核通过到账收据待审核'
-            && !"5".equals(depositAgreement.getAgreementStatus())) {// "5":到账收据审核通过
-          depositAgreement.setAgreementStatus("3");// 内容审核通过到账收据待审核
+        if (!AgreementAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(depositAgreement.getAgreementStatus())
+            && !AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(depositAgreement.getAgreementStatus())) {
+          depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
           depositAgreementDao.update(depositAgreement);
         }
       }
-    } else if ("2".equals(tradeType)) {// 定金转违约
+    } else if (TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradeType)) {
       DepositAgreement depositAgreement = depositAgreementDao.get(tradeId);
-      depositAgreement.preUpdate();
-      if ("3".equals(depositAgreement.getAgreementBusiStatus()) || "6".equals(depositAgreement.getAgreementBusiStatus())) { // '3','定金转违约到账待登记';'6'='定金转违约到账审核拒绝'
-        depositAgreement.setAgreementBusiStatus("4");// '4'='定金转违约到账待审核';
+      if (AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue().equals(depositAgreement.getAgreementBusiStatus())
+          || AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue().equals(depositAgreement.getAgreementBusiStatus())) {
+        depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_TO_AUDIT.getValue());
       }
+      depositAgreement.preUpdate();
       depositAgreementDao.update(depositAgreement);
-    } else if ("3".equals(tradeType) || "4".equals(tradeType) || "5".equals(tradeType)) {// 新签合同、正常人工续签、逾期自动续签
+    } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)
+        || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
       RentContract rentContract = rentContractDao.get(tradeId);
-      rentContract.preUpdate();
       if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
         rentContract.setContractStatus(ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue());
+        rentContract.preUpdate();
         rentContractDao.update(rentContract);
       } else {
         if (!ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(rentContract.getContractStatus())
             && !ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
           rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
+          rentContract.preUpdate();
           rentContractDao.update(rentContract);
         }
       }
@@ -406,19 +413,20 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         upFee.preUpdate();
         electricFeeDao.update(upFee);
       }
-    } else if ("7".equals(tradeType) || "8".equals(tradeType) || "6".equals(tradeType)) {// '6''提前退租';'7''正常退租';'8''逾期退租'
+    } else if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType)
+        || TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
       RentContract rentContract = rentContractDao.get(tradeId);
-      rentContract.preUpdate();
-      if ("6".equals(rentContract.getContractStatus())) {// '6''到账收据审核通过'
-        rentContract.setContractBusiStatus("5");// 退租款项待审核
+      if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
+        rentContract.setContractBusiStatus(ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue());
+        rentContract.preUpdate();
         rentContractDao.update(rentContract);
       }
-    } else if ("9".equals(tradeType)) {// 特殊退租
+    } else if (TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
       RentContract rentContract = rentContractDao.get(tradeId);
       rentContract.preUpdate();
-      rentContract.setContractBusiStatus("11");// 特殊退租结算待审核
+      rentContract.setContractBusiStatus(ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue());
       rentContractDao.update(rentContract);
-    } else if ("11".equals(tradeType)) { // 11=电费充值
+    } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradeType)) {
       if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
         String[] transIds = tradingAccounts.getTransIds().split(",");
         List<String> eleTransIds = new ArrayList<String>();// 电费充值的款项ID列表

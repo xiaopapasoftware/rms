@@ -29,6 +29,51 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
   private TenantService tenantService;
 
   /**
+   * 保存或修改定金协议（包括前端APP的定金）
+   */
+  @Transactional(readOnly = false)
+  public void doProcess4DepositAgreement(DepositAgreement depositAgreement) {
+    if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource()) && ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
+      List<Tenant> leaseTenants = depositAgreement.getTenantList();
+      if (CollectionUtils.isNotEmpty(leaseTenants)) {
+        Tenant leaseTenat = leaseTenants.get(0);
+        Tenant queryTenant = new Tenant();
+        queryTenant.setCellPhone(leaseTenat.getCellPhone());
+        List<Tenant> tempTenantList = tenantService.findTenantByPhone(queryTenant);
+        if (CollectionUtils.isEmpty(tempTenantList)) {
+          String tenatId = tenantService.saveAndReturnId(leaseTenat);
+          ContractTenant contractTenant = new ContractTenant();
+          contractTenant.setTenantId(tenatId);
+          contractTenant.setDepositAgreementId(depositAgreement.getId());
+          super.save(contractTenant);
+        } else {
+          ContractTenant contractTenant = new ContractTenant();
+          contractTenant.setTenantId(tempTenantList.get(0).getId());
+          contractTenant.setDepositAgreementId(depositAgreement.getId());
+          List<ContractTenant> cts = super.findList(contractTenant);
+          if (CollectionUtils.isEmpty(cts)) {
+            super.save(contractTenant);
+          }
+        }
+      }
+    } else { /* 保存定金-租客关联信息 */
+      List<Tenant> tenants = depositAgreement.getTenantList();
+      if (CollectionUtils.isNotEmpty(tenants)) {
+        ContractTenant delTenant = new ContractTenant();
+        delTenant.setDepositAgreementId(depositAgreement.getId());
+        delTenant.preUpdate();
+        super.delete(delTenant);
+        for (Tenant tenant : tenants) {
+          ContractTenant contractTenant = new ContractTenant();
+          contractTenant.setTenantId(tenant.getId());
+          contractTenant.setDepositAgreementId(depositAgreement.getId());
+          super.save(contractTenant);
+        }
+      }
+    }
+  }
+
+  /**
    * 保存或修改出租合同（包括前端APP的合同）
    */
   @Transactional(readOnly = false)
@@ -49,6 +94,16 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
           contractTenant.setLeaseContractId(rentContract.getId());
           contractTenant.setContractId(rentContract.getId());
           super.save(contractTenant);
+        } else {
+          Tenant tt = tempTenantList.get(0);
+          ContractTenant contractTenant = new ContractTenant();
+          contractTenant.setTenantId(tt.getId());
+          contractTenant.setLeaseContractId(rentContract.getId());
+          contractTenant.setContractId(rentContract.getId());
+          List<ContractTenant> cts = super.findList(contractTenant);
+          if (CollectionUtils.isEmpty(cts)) {
+            super.save(contractTenant);
+          }
         }
       }
     } else {// 后台管理系统直接保存合同，承租人信息
@@ -77,43 +132,6 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
           contractTenant.setTenantId(tenant.getId());
           contractTenant.setContractId(rentContract.getId());
           super.save(contractTenant);
-        }
-      }
-    }
-  }
-
-  /**
-   * 保存或修改定金协议（包括前端APP的定金）
-   */
-  @Transactional(readOnly = false)
-  public void doProcess4DepositAgreement(DepositAgreement depositAgreement) {
-    if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource()) && ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
-      List<Tenant> leaseTenants = depositAgreement.getTenantList();
-      if (CollectionUtils.isNotEmpty(leaseTenants)) {
-        Tenant leaseTenat = leaseTenants.get(0);
-        Tenant queryTenant = new Tenant();
-        queryTenant.setCellPhone(leaseTenat.getCellPhone());
-        List<Tenant> tempTenantList = tenantService.findTenantByPhone(queryTenant);
-        if (CollectionUtils.isEmpty(tempTenantList)) {
-          String tenatId = tenantService.saveAndReturnId(leaseTenat);
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenatId);
-          contractTenant.setDepositAgreementId(depositAgreement.getId());
-          super.save(contractTenant);
-        }
-      } else { /* 保存定金-租客关联信息 */
-        List<Tenant> tenants = depositAgreement.getTenantList();
-        if (CollectionUtils.isNotEmpty(tenants)) {
-          ContractTenant delTenant = new ContractTenant();
-          delTenant.setDepositAgreementId(depositAgreement.getId());
-          delTenant.preUpdate();
-          super.delete(delTenant);
-          for (Tenant tenant : tenants) {
-            ContractTenant contractTenant = new ContractTenant();
-            contractTenant.setTenantId(tenant.getId());
-            contractTenant.setDepositAgreementId(depositAgreement.getId());
-            super.save(contractTenant);
-          }
         }
       }
     }
