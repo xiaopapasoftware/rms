@@ -673,7 +673,6 @@ public class AppHouseController {
       appUser.setPhone(apptoken.getPhone());
       appUser = appUserService.getByPhone(appUser);
       ContractBook contractBook = new ContractBook();
-      // contractBook.setIdNo(appUser.getIdCardNo());
       contractBook.setUserPhone(appUser.getPhone());
       contractBook.setDepositId(request.getParameter("id"));
       List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
@@ -758,7 +757,6 @@ public class AppHouseController {
       appUser.setPhone(phone);
       appUser = appUserService.getByPhone(appUser);
       ContractBook contractBook = new ContractBook();
-      // contractBook.setIdNo(appUser.getIdCardNo());
       contractBook.setUserPhone(appUser.getPhone());
       contractBook.setDepositId(request.getParameter("id"));
       List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
@@ -857,7 +855,7 @@ public class AppHouseController {
       }
       DepositAgreement depositAgreement = depositAgreementService.get(contractBook.getDepositId());
       if (depositAgreement != null && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())
-          && AgreementAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(depositAgreement.getAgreementStatus())) {
+          && AgreementAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(depositAgreement.getAgreementStatus())) {
         PaymentTrans paymentTrans = new PaymentTrans();
         paymentTrans.setTransId(depositAgreement.getId());
         List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
@@ -1425,7 +1423,7 @@ public class AppHouseController {
       RentContract rentContract = rentContractService.get(contractBook.getContractId());
       // 安全性校验
       if (rentContract != null && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())
-          && ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
+          && ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(rentContract.getContractStatus())) {
         PaymentTrans paymentTrans = new PaymentTrans();
         paymentTrans.setTransId(rentContract.getId());
         List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans); // 查询出来的结果是先按照款项类型排序，款项类型相同的再按照款项开始日期排序

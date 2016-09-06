@@ -322,8 +322,8 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="depositAgreement" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<form:hidden path="agreementStatus" value="0"/>
-		<form:hidden path="validatorFlag" value="1"/>
+		<form:hidden path="agreementStatus" value="0"/><!-- 录入完成到账收据待登记 -->
+		<form:hidden path="validatorFlag" value="1"/><!-- 保存 -->
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">定金协议编号：</label>
