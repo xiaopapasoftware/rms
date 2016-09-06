@@ -308,24 +308,46 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       roomId = rentContract.getRoom().getId();
     }
     if (rentContract.getIsNewRecord()) {// 新增,包括手机APP签约申请以及后台直接新增合同，需要锁定房源
-      if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) { // 新签
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-          boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
-          if (isLock) {
-            roomService.lockRooms(houseId);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
+      if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
+        if ("1".equals(rentContract.getSaveSource()) && StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同，把房源状态从“已预定”变更为“已出租”
+          if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+            boolean isLock = houseService.isLockWholeHouseFromDepositToContract(houseId);
+            if (isLock) {
+              roomService.lockRooms(houseId);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
+          } else {// 合租
+            boolean isLock = roomService.isLockSingleRoomFromDepositToContract(roomId);
+            if (isLock) {
+              houseService.calculateHouseStatus(roomId, false);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
           }
-        } else {// 合租
-          boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
-          if (isLock) {
-            houseService.calculateHouseStatus(roomId, false);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
+        } else {// 非定金转合同，直接新签
+          if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+            boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
+            if (isLock) {
+              roomService.lockRooms(houseId);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
+          } else {// 合租
+            boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
+            if (isLock) {
+              houseService.calculateHouseStatus(roomId, false);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
           }
         }
       }
@@ -342,28 +364,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           }
         } else {// 合租
           boolean isLock = roomService.isLockSingleRoom4RenewSign(roomId);
-          if (isLock) {
-            houseService.calculateHouseStatus(roomId, false);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
-          }
-        }
-      }
-      // 定金转合同，把房源状态从“已预定”变更为“已出租”
-      if ("1".equals(rentContract.getSaveSource()) && StringUtils.isNotBlank(rentContract.getAgreementId())) {
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-          boolean isLock = houseService.isLockWholeHouseFromDepositToContract(houseId);
-          if (isLock) {
-            roomService.lockRooms(houseId);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
-          }
-        } else {// 合租
-          boolean isLock = roomService.isLockSingleRoomFromDepositToContract(roomId);
           if (isLock) {
             houseService.calculateHouseStatus(roomId, false);
             doSaveContractBusiness(rentContract);
