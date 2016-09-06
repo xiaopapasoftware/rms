@@ -861,7 +861,7 @@ public class AppHouseController {
         String transIds = "";
         double totalTradeAmount = 0;
         List<Receipt> receiptList = new ArrayList<Receipt>();
-        processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
+        totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), transIds, 1);
         if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
           transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
         }
@@ -1430,15 +1430,15 @@ public class AppHouseController {
         double totalTradeAmount = 0;// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
         List<Receipt> receiptList = new ArrayList<Receipt>();// 款项类型为：'2', '3', '4', '5','6'的所有收据
         if (CollectionUtils.isNotEmpty(paymentTransList)) {// 筛选对应款项类型的id及累计金额
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), transIds, totalTradeAmount, 1);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
-          processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transIds, totalTradeAmount, rentMonthes);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), transIds, 1);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), transIds, 1);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), transIds, 1);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), transIds, 1);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), transIds, rentMonthes);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transIds, rentMonthes);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), transIds, rentMonthes);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), transIds, rentMonthes);
+          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transIds, rentMonthes);
         }
         if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
           transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
@@ -1513,7 +1513,8 @@ public class AppHouseController {
    * @param rentMonthes 需要过滤的款项数量
    * @param receiptList 每笔款项对应生成一笔收据
    */
-  private void processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, String transIds, double tradeAmount, int rentMonthes) {
+  private double processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, String transIds, int rentMonthes) {
+    double totalAmt = 0d;
     int count = 0;
     for (PaymentTrans tempPT : paymentTransList) {
       if (count >= rentMonthes) {
@@ -1521,7 +1522,7 @@ public class AppHouseController {
       }
       if (targetPaymentType.equals(tempPT.getPaymentType())) {
         transIds += tempPT.getId() + ",";
-        tradeAmount += tempPT.getTradeAmount();
+        totalAmt += tempPT.getTradeAmount();
         Receipt receipt = new Receipt();
         receipt.setReceiptNo(RandomStrUtil.generateCode(true, 12));
         receipt.setReceiptDate(new Date());
@@ -1532,6 +1533,7 @@ public class AppHouseController {
         count++;
       }
     }
+    return totalAmt;
   }
 
   /**
