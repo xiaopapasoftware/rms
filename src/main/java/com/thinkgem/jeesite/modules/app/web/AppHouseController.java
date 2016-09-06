@@ -854,8 +854,7 @@ public class AppHouseController {
         contractBook = list.get(0);
       }
       DepositAgreement depositAgreement = depositAgreementService.get(contractBook.getDepositId());
-      if (depositAgreement != null && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())
-          && AgreementAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(depositAgreement.getAgreementStatus())) {
+      if (depositAgreement != null && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
         PaymentTrans paymentTrans = new PaymentTrans();
         paymentTrans.setTransId(depositAgreement.getId());
         List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
@@ -1422,8 +1421,7 @@ public class AppHouseController {
       }
       RentContract rentContract = rentContractService.get(contractBook.getContractId());
       // 安全性校验
-      if (rentContract != null && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())
-          && ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(rentContract.getContractStatus())) {
+      if (rentContract != null && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
         PaymentTrans paymentTrans = new PaymentTrans();
         paymentTrans.setTransId(rentContract.getId());
         List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans); // 查询出来的结果是先按照款项类型排序，款项类型相同的再按照款项开始日期排序
