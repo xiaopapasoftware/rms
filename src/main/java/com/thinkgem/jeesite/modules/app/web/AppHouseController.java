@@ -861,7 +861,9 @@ public class AppHouseController {
         String transIds = "";
         double totalTradeAmount = 0;
         List<Receipt> receiptList = new ArrayList<Receipt>();
-        totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), transIds, 1);
+        Map<String, Object> resultMap = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), 1);
+        totalTradeAmount += (Double) (resultMap.get("1"));
+        transIds += (String) (resultMap.get("2"));
         if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
           transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
         }
@@ -1430,15 +1432,33 @@ public class AppHouseController {
         double totalTradeAmount = 0;// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
         List<Receipt> receiptList = new ArrayList<Receipt>();// 款项类型为：'2', '3', '4', '5','6'的所有收据
         if (CollectionUtils.isNotEmpty(paymentTransList)) {// 筛选对应款项类型的id及累计金额
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), transIds, 1);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), transIds, 1);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), transIds, 1);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), transIds, 1);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), transIds, rentMonthes);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transIds, rentMonthes);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), transIds, rentMonthes);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), transIds, rentMonthes);
-          totalTradeAmount += processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transIds, rentMonthes);
+          Map<String, Object> resultMap1 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), 1);
+          totalTradeAmount += (Double) (resultMap1.get("1"));
+          transIds += (String) (resultMap1.get("2"));
+          Map<String, Object> resultMap2 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), 1);
+          totalTradeAmount += (Double) (resultMap2.get("1"));
+          transIds += (String) (resultMap2.get("2"));
+          Map<String, Object> resultMap3 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), 1);
+          totalTradeAmount += (Double) (resultMap3.get("1"));
+          transIds += (String) (resultMap3.get("2"));
+          Map<String, Object> resultMap4 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), 1);
+          totalTradeAmount += (Double) (resultMap4.get("1"));
+          transIds += (String) (resultMap4.get("2"));
+          Map<String, Object> resultMap5 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentMonthes);
+          totalTradeAmount += (Double) (resultMap5.get("1"));
+          transIds += (String) (resultMap5.get("2"));
+          Map<String, Object> resultMap6 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), rentMonthes);
+          totalTradeAmount += (Double) (resultMap6.get("1"));
+          transIds += (String) (resultMap6.get("2"));
+          Map<String, Object> resultMap7 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), rentMonthes);
+          totalTradeAmount += (Double) (resultMap7.get("1"));
+          transIds += (String) (resultMap7.get("2"));
+          Map<String, Object> resultMap8 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), rentMonthes);
+          totalTradeAmount += (Double) (resultMap8.get("1"));
+          transIds += (String) (resultMap8.get("2"));
+          Map<String, Object> resultMap9 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), rentMonthes);
+          totalTradeAmount += (Double) (resultMap9.get("1"));
+          transIds += (String) (resultMap9.get("2"));
         }
         if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
           transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
@@ -1512,9 +1532,12 @@ public class AppHouseController {
    * @param tradeAmount 过滤出来的款项，累计金额
    * @param rentMonthes 需要过滤的款项数量
    * @param receiptList 每笔款项对应生成一笔收据
+   * @return Map<String,Object> key=1表示amount，key=2表示transIds
    */
-  private double processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, String transIds, int rentMonthes) {
+  private Map<String, Object> processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, int rentMonthes) {
+    Map<String, Object> resultMap = new HashMap<String, Object>();
     double totalAmt = 0d;
+    String transIds = "";
     int count = 0;
     for (PaymentTrans tempPT : paymentTransList) {
       if (count >= rentMonthes) {
@@ -1533,7 +1556,9 @@ public class AppHouseController {
         count++;
       }
     }
-    return totalAmt;
+    resultMap.put("1", totalAmt);
+    resultMap.put("2", transIds);
+    return resultMap;
   }
 
   /**
@@ -2394,19 +2419,23 @@ public class AppHouseController {
     return data;
   }
 
+  /**
+   * 我的账单列表
+   */
   @RequestMapping(value = "bill")
   @ResponseBody
   public ResponseData bill(HttpServletRequest request, HttpServletResponse response) {
     ResponseData data = new ResponseData();
-    if (null == request.getParameter("contract_id")) {
+    String contractId = request.getParameter("contract_id");
+    if (StringUtils.isBlank(contractId)) {
       data.setCode("101");
       data.setMsg("合同编号'contract_id'不能为空");
       return data;
     }
     PaymentTrans paymentTrans = new PaymentTrans();
-    paymentTrans.setTransId(request.getParameter("contract_id"));
+    paymentTrans.setTransId(contractId);
     List<PaymentTrans> listPaymentTrans = paymentTransService.findList(paymentTrans);
-    RentContract rentContract = this.rentContractService.get(request.getParameter("contract_id"));
+    RentContract rentContract = rentContractService.get(contractId);
     Map<String, Object> map = new HashMap<String, Object>();
     List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
     Map<String, Object> mp = null;
@@ -2414,8 +2443,9 @@ public class AppHouseController {
     Double bill_amount = 0d;
     try {
       for (PaymentTrans tmpPaymentTrans : listPaymentTrans) {
-        if ("11".equals(tmpPaymentTrans.getPaymentType()))// 电费自用金额
+        if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
           continue;
+        }
         boolean check = true;
         for (int i = 0; i < list.size(); i++) {
           Map<String, Object> tmpMap = list.get(i);
@@ -2478,36 +2508,59 @@ public class AppHouseController {
           mp.put("bill_start", DateFormatUtils.format(tmpPaymentTrans.getStartDate(), "yyyy-MM-dd"));
           mp.put("bill_end", DateFormatUtils.format(tmpPaymentTrans.getExpiredDate(), "yyyy-MM-dd"));
           double rent_amount = 0;
-          if ("6".equals(tmpPaymentTrans.getPaymentType())) rent_amount = tmpPaymentTrans.getTradeAmount();
-          mp.put("rent_amount", rent_amount);// 房租金额
+          if (PaymentTransTypeEnum.RENT_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+            rent_amount = tmpPaymentTrans.getTradeAmount();
+          }
+          mp.put("rent_amount", rent_amount);// 房租
           double deposit_amount = 0;
-          if ("4".equals(tmpPaymentTrans.getPaymentType())) {
+          if (PaymentTransTypeEnum.RENT_DEPOSIT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
             deposit_amount = tmpPaymentTrans.getTradeAmount();
           }
           mp.put("deposit_amount", deposit_amount);// 房租押金
           double deposit_water_amount = 0;
-          if ("2".equals(tmpPaymentTrans.getPaymentType())) {
+          if (PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
             deposit_water_amount = tmpPaymentTrans.getTradeAmount();
           }
           mp.put("deposit_water_amount", deposit_water_amount);// 水电费押金
           double net_amount = 0;
-          if ("20".equals(tmpPaymentTrans.getPaymentType())) net_amount = tmpPaymentTrans.getTradeAmount();
+          if (PaymentTransTypeEnum.NET_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+            net_amount = tmpPaymentTrans.getTradeAmount();
+          }
           mp.put("net_amount", net_amount);// 宽带费
           double water_amount = 0;
-          if ("14".equals(tmpPaymentTrans.getPaymentType())) water_amount = tmpPaymentTrans.getTradeAmount();
-          if ("18".equals(tmpPaymentTrans.getPaymentType())) mp.put("tv_amount", tmpPaymentTrans.getTradeAmount());// 有线电视费
+          if (PaymentTransTypeEnum.WATER_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+            water_amount = tmpPaymentTrans.getTradeAmount();
+          }
           mp.put("water_amount", water_amount);// 水费金额
-          String current_electric_balance = "0", bill_electric_balance = "0", common_electric_balance = "0";
-          String electricPrice = "0", electricPublicPric = "0";
+          double tv_amount = 0;
+          if (PaymentTransTypeEnum.TV_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+            tv_amount = tmpPaymentTrans.getTradeAmount();
+          }
+          mp.put("tv_amount", tv_amount);// 有线电视费
+          String current_electric_balance = "0";// 智能电表还剩余的总可用电量（度）
+          String bill_electric_balance = "0";// 个人住户使用掉的总电量（度）
+          String common_electric_balance = "0";// 公共区域使用掉的总电量（度）
+          String electricPrice = "0";// 个人住户电量单价（元/度）
+          String electricPublicPric = "0";// 公共区域电量单价（元/度）
           try {
-            Map<Integer, String> meterMap = this.electricFeeService.getMeterFee(request.getParameter("contract_id"), DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"),
-                DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
+            Map<Integer, String> meterMap =
+                electricFeeService.getMeterFee(contractId, DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"), DateFormatUtils.format(new Date(), "yyyy-MM-dd"));
             if (null != meterMap) {
-              if (null != meterMap.get(3)) current_electric_balance = meterMap.get(3);
-              if (null != meterMap.get(1)) bill_electric_balance = meterMap.get(1);
-              if (null != meterMap.get(2)) common_electric_balance = meterMap.get(2);
-              if (null != meterMap.get(4)) electricPrice = meterMap.get(4);
-              if (null != meterMap.get(5)) electricPublicPric = meterMap.get(5);
+              if (null != meterMap.get(3)) {// 智能电表还剩余的总可用电量（度）
+                current_electric_balance = meterMap.get(3);
+              }
+              if (null != meterMap.get(1)) {// 个人住户使用掉的总电量（度）
+                bill_electric_balance = meterMap.get(1);
+              }
+              if (null != meterMap.get(2)) {// 公共区域使用掉的总电量（度）
+                common_electric_balance = meterMap.get(2);
+              }
+              if (null != meterMap.get(4)) {// 个人住户电量单价（元/度）
+                electricPrice = meterMap.get(4);
+              }
+              if (null != meterMap.get(5)) {// 公共区域电量单价（元/度）
+                electricPublicPric = meterMap.get(5);
+              }
             }
           } catch (Exception e) {
             this.log.error("查询电表异常:", e);
@@ -2518,7 +2571,7 @@ public class AppHouseController {
           mp.put("bill_electric_balance", bill_electric_balance);// 本期个人用电度数
           mp.put("common_electric_amount", Double.valueOf(common_electric_balance) * Double.valueOf(electricPublicPric));// 本期公共用电金额
           mp.put("common_electric_balance", common_electric_balance);// 本期公共用电度数
-          String bill_state = "0";
+          String bill_state = "0";// 账单状态 0:未付 1:已付
           String paymentTransId = tmpPaymentTrans.getId();
           PaymentTrade paymentTrade = new PaymentTrade();
           paymentTrade.setTransId(paymentTransId);
