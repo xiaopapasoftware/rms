@@ -298,6 +298,9 @@ public class RentContractController extends BaseController {
     return "modules/contract/rentContractForm";
   }
 
+  /**
+   * 人工续签
+   */
   @RequestMapping(value = "renewContract")
   public String renewContract(RentContract rentContract, Model model) {
     String contractId = rentContract.getId();
@@ -356,8 +359,7 @@ public class RentContractController extends BaseController {
       }
       model.addAttribute("roomList", roomList);
     }
-    List<Tenant> tenantList = tenantService.findList(new Tenant());
-    model.addAttribute("tenantList", tenantList);
+    model.addAttribute("tenantList", tenantService.findList(new Tenant()));
     model.addAttribute("renew", "1");
     model.addAttribute("partnerList", partnerService.findList(new Partner()));
     rentContract.setId(null);
@@ -436,7 +438,7 @@ public class RentContractController extends BaseController {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model);
     }
-    if (rentContract.getIsNewRecord() && !"1".equals(rentContract.getSaveSource())) {// 设置出租合同编号(排除定金转合同)
+    if (rentContract.getIsNewRecord()) {// 设置出租合同编号
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     }

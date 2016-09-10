@@ -403,7 +403,7 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<update id="updateHouseStatus4ReNewSign">
+	<update id="updateHouseStatus4RenewSign">
 		UPDATE  t_house 
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},

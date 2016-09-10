@@ -474,9 +474,9 @@
 		<form:hidden path="contractStatus" value="1"/><!-- 合同审核状态：录入完成到账收据待登记 -->
 		<form:hidden path="validatorFlag" value="1"/><!-- 表示：保存 -->
 		<form:hidden path="saveSource" value="0"/><!-- 表示：非定金转合同 -->
-		<form:hidden path="contractId"/>
-		<form:hidden path="agreementId"/>
-		<form:hidden path="signType"/>
+		<form:hidden path="contractId"/><!-- 续签合同，原合同ID -->
+		<form:hidden path="agreementId"/><!-- 定金转合同，原定金ID -->
+		<form:hidden path="signType"/><!-- 签约类型 -->
 		<form:hidden path="oriEndDate"/><!-- 如是续签，则原合同的结束日期 -->
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
