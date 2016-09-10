@@ -41,6 +41,7 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -301,10 +302,9 @@ public class RentContractController extends BaseController {
   public String renewContract(RentContract rentContract, Model model) {
     String contractId = rentContract.getId();
     rentContract = rentContractService.get(contractId);
-
     rentContract.setOriEndDate(DateUtils.formatDate(rentContract.getExpiredDate()));// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
     rentContract.setContractId(contractId);
-    rentContract.setSignType("1");// 正常续签
+    rentContract.setSignType(ContractSignTypeEnum.RENEW_SIGN.getValue());
     rentContract.setContractName(rentContract.getContractName().concat("(XU)"));
     rentContract.setDepositElectricAmount(null);
     rentContract.setDepositAmount(null);
@@ -315,20 +315,16 @@ public class RentContractController extends BaseController {
     rentContract.setExpiredDate(null);
     rentContract.setSignDate(null);
     rentContract.setRemindTime(null);
-
     int currContractNum = 1;
     List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
     if (CollectionUtils.isNotEmpty(allContracts)) {
       currContractNum = currContractNum + allContracts.size();
     }
     rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
-
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
     rentContract.setTenantList(rentContractService.findTenant(rentContract));
-
     if (null != rentContract.getPropertyProject()) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -337,7 +333,6 @@ public class RentContractController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != rentContract.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -348,7 +343,6 @@ public class RentContractController extends BaseController {
       if (null != rentContract.getHouse()) houseList.add(houseService.get(rentContract.getHouse()));
       model.addAttribute("houseList", houseList);
     }
-
     if (null != rentContract.getRoom()) {
       Room room = new Room();
       House house = new House();
@@ -362,12 +356,9 @@ public class RentContractController extends BaseController {
       }
       model.addAttribute("roomList", roomList);
     }
-
     List<Tenant> tenantList = tenantService.findList(new Tenant());
     model.addAttribute("tenantList", tenantList);
-
     model.addAttribute("renew", "1");
-
     model.addAttribute("partnerList", partnerService.findList(new Partner()));
     rentContract.setId(null);
     model.addAttribute("rentContract", rentContract);
@@ -445,7 +436,7 @@ public class RentContractController extends BaseController {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model);
     }
-    if (rentContract.getIsNewRecord()) {// 设置出租合同编号
+    if (rentContract.getIsNewRecord() && !"1".equals(rentContract.getSaveSource())) {// 设置出租合同编号(排除定金转合同)
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     }

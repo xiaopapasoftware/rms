@@ -34,6 +34,7 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
@@ -312,7 +313,7 @@ public class DepositAgreementController extends BaseController {
       depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
     }
     RentContract rentContract = new RentContract();
-    rentContract.setSignType("0");// 新签
+    rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
     rentContract.setContractName(null);
     rentContract.setRentMode(depositAgreement.getRentMode());
     rentContract.setPropertyProject(depositAgreement.getPropertyProject());
@@ -327,11 +328,11 @@ public class DepositAgreementController extends BaseController {
     rentContract.setSignDate(depositAgreement.getAgreementDate());
     rentContract.setUser(depositAgreement.getUser());
     rentContract.setTenantList(depositAgreement.getTenantList());
+    rentContract.setLiveList(depositAgreement.getTenantList());
     rentContract.setRemarks(depositAgreement.getRemarks());
     rentContract.setAgreementId(depositAgreement.getId());
     rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     model.addAttribute("rentContract", rentContract);
-
     if (null != rentContract.getPropertyProject()) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
