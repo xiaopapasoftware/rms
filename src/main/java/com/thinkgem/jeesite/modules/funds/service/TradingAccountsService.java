@@ -100,29 +100,29 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
   }
 
   @Transactional(readOnly = false)
-  public void remoke(String id) {
+  public void remoke(String id) {/* 退回已到账的款项、删除收据 */
     TradingAccounts tradingAccounts = tradingAccountsDao.get(id);
-    /* 退回已到账的款项、删除收据 */
     PaymentTrade paymentTrade = new PaymentTrade();
     paymentTrade.setTradeId(tradingAccounts.getId());
-    List<PaymentTrade> listPaymentTrade = this.paymentTradeDao.findList(paymentTrade);
+    List<PaymentTrade> listPaymentTrade = paymentTradeDao.findList(paymentTrade);
     for (PaymentTrade tmpPaymentTrade : listPaymentTrade) {
       PaymentTrans paymentTrans = new PaymentTrans();
       paymentTrans.setId(tmpPaymentTrade.getTransId());
       paymentTrans = paymentTransDao.get(paymentTrans);
-      if (paymentTrans.getTransferDepositAmount() != null && paymentTrans.getTransferDepositAmount() > 0) {// 定金转过来的部分,特殊处理
-        double shouldBeTransAmount = paymentTrans.getTransAmount() - paymentTrans.getTransferDepositAmount();
-        paymentTrans.setTransAmount(shouldBeTransAmount);
-        if (shouldBeTransAmount > 0) {// 状态恢复为部分到账登记
-          paymentTrans.setTransStatus("1");
-        } else if (shouldBeTransAmount == 0) {// 状态恢复为未到账登记
-          paymentTrans.setTransStatus("0");
+      Double transedDepositAmount = paymentTrans.getTransferDepositAmount();
+      if (transedDepositAmount != null && transedDepositAmount > 0) {// 定金转过来的部分,特殊处理
+        paymentTrans.setTransAmount(transedDepositAmount);
+        if (transedDepositAmount < paymentTrans.getTradeAmount()) {
+          paymentTrans.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
+        } else {
+          paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
         }
+        paymentTrans.setLastAmount(paymentTrans.getTradeAmount() - transedDepositAmount);
       } else {
         paymentTrans.setTransAmount(0D);
-        paymentTrans.setTransStatus("0");// 未到账登记
+        paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+        paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
       }
-      paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
       paymentTrans.preUpdate();
       paymentTransDao.update(paymentTrans);
     }
@@ -342,7 +342,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     boolean isChoosedEleFlag = false;// 有可能用户同时选中了电费充值和新签合同的款项，设立一个是否有选中的电费充值的款项标示。
     String elePaymentTransId = "";// 电费充值的那笔款项
     /* 更新款项状态 */
-    if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
+    if (StringUtils.isNotEmpty(tradingAccounts.getTransIds())) {
       String[] transIds = tradingAccounts.getTransIds().split(",");
       /* 款项账务关联 */
       PaymentTrade paymentTrade = new PaymentTrade();
