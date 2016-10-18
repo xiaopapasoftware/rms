@@ -131,12 +131,17 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
       }
     } else {// 审核拒绝
-      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
-        House house = houseService.get(rentContract.getHouse().getId());
-        houseService.cancelSign4WholeHouse(house);
-      } else {// 单间
-        Room room = roomService.get(rentContract.getRoom().getId());
-        houseService.cancelSign4SingleRoom(room);
+      if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
+        rentContract.setUpdateUser(auditHis.getUpdateUser());
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
+          House house = houseService.get(rentContract.getHouse().getId());
+          houseService.cancelSign4WholeHouse(house);
+        } else {// 单间
+          Room room = roomService.get(rentContract.getRoom().getId());
+          houseService.cancelSign4SingleRoom(room);
+        }
+      } else {// 管理系统后台审核拒绝往往不需要释放房屋，而是直接修改合同。
+        rentContract.setUpdateUser(UserUtils.getUser().getId());
       }
       paymentTransService.deletePaymentTransAndTradingAcctouns(rentContractId);// 删除相关款项
       if ("2".equals(actFlagFromView)) {// 特殊退租审核
@@ -144,11 +149,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       } else {
         rentContract.setContractStatus(ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue());
       }
-    }
-    if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
-      rentContract.setUpdateUser(auditHis.getUpdateUser());
-    } else {
-      rentContract.setUpdateUser(UserUtils.getUser().getId());
     }
     super.save(rentContract);
   }

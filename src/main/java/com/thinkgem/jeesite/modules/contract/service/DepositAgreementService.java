@@ -94,21 +94,21 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
       audit.setNextRole("");
       auditService.update(audit);
       depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
-    } else { // 审核拒绝时，需要把房屋和房间的状态回滚到原先状态,前提条件是房屋状态是已预定
-      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
-        House house = houseService.get(depositAgreement.getHouse().getId());
-        houseService.releaseWholeHouse(house);
-      } else {// 合租,更新房间状态
-        Room room = roomService.get(depositAgreement.getRoom().getId());
-        houseService.releaseSingleRoom(room);
+    } else { // 审核拒绝
+      if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
+        depositAgreement.setUpdateUser(auditHis.getUpdateUser());
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
+          House house = houseService.get(depositAgreement.getHouse().getId());
+          houseService.releaseWholeHouse(house);
+        } else {// 合租,更新房间状态
+          Room room = roomService.get(depositAgreement.getRoom().getId());
+          houseService.releaseSingleRoom(room);
+        }
+      } else {
+        depositAgreement.setUpdateUser(UserUtils.getUser().getId());
       }
       paymentTransService.deletePaymentTransAndTradingAcctouns(depositAgreemId); // 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据
       depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue());
-    }
-    if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
-      depositAgreement.setUpdateUser(auditHis.getUpdateUser());
-    } else {
-      depositAgreement.setUpdateUser(UserUtils.getUser().getId());
     }
     super.save(depositAgreement);
   }
