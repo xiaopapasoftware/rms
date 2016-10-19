@@ -363,6 +363,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("renew", "1");
     model.addAttribute("partnerList", partnerService.findList(new Partner()));
     rentContract.setId(null);
+    rentContract.setAgreementId(null);// 防止对某些定金转的合同，再进行续签，导致最终续签合同还持有agreementId
     model.addAttribute("rentContract", rentContract);
     return "modules/contract/rentContractForm";
   }
@@ -425,6 +426,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("tenantList", tenantList);
     model.addAttribute("partnerList", partnerService.findList(new Partner()));
     rentContract.setId(null);
+    rentContract.setAgreementId(null);// 防止对某些定金转的合同，再进行续签，导致最终续签合同还持有agreementId
     model.addAttribute("rentContract", rentContract);
     return "modules/contract/rentContractForm";
   }
