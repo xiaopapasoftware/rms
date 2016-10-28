@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.report.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,10 +98,16 @@ public class SalesReportController extends BaseController {
   public String roomsCount(HouseRoomReport houseRoomReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     if (houseRoomReport.getPropertyProject() != null) {
       if ("ALL".equals(houseRoomReport.getPropertyProject().getId())) {
-        Page<HouseRoomReport> totalPage = new Page<HouseRoomReport>();
+        Page<HouseRoomReport> totalPage = new Page<HouseRoomReport>(request, response, -1);
         totalPage.initialize();
-        totalPage.setPageSize(-1);
         List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+        int allTotalNum = 0;// 所有小区的总数量
+        int allRenovationNum = 0;// 所有小区的待装修总数量
+        int allToBeReservedNum = 0;// 所有小区的可预订总数量
+        int allReservedNum = 0; // 所有小区的已预定总数量
+        int allLeasedNum = 0;// 所有小区的已出租总数量
+        int allReturned4ReservedNum = 0;// 所有小区的已退租可预订总数量
+        int allDamagedNum = 0;// 所有小区的已损坏总数量
         for (PropertyProject pp : projectList) {
           if (StringUtils.isNotEmpty(pp.getId())) {
             HouseRoomReport hrr = new HouseRoomReport();
@@ -108,9 +115,31 @@ public class SalesReportController extends BaseController {
             Page<HouseRoomReport> page = reportService.roomsCount(new Page<HouseRoomReport>(request, response), hrr);
             if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
               totalPage.getList().addAll(page.getList());
+              totalPage.setCount(totalPage.getCount() + 1);
+              HouseRoomReport tempHRR = page.getList().get(0);
+              allTotalNum += Integer.valueOf(tempHRR.getTotalNum());
+              allRenovationNum += Integer.valueOf(tempHRR.getRenovationNum());
+              allToBeReservedNum += Integer.valueOf(tempHRR.getToBeReservedNum());
+              allReservedNum += Integer.valueOf(tempHRR.getReservedNum());
+              allLeasedNum += Integer.valueOf(tempHRR.getLeasedNum());
+              allReturned4ReservedNum += Integer.valueOf(tempHRR.getReturned4ReservedNum());
+              allDamagedNum += Integer.valueOf(tempHRR.getDamagedNum());
             }
           }
         }
+        HouseRoomReport totalHouseRoomReport = new HouseRoomReport();// 单独生成合计的数据
+        totalHouseRoomReport.setProjectName("合计");
+        totalHouseRoomReport.setTotalNum(allTotalNum + "");// 总数量
+        totalHouseRoomReport.setRenovationNum(allRenovationNum + "");// 待装修数量
+        totalHouseRoomReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
+        totalHouseRoomReport.setReservedNum(allReservedNum + "");// 已预定数量
+        totalHouseRoomReport.setLeasedNum(allLeasedNum + "");// 已出租数量
+        totalHouseRoomReport.setReturned4ReservedNum(allReturned4ReservedNum + "");// 已退租可预定数量
+        totalHouseRoomReport.setDamagedNum(allDamagedNum + "");// 已损坏数量
+        List<HouseRoomReport> totalHouseRoomReportList = new ArrayList<HouseRoomReport>();
+        totalHouseRoomReportList.add(totalHouseRoomReport);
+        totalPage.getList().addAll(totalHouseRoomReportList);
+
         model.addAttribute("page", totalPage);
       } else {
         Page<HouseRoomReport> page = reportService.roomsCount(new Page<HouseRoomReport>(request, response), houseRoomReport);
