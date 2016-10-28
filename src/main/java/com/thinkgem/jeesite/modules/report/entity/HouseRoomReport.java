@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.report.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
 /**
@@ -8,7 +9,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
  * 
  * @author wangshujin
  */
-public class HouseRoomReport extends DataEntity<HouseRoomReport> {
+public class HouseRoomReport extends DataEntity<HouseRoomReport> implements Comparable<HouseRoomReport> {
 
   private static final long serialVersionUID = -8337624029447634635L;
 
@@ -38,6 +39,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.propertyProject = propertyProject;
   }
 
+  @ExcelField(title = "物业项目名称", align = 2, sort = 1)
   public String getProjectName() {
     return projectName;
   }
@@ -46,6 +48,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.projectName = projectName;
   }
 
+  @ExcelField(title = "房间总数", align = 2, sort = 2)
   public String getTotalNum() {
     return totalNum;
   }
@@ -54,6 +57,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.totalNum = totalNum;
   }
 
+  @ExcelField(title = "待装修房间数", align = 2, sort = 3)
   public String getRenovationNum() {
     return renovationNum;
   }
@@ -62,6 +66,8 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.renovationNum = renovationNum;
   }
 
+
+  @ExcelField(title = "待出租可预订房间数", align = 2, sort = 4)
   public String getToBeReservedNum() {
     return toBeReservedNum;
   }
@@ -70,6 +76,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.toBeReservedNum = toBeReservedNum;
   }
 
+  @ExcelField(title = "已预定房间数", align = 2, sort = 5)
   public String getReservedNum() {
     return reservedNum;
   }
@@ -78,6 +85,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.reservedNum = reservedNum;
   }
 
+  @ExcelField(title = "已出租房间数", align = 2, sort = 6)
   public String getLeasedNum() {
     return leasedNum;
   }
@@ -86,6 +94,7 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.leasedNum = leasedNum;
   }
 
+  @ExcelField(title = "已退租可预订房间数", align = 2, sort = 7)
   public String getReturned4ReservedNum() {
     return returned4ReservedNum;
   }
@@ -94,11 +103,19 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> {
     this.returned4ReservedNum = returned4ReservedNum;
   }
 
+  @ExcelField(title = "已损坏房间数", align = 2, sort = 8)
   public String getDamagedNum() {
     return damagedNum;
   }
 
   public void setDamagedNum(String damagedNum) {
     this.damagedNum = damagedNum;
+  }
+
+  @Override
+  public int compareTo(HouseRoomReport o) {
+    int leftTotalNum = Integer.valueOf(this.getTotalNum());
+    int rightTotalNum = Integer.valueOf(o.getTotalNum());
+    return leftTotalNum - rightTotalNum;
   }
 }
