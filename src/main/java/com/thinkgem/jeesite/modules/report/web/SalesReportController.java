@@ -20,7 +20,6 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans4Export;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -28,6 +27,7 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.report.entity.ExpireReport;
+import com.thinkgem.jeesite.modules.report.entity.HouseReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
 import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
@@ -113,7 +113,7 @@ public class SalesReportController extends BaseController {
   }
 
   /**
-   * 房间数量统计报表
+   * 房间数量统计报表-查询
    */
   @RequestMapping(value = {"roomsCount"})
   public String roomsCount(HouseRoomReport houseRoomReport, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -174,6 +174,92 @@ public class SalesReportController extends BaseController {
       totalPage.getList().addAll(totalHouseRoomReportList);
     } else {
       totalPage = reportService.roomsCount(new Page<HouseRoomReport>(request, response), houseRoomReport);
+    }
+    return totalPage;
+  }
+
+  /**
+   * 房屋数量统计报表-导出
+   */
+  @RequestMapping(value = {"exportHousesCount"})
+  public String exportHousesCount(HouseReport houseReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    try {
+      String fileName = "房屋数量统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      Page<HouseReport> page = getHousesCountList(houseReport, request, response);
+      new ExportExcel("房屋数量统计报表", HouseReport.class).setDataList(page.getList()).write(response, fileName).dispose();
+      return null;
+    } catch (Exception e) {
+      model.addAttribute("message", "导出房间数量统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+    }
+    return housesCount(houseReport, request, response, model);
+  }
+
+  /**
+   * 房屋数量统计报表-查询
+   */
+  @RequestMapping(value = {"housesCount"})
+  public String housesCount(HouseReport houseReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    if (houseReport.getPropertyProject() != null) {
+      model.addAttribute("page", getHousesCountList(houseReport, request, response));
+    }
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    return "modules/report/sales/housesCount";
+  }
+
+  /**
+   * 获得房屋数量统计报表的数据
+   */
+  private Page<HouseReport> getHousesCountList(HouseReport houseReport, HttpServletRequest request, HttpServletResponse response) {
+    Page<HouseReport> totalPage = new Page<HouseReport>(request, response, -1);
+    if ("ALL".equals(houseReport.getPropertyProject().getId())) {
+      totalPage.initialize();
+      List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+      int allTotalNum = 0;// 所有小区的总数量
+      int allRenovationNum = 0;// 所有小区的总的待装修总数量
+      int allToBeReservedNum = 0;// 所有小区的可预订总数量
+      int allReservedNum = 0; // 所有小区的已预定总数量
+      int allPartLeasedNum = 0;// 所有小区的部分出租的总数量
+      int allWholeLeasedNum = 0;// 所有小区的完全出租的总数量
+      int allReturned4ReservedNum = 0;// 所有小区的已退租可预订总数量
+      int allDamagedNum = 0;// 所有小区的已损坏总数量
+      for (PropertyProject pp : projectList) {
+        if (StringUtils.isNotEmpty(pp.getId())) {
+          HouseReport hr = new HouseReport();
+          hr.setPropertyProject(pp);
+          Page<HouseReport> page = reportService.housesCount(new Page<HouseReport>(request, response), hr);
+          if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
+            totalPage.getList().addAll(page.getList());
+            totalPage.setCount(totalPage.getCount() + 1);
+            HouseReport tempHR = page.getList().get(0);
+            allTotalNum += Integer.valueOf(tempHR.getTotalNum());
+            allRenovationNum += Integer.valueOf(tempHR.getRenovationNum());
+            allToBeReservedNum += Integer.valueOf(tempHR.getToBeReservedNum());
+            allReservedNum += Integer.valueOf(tempHR.getReservedNum());
+            allPartLeasedNum += Integer.valueOf(tempHR.getPartRentNum());
+            allWholeLeasedNum += Integer.valueOf(tempHR.getWholeRentNum());
+            allReturned4ReservedNum += Integer.valueOf(tempHR.getReturned4ReservedNum());
+            allDamagedNum += Integer.valueOf(tempHR.getDamagedNum());
+          }
+        }
+      }
+      HouseReport totalHouseReport = new HouseReport();// 单独生成合计的数据
+      totalHouseReport.setProjectName("合计");
+      totalHouseReport.setTotalNum(allTotalNum + "");// 总数量
+      totalHouseReport.setRenovationNum(allRenovationNum + "");// 待装修数量
+      totalHouseReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
+      totalHouseReport.setReservedNum(allReservedNum + "");// 已预定数量
+      totalHouseReport.setPartRentNum(allPartLeasedNum + "");// 部分出租数量
+      totalHouseReport.setWholeRentNum(allWholeLeasedNum + "");// 完全出租的数量
+      totalHouseReport.setReturned4ReservedNum(allReturned4ReservedNum + "");// 已退租可预定数量
+      totalHouseReport.setDamagedNum(allDamagedNum + "");// 已损坏数量
+      List<HouseReport> totalHouseReportList = new ArrayList<HouseReport>();
+      totalHouseReportList.add(totalHouseReport);
+      Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
+      totalPage.getList().addAll(totalHouseReportList);
+    } else {
+      totalPage = reportService.housesCount(new Page<HouseReport>(request, response), houseReport);
     }
     return totalPage;
   }

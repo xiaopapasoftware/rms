@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.modules.report.dao.HouseReportDao;
 import com.thinkgem.jeesite.modules.report.dao.HouseRoomReportDao;
 import com.thinkgem.jeesite.modules.report.dao.IncomeReportDao;
 import com.thinkgem.jeesite.modules.report.dao.LandlordReportDao;
@@ -12,6 +13,7 @@ import com.thinkgem.jeesite.modules.report.dao.PaymentReportDao;
 import com.thinkgem.jeesite.modules.report.dao.ReletRateReportDao;
 import com.thinkgem.jeesite.modules.report.dao.RentDataReportDao;
 import com.thinkgem.jeesite.modules.report.dao.ResultsReportDao;
+import com.thinkgem.jeesite.modules.report.entity.HouseReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
 import com.thinkgem.jeesite.modules.report.entity.IncomeReport;
 import com.thinkgem.jeesite.modules.report.entity.LandlordReport;
@@ -39,6 +41,8 @@ public class ReportService {
   private IncomeReportDao incomeReportDao;
   @Autowired
   private HouseRoomReportDao houseRoomReportDao;
+  @Autowired
+  private HouseReportDao houseReportDao;
 
   public Page<ReletRateReport> reletRateReport(Page<ReletRateReport> page, ReletRateReport reletRateReport) {
     reletRateReport.setPage(page);
@@ -97,6 +101,12 @@ public class ReportService {
   public Page<IncomeReport> refundReport(Page<IncomeReport> page, IncomeReport incomeReport) {
     incomeReport.setPage(page);
     page.setList(incomeReportDao.refundReport(incomeReport));
+    return page;
+  }
+
+  public Page<HouseReport> housesCount(Page<HouseReport> page, HouseReport houseReport) {
+    houseReport.setPage(page);
+    page.setList(houseReportDao.housesCount(houseReport));
     return page;
   }
 

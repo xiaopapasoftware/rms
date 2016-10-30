@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
 
 /**
+ * 房间数量统计报表
  * @author wangshujin
  */
 @MyBatisDao
