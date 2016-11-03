@@ -175,7 +175,7 @@
 				AND a.house_status = #{houseStatus}
 			</if>
 			<if test="choose != null and choose != ''">
-				and a.house_status not in('0','2','4','6')
+				and a.house_status not in('0','2','4')
 			</if>
 			<if test="intentMode != null and intentMode != ''">
 				and a.intent_mode = #{intentMode}
@@ -212,7 +212,7 @@
 		ON h.id = a.house_id
 		WHERE h.intent_mode = '0'
 		AND h.is_feature = '1'
-		AND h.house_status IN ('1', '5')
+		AND h.house_status = '1'
 		AND h.del_flag = '0') t1
 		UNION
 		ALL
@@ -234,7 +234,7 @@
 		LEFT JOIN t_attachment a
 		ON r.id = a.room_id
 		WHERE r.is_feature = '1'
-		AND r.room_status IN ('1', '4')
+		AND r.room_status = '1'
 		AND r.del_flag = '0') t2
 	</select>
 
@@ -399,7 +399,7 @@
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
 		WHERE   id = #{id} 
-		and     (house_status = '1' or house_status = '5')
+		and     house_status = '1'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
@@ -429,7 +429,7 @@
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
 		WHERE   id = #{id}
-		and     (house_status = '1' OR house_status = '5')
+		and     house_status = '1'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 	

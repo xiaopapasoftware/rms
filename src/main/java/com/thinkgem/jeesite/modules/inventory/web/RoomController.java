@@ -254,8 +254,6 @@ public class RoomController extends BaseController {
           room.setRoomStatus(RoomStatusEnum.BE_RESERVED.getValue());
         } else if (HouseStatusEnum.WHOLE_RENT.getValue().equals(house.getHouseStatus())) {
           room.setRoomStatus(RoomStatusEnum.RENTED.getValue());
-        } else if (HouseStatusEnum.DAMAGED.getValue().equals(house.getHouseStatus())) {
-          room.setRoomStatus(RoomStatusEnum.DAMAGED.getValue());
         } else {
           room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
         }
@@ -317,8 +315,7 @@ public class RoomController extends BaseController {
   public String delete(Room room, RedirectAttributes redirectAttributes) {
     Room queryRoom = roomService.get(room);
     String roomStatus = queryRoom.getRoomStatus();
-    // 2已预定 3已出租
-    if ("2".equals(roomStatus) || "3".equals(roomStatus)) {
+    if (RoomStatusEnum.BE_RESERVED.getValue().equals(roomStatus) || RoomStatusEnum.RENTED.getValue().equals(roomStatus)) {
       addMessage(redirectAttributes, "房间已预定或已出租，不能删除！");
     } else {
       roomService.delete(room);

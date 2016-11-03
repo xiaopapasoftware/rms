@@ -1,7 +1,9 @@
 package com.thinkgem.jeesite.modules.report.web;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,15 +22,18 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.report.entity.ExpireReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
+import com.thinkgem.jeesite.modules.report.entity.JointRentRateReport;
 import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletReport;
@@ -51,6 +56,10 @@ public class SalesReportController extends BaseController {
   private ContractReportService contractReportService;
   @Autowired
   private ReportService reportService;
+  @Autowired
+  private RentContractService rentContractService;
+  @Autowired
+  private RoomService roomService;
 
   @RequestMapping(value = {"expire"})
   public String expire(ExpireReport expireReport, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -138,8 +147,6 @@ public class SalesReportController extends BaseController {
       int allToBeReservedNum = 0;// 所有小区的可预订总数量
       int allReservedNum = 0; // 所有小区的已预定总数量
       int allLeasedNum = 0;// 所有小区的已出租总数量
-      int allReturned4ReservedNum = 0;// 所有小区的已退租可预订总数量
-      int allDamagedNum = 0;// 所有小区的已损坏总数量
       for (PropertyProject pp : projectList) {
         if (StringUtils.isNotEmpty(pp.getId())) {
           HouseRoomReport hrr = new HouseRoomReport();
@@ -154,8 +161,6 @@ public class SalesReportController extends BaseController {
             allToBeReservedNum += Integer.valueOf(tempHRR.getToBeReservedNum());
             allReservedNum += Integer.valueOf(tempHRR.getReservedNum());
             allLeasedNum += Integer.valueOf(tempHRR.getLeasedNum());
-            allReturned4ReservedNum += Integer.valueOf(tempHRR.getReturned4ReservedNum());
-            allDamagedNum += Integer.valueOf(tempHRR.getDamagedNum());
           }
         }
       }
@@ -166,8 +171,6 @@ public class SalesReportController extends BaseController {
       totalHouseRoomReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
       totalHouseRoomReport.setReservedNum(allReservedNum + "");// 已预定数量
       totalHouseRoomReport.setLeasedNum(allLeasedNum + "");// 已出租数量
-      totalHouseRoomReport.setReturned4ReservedNum(allReturned4ReservedNum + "");// 已退租可预定数量
-      totalHouseRoomReport.setDamagedNum(allDamagedNum + "");// 已损坏数量
       List<HouseRoomReport> totalHouseRoomReportList = new ArrayList<HouseRoomReport>();
       totalHouseRoomReportList.add(totalHouseRoomReport);
       Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
@@ -222,8 +225,6 @@ public class SalesReportController extends BaseController {
       int allReservedNum = 0; // 所有小区的已预定总数量
       int allPartLeasedNum = 0;// 所有小区的部分出租的总数量
       int allWholeLeasedNum = 0;// 所有小区的完全出租的总数量
-      int allReturned4ReservedNum = 0;// 所有小区的已退租可预订总数量
-      int allDamagedNum = 0;// 所有小区的已损坏总数量
       for (PropertyProject pp : projectList) {
         if (StringUtils.isNotEmpty(pp.getId())) {
           HouseReport hr = new HouseReport();
@@ -239,8 +240,6 @@ public class SalesReportController extends BaseController {
             allReservedNum += Integer.valueOf(tempHR.getReservedNum());
             allPartLeasedNum += Integer.valueOf(tempHR.getPartRentNum());
             allWholeLeasedNum += Integer.valueOf(tempHR.getWholeRentNum());
-            allReturned4ReservedNum += Integer.valueOf(tempHR.getReturned4ReservedNum());
-            allDamagedNum += Integer.valueOf(tempHR.getDamagedNum());
           }
         }
       }
@@ -252,8 +251,6 @@ public class SalesReportController extends BaseController {
       totalHouseReport.setReservedNum(allReservedNum + "");// 已预定数量
       totalHouseReport.setPartRentNum(allPartLeasedNum + "");// 部分出租数量
       totalHouseReport.setWholeRentNum(allWholeLeasedNum + "");// 完全出租的数量
-      totalHouseReport.setReturned4ReservedNum(allReturned4ReservedNum + "");// 已退租可预定数量
-      totalHouseReport.setDamagedNum(allDamagedNum + "");// 已损坏数量
       List<HouseReport> totalHouseReportList = new ArrayList<HouseReport>();
       totalHouseReportList.add(totalHouseReport);
       Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
@@ -263,6 +260,50 @@ public class SalesReportController extends BaseController {
     }
     return totalPage;
   }
+
+  /**
+   * 合租出租率统计报表-查询
+   */
+  @RequestMapping(value = {"jointRentRate"})
+  public String jointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<JointRentRateReport> totalPage = new Page<JointRentRateReport>(request, response, -1);
+    if (jointRentRateReport.getStartDate() != null && jointRentRateReport.getEndDate() != null && jointRentRateReport.getPropertyProject() != null) {
+      if ("ALL".equals(jointRentRateReport.getPropertyProject().getId())) {
+        totalPage.initialize();
+        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+        for (PropertyProject pp : projectList) {
+          totalPage = getJointRentRateReport(totalPage, pp.getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
+          Collections.sort(totalPage.getList(), Collections.reverseOrder());
+        }
+      } else {
+        totalPage = getJointRentRateReport(totalPage, jointRentRateReport.getPropertyProject().getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
+      }
+    }
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    model.addAttribute("jointRentRateReport", jointRentRateReport);
+    model.addAttribute("page", totalPage);
+    return "modules/report/sales/jointRentRateReport";
+  }
+
+
+  private Page<JointRentRateReport> getJointRentRateReport(Page<JointRentRateReport> totalPage, String ppId, Date startDate, Date endDate) {
+    PropertyProject pp = propertyProjectService.get(ppId);
+    int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(ppId);
+    int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(startDate, endDate, ppId);
+    JointRentRateReport jrrr = new JointRentRateReport();
+    jrrr.setProjectName(pp.getProjectName());
+    jrrr.setTotalNum(allRoomsCount + "");
+    jrrr.setRentedNum(rentedRoomsCount + "");
+    if (allRoomsCount != 0 && rentedRoomsCount != 0) {
+      jrrr.setRentRate(new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).toString());
+    } else {
+      jrrr.setRentRate("0");
+    }
+    totalPage.getList().add(jrrr);
+    return totalPage;
+  }
+
 
   @RequestMapping(value = {"relet"})
   public String relet(ReletReport reletReport, HttpServletRequest request, HttpServletResponse response, Model model) {

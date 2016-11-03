@@ -47,8 +47,6 @@
 				<th>已预定房屋数</th>
 				<th>部分出租房屋数</th>
 				<th>完全出租房屋数</th>
-				<th>已退租可预订房屋数</th>
-				<th>已损坏房屋数</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -74,12 +72,6 @@
 					</td>
 					<td>
 						${houseReport.wholeRentNum}
-					</td>
-					<td>
-						${houseReport.returned4ReservedNum}
-					</td>
-						<td>
-						${houseReport.damagedNum}
 					</td>
 				</tr>
 			</c:forEach>

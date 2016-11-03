@@ -76,12 +76,6 @@
 		<form:hidden path="tradeType"/>
 		<form:hidden path="isSpecial"/>
 		<div class="control-group">
-			<label class="control-label">房屋是否损坏：</label>
-			<div class="controls">
-				&nbsp;<input type="checkbox" name="breakDown" value="1"/>
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">应收费用：</label>
 			<div class="controls">
 				<table id="contentTable" class="table table-striped table-bordered table-condensed">

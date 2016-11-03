@@ -169,7 +169,6 @@ public class RoomService extends CrudService<RoomDao, Room> {
     }
   }
 
-
   /**
    * 预定-单间，是否成功锁定房源
    */
@@ -184,5 +183,9 @@ public class RoomService extends CrudService<RoomDao, Room> {
     } else {
       return false;
     }
+  }
+
+  public int queryRoomsCountByProjectPropertyId(String propertyProjectId) {
+    return dao.queryRoomsCountByProjectPropertyId(propertyProjectId);
   }
 }

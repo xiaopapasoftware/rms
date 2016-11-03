@@ -78,7 +78,6 @@ public class RentContract extends DataEntity<RentContract> {
   private List<Tenant> liveList = new ArrayList<Tenant>();// 入住人
   private String chargeType;
   private String saveSource;// 值为1表示：从定金协议转化合同时，保存合同 值为0表示：直接新签合同的保存操作
-  private String breakDown;
   private List<Accounting> accountList = new ArrayList<Accounting>();
   private List<Accounting> outAccountList = new ArrayList<Accounting>();
   private String tradeType;
@@ -500,14 +499,6 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setSaveSource(String saveSource) {
     this.saveSource = saveSource;
-  }
-
-  public String getBreakDown() {
-    return breakDown;
-  }
-
-  public void setBreakDown(String breakDown) {
-    this.breakDown = breakDown;
   }
 
   public List<Accounting> getAccountList() {

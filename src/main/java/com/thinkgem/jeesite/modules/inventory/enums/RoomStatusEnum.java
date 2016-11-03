@@ -18,13 +18,13 @@ public enum RoomStatusEnum {
     BE_RESERVED("2"),
 
     /** 已出租 */
-    RENTED("3"),
+    RENTED("3");
 
-    /** 已退租可预订 */
-    RETURN_FOR_RESERVE("4"),
+//    /** 已退租可预订 */
+//    RETURN_FOR_RESERVE("4"),
 
-    /** 已损坏 */
-    DAMAGED("5");
+//    /** 已损坏 */
+//    DAMAGED("5")
 
     RoomStatusEnum(String value) {
 	this.value = value;

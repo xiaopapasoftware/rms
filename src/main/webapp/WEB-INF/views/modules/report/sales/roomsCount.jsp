@@ -46,8 +46,6 @@
 				<th>待出租可预订房间数</th>
 				<th>已预定房间数</th>
 				<th>已出租房间数</th>
-				<th>已退租可预订房间数</th>
-				<th>已损坏房间数</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -70,12 +68,6 @@
 					</td>
 					<td>
 						${houseRoomReport.leasedNum}
-					</td>
-					<td>
-						${houseRoomReport.returned4ReservedNum}
-					</td>
-						<td>
-						${houseRoomReport.damagedNum}
 					</td>
 				</tr>
 			</c:forEach>

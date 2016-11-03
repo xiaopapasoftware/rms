@@ -30,13 +30,13 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseOwnerService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
-import com.thinkgem.jeesite.modules.sys.utils.DictUtils;
 
 /**
  * 房屋信息Controller
@@ -228,7 +228,7 @@ public class HouseController extends BaseController {
         model.addAttribute("ownerList", ownerService.findList(new Owner()));
         return "modules/inventory/houseForm";
       } else {
-        house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
+        house.setHouseStatus(HouseStatusEnum.TO_RENOVATION.getValue());
         String houseCode = house.getHouseCode();
         if (houseCode.contains("-")) {
           house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
@@ -261,7 +261,7 @@ public class HouseController extends BaseController {
       model.addAttribute("listOwner", ownerService.findList(new Owner()));
       jsonObject.put("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
     } else {
-      if (StringUtils.isBlank(house.getHouseStatus())) house.setHouseStatus(DictUtils.getDictValue("待装修", "house_status", "0"));
+      if (StringUtils.isBlank(house.getHouseStatus())) house.setHouseStatus(HouseStatusEnum.TO_RENOVATION.getValue());
       String houseCode = house.getHouseCode();
       if (houseCode.contains("-")) {
         house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
@@ -281,8 +281,7 @@ public class HouseController extends BaseController {
   public String delete(House house, RedirectAttributes redirectAttributes) {
     House queryhouse = houseService.get(house);
     String houseStatus = queryhouse.getHouseStatus();
-    // 2已预定 3部分出租 4完全出租
-    if ("2".equals(houseStatus) || "3".equals(houseStatus) || "4".equals(houseStatus)) {
+    if (HouseStatusEnum.BE_RESERVED.getValue().equals(houseStatus) || HouseStatusEnum.PART_RENT.getValue().equals(houseStatus) || HouseStatusEnum.WHOLE_RENT.getValue().equals(houseStatus)) {
       addMessage(redirectAttributes, "房屋已预定或已出租，不能删除！");
     } else {
       houseService.delete(house);

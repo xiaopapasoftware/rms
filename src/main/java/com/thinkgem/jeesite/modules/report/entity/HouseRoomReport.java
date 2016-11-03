@@ -27,10 +27,6 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> implements Comp
 
   private String leasedNum;// 已出租数量
 
-  private String returned4ReservedNum;// 已退租可预定数量
-
-  private String damagedNum;// 已损坏
-
   public PropertyProject getPropertyProject() {
     return propertyProject;
   }
@@ -92,24 +88,6 @@ public class HouseRoomReport extends DataEntity<HouseRoomReport> implements Comp
 
   public void setLeasedNum(String leasedNum) {
     this.leasedNum = leasedNum;
-  }
-
-  @ExcelField(title = "已退租可预订房间数", align = 2, sort = 7)
-  public String getReturned4ReservedNum() {
-    return returned4ReservedNum;
-  }
-
-  public void setReturned4ReservedNum(String returned4ReservedNum) {
-    this.returned4ReservedNum = returned4ReservedNum;
-  }
-
-  @ExcelField(title = "已损坏房间数", align = 2, sort = 8)
-  public String getDamagedNum() {
-    return damagedNum;
-  }
-
-  public void setDamagedNum(String damagedNum) {
-    this.damagedNum = damagedNum;
   }
 
   @Override

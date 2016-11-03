@@ -88,7 +88,7 @@
 				AND a.room_status = #{roomStatus}
 			</if>
 			<if test="choose !=null and choose != ''">
-				and a.room_status not in('0','2','3','5')
+				and a.room_status not in('0','2','3')
 			</if>
 			<if test="isFeature != null and isFeature != ''">
 				and a.is_feature = #{isFeature}
@@ -126,6 +126,12 @@
 		AND a.room_no = #{roomNo}
 	</select>
 
+	<select id="queryRoomsCountByProjectPropertyId" resultType="int">
+	  	SELECT COUNT(*) FROM t_room tr 
+		WHERE tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+		AND   tr.`DEL_FLAG` = '0'
+	</select>
+	
 	<select id="findAllList" resultType="Room">
 		SELECT
 		<include refid="roomColumns" />
@@ -228,7 +234,7 @@
 					update_by = #{updateBy.id},
 					update_date = #{updateDate}
 		WHERE 		id = #{id}
-		AND 		(room_status = '1' OR room_status = '4')
+		AND 		room_status = '1'
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
@@ -258,7 +264,7 @@
 					update_by = #{updateBy.id},
 					update_date = #{updateDate}
 		WHERE 		id = #{id}
-		AND 		(room_status = '1' OR room_status = '4')
+		AND 		room_status = '1'  
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 </mapper>

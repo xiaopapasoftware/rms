@@ -150,7 +150,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
       } else {// 合租
         boolean isLock = roomService.isLockSingleRoom4Deposit(roomId);
         if (isLock) {
-          houseService.calculateHouseStatus(roomId, false);
+          houseService.calculateHouseStatus(roomId);
           doSaveDepositAgreement(depositAgreement);
           return 0;
         } else {

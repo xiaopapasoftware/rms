@@ -212,6 +212,18 @@
 		SELECT count(*) FROM t_rent_contract
 	</select>
 	
+	<select id="queryValidSingleRoomCount" resultType="int">
+		SELECT COUNT(*) FROM  t_rent_contract trc
+		WHERE trc.RENT_MODE = '1' 
+		  AND trc.DEL_FLAG = '0' 
+		  AND trc.CONTRACT_STATUS = '6' 
+		  AND trc.CONTRACT_BUSI_STATUS = '0' 
+		  <![CDATA[
+			AND trc.START_DATE >=  #{startDate}
+		  	AND trc.START_DATE <=  #{endDate}
+		   ]]>  
+		  AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
+	</select>
 	
 	<insert id="insert">
 		INSERT INTO t_rent_contract(

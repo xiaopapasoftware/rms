@@ -230,13 +230,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     generatePaymentTransAndAccounts(accountList, rentContract, tradeType, TradeDirectionEnum.IN.getValue());
     generatePaymentTransAndAccounts(outAccountList, rentContract, tradeType, TradeDirectionEnum.OUT.getValue());
     // 变更房屋及房间的状态
-    boolean damagedFlag = "1".equals(rentContract.getBreakDown()) ? true : false;
     if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
       House house = houseService.get(rentContract.getHouse().getId());
-      houseService.returnWholeHouse(house, damagedFlag);
+      houseService.returnWholeHouse(house);
     } else {// 单间
       Room room = roomService.get(rentContract.getRoom().getId());
-      houseService.returnSingleRoom(room, damagedFlag);
+      houseService.returnSingleRoom(room);
     }
   }
 
@@ -322,7 +321,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           } else {// 合租
             boolean isLock = roomService.isLockSingleRoomFromDepositToContract(roomId);
             if (isLock) {
-              houseService.calculateHouseStatus(roomId, false);
+              houseService.calculateHouseStatus(roomId);
               doSaveContractBusiness(rentContract);
               return 0;
             } else {
@@ -342,7 +341,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           } else {// 合租
             boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
             if (isLock) {
-              houseService.calculateHouseStatus(roomId, false);
+              houseService.calculateHouseStatus(roomId);
               doSaveContractBusiness(rentContract);
               return 0;
             } else {
@@ -365,7 +364,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         } else {// 合租
           boolean isLock = roomService.isLockSingleRoom4RenewSign(roomId);
           if (isLock) {
-            houseService.calculateHouseStatus(roomId, false);
+            houseService.calculateHouseStatus(roomId);
             doSaveContractBusiness(rentContract);
             return 0;
           } else {
@@ -378,6 +377,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
     return 0;
   }
+
+  /**
+   * 查询已出租的有效的单间合同数
+   */
+  public int queryValidSingleRoomCount(Date startDate, Date endDate, String propertyProjectId) {
+    return dao.queryValidSingleRoomCount(startDate, endDate, propertyProjectId);
+  }
+
 
   /**
    * 房源状态变更成功，做合同相关业务
