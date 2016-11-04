@@ -147,7 +147,6 @@ create table T_RENT_CONTRACT
    CONTRACT_STATUS      VARCHAR(64) COMMENT '合同状态',
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
    CHARGE_TYPE          VARCHAR(64) COMMENT '付费方式',
-   BREAK_DOWN            varchar(64) comment '房屋是否损坏',
    return_remark 		VARCHAR(64) COMMENT '退租备注',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',

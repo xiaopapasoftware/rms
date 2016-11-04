@@ -60,7 +60,6 @@
 		th.house_no as houseNo,
 		tm.room_no as roomNo,
 		a.charge_type as chargeType,
-		a.break_down as breakDown,
 		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
 		at4.attachment_path as "rentContractOtherFile",
@@ -323,7 +322,6 @@
 			#{remarks},
 			#{delFlag},
 			#{chargeType},
-			#{breakDown},
 			#{returnRemark},
 			#{dataSource}
 		)
@@ -375,7 +373,6 @@
 			update_date = #{updateDate},
 			remarks = #{remarks},
 			charge_type = #{chargeType},
-			break_down = #{breakDown},
 			return_remark=#{returnRemark}
 		WHERE id = #{id}
 	</update>

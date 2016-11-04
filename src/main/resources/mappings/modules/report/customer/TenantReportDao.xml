@@ -53,8 +53,7 @@
 		tb.building_name as buildingBame,
 		th.house_no as houseNo,
 		tm.room_no as roomNo,
-		a.charge_type as chargeType,
-		a.break_down as breakDown
+		a.charge_type as chargeType
 	</sql>
 	
 	<sql id="rentContractJoins">
