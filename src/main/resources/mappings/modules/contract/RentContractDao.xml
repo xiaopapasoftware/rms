@@ -272,7 +272,6 @@
 			remarks,
 			del_flag,
 			charge_type,
-			break_down,
 			return_remark,
 			data_source
 		) VALUES (
