@@ -42,6 +42,7 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -594,6 +595,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountList", inAccountList);
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("rentContract", rentContract);
+    model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
 
   }
@@ -622,6 +624,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("outAccountSize", outAccountList.size());
     rentContract.setTradeType("7");// 正常退租
     model.addAttribute("rentContract", rentContract);
+    model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
   }
 
@@ -643,6 +646,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("outAccountSize", outAccountList.size());
     rentContract.setTradeType("6");// 提前退租
     model.addAttribute("rentContract", rentContract);
+    model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
   }
 
@@ -660,7 +664,33 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountSize", inAccountList.size());
     rentContract.setTradeType("8");// 逾期退租
     model.addAttribute("rentContract", rentContract);
+    model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
+  }
+
+  /**
+   * 计算各种退款的应退或应收的总金额
+   */
+  private String calculateTatalRefundAmt(List<Accounting> outAccountList, List<Accounting> inAccountList) {
+    double totalOutAmt = 0;// 应出总金额
+    if (CollectionUtils.isNotEmpty(outAccountList)) {
+      for (Accounting outAcct : outAccountList) {
+        if (TradeDirectionEnum.OUT.getValue().equals(outAcct.getFeeDirection())) {
+          totalOutAmt += outAcct.getFeeAmount();
+        }
+      }
+    }
+    double totalInAmt = 0;// 应收总金额
+    if (CollectionUtils.isNotEmpty(inAccountList)) {
+      for (Accounting intAccount : inAccountList) {
+        if (TradeDirectionEnum.IN.getValue().equals(intAccount.getFeeDirection())) {
+          totalInAmt += intAccount.getFeeAmount();
+        }
+      }
+    }
+
+    double refundAmount = totalInAmt - totalOutAmt;
+    return new BigDecimal(refundAmount).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
   }
 
   /**

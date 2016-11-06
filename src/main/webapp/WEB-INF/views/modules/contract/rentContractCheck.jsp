@@ -237,6 +237,12 @@
 				</script>
 			</div>
 		</div>
+			<div class="control-group"><font color="red">
+				<label class="control-label">费用总计：</label>
+				<div class="controls">
+				    ${totalRefundAmount}元
+				</div></font>
+			</div>
 			<div class="control-group">
 				<label class="control-label">备注：</label>
 				<div class="controls">
