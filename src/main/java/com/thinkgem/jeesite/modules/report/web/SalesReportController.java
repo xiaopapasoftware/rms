@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.report.web;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -296,7 +297,11 @@ public class SalesReportController extends BaseController {
     jrrr.setTotalNum(allRoomsCount + "");
     jrrr.setRentedNum(rentedRoomsCount + "");
     if (allRoomsCount != 0 && rentedRoomsCount != 0) {
-      jrrr.setRentRate(new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).toString());
+      double doubleValue = new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+      NumberFormat num = NumberFormat.getPercentInstance();
+      num.setMaximumIntegerDigits(3);
+      num.setMaximumFractionDigits(2);
+      jrrr.setRentRate(num.format(doubleValue));
     } else {
       jrrr.setRentRate("0");
     }
@@ -304,7 +309,6 @@ public class SalesReportController extends BaseController {
     totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
-
 
   @RequestMapping(value = {"relet"})
   public String relet(ReletReport reletReport, HttpServletRequest request, HttpServletResponse response, Model model) {
