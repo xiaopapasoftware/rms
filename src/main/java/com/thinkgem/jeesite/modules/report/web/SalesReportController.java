@@ -263,10 +263,36 @@ public class SalesReportController extends BaseController {
   }
 
   /**
+   * 合租出租率统计报表-导出
+   */
+  @RequestMapping(value = {"exportJointRentRateReport"})
+  public String exportJointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    try {
+      String fileName = "合租出租率统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      Page<JointRentRateReport> totalPage = getJointRentRateReport(jointRentRateReport, request, response);
+      new ExportExcel("合租出租率统计报表", HouseReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      return null;
+    } catch (Exception e) {
+      model.addAttribute("message", "导出合租出租率统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+    }
+    return jointRentRateReport(jointRentRateReport, request, response, model);
+  }
+
+  /**
    * 合租出租率统计报表-查询
    */
   @RequestMapping(value = {"jointRentRate"})
   public String jointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<JointRentRateReport> totalPage = getJointRentRateReport(jointRentRateReport, request, response);
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    model.addAttribute("jointRentRateReport", jointRentRateReport);
+    model.addAttribute("page", totalPage);
+    return "modules/report/sales/jointRentRateReport";
+  }
+
+  private Page<JointRentRateReport> getJointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response) {
     Page<JointRentRateReport> totalPage = new Page<JointRentRateReport>(request, response, -1);
     if (jointRentRateReport.getPropertyProject() != null) {
       if ("ALL".equals(jointRentRateReport.getPropertyProject().getId())) {
@@ -280,13 +306,8 @@ public class SalesReportController extends BaseController {
         totalPage = getJointRentRateReport(totalPage, jointRentRateReport.getPropertyProject().getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
       }
     }
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
-    model.addAttribute("jointRentRateReport", jointRentRateReport);
-    model.addAttribute("page", totalPage);
-    return "modules/report/sales/jointRentRateReport";
+    return totalPage;
   }
-
 
   private Page<JointRentRateReport> getJointRentRateReport(Page<JointRentRateReport> totalPage, String ppId, Date startDate, Date endDate) {
     PropertyProject pp = propertyProjectService.get(ppId);
