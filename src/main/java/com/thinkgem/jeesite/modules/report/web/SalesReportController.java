@@ -270,7 +270,7 @@ public class SalesReportController extends BaseController {
     try {
       String fileName = "合租出租率统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
       Page<JointRentRateReport> totalPage = getJointRentRateReport(jointRentRateReport, request, response);
-      new ExportExcel("合租出租率统计报表", HouseReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      new ExportExcel("合租出租率统计报表", JointRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
       model.addAttribute("message", "导出合租出租率统计报表失败！失败信息：" + e.getMessage());
