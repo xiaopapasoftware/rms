@@ -267,14 +267,14 @@ public class SalesReportController extends BaseController {
   @RequestMapping(value = {"jointRentRate"})
   public String jointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<JointRentRateReport> totalPage = new Page<JointRentRateReport>(request, response, -1);
-    if (jointRentRateReport.getStartDate() != null && jointRentRateReport.getEndDate() != null && jointRentRateReport.getPropertyProject() != null) {
+    if (jointRentRateReport.getPropertyProject() != null) {
       if ("ALL".equals(jointRentRateReport.getPropertyProject().getId())) {
         totalPage.initialize();
         List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
         for (PropertyProject pp : projectList) {
           totalPage = getJointRentRateReport(totalPage, pp.getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
-          Collections.sort(totalPage.getList(), Collections.reverseOrder());
         }
+        Collections.sort(totalPage.getList(), Collections.reverseOrder());
       } else {
         totalPage = getJointRentRateReport(totalPage, jointRentRateReport.getPropertyProject().getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
       }
@@ -301,6 +301,7 @@ public class SalesReportController extends BaseController {
       jrrr.setRentRate("0");
     }
     totalPage.getList().add(jrrr);
+    totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
 
