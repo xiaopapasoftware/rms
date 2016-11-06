@@ -22,12 +22,6 @@ public enum HouseStatusEnum {
   /** 完全出租 */
   WHOLE_RENT("4");
 
-//  /** 已退待租 */
-//  RETURN_FOR_RENT("5"),
-//
-//  /** 已损坏 */
-//  DAMAGED("6");
-
   HouseStatusEnum(String value) {
     this.value = value;
   }

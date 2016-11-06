@@ -8,36 +8,30 @@ package com.thinkgem.jeesite.modules.inventory.enums;
  */
 public enum RoomStatusEnum {
 
-    /** 待装修 */
-    TO_RENOVATION("0"),
+  /** 待装修 */
+  TO_RENOVATION("0"),
 
-    /** 待出租可预订 */
-    RENT_FOR_RESERVE("1"),
+  /** 待出租可预订 */
+  RENT_FOR_RESERVE("1"),
 
-    /** 已预定 */
-    BE_RESERVED("2"),
+  /** 已预定 */
+  BE_RESERVED("2"),
 
-    /** 已出租 */
-    RENTED("3");
+  /** 已出租 */
+  RENTED("3");
+  
+  RoomStatusEnum(String value) {
+    this.value = value;
+  }
 
-//    /** 已退租可预订 */
-//    RETURN_FOR_RESERVE("4"),
+  private String value;
 
-//    /** 已损坏 */
-//    DAMAGED("5")
+  public String getValue() {
+    return value;
+  }
 
-    RoomStatusEnum(String value) {
-	this.value = value;
-    }
-
-    private String value;
-
-    public String getValue() {
-	return value;
-    }
-
-    public void setValue(String value) {
-	this.value = value;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
 }
