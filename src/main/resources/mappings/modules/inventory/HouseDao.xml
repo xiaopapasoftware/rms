@@ -433,4 +433,9 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 	
+	<select id="queryHousesCountByProjectPropertyId" resultType="int">
+	  	SELECT COUNT(*) FROM t_house th
+		WHERE th.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+		AND   th.`DEL_FLAG` = '0'
+	</select>
 </mapper>

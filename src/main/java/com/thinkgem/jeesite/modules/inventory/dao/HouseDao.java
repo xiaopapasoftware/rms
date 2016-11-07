@@ -54,4 +54,6 @@ public interface HouseDao extends CrudDao<House> {
    * 预定-整租，更新房屋状态
    */
   int updateHouseStatus4Deposit(House house);
+
+  int queryHousesCountByProjectPropertyId(String propertyProjectId);
 }

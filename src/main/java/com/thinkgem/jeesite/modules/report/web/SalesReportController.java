@@ -31,6 +31,7 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.report.entity.EntireRentRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ExpireReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseReport;
 import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
@@ -319,6 +320,75 @@ public class SalesReportController extends BaseController {
     jrrr.setRentedNum(rentedRoomsCount + "");
     if (allRoomsCount != 0 && rentedRoomsCount != 0) {
       double doubleValue = new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+      NumberFormat num = NumberFormat.getPercentInstance();
+      num.setMaximumIntegerDigits(3);
+      num.setMaximumFractionDigits(2);
+      jrrr.setRentRate(num.format(doubleValue));
+    } else {
+      jrrr.setRentRate("0");
+    }
+    totalPage.getList().add(jrrr);
+    totalPage.setCount(totalPage.getCount() + 1);
+    return totalPage;
+  }
+
+  /**
+   * 整租出租率统计报表-导出
+   */
+  @RequestMapping(value = {"exportEntireRentRateReport"})
+  public String exportEntireRentRateReport(EntireRentRateReport entireRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    try {
+      String fileName = "整租出租率统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      Page<EntireRentRateReport> totalPage = getEntireRentRateReport(entireRentRateReport, request, response);
+      new ExportExcel("整租出租率统计报表", EntireRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      return null;
+    } catch (Exception e) {
+      model.addAttribute("message", "导出整租出租率统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+    }
+    return entireRentRateReport(entireRentRateReport, request, response, model);
+  }
+
+  /**
+   * 整租出租率统计报表-查询
+   */
+  @RequestMapping(value = {"entireRentRate"})
+  public String entireRentRateReport(EntireRentRateReport entireRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<EntireRentRateReport> totalPage = getEntireRentRateReport(entireRentRateReport, request, response);
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    model.addAttribute("jointRentRateReport", entireRentRateReport);
+    model.addAttribute("page", totalPage);
+    return "modules/report/sales/entireRentRateReport";
+  }
+
+  private Page<EntireRentRateReport> getEntireRentRateReport(EntireRentRateReport entireRentRateReport, HttpServletRequest request, HttpServletResponse response) {
+    Page<EntireRentRateReport> totalPage = new Page<EntireRentRateReport>(request, response, -1);
+    if (entireRentRateReport.getPropertyProject() != null) {
+      if ("ALL".equals(entireRentRateReport.getPropertyProject().getId())) {
+        totalPage.initialize();
+        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+        for (PropertyProject pp : projectList) {
+          totalPage = getEntireRentRateReport(totalPage, pp.getId(), entireRentRateReport.getStartDate(), entireRentRateReport.getEndDate());
+        }
+        Collections.sort(totalPage.getList(), Collections.reverseOrder());
+      } else {
+        totalPage = getEntireRentRateReport(totalPage, entireRentRateReport.getPropertyProject().getId(), entireRentRateReport.getStartDate(), entireRentRateReport.getEndDate());
+      }
+    }
+    return totalPage;
+  }
+
+  private Page<EntireRentRateReport> getEntireRentRateReport(Page<EntireRentRateReport> totalPage, String ppId, Date startDate, Date endDate) {
+    PropertyProject pp = propertyProjectService.get(ppId);
+    int allHousesCount = houseService.queryHousesCountByProjectPropertyId(ppId);
+    int rentedHousesCount = rentContractService.queryValidEntireHouseCount(startDate, endDate, ppId);
+    EntireRentRateReport jrrr = new EntireRentRateReport();
+    jrrr.setProjectName(pp.getProjectName());
+    jrrr.setTotalNum(allHousesCount + "");
+    jrrr.setRentedNum(rentedHousesCount + "");
+    if (allHousesCount != 0 && rentedHousesCount != 0) {
+      double doubleValue = new BigDecimal(rentedHousesCount).divide(new BigDecimal(allHousesCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
       NumberFormat num = NumberFormat.getPercentInstance();
       num.setMaximumIntegerDigits(3);
       num.setMaximumFractionDigits(2);

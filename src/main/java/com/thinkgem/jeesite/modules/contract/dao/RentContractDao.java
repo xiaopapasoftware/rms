@@ -34,4 +34,9 @@ public interface RentContractDao extends CrudDao<RentContract> {
    * 查询已出租的有效的单间合同数
    */
   int queryValidSingleRoomCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
+
+  /**
+   * 查询已出租的有效的整租合同数
+   */
+  int queryValidEntireHouseCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
 }

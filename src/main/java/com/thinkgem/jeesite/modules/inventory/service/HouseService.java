@@ -393,4 +393,8 @@ public class HouseService extends CrudService<HouseDao, House> {
       super.save(h);
     }
   }
+
+  public int queryHousesCountByProjectPropertyId(String propertyProjectId) {
+    return dao.queryHousesCountByProjectPropertyId(propertyProjectId);
+  }
 }
