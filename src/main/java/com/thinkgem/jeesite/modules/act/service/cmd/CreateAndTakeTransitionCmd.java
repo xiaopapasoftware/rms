@@ -11,36 +11,33 @@ import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.pvm.runtime.AtomicOperation;
 
 public class CreateAndTakeTransitionCmd implements Command<java.lang.Void> {
-	
-	private TaskEntity currentTaskEntity;
-	private ActivityImpl activity;
-	protected Map<String, Object> variables;
 
-	public CreateAndTakeTransitionCmd(TaskEntity currentTaskEntity, ActivityImpl activity, Map<String, Object> variables) {
-		this.currentTaskEntity = currentTaskEntity;
-		this.activity = activity;
-		this.variables = variables;
-	}
+  private TaskEntity currentTaskEntity;
+  private ActivityImpl activity;
+  protected Map<String, Object> variables;
 
-	@Override
-	public Void execute(CommandContext commandContext) {
-		if (currentTaskEntity != null) {
+  public CreateAndTakeTransitionCmd(TaskEntity currentTaskEntity, ActivityImpl activity, Map<String, Object> variables) {
+    this.currentTaskEntity = currentTaskEntity;
+    this.activity = activity;
+    this.variables = variables;
+  }
 
-			ExecutionEntity execution = commandContext.getExecutionEntityManager().findExecutionById(currentTaskEntity.getExecutionId());
-			execution.setActivity(activity);
-			execution.performOperation(AtomicOperation.TRANSITION_CREATE_SCOPE);
-
-			//删除当前的任务，不能删除当前正在执行的任务，所以要先清除掉关联
-			if (variables != null) {
-				if (currentTaskEntity.getExecutionId() != null) {
-					currentTaskEntity.setExecutionVariables(variables);
-				} else {
-					currentTaskEntity.setVariables(variables);
-				}
-			}
-
-			Context.getCommandContext().getTaskEntityManager().deleteTask(currentTaskEntity, TaskEntity.DELETE_REASON_DELETED, false);
-		}
-		return null;
-	}
+  @Override
+  public Void execute(CommandContext commandContext) {
+    if (currentTaskEntity != null) {
+      ExecutionEntity execution = commandContext.getExecutionEntityManager().findExecutionById(currentTaskEntity.getExecutionId());
+      execution.setActivity(activity);
+      execution.performOperation(AtomicOperation.TRANSITION_CREATE_SCOPE);
+      if (variables != null) {
+        if (currentTaskEntity.getExecutionId() != null) {
+          currentTaskEntity.setExecutionVariables(variables);
+        } else {
+          currentTaskEntity.setVariables(variables);
+        }
+      }
+      // 删除当前的任务，不能删除当前正在执行的任务，所以要先清除掉关联
+      Context.getCommandContext().getTaskEntityManager().deleteTask(currentTaskEntity, TaskEntity.DELETE_REASON_DELETED, false);
+    }
+    return null;
+  }
 }
