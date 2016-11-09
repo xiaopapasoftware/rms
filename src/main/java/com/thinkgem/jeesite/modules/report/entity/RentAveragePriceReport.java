@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.report.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -80,7 +81,7 @@ public class RentAveragePriceReport extends DataEntity<RentAveragePriceReport> i
 
   @Override
   public int compareTo(RentAveragePriceReport o) {
-    return Integer.valueOf(this.jointRentAvgPrice) - Integer.valueOf(o.jointRentAvgPrice);
+    return new BigDecimal(this.jointRentAvgPrice).subtract(new BigDecimal(o.jointRentAvgPrice)).intValue();
   }
 
 }
