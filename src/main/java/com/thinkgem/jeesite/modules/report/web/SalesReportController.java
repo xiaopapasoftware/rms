@@ -23,6 +23,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -39,6 +40,7 @@ import com.thinkgem.jeesite.modules.report.entity.JointRentRateReport;
 import com.thinkgem.jeesite.modules.report.entity.RecommendReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletRateReport;
 import com.thinkgem.jeesite.modules.report.entity.ReletReport;
+import com.thinkgem.jeesite.modules.report.entity.RentAveragePriceReport;
 import com.thinkgem.jeesite.modules.report.entity.RentDataReport;
 import com.thinkgem.jeesite.modules.report.entity.RentReport;
 import com.thinkgem.jeesite.modules.report.entity.ResultsReport;
@@ -397,6 +399,82 @@ public class SalesReportController extends BaseController {
       jrrr.setRentRate("0");
     }
     totalPage.getList().add(jrrr);
+    totalPage.setCount(totalPage.getCount() + 1);
+    return totalPage;
+  }
+
+  /**
+   * 房租平均价格统计报表-导出
+   */
+  @RequestMapping(value = {"exportRentAveragePriceReport"})
+  public String exportRentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    try {
+      String fileName = "房租平均价格统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      Page<RentAveragePriceReport> totalPage = getRentAveragePriceReport(rentAveragePriceReport, request, response);
+      new ExportExcel("房租平均价格统计报表", RentAveragePriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      return null;
+    } catch (Exception e) {
+      model.addAttribute("message", "导出房租平均价格统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+    }
+    return rentAveragePriceReport(rentAveragePriceReport, request, response, model);
+  }
+
+  /**
+   * 房租平均价格统计报表-查询
+   */
+  @RequestMapping(value = {"rentAveragePriceReport"})
+  public String rentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<RentAveragePriceReport> totalPage = getRentAveragePriceReport(rentAveragePriceReport, request, response);
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    model.addAttribute("rentAveragePriceReport", rentAveragePriceReport);
+    model.addAttribute("page", totalPage);
+    return "modules/report/sales/rentAveragePriceReport";
+  }
+
+  private Page<RentAveragePriceReport> getRentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response) {
+    Page<RentAveragePriceReport> totalPage = new Page<RentAveragePriceReport>(request, response, -1);
+    if (rentAveragePriceReport.getPropertyProject() != null) {
+      if ("ALL".equals(rentAveragePriceReport.getPropertyProject().getId())) {
+        totalPage.initialize();
+        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+        for (PropertyProject pp : projectList) {
+          totalPage = getRentAveragePriceReport(totalPage, pp.getId(), rentAveragePriceReport.getStartDate(), rentAveragePriceReport.getEndDate());
+        }
+        Collections.sort(totalPage.getList(), Collections.reverseOrder());
+      } else {
+        totalPage = getRentAveragePriceReport(totalPage, rentAveragePriceReport.getPropertyProject().getId(), rentAveragePriceReport.getStartDate(), rentAveragePriceReport.getEndDate());
+      }
+    }
+    return totalPage;
+  }
+
+  private Page<RentAveragePriceReport> getRentAveragePriceReport(Page<RentAveragePriceReport> totalPage, String ppId, Date startDate, Date endDate) {
+    RentAveragePriceReport rapr = new RentAveragePriceReport();
+    double jointAvgPrice = 0d;
+    double jointTotalPrice = 0d;
+    double entireAvgPrice = 0d;
+    double entireTotalPrice = 0d;
+    PropertyProject pp = propertyProjectService.get(ppId);
+    List<RentContract> singleContracts = rentContractService.queryValidSingleRooms(startDate, endDate, ppId);
+    List<RentContract> entireContracts = rentContractService.queryValidEntireHouses(startDate, endDate, ppId);
+    if (CollectionUtils.isNotEmpty(singleContracts)) {
+      for (RentContract singleContract : singleContracts) {
+        jointTotalPrice += singleContract.getRental();
+      }
+      jointAvgPrice = new BigDecimal(jointTotalPrice).divide(new BigDecimal(singleContracts.size()), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+    if (CollectionUtils.isNotEmpty(entireContracts)) {
+      for (RentContract entireContract : entireContracts) {
+        entireTotalPrice += entireContract.getRental();
+      }
+      entireAvgPrice = new BigDecimal(entireTotalPrice).divide(new BigDecimal(entireContracts.size()), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+    rapr.setProjectName(pp.getProjectName());
+    rapr.setJointRentAvgPrice(jointAvgPrice + "");
+    rapr.setEntireRentAvgPrice(entireAvgPrice + "");
+    totalPage.getList().add(rapr);
     totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
