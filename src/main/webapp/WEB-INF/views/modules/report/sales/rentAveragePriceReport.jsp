@@ -26,11 +26,6 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}" />
 		<sys:message content="${message}" type="${messageType}" />
 		<ul class="ul-form">
-			<li><label style="width: 120px;">物业项目：</label> 
-				<form:select path="propertyProject.id" class="input-medium" style="width:190px;">
-					<form:option itemLabel="ALL" itemValue="ALL" value="ALL" label="全部" />
-					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false" />
-				</form:select></li>
 			<li><label style="width: 120px;">开始时间：</label> 
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required" value="<fmt:formatDate value="${rentAveragePriceReport.startDate}" pattern="yyyy-MM-dd"/>" 
 				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width: 196px;" />
@@ -52,8 +47,7 @@
 		<thead>
 			<tr>
 				<th>物业项目名称</th>
-				<th>合租房间平均房租价格</th>
-				<th>整租房屋平均房租价格</th>
+				<th>单间平均房租价格</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -61,7 +55,6 @@
 				<tr>
 					<td>${rentAveragePriceReport.projectName}</td>
 					<td>${rentAveragePriceReport.jointRentAvgPrice}</td>
-					<td>${rentAveragePriceReport.entireRentAvgPrice}</td>
 				</tr>
 			</c:forEach>
 		</tbody>

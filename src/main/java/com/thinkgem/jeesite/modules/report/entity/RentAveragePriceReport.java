@@ -5,10 +5,9 @@ import java.util.Date;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
 /**
- * 房租平均价格统计报表
+ * 单间的房租平均价格统计报表
  * 
  * @author wangshujin
  */
@@ -16,25 +15,13 @@ public class RentAveragePriceReport extends DataEntity<RentAveragePriceReport> i
 
   private static final long serialVersionUID = -757744148201792424L;
 
-  private PropertyProject propertyProject; // 物业项目
-
   private Date startDate;// 开始日期
 
   private Date endDate;// 结束日期
 
   private String projectName; // 物业项目名称
 
-  private String jointRentAvgPrice;// 合租平均价格
-
-  private String entireRentAvgPrice;// 整租平均价格
-
-  public PropertyProject getPropertyProject() {
-    return propertyProject;
-  }
-
-  public void setPropertyProject(PropertyProject propertyProject) {
-    this.propertyProject = propertyProject;
-  }
+  private String jointRentAvgPrice;// 单间平均租赁价格
 
   public Date getStartDate() {
     return startDate;
@@ -61,7 +48,7 @@ public class RentAveragePriceReport extends DataEntity<RentAveragePriceReport> i
     this.projectName = projectName;
   }
 
-  @ExcelField(title = "合租平均价格", align = 2, sort = 2)
+  @ExcelField(title = "单间租赁平均价格", align = 2, sort = 2)
   public String getJointRentAvgPrice() {
     return jointRentAvgPrice;
   }
@@ -70,18 +57,8 @@ public class RentAveragePriceReport extends DataEntity<RentAveragePriceReport> i
     this.jointRentAvgPrice = jointRentAvgPrice;
   }
 
-  @ExcelField(title = "整租平均价格", align = 2, sort = 3)
-  public String getEntireRentAvgPrice() {
-    return entireRentAvgPrice;
-  }
-
-  public void setEntireRentAvgPrice(String entireRentAvgPrice) {
-    this.entireRentAvgPrice = entireRentAvgPrice;
-  }
-
   @Override
   public int compareTo(RentAveragePriceReport o) {
     return new BigDecimal(this.jointRentAvgPrice).subtract(new BigDecimal(o.jointRentAvgPrice)).intValue();
   }
-
 }

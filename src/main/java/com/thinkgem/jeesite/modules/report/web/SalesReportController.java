@@ -5,7 +5,9 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -409,25 +411,23 @@ public class SalesReportController extends BaseController {
   @RequestMapping(value = {"exportRentAveragePriceReport"})
   public String exportRentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     try {
-      String fileName = "房租平均价格统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      String fileName = "单间平均房租价格统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
       Page<RentAveragePriceReport> totalPage = getRentAveragePriceReport(rentAveragePriceReport, request, response);
-      new ExportExcel("房租平均价格统计报表", RentAveragePriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      new ExportExcel("单间平均房租价格统计报表", RentAveragePriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出房租平均价格统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("message", "导出单间平均房租价格统计报表失败！失败信息：" + e.getMessage());
       model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
     }
     return rentAveragePriceReport(rentAveragePriceReport, request, response, model);
   }
 
   /**
-   * 房租平均价格统计报表-查询
+   * 单间平均价格统计报表-查询
    */
   @RequestMapping(value = {"rentAveragePriceReport"})
   public String rentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<RentAveragePriceReport> totalPage = getRentAveragePriceReport(rentAveragePriceReport, request, response);
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
     model.addAttribute("rentAveragePriceReport", rentAveragePriceReport);
     model.addAttribute("page", totalPage);
     return "modules/report/sales/rentAveragePriceReport";
@@ -435,45 +435,44 @@ public class SalesReportController extends BaseController {
 
   private Page<RentAveragePriceReport> getRentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response) {
     Page<RentAveragePriceReport> totalPage = new Page<RentAveragePriceReport>(request, response, -1);
-    if (rentAveragePriceReport.getPropertyProject() != null) {
-      if ("ALL".equals(rentAveragePriceReport.getPropertyProject().getId())) {
-        totalPage.initialize();
-        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-        for (PropertyProject pp : projectList) {
-          totalPage = getRentAveragePriceReport(totalPage, pp.getId(), rentAveragePriceReport.getStartDate(), rentAveragePriceReport.getEndDate());
-        }
-        Collections.sort(totalPage.getList(), Collections.reverseOrder());
-      } else {
-        totalPage = getRentAveragePriceReport(totalPage, rentAveragePriceReport.getPropertyProject().getId(), rentAveragePriceReport.getStartDate(), rentAveragePriceReport.getEndDate());
-      }
+    totalPage.initialize();
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    Map<String, Double> map = new HashMap<String, Double>();
+    map.put("totalRental", 0d);// 所有小区的单间总租金
+    map.put("totalRoomCount", 0d);// 所有小区的单间数
+    for (PropertyProject pp : projectList) {
+      totalPage = getRentAveragePriceReport(map, totalPage, pp.getId(), rentAveragePriceReport.getStartDate(), rentAveragePriceReport.getEndDate());
     }
+    Collections.sort(totalPage.getList(), Collections.reverseOrder());
+    // 所有小区的单间的平均房租
+    double wholeJointAvgPrice = 0d;
+    if (map.get("totalRental") > 0d && map.get("totalRoomCount") > 0d) {
+      wholeJointAvgPrice = new BigDecimal(map.get("totalRental")).divide(new BigDecimal(map.get("totalRoomCount")), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+    RentAveragePriceReport rapr = new RentAveragePriceReport();
+    rapr.setProjectName("合计");
+    rapr.setJointRentAvgPrice(wholeJointAvgPrice + "");
+    totalPage.getList().add(rapr);
+    totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
 
-  private Page<RentAveragePriceReport> getRentAveragePriceReport(Page<RentAveragePriceReport> totalPage, String ppId, Date startDate, Date endDate) {
+  private Page<RentAveragePriceReport> getRentAveragePriceReport(Map<String, Double> paMap, Page<RentAveragePriceReport> totalPage, String ppId, Date startDate, Date endDate) {
     RentAveragePriceReport rapr = new RentAveragePriceReport();
-    double jointAvgPrice = 0d;
-    double jointTotalPrice = 0d;
-    double entireAvgPrice = 0d;
-    double entireTotalPrice = 0d;
+    double jointAvgPrice = 0d;// 单个小区的单间的平均房租
+    double jointTotalPrice = 0d;// 单个小区的单间房租总和
     PropertyProject pp = propertyProjectService.get(ppId);
-    List<RentContract> singleContracts = rentContractService.queryValidSingleRooms(startDate, endDate, ppId);
-    List<RentContract> entireContracts = rentContractService.queryValidEntireHouses(startDate, endDate, ppId);
+    List<RentContract> singleContracts = rentContractService.queryValidSingleRooms(startDate, endDate, ppId);// 所有有效的合租合同
     if (CollectionUtils.isNotEmpty(singleContracts)) {
       for (RentContract singleContract : singleContracts) {
         jointTotalPrice += singleContract.getRental();
       }
       jointAvgPrice = new BigDecimal(jointTotalPrice).divide(new BigDecimal(singleContracts.size()), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
-    }
-    if (CollectionUtils.isNotEmpty(entireContracts)) {
-      for (RentContract entireContract : entireContracts) {
-        entireTotalPrice += entireContract.getRental();
-      }
-      entireAvgPrice = new BigDecimal(entireTotalPrice).divide(new BigDecimal(entireContracts.size()), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+      paMap.put("totalRental", paMap.get("totalRental") + jointTotalPrice);
+      paMap.put("totalRoomCount", paMap.get("totalRoomCount") + singleContracts.size());
     }
     rapr.setProjectName(pp.getProjectName());
     rapr.setJointRentAvgPrice(jointAvgPrice + "");
-    rapr.setEntireRentAvgPrice(entireAvgPrice + "");
     totalPage.getList().add(rapr);
     totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
@@ -483,10 +482,8 @@ public class SalesReportController extends BaseController {
   public String relet(ReletReport reletReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<ReletReport> page = contractReportService.reletReport(new Page<ReletReport>(request, response), reletReport);
     model.addAttribute("page", page);
-
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     if (null != reletReport.getPropertyProject() && StringUtils.isNotEmpty(reletReport.getPropertyProject().getId())) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -495,7 +492,6 @@ public class SalesReportController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != reletReport.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -504,7 +500,6 @@ public class SalesReportController extends BaseController {
       List<House> houseList = houseService.findList(house);
       model.addAttribute("houseList", houseList);
     }
-
     return "modules/report/sales/reletList";
   }
 
@@ -526,10 +521,8 @@ public class SalesReportController extends BaseController {
   public String recommend(RecommendReport recommendReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<RecommendReport> page = contractReportService.recommendReport(new Page<RecommendReport>(request, response), recommendReport);
     model.addAttribute("page", page);
-
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     if (null != recommendReport.getPropertyProject() && StringUtils.isNotEmpty(recommendReport.getPropertyProject().getId())) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -538,7 +531,6 @@ public class SalesReportController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != recommendReport.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -547,7 +539,6 @@ public class SalesReportController extends BaseController {
       List<House> houseList = houseService.findList(house);
       model.addAttribute("houseList", houseList);
     }
-
     return "modules/report/sales/recommendList";
   }
 

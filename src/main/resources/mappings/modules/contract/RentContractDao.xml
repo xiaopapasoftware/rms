@@ -329,6 +329,22 @@
 		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 	</select>
 
+	<select id="queryValidEntire41Houses" resultType="int">
+	
+	</select>
+	
+	<select id="queryValidEntire31Houses" resultType="int">
+	
+	</select>
+	
+	<select id="queryValidEntire21Houses" resultType="int">
+	
+	</select>
+	
+	<select id="queryValidEntire11Houses" resultType="int">
+	
+	</select>
+	
 	<insert id="insert">
 		INSERT INTO t_rent_contract(
 		id,
