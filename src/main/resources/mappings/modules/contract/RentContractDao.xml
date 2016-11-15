@@ -310,7 +310,7 @@
 
 	<!--查询指定房型的有效整租合同 -->
     <select id="queryValidConditionalEntireHouses" resultType="RentContract">
-	 SELECT  * 
+	 SELECT  trc.*
 	 FROM    t_rent_contract trc,t_house th
 	 WHERE   trc.RENT_MODE = '0' 
 	  AND    trc.DEL_FLAG = '0' 
@@ -331,6 +331,7 @@
 	  AND    th.`HOUSE_STATUS` = '4'
 	  AND    th.`DECORA_STRUC_ROOM_NUM` = #{roomNum}
 	  AND    th.`DECORA_STRUC_CUSSPAC_NUM` = #{cusspacNum}
+	  AND    trc.house_id = th.id
   </select>
 
 	<insert id="insert">
