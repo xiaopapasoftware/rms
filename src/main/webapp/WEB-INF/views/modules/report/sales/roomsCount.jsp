@@ -26,13 +26,6 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<ul class="ul-form">
-			<li><label style="width:120px;">物业项目：</label>
-				<form:select path="propertyProject.id" class="input-medium" style="width:190px;">
-					<form:option itemLabel="ALL" itemValue="ALL" value="ALL" label="全部"/>
-					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
-				</form:select>
-			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="btns"><input id="btnExport" class="btn btn-primary" type="button" value="导出"/></li>
 			<li class="clearfix"></li>
 		</ul>

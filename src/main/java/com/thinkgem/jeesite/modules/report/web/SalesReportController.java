@@ -74,11 +74,7 @@ public class SalesReportController extends BaseController {
    */
   @RequestMapping(value = {"roomsCount"})
   public String roomsCount(HouseRoomReport houseRoomReport, HttpServletRequest request, HttpServletResponse response, Model model) {
-    if (houseRoomReport.getPropertyProject() != null) {
-      model.addAttribute("page", getRoomsCountList(houseRoomReport, request, response));
-    }
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
+    model.addAttribute("page", getRoomsCountList(houseRoomReport, request, response));
     return "modules/report/sales/roomsCount";
   }
 
@@ -87,45 +83,41 @@ public class SalesReportController extends BaseController {
    */
   private Page<HouseRoomReport> getRoomsCountList(HouseRoomReport houseRoomReport, HttpServletRequest request, HttpServletResponse response) {
     Page<HouseRoomReport> totalPage = new Page<HouseRoomReport>(request, response, -1);
-    if ("ALL".equals(houseRoomReport.getPropertyProject().getId())) {
-      totalPage.initialize();
-      List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-      int allTotalNum = 0;// 所有小区的总数量
-      int allRenovationNum = 0;// 所有小区的待装修总数量
-      int allToBeReservedNum = 0;// 所有小区的可预订总数量
-      int allReservedNum = 0; // 所有小区的已预定总数量
-      int allLeasedNum = 0;// 所有小区的已出租总数量
-      for (PropertyProject pp : projectList) {
-        if (StringUtils.isNotEmpty(pp.getId())) {
-          HouseRoomReport hrr = new HouseRoomReport();
-          hrr.setPropertyProject(pp);
-          Page<HouseRoomReport> page = reportService.roomsCount(new Page<HouseRoomReport>(request, response), hrr);
-          if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
-            totalPage.getList().addAll(page.getList());
-            totalPage.setCount(totalPage.getCount() + 1);
-            HouseRoomReport tempHRR = page.getList().get(0);
-            allTotalNum += Integer.valueOf(tempHRR.getTotalNum());
-            allRenovationNum += Integer.valueOf(tempHRR.getRenovationNum());
-            allToBeReservedNum += Integer.valueOf(tempHRR.getToBeReservedNum());
-            allReservedNum += Integer.valueOf(tempHRR.getReservedNum());
-            allLeasedNum += Integer.valueOf(tempHRR.getLeasedNum());
-          }
+    totalPage.initialize();
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    int allTotalNum = 0;// 所有小区的总数量
+    int allRenovationNum = 0;// 所有小区的待装修总数量
+    int allToBeReservedNum = 0;// 所有小区的可预订总数量
+    int allReservedNum = 0; // 所有小区的已预定总数量
+    int allLeasedNum = 0;// 所有小区的已出租总数量
+    for (PropertyProject pp : projectList) {
+      if (StringUtils.isNotEmpty(pp.getId())) {
+        HouseRoomReport hrr = new HouseRoomReport();
+        hrr.setPropertyProject(pp);
+        Page<HouseRoomReport> page = reportService.roomsCount(new Page<HouseRoomReport>(request, response), hrr);
+        if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
+          totalPage.getList().addAll(page.getList());
+          totalPage.setCount(totalPage.getCount() + 1);
+          HouseRoomReport tempHRR = page.getList().get(0);
+          allTotalNum += Integer.valueOf(tempHRR.getTotalNum());
+          allRenovationNum += Integer.valueOf(tempHRR.getRenovationNum());
+          allToBeReservedNum += Integer.valueOf(tempHRR.getToBeReservedNum());
+          allReservedNum += Integer.valueOf(tempHRR.getReservedNum());
+          allLeasedNum += Integer.valueOf(tempHRR.getLeasedNum());
         }
       }
-      HouseRoomReport totalHouseRoomReport = new HouseRoomReport();// 单独生成合计的数据
-      totalHouseRoomReport.setProjectName("合计");
-      totalHouseRoomReport.setTotalNum(allTotalNum + "");// 总数量
-      totalHouseRoomReport.setRenovationNum(allRenovationNum + "");// 待装修数量
-      totalHouseRoomReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
-      totalHouseRoomReport.setReservedNum(allReservedNum + "");// 已预定数量
-      totalHouseRoomReport.setLeasedNum(allLeasedNum + "");// 已出租数量
-      List<HouseRoomReport> totalHouseRoomReportList = new ArrayList<HouseRoomReport>();
-      totalHouseRoomReportList.add(totalHouseRoomReport);
-      Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
-      totalPage.getList().addAll(totalHouseRoomReportList);
-    } else {
-      totalPage = reportService.roomsCount(new Page<HouseRoomReport>(request, response), houseRoomReport);
     }
+    HouseRoomReport totalHouseRoomReport = new HouseRoomReport();// 单独生成合计的数据
+    totalHouseRoomReport.setProjectName("合计");
+    totalHouseRoomReport.setTotalNum(allTotalNum + "");// 总数量
+    totalHouseRoomReport.setRenovationNum(allRenovationNum + "");// 待装修数量
+    totalHouseRoomReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
+    totalHouseRoomReport.setReservedNum(allReservedNum + "");// 已预定数量
+    totalHouseRoomReport.setLeasedNum(allLeasedNum + "");// 已出租数量
+    List<HouseRoomReport> totalHouseRoomReportList = new ArrayList<HouseRoomReport>();
+    totalHouseRoomReportList.add(totalHouseRoomReport);
+    Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
+    totalPage.getList().addAll(totalHouseRoomReportList);
     return totalPage;
   }
 
@@ -151,11 +143,7 @@ public class SalesReportController extends BaseController {
    */
   @RequestMapping(value = {"housesCount"})
   public String housesCount(HouseReport houseReport, HttpServletRequest request, HttpServletResponse response, Model model) {
-    if (houseReport.getPropertyProject() != null) {
-      model.addAttribute("page", getHousesCountList(houseReport, request, response));
-    }
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
+    model.addAttribute("page", getHousesCountList(houseReport, request, response));
     return "modules/report/sales/housesCount";
   }
 
@@ -164,48 +152,44 @@ public class SalesReportController extends BaseController {
    */
   private Page<HouseReport> getHousesCountList(HouseReport houseReport, HttpServletRequest request, HttpServletResponse response) {
     Page<HouseReport> totalPage = new Page<HouseReport>(request, response, -1);
-    if ("ALL".equals(houseReport.getPropertyProject().getId())) {
-      totalPage.initialize();
-      List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-      int allTotalNum = 0;// 所有小区的总数量
-      int allRenovationNum = 0;// 所有小区的总的待装修总数量
-      int allToBeReservedNum = 0;// 所有小区的可预订总数量
-      int allReservedNum = 0; // 所有小区的已预定总数量
-      int allPartLeasedNum = 0;// 所有小区的部分出租的总数量
-      int allWholeLeasedNum = 0;// 所有小区的完全出租的总数量
-      for (PropertyProject pp : projectList) {
-        if (StringUtils.isNotEmpty(pp.getId())) {
-          HouseReport hr = new HouseReport();
-          hr.setPropertyProject(pp);
-          Page<HouseReport> page = reportService.housesCount(new Page<HouseReport>(request, response), hr);
-          if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
-            totalPage.getList().addAll(page.getList());
-            totalPage.setCount(totalPage.getCount() + 1);
-            HouseReport tempHR = page.getList().get(0);
-            allTotalNum += Integer.valueOf(tempHR.getTotalNum());
-            allRenovationNum += Integer.valueOf(tempHR.getRenovationNum());
-            allToBeReservedNum += Integer.valueOf(tempHR.getToBeReservedNum());
-            allReservedNum += Integer.valueOf(tempHR.getReservedNum());
-            allPartLeasedNum += Integer.valueOf(tempHR.getPartRentNum());
-            allWholeLeasedNum += Integer.valueOf(tempHR.getWholeRentNum());
-          }
+    totalPage.initialize();
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    int allTotalNum = 0;// 所有小区的总数量
+    int allRenovationNum = 0;// 所有小区的总的待装修总数量
+    int allToBeReservedNum = 0;// 所有小区的可预订总数量
+    int allReservedNum = 0; // 所有小区的已预定总数量
+    int allPartLeasedNum = 0;// 所有小区的部分出租的总数量
+    int allWholeLeasedNum = 0;// 所有小区的完全出租的总数量
+    for (PropertyProject pp : projectList) {
+      if (StringUtils.isNotEmpty(pp.getId())) {
+        HouseReport hr = new HouseReport();
+        hr.setPropertyProject(pp);
+        Page<HouseReport> page = reportService.housesCount(new Page<HouseReport>(request, response), hr);
+        if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
+          totalPage.getList().addAll(page.getList());
+          totalPage.setCount(totalPage.getCount() + 1);
+          HouseReport tempHR = page.getList().get(0);
+          allTotalNum += Integer.valueOf(tempHR.getTotalNum());
+          allRenovationNum += Integer.valueOf(tempHR.getRenovationNum());
+          allToBeReservedNum += Integer.valueOf(tempHR.getToBeReservedNum());
+          allReservedNum += Integer.valueOf(tempHR.getReservedNum());
+          allPartLeasedNum += Integer.valueOf(tempHR.getPartRentNum());
+          allWholeLeasedNum += Integer.valueOf(tempHR.getWholeRentNum());
         }
       }
-      HouseReport totalHouseReport = new HouseReport();// 单独生成合计的数据
-      totalHouseReport.setProjectName("合计");
-      totalHouseReport.setTotalNum(allTotalNum + "");// 总数量
-      totalHouseReport.setRenovationNum(allRenovationNum + "");// 待装修数量
-      totalHouseReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
-      totalHouseReport.setReservedNum(allReservedNum + "");// 已预定数量
-      totalHouseReport.setPartRentNum(allPartLeasedNum + "");// 部分出租数量
-      totalHouseReport.setWholeRentNum(allWholeLeasedNum + "");// 完全出租的数量
-      List<HouseReport> totalHouseReportList = new ArrayList<HouseReport>();
-      totalHouseReportList.add(totalHouseReport);
-      Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
-      totalPage.getList().addAll(totalHouseReportList);
-    } else {
-      totalPage = reportService.housesCount(new Page<HouseReport>(request, response), houseReport);
     }
+    HouseReport totalHouseReport = new HouseReport();// 单独生成合计的数据
+    totalHouseReport.setProjectName("合计");
+    totalHouseReport.setTotalNum(allTotalNum + "");// 总数量
+    totalHouseReport.setRenovationNum(allRenovationNum + "");// 待装修数量
+    totalHouseReport.setToBeReservedNum(allToBeReservedNum + "");// 可预订数量
+    totalHouseReport.setReservedNum(allReservedNum + "");// 已预定数量
+    totalHouseReport.setPartRentNum(allPartLeasedNum + "");// 部分出租数量
+    totalHouseReport.setWholeRentNum(allWholeLeasedNum + "");// 完全出租的数量
+    List<HouseReport> totalHouseReportList = new ArrayList<HouseReport>();
+    totalHouseReportList.add(totalHouseReport);
+    Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
+    totalPage.getList().addAll(totalHouseReportList);
     return totalPage;
   }
 
