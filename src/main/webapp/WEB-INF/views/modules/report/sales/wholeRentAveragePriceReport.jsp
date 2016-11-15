@@ -28,12 +28,12 @@
 		<ul class="ul-form">
 			<li><label style="width: 120px;">开始时间：</label> 
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" 
-				class="input-medium Wdate required" value="<fmt:formatDate value="${wholeRentAveragePriceReport.startDate}" pattern="yyyy-MM-dd"/>" 
+				class="input-medium Wdate required" value="<fmt:formatDate value="${wholeAvgPriceReport.startDate}" pattern="yyyy-MM-dd"/>" 
 				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width: 196px;" />
 			</li>
 			<li><label style="width: 120px;">结束时间：</label> 
 				<input name="endDate" type="text" readonly="readonly" maxlength="20"
-				class="input-medium Wdate required" value="<fmt:formatDate value="${wholeRentAveragePriceReport.endDate}" pattern="yyyy-MM-dd"/>"
+				class="input-medium Wdate required" value="<fmt:formatDate value="${wholeAvgPriceReport.endDate}" pattern="yyyy-MM-dd"/>"
 				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
 				style="width: 196px;" /></li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
@@ -53,9 +53,16 @@
 		<tbody>
 			<c:forEach items="${page.list}" var="wholeRentAveragePriceReport">
 				<tr>
-					<td>${wholeRentAveragePriceReport.wholeAvgHouseType}</td>
-					<td>${wholeRentAveragePriceReport.projectName}</td>
-					<td>${wholeRentAveragePriceReport.wholeAvgPrice}</td>
+					<c:if test="${wholeRentAveragePriceReport.projectName == '该房型总平均'}">
+							<td><font color="red">${wholeRentAveragePriceReport.wholeAvgHouseType}</font></td>
+							<td><font color="red">${wholeRentAveragePriceReport.projectName}</font></td>
+							<td><font color="red">${wholeRentAveragePriceReport.wholeAvgPrice}</font></td>
+					</c:if>
+					<c:if test="${wholeRentAveragePriceReport.projectName != '该房型总平均'}">
+	   					 	<td>${wholeRentAveragePriceReport.wholeAvgHouseType}</td>
+							<td>${wholeRentAveragePriceReport.projectName}</td>
+							<td>${wholeRentAveragePriceReport.wholeAvgPrice}</td>
+					</c:if>
 				</tr>
 			</c:forEach>
 		</tbody>

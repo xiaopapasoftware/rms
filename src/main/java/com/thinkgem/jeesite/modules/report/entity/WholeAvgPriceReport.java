@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.report.entity;
 import java.util.Date;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
 
 /**
  * 整租平均房租价格
@@ -41,6 +42,7 @@ public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> {
     this.endDate = endDate;
   }
 
+  @ExcelField(title = "物业项目名称", align = 2, sort = 2)
   public String getProjectName() {
     return projectName;
   }
@@ -49,6 +51,7 @@ public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> {
     this.projectName = projectName;
   }
 
+  @ExcelField(title = "整租房型", align = 2, sort = 1)
   public String getWholeAvgHouseType() {
     return wholeAvgHouseType;
   }
@@ -57,6 +60,7 @@ public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> {
     this.wholeAvgHouseType = wholeAvgHouseType;
   }
 
+  @ExcelField(title = "整租租赁平均价格", align = 2, sort =3)
   public String getWholeAvgPrice() {
     return wholeAvgPrice;
   }
