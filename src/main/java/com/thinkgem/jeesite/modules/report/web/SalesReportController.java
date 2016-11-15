@@ -46,6 +46,7 @@ import com.thinkgem.jeesite.modules.report.entity.RentAveragePriceReport;
 import com.thinkgem.jeesite.modules.report.entity.RentDataReport;
 import com.thinkgem.jeesite.modules.report.entity.RentReport;
 import com.thinkgem.jeesite.modules.report.entity.ResultsReport;
+import com.thinkgem.jeesite.modules.report.entity.WholeAvgPriceReport;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportService;
 
@@ -406,7 +407,7 @@ public class SalesReportController extends BaseController {
   }
 
   /**
-   * 房租平均价格统计报表-导出
+   * 单间平均房租价格统计报表-导出
    */
   @RequestMapping(value = {"exportRentAveragePriceReport"})
   public String exportRentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -423,7 +424,7 @@ public class SalesReportController extends BaseController {
   }
 
   /**
-   * 单间平均价格统计报表-查询
+   * 单间平均房租价格统计报表-查询
    */
   @RequestMapping(value = {"rentAveragePriceReport"})
   public String rentAveragePriceReport(RentAveragePriceReport rentAveragePriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -475,6 +476,81 @@ public class SalesReportController extends BaseController {
     rapr.setJointRentAvgPrice(jointAvgPrice + "");
     totalPage.getList().add(rapr);
     totalPage.setCount(totalPage.getCount() + 1);
+    return totalPage;
+  }
+
+  /**
+   * 整租平均房租价格统计报表-导出
+   */
+  @RequestMapping(value = {"exportWholeRentAveragePriceReport"})
+  public String exportWholeRentAveragePriceReport(WholeAvgPriceReport wholeAvgPriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    try {
+      String fileName = "整租平均房租价格统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      Page<WholeAvgPriceReport> totalPage = getWholeRentAveragePriceReport(wholeAvgPriceReport, request, response);
+      new ExportExcel("整租平均房租价格统计报表", WholeAvgPriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      return null;
+    } catch (Exception e) {
+      model.addAttribute("message", "导出整租平均房租价格统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+    }
+    return wholeRentAveragePriceReport(wholeAvgPriceReport, request, response, model);
+  }
+
+
+  /**
+   * 整租平均房租价格统计报表-查询
+   */
+  @RequestMapping(value = {"wholeRentAveragePriceReport"})
+  public String wholeRentAveragePriceReport(WholeAvgPriceReport wholeAvgPriceReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<WholeAvgPriceReport> totalPage = getWholeRentAveragePriceReport(wholeAvgPriceReport, request, response);
+    model.addAttribute("wholeAvgPriceReport", wholeAvgPriceReport);
+    model.addAttribute("page", totalPage);
+    return "modules/report/sales/wholeRentAveragePriceReport";
+  }
+
+  private Page<WholeAvgPriceReport> getWholeRentAveragePriceReport(WholeAvgPriceReport wholeAvgPriceReport, HttpServletRequest request, HttpServletResponse response) {
+    Page<WholeAvgPriceReport> totalPage = new Page<WholeAvgPriceReport>(request, response, -1);
+    totalPage.initialize();
+    // 按顺序：1室1厅、1室2厅、2室1厅、2室2厅、3室1厅、3室2厅、4室1厅、4室2厅
+    for (int i = 1; i < 5; i++) {
+      for (int j = 1; j < 3; j++) {
+        String wholeAvgHouseType = i + "室" + j + "厅";
+        double allHouseTypesTotalRental = 0d;// 此类房型的所有房屋的总租金,求平均值用
+        double allHouseTypesTotalCount = 0d;// 此类房型的所有房屋的数量，求平均值用
+        double allHouseTypesAvgRental = 0d;// 此类房型的所有房屋的平均房价
+        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+        for (PropertyProject pp : projectList) {
+          double ppHouseTypesTotalRental = 0d; // 此类房型某个小区的所有房屋的总租金
+          double ppAvgEntirePrice = 0d;// 此房型的某小区的平均房租
+          String propertyName = pp.getProjectName();
+          List<RentContract> rentContracts = rentContractService.queryValidConditionalEntireHouses(wholeAvgPriceReport.getStartDate(), wholeAvgPriceReport.getEndDate(), pp.getId(), i, j);
+          if (CollectionUtils.isNotEmpty(rentContracts)) {
+            for (RentContract rc : rentContracts) {
+              ppHouseTypesTotalRental += rc.getRental();
+            }
+            allHouseTypesTotalRental += ppHouseTypesTotalRental;
+            allHouseTypesTotalCount += rentContracts.size();
+            ppAvgEntirePrice = new BigDecimal(ppHouseTypesTotalRental).divide(new BigDecimal(rentContracts.size()), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+          }
+          WholeAvgPriceReport tempR = new WholeAvgPriceReport();
+          tempR.setWholeAvgHouseType(wholeAvgHouseType);
+          tempR.setProjectName(propertyName);
+          tempR.setWholeAvgPrice(ppAvgEntirePrice + "");
+          totalPage.getList().add(tempR);
+          totalPage.setCount(totalPage.getCount() + 1);
+        }
+        // 新增某种房型下的平均房租
+        WholeAvgPriceReport houseTypeAvg = new WholeAvgPriceReport();
+        houseTypeAvg.setWholeAvgHouseType(wholeAvgHouseType);
+        houseTypeAvg.setProjectName("该房型总平均");
+        if (allHouseTypesTotalCount > 0d) {
+          allHouseTypesAvgRental = new BigDecimal(allHouseTypesTotalRental).divide(new BigDecimal(allHouseTypesTotalCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue();
+        }
+        houseTypeAvg.setWholeAvgPrice(allHouseTypesAvgRental + "");
+        totalPage.getList().add(houseTypeAvg);
+        totalPage.setCount(totalPage.getCount() + 1);
+      }
+    }
     return totalPage;
   }
 

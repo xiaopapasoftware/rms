@@ -400,10 +400,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   }
 
   /**
-   * 查询已出租的有效的整租合同列表
+   * 根据不同的房型查询有效的整租合同列表
    */
-  public List<RentContract> queryValidEntireHouses(Date startDate, Date endDate, String propertyProjectId) {
-    return dao.queryValidEntireHouses(startDate, endDate, propertyProjectId);
+  public List<RentContract> queryValidConditionalEntireHouses(Date startDate, Date endDate, String propertyProjectId, Integer roomNum, Integer cusspacNum) {
+    return dao.queryValidConditionalEntireHouses(startDate, endDate, propertyProjectId, roomNum, cusspacNum);
   }
 
   /**

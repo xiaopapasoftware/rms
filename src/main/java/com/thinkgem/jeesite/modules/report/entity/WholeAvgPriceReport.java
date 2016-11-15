@@ -9,7 +9,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  * 
  * @author wangshujin
  */
-public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> implements Comparable<WholeAvgPriceReport> {
+public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> {
 
   private static final long serialVersionUID = 527341013657196456L;
 
@@ -65,10 +65,6 @@ public class WholeAvgPriceReport extends DataEntity<WholeAvgPriceReport> impleme
     this.wholeAvgPrice = wholeAvgPrice;
   }
 
-  @Override
-  public int compareTo(WholeAvgPriceReport o) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
+
 
 }

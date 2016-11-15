@@ -308,43 +308,31 @@
 		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 	</select>
 
-	<select id="queryValidEntireHouses" resultType="RentContract">
-		SELECT * FROM t_rent_contract trc
-		WHERE trc.RENT_MODE = '0'
-		AND
-		trc.DEL_FLAG = '0'
-		AND trc.CONTRACT_STATUS = '6'
-		AND
-		trc.CONTRACT_BUSI_STATUS = '0'
-		<if test="startDate != null and startDate != ''">
+	<!--查询指定房型的有效整租合同 -->
+    <select id="queryValidConditionalEntireHouses" resultType="RentContract">
+	 SELECT  * 
+	 FROM    t_rent_contract trc,t_house th
+	 WHERE   trc.RENT_MODE = '0' 
+	  AND    trc.DEL_FLAG = '0' 
+	  AND    trc.CONTRACT_STATUS = '6' 
+	  AND    trc.CONTRACT_BUSI_STATUS = '0' 
+	  AND    trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
+	  <if test="startDate != null and startDate != ''">
 		  	 <![CDATA[
 				AND trc.START_DATE >=  #{startDate}
 			 ]]>
-		</if>
-		<if test="endDate != null and endDate != ''">
+	  </if>
+	  <if test="endDate != null and endDate != ''">
 			 <![CDATA[
 				AND trc.START_DATE <=  #{endDate}
 			 ]]>
-		</if>
-		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-	</select>
+	  </if>
+	  AND    th.`DEL_FLAG` = '0'
+	  AND    th.`HOUSE_STATUS` = '4'
+	  AND    th.`DECORA_STRUC_ROOM_NUM` = #{roomNum}
+	  AND    th.`DECORA_STRUC_CUSSPAC_NUM` = #{cusspacNum}
+  </select>
 
-	<select id="queryValidEntire41Houses" resultType="int">
-	
-	</select>
-	
-	<select id="queryValidEntire31Houses" resultType="int">
-	
-	</select>
-	
-	<select id="queryValidEntire21Houses" resultType="int">
-	
-	</select>
-	
-	<select id="queryValidEntire11Houses" resultType="int">
-	
-	</select>
-	
 	<insert id="insert">
 		INSERT INTO t_rent_contract(
 		id,
