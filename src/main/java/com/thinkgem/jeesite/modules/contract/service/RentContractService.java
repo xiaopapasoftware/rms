@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -179,12 +178,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
   public RentContract findContractByCode(String contractCode) {
     return dao.findContractByCode(contractCode);
-  }
-
-  public Page<RentContract> findContractList(Page<RentContract> page, RentContract rentContract) {
-    rentContract.setPage(page);
-    page.setList(dao.findContractList(rentContract));
-    return page;
   }
 
   @Transactional(readOnly = true)

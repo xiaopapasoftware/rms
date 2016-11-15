@@ -1,9 +1,8 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
+ * reserved.
  */
 package com.thinkgem.jeesite.modules.contract.dao;
-
-import java.util.List;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
@@ -18,7 +17,5 @@ import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 @MyBatisDao
 public interface LeaseContractDao extends CrudDao<LeaseContract> {
 
-    public List<LeaseContract> findLeaseContractList(LeaseContract leaseContract);
-
-    Integer getTotalValidLeaseContractCounts(LeaseContract leaseContract);
+  Integer getTotalValidLeaseContractCounts(LeaseContract leaseContract);
 }

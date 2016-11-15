@@ -22,8 +22,6 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 @MyBatisDao
 public interface RentContractDao extends CrudDao<RentContract> {
 
-  List<RentContract> findContractList(RentContract rentContract);
-
   Integer getAllValidRentContractCounts();
 
   RentContract getByHouseId(RentContract rentContract);

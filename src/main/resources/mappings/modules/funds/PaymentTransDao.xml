@@ -5,37 +5,47 @@
 	<sql id="paymentTransColumns">
 		a.id AS "id",
 		a.trade_type AS "tradeType",
-		a.payment_type AS "paymentType",
+		a.payment_type AS
+		"paymentType",
 		a.trans_id AS "transId",
-		a.trade_direction AS "tradeDirection",
+		a.trade_direction AS
+		"tradeDirection",
 		a.start_date AS "startDate",
-		a.expired_date AS "expiredDate",
+		a.expired_date AS
+		"expiredDate",
 		a.trade_amount AS "tradeAmount",
-		a.trans_amount AS "transAmount",
+		a.trans_amount AS
+		"transAmount",
 		a.last_amount AS "lastAmount",
-		a.transfer_deposit_amount AS "transferDepositAmount",
+		a.transfer_deposit_amount
+		AS "transferDepositAmount",
 		a.trans_status AS "transStatus",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
+		a.remarks
+		AS "remarks",
 		a.del_flag AS "delFlag",
-		case when a.trade_type=1 or a.trade_type=2 then ta.agreement_name
-			 when a.trade_type=0 then tl.contract_name
-			 else tc.contract_name
-			 end transName,
-		case when a.trade_type=1 or a.trade_type=2 then ta.agreement_code
-			 when a.trade_type=0 then tl.contract_code
-			 else tc.contract_code
-			 end transObjectNo,
+		case when a.trade_type=1 or
+		a.trade_type=2 then ta.agreement_name
+		when a.trade_type=0 then tl.contract_name
+		else tc.contract_name
+		end transName,
+		case when a.trade_type=1 or a.trade_type=2 then
+		ta.agreement_code
+		when a.trade_type=0 then tl.contract_code
+		else tc.contract_code
+		end transObjectNo,
 		tl.remittance_date as "remittanceDate"
 	</sql>
 
 	<sql id="paymentTransJoins">
 		left join t_deposit_agreement ta on a.trans_id=ta.id
-		left join t_rent_contract tc on a.trans_id=tc.id
-		left join t_lease_contract tl on a.trans_id=tl.id
+		left
+		join t_rent_contract tc on a.trans_id=tc.id
+		left join t_lease_contract
+		tl on a.trans_id=tl.id
 	</sql>
 
 	<select id="get" resultType="PaymentTrans">
@@ -48,8 +58,9 @@
 
 	<select id="findList" resultType="PaymentTrans">
 		select * from(
-		SELECT <include refid="paymentTransColumns" />
-		FROM 	t_payment_trans a
+		SELECT
+		<include refid="paymentTransColumns" />
+		FROM t_payment_trans a
 		<include refid="paymentTransJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -89,53 +100,6 @@
 				AND t.remittanceDate = #{remittanceDate}
 			</if>
 		</where>
-	</select>
-
-	<select id="findRemindList" resultType="PaymentTrans">
-		select * from(
-		SELECT
-		<include refid="paymentTransColumns" />
-		from t_payment_trans a
-		<include refid="paymentTransJoins" />
-	  <![CDATA[
-		where a.del_flag='0' 
-		and date_add(a.expired_date,interval-3 day)<=now() 
-		and a.trans_status in('0','1') 
-		and a.payment_type='6' 
-		and a.trade_direction='1'  
-		order by a.expired_date
-	  ]]>
-		) t
-		union
-		select
-		<include refid="paymentTransColumns" />
-		from
-	  <![CDATA[
-  (select 
-    t4.id tid,
-    t3.* 
-  from
-    (select 
-      t2.trade_id,
-      t1.* 
-    from
-      (select 
-        * 
-      from
-        t_payment_trans a 
-      where a.del_flag = '0' 
-        and date_add(a.expired_date, interval - 3 day) <= now() 
-        and a.trans_status in ('2') 
-        and a.payment_type = '6'
-        and a.trade_direction='1') t1 
-      left join t_payment_trade t2 
-        on t1.id = t2.trans_id) t3 
-    left join t_trading_accounts t4 
-      on t3.trade_id = t4.id 
-      and t3.trans_status != '1') a 
-      ]]>
-		<include refid="paymentTransJoins" />
-		where tid is not null
 	</select>
 
 	<select id="findAllList" resultType="PaymentTrans">
@@ -220,7 +184,8 @@
 	<update id="delete">
 		UPDATE t_payment_trans SET
 		del_flag = #{DEL_FLAG_DELETE},
-		update_by = #{updateBy.id},
+		update_by =
+		#{updateBy.id},
 		update_date = #{updateDate}
 		<where>
 			<if test="id != null and id != ''">

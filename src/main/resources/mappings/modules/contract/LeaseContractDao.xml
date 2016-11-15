@@ -58,21 +58,6 @@
 		WHERE a.id = #{id}
 	</select>
 	
-	<select id="findLeaseContractList" resultType="Leasecontract">
-	  select * from (
-		select 
-			<include refid="leaseContractColumns"/>
-		from t_lease_contract a
-		<include refid="leaseContractJoins"/>
-		<![CDATA[
-		where a.del_flag='0' 
-		and a.contract_status='1'
-  		and date_add(a.expired_date,interval-30 day)<=now()
-		]]>
-		 order by a.expired_date
-		) t
-	</select>
-	
 	<select id="findList" resultType="LeaseContract">
 		SELECT 
 			<include refid="leaseContractColumns"/>

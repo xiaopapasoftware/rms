@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
@@ -47,13 +46,6 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 
   @Autowired
   private AttachmentService attachmentService;
-
-  @Transactional(readOnly = true)
-  public Page<PaymentTrans> findRemind(Page<PaymentTrans> page, PaymentTrans paymentTrans) {
-    paymentTrans.setPage(page);
-    page.setList(dao.findRemindList(paymentTrans));
-    return page;
-  }
 
   @Transactional(readOnly = false)
   public void generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus,
