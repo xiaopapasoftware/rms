@@ -194,30 +194,28 @@ public class SalesReportController extends BaseController {
   }
 
   /**
-   * 合租出租率统计报表-导出
+   * 单间出租率-导出
    */
   @RequestMapping(value = {"exportJointRentRateReport"})
   public String exportJointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     try {
-      String fileName = "合租出租率统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
+      String fileName = "单间出租率统计报表" + DateUtils.getDate("yyyyMMddHHmmss") + ".xlsx";
       Page<JointRentRateReport> totalPage = getJointRentRateReport(jointRentRateReport, request, response);
-      new ExportExcel("合租出租率统计报表", JointRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
+      new ExportExcel("单间出租率统计报表", JointRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出合租出租率统计报表失败！失败信息：" + e.getMessage());
+      model.addAttribute("message", "导出单间出租率统计报表失败！失败信息：" + e.getMessage());
       model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
     }
     return jointRentRateReport(jointRentRateReport, request, response, model);
   }
 
   /**
-   * 合租出租率统计报表-查询
+   * 单间出租率-查询
    */
   @RequestMapping(value = {"jointRentRate"})
   public String jointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<JointRentRateReport> totalPage = getJointRentRateReport(jointRentRateReport, request, response);
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
     model.addAttribute("jointRentRateReport", jointRentRateReport);
     model.addAttribute("page", totalPage);
     return "modules/report/sales/jointRentRateReport";
@@ -225,40 +223,28 @@ public class SalesReportController extends BaseController {
 
   private Page<JointRentRateReport> getJointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response) {
     Page<JointRentRateReport> totalPage = new Page<JointRentRateReport>(request, response, -1);
-    if (jointRentRateReport.getPropertyProject() != null) {
-      if ("ALL".equals(jointRentRateReport.getPropertyProject().getId())) {
-        totalPage.initialize();
-        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-        for (PropertyProject pp : projectList) {
-          totalPage = getJointRentRateReport(totalPage, pp.getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
-        }
-        Collections.sort(totalPage.getList(), Collections.reverseOrder());
+    totalPage.initialize();
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    for (PropertyProject pp : projectList) {
+      int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(pp.getId());
+      int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate(), pp.getId());
+      JointRentRateReport jrrr = new JointRentRateReport();
+      jrrr.setProjectName(pp.getProjectName());
+      jrrr.setTotalNum(allRoomsCount + "");
+      jrrr.setRentedNum(rentedRoomsCount + "");
+      if (allRoomsCount != 0 && rentedRoomsCount != 0) {
+        double doubleValue = new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        NumberFormat num = NumberFormat.getPercentInstance();
+        num.setMaximumIntegerDigits(3);
+        num.setMaximumFractionDigits(2);
+        jrrr.setRentRate(num.format(doubleValue));
       } else {
-        totalPage = getJointRentRateReport(totalPage, jointRentRateReport.getPropertyProject().getId(), jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate());
+        jrrr.setRentRate("0");
       }
+      totalPage.getList().add(jrrr);
+      totalPage.setCount(totalPage.getCount() + 1);
+      Collections.sort(totalPage.getList(), Collections.reverseOrder());
     }
-    return totalPage;
-  }
-
-  private Page<JointRentRateReport> getJointRentRateReport(Page<JointRentRateReport> totalPage, String ppId, Date startDate, Date endDate) {
-    PropertyProject pp = propertyProjectService.get(ppId);
-    int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(ppId);
-    int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(startDate, endDate, ppId);
-    JointRentRateReport jrrr = new JointRentRateReport();
-    jrrr.setProjectName(pp.getProjectName());
-    jrrr.setTotalNum(allRoomsCount + "");
-    jrrr.setRentedNum(rentedRoomsCount + "");
-    if (allRoomsCount != 0 && rentedRoomsCount != 0) {
-      double doubleValue = new BigDecimal(rentedRoomsCount).divide(new BigDecimal(allRoomsCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
-      NumberFormat num = NumberFormat.getPercentInstance();
-      num.setMaximumIntegerDigits(3);
-      num.setMaximumFractionDigits(2);
-      jrrr.setRentRate(num.format(doubleValue));
-    } else {
-      jrrr.setRentRate("0");
-    }
-    totalPage.getList().add(jrrr);
-    totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
 
