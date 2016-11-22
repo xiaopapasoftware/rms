@@ -126,10 +126,12 @@
 		AND a.room_no = #{roomNo}
 	</select>
 
+	<!-- 查询某个小区下面所有的房间数量 -->
 	<select id="queryRoomsCountByProjectPropertyId" resultType="int">
-	  	SELECT COUNT(*) FROM t_room tr 
-		WHERE tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
-		AND   tr.`DEL_FLAG` = '0'
+	  	SELECT  COUNT(*)
+	  	FROM    t_room tr 
+		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+		AND     tr.`DEL_FLAG` = '0'
 	</select>
 	
 	<select id="findAllList" resultType="Room">

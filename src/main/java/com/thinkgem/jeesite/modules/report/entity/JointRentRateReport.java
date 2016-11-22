@@ -17,15 +17,13 @@ public class JointRentRateReport extends DataEntity<JointRentRateReport> impleme
 
   private PropertyProject propertyProject; // 物业项目
 
-  private Date startDate;// 开始日期
-
-  private Date endDate;// 结束日期
+  private Date startDate;// 日期
 
   private String projectName; // 物业项目名称
 
-  private String totalNum;// 总数数量
+  private String totalNum;// 小区的房间总数
 
-  private String rentedNum;// 已出租房间数
+  private String rentedNum;// 小区某个日期的已出租房间数
 
   private String rentRate;// 出租率
 
@@ -43,14 +41,6 @@ public class JointRentRateReport extends DataEntity<JointRentRateReport> impleme
 
   public void setStartDate(Date startDate) {
     this.startDate = startDate;
-  }
-
-  public Date getEndDate() {
-    return endDate;
-  }
-
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
   }
 
   @ExcelField(title = "物业项目名称", align = 2, sort = 1)
@@ -71,7 +61,7 @@ public class JointRentRateReport extends DataEntity<JointRentRateReport> impleme
     this.totalNum = totalNum;
   }
 
-  @ExcelField(title = "已出租合租房间数", align = 2, sort = 3)
+  @ExcelField(title = "已出租房间数", align = 2, sort = 3)
   public String getRentedNum() {
     return rentedNum;
   }

@@ -228,39 +228,60 @@
 	</select>
 
 	<select id="getAllValidRentContractCounts" resultType="int">
-		SELECT
-		count(*) FROM t_rent_contract
+		SELECT count(*) FROM t_rent_contract
 	</select>
 
+	<!-- 获取某个时间日期的所有已经出租掉的房间数，包括合租的和整租的 -->
 	<select id="queryValidSingleRoomCount" resultType="int">
-		SELECT COUNT(*) FROM t_rent_contract trc
-		WHERE trc.RENT_MODE = '1'
-		AND
-		trc.DEL_FLAG = '0'
-		AND trc.CONTRACT_STATUS = '6'
-		AND
-		trc.CONTRACT_BUSI_STATUS = '0'
-		<if test="startDate != null and startDate != ''">
+		SELECT 
+		  SUM(t.roomCount) 
+		FROM
+		  (SELECT 
+		    COUNT(*) AS roomCount 
+		  FROM
+		    t_rent_contract trc 
+		  WHERE trc.RENT_MODE = '1'
+		    AND trc.DEL_FLAG = '0' 
+		    AND trc.CONTRACT_STATUS = '6' 
+		    AND trc.CONTRACT_BUSI_STATUS = '0' 
+		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId} 
+		    <if test="startDate != null and startDate != ''">
 		  	 <![CDATA[
-				AND trc.START_DATE >=  #{startDate}
+					AND trc.START_DATE <=  #{startDate}
+					AND trc.expired_date >= #{startDate}
 			 ]]>
-		</if>
-		<if test="endDate != null and endDate != ''">
-			 <![CDATA[
-				AND trc.START_DATE <=  #{endDate}
-			 ]]>
-		</if>
-		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
+			</if>
+		  UNION
+		  ALL 
+		  SELECT 
+		    	COUNT(*) AS roomCount 
+		  FROM
+		    t_room tr 
+		  WHERE tr.`HOUSE_ID` IN 
+		    (SELECT  trc.`HOUSE_ID` 
+		     FROM t_rent_contract trc 
+		     WHERE trc.RENT_MODE = '0'
+		      AND trc.DEL_FLAG = '0' 
+		      AND trc.CONTRACT_STATUS = '6' 
+		      AND trc.CONTRACT_BUSI_STATUS = '0' 
+		      AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
+		      <if test="startDate != null and startDate != ''">
+			  	 <![CDATA[
+					AND trc.START_DATE <=  #{startDate}
+					AND trc.expired_date >= #{startDate}
+				 ]]>
+			 </if>)
+		    AND tr.`DEL_FLAG` = '0') t
 	</select>
 
+	<!-- 查询所有有效的“合租”合同列表 -->
 	<select id="queryValidSingleRooms" resultType="RentContract">
-		SELECT * FROM t_rent_contract trc
-		WHERE trc.RENT_MODE = '1'
-		AND
-		trc.DEL_FLAG = '0'
-		AND trc.CONTRACT_STATUS = '6'
-		AND
-		trc.CONTRACT_BUSI_STATUS = '0'
+		SELECT  * 
+		FROM 	t_rent_contract trc
+		WHERE 	trc.RENT_MODE = '1' 
+		AND 	trc.DEL_FLAG = '0'
+		AND 	trc.CONTRACT_STATUS = '6'
+		AND  	trc.CONTRACT_BUSI_STATUS = '0'
 		<if test="startDate != null and startDate != ''">
 		  	 <![CDATA[
 				AND trc.START_DATE >=  #{startDate}

@@ -38,6 +38,9 @@ import com.thinkgem.jeesite.modules.report.entity.RentAveragePriceReport;
 import com.thinkgem.jeesite.modules.report.entity.WholeAvgPriceReport;
 import com.thinkgem.jeesite.modules.report.service.ReportService;
 
+/**
+ * @author wangshujin
+ */
 @Controller
 @RequestMapping(value = "${adminPath}/report/sales")
 public class SalesReportController extends BaseController {
@@ -226,8 +229,8 @@ public class SalesReportController extends BaseController {
     totalPage.initialize();
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     for (PropertyProject pp : projectList) {
-      int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(pp.getId());
-      int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(jointRentRateReport.getStartDate(), jointRentRateReport.getEndDate(), pp.getId());
+      int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(pp.getId()); // 获取到小区的所有房间的数量
+      int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(jointRentRateReport.getStartDate(), pp.getId());// 获取某个日期的所有已经出租掉的房间数，包括合租的和整租的
       JointRentRateReport jrrr = new JointRentRateReport();
       jrrr.setProjectName(pp.getProjectName());
       jrrr.setTotalNum(allRoomsCount + "");

@@ -41,7 +41,7 @@ public interface RoomDao extends CrudDao<Room> {
   int updateRoomStatus4Deposit(Room paRoom);
 
   /**
-   * 查询所有的有效房间的数目
+   * 查询某个小区下面已经出租掉的所有的房间数量
    */
   int queryRoomsCountByProjectPropertyId(String propertyProjectId);
 }

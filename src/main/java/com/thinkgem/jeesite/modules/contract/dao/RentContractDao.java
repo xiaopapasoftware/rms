@@ -29,9 +29,9 @@ public interface RentContractDao extends CrudDao<RentContract> {
   RentContract findContractByCode(String contractCode);
 
   /**
-   * 查询已出租的有效的单间合同数
+   * 获取某个日期的所有已经出租掉的房间数，包括合租的和整租的
    */
-  int queryValidSingleRoomCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
+  int queryValidSingleRoomCount(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
 
   /**
    * 查询已出租的有效的单间合同列表
