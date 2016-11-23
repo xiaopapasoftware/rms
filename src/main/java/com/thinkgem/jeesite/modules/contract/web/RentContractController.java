@@ -303,8 +303,12 @@ public class RentContractController extends BaseController {
    * 人工续签
    */
   @RequestMapping(value = "renewContract")
-  public String renewContract(RentContract rentContract, Model model) {
+  public String renewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String contractId = rentContract.getId();
+    if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
+      addMessage(redirectAttributes, "有款项未到账,不能续签！");
+      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+    }
     rentContract = rentContractService.get(contractId);
     rentContract.setOriEndDate(DateUtils.formatDate(rentContract.getExpiredDate()));// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
     rentContract.setContractId(contractId);
@@ -373,8 +377,12 @@ public class RentContractController extends BaseController {
    * 点击“逾期自动续签”
    */
   @RequestMapping(value = "autoRenewContract")
-  public String autoRenewContract(RentContract rentContract, Model model) {
+  public String autoRenewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String contractId = rentContract.getId();
+    if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
+      addMessage(redirectAttributes, "有款项未到账,不能续签！");
+      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+    }
     rentContract = rentContractService.get(contractId);
     rentContract.setContractId(contractId);
     rentContract.setSignType("2");// 逾租续签

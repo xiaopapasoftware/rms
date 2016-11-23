@@ -242,9 +242,16 @@
 		    t_rent_contract trc 
 		  WHERE trc.RENT_MODE = '1'
 		    AND trc.DEL_FLAG = '0' 
-		    AND trc.CONTRACT_STATUS in('1','2','4','6')
-		    AND trc.CONTRACT_BUSI_STATUS = '0' 
-		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId} 
+		    AND (
+		      (trc.CONTRACT_STATUS = '1' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '2' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` = '0')
+   			)
+		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 		    <if test="startDate != null and startDate != ''">
 		  	 <![CDATA[
 					AND trc.START_DATE <=  #{startDate}
@@ -252,7 +259,6 @@
 			 ]]>
 			</if>
 		  UNION
-		  ALL 
 		  SELECT 
 		    	COUNT(*) AS roomCount 
 		  FROM
@@ -262,9 +268,16 @@
 		     FROM t_rent_contract trc 
 		     WHERE trc.RENT_MODE = '0'
 		      AND trc.DEL_FLAG = '0' 
-		      AND trc.CONTRACT_STATUS in('1','2','4','6')
-		      AND trc.CONTRACT_BUSI_STATUS = '0' 
-		      AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
+		      AND (
+		      (trc.CONTRACT_STATUS = '1' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '2' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
+		       OR
+		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` = '0')
+   			)
+		     AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 		      <if test="startDate != null and startDate != ''">
 			  	 <![CDATA[
 					AND trc.START_DATE <=  #{startDate}

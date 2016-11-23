@@ -46,6 +46,7 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
@@ -268,31 +269,31 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
           }
         }
       }
-    } else if ("7".equals(tradingAccounts.getTradeType())) {
-      // 正常退租 8:正常退租 6:退租款项审核拒绝
+    } else if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-      rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "8" : "6");
+      rentContract.setContractBusiStatus(
+          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.NORMAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
-    } else if ("6".equals(tradingAccounts.getTradeType())) {
-      // 提前退租 7:提前退租 6:退租款项审核拒绝
+    } else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-      rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "7" : "6");
+      rentContract.setContractBusiStatus(
+          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.EARLY_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
-    } else if ("8".equals(tradingAccounts.getTradeType())) {
-      // 逾期退租 9:逾期退租 6:退租款项审核拒绝
+    } else if (TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-      rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "9" : "6");
+      rentContract.setContractBusiStatus(
+          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.LATE_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
-    } else if ("9".equals(tradingAccounts.getTradeType())) {
-      // 特殊退租 16:特殊退租 6:退租款项审核拒绝
+    } else if (TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-      rentContract.setContractBusiStatus("1".equals(auditHis.getAuditStatus()) ? "16" : "6");
+      rentContract.setContractBusiStatus(
+          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.SPECIAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
-    } else if ("11".equals(tradingAccounts.getTradeType())) {// 电费充值
+    } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
       PaymentTrade paymentTrade = new PaymentTrade();
       paymentTrade.setDelFlag("0");
       paymentTrade.setTradeId(tradingAccounts.getId());
@@ -305,9 +306,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         electricFee.setDelFlag("0");
         electricFee = electricFeeDao.get(electricFee);
         if (null != electricFee) {
-          if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
+          if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {// 审核通过
             RentContract rentContract = rentContractDao.get(electricFee.getRentContractId());/* 智能电表充值 */
-            if (null != rentContract && "1".equals(rentContract.getRentMode())) {// 单间
+            if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
               Room room = rentContract.getRoom();
               room = roomDao.get(room);
               String meterNo = room.getMeterNo();

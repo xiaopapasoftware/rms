@@ -58,7 +58,6 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSourceEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentPayTypeEnum;
@@ -1313,22 +1312,10 @@ public class AppHouseController {
       return data;
     }
     // 检查合同的所有款项是否结清
-    boolean paymentTransFlag = true;
-    PaymentTrans paymentTrans = new PaymentTrans();
-    paymentTrans.setTransId(contractId);
-    List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
-    if (CollectionUtils.isNotEmpty(paymentTransList)) {
-      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
-        if (!PaymentTransStatusEnum.WHOLE_SIGN.getValue().equals(tmpPaymentTrans.getTransStatus())) {
-          paymentTransFlag = false;
-          break;
-        }
-      }
-      if (!paymentTransFlag) {
-        data.setCode("400");
-        data.setMsg("当前合同还有未结清的款项，暂不能续签！");
-        return data;
-      }
+    if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
+      data.setCode("400");
+      data.setMsg("当前合同还有未结清的款项，暂不能续签！");
+      return data;
     }
     RentContract oriRentContract = rentContractService.get(contractId);
     try {

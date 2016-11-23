@@ -137,14 +137,18 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = true)
   public boolean checkNotSignedPaymentTrans(String rentContractId) {
+    boolean paymentTransFlag = false;
     PaymentTrans paymentTrans = new PaymentTrans();
     paymentTrans.setTransId(rentContractId);
-    paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-    List<PaymentTrans> list = super.findList(paymentTrans);
-    if (CollectionUtils.isNotEmpty(list)) {
-      return true;
-    } else {
-      return false;
+    List<PaymentTrans> paymentTransList = super.findList(paymentTrans);
+    if (CollectionUtils.isNotEmpty(paymentTransList)) {
+      for (PaymentTrans tmpPaymentTrans : paymentTransList) {
+        if (!PaymentTransStatusEnum.WHOLE_SIGN.getValue().equals(tmpPaymentTrans.getTransStatus())) {
+          paymentTransFlag = true;
+          break;
+        }
+      }
     }
+    return paymentTransFlag;
   }
 }
