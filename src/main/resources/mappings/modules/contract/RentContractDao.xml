@@ -234,10 +234,10 @@
 	<!-- 获取某个时间日期的所有已经出租掉的房间数，包括合租的和整租的 -->
 	<select id="queryValidSingleRoomCount" resultType="int">
 		SELECT 
-		  SUM(t.roomCount) 
+		  COUNT(t.roomid)  
 		FROM
 		  (SELECT 
-		    COUNT(*) AS roomCount 
+		    trc.`ROOM_ID`  AS  roomid
 		  FROM
 		    t_rent_contract trc 
 		  WHERE trc.RENT_MODE = '1'
@@ -260,7 +260,7 @@
 			</if>
 		  UNION
 		  SELECT 
-		    	COUNT(*) AS roomCount 
+		    tr.id AS roomid
 		  FROM
 		    t_room tr 
 		  WHERE tr.`HOUSE_ID` IN 

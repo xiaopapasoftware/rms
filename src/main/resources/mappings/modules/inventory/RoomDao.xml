@@ -126,12 +126,17 @@
 		AND a.room_no = #{roomNo}
 	</select>
 
-	<!-- 查询某个小区下面所有的房间数量 -->
+	<!-- 查询某个小区下面某个时间点所有的房间数量 -->
 	<select id="queryRoomsCountByProjectPropertyId" resultType="int">
 	  	SELECT  COUNT(*)
 	  	FROM    t_room tr 
 		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
 		AND     tr.`DEL_FLAG` = '0'
+	    <if test="startDate != null and startDate != ''">
+	  	  <![CDATA[
+			AND tr.create_date <=  #{startDate}
+		  ]]>
+		</if>
 	</select>
 	
 	<select id="findAllList" resultType="Room">

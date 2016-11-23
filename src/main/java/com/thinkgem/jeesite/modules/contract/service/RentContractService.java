@@ -300,68 +300,72 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       roomId = rentContract.getRoom().getId();
     }
     if (rentContract.getIsNewRecord()) {// 新增,包括手机APP签约申请以及后台直接新增合同，需要锁定房源
-      if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
-        if ("1".equals(rentContract.getSaveSource()) && StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同，把房源状态从“已预定”变更为“已出租”
-          if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-            boolean isLock = houseService.isLockWholeHouseFromDepositToContract(houseId);
-            if (isLock) {
-              roomService.lockRooms(houseId);
-              doSaveContractBusiness(rentContract);
-              return 0;
-            } else {
-              return -1;
+      if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(rentContract.getValidatorFlag())) {
+        doSaveContractBusiness(rentContract); // 后台暂存无须改变房源状态
+      } else {
+        if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
+          if ("1".equals(rentContract.getSaveSource()) && StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同，把房源状态从“已预定”变更为“已出租”
+            if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+              boolean isLock = houseService.isLockWholeHouseFromDepositToContract(houseId);
+              if (isLock) {
+                roomService.lockRooms(houseId);
+                doSaveContractBusiness(rentContract);
+                return 0;
+              } else {
+                return -1;
+              }
+            } else {// 合租
+              boolean isLock = roomService.isLockSingleRoomFromDepositToContract(roomId);
+              if (isLock) {
+                houseService.calculateHouseStatus(roomId);
+                doSaveContractBusiness(rentContract);
+                return 0;
+              } else {
+                return -1;
+              }
             }
-          } else {// 合租
-            boolean isLock = roomService.isLockSingleRoomFromDepositToContract(roomId);
-            if (isLock) {
-              houseService.calculateHouseStatus(roomId);
-              doSaveContractBusiness(rentContract);
-              return 0;
-            } else {
-              return -1;
-            }
-          }
-        } else {// 非定金转合同，直接新签
-          if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-            boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
-            if (isLock) {
-              roomService.lockRooms(houseId);
-              doSaveContractBusiness(rentContract);
-              return 0;
-            } else {
-              return -1;
-            }
-          } else {// 合租
-            boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
-            if (isLock) {
-              houseService.calculateHouseStatus(roomId);
-              doSaveContractBusiness(rentContract);
-              return 0;
-            } else {
-              return -1;
+          } else {// 非定金转合同，直接新签
+            if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+              boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
+              if (isLock) {
+                roomService.lockRooms(houseId);
+                doSaveContractBusiness(rentContract);
+                return 0;
+              } else {
+                return -1;
+              }
+            } else {// 合租
+              boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
+              if (isLock) {
+                houseService.calculateHouseStatus(roomId);
+                doSaveContractBusiness(rentContract);
+                return 0;
+              } else {
+                return -1;
+              }
             }
           }
         }
-      }
-      // 正常人工续签或逾期自动续签，把房源状态从“已出租”变更为“已出租”
-      if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType()) || ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
-          boolean isLock = houseService.isLockWholeHouse4RenewSign(houseId);
-          if (isLock) {
-            roomService.lockRooms(houseId);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
-          }
-        } else {// 合租
-          boolean isLock = roomService.isLockSingleRoom4RenewSign(roomId);
-          if (isLock) {
-            houseService.calculateHouseStatus(roomId);
-            doSaveContractBusiness(rentContract);
-            return 0;
-          } else {
-            return -1;
+        // 正常人工续签或逾期自动续签，把房源状态从“已出租”变更为“已出租”
+        if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType()) || ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
+          if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+            boolean isLock = houseService.isLockWholeHouse4RenewSign(houseId);
+            if (isLock) {
+              roomService.lockRooms(houseId);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
+          } else {// 合租
+            boolean isLock = roomService.isLockSingleRoom4RenewSign(roomId);
+            if (isLock) {
+              houseService.calculateHouseStatus(roomId);
+              doSaveContractBusiness(rentContract);
+              return 0;
+            } else {
+              return -1;
+            }
           }
         }
       }

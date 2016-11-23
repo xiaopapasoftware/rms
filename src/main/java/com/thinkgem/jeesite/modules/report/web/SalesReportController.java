@@ -229,7 +229,7 @@ public class SalesReportController extends BaseController {
     totalPage.initialize();
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     for (PropertyProject pp : projectList) {
-      int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(pp.getId()); // 获取到小区的所有房间的数量
+      int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(jointRentRateReport.getStartDate(), pp.getId()); // 获取到在某个时间点之前小区的所有房间的数量
       int rentedRoomsCount = rentContractService.queryValidSingleRoomCount(jointRentRateReport.getStartDate(), pp.getId());// 获取某个日期的所有已经出租掉的房间数，包括合租的和整租的
       JointRentRateReport jrrr = new JointRentRateReport();
       jrrr.setProjectName(pp.getProjectName());
