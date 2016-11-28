@@ -227,6 +227,8 @@ public class SalesReportController extends BaseController {
   private Page<JointRentRateReport> getJointRentRateReport(JointRentRateReport jointRentRateReport, HttpServletRequest request, HttpServletResponse response) {
     Page<JointRentRateReport> totalPage = new Page<JointRentRateReport>(request, response, -1);
     totalPage.initialize();
+    int allRoomCount = 0;
+    int allRentedRoom = 0;
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     for (PropertyProject pp : projectList) {
       int allRoomsCount = roomService.queryRoomsCountByProjectPropertyId(jointRentRateReport.getStartDate(), pp.getId()); // 获取到在某个时间点之前小区的所有房间的数量
@@ -244,10 +246,27 @@ public class SalesReportController extends BaseController {
       } else {
         jrrr.setRentRate("0");
       }
+      allRoomCount += allRoomsCount;
+      allRentedRoom += rentedRoomsCount;
       totalPage.getList().add(jrrr);
       totalPage.setCount(totalPage.getCount() + 1);
       Collections.sort(totalPage.getList(), Collections.reverseOrder());
     }
+    JointRentRateReport jrrr = new JointRentRateReport();
+    jrrr.setProjectName("总平均出租率");
+    jrrr.setTotalNum(allRoomCount + "");
+    jrrr.setRentedNum(allRentedRoom + "");
+    if (allRoomCount != 0 && allRentedRoom != 0) {
+      double doubleValue = new BigDecimal(allRentedRoom).divide(new BigDecimal(allRoomCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+      NumberFormat num = NumberFormat.getPercentInstance();
+      num.setMaximumIntegerDigits(3);
+      num.setMaximumFractionDigits(2);
+      jrrr.setRentRate(num.format(doubleValue));
+    } else {
+      jrrr.setRentRate("0");
+    }
+    totalPage.getList().add(jrrr);
+    totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }
 
