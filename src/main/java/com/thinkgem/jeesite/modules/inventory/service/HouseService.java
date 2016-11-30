@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -394,7 +395,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
   }
 
-  public int queryHousesCountByProjectPropertyId(String propertyProjectId) {
-    return dao.queryHousesCountByProjectPropertyId(propertyProjectId);
+  public int queryHousesCountByProjectPropertyId(String propertyProjectId, Date startDate) {
+    return dao.queryHousesCountByProjectPropertyId(propertyProjectId, startDate);
   }
 }

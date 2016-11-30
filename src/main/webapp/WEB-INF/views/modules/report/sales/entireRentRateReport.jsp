@@ -29,22 +29,11 @@
 			value="${page.pageSize}" />
 		<sys:message content="${message}" type="${messageType}" />
 		<ul class="ul-form">
-			<li><label style="width: 120px;">物业项目：</label> <form:select
-					path="propertyProject.id" class="input-medium" style="width:190px;">
-					<form:option itemLabel="ALL" itemValue="ALL" value="ALL" label="全部" />
-					<form:options items="${projectList}" itemLabel="projectName"
-						itemValue="id" htmlEscape="false" />
-				</form:select></li>
-			<li><label style="width: 120px;">开始时间：</label> 
+			<li><label style="width: 120px;">日期：</label> 
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required" 
 				value="<fmt:formatDate value="${jointRentRateReport.startDate}" pattern="yyyy-MM-dd"/>" 
 				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width: 196px;" />
 			</li>
-			<li><label style="width: 120px;">结束时间：</label> <input
-				name="endDate" type="text" readonly="readonly" maxlength="20"
-				class="input-medium Wdate required" value="<fmt:formatDate value="${jointRentRateReport.endDate}" pattern="yyyy-MM-dd"/>"
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
-				style="width: 196px;" /></li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary"
 				type="submit" value="查询" /></li>
 			<li class="btns"><input id="btnExport" class="btn btn-primary"
@@ -58,7 +47,7 @@
 			<tr>
 				<th>物业项目名称</th>
 				<th>房屋总数</th>
-				<th>已出租的整租房屋数</th>
+				<th>部分及完全出租房屋数</th>
 				<th>出租率</th>
 			</tr>
 		</thead>

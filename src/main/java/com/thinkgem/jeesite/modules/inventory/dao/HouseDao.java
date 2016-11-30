@@ -4,7 +4,10 @@
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
@@ -55,5 +58,5 @@ public interface HouseDao extends CrudDao<House> {
    */
   int updateHouseStatus4Deposit(House house);
 
-  int queryHousesCountByProjectPropertyId(String propertyProjectId);
+  int queryHousesCountByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId, @Param("startDate") Date startDate);
 }

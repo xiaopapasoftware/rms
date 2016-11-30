@@ -4,7 +4,6 @@ import java.util.Date;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
 /**
  * 合租出租率统计
@@ -15,8 +14,6 @@ public class JointRentRateReport extends DataEntity<JointRentRateReport> impleme
 
   private static final long serialVersionUID = 1592319323465365879L;
 
-  private PropertyProject propertyProject; // 物业项目
-
   private Date startDate;// 日期
 
   private String projectName; // 物业项目名称
@@ -26,14 +23,6 @@ public class JointRentRateReport extends DataEntity<JointRentRateReport> impleme
   private String rentedNum;// 小区某个日期的已出租房间数
 
   private String rentRate;// 出租率
-
-  public PropertyProject getPropertyProject() {
-    return propertyProject;
-  }
-
-  public void setPropertyProject(PropertyProject propertyProject) {
-    this.propertyProject = propertyProject;
-  }
 
   public Date getStartDate() {
     return startDate;

@@ -302,39 +302,46 @@ public class SalesReportController extends BaseController {
 
   private Page<EntireRentRateReport> getEntireRentRateReport(EntireRentRateReport entireRentRateReport, HttpServletRequest request, HttpServletResponse response) {
     Page<EntireRentRateReport> totalPage = new Page<EntireRentRateReport>(request, response, -1);
-    if (entireRentRateReport.getPropertyProject() != null) {
-      if ("ALL".equals(entireRentRateReport.getPropertyProject().getId())) {
-        totalPage.initialize();
-        List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-        for (PropertyProject pp : projectList) {
-          totalPage = getEntireRentRateReport(totalPage, pp.getId(), entireRentRateReport.getStartDate(), entireRentRateReport.getEndDate());
-        }
-        Collections.sort(totalPage.getList(), Collections.reverseOrder());
+    totalPage.initialize();
+    int allRoomCount = 0;
+    int allRentedRoom = 0;
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    for (PropertyProject pp : projectList) {
+      int allHousesCount = houseService.queryHousesCountByProjectPropertyId(pp.getId(), entireRentRateReport.getStartDate());// 指定日期的房屋总数
+      int rentedHousesCount = rentContractService.queryValidEntireHouseCount(pp.getId(), entireRentRateReport.getStartDate());// 指定日期所有部分出租+完全出租的房屋套数
+      EntireRentRateReport jrrr = new EntireRentRateReport();
+      jrrr.setProjectName(pp.getProjectName());
+      jrrr.setTotalNum(allHousesCount + "");
+      jrrr.setRentedNum(rentedHousesCount + "");
+      if (allHousesCount != 0 && rentedHousesCount != 0) {
+        double doubleValue = new BigDecimal(rentedHousesCount).divide(new BigDecimal(allHousesCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        NumberFormat num = NumberFormat.getPercentInstance();
+        num.setMaximumIntegerDigits(3);
+        num.setMaximumFractionDigits(2);
+        jrrr.setRentRate(num.format(doubleValue));
       } else {
-        totalPage = getEntireRentRateReport(totalPage, entireRentRateReport.getPropertyProject().getId(), entireRentRateReport.getStartDate(), entireRentRateReport.getEndDate());
+        jrrr.setRentRate("0");
       }
+      allRoomCount += allHousesCount;
+      allRentedRoom += rentedHousesCount;
+      totalPage.getList().add(jrrr);
+      totalPage.setCount(totalPage.getCount() + 1);
+      Collections.sort(totalPage.getList(), Collections.reverseOrder());
     }
-    return totalPage;
-  }
-
-  private Page<EntireRentRateReport> getEntireRentRateReport(Page<EntireRentRateReport> totalPage, String ppId, Date startDate, Date endDate) {
-    PropertyProject pp = propertyProjectService.get(ppId);
-    int allHousesCount = houseService.queryHousesCountByProjectPropertyId(ppId);
-    int rentedHousesCount = rentContractService.queryValidEntireHouseCount(startDate, endDate, ppId);
-    EntireRentRateReport jrrr = new EntireRentRateReport();
-    jrrr.setProjectName(pp.getProjectName());
-    jrrr.setTotalNum(allHousesCount + "");
-    jrrr.setRentedNum(rentedHousesCount + "");
-    if (allHousesCount != 0 && rentedHousesCount != 0) {
-      double doubleValue = new BigDecimal(rentedHousesCount).divide(new BigDecimal(allHousesCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+    EntireRentRateReport errr = new EntireRentRateReport();
+    errr.setProjectName("总平均出租率");
+    errr.setTotalNum(allRoomCount + "");
+    errr.setRentedNum(allRentedRoom + "");
+    if (allRoomCount != 0 && allRentedRoom != 0) {
+      double doubleValue = new BigDecimal(allRentedRoom).divide(new BigDecimal(allRoomCount), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
       NumberFormat num = NumberFormat.getPercentInstance();
       num.setMaximumIntegerDigits(3);
       num.setMaximumFractionDigits(2);
-      jrrr.setRentRate(num.format(doubleValue));
+      errr.setRentRate(num.format(doubleValue));
     } else {
-      jrrr.setRentRate("0");
+      errr.setRentRate("0");
     }
-    totalPage.getList().add(jrrr);
+    totalPage.getList().add(errr);
     totalPage.setCount(totalPage.getCount() + 1);
     return totalPage;
   }

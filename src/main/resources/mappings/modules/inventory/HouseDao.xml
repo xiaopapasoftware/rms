@@ -434,8 +434,14 @@
 	</update>
 	
 	<select id="queryHousesCountByProjectPropertyId" resultType="int">
-	  	SELECT COUNT(*) FROM t_house th
-		WHERE th.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
-		AND   th.`DEL_FLAG` = '0'
+	  	SELECT 	COUNT(*) 
+	  	FROM 	t_house th
+		WHERE 	th.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+		AND   	th.`DEL_FLAG` = '0'
+		<if test="startDate != null and startDate != ''">
+	  	  <![CDATA[
+			AND th.create_date <=  #{startDate}
+		  ]]>
+		</if>
 	</select>
 </mapper>
