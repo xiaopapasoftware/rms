@@ -249,7 +249,7 @@
 		       OR
 		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
 		       OR
-		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` = '0')
+		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3'))
    			)
 		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 		    <if test="startDate != null and startDate != ''">
@@ -275,7 +275,7 @@
 		       OR
 		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
 		       OR
-		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` = '0')
+		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3'))
    			)
 		     AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
 		      <if test="startDate != null and startDate != ''">
@@ -342,7 +342,7 @@
 		      ) 
 		      OR (
 		        trc.CONTRACT_STATUS = '6' 
-		        AND trc.`CONTRACT_BUSI_STATUS` = '0'
+		        AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3')
 		      )
 		    ) 
 		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
@@ -383,7 +383,7 @@
 		      ) 
 		      OR (
 		        trc.CONTRACT_STATUS = '6' 
-		        AND trc.`CONTRACT_BUSI_STATUS` = '0'
+		        AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3')
 		      )
 		    ) 
 		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
