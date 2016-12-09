@@ -630,7 +630,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
-    rentContract.setTradeType("7");// 正常退租
+    rentContract.setTradeType(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());// 正常退租
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
