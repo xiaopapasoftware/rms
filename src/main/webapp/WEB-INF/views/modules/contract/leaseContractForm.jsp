@@ -506,29 +506,6 @@
 							<tr><td colspan="4"><a href="javascript:" onclick="addRow('#leaseContractDtlList', leaseContractDtlRowIdx, leaseContractDtlTpl);leaseContractDtlRowIdx = leaseContractDtlRowIdx + 1;" class="btn">新增</a></td></tr>
 						</tfoot></shiro:hasPermission>
 					</table>
-					<script type="text/template" id="leaseContractDtlTpl">//<!--
-						<tr id="leaseContractDtlList{{idx}}">
-							<td class="hide">
-								<input id="leaseContractDtlList{{idx}}_id" name="leaseContractDtlList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
-								<input id="leaseContractDtlList{{idx}}_delFlag" name="leaseContractDtlList[{{idx}}].delFlag" type="hidden" value="0"/>
-							</td>
-							<td>
-								<input id="leaseContractDtlList{{idx}}_startDate" name="leaseContractDtlList[{{idx}}].startDate" type="text" readonly="readonly" value="{{row.startDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required"/>
-								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td>
-								<input id="leaseContractDtlList{{idx}}_endDate" name="leaseContractDtlList[{{idx}}].endDate" type="text" readonly="readonly" value="{{row.endDateStr}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required"/>
-								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td>
-								<input id="leaseContractDtlList{{idx}}_deposit" name="leaseContractDtlList[{{idx}}].deposit" type="text" value="{{row.deposit}}" maxlength="255" class="input-small required number"/>
-								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<shiro:hasPermission name="contract:leaseContract:edit"><td class="text-center" width="10">
-								{{#delBtn}}<span class="close" onclick="delRow(this, '#leaseContractDtlList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
-							</td></shiro:hasPermission>
-						</tr>//-->
-					</script>
 					<script type="text/javascript">
 						var leaseContractDtlRowIdx = 0, leaseContractDtlTpl = $("#leaseContractDtlTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 						$(document).ready(function() {

@@ -42,6 +42,7 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
@@ -737,9 +738,9 @@ public class RentContractController extends BaseController {
     Accounting eaccounting = new Accounting();
     eaccounting.setRentContract(rentContract);
     eaccounting.setAccountingType(accountingType);
-    eaccounting.setFeeDirection("0");// 0 : 应出
-    eaccounting.setFeeType("2");// 水电费押金
-    if ("1".equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
+    eaccounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
+    eaccounting.setFeeType(PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue());
+    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
       eaccounting.setFeeAmount(calculateContinueContractAmount(rentContract, "2"));
     } else {// 如果是新签合同、逾期续签合同则直接退水电费押金
       eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
