@@ -588,7 +588,7 @@
 			<div class="controls">
 				<form:select path="tenantList" class="input-xlarge required" multiple="true">
 					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}-${item.idNo}</form:option>
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -600,7 +600,7 @@
 			<div class="controls">
 				<form:select path="liveList" class="input-xlarge required" multiple="true">
 					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
+						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}-${item.idNo}</form:option>
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
