@@ -251,8 +251,13 @@ public class RentContractController extends BaseController {
   }
 
   // @RequiresPermissions("contract:rentContract:view")
+  /**
+   * @param rentContract
+   * @param model
+   * @return
+   */
   @RequestMapping(value = "form")
-  public String form(RentContract rentContract, Model model) {
+  public String form(RentContract rentContract, Model model, HttpServletRequest request) {
     if (rentContract.getIsNewRecord()) {
       rentContract.setSignType("0");// 新签
       rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
@@ -297,6 +302,7 @@ public class RentContractController extends BaseController {
     }
     List<Tenant> tenantList = tenantService.findList(new Tenant());
     model.addAttribute("tenantList", tenantList);
+    setSubmitToken(request);
     return "modules/contract/rentContractForm";
   }
 
@@ -446,9 +452,14 @@ public class RentContractController extends BaseController {
    */
   // @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "save")
-  public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+  public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    if (isRepeatSubmit(request)) {// 表单重复提交
+      addMessage(redirectAttributes, "不能重复提交合同！");
+      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+    }
+    delSubmitToken(request);
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
-      return form(rentContract, model);
+      return form(rentContract, model, request);
     }
     if (rentContract.getIsNewRecord()) {// 设置出租合同编号
       String[] codeArr = rentContract.getContractCode().split("-");
@@ -466,7 +477,7 @@ public class RentContractController extends BaseController {
     } else if (result == -1) {
       model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
       addMessage(model, "房源已出租！");
-      return form(rentContract, model);
+      return form(rentContract, model, request);
     } else {
       if (StringUtils.isNotEmpty(rentContract.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {// APP订单后台保存
         try {
