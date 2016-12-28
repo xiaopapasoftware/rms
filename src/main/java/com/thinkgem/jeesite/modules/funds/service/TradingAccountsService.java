@@ -230,14 +230,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
       for (PaymentTrade tmpPaymentTrade : list) { /* 更新充值记录 */
         PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
-        if ("11".equals(paymentTrans.getPaymentType())) {// 电费自用金额类型
+        if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
           ElectricFee electricFee = new ElectricFee();
           electricFee.setPaymentTransId(paymentTrans.getId());
           electricFee.setDelFlag("0");
           electricFee = electricFeeDao.get(electricFee);
           if (null != electricFee) {
-            if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
-              if (null != rentContract && "1".equals(rentContract.getRentMode())) {// 单间
+            if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+              if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
                 Room room = rentContract.getRoom();
                 room = roomDao.get(room);
                 String meterNo = room.getMeterNo();
