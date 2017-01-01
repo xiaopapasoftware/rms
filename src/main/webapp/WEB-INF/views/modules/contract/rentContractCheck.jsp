@@ -158,6 +158,33 @@
 						</tr>
 					</tfoot>
 				</table>
+				<script type="text/template" id="accountTpl">//<!--
+						<tr id="accountList{{idx}}">
+							<td class="hide">
+								<input id="accountList{{idx}}_id" name="accountList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
+								<input id="accountList{{idx}}_delFlag" name="accountList[{{idx}}].delFlag" type="hidden" value="0"/>
+							</td>
+							<td>
+								<select id="accountList{{idx}}_feeType" name="accountList[{{idx}}].feeType" class="required">
+									<option value="">请选择</option>
+									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+										<option value="${item.value}">${item.label}</option>
+									</c:forEach>
+								</select>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<input id="accountList{{idx}}_feeAmount" name="accountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" maxlength="255" onblur="calculateTotalAmt()" class="input-small required number"/>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td class="hide">
+								<input id="accountList{{idx}}_feeDateStr" name="accountList[{{idx}}].feeDateStr" type="hidden" value="${outItem.feeDateStr}" maxlength="255"/>
+							</td>
+							<td class="text-center" width="10">
+								{{#delBtn}}<span class="close" onclick="delRow(this, '#accountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
+							</td>
+						</tr>//-->
+				</script>
 				<script type="text/javascript">
 					var accountRowIdx = ${accountSize}, accountTpl = $("#accountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 					$(document).ready(function() {
@@ -221,6 +248,33 @@
 						</tr>
 					</tfoot>
 				</table>
+				<script type="text/template" id="outAccountTpl">//<!--
+						<tr id="outAccountList{{idx}}">
+							<td class="hide">
+								<input id="outAccountList{{idx}}_id" name="outAccountList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
+								<input id="outAccountList{{idx}}_delFlag" name="outAccountList[{{idx}}].delFlag" type="hidden" value="0"/>
+							</td>
+							<td>
+								<select id="outAccountList{{idx}}_feeType" name="outAccountList[{{idx}}].feeType" class="required">
+									<option value="">请选择</option>
+									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+										<option value="${item.value}">${item.label}</option>
+									</c:forEach>
+								</select>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<input id="outAccountList{{idx}}_feeAmount" name="outAccountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" onblur="calculateTotalAmt()" maxlength="255" class="input-small required number"/>
+								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td class="hide">
+								<input id="outAccountList{{idx}}_feeDateStr" name="outAccountList[{{idx}}].feeDateStr" type="hidden" value="{{row.feeDateStr}}"/>
+							</td>
+							<td class="text-center" width="10">
+								{{#delBtn}}<span class="close" onclick="delRow(this, '#outAccountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
+							</td>
+						</tr>//-->
+				</script>
 				<script type="text/javascript">
 					var outAccountRowIdx = ${outAccountSize}, outAccountTpl = $("#outAccountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
 					$(document).ready(function() {

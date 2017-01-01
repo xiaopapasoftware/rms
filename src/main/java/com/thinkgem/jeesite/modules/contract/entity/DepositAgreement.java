@@ -56,6 +56,8 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
   private Double refundAmount;// 退费金额
   private String dataSource;
   private String updateUser;
+  private String tenantName;// 租客姓名
+  private String cellPhone;// 租客手机号
 
   public DepositAgreement() {
     super();
@@ -316,5 +318,21 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
 
   public void setUpdateUser(String updateUser) {
     this.updateUser = updateUser;
+  }
+
+  public String getTenantName() {
+    return tenantName;
+  }
+
+  public void setTenantName(String tenantName) {
+    this.tenantName = tenantName;
+  }
+
+  public String getCellPhone() {
+    return cellPhone;
+  }
+
+  public void setCellPhone(String cellPhone) {
+    this.cellPhone = cellPhone;
   }
 }

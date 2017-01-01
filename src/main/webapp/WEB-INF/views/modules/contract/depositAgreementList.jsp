@@ -245,6 +245,8 @@
 				<th>楼宇</th>
 				<th>房屋</th>
 				<th style="width:40px;">房间</th>
+				<th>租客姓名</th>
+				<th>租客手机号</th>
 				<th style="width:80px;">合同开始时间</th>
 				<th style="width:80px;">合同结束时间</th>
 				<th style="width:80px;">协议签订时间</th>
@@ -287,6 +289,12 @@
 				</td>
 				<td>
 					${depositAgreement.roomNo}
+				</td>
+				<td>
+					${depositAgreement.tenantName}
+				</td>
+				<td>
+					${depositAgreement.cellPhone}
 				</td>
 				<td>
 					<fmt:formatDate value="${depositAgreement.startDate}" pattern="yyyy-MM-dd"/>
