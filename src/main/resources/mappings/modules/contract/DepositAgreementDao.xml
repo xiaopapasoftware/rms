@@ -43,8 +43,8 @@
 	
 	<sql id="depositAgreementJoins">
 		LEFT JOIN sys_user u7 ON u7.id = a.user_id
-		LEFT JOIN t_contract_tenant tct ON tct.DEPOSIT_AGREEMENT_ID = a.id
-		LEFT JOIN t_tenant tt on tt.id = tct.TENANT_ID
+		LEFT JOIN t_contract_tenant tct ON tct.DEPOSIT_AGREEMENT_ID = a.id AND tct.`DEL_FLAG` = '0' 
+		LEFT JOIN t_tenant tt on tt.id = tct.TENANT_ID and tt.`DEL_FLAG` = '0' 
 		left join t_property_project tp on a.property_project_id = tp.id 
 		left join t_building tb on a.building_id=tb.id 
 		left join t_house th on a.house_id=th.id 
