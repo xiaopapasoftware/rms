@@ -1,6 +1,6 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * \ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All
+ * rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.dao;
 
@@ -17,6 +17,7 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
  */
 @MyBatisDao
 public interface PaymentOrderDao extends CrudDao<PaymentOrder> {
+
   List<PaymentOrder> findByHouseId(PaymentOrder paymentOrder);
 
   PaymentOrder findByOrderId(PaymentOrder paymentOrder);

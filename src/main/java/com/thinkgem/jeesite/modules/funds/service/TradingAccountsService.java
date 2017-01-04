@@ -28,6 +28,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
@@ -44,6 +45,7 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
@@ -52,10 +54,12 @@ import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
@@ -78,6 +82,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
   private PaymentTradeDao paymentTradeDao;
   @Autowired
   private DepositAgreementDao depositAgreementDao;
+  @Autowired
+  private PaymentOrderDao paymentOrderDao;
   @Autowired
   private AuditDao auditDao;
   @Autowired
@@ -151,14 +157,11 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     saveAuditHis.setAuditTime(new Date());
     saveAuditHis.setAuditUser(UserUtils.getUser().getId());
     auditHisDao.insert(saveAuditHis);
-
     TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
     tradingAccounts.preUpdate();
     tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
     tradingAccountsDao.update(tradingAccounts);
-
-    if ("1".equals(auditHis.getAuditStatus())) {// 审核通过
-      // 款项做到账
+    if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) { // 款项做到账
       PaymentTrade paymentTrade = new PaymentTrade();
       paymentTrade.setTradeId(tradingAccounts.getId());
       List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
@@ -200,6 +203,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         depositAgreement.preUpdate();
         depositAgreementDao.update(depositAgreement);
       }
+      // 如果是APP端生成的定金，但是从线下管理系统审核付款的，需要把订单状态也同步更新为已付款
+      if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource()) && AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+        doProcessWithPaymentOrder(auditHis.getObjectId());
+      }
     } else if (TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradingAccounts.getTradeType())) {
       DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
       depositAgreement.preUpdate();
@@ -222,6 +229,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
           rentContract.preUpdate();
           rentContractDao.update(rentContract);
         }
+      }
+      // 如果是APP端生成的合同，但是从线下管理系统审核付款的，需要把订单状态也同步更新为已付款
+      if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource()) && AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+        doProcessWithPaymentOrder(auditHis.getObjectId());
       }
       // 如果同时有电费充值的交易类型
       PaymentTrade paymentTrade = new PaymentTrade();
@@ -338,6 +349,21 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             electricFeeDao.update(electricFee);
           }
         }
+      }
+    }
+  }
+
+  /**
+   * 审核成功后，如果是APP端的定金或合同，同时要把订单状态更新，防止审核到账后被自动取消房源
+   */
+  private void doProcessWithPaymentOrder(String tradeAccountsId) {
+    PaymentOrder paymentOrder = new PaymentOrder();
+    paymentOrder.setTradeId(tradeAccountsId);
+    List<PaymentOrder> pos = paymentOrderDao.findList(paymentOrder);
+    if (CollectionUtils.isNotEmpty(pos)) {
+      for (PaymentOrder po : pos) {
+        po.setOrderStatus(PaymentOrderStatusEnum.PAID.getValue());
+        paymentOrderDao.update(po);
       }
     }
   }

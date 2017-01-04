@@ -65,6 +65,9 @@
 			<if test="orderStatus != null and orderStatus != ''">
 				AND a.order_status = #{orderStatus}
 			</if>
+			<if test="tradeId != null and tradeId != ''">
+				AND a.trade_id = #{tradeId}
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

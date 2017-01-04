@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
@@ -33,75 +34,75 @@ import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 @Service
 @Lazy(false)
 public class QuartzJob {
-    Logger log = LoggerFactory.getLogger(QuartzJob.class);
-    @Autowired
-    private PaymentOrderDao paymentOrderDao;
-    @Autowired
-    private TradingAccountsService tradingAccountsService;
-    @Autowired
-    private DepositAgreementService depositAgreementService;
-    @Autowired
-    private RentContractService rentContractService;
-    @Autowired
-    private TradingAccountsDao tradingAccountsDao;
-    @Autowired
-    private PaymentTransService paymentTransService;
-    @Autowired
-    private PaymentTradeDao paymentTradeDao;
+  Logger log = LoggerFactory.getLogger(QuartzJob.class);
+  @Autowired
+  private PaymentOrderDao paymentOrderDao;
+  @Autowired
+  private TradingAccountsService tradingAccountsService;
+  @Autowired
+  private DepositAgreementService depositAgreementService;
+  @Autowired
+  private RentContractService rentContractService;
+  @Autowired
+  private TradingAccountsDao tradingAccountsDao;
+  @Autowired
+  private PaymentTransService paymentTransService;
+  @Autowired
+  private PaymentTradeDao paymentTradeDao;
 
-    @Scheduled(cron = "0 */1 * * * ?")
-    public void scanPaymentOrder() {
-	log.info("------扫描未支付超时订单开始------");
-	PaymentOrder paymentOrder = new PaymentOrder();
-	paymentOrder.setOrderStatus("1");// 未支付
-	List<PaymentOrder> allNotPaidOrders = paymentOrderDao.findList(paymentOrder);// 所有未支付成功的订单
-	PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-	String orderTimeout = proper.getProperty("order.timeout");
-	for (PaymentOrder tmpPaymentOrder : allNotPaidOrders) {
-	    if ((new Date().getTime() - tmpPaymentOrder.getOrderDate().getTime()) / 1000 / 60 > Long.valueOf(orderTimeout)) {
-		tmpPaymentOrder.preUpdate();
-		paymentOrderDao.delete(tmpPaymentOrder);
-		String[] tradeIds = tmpPaymentOrder.getTradeId().split(",");
-		for (String tradeId : tradeIds) {// 定金协议/合同删除
-		    if (StringUtils.isNotBlank(tradeId)) {
-			TradingAccounts tradingAccounts = tradingAccountsService.get(tradeId);
-			if (null != tradingAccounts) {
-			    String objectId = tradingAccounts.getTradeId();// 账务交易对象
-			    if (StringUtils.isNotBlank(objectId)) {
-				DepositAgreement depositAgreement = depositAgreementService.get(objectId);
-				if (null != depositAgreement) {
-				    AuditHis auditHis = new AuditHis();
-				    auditHis.setObjectId(objectId);
-				    auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
-				    depositAgreementService.audit(auditHis);
-				} else {
-				    RentContract rentContract = rentContractService.get(objectId);
-				    if (null != rentContract && StringUtils.isBlank(rentContract.getContractBusiStatus())) {
-					AuditHis auditHis = new AuditHis();
-					auditHis.setObjectId(objectId);
-					auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
-					rentContractService.audit(auditHis);
-				    } else {
-					tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_REFUSE.getValue());
-					tradingAccountsDao.update(tradingAccounts);
-					PaymentTrade paymentTrade = new PaymentTrade();
-					paymentTrade.setTradeId(tradeId);
-					List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
-					for (PaymentTrade tmpPaymentTrade : paymentTradeList) {
-					    PaymentTrans paymentTrans = paymentTransService.get(tmpPaymentTrade.getTransId());
-					    paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-					    paymentTrans.setTransAmount(0d);
-					    paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
-					    paymentTransService.save(paymentTrans);
-					}
-				    }
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	}
-	log.info("------扫描未支付超时订单结束------");
+  @Scheduled(cron = "0 */1 * * * ?")
+  public void scanPaymentOrder() {
+    log.info("------扫描未支付超时订单开始------");
+    PaymentOrder paymentOrder = new PaymentOrder();
+    paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
+    List<PaymentOrder> allNotPaidOrders = paymentOrderDao.findList(paymentOrder);// 所有未支付成功的订单
+    PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+    String orderTimeout = proper.getProperty("order.timeout");
+    for (PaymentOrder tmpPaymentOrder : allNotPaidOrders) {
+      if ((new Date().getTime() - tmpPaymentOrder.getOrderDate().getTime()) / 1000 / 60 > Long.valueOf(orderTimeout)) {
+        tmpPaymentOrder.preUpdate();
+        paymentOrderDao.delete(tmpPaymentOrder);
+        String[] tradeIds = tmpPaymentOrder.getTradeId().split(",");
+        for (String tradeId : tradeIds) {// 定金协议/合同删除
+          if (StringUtils.isNotBlank(tradeId)) {
+            TradingAccounts tradingAccounts = tradingAccountsService.get(tradeId);
+            if (null != tradingAccounts) {
+              String objectId = tradingAccounts.getTradeId();// 账务交易对象
+              if (StringUtils.isNotBlank(objectId)) {
+                DepositAgreement depositAgreement = depositAgreementService.get(objectId);
+                if (null != depositAgreement) {
+                  AuditHis auditHis = new AuditHis();
+                  auditHis.setObjectId(objectId);
+                  auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
+                  depositAgreementService.audit(auditHis);
+                } else {
+                  RentContract rentContract = rentContractService.get(objectId);
+                  if (null != rentContract && StringUtils.isBlank(rentContract.getContractBusiStatus())) {
+                    AuditHis auditHis = new AuditHis();
+                    auditHis.setObjectId(objectId);
+                    auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
+                    rentContractService.audit(auditHis);
+                  } else {
+                    tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_REFUSE.getValue());
+                    tradingAccountsDao.update(tradingAccounts);
+                    PaymentTrade paymentTrade = new PaymentTrade();
+                    paymentTrade.setTradeId(tradeId);
+                    List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+                    for (PaymentTrade tmpPaymentTrade : paymentTradeList) {
+                      PaymentTrans paymentTrans = paymentTransService.get(tmpPaymentTrade.getTransId());
+                      paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+                      paymentTrans.setTransAmount(0d);
+                      paymentTrans.setLastAmount(paymentTrans.getTradeAmount());
+                      paymentTransService.save(paymentTrans);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+    log.info("------扫描未支付超时订单结束------");
+  }
 }

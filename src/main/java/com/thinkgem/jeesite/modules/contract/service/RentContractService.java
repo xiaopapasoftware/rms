@@ -301,8 +301,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
     if (rentContract.getIsNewRecord()) {// 新增后的保存,包括手机APP签约申请以及后台直接新增合同，需要锁定房源
       if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(rentContract.getValidatorFlag())) {
+        logger.info("新增--合同暂存");
         doSaveContractBusiness(rentContract); // 后台暂存无须改变房源状态
       } else {// 保存
+        logger.info("新增--合同保存");
         return persistentHouseInfo(rentContract, houseId, roomId);
       }
     } else {// 点修改后的保存
@@ -322,6 +324,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
   private int persistentHouseInfo(RentContract rentContract, String houseId, String roomId) {
     if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || StringUtils.isEmpty(rentContract.getSignType())) {
+      logger.info("SaveSource IS.... : [" + rentContract.getSaveSource() + "],AgreementId is ......:[" + rentContract.getAgreementId() + "]");
       if ("1".equals(rentContract.getSaveSource()) && StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同，把房源状态从“已预定”变更为“已出租”
         if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
           boolean isLock = houseService.isLockWholeHouseFromDepositToContract(houseId);

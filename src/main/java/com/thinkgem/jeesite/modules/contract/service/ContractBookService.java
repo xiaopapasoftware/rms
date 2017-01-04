@@ -23,7 +23,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 /**
  * 预约看房信息Service
- * 
  * @author huangsc
  */
 @Service

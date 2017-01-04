@@ -58,6 +58,7 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSourceEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentPayTypeEnum;
@@ -896,7 +897,7 @@ public class AppHouseController {
         PaymentOrder paymentOrder = new PaymentOrder();
         paymentOrder.setOrderId(contractBookService.generateOrderId());
         paymentOrder.setOrderDate(new Date());
-        paymentOrder.setOrderStatus("1");// 未支付
+        paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
         paymentOrder.setTradeId(tradingAccounts.getId());
         paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
         paymentOrder.setCreateDate(new Date());
@@ -1074,6 +1075,7 @@ public class AppHouseController {
     }
     try {
       String houseId = request.getParameter("house_id"); // 可能是从预订申请转过来的，也可能是houseId
+      log.info("sign's parameter houseId is :[" + houseId + "]");
       DepositAgreement fromDepositAgreement = depositAgreementService.get(houseId);
       if (null != fromDepositAgreement) {// 预订
         if (fromDepositAgreement.getRoom() != null && StringUtils.isNotBlank(fromDepositAgreement.getRoom().getId())) {
@@ -1082,6 +1084,7 @@ public class AppHouseController {
           houseId = fromDepositAgreement.getHouse().getId();
         }
       }
+      log.info("generate's houseId is :[" + houseId + "]");
       boolean hasBooked = false;// 是否定金转合同
       String depositId = null;// 定金协议ID
       ContractBook booked = new ContractBook();
@@ -1089,6 +1092,8 @@ public class AppHouseController {
       List<ContractBook> bookedList = contractBookService.findBookedContract(booked);
       if (CollectionUtils.isNotEmpty(bookedList)) {
         for (ContractBook tContractBook : bookedList) {
+          log.info("phone is : [" + appUser.getPhone() + "];houseId is :[" + tContractBook.getHouseId() + "];bookstatus is : [" + tContractBook.getBookStatus() + "];bookBusiStatus is : ["
+              + tContractBook.getBookBusiStatus() + "]");
           if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
               && AgreementBusiStatusEnum.TOBE_CONVERTED.getValue().equals(tContractBook.getBookBusiStatus())) {
             hasBooked = true;
@@ -1097,6 +1102,7 @@ public class AppHouseController {
           }
         }
       }
+      log.info("booked's value is....[" + hasBooked + "]");
       // 获取房屋、房间信息
       Room room = null;
       House house = new House();
@@ -1487,7 +1493,7 @@ public class AppHouseController {
         PaymentOrder paymentOrder = new PaymentOrder();
         paymentOrder.setOrderId(contractBookService.generateOrderId());
         paymentOrder.setOrderDate(new Date());
-        paymentOrder.setOrderStatus("1");// 未支付
+        paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
         paymentOrder.setTradeId(tradingAccounts.getId());
         paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
         paymentOrder.setCreateDate(new Date());
@@ -1799,12 +1805,12 @@ public class AppHouseController {
           PaymentOrder paymentOrder = this.contractBookService.findByOrderId(out_trade_no);
           PaymentOrder updatePaymentOrder = new PaymentOrder();
           updatePaymentOrder.setOrderId(out_trade_no);
-          updatePaymentOrder.setOrderStatus("2");// 已支付
+          updatePaymentOrder.setOrderStatus(PaymentOrderStatusEnum.PAID.getValue());
           this.contractBookService.updateStatusByOrderId(updatePaymentOrder);
           // 2.根据订单号获取账务交易ID
           paymentOrder = new PaymentOrder();
           paymentOrder.setOrderId(out_trade_no);
-          paymentOrder.setOrderStatus("2");// 已支付
+          paymentOrder.setOrderStatus(PaymentOrderStatusEnum.PAID.getValue());
           paymentOrder.setTransId(trade_no);
           paymentOrder = this.contractBookService.findByOrderId(paymentOrder);
           // 3.走账务交易审核通过流程
@@ -2279,7 +2285,7 @@ public class AppHouseController {
         PaymentOrder paymentOrder = new PaymentOrder();
         paymentOrder.setOrderId(contractBookService.generateOrderId());
         paymentOrder.setOrderDate(new Date());
-        paymentOrder.setOrderStatus("1");// 未支付
+        paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
         paymentOrder.setTradeId(tradingAccounts.getId());
         paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
         paymentOrder.setCreateDate(new Date());
@@ -2365,7 +2371,7 @@ public class AppHouseController {
     paymentOrder.setTradeId(tradingAccounts.getId());
     paymentOrder.setOrderId(contractBookService.generateOrderId());
     paymentOrder.setOrderDate(new Date());
-    paymentOrder.setOrderStatus("1");// 未支付
+    paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
     paymentOrder.setCreateDate(new Date());
     paymentOrder.setHouseId("");
     this.contractBookService.saveOrder(paymentOrder);
