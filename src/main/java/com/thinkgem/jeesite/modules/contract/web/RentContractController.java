@@ -251,11 +251,6 @@ public class RentContractController extends BaseController {
   }
 
   // @RequiresPermissions("contract:rentContract:view")
-  /**
-   * @param rentContract
-   * @param model
-   * @return
-   */
   @RequestMapping(value = "form")
   public String form(RentContract rentContract, Model model, HttpServletRequest request) {
     if (rentContract.getIsNewRecord()) {
@@ -493,7 +488,7 @@ public class RentContractController extends BaseController {
         }
       }
       addMessage(redirectAttributes, "保存出租合同成功");
-      if ("1".equals(rentContract.getSaveSource())) {
+      if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
         return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
       } else {
         return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";

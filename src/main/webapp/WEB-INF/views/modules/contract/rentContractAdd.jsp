@@ -355,7 +355,6 @@
 		<form:hidden path="id"/>
 		<form:hidden path="contractStatus" value="1"/>
 		<form:hidden path="validatorFlag" value="1"/><!-- 正常保存，而非暂存 -->
-		<form:hidden path="saveSource" value="1"/><!-- 标识为定金协议转合同 -->
 		<form:hidden path="contractId"/>
 		<form:hidden path="agreementId"/><!-- 定金转合同，保存定金ID -->
 		<form:hidden path="depositAgreementAmount" value="${depositAmount}"/>

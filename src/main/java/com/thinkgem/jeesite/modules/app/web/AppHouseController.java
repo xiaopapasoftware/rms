@@ -1179,7 +1179,6 @@ public class AppHouseController {
           rentContract.setUser(depositAgreement.getUser());
           rentContract.setAgreementId(depositId);
           rentContract.setDepositAmount(depositAgreement.getDepositAmount());
-          rentContract.setSaveSource("1");// 定金转合同
           int result = rentContractService.saveContract(rentContract);
           tailProcess(house, result, data);// 结果处理
         } else {
