@@ -31,9 +31,6 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
   protected User updateBy; // 更新者
   protected Date updateDate; // 更新日期
   protected String delFlag; // 删除标记（0：正常；1：删除；2：审核）
-  protected String submitToken; // 防止重复提交令牌
-
-
 
   public DataEntity() {
     super();
@@ -129,12 +126,4 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
     this.delFlag = delFlag;
   }
 
-  @JsonIgnore
-  public String getSubmitToken() {
-    return submitToken;
-  }
-
-  public void setSubmitToken(String submitToken) {
-    this.submitToken = submitToken;
-  }
 }

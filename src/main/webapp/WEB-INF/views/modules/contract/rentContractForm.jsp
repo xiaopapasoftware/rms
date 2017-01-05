@@ -477,7 +477,6 @@
 		<form:hidden path="agreementId"/><!-- 定金转合同，原定金ID -->
 		<form:hidden path="signType"/><!-- 签约类型 -->
 		<form:hidden path="oriEndDate"/><!-- 如是续签，则原合同的结束日期 -->
-	    <input type="hidden" name="submitToken" id="submitToken" value="${submitToken}"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">合同编号：</label>

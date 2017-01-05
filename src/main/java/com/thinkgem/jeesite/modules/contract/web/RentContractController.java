@@ -297,7 +297,6 @@ public class RentContractController extends BaseController {
     }
     List<Tenant> tenantList = tenantService.findList(new Tenant());
     model.addAttribute("tenantList", tenantList);
-    setSubmitToken(request);
     return "modules/contract/rentContractForm";
   }
 
@@ -448,11 +447,6 @@ public class RentContractController extends BaseController {
   // @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "save")
   public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-    if (isRepeatSubmit(request)) {// 表单重复提交
-      addMessage(redirectAttributes, "不能重复提交合同！");
-      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
-    }
-    delSubmitToken(request);
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model, request);
     }

@@ -8,9 +8,7 @@ import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -32,7 +30,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 
 /**
  * 控制器支持类
@@ -216,47 +213,7 @@ public abstract class BaseController {
       public void setAsText(String text) {
         setValue(DateUtils.parseDate(text));
       }
-      // @Override
-      // public String getAsText() {
-      // Object value = getValue();
-      // return value != null ? DateUtils.formatDateTime((Date)value) : "";
-      // }
     });
   }
 
-  /**
-   * 防止重复提交设置token
-   */
-  protected void setSubmitToken(HttpServletRequest request) {
-    request.getSession().setAttribute("submitToken", UUID.randomUUID().toString()); // 在服务器使用session保存token(令牌)
-  }
-
-  /**
-   * 判断客户端提交上来的令牌和服务器端生成的令牌是否一致
-   */
-  protected boolean isRepeatSubmit(HttpServletRequest request) {
-    String client_token = request.getParameter("submitToken");
-    // 1、如果用户提交的表单数据中没有token，则用户是重复提交了表单
-    if (StringUtils.isBlank(client_token)) {
-      return true;
-    }
-    // 取出存储在Session中的token
-    String server_token = (String) request.getSession().getAttribute("submitToken");
-    // 2、如果当前用户的Session中不存在Token(令牌)，则用户是重复提交了表单
-    if (StringUtils.isBlank(server_token)) {
-      return true;
-    }
-    // 3、存储在Session中的Token(令牌)与表单提交的Token(令牌)不同，则用户是重复提交了表单
-    if (!client_token.equals(server_token)) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * 删除提交token
-   */
-  protected void delSubmitToken(HttpServletRequest request) {
-    request.getSession().removeAttribute("submitToken");// 移除session中的token
-  }
 }
