@@ -1075,7 +1075,6 @@ public class AppHouseController {
     }
     try {
       String houseId = request.getParameter("house_id"); // 可能是从预订申请转过来的，也可能是houseId
-      log.info("sign's parameter houseId is :[" + houseId + "]");
       DepositAgreement fromDepositAgreement = depositAgreementService.get(houseId);
       if (null != fromDepositAgreement) {// 预订
         if (fromDepositAgreement.getRoom() != null && StringUtils.isNotBlank(fromDepositAgreement.getRoom().getId())) {
@@ -1084,16 +1083,19 @@ public class AppHouseController {
           houseId = fromDepositAgreement.getHouse().getId();
         }
       }
-      log.info("generate's houseId is :[" + houseId + "]");
       boolean hasBooked = false;// 是否定金转合同
+      boolean dumpBooked = false;// 防止已经转合同的定金，重复转合同
       String depositId = null;// 定金协议ID
       ContractBook booked = new ContractBook();
       booked.setUserPhone(appUser.getPhone());
       List<ContractBook> bookedList = contractBookService.findBookedContract(booked);
       if (CollectionUtils.isNotEmpty(bookedList)) {
         for (ContractBook tContractBook : bookedList) {
-          log.info("phone is : [" + appUser.getPhone() + "];houseId is :[" + tContractBook.getHouseId() + "];bookstatus is : [" + tContractBook.getBookStatus() + "];bookBusiStatus is : ["
-              + tContractBook.getBookBusiStatus() + "]");
+          if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
+              && AgreementBusiStatusEnum.BE_CONVERTED_CONTRACT.getValue().equals(tContractBook.getBookBusiStatus())) {
+            dumpBooked = true;
+            break;
+          }
           if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
               && AgreementBusiStatusEnum.TOBE_CONVERTED.getValue().equals(tContractBook.getBookBusiStatus())) {
             hasBooked = true;
@@ -1102,7 +1104,11 @@ public class AppHouseController {
           }
         }
       }
-      log.info("booked's value is....[" + hasBooked + "]");
+      if (dumpBooked) {// 已转定金重复转合同，报警提示
+        data.setCode("400");
+        data.setMsg("您预定的房源已被签约，");
+        return data;
+      }
       // 获取房屋、房间信息
       Room room = null;
       House house = new House();
