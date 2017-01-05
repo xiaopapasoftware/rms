@@ -1106,7 +1106,7 @@ public class AppHouseController {
       }
       if (dumpBooked) {// 已转定金重复转合同，报警提示
         data.setCode("400");
-        data.setMsg("您预定的房源已被签约，");
+        data.setMsg("您预定的房源已签约！");
         return data;
       }
       // 获取房屋、房间信息
