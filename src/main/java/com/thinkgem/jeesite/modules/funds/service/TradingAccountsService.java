@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -44,6 +45,8 @@ import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
@@ -153,7 +156,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     saveAuditHis.setObjectType(AuditTypeEnum.TRADING_ACCOUNT.getValue());
     saveAuditHis.setObjectId(auditHis.getObjectId());
     saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
-    saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
+    saveAuditHis.setAuditStatus(auditHis.getAuditStatus());
     saveAuditHis.setAuditTime(new Date());
     saveAuditHis.setAuditUser(UserUtils.getUser().getId());
     auditHisDao.insert(saveAuditHis);
@@ -236,7 +239,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       }
       // 如果同时有电费充值的交易类型
       PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setDelFlag("0");
+      paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       paymentTrade.setTradeId(tradingAccounts.getId());
       List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
       for (PaymentTrade tmpPaymentTrade : list) { /* 更新充值记录 */
@@ -244,7 +247,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
           ElectricFee electricFee = new ElectricFee();
           electricFee.setPaymentTransId(paymentTrans.getId());
-          electricFee.setDelFlag("0");
+          electricFee.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
           electricFee = electricFeeDao.get(electricFee);
           if (null != electricFee) {
             if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
@@ -254,26 +257,26 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
                 String meterNo = room.getMeterNo();
                 DecimalFormat df = new DecimalFormat("0");
                 String id = charge(meterNo, df.format(electricFee.getChargeAmount()));
-                if (!StringUtils.isBlank(id)) {// 充值成功
+                if (StringUtils.isNotBlank(id) && !"0".equals(id)) {// 充值成功
                   Pattern pattern = Pattern.compile("[0-9]*");
                   Matcher isNum = pattern.matcher(id);
                   if (isNum.matches()) {
                     electricFee.setChargeId(id);
-                    electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
-                    electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
+                    electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
+                    electricFee.setChargeStatus(ElectricChargeStatusEnum.SUCCESSED.getValue());
                     electricFee.preUpdate();
                     electricFeeDao.update(electricFee);
                   }
                 } else {// 充值失败
-                  electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
-                  electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+                  electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+                  electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
                   electricFee.preUpdate();
                   electricFeeDao.update(electricFee);
                 }
               }
             } else {// 审核不通过
-              electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
-              electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+              electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+              electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
               electricFee.preUpdate();
               electricFeeDao.update(electricFee);
             }
@@ -306,7 +309,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
       PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setDelFlag("0");
+      paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       paymentTrade.setTradeId(tradingAccounts.getId());
       List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
       /* 更新充值记录 */
@@ -314,7 +317,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
         ElectricFee electricFee = new ElectricFee();
         electricFee.setPaymentTransId(paymentTrans.getId());
-        electricFee.setDelFlag("0");
+        electricFee.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
         electricFee = electricFeeDao.get(electricFee);
         if (null != electricFee) {
           if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {// 审核通过
@@ -330,21 +333,21 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
                 Matcher isNum = pattern.matcher(id);
                 if (isNum.matches()) {
                   electricFee.setChargeId(id);
-                  electricFee.setSettleStatus("3");// 3=审核通过；2=审核拒绝
-                  electricFee.setChargeStatus("1");// 1=充值成功；2=充值失败；
+                  electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
+                  electricFee.setChargeStatus(ElectricChargeStatusEnum.SUCCESSED.getValue());
                   electricFee.preUpdate();
                   electricFeeDao.update(electricFee);
                 }
               } else {// 充值失败
-                electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
-                electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+                electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+                electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
                 electricFee.preUpdate();
                 electricFeeDao.update(electricFee);
               }
             }
           } else {// 审核不通过
-            electricFee.setSettleStatus("2");// 3=审核通过；2=审核拒绝
-            electricFee.setChargeStatus("2");// 1=充值成功；2=充值失败；
+            electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+            electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
             electricFee.preUpdate();
             electricFeeDao.update(electricFee);
           }
@@ -440,8 +443,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         ElectricFee fee = new ElectricFee();
         fee.setPaymentTransId(elePaymentTransId);
         ElectricFee upFee = electricFeeDao.get(fee);
-        upFee.setChargeStatus("0");// 0=充值中
-        upFee.setSettleStatus("1");// '1'='结算待审核'
+        upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
+        upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
         upFee.preUpdate();
         electricFeeDao.update(upFee);
       }
@@ -465,7 +468,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         boolean isChoosed = false;// 除了电费充值外，是否还有其他的款项
         for (String transId : transIds) {
           PaymentTrans paymentTrans = paymentTransDao.get(transId);
-          if (!"11".equals(paymentTrans.getPaymentType())) {// 含有别的款项，说明是有新签合同和电费充值混合的款项
+          if (!PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {// 含有别的款项，说明是有新签合同和电费充值混合的款项
             isChoosed = true;
           } else {
             eleTransIds.add(transId);
@@ -474,22 +477,23 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         if (isChoosed) {
           RentContract rentContract = rentContractDao.get(tradeId);
           rentContract.preUpdate();
-          if ("1".equals(rentContract.getContractStatus())) {// '1':'录入完成到账收据待登记'
-            rentContract.setContractStatus("2");// '2':'到账收据完成合同内容待审核'
+          if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
+            rentContract.setContractStatus(ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue());
             rentContractDao.update(rentContract);
           } else {
-            if (!"4".equals(rentContract.getContractStatus()) && !"6".equals(rentContract.getContractStatus())) {// '4':'内容审核通过到账收据待审核',"6":到账收据审核通过
-              rentContract.setContractStatus("4");// 内容审核通过到账收据待审核
+            if (!ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(rentContract.getContractStatus())
+                && !ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {//
+              rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
               rentContractDao.update(rentContract);
             }
           }
         }
-        for (String eleTransId : eleTransIds) {//
+        for (String eleTransId : eleTransIds) {
           ElectricFee fee = new ElectricFee();
           fee.setPaymentTransId(eleTransId);
           ElectricFee upFee = electricFeeDao.get(fee);
-          upFee.setChargeStatus("0");// 0=充值中
-          upFee.setSettleStatus("1");// '1'='结算待审核'
+          upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
+          upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
           upFee.preUpdate();
           electricFeeDao.update(upFee);
         }
@@ -500,7 +504,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     Audit audit = new Audit();
     audit.preInsert();
     audit.setObjectId(id);
-    audit.setObjectType("2");// 账务
+    audit.setObjectType(AuditTypeEnum.TRADING_ACCOUNT.getValue());
     audit.setNextRole(TRADING_ACCOUNTS_ROLE);
     auditDao.insert(audit);
 
@@ -520,7 +524,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     }
 
     // 非新增，首先清空所有的账务交易记录的附件信息，非承租合同，承租合同批量到账登记就直接生成账务记录，不需要审核
-    if (!tradingAccounts.getIsNewRecord() && !"0".equals(tradingAccounts.getTradeType())) {
+    if (!tradingAccounts.getIsNewRecord() && !TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradingAccounts.getTradeType())) {
       Attachment attachment = new Attachment();
       attachment.setTradingAccountsId(id);
       attachment.preUpdate();
@@ -599,16 +603,13 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     BigDecimal needBeAmount = BigDecimal.ZERO;
     // 新签,至少需要到账金额满足水电押金+房租押金+1个月房租
     // 正常续签时，到账金额至少满足水电押金差额+房租押金差额+1个月房租
-    if ("0".equals(rentContract.getSignType()) || "1".equals(rentContract.getSignType())) {
+    if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
       if (DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate()) < 1) {// 如果合同期不足一个月
         needBeAmount = new BigDecimal(rentContract.getDepositElectricAmount() + rentContract.getDepositAmount());
       } else {// 如果合同期超过一个月
         needBeAmount = new BigDecimal(rentContract.getDepositElectricAmount() + rentContract.getDepositAmount() + rentContract.getRental());
       }
     }
-    if ("2".equals(rentContract.getSignType())) {// 逾期续签,暂不做限制
-    }
-
     if (totalAmount.compareTo(needBeAmount) >= 0) {
       return true;
     } else {

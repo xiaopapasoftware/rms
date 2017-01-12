@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -28,7 +29,13 @@ import com.thinkgem.jeesite.modules.contract.entity.Audit;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
+import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -62,7 +69,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     if (null != leaseContract) {
       LeaseContractDtl deaseContractDtl = new LeaseContractDtl();
       deaseContractDtl.setLeaseContractId(id);
-      deaseContractDtl.setDelFlag("0");
+      deaseContractDtl.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       List<LeaseContractDtl> leaseContractDtlList = leaseContractDtlDao.findList(deaseContractDtl);
       leaseContract.setLeaseContractDtlList(leaseContractDtlList);
     }
@@ -73,10 +80,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
   public void audit(AuditHis auditHis) {
     AuditHis saveAuditHis = new AuditHis();
     saveAuditHis.preInsert();
-    saveAuditHis.setObjectType("0");// 承租合同
+    saveAuditHis.setObjectType(AuditTypeEnum.LEASE_CONTRACT_CONTENT.getValue());
     saveAuditHis.setObjectId(auditHis.getObjectId());
     saveAuditHis.setAuditMsg(auditHis.getAuditMsg());
-    saveAuditHis.setAuditStatus(auditHis.getAuditStatus());// 1:通过 2:拒绝
+    saveAuditHis.setAuditStatus(auditHis.getAuditStatus());
     saveAuditHis.setAuditTime(new Date());
     saveAuditHis.setAuditUser(UserUtils.getUser().getId());
     auditHisDao.insert(saveAuditHis);
@@ -88,7 +95,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     leaseContractDao.update(leaseContract);
 
     // 审核通过，生成款项
-    if ("1".equals(auditHis.getAuditStatus())) {
+    if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
       // 审核
       Audit audit = new Audit();
       audit.setObjectId(auditHis.getObjectId());
@@ -103,25 +110,24 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
 
       // 1.押金款项
       Double deposit = leaseContract.getDeposit();
-
       PaymentTrans paymentTrans = new PaymentTrans();
       paymentTrans.preInsert();
-      paymentTrans.setTradeType("0");// 承租合同
-      paymentTrans.setPaymentType("4");// 房租押金
+      paymentTrans.setTradeType(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
+      paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
       paymentTrans.setTransId(leaseContract.getId());
-      paymentTrans.setTradeDirection("0");// 出款
+      paymentTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
       paymentTrans.setStartDate(leaseContract.getEffectiveDate());
       paymentTrans.setExpiredDate(leaseContract.getExpiredDate());
       paymentTrans.setTradeAmount(deposit);
       paymentTrans.setTransAmount(0d);
       paymentTrans.setLastAmount(deposit);
-      paymentTrans.setTransStatus("0");// 未支付
+      paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
       if (0 != deposit) paymentTransDao.insert(paymentTrans);
 
       // 2.房租款项
       LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
       leaseContractDtl.setLeaseContractId(leaseContract.getId());
-      leaseContractDtl.setDelFlag("0");
+      leaseContractDtl.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       List<LeaseContractDtl> list = leaseContractDtlDao.findList(leaseContractDtl);
 
       int monthSpace = leaseContract.getMonthSpace();// 打款月份间隔
@@ -134,10 +140,10 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
         for (int i = 1; i <= month; i++) {
           paymentTrans = new PaymentTrans();
           paymentTrans.setId(IdGen.uuid());
-          paymentTrans.setTradeType("0");// 承租合同
-          paymentTrans.setPaymentType("6");// 房租
+          paymentTrans.setTradeType(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
+          paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
           paymentTrans.setTransId(leaseContract.getId());
-          paymentTrans.setTradeDirection("0");// 出款
+          paymentTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
           Date startDate = i == 1 ? tmpLeaseContractDtl.getStartDate() : DateUtils.dateAddMonth2(tmpLeaseContractDtl.getStartDate(), i - 1);
           paymentTrans.setStartDate(startDate);
           Date endDate = i == month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth2(tmpLeaseContractDtl.getStartDate(), i);
@@ -145,12 +151,12 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
           paymentTrans.setTradeAmount(tmpLeaseContractDtl.getDeposit());
           paymentTrans.setTransAmount(0d);
           paymentTrans.setLastAmount(tmpLeaseContractDtl.getDeposit());
-          paymentTrans.setTransStatus("0");// 未支付
+          paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
           paymentTrans.setCreateDate(new Date());
           paymentTrans.setCreateBy(UserUtils.getUser());
           paymentTrans.setUpdateDate(new Date());
           paymentTrans.setUpdateBy(UserUtils.getUser());
-          paymentTrans.setDelFlag("0");
+          paymentTrans.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
           if (0 != tmpLeaseContractDtl.getDeposit()) {
             listPaymentTrans.add(paymentTrans);
           }
@@ -205,7 +211,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       Audit audit = new Audit();
       audit.preInsert();
       audit.setObjectId(id);
-      audit.setObjectType("0");// 承租合同
+      audit.setObjectType(AuditTypeEnum.LEASE_CONTRACT_CONTENT.getValue());
       audit.setNextRole(LEASE_CONTRACT_ROLE);
       auditDao.insert(audit);
 
@@ -311,9 +317,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       List<LeaseContractDtl> delLeaseContractDtlList = Lists.newArrayList();// 删除的list
       if (CollectionUtils.isNotEmpty(leaseContractDtlList)) {
         for (LeaseContractDtl lcd : leaseContractDtlList) {
-          if (StringUtils.isEmpty(lcd.getId()) && "0".equals(lcd.getDelFlag())) {
+          if (StringUtils.isEmpty(lcd.getId()) && BaseEntity.DEL_FLAG_NORMAL.equals(lcd.getDelFlag())) {
             addLeaseContractDtlList.add(lcd);
-          } else if (StringUtils.isNotEmpty(lcd.getId()) && "1".equals(lcd.getDelFlag())) {
+          } else if (StringUtils.isNotEmpty(lcd.getId()) && BaseEntity.DEL_FLAG_DELETE.equals(lcd.getDelFlag())) {
             delLeaseContractDtlList.add(lcd);
           } else {// 更新
             leaseContractDtlDao.update(lcd);

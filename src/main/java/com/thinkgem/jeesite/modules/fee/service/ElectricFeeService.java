@@ -26,10 +26,15 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
@@ -43,7 +48,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 @Transactional(readOnly = true)
 public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee> {
   @Autowired
-  private PaymentTransDao paymentTransDao;
+  private PaymentTransService paymentTransService;
   @Autowired
   private RentContractDao rentContractDao;
   @Autowired
@@ -64,26 +69,12 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
   @Transactional(readOnly = false)
   public void save(ElectricFee electricFee) {
     Date nowDate = new Date();
-    /* 生成款项 */
-    PaymentTrans paymentTrans = new PaymentTrans();
-    paymentTrans.preInsert();
-    paymentTrans.setTradeType("11");// 电费充值
-    paymentTrans.setPaymentType("11");// 电费自用金额
-    paymentTrans.setTransId(electricFee.getRentContractId());// 合同
-    paymentTrans.setTradeDirection("1");// 收款
-    paymentTrans.setStartDate(nowDate);
-    paymentTrans.setExpiredDate(nowDate);
-    paymentTrans.setTradeAmount(electricFee.getChargeAmount());
-    paymentTrans.setLastAmount(electricFee.getChargeAmount());
-    paymentTrans.setTransAmount(0D);
-    paymentTrans.setTransStatus("0");// 未到账登记
-    if (0 != paymentTrans.getTradeAmount()) {
-      paymentTransDao.insert(paymentTrans);
-    }
+    String id = paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.ELECTRICITY_CHARGE.getValue(), PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), electricFee.getRentContractId(),
+        TradeDirectionEnum.IN.getValue(), electricFee.getChargeAmount(), electricFee.getChargeAmount(), 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, nowDate);
     electricFee.setChargeDate(nowDate);
-    electricFee.setChargeStatus("0");// 充值中
-    electricFee.setPaymentTransId(paymentTrans.getId());
-    electricFee.setSettleStatus("0");// 待结算
+    electricFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
+    electricFee.setPaymentTransId(id);
+    electricFee.setSettleStatus(FeeSettlementStatusEnum.NOT_SETTLED.getValue());
     super.save(electricFee);
   }
 

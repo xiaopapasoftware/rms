@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -59,6 +60,7 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractSourceEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentPayTypeEnum;
@@ -1676,16 +1678,17 @@ public class AppHouseController {
       map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
       if (null != rentContract.getRemindTime()) map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
       String status = "";
-      if ("0".equals(rentContract.getContractStatus()))
+      if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(rentContract.getContractStatus())) {
         status = "0";
-      else if ("1".equals(rentContract.getContractStatus()))
+      } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
         status = "4";
-      else if ("2".equals(rentContract.getContractStatus()) || "4".equals(rentContract.getContractStatus()))
+      } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(rentContract.getContractStatus())
+          || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(rentContract.getContractStatus())) {
         status = "1";
-      else if ("6".equals(rentContract.getContractStatus())) status = "2";
-      // 0:等待管家确认 1:在线签约成功等待支付 2:在线签约支付成功 3:管家取消在线签约 4:管家确认成功请您核实
-      // 5:用户取消在线签约
-      if ("3".equals(rentContract.getContractStatus())) {
+      } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
+        status = "2";
+      }
+      if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(rentContract.getContractStatus())) {
         status = "3";
       }
       map.put("status", status);
@@ -1703,7 +1706,7 @@ public class AppHouseController {
       if (null != rentContract.getWaterFee()) waterFee = rentContract.getWaterFee();
       map.put("water_fee", waterFee);
       // 房租押金差额
-      if (!"0".equals(rentContract.getSignType())) {
+      if (!ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
         if (!StringUtils.isBlank(rentContract.getContractBusiStatus())) {
           if (null != rentContract.getDepositAmount()) {
             map.put("re_deposit_amount", rentContract.getDepositAmount());
@@ -1823,11 +1826,11 @@ public class AppHouseController {
           AuditHis auditHis = new AuditHis();
           auditHis.setObjectId(tradeId);
           auditHis.setAuditMsg("手机在线支付");
-          auditHis.setAuditStatus("1");// 通过
+          auditHis.setAuditStatus(AuditStatusEnum.PASS.getValue());
           this.tradingAccountsService.audit(auditHis);
           // 充电费
           TradingAccounts tradingAccounts = this.tradingAccountsService.get(tradeId);
-          if ("11".equals(tradingAccounts.getTradeType())) {
+          if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
             RentContract rentContract = this.rentContractService.get(tradingAccounts.getTradeId());
             String meterNo = "";
             if (null != rentContract && "1".equals(rentContract.getRentMode())) {// 单间
@@ -1881,7 +1884,7 @@ public class AppHouseController {
         }
       }
       StringBuffer html = new StringBuffer();
-      if ("0".equals(rentContract.getSignType())) {// 新签
+      if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
         html.append("<div><p>");
         html.append("<h3><center>唐巢人才公寓租赁合同</center></h3>");
         html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
@@ -2036,7 +2039,7 @@ public class AppHouseController {
         }
       }
       StringBuffer html = new StringBuffer();
-      if ("0".equals(rentContract.getSignType())) {// 新签
+      if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
         html.append("<div><p>");
         html.append("<h3><center>唐巢人才公寓租赁合同</center></h3>");
         html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
@@ -2239,30 +2242,30 @@ public class AppHouseController {
         String chargeValue = String.format("%.0f", Double.valueOf(request.getParameter("fee")));
         // 记录款项
         PaymentTrans paymentTrans = new PaymentTrans();
-        paymentTrans.setTradeType("11");// 电费充值
+        paymentTrans.setTradeType(TradeTypeEnum.ELECTRICITY_CHARGE.getValue());
         paymentTrans.setTransId(request.getParameter("contract_id"));
-        paymentTrans.setTradeDirection("1");// 收款
+        paymentTrans.setTradeDirection(TradeDirectionEnum.IN.getValue());
         paymentTrans.setStartDate(new Date());
         paymentTrans.setExpiredDate(new Date());
         paymentTrans.setTradeAmount(Double.valueOf(chargeValue));
         paymentTrans.setLastAmount(0d);
         paymentTrans.setTransAmount(Double.valueOf(chargeValue));
-        paymentTrans.setTransStatus("2");// 完全到账登记
-        paymentTrans.setPaymentType("11");// 电费自用金额
+        paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+        paymentTrans.setPaymentType(PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue());
         paymentTrans.setCreateDate(new Date());
         paymentTrans.setUpdateDate(new Date());
-        paymentTrans.setDelFlag("0");
+        paymentTrans.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
         this.paymentTransService.save(paymentTrans);
         // 账务交易
         TradingAccounts tradingAccounts = new TradingAccounts();
         tradingAccounts.preInsert();
         tradingAccounts.setTradeId(rentContract.getId());
         tradingAccounts.setTransIds(paymentTrans.getId());
-        tradingAccounts.setTradeStatus("0");// 待审核
-        tradingAccounts.setTradeType("11");// 电费充值
+        tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
+        tradingAccounts.setTradeType(TradeTypeEnum.ELECTRICITY_CHARGE.getValue());
         tradingAccounts.setTradeAmount(Double.valueOf(chargeValue));
-        tradingAccounts.setTradeDirection("1");// 入账
-        tradingAccounts.setPayeeType("1");// 个人
+        tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
+        tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
         String token = (String) request.getHeader("token");
         AppToken apptoken = new AppToken();
         apptoken.setToken(token);
@@ -2347,12 +2350,10 @@ public class AppHouseController {
         tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
       }
       orderAmount += tmpPaymentTrans.getTradeAmount();
-      if (null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus())) {
+      if (null != tradingAccounts && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(tradingAccounts.getTradeStatus())) {
         data.setCode("400");
         break;
       }
-      // if(!"2".equals(tmpPaymentTrans.getTransStatus()))
-      // orderAmount += tmpPaymentTrans.getLastAmount();
     }
     if ("400".equals(data.getCode())) {
       // data.setCode("400");
@@ -2362,10 +2363,10 @@ public class AppHouseController {
     TradingAccounts tradingAccounts = new TradingAccounts();
     tradingAccounts.setTransIds(billIds);
     tradingAccounts.setTradeId(paymentTrans.getTransId());
-    tradingAccounts.setTradeStatus("0");// 待审核
-    tradingAccounts.setTradeType("3");// 新签合同
-    tradingAccounts.setTradeDirection("1");// 入账
-    tradingAccounts.setPayeeType("1");// 个人
+    tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
+    tradingAccounts.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
+    tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
+    tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
     tradingAccounts.setPayeeName(appUser.getName());
     tradingAccounts.setReceiptList(receiptList);
     tradingAccounts.setTradeAmount(orderAmount);
@@ -2456,28 +2457,30 @@ public class AppHouseController {
             mp.put("bill_id", bill_id);
             bill_amount = Double.valueOf(mp.get("bill_amount").toString()) + tmpPaymentTrans.getTradeAmount();
             mp.put("bill_amount", df.format(bill_amount));
-            if ("6".equals(tmpPaymentTrans.getPaymentType())) mp.put("rent_amount", Double.valueOf(mp.get("rent_amount").toString()) + tmpPaymentTrans.getTradeAmount());// 房租金额
-            if ("4".equals(tmpPaymentTrans.getPaymentType())) {
-              mp.put("deposit_amount", Double.valueOf(mp.get("deposit_amount").toString()) + tmpPaymentTrans.getTradeAmount());// 房租押金
+            if (PaymentTransTypeEnum.RENT_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+              mp.put("rent_amount", Double.valueOf(mp.get("rent_amount").toString()) + tmpPaymentTrans.getTradeAmount());
             }
-            if ("2".equals(tmpPaymentTrans.getPaymentType())) {
-              mp.put("deposit_water_amount", Double.valueOf(mp.get("deposit_water_amount").toString()) + tmpPaymentTrans.getTradeAmount());// 水电费押金
+            if (PaymentTransTypeEnum.RENT_DEPOSIT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+              mp.put("deposit_amount", Double.valueOf(mp.get("deposit_amount").toString()) + tmpPaymentTrans.getTradeAmount());
             }
-            if ("20".equals(tmpPaymentTrans.getPaymentType())) {
+            if (PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
+              mp.put("deposit_water_amount", Double.valueOf(mp.get("deposit_water_amount").toString()) + tmpPaymentTrans.getTradeAmount());
+            }
+            if (PaymentTransTypeEnum.NET_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
               double netAmount = tmpPaymentTrans.getTradeAmount();
               if (null != mp.get("net_amount")) netAmount += Double.valueOf(mp.get("net_amount").toString());
-              mp.put("net_amount", netAmount);// 宽带费
+              mp.put("net_amount", netAmount);
             }
-            if ("14".equals(tmpPaymentTrans.getPaymentType())) {
+            if (PaymentTransTypeEnum.WATER_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
               double water_amount = tmpPaymentTrans.getTradeAmount();
               if (null != mp.get("water_amount")) water_amount += Double.valueOf(mp.get("water_amount").toString());
-              mp.put("water_amount", water_amount);// 水费金额
+              mp.put("water_amount", water_amount);
             }
             mp.put("payment_type", tmpPaymentTrans.getPaymentType());
-            if ("18".equals(tmpPaymentTrans.getPaymentType())) {
+            if (PaymentTransTypeEnum.TV_AMOUNT.getValue().equals(tmpPaymentTrans.getPaymentType())) {
               double tv_amount = tmpPaymentTrans.getTradeAmount();
               if (null != mp.get("tv_amount")) tv_amount += Double.valueOf(mp.get("tv_amount").toString());
-              mp.put("tv_amount", tv_amount);// 有线电视费
+              mp.put("tv_amount", tv_amount);
             }
             String paymentTransId = tmpPaymentTrans.getId();
             PaymentTrade paymentTrade = new PaymentTrade();
@@ -2488,7 +2491,7 @@ public class AppHouseController {
               paymentTrade = paymentTradeList.get(0);
               tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
             }
-            if (null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus()))
+            if (null != tradingAccounts && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(tradingAccounts.getTradeStatus()))
               mp.put("bill_state", "1");
             else
               mp.put("bill_state", "0");
@@ -2579,7 +2582,9 @@ public class AppHouseController {
             paymentTrade = paymentTradeList.get(0);
             tradingAccounts = this.tradingAccountsService.get(paymentTrade.getTradeId());
           }
-          if (null != tradingAccounts && "1".equals(tradingAccounts.getTradeStatus())) bill_state = "1";
+          if (null != tradingAccounts && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(tradingAccounts.getTradeStatus())) {
+            bill_state = "1";
+          }
           mp.put("bill_state", bill_state);// 0:未付 1:已付
           mp.put("payment_type", tmpPaymentTrans.getPaymentType());
           list.add(mp);

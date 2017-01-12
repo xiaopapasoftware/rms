@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -31,6 +32,9 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
@@ -83,7 +87,7 @@ public class TradingAccountsController extends BaseController {
   public String viewReceiptAttachmentFiles(String id, Model model) {
     TradingAccounts entity = tradingAccountsService.get(id);
     model.addAttribute("tradingAccounts", entity);
-    if ("1".equals(entity.getTradeType())) {// 预约定金
+    if (TradeTypeEnum.DEPOSIT_AGREEMENT.getValue().equals(entity.getTradeType())) {
       return "modules/funds/viewReceiptAttachment";
     } else {
       return "modules/funds/viewRentAttachment";
@@ -109,7 +113,7 @@ public class TradingAccountsController extends BaseController {
     if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
       for (String transId : paymentTransIdArray) {
         PaymentTrans pt = paymentTransService.get(transId);
-        if (pt == null || (pt != null && pt.getDelFlag().equals("1"))) {
+        if (pt == null || (pt != null && pt.getDelFlag().equals(BaseEntity.DEL_FLAG_DELETE))) {
           check = false;
           break;
         }
@@ -122,10 +126,10 @@ public class TradingAccountsController extends BaseController {
       addMessage(redirectAttributes, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
-    if ("0".equals(type)) {// 承租合同直接处理，不跳转
-      tradingAccounts.setTradeStatus("1");// 审核通过
-      tradingAccounts.setTradeDirection("0");// 出账
-      tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+    if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(type)) {
+      tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
+      tradingAccounts.setTradeDirection(TradeDirectionEnum.OUT.getValue());
+      tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
       for (int i = 0; i < paymentTransIdArray.length; i++) {
         PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
         tradingAccounts.setId(null);
@@ -145,7 +149,7 @@ public class TradingAccountsController extends BaseController {
       Map<String, Receipt> paymentTypeMap = new HashMap<String, Receipt>();
       for (int i = 0; i < paymentTransIdArray.length; i++) {
         PaymentTrans paymentTrans = paymentTransService.get(paymentTransIdArray[i]);
-        if ("0".equals(paymentTrans.getTradeDirection())) {// 应出
+        if (TradeDirectionEnum.OUT.getValue().equals(paymentTrans.getTradeDirection())) {
           amount -= paymentTrans.getLastAmount();
         } else {// 应收
           amount += paymentTrans.getLastAmount();
@@ -153,11 +157,10 @@ public class TradingAccountsController extends BaseController {
         tradeType = paymentTrans.getTradeType();// 交易类型
         tradeObjectId = paymentTrans.getTransId();// 交易对象ID
         String paymentType = paymentTrans.getPaymentType();// 款项类型
-
-        // 包含有出款的交易类型:0=承租合同,2=定金转违约,6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
-        if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
-        } else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {} else {// 交易类型里的款项全是收款，不包含出款
-          if (!"0".equals(paymentTrans.getTradeDirection())) {// 应收款项
+        if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue()
+            .equals(tradeType)) {} else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
+                || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {} else {// 交易类型里的款项全是收款，不包含出款
+          if (TradeDirectionEnum.IN.getValue().equals(paymentTrans.getTradeDirection())) {
             Receipt receipt = new Receipt();
             if (paymentTypeMap.containsKey(paymentType)) {
               receipt = paymentTypeMap.get(paymentType);
@@ -169,8 +172,9 @@ public class TradingAccountsController extends BaseController {
         }
       }
       List<Receipt> receiptList = new ArrayList<Receipt>(); /* 收据 */
-      if ("0".equals(tradeType) || "2".equals(tradeType)) {// 0=承租合同,2=定金转违约不开收据
-      } else if ("6".equals(tradeType) || "7".equals(tradeType) || "8".equals(tradeType) || "9".equals(tradeType)) {// 6=提前退租,7=正常退租,8=逾期退租,9=特殊退租
+      if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue()
+          .equals(tradeType)) {} else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
+              || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
         if (amount > 0) {// 总到账金额大于0
           Receipt receipt = new Receipt();
           receipt.setReceiptAmount(new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -191,10 +195,10 @@ public class TradingAccountsController extends BaseController {
             tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
             String tenantType = tenants.get(0).getTenantType();// 租客类型
             if ("0".equals(tenantType)) {// 个人租客
-              tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+              tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
             }
             if ("1".equals(tenantType)) {// 企业租客
-              tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+              tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
             }
           }
         } else {
@@ -205,16 +209,16 @@ public class TradingAccountsController extends BaseController {
               tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
               String tenantType = tenants.get(0).getTenantType();// 租客类型
               if ("0".equals(tenantType)) {// 个人租客
-                tradingAccounts.setPayeeType("1");// 交易人类型为“个人”
+                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
               }
               if ("1".equals(tenantType)) {// 企业租客
-                tradingAccounts.setPayeeType("0");// 交易人类型为“单位”
+                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
               }
             }
           }
         }
       }
-      tradingAccounts.setTradeDirection(amount > 0 ? "1" : "0");
+      tradingAccounts.setTradeDirection(amount > 0 ? TradeDirectionEnum.IN.getValue() : TradeDirectionEnum.OUT.getValue());
       tradingAccounts.setTradeAmount(new BigDecimal(Math.abs(amount)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
       tradingAccounts.setTradeDirectionDesc(DictUtils.getDictLabel(tradingAccounts.getTradeDirection(), "trans_dirction", ""));
       tradingAccounts.setTradeType(tradeType);
@@ -274,7 +278,7 @@ public class TradingAccountsController extends BaseController {
         }
         Receipt tmpReceipt = new Receipt();
         tmpReceipt.setReceiptNo(receipt.getReceiptNo());
-        tmpReceipt.setDelFlag("0");
+        tmpReceipt.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
         List<Receipt> list = receiptService.findList(tmpReceipt);
         if ((null != list && list.size() > 0)) {
           for (Receipt tReceipt : list) {
@@ -310,7 +314,7 @@ public class TradingAccountsController extends BaseController {
       if (ArrayUtils.isNotEmpty(transIds)) {
         for (String transId : transIds) {
           PaymentTrans pt = paymentTransService.get(transId);
-          if (pt == null || (pt != null && pt.getDelFlag().equals("1"))) {
+          if (pt == null || (pt != null && pt.getDelFlag().equals(BaseEntity.DEL_FLAG_DELETE))) {
             check2 = false;
             break;
           }

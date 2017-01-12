@@ -88,7 +88,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     auditHisService.saveAuditHis(auditHis, AuditTypeEnum.DEPOSIT_AGREEMENT_CONTENT.getValue());
     String depositAgreemId = auditHis.getObjectId();
     DepositAgreement depositAgreement = super.get(depositAgreemId);
-    if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {// 审核通过
+    if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
       Audit audit = new Audit();
       audit.setObjectId(depositAgreemId);
       audit.setNextRole("");

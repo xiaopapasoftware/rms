@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.druid.util.StringUtils;
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -69,7 +70,7 @@ public class AppSelfController {
       page.setPageSize(p_s);
       page.setPageNo(p_n);
       Message message = new Message();
-      message.setDelFlag("0");
+      message.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       message.setReceiver(mobile);
       page = messageService.findPage(page, message);
       List<Message> msgs = page.getList();
@@ -180,7 +181,7 @@ public class AppSelfController {
       attachment.setCreateBy(UserUtils.getUser());
       attachment.setUpdateDate(new Date());
       attachment.setUpdateBy(UserUtils.getUser());
-      attachment.setDelFlag("0");
+      attachment.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       attachment.setBizId(appUser.getId());
       attachmentDao.insert(attachment);
       PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
@@ -231,7 +232,7 @@ public class AppSelfController {
       attachment.setCreateBy(UserUtils.getUser());
       attachment.setUpdateDate(new Date());
       attachment.setUpdateBy(UserUtils.getUser());
-      attachment.setDelFlag("0");
+      attachment.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       attachment.setBizId(appUser.getId());
       attachmentDao.insert(attachment);
       Attachment attachmentback = new Attachment();
@@ -246,7 +247,7 @@ public class AppSelfController {
       attachmentback.setCreateBy(UserUtils.getUser());
       attachmentback.setUpdateDate(new Date());
       attachmentback.setUpdateBy(UserUtils.getUser());
-      attachmentback.setDelFlag("0");
+      attachmentback.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       attachmentback.setBizId(appUser.getId());
       attachmentDao.insert(attachmentback);
       PropertiesLoader proper = new PropertiesLoader("jeesite.properties");

@@ -28,8 +28,8 @@ public class ElectricFee extends DataEntity<ElectricFee> {
   private Double chargeAmount; // 充值金额
   private String chargeStatus;// 充值状态
   private String settleStatus;// 结算状态
-  private String contractName;
-  private String chargeId;
+  private String contractName;// 专用来查询使用的合同名变量
+  private String chargeId;// 电表充值系统返回的充值编号
 
   public ElectricFee() {
     super();

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -39,13 +40,17 @@ import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FeeChargeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
+import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -91,6 +96,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   private AttachmentService attachmentService;
   @Autowired
   private LeaseContractService leaseContractService;
+  @Autowired
+  private ElectricFeeDao electricFeeDao;
 
   @Transactional(readOnly = false)
   public void audit(AuditHis auditHis) {
@@ -262,12 +269,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         contractTenantService.save(contractTenant);
       }
     }
-    agreementChange.setAgreementStatus("0");// 待审核
     agreementChange.setCreateDate(new Date());
     agreementChange.setCreateBy(UserUtils.getUser());
     agreementChange.setUpdateDate(new Date());
     agreementChange.setUpdateBy(UserUtils.getUser());
-    agreementChange.setDelFlag("0");
+    agreementChange.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
     agreementChange.setId(id);
     agreementChange.setAgreementStatus("0");// 待审核
     agreementChange.setRentContract(super.get(agreementChange.getContractId()));
@@ -434,41 +440,59 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       } else if (ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(contractSignType)) {
         tradeType = TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue();
       }
-      // 新签合同、正常人工续签合同时，才需要生成水电费押金或水电押金差额
-      if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
-        Double electricAmount = rentContract.getDepositElectricAmount();
-        if (electricAmount != null && electricAmount > 0) {
-          String paymentType = "";
-          if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType)) {
-            paymentType = PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue();
-          }
-          if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
-            paymentType = PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue();
-          }
-          paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), electricAmount, electricAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
-              startDate, expireDate);
+      Double electricAmount = rentContract.getDepositElectricAmount();
+      if (electricAmount != null && electricAmount > 0) {
+        String paymentType = "";
+        // 生成水电费押金
+        if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType)) {
+          paymentType = PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue();
         }
+        // 生成水电费押金差额
+        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
+          paymentType = PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue();
+        }
+        paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), electricAmount, electricAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
+            startDate, expireDate);
       }
-      // 新签合同、正常人工续签合同时，才需要生成房租押金/房租押金差额
-      if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
-        Double rentDepositAmt = rentContract.getDepositAmount();
-        if (rentDepositAmt != null && rentDepositAmt > 0) {
-          String paymentType = "";
-          if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType)) {
-            paymentType = PaymentTransTypeEnum.RENT_DEPOSIT.getValue();
-          }
-          if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
-            paymentType = PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue();
-          }
-          paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), rentDepositAmt, rentDepositAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
-              startDate, expireDate);
+      Double rentDepositAmt = rentContract.getDepositAmount();
+      if (rentDepositAmt != null && rentDepositAmt > 0) {
+        String paymentType = "";
+        // 生成房租押金
+        if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType)) {
+          paymentType = PaymentTransTypeEnum.RENT_DEPOSIT.getValue();
         }
+        // 生成房租押金差额
+        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
+          paymentType = PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue();
+        }
+        paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), rentDepositAmt, rentDepositAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
+            startDate, expireDate);
+      }
+      // 如果有电费充值金额，需要同时生成电费充值款项和电费充值记录
+      Double eleRechargeAmount = rentContract.getEleRechargeAmount();
+      if (eleRechargeAmount != null && eleRechargeAmount > 0) {
+        Date nowDate = new Date();
+        Date endDate = DateUtils.parseDate(DateUtils.lastDateOfCurrentMonth());
+        String paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), id, TradeDirectionEnum.IN.getValue(), eleRechargeAmount,
+            eleRechargeAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, endDate);
+        ElectricFee ef = new ElectricFee();
+        ef.preInsert();
+        ef.setChargeAmount(eleRechargeAmount);
+        ef.setChargeDate(new Date());
+        ef.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
+        ef.setStartDate(nowDate);
+        ef.setEndDate(endDate);
+        ef.setPaymentTransId(paymentTransId);
+        ef.setRentContractId(id);
+        ef.setSettleStatus(FeeSettlementStatusEnum.NOT_SETTLED.getValue());
+        electricFeeDao.insert(ef);
       }
       int monthCountDiff = DateUtils.getMonthSpace(startDate, expireDate);// 合同日期间隔月数
       if (monthCountDiff > 0) {
         Double rentalAmt = rentContract.getRental();// 房租
         if (rentalAmt != null && rentalAmt > 0) {
-          genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);// 生成合同期内所有的房租款项
+          // 生成房租款项
+          genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);
         }
         genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
       }
@@ -644,7 +668,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     paymentTrans.setTradeAmount(accounting.getFeeAmount());
     paymentTrans.setLastAmount(accounting.getFeeAmount());
     paymentTrans.setTransAmount(0D);
-    paymentTrans.setTransStatus("0");// 未到账登记
+    paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
     paymentTransService.save(paymentTrans);
   }
 
@@ -661,7 +685,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
     accounting.setFeeDirection(tradeDirection);
     accounting.setUser(UserUtils.getUser());
-    if (!"9".equals(tradeType)) {// 非特殊退租核算
+    if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
       accounting.setFeeDate(new Date());
     } else {
       if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {

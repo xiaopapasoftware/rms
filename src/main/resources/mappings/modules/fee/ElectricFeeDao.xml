@@ -148,9 +148,14 @@
 	</update>
 
 	<update id="delete">
-		UPDATE t_electric_fee SET
-		del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		UPDATE    t_electric_fee 
+		   SET    del_flag = #{DEL_FLAG_DELETE},
+		   		  update_by = #{updateBy.id},
+				  update_date = #{updateDate}
+		 WHERE    id = #{id}
+		          <if test="rentContractId != null and rentContractId != ''">
+		 	        AND rent_contract_id = #{rentContractId}
+		          </if>
 	</update>
 
 </mapper>

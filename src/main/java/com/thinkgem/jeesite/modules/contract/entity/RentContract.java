@@ -58,6 +58,7 @@ public class RentContract extends DataEntity<RentContract> {
   private Integer depositMonths; // 房租押金月数
   private Double depositAmount; // 房租押金金额/房租押金续补金额
   private Double depositElectricAmount; // 水电押金金额/水电押金续补金额
+  private Double eleRechargeAmount;// 电费充值金额
   private String hasVisa; // 是否需办理居住证及落户
   private Double meterValue; // 入住分电表系数
   private Double totalMeterValue; // 入住总电表系数
@@ -335,6 +336,14 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setDepositElectricAmount(Double depositElectricAmount) {
     this.depositElectricAmount = depositElectricAmount;
+  }
+
+  public Double getEleRechargeAmount() {
+    return eleRechargeAmount;
+  }
+
+  public void setEleRechargeAmount(Double eleRechargeAmount) {
+    this.eleRechargeAmount = eleRechargeAmount;
   }
 
   @Length(min = 0, max = 64, message = "是否需办理居住证及落户长度必须介于 0 和 64 之间")

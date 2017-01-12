@@ -20,6 +20,8 @@ import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
+import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
@@ -34,34 +36,36 @@ import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 @Service
 @Transactional(readOnly = true)
 public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTrans> {
-
+  @Autowired
+  private ElectricFeeDao electricFeeDao;
   @Autowired
   private TradingAccountsDao tradingAccountsDao;
-
   @Autowired
   private PaymentTradeDao paymentTradeDao;
-
   @Autowired
   private ReceiptService receiptService;
-
   @Autowired
   private AttachmentService attachmentService;
 
   @Transactional(readOnly = false)
-  public void generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus,
+  public String generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus,
       Date startDate, Date expiredDate) {
-    PaymentTrans paymentTrans = new PaymentTrans();
-    paymentTrans.setTradeType(tradeType);
-    paymentTrans.setPaymentType(paymentType);
-    paymentTrans.setTransId(transId);
-    paymentTrans.setTradeDirection(tradeDirection);
-    paymentTrans.setStartDate(startDate);
-    paymentTrans.setExpiredDate(expiredDate);
-    paymentTrans.setTradeAmount(tradeAmount);
-    paymentTrans.setLastAmount(lastAmount);
-    paymentTrans.setTransAmount(transAmount);
-    paymentTrans.setTransStatus(transStatus);
-    super.save(paymentTrans);
+    String id = "";
+    if (null != tradeAmount && tradeAmount > 0) {
+      PaymentTrans paymentTrans = new PaymentTrans();
+      paymentTrans.setTradeType(tradeType);
+      paymentTrans.setPaymentType(paymentType);
+      paymentTrans.setTransId(transId);
+      paymentTrans.setTradeDirection(tradeDirection);
+      paymentTrans.setStartDate(startDate);
+      paymentTrans.setExpiredDate(expiredDate);
+      paymentTrans.setTradeAmount(tradeAmount);
+      paymentTrans.setLastAmount(lastAmount);
+      paymentTrans.setTransAmount(transAmount);
+      paymentTrans.setTransStatus(transStatus);
+      id = super.saveAndReturnId(paymentTrans);
+    }
+    return id;
   }
 
   /**
@@ -74,7 +78,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     delPaymentTrans.setTransId(objectID);
     delPaymentTrans.preUpdate();
     dao.delete(delPaymentTrans);
-    // 删除款项账务的关联关系、收据
+    // 删除款项账务的关联关系、收据、附件
     TradingAccounts tradingAccounts = new TradingAccounts();
     tradingAccounts.setTradeId(objectID);
     tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
@@ -97,6 +101,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     // 删除账务交易记录
     tradingAccounts.preUpdate();
     tradingAccountsDao.delete(tradingAccounts);
+    // 如果合同有同步的电费充值金额，需要把同时生成的电费充值记录删除
+    ElectricFee ele = new ElectricFee();
+    ele.preUpdate();
+    ele.setRentContractId(objectID);
+    electricFeeDao.delete(ele);
   }
 
   /**

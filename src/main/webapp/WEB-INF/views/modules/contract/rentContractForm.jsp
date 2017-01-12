@@ -127,7 +127,6 @@
 						top.$.jBox.tip('请选择房间.','warning');
 						return;
 					}
-					 
 					var rental = $("#rental").val();
 					if(rental!=null && rental!=undefined && rental!=""){
 						var rentalNum = parseFloat(rental);
@@ -136,7 +135,6 @@
 							return;
 						}
 					}
-
 					var renMonths = $("#renMonths").val();
 					if(renMonths!=null && renMonths!=undefined && renMonths!=""){
 						var renMonthsNum = parseFloat(renMonths);
@@ -145,9 +143,15 @@
 							return;
 						}
 					}
+					if($("#rentMode").val()=="0") {//整租
+						if($("#eleRechargeAmount").val().length != 0){
+							top.$.jBox.tip('整租房源不能进行电费充值！','warning');
+							return;
+						}
+					}
 					loading('正在提交，请稍等...');
-					//$("#saveBtn").attr("disabled",true);
-					//$("#btnSubmit").attr("disabled",true);
+					$("#saveBtn").attr("disabled",true);
+					$("#btnSubmit").attr("disabled",true);
 					form.submit();
 				},
 				errorContainer: "#messageBox",
@@ -580,6 +584,12 @@
 			<div class="controls">
 				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">智能电表首充金额</label>
+			<div class="controls">
+				<form:input path="eleRechargeAmount" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
