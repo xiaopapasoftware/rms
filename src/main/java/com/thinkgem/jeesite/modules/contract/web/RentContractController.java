@@ -39,6 +39,7 @@ import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.AccountingTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
@@ -598,9 +599,9 @@ public class RentContractController extends BaseController {
     rentContract = rentContractService.get(contractId);
     rentContract.setIsSpecial("1");
     rentContract.setReturnDate(returnDate);
-    rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());// 特殊退租
-    List<Accounting> outAccountList = genOutAccountListBack(rentContract, "3", false);// 应出核算项列表
-    List<Accounting> inAccountList = genInAccountListBack(rentContract, "3", false, false);// 应收核算项列表
+    rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
+    List<Accounting> outAccountList = genOutAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false);// 应出核算项列表
+    List<Accounting> inAccountList = genInAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false, false);// 应收核算项列表
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
     model.addAttribute("accountList", inAccountList);
