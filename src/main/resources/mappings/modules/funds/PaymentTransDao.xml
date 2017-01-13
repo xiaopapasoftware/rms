@@ -41,11 +41,9 @@
 	</sql>
 
 	<sql id="paymentTransJoins">
-		left join t_deposit_agreement ta on a.trans_id=ta.id
-		left
-		join t_rent_contract tc on a.trans_id=tc.id
-		left join t_lease_contract
-		tl on a.trans_id=tl.id
+		left join t_deposit_agreement ta on a.trans_id=ta.id 
+		left join t_rent_contract tc on a.trans_id=tc.id
+		left join t_lease_contract tl on a.trans_id=tl.id
 	</sql>
 
 	<select id="get" resultType="PaymentTrans">

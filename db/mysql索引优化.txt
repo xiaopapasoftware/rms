@@ -1,0 +1,6 @@
+1、WHERE和JOIN中出现的列需要建立索引:
+
+2、SELECT * FROM [table] WHERE uid=1 ORDER x,y LIMIT 0,10; 建立索引(uid,x,y)实现order by的优化；
+
+3、SELECT [column1],[column2],…. FROM [TABLE] WHERE [columnX] = [value] ORDER BY [sort];
+   建立一个联合索引(columnX,sort)来实现order by 优化。

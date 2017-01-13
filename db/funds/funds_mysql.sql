@@ -39,6 +39,7 @@ create table T_PAYMENT_TRANS
    TRANS_AMOUNT         float comment '实际交易金额',
    LAST_AMOUNT          float comment '剩余交易金额',
    TRANS_STATUS         VARCHAR(64) COMMENT '交易款项状态',
+   TRANSFER_DEPOSIT_AMOUNT FLOAT COMMENT '已转定金金额',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -47,6 +48,12 @@ create table T_PAYMENT_TRANS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '款项交易';
+alter table t_payment_trans add index idx_complex_pt(del_flag,payment_type,start_date);
+alter table t_payment_trans add index idx_del_flag(del_flag);
+alter table t_payment_trans add index idx_trade_type(trade_type);
+alter table t_payment_trans add index idx_payment_type(payment_type);
+alter table t_payment_trans add index idx_trans_id(trans_id);
+alter table t_payment_trans add index idx_start_date(start_date);
 
 create table T_PAYMENT_TRADE
 (
@@ -97,5 +104,3 @@ create table T_INVOICE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '发票信息';
-
-ALTER TABLE T_PAYMENT_TRANS ADD transfer_deposit_amount FLOAT COMMENT '已转定金金额';
