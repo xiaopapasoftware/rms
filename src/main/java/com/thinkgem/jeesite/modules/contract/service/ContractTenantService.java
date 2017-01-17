@@ -106,35 +106,47 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
           }
         }
       }
-    } else {// 后台管理系统直接保存合同，承租人信息
-      ContractTenant delContractTenant = new ContractTenant();
-      delContractTenant.setLeaseContractId(rentContract.getId());
-      delContractTenant.preUpdate();
-      super.delete(delContractTenant);
-      List<Tenant> list = rentContract.getTenantList();
-      if (CollectionUtils.isNotEmpty(list)) {
-        for (Tenant tenant : list) {
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenant.getId());
-          contractTenant.setLeaseContractId(rentContract.getId());
-          super.save(contractTenant);
-        }
-      }
-      // 合同入住人关联信息
-      ContractTenant delContractTenant2 = new ContractTenant();
-      delContractTenant2.setContractId(rentContract.getId());
-      delContractTenant2.preUpdate();
-      super.delete(delContractTenant2);
-      List<Tenant> list2 = rentContract.getLiveList();
-      if (CollectionUtils.isNotEmpty(list2)) {
-        for (Tenant tenant : list2) {
-          ContractTenant contractTenant = new ContractTenant();
-          contractTenant.setTenantId(tenant.getId());
-          contractTenant.setContractId(rentContract.getId());
-          super.save(contractTenant);
-        }
+    } else {// 后台管理系统直接保存合同
+      updateTenantList(rentContract.getId(), rentContract.getTenantList());
+      updateLiveList(rentContract.getId(), rentContract.getLiveList());
+    }
+  }
+
+  /**
+   * 更新出租合同的承租人列表
+   */
+  @Transactional(readOnly = false)
+  public void updateTenantList(String rentContractId, List<Tenant> tenantList) {
+    ContractTenant delContractTenant = new ContractTenant();
+    delContractTenant.setLeaseContractId(rentContractId);
+    delContractTenant.preUpdate();
+    super.delete(delContractTenant);
+    if (CollectionUtils.isNotEmpty(tenantList)) {
+      for (Tenant tenant : tenantList) {
+        ContractTenant contractTenant = new ContractTenant();
+        contractTenant.setTenantId(tenant.getId());
+        contractTenant.setLeaseContractId(rentContractId);
+        super.save(contractTenant);
       }
     }
   }
 
+  /**
+   * 更新出租合同的入住人列表
+   */
+  @Transactional(readOnly = false)
+  public void updateLiveList(String rentContractId, List<Tenant> LiveList) {
+    ContractTenant delContractTenant = new ContractTenant();
+    delContractTenant.setContractId(rentContractId);
+    delContractTenant.preUpdate();
+    super.delete(delContractTenant);
+    if (CollectionUtils.isNotEmpty(LiveList)) {
+      for (Tenant tenant : LiveList) {
+        ContractTenant contractTenant = new ContractTenant();
+        contractTenant.setTenantId(tenant.getId());
+        contractTenant.setContractId(rentContractId);
+        super.save(contractTenant);
+      }
+    }
+  }
 }
