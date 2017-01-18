@@ -61,9 +61,11 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
     if (CollectionUtils.isNotEmpty(trans)) {
       PaymentTrans pt = trans.get(0);
       if (PaymentTransStatusEnum.NO_SIGN.getValue().equals(pt.getTransStatus())) {
-        pt.setTradeAmount(accounting.getFeeAmount());
-        pt.setLastAmount(accounting.getFeeAmount());
-        paymentTransService.save(pt);
+        if (accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
+          pt.setTradeAmount(accounting.getFeeAmount());
+          pt.setLastAmount(accounting.getFeeAmount());
+          paymentTransService.save(pt);
+        }
       }
     }
   }

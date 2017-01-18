@@ -130,7 +130,7 @@
 					var rental = $("#rental").val();
 					if(rental!=null && rental!=undefined && rental!=""){
 						var rentalNum = parseFloat(rental);
-						if(rentalNum <= 0){
+						if(rentalNum < 0){
 							top.$.jBox.tip('月租金金额不合法！','warning');
 							return;
 						}

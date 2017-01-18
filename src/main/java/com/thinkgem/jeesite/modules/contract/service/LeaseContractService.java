@@ -38,6 +38,7 @@ import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 
 /**
@@ -61,6 +62,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
   private LeaseContractDao leaseContractDao;
   @Autowired
   private PaymentTransDao paymentTransDao;
+  @Autowired
+  private PaymentTransService paymentTransService;
 
   private static final String LEASE_CONTRACT_ROLE = "lease_contract_role";// 承租合同审批
 
@@ -109,20 +112,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       paymentTransDao.delete(delPaymentTrans);
 
       // 1.押金款项
-      Double deposit = leaseContract.getDeposit();
-      PaymentTrans paymentTrans = new PaymentTrans();
-      paymentTrans.preInsert();
-      paymentTrans.setTradeType(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
-      paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
-      paymentTrans.setTransId(leaseContract.getId());
-      paymentTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
-      paymentTrans.setStartDate(leaseContract.getEffectiveDate());
-      paymentTrans.setExpiredDate(leaseContract.getExpiredDate());
-      paymentTrans.setTradeAmount(deposit);
-      paymentTrans.setTransAmount(0d);
-      paymentTrans.setLastAmount(deposit);
-      paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-      if (0 != deposit) paymentTransDao.insert(paymentTrans);
+      paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(), PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), leaseContract.getId(),
+          TradeDirectionEnum.OUT.getValue(), leaseContract.getDeposit(), leaseContract.getDeposit(), 0d, PaymentTransStatusEnum.NO_SIGN.getValue(), leaseContract.getEffectiveDate(),
+          leaseContract.getExpiredDate());
 
       // 2.房租款项
       LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
@@ -138,7 +130,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
         int month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(), tmpLeaseContractDtl.getEndDate());
         month = (month == 0 ? month++ : month);
         for (int i = 1; i <= month; i++) {
-          paymentTrans = new PaymentTrans();
+          PaymentTrans paymentTrans = new PaymentTrans();
           paymentTrans.setId(IdGen.uuid());
           paymentTrans.setTradeType(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
           paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
@@ -157,7 +149,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
           paymentTrans.setUpdateDate(new Date());
           paymentTrans.setUpdateBy(UserUtils.getUser());
           paymentTrans.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-          if (0 != tmpLeaseContractDtl.getDeposit()) {
+          if (tmpLeaseContractDtl.getDeposit() != null && tmpLeaseContractDtl.getDeposit() > 0) {
             listPaymentTrans.add(paymentTrans);
           }
         }
@@ -180,7 +172,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
         }
         Date endDate = DateUtils.dateAddMonth2(tmpPaymentTrans.getStartDate(), monthSpace);
         tmpPaymentTrans.setExpiredDate(endDate);
-        paymentTransDao.insert(tmpPaymentTrans);
+        if (tradeAmount > 0) {
+          paymentTransDao.insert(tmpPaymentTrans);
+        }
       }
       if (0 != listPaymentTrans.size() % monthSpace) {
         List<PaymentTrans> tmpList = listPaymentTrans.subList(listPaymentTrans.size() - listPaymentTrans.size() % monthSpace - 1, listPaymentTrans.size() - 1);
@@ -196,7 +190,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
         tmpPaymentTrans.setStartDate(DateUtils.dateAddDay(tmpPaymentTrans.getStartDate(), 1));
         Date endDate = DateUtils.dateAddMonth2(tmpPaymentTrans.getStartDate(), monthSpace);
         tmpPaymentTrans.setExpiredDate(endDate);
-        paymentTransDao.insert(tmpPaymentTrans);
+        if (tradeAmount > 0) {
+          paymentTransDao.insert(tmpPaymentTrans);
+        }
       }
     }
   }

@@ -490,8 +490,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       int monthCountDiff = DateUtils.getMonthSpace(startDate, expireDate);// 合同日期间隔月数
       if (monthCountDiff > 0) {
         Double rentalAmt = rentContract.getRental();// 房租
-        if (rentalAmt != null && rentalAmt > 0) {
-          // 生成房租款项
+        if (rentalAmt != null && rentalAmt > 0) { // 生成房租款项
           genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);
         }
         genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
@@ -602,7 +601,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
         paymentTrans.setTransferDepositAmount(0d);
       }
-      paymentTransService.save(paymentTrans);
+      if (rentalAmt != null && rentalAmt > 0) {
+        paymentTransService.save(paymentTrans);
+      }
       startD = DateUtils.dateAddMonth(startD, 1);
     }
   }
@@ -656,20 +657,21 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.getByHouseId(rentContract);
   }
 
-  /* 保存款项 */
   private void savePaymentTrans(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
-    PaymentTrans paymentTrans = new PaymentTrans();
-    paymentTrans.setTradeType(tradeType);
-    paymentTrans.setPaymentType(accounting.getFeeType());
-    paymentTrans.setTransId(rentContract.getId());
-    paymentTrans.setTradeDirection(tradeDirection);
-    paymentTrans.setStartDate(rentContract.getStartDate());
-    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-    paymentTrans.setTradeAmount(accounting.getFeeAmount());
-    paymentTrans.setLastAmount(accounting.getFeeAmount());
-    paymentTrans.setTransAmount(0D);
-    paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-    paymentTransService.save(paymentTrans);
+    if (accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
+      PaymentTrans paymentTrans = new PaymentTrans();
+      paymentTrans.setTradeType(tradeType);
+      paymentTrans.setPaymentType(accounting.getFeeType());
+      paymentTrans.setTransId(rentContract.getId());
+      paymentTrans.setTradeDirection(tradeDirection);
+      paymentTrans.setStartDate(rentContract.getStartDate());
+      paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+      paymentTrans.setTradeAmount(accounting.getFeeAmount());
+      paymentTrans.setLastAmount(accounting.getFeeAmount());
+      paymentTrans.setTransAmount(0D);
+      paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+      paymentTransService.save(paymentTrans);
+    }
   }
 
   private void saveAccounting(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {

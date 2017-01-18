@@ -21,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -2241,26 +2240,14 @@ public class AppHouseController {
       if (StringUtils.isNoneBlank(meterNo)) {
         String chargeValue = String.format("%.0f", Double.valueOf(request.getParameter("fee")));
         // 记录款项
-        PaymentTrans paymentTrans = new PaymentTrans();
-        paymentTrans.setTradeType(TradeTypeEnum.ELECTRICITY_CHARGE.getValue());
-        paymentTrans.setTransId(request.getParameter("contract_id"));
-        paymentTrans.setTradeDirection(TradeDirectionEnum.IN.getValue());
-        paymentTrans.setStartDate(new Date());
-        paymentTrans.setExpiredDate(new Date());
-        paymentTrans.setTradeAmount(Double.valueOf(chargeValue));
-        paymentTrans.setLastAmount(0d);
-        paymentTrans.setTransAmount(Double.valueOf(chargeValue));
-        paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-        paymentTrans.setPaymentType(PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue());
-        paymentTrans.setCreateDate(new Date());
-        paymentTrans.setUpdateDate(new Date());
-        paymentTrans.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-        this.paymentTransService.save(paymentTrans);
+        String paymentTransId =
+            paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.ELECTRICITY_CHARGE.getValue(), PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), request.getParameter("contract_id"),
+                TradeDirectionEnum.IN.getValue(), Double.valueOf(chargeValue), 0d, Double.valueOf(chargeValue), PaymentTransStatusEnum.WHOLE_SIGN.getValue(), new Date(), new Date());
         // 账务交易
         TradingAccounts tradingAccounts = new TradingAccounts();
         tradingAccounts.preInsert();
         tradingAccounts.setTradeId(rentContract.getId());
-        tradingAccounts.setTransIds(paymentTrans.getId());
+        tradingAccounts.setTransIds(paymentTransId);
         tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
         tradingAccounts.setTradeType(TradeTypeEnum.ELECTRICITY_CHARGE.getValue());
         tradingAccounts.setTradeAmount(Double.valueOf(chargeValue));
