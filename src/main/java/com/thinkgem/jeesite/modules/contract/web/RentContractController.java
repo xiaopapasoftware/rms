@@ -455,7 +455,7 @@ public class RentContractController extends BaseController {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model, request);
     }
-    if (rentContract.getIsNewRecord()) {// 设置出租合同编号
+    if (rentContract.getIsNewRecord()) {
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     }
