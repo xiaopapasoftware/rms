@@ -561,7 +561,7 @@
 			<label class="control-label">月租金：</label>
 			<div class="controls">
 				<form:input path="rental" htmlEscape="false" class="input-xlarge required number"/>
-				<span class="help-inline"><font color="red">*</font> </span>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -698,25 +698,27 @@
 		<div class="control-group">
 			<label class="control-label">是否开通有线电视：</label>
 			<div class="controls">
-				<form:select path="hasTv" class="input-xlarge ">
+				<form:select path="hasTv" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">有线电视每月费用：</label>
 			<div class="controls">
-				<form:input path="tvFee" htmlEscape="false" class="input-xlarge  number"/>
+				<form:input path="tvFee" htmlEscape="false" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">是否开通宽带：</label>
 			<div class="controls">
-				<form:select path="hasNet" class="input-xlarge ">
+				<form:select path="hasNet" class="input-xlarge required">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">
