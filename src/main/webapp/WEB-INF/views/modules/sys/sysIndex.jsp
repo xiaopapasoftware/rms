@@ -91,11 +91,12 @@
 								return false;
 							}
 							// <c:if test="${tabmode eq '1'}"> 打开显示页签
-							return addTab($(this)); // </c:if>
+							return addTab($(this));
+							// </c:if>
 						});
 						// 默认选中第一个菜单
-						$(menuId + " .accordion-body a:first i").click();
-						$(menuId + " .accordion-body li:first li:first a:first i").click();
+						//$(menuId + " .accordion-body a:first i").click();
+						//$(menuId + " .accordion-body li:first li:first a:first i").click();
 					});
 				}
 				// 大小宽度调整
