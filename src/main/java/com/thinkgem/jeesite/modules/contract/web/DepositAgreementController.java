@@ -40,6 +40,7 @@ import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
@@ -66,6 +67,8 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 @Controller
 @RequestMapping(value = "${adminPath}/contract/depositAgreement")
 public class DepositAgreementController extends BaseController {
+  @Autowired
+  private ContractTenantService contractTenantService;
   @Autowired
   private RentContractService rentContractService;
   @Autowired
@@ -103,6 +106,27 @@ public class DepositAgreementController extends BaseController {
   @RequestMapping(value = {"list", ""})
   public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<DepositAgreement> page = depositAgreementService.findPage(new Page<DepositAgreement>(request, response), depositAgreement);
+    // 单独设置该定金协议下的承租人姓名和手机号列表
+    if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
+      for (DepositAgreement da : page.getList()) {
+        List<Tenant> ts = contractTenantService.getDepositAgreementTenantList(da.getId());
+        if (CollectionUtils.isNotEmpty(ts)) {
+          String name = "";
+          String cellphone = "";
+          for (Tenant tt : ts) {
+            if (StringUtils.isEmpty(name)) {
+              name = name + tt.getTenantName();
+              cellphone = cellphone + tt.getCellPhone();
+            } else {
+              name = name + "," + tt.getTenantName();
+              cellphone = cellphone + "," + tt.getCellPhone();
+            }
+          }
+          da.setTenantName(name);
+          da.setCellPhone(cellphone);
+        }
+      }
+    }
     model.addAttribute("page", page);
 
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
@@ -134,7 +158,6 @@ public class DepositAgreementController extends BaseController {
       List<Room> roomList = roomServie.findList(room);
       model.addAttribute("roomList", roomList);
     }
-
     return "modules/contract/depositAgreementList";
   }
 

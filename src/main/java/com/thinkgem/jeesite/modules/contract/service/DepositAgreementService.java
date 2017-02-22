@@ -45,7 +45,6 @@ import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 /**
  * 定金协议Service
  * 
- * @author huangsc
  * @author wangshujin
  */
 @Service
@@ -69,6 +68,13 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
   private AttachmentService attachmentService;
   @Autowired
   private LeaseContractService leaseContractService;
+
+  /**
+   * 根据定金协议设置其对应的承租人姓名和手机号列表
+   */
+  public void setDepositNameAndPhoneList(DepositAgreement depositAgreement) {
+    
+  }
 
   public List<Tenant> findTenant(DepositAgreement depositAgreement) {
     List<Tenant> tenantList = new ArrayList<Tenant>();
