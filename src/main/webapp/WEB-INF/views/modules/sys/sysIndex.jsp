@@ -51,10 +51,10 @@
 						$(menuId + " .accordion-heading:first a").click();
 					}
 					if (!$(menuId + " .accordion-body li:first ul:first").is(":visible")){
-						$(menuId + " .accordion-body a:first i").click();
+						//$(menuId + " .accordion-body a:first i").click();
 					}
 					// 初始化点击第一个三级菜单
-					$(menuId + " .accordion-body li:first li:first a:first i").click();
+					//$(menuId + " .accordion-body li:first li:first a:first i").click();
 				}else{
 					// 获取二级菜单数据
 					$.get($(this).attr("data-href"), function(data){
