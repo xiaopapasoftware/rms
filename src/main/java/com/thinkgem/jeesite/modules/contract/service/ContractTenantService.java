@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -27,6 +28,25 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
 
   @Autowired
   private TenantService tenantService;
+
+  /**
+   * 根据定金协议查询其下租客列表
+   */
+  public List<Tenant> getDepositAgreementTenantList(String depositAgreementId) {
+    List<Tenant> tenants = new ArrayList<Tenant>();
+    ContractTenant contractTenant = new ContractTenant();
+    contractTenant.setDepositAgreementId(depositAgreementId);
+    List<ContractTenant> cts = super.findList(contractTenant);
+    if (CollectionUtils.isNotEmpty(cts)) {
+      for (ContractTenant ct : cts) {
+        Tenant t = tenantService.get(ct.getTenantId());
+        if (t != null) {
+          tenants.add(t);
+        }
+      }
+    }
+    return tenants;
+  }
 
   /**
    * 保存或修改定金协议（包括前端APP的定金）
