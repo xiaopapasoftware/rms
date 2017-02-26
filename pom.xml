@@ -41,6 +41,7 @@
 		<guava.version>17.0</guava.version>
 		<dozer.version>5.5.1</dozer.version>
 		<poi.version>3.9</poi.version>
+		<jxl.version>2.6.12</jxl.version>
 		<freemarker.version>2.3.20</freemarker.version>
 
 		<!-- jdbc driver setting -->
@@ -454,6 +455,22 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
 			<version>${poi.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sourceforge.jexcelapi</groupId>
+			<artifactId>jxl</artifactId>
+			<version>${jxl.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- image util -->

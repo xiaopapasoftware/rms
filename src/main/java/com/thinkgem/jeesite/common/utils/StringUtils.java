@@ -405,4 +405,19 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 			return uuid;
 		}
 	}
+
+
+	/**
+	 * 小写首字母<br>
+	 * 例如：str = Name, return name
+	 *
+	 * @param str 字符串
+	 * @return 字符串
+	 */
+	public static String lowerFirst(String str) {
+		if(org.apache.commons.lang3.StringUtils.isBlank(str)){
+			return str;
+		}
+		return Character.toLowerCase(str.charAt(0)) + str.substring(1);
+	}
 }
