@@ -1,16 +1,10 @@
 package com.thinkgem.jeesite.modules.report.service;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.report.dao.ContractReportDao;
-import com.thinkgem.jeesite.modules.report.dao.HouseReportDao;
-import com.thinkgem.jeesite.modules.report.dao.HouseRoomReportDao;
-import com.thinkgem.jeesite.modules.report.entity.HouseReport;
-import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
-import com.thinkgem.jeesite.modules.report.entity.ReportEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author wangshujin
@@ -18,12 +12,11 @@ import java.util.Map;
 @Service
 public class ContractReportService {
 
-  @Autowired
-  private ContractReportDao contractReportDao;
+    @Autowired
+    private ContractReportDao contractReportDao;
 
 
-  public Page<Map> queryContractReport(Page<Map> page) {
-    page.setList(contractReportDao.queryContractReport());
-    return page;
-  }
+    public List queryContractReport() {
+        return contractReportDao.queryContractReport();
+    }
 }

@@ -15,6 +15,7 @@
 		<constructor-arg>
 			<value>
 				/static/** = anon
+				${adminPath}/page/** = anon
 				/userfiles/** = anon
 				${adminPath}/cas = cas
 				${adminPath}/login = authc

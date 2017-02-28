@@ -385,7 +385,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	 * 
 	 * @param length
 	 *            指定流水号长度
-	 * @param toNumber
 	 *            指定流水号是否全由数字组成
 	 */
 	public static String getSysJournalNo(int length, boolean isNumber) {
@@ -419,5 +418,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 			return str;
 		}
 		return Character.toLowerCase(str.charAt(0)) + str.substring(1);
+	}
+
+	public static int isNull(String data,int num){
+		if(isBlank(data))
+			return  num;
+		return Integer.valueOf(data);
 	}
 }

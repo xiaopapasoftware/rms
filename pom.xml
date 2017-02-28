@@ -588,6 +588,12 @@
 			<artifactId>quartz</artifactId>
 			<version>1.8.5</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper</artifactId>
+			<version>3.7.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>
