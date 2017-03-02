@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,31 +57,21 @@ public class HouseService extends CrudService<HouseDao, House> {
   @Transactional(readOnly = false)
   public void saveHouse(House house) {
     String id = saveAndReturnId(house);
-    if (house.getIsNewRecord()) {// 新增
-      if (StringUtils.isNotEmpty(house.getAttachmentPath())) {
-        Attachment attachment = new Attachment();
-        attachment.setHouseId(id);
-        attachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
-        attachment.setAttachmentPath(house.getAttachmentPath());
-        attachmentService.save(attachment);
-      }
-    } else {// 修改
-      Attachment attachment = new Attachment();
-      attachment.setHouseId(house.getId());
-      List<Attachment> attachmentList = attachmentService.findList(attachment);
-      if (CollectionUtils.isNotEmpty(attachmentList)) {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
-        Attachment atta = new Attachment();
-        atta.setHouseId(id);
-        atta.setAttachmentPath(house.getAttachmentPath());
-        atta.preUpdate();
-        attachmentService.updateAttachmentPathByType(atta);
-      } else {// 新增附件
-        Attachment toAddattachment = new Attachment();
-        toAddattachment.setHouseId(id);
-        toAddattachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
-        toAddattachment.setAttachmentPath(house.getAttachmentPath());
-        attachmentService.save(toAddattachment);
-      }
+    Attachment attachment = new Attachment();
+    attachment.setHouseId(house.getId());
+    List<Attachment> attachmentList = attachmentService.findList(attachment);
+    if (CollectionUtils.isNotEmpty(attachmentList)) {// 更新时候，不管AttachmentPath有值无值，都要更新，防止空值不更新的情况。
+      Attachment atta = new Attachment();
+      atta.setHouseId(id);
+      atta.setAttachmentPath(house.getAttachmentPath());
+      atta.preUpdate();
+      attachmentService.updateAttachmentPathByType(atta);
+    } else {// 新增附件
+      Attachment toAddattachment = new Attachment();
+      toAddattachment.setHouseId(id);
+      toAddattachment.setAttachmentType(FileType.HOUSE_MAP.getValue());
+      toAddattachment.setAttachmentPath(house.getAttachmentPath());
+      attachmentService.save(toAddattachment);
     }
     // 房屋业主关系信息
     HouseOwner houseOwner = new HouseOwner();
@@ -90,11 +79,13 @@ public class HouseService extends CrudService<HouseDao, House> {
     houseOwner.preUpdate();
     houseOwnerService.delete(houseOwner);
     List<Owner> ownerList = house.getOwnerList();
-    for (Owner owner : ownerList) {
-      houseOwner = new HouseOwner();
-      houseOwner.setOwnerId(owner.getId());
-      houseOwner.setHouseId(house.getId());
-      houseOwnerService.save(houseOwner);
+    if (CollectionUtils.isNotEmpty(ownerList)) {
+      for (Owner owner : ownerList) {
+        houseOwner = new HouseOwner();
+        houseOwner.setOwnerId(owner.getId());
+        houseOwner.setHouseId(house.getId());
+        houseOwnerService.save(houseOwner);
+      }
     }
   }
 

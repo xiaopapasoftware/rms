@@ -12,7 +12,6 @@
 		        }
 		    });
 			
-			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -127,12 +126,11 @@
 		<div class="control-group">
 			<label class="control-label">业主：</label>
 			<div class="controls">
-				<form:select path="ownerList" class="input-xlarge required" multiple="true">
+				<form:select path="ownerList" class="input-xlarge" multiple="true">
 					<c:forEach items="${ownerList}" var="item">
 						<form:option value="${item.id}">${item.cellPhone}-${item.name}</form:option>
 					</c:forEach>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">

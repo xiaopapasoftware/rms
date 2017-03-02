@@ -272,6 +272,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
                   electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
                   electricFee.preUpdate();
                   electricFeeDao.update(electricFee);
+                  // TODO 把相应的款项及账务交易等数据都更新为未到账和审核失败。
                 }
               }
             } else {// 审核不通过
@@ -279,6 +280,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
               electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
               electricFee.preUpdate();
               electricFeeDao.update(electricFee);
+              // TODO 把相应的款项及账务交易等数据都更新为未到账和审核失败。
             }
           }
         }
