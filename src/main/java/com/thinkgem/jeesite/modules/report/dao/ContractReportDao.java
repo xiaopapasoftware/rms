@@ -1,7 +1,7 @@
 package com.thinkgem.jeesite.modules.report.dao;
 
+import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.report.entity.ReportEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -12,5 +12,5 @@ import java.util.Map;
 @MyBatisDao
 public interface ContractReportDao {
 
-    List<Map> queryContractReport();
+    List<Map> queryContractReport(Criterion criterion);
 }

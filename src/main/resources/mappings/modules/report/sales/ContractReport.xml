@@ -2,21 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.ContractReportDao">
 
-	<select id="queryContractReport" resultType="java.util.Map">
-		SELECT
-		trc.CONTRACT_CODE,trc.CONTRACT_NAME,tb.BUILDING_NAME,th.HOUSE_NO,tr.ROOM_NO,
-		trc.SIGN_DATE,trc.START_DATE,trc.EXPIRED_DATE,trc.DEPOSIT_AMOUNT,trc.RENTAL,
-		trc.DEPOSIT_ELECTRIC_AMOUNT,trc.ELE_RECHARGE_AMOUNT,
-		ttl.CELL_PHONE CELL_PHONE_LEAD,ttl.TENANT_NAME,
-		tt.CELL_PHONE,tt.TENANT_NAME,tt.ID_NO,su.name server_name
-		FROM t_rent_contract trc
-		left join t_contract_tenant tct on trc.ID = tct.CONTRACT_ID /** 入住人 **/
-		left join t_contract_tenant tctl on trc.ID = tctl.LEASE_CONTRACT_ID /**  承租人 **/
-		left join t_building tb on trc.BUILDING_ID = tb.ID
-		left join t_house th on trc.HOUSE_ID = th.ID
-		left join t_room tr on trc.ROOM_ID = tr.ID
-		left join t_tenant tt on tct.TENANT_ID = tt.ID
-		left join t_tenant ttl on tctl.TENANT_ID = ttl.ID
-		left join sys_user su on th.service_user = su.id
-	</select>
+    <select id="queryContractReport" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
+        SELECT
+        trc.CONTRACT_CODE,trc.CONTRACT_NAME,tb.BUILDING_NAME,th.HOUSE_NO,tr.ROOM_NO,trc.CHARGE_TYPE,
+        trc.SIGN_DATE,trc.START_DATE,trc.EXPIRED_DATE,trc.DEPOSIT_AMOUNT,trc.RENTAL,trc.REN_MONTHS,trc.DEPOSIT_MONTHS,
+        trc.DEPOSIT_ELECTRIC_AMOUNT,trc.ELE_RECHARGE_AMOUNT,trc.CONTRACT_STATUS,trc.CONTRACT_BUSI_STATUS,
+        ttl.CELL_PHONE AS CELL_PHONE_LEAD,ttl.TENANT_NAME AS TENANT_NAME_LEAD,
+        tt.CELL_PHONE,tt.TENANT_NAME,tt.ID_NO,su.name server_name
+        FROM t_rent_contract trc
+        left join t_contract_tenant tct on trc.ID = tct.CONTRACT_ID /** 入住人 **/
+        left join t_contract_tenant tctl on trc.ID = tctl.LEASE_CONTRACT_ID /** 承租人 **/
+        left join t_building tb on trc.BUILDING_ID = tb.ID
+        left join t_house th on trc.HOUSE_ID = th.ID
+        left join t_room tr on trc.ROOM_ID = tr.ID
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        left join t_tenant ttl on tctl.TENANT_ID = ttl.ID
+        left join sys_user su on th.service_user = su.id
+
+        WHERE 1=1
+
+        ${whereSqlString}
+
+        <if test="orderBy != null">
+            ${orderBySqlString}
+        </if>
+
+    </select>
 </mapper>
