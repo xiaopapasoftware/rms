@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.filter.search.builder.PropertyFilterBuilder;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
 import com.thinkgem.jeesite.common.support.MessageSupport;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,14 @@ public class ReportComponentController {
         List<Sort> sorts = SortBuilder.create().addAsc("sort").end();
 
         List<Dict> dicts = reportComponentSrervice.queryDict(propertyFilterBuilder.end(), sorts);
+        return MessageSupport.successDataMsg(dicts, "查询成功");
+    }
+
+    @RequestMapping("project")
+    @ResponseBody
+    public Object queryProject(HttpServletRequest request) {
+        List<Sort> sorts = SortBuilder.create().addAsc("project_name").end();
+        List<PropertyProject> dicts = reportComponentSrervice.queryProject(null, sorts);
         return MessageSupport.successDataMsg(dicts, "查询成功");
     }
 }

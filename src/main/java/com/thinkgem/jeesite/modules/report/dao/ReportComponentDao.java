@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.report.dao;
 
 import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
 import java.util.List;
@@ -16,4 +17,7 @@ import java.util.List;
 public interface ReportComponentDao {
 
     List<Dict> queryDict(Criterion criterion);
+
+    List<PropertyProject> queryProject(Criterion criterion);
+
 }

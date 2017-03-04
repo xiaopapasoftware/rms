@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by wangganggang on 17/2/26.
  */
 @MyBatisDao
-public interface ContractReportDao {
+public interface RentDueUrgeReportDao {
 
-    List<Map> queryContract(Criterion criterion);
+    List<Map> queryRentDueUrge(Criterion criterion);
 }

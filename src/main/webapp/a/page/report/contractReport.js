@@ -21,7 +21,8 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
     var ContractReportCommon = {
         baseUrl: "/rms/a/report/",
         pageNo: 1,
-        pageSize: 15
+        pageSize: 15,
+        exportNum : 1000
     };
 
     var ContractReportMVC = {
@@ -85,11 +86,16 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             export: function () {
                 layer.prompt({
                     formType: 3,
-                    value: ContractReportCommon.pageSize,
+                    value: ContractReportCommon.exportNum,
                     title: '导出条数',
                     area: ['100px', '30px'] //自定义文本域宽高
                 }, function(value, index, elem){
                     if(isNaN(value)) return;
+                    if(value > ContractReportCommon.exportNum){
+                        layer.alert("导出条数不能大于:" + ContractReportCommon.exportNum);
+                        return;
+                    }
+
                     var url = ContractReportMVC.URLs.export.url + "?pageSize=" + value;
                     $("#queryFrom").attr("action", url).attr("method", ContractReportMVC.URLs.export.method).submit();
                     layer.close(index);

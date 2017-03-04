@@ -3,9 +3,20 @@
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportComponentDao">
 
     <select id="queryDict" resultType="Dict" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        select
-        *
-        from sys_dict
+        select * from sys_dict
+
+        where del_flag = 0
+
+        ${whereSqlString}
+
+        <if test="orderBy != null">
+            ${orderBySqlString}
+        </if>
+
+    </select>
+
+    <select id="queryProject" resultType="PropertyProject" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
+        select * from t_property_project
 
         where del_flag = 0
 
