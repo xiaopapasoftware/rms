@@ -41,7 +41,7 @@ public class ContractReportController extends BaseController {
     @RequestMapping("query")
     @ResponseBody
     public Object queryContract(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContractReport(getFilterParams(request), sorts);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
@@ -50,7 +50,7 @@ public class ContractReportController extends BaseController {
 
     @RequestMapping("export")
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContractReport(getFilterParams(request), sorts);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
@@ -72,42 +72,72 @@ public class ContractReportController extends BaseController {
         }
     }
 
+
     /** 添加查询判断的条件 **/
     private List<PropertyFilter> getFilterParams(HttpServletRequest request) {
         /** 模糊条件查询 **/
         PropertyFilterBuilder propertyFilterBuilder = PropertyFilterBuilder.create().matchTye(MatchType.LIKE).propertyType(PropertyType.S)
-                .add("th.house_no", StringUtils.trimToEmpty(request.getParameter("houseNo")))
-                .add("tb.building_name", StringUtils.trimToEmpty(request.getParameter("buildingName")))
-                .add("tr.room_no", StringUtils.trimToEmpty(request.getParameter("roomNo")));
+                .add("trc.contract_code", StringUtils.trimToEmpty(request.getParameter("contractCode")));
+
+        /** 楼宇号 **/
+        String buildingName = request.getParameter("buildingName");
+        if (StringUtils.isNotBlank(buildingName)) {
+            propertyFilterBuilder.add("tb.building_name", StringUtils.trimToEmpty(buildingName));
+        }
+
+        /** 房号 **/
+        String houseNo = request.getParameter("houseNo");
+        if (StringUtils.isNotBlank(houseNo)) {
+            propertyFilterBuilder.add("th.house_no", StringUtils.trimToEmpty(houseNo));
+        }
+
+        /** 室号 **/
+        String roomNo = request.getParameter("roomNo");
+        if (StringUtils.isNotBlank(roomNo)) {
+            propertyFilterBuilder.add("tr.room_no", StringUtils.trimToEmpty(roomNo));
+        }
+
+        /** 合同业务状态 **/
+        String dictValue = request.getParameter("dictValue");
+        if (StringUtils.isNotBlank(dictValue)) {
+            propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
+                    .add("sd.value", StringUtils.trimToEmpty(dictValue));
+        }
 
         /** 签订日期范围 **/
-        if (StringUtils.isNotBlank(request.getParameter("signDateStart"))) {
+        String signDateStart = request.getParameter("signDateStart");
+        if (StringUtils.isNotBlank(signDateStart)) {
             propertyFilterBuilder.matchTye(MatchType.GE).propertyType(PropertyType.D)
-                    .add("trc.sign_date", StringUtils.trimToEmpty(request.getParameter("signDateStart")));
+                    .add("trc.sign_date", StringUtils.trimToEmpty(signDateStart));
         }
-        if (StringUtils.isNotBlank(request.getParameter("signDateEnd"))) {
+        String signDateEnd = request.getParameter("signDateEnd");
+        if (StringUtils.isNotBlank(signDateEnd)) {
             propertyFilterBuilder.matchTye(MatchType.LE).propertyType(PropertyType.D)
-                    .add("trc.sign_date", StringUtils.trimToEmpty(request.getParameter("signDateEnd")));
+                    .add("trc.sign_date", StringUtils.trimToEmpty(signDateEnd));
         }
 
         /** 合同开始日期范围 **/
-        if (StringUtils.isNotBlank(request.getParameter("startDateBegin"))) {
+        String startDateBegin = request.getParameter("startDateBegin");
+        if (StringUtils.isNotBlank(startDateBegin)) {
             propertyFilterBuilder.matchTye(MatchType.GE).propertyType(PropertyType.D)
-                    .add("trc.start_date", StringUtils.trimToEmpty(request.getParameter("startDateBegin")));
+                    .add("trc.start_date", StringUtils.trimToEmpty(startDateBegin));
         }
-        if (StringUtils.isNotBlank(request.getParameter("startDateEnd"))) {
+        String startDateEnd = request.getParameter("startDateEnd");
+        if (StringUtils.isNotBlank(startDateEnd)) {
             propertyFilterBuilder.matchTye(MatchType.LE).propertyType(PropertyType.D)
-                    .add("trc.start_date", StringUtils.trimToEmpty(request.getParameter("startDateEnd")));
+                    .add("trc.start_date", StringUtils.trimToEmpty(startDateEnd));
         }
 
         /** 合同结束日期范围 **/
-        if (StringUtils.isNotBlank(request.getParameter("expiredDateBegin"))) {
+        String expiredDateBegin = request.getParameter("expiredDateBegin");
+        if (StringUtils.isNotBlank(expiredDateBegin)) {
             propertyFilterBuilder.matchTye(MatchType.GE).propertyType(PropertyType.D)
-                    .add("trc.expired_date", StringUtils.trimToEmpty(request.getParameter("expiredDateBegin")));
+                    .add("trc.expired_date", StringUtils.trimToEmpty(expiredDateBegin));
         }
-        if (StringUtils.isNotBlank(request.getParameter("expiredDateEnd"))) {
+        String expiredDateEnd = request.getParameter("expiredDateEnd");
+        if (StringUtils.isNotBlank(expiredDateEnd)) {
             propertyFilterBuilder.matchTye(MatchType.LE).propertyType(PropertyType.D)
-                    .add("trc.expired_date", StringUtils.trimToEmpty(request.getParameter("expiredDateEnd")));
+                    .add("trc.expired_date", StringUtils.trimToEmpty(expiredDateEnd));
         }
 
         return propertyFilterBuilder.end();

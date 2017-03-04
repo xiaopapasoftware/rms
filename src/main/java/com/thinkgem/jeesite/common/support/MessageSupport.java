@@ -21,6 +21,7 @@ public class MessageSupport {
 
   private static final String KEY_TOTAL_PAGE = "totalPage";
   private static final String KEY_PAGE_SIZE = "pageSize";
+  private static final String KEY_PAGE_NO = "pageNo";
 
   public static Object successDataMsg(Object dataObj, String message) {
     Map<String, Object> map = new HashMap<String, Object>();
@@ -43,6 +44,7 @@ public class MessageSupport {
     map.put(KEY_DATA, object);
     map.put(KEY_TOTAL_PAGE, page.getPages());
     map.put(KEY_PAGE_SIZE, page.getPageSize());
+    map.put(KEY_PAGE_NO, page.getPageNum());
     return responseBody(map);
   }
 

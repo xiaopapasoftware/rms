@@ -3,23 +3,81 @@
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.ContractReportDao">
 
     <select id="queryContractReport" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        SELECT
-        trc.CONTRACT_CODE,trc.CONTRACT_NAME,tb.BUILDING_NAME,th.HOUSE_NO,tr.ROOM_NO,trc.CHARGE_TYPE,
-        trc.SIGN_DATE,trc.START_DATE,trc.EXPIRED_DATE,trc.DEPOSIT_AMOUNT,trc.RENTAL,trc.REN_MONTHS,trc.DEPOSIT_MONTHS,
-        trc.DEPOSIT_ELECTRIC_AMOUNT,trc.ELE_RECHARGE_AMOUNT,trc.CONTRACT_STATUS,trc.CONTRACT_BUSI_STATUS,
-        ttl.CELL_PHONE AS CELL_PHONE_LEAD,ttl.TENANT_NAME AS TENANT_NAME_LEAD,
-        tt.CELL_PHONE,tt.TENANT_NAME,tt.ID_NO,su.name server_name
-        FROM t_rent_contract trc
-        left join t_contract_tenant tct on trc.ID = tct.CONTRACT_ID /** 入住人 **/
-        left join t_contract_tenant tctl on trc.ID = tctl.LEASE_CONTRACT_ID /** 承租人 **/
-        left join t_building tb on trc.BUILDING_ID = tb.ID
-        left join t_house th on trc.HOUSE_ID = th.ID
-        left join t_room tr on trc.ROOM_ID = tr.ID
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        left join t_tenant ttl on tctl.TENANT_ID = ttl.ID
-        left join sys_user su on th.service_user = su.id
+        select
+        trc.contract_code,
+        trc.contract_name,
+        trc.charge_type,
+        trc.sign_date,
+        trc.start_date,
+        trc.expired_date,
+        trc.deposit_amount,
+        trc.rental,
+        trc.deposit_electric_amount,
+        trc.ele_recharge_amount,
+        trc.contract_status,
+        trc.contract_busi_status,
+        trc.water_fee,
+        trc.net_fee,
+        trc.tv_fee,
+        trc.water_value,
+        trc.peak_meter_value,
+        trc.valley_meter_value,
+        trc.total_meter_value,
+        trc.meter_value,
+        trc.coal_value,
+        trc.remarks,
+        <!--销售-->
+        ifnull(tc.CONTACT_NAME,ifnull(sell.name,'')) as sell_name,
 
-        WHERE 1=1
+        <!--出租人-->
+        (select group_concat(distinct tt.cell_phone separator ';')
+        from t_contract_tenant tct
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        where tct.CONTRACT_ID = trc.ID) as cell_phone,
+
+        (select group_concat(distinct tt.cell_phone separator ';')
+        from t_contract_tenant tct
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        where tct.CONTRACT_ID = trc.ID) as tenant_name,
+
+        (select group_concat(distinct tt.id_no separator ';')
+        from t_contract_tenant tct
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        where tct.CONTRACT_ID = trc.ID) as id_no,
+
+        <!--承租人-->
+        (select group_concat(distinct tt.cell_phone separator ';')
+        from t_contract_tenant tct
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        where tct.lease_contract_id = trc.ID) as cell_phone_lead,
+
+        (select group_concat(distinct tt.cell_phone separator ';')
+        from t_contract_tenant tct
+        left join t_tenant tt on tct.TENANT_ID = tt.ID
+        where tct.lease_contract_id = trc.ID) as tenant_name_lead,
+
+
+        case trc.contract_source when 0 then '本部' when 1 then '合作' end contract_source,
+        sd.label as contract_busi_status_name,
+        concat('付',ifnull(trc.ren_months,0),'押',ifnull(trc.deposit_months,0)) as pay_type,
+        tb.building_name,
+        th.house_no,
+        concat(ifnull(th.decora_struc_room_num,0),'房',ifnull(th.decora_struc_cusspac_num,0),'厅',ifnull(th.decora_struc_washro_num,0),'卫') as house_style,
+        tr.room_no,
+        su.name server_name
+        from t_rent_contract trc
+
+        left join t_building tb on trc.building_id = tb.id
+        left join t_house th on trc.house_id = th.id
+        left join t_room tr on trc.room_id = tr.id
+        left join sys_user su on th.service_user = su.id
+        left join sys_dict sd on trc.contract_busi_status = sd.value and sd.type='rent_contract_busi_status'
+
+        <!--销售-->
+        left join T_CUSTOMER tc on tc.ID = trc.PARTNER_ID
+        left join sys_user sell on sell.id = trc.USER_ID
+
+        where 1=1
 
         ${whereSqlString}
 

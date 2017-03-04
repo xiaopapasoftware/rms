@@ -2,8 +2,9 @@
  * Created by wangganggang on 17/2/27.
  */
 
-layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
-    var laypage = layui.laypage,
+layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
+    var form = layui.form(),
+        laypage = layui.laypage,
         layer = layui.layer,
         laydate = layui.laydate,
         laytpl = layui.laytpl;
@@ -13,11 +14,12 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
         init: function () {
             ContractReportMVC.View.initControl();
             ContractReportMVC.View.bindEvent();
+            ContractReportMVC.Controller.loadDict();
         }
     }
 
     var ContractReportCommon = {
-        baseUrl: "/rms/a/report/contract/",
+        baseUrl: "/rms/a/report/",
         pageNo: 1,
         pageSize: 15
     };
@@ -25,22 +27,26 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
     var ContractReportMVC = {
         URLs: {
             export: {
-                url: ContractReportCommon.baseUrl + "export",
+                url: ContractReportCommon.baseUrl + "contract/export",
                 method: "POST"
             },
             query: {
-                url: ContractReportCommon.baseUrl + "query?pageNo=" + ContractReportCommon.pageNo + "&pageSize=" + ContractReportCommon.pageSize,
+                url: ContractReportCommon.baseUrl + "contract/query?pageNo=" + ContractReportCommon.pageNo + "&pageSize=" + ContractReportCommon.pageSize,
+                method: "GET"
+            },
+            dict :{
+                url: ContractReportCommon.baseUrl + "component/dict",
                 method: "GET"
             }
         },
         View: {
             initControl: function () {
-                ContractReportMVC.View.intDate('signDateBegin','signDateEnd');
-                ContractReportMVC.View.intDate('startDateBegin','startDateEnd');
-                ContractReportMVC.View.intDate('expiredDateBegin','expiredDateEnd');
+                ContractReportMVC.View.intDate('signDateBegin', 'signDateEnd');
+                ContractReportMVC.View.intDate('startDateBegin', 'startDateEnd');
+                ContractReportMVC.View.intDate('expiredDateBegin', 'expiredDateEnd');
             },
             intDate: function (_ele1, _ele2) {
-                var start  = _ele1 + "_sart",end = _ele2 + "_end";
+                var start = _ele1 + "_sart", end = _ele2 + "_end";
                 start = {
                     //min: laydate.now(),
                     max: '2099-06-16 23:59:59',
@@ -60,11 +66,11 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
                     }
                 };
 
-                document.getElementById(_ele1).onclick = function(){
+                document.getElementById(_ele1).onclick = function () {
                     start.elem = this;
                     laydate(start);
                 };
-                document.getElementById(_ele2).onclick = function(){
+                document.getElementById(_ele2).onclick = function () {
                     end.elem = this
                     laydate(end);
                 };
@@ -77,7 +83,17 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
         },
         Controller: {
             export: function () {
-                $("#queryFrom").attr("action", ContractReportMVC.URLs.export.url).attr("method", ContractReportMVC.URLs.export.method).submit();
+                layer.prompt({
+                    formType: 3,
+                    value: ContractReportCommon.pageSize,
+                    title: '导出条数',
+                    area: ['100px', '30px'] //自定义文本域宽高
+                }, function(value, index, elem){
+                    if(isNaN(value)) return;
+                    var url = ContractReportMVC.URLs.export.url + "?pageSize=" + value;
+                    $("#queryFrom").attr("action", url).attr("method", ContractReportMVC.URLs.export.method).submit();
+                    layer.close(index);
+                });
             },
             undo: function () {
                 $("#queryFrom input").val("");
@@ -94,17 +110,28 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
                     });
 
                     laypage({
-                        cont: 'contractPage',
-                        pages: data.totalPage,
-                        curr: data.pageSize,
-                        groups: 0,
-                        skip: true,
-                        jump: function (obj, first) {
+                        cont : 'contractPage',
+                        pages : data.totalPage,
+                        curr : data.pageNo,
+                        groups : 5,
+                        skip : true,
+                        jump : function (obj, first) {
                             if (!first) {
                                 ContractReportCommon.pageNo = obj.curr;
-                                ContractReportMVC.Controller.load();
+                                ContractReportMVC.Controller.query();
                             }
                         }
+                    });
+                });
+            },
+            loadDict : function(){
+                var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
+                $.getJSON(ContractReportMVC.URLs.dict.url, "type=rent_contract_busi_status", function (data) {
+                    layer.close(index);
+                    var getTpl = dictValueTpl.innerHTML;
+                    laytpl(getTpl).render(data, function (html) {
+                        dictValue.innerHTML = html;
+                        form.render('select');
                     });
                 });
             },
@@ -116,17 +143,6 @@ layui.use(['laypage', 'layer', 'laydate', 'laytpl'], function () {
 
     ContractReport.init();
 });
-
-Render = {
-    houseStyle: function (item) {
-
-        return item.contractCode;
-    },
-    payType: function (item) {
-        var renMonths = item.renMonths == undefined ? "0" : item.renMonths, depositMonths = item.depositMonths == undefined ? "0" : item.depositMonths;
-        return "付" + renMonths + "押" + depositMonths;
-    }
-}
 
 
 

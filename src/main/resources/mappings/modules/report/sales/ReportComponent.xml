@@ -1,41 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ContractReportDao">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportComponentDao">
 
-    <select id="queryContractReport" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        select
-        trc.contract_code,
-        trc.contract_name,
-        trc.charge_type,
-        trc.sign_date,
-        trc.start_date,
-        trc.expired_date,
-        trc.deposit_amount,
-        trc.rental,
-        trc.deposit_electric_amount,
-        trc.ele_recharge_amount,
-        trc.contract_status,
-        trc.contract_busi_status,
-        sd.label as contract_busi_status_name,
-        concat('付',ifnull(trc.ren_months,0),'押',ifnull(trc.deposit_months,0)) as pay_type,
-        tb.building_name,
-        th.house_no,
-        concat(ifnull(th.decora_struc_room_num,0),'房',ifnull(th.decora_struc_cusspac_num,0),'厅',ifnull(th.decora_struc_washro_num,0),'卫') as house_style,
-        tr.room_no,
-        ttl.cell_phone as cell_phone_lead,ttl.tenant_name as tenant_name_lead,
-        tt.cell_phone,tt.tenant_name,tt.id_no,su.name server_name
-        from t_rent_contract trc
-        left join t_contract_tenant tct on trc.id = tct.contract_id /** 入住人 **/
-        left join t_contract_tenant tctl on trc.id = tctl.lease_contract_id /** 承租人 **/
-        left join t_building tb on trc.building_id = tb.id
-        left join t_house th on trc.house_id = th.id
-        left join t_room tr on trc.room_id = tr.id
-        left join t_tenant tt on tct.tenant_id = tt.id
-        left join t_tenant ttl on tctl.tenant_id = ttl.id
-        left join sys_user su on th.service_user = su.id
-        left join sys_dict sd on trc.contract_busi_status = sd.value and sd.type='rent_contract_busi_status'
+    <select id="queryDict" resultType="Dict" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
+        SELECT
+        *
+        FROM sys_dict
 
-        where 1=1
+        where del_flag = 0
 
         ${whereSqlString}
 
