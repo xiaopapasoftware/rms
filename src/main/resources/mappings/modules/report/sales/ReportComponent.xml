@@ -3,9 +3,9 @@
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.ReportComponentDao">
 
     <select id="queryDict" resultType="Dict" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        SELECT
+        select
         *
-        FROM sys_dict
+        from sys_dict
 
         where del_flag = 0
 

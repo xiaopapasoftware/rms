@@ -27,34 +27,34 @@
         trc.coal_value,
         trc.remarks,
         <!--销售-->
-        ifnull(tc.CONTACT_NAME,ifnull(sell.name,'')) as sell_name,
+        ifnull(tc.contact_name,ifnull(sell.name,'')) as sell_name,
 
         <!--出租人-->
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        where tct.CONTRACT_ID = trc.ID) as cell_phone,
+        left join t_tenant tt on tct.tenant_id = tt.id
+        where tct.contract_id = trc.id) as cell_phone,
 
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        where tct.CONTRACT_ID = trc.ID) as tenant_name,
+        left join t_tenant tt on tct.tenant_id = tt.id
+        where tct.contract_id = trc.id) as tenant_name,
 
         (select group_concat(distinct tt.id_no separator ';')
         from t_contract_tenant tct
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        where tct.CONTRACT_ID = trc.ID) as id_no,
+        left join t_tenant tt on tct.tenant_id = tt.id
+        where tct.contract_id = trc.id) as id_no,
 
         <!--承租人-->
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        where tct.lease_contract_id = trc.ID) as cell_phone_lead,
+        left join t_tenant tt on tct.tenant_id = tt.id
+        where tct.lease_contract_id = trc.id) as cell_phone_lead,
 
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
-        left join t_tenant tt on tct.TENANT_ID = tt.ID
-        where tct.lease_contract_id = trc.ID) as tenant_name_lead,
+        left join t_tenant tt on tct.tenant_id = tt.id
+        where tct.lease_contract_id = trc.id) as tenant_name_lead,
 
 
         case trc.contract_source when 0 then '本部' when 1 then '合作' end contract_source,
@@ -74,8 +74,8 @@
         left join sys_dict sd on trc.contract_busi_status = sd.value and sd.type='rent_contract_busi_status'
 
         <!--销售-->
-        left join T_CUSTOMER tc on tc.ID = trc.PARTNER_ID
-        left join sys_user sell on sell.id = trc.USER_ID
+        left join t_customer tc on tc.id = trc.partner_id
+        left join sys_user sell on sell.id = trc.user_id
 
         where 1=1
 
