@@ -4,6 +4,7 @@
 
     <select id="queryContract" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
         select
+        trc.id contract_id,
         trc.contract_code,
         trc.contract_name,
         trc.charge_type,
@@ -29,7 +30,7 @@
         <!--销售-->
         ifnull(tc.contact_name,ifnull(sell.name,'')) as sell_name,
 
-        <!--出租人-->
+        <!--
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
         left join t_tenant tt on tct.tenant_id = tt.id
@@ -45,7 +46,7 @@
         left join t_tenant tt on tct.tenant_id = tt.id
         where tct.contract_id = trc.id and tct.del_flag =0) as id_no,
 
-        <!--承租人-->
+
         (select group_concat(distinct tt.cell_phone separator ';')
         from t_contract_tenant tct
         left join t_tenant tt on tct.tenant_id = tt.id
@@ -55,7 +56,7 @@
         from t_contract_tenant tct
         left join t_tenant tt on tct.tenant_id = tt.id
         where tct.lease_contract_id = trc.id and tct.del_flag =0) as tenant_name_lead,
-
+        -->
 
         case trc.contract_source when 0 then '本部' when 1 then '合作' end contract_source,
         sd.label as contract_busi_status_name,

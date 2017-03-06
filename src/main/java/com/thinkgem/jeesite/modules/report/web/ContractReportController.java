@@ -14,7 +14,9 @@ import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author wangganggang
@@ -38,21 +40,28 @@ public class ContractReportController extends BaseController {
     @Autowired
     private ContractReportService contractReportService;
 
+    @Autowired
+    private ReportComponentSrervice reportComponentSrervice;
+
     @RequestMapping("query")
     @ResponseBody
     public Object queryContract(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
+
+        fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
 
     @RequestMapping("export")
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
+
+        fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         logger.debug("查询到合同数据为:" + reportEntities.toString());
@@ -72,8 +81,9 @@ public class ContractReportController extends BaseController {
         }
     }
 
-
-    /** 添加查询判断的条件 **/
+    /**
+     * 添加查询判断的条件
+     **/
     private List<PropertyFilter> getFilterParams(HttpServletRequest request) {
         /** 模糊条件查询 **/
         PropertyFilterBuilder propertyFilterBuilder = PropertyFilterBuilder.create().matchTye(MatchType.LIKE).propertyType(PropertyType.S)
@@ -141,6 +151,33 @@ public class ContractReportController extends BaseController {
         }
 
         return propertyFilterBuilder.end();
+    }
+
+    /**
+     * 填充合同日期
+     **/
+    private void fillTenantInfo(List<Map> maps) {
+        maps.stream().forEach(map -> {
+            List<Map> tenants = reportComponentSrervice.queryTenant(map);
+
+            List<Map> tenantMap = tenants.stream().filter(x -> StringUtils.equalsIgnoreCase(x.get("contract_id").toString(), map.get("contract_id").toString())).collect(Collectors.toList());
+            List<Map> tenantLeadMap = tenants.stream().filter(x -> StringUtils.equalsIgnoreCase(x.get("contract_id").toString(), map.get("contract_id").toString())).collect(Collectors.toList());
+            String tenantName = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+
+            String cellPhone = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+
+            String tenantIdNo = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+
+            String tenantNameLead = tenantLeadMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+
+            String cellPhoneLead = tenantLeadMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+
+            map.put("tenantName", cellPhone);
+            map.put("cellPhone", tenantName);
+            map.put("tenantIdNo", tenantIdNo);
+            map.put("tenantNameLead", tenantNameLead);
+            map.put("cellPhoneLead", cellPhoneLead);
+        });
     }
 
 }

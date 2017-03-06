@@ -47,4 +47,25 @@
         </if>
 
     </select>
+
+    <select id="queryPaymentTrade">
+        SELECT
+        DATEDIFF(MAX(tpt.`EXPIRED_DATE`), NOW()),
+
+        tpt.`TRANS_ID`,
+        MAX(tpt.`EXPIRED_DATE`) ,
+        trc.CONTRACT_CODE,trc.START_DATE,trc.EXPIRED_DATE
+        FROM
+        t_payment_trans tpt
+
+        left join t_rent_contract trc on trc.ID = tpt.TRANS_ID
+        WHERE tpt.`DEL_FLAG` = '0'
+        AND tpt.`PAYMENT_TYPE` = '6'
+        <!--AND 3 <= tpt.`TRADE_TYPE` <= 5-->
+        AND tpt.`TRANS_STATUS` = '2'
+        AND tpt.`TRADE_DIRECTION` = '1'
+       <!-- and tpt.EXPIRED_DATE <> trc.EXPIRED_DATE-->
+        GROUP BY tpt.`TRANS_ID`
+        HAVING DATEDIFF(MAX(tpt.`EXPIRED_DATE`), NOW()) between 3 and 15
+    </select>
 </mapper>
