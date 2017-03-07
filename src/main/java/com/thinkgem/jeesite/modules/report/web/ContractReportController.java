@@ -14,9 +14,9 @@ import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangganggang
@@ -160,23 +160,31 @@ public class ContractReportController extends BaseController {
         maps.stream().forEach(map -> {
             List<Map> tenants = reportComponentSrervice.queryTenant(map);
 
-            List<Map> tenantMap = tenants.stream().filter(x -> StringUtils.equalsIgnoreCase(x.get("contract_id").toString(), map.get("contract_id").toString())).collect(Collectors.toList());
-            List<Map> tenantLeadMap = tenants.stream().filter(x -> StringUtils.equalsIgnoreCase(x.get("contract_id").toString(), map.get("contract_id").toString())).collect(Collectors.toList());
-            String tenantName = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+            final StringBuffer cellPhone = new StringBuffer();
+            final StringBuffer tenantName = new StringBuffer();
+            final StringBuffer tenantIdNo = new StringBuffer();
+            final StringBuffer tenantNameLead = new StringBuffer();
+            final StringBuffer cellPhoneLead = new StringBuffer();
 
-            String cellPhone = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
 
-            String tenantIdNo = tenantMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
 
-            String tenantNameLead = tenantLeadMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
+            tenants.stream().forEach(t -> {
+                if (StringUtils.equals(MapUtils.getString(t,"contract_id"), MapUtils.getString(map,"contract_id"))) {
+                    cellPhone.append(t.get("cell_phone").toString()).append(";");
+                    tenantName.append(t.get("tenant_name").toString()).append(";");
+                    tenantIdNo.append(t.get("id_no").toString()).append(";");
+                }
+                if (StringUtils.equals(MapUtils.getString(t,"lease_contract_id"), MapUtils.getString(map,"contract_id"))) {
+                    tenantNameLead.append(t.get("tenant_name").toString()).append(";");
+                    cellPhoneLead.append(t.get("cell_phone").toString()).append(";");
+                }
+            });
 
-            String cellPhoneLead = tenantLeadMap.stream().map(t -> t.get("cell_phone").toString()).collect(Collectors.joining(";"));
-
-            map.put("tenantName", cellPhone);
-            map.put("cellPhone", tenantName);
-            map.put("tenantIdNo", tenantIdNo);
-            map.put("tenantNameLead", tenantNameLead);
-            map.put("cellPhoneLead", cellPhoneLead);
+            map.put("tenant_name", StringUtils.substringBeforeLast(tenantName.toString(), ";"));
+            map.put("cell_phone", StringUtils.substringBeforeLast(cellPhone.toString(), ";"));
+            map.put("id_no", StringUtils.substringBeforeLast(tenantIdNo.toString(), ";"));
+            map.put("tenant_name_lead", StringUtils.substringBeforeLast(tenantNameLead.toString(), ";"));
+            map.put("cell_phone_lead", StringUtils.substringBeforeLast(cellPhoneLead.toString(), ";"));
         });
     }
 
