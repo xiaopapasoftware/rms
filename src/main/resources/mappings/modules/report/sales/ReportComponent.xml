@@ -16,7 +16,8 @@
     </select>
 
     <select id="queryProject" resultType="PropertyProject" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        select * from t_property_project
+        select *
+        from t_property_project
 
         where del_flag = 0
 
@@ -25,6 +26,17 @@
         <if test="orderBy != null">
             ${orderBySqlString}
         </if>
+    </select>
 
+    <select id="queryTenant" resultType="java.util.Map" parameterType="java.util.Map">
+        select
+            tt.cell_phone,tt.id_no,tt.tenant_name,tt.degrees,tct.contract_id,tct.lease_contract_id
+        from
+            t_contract_tenant tct
+
+        left join t_tenant tt on tct.tenant_id = tt.id and tt.del_flag=0
+
+        where tct.del_flag=0
+        and (tct.contract_id = #{contract_id} or tct.lease_contract_id = #{contract_id})
     </select>
 </mapper>

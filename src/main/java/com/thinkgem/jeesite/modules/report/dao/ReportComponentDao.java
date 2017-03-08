@@ -6,6 +6,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.sys.entity.Dict;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangganggang on 17/3/4.
@@ -20,4 +21,5 @@ public interface ReportComponentDao {
 
     List<PropertyProject> queryProject(Criterion criterion);
 
+    List<Map> queryTenant(Map map);
 }

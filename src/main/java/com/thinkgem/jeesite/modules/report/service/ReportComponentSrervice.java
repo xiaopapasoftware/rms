@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangganggang on 17/3/4.
@@ -31,5 +32,8 @@ public class ReportComponentSrervice {
         return reportComponentDao.queryProject(new Criterion(propertyFilters, sorts));
     }
 
+    public List<Map> queryTenant(Map map){
+        return  reportComponentDao.queryTenant(map);
+    }
 
 }
