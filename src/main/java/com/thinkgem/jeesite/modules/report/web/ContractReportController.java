@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.report.web;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.MatchType;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.PropertyType;
@@ -16,6 +17,7 @@ import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +44,11 @@ public class ContractReportController extends BaseController {
 
     @Autowired
     private ReportComponentSrervice reportComponentSrervice;
+
+    @RequestMapping("index")
+    public String redirectIndex(){
+        return "modules/report/contract/contractReport";
+    }
 
     @RequestMapping("query")
     @ResponseBody
@@ -72,7 +79,7 @@ public class ContractReportController extends BaseController {
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
         excelUtils.setTemplatePath("/templates/report/contract_template.xls");
-        excelUtils.setFilename("合同表报表_" + DateUtils.getDate());
+        excelUtils.setFilename("合同表报表_" + DateUtils.getDate() + ".xls");
         try {
             excelUtils.export(request, response);
         } catch (IOException e) {
@@ -167,18 +174,20 @@ public class ContractReportController extends BaseController {
             final StringBuffer cellPhoneLead = new StringBuffer();
 
 
+            if(tenants != null && tenants.size() > 0){
+                tenants.stream().forEach(t -> {
 
-            tenants.stream().forEach(t -> {
-                if (StringUtils.equals(MapUtils.getString(t,"contract_id"), MapUtils.getString(map,"contract_id"))) {
-                    cellPhone.append(t.get("cell_phone").toString()).append(";");
-                    tenantName.append(t.get("tenant_name").toString()).append(";");
-                    tenantIdNo.append(t.get("id_no").toString()).append(";");
-                }
-                if (StringUtils.equals(MapUtils.getString(t,"lease_contract_id"), MapUtils.getString(map,"contract_id"))) {
-                    tenantNameLead.append(t.get("tenant_name").toString()).append(";");
-                    cellPhoneLead.append(t.get("cell_phone").toString()).append(";");
-                }
-            });
+                    if (StringUtils.equals(MapUtils.getString(t,"contract_id"), MapUtils.getString(map,"contract_id"))) {
+                        cellPhone.append(t.get("cell_phone").toString()).append(";");
+                        tenantName.append(t.get("tenant_name").toString()).append(";");
+                        tenantIdNo.append(t.get("id_no").toString()).append(";");
+                    }
+                    if (StringUtils.equals(MapUtils.getString(t,"lease_contract_id"), MapUtils.getString(map,"contract_id"))) {
+                        tenantNameLead.append(t.get("tenant_name").toString()).append(";");
+                        cellPhoneLead.append(t.get("cell_phone").toString()).append(";");
+                    }
+                });
+            }
 
             map.put("tenant_name", StringUtils.substringBeforeLast(tenantName.toString(), ";"));
             map.put("cell_phone", StringUtils.substringBeforeLast(cellPhone.toString(), ";"));

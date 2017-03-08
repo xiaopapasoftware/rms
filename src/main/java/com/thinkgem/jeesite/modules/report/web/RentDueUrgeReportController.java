@@ -39,6 +39,12 @@ public class RentDueUrgeReportController extends BaseController {
     @Autowired
     private RentDueUrgeReportService rentDueUrgeReportService;
 
+    @RequestMapping("index")
+    public String redirectIndex(){
+        return "modules/report/contract/rentDueUrgeReport";
+    }
+
+
     @RequestMapping("query")
     @ResponseBody
     public Object queryRentDueUrge(HttpServletRequest request) {
@@ -64,7 +70,7 @@ public class RentDueUrgeReportController extends BaseController {
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
         excelUtils.setTemplatePath("/templates/report/rent_due_urge.xls");
-        excelUtils.setFilename("房租到期催款报表_" + DateUtils.getDate());
+        excelUtils.setFilename("房租到期催款报表_" + DateUtils.getDate() + ".xls");
         try {
             excelUtils.export(request, response);
         } catch (IOException e) {
