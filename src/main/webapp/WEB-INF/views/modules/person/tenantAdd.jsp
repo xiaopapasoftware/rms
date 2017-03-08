@@ -108,7 +108,7 @@
 			<div class="controls">
 				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate "
 					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">

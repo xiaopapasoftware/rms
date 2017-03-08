@@ -53,7 +53,7 @@
 			<li><label style="width:120px;">开票日期：</label>
 				<input name="invoiceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${invoice.invoiceDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>
 			</li>
 			<li><label style="width:120px;">发票金额：</label>
 				<form:input path="invoiceAmount" htmlEscape="false" class="input-medium" style="width:185px;"/>

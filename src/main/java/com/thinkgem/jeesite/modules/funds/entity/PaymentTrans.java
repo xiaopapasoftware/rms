@@ -29,8 +29,12 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   private String transName; // 交易对象名称
   private String transObjectNo;// 交易对象编号
   private String tradeDirection; // 交易款项方向
-  private Date startDate; // 交易款项开始时间，用于查询条件
-  private Date expiredDate; // 交易款项到期时间，用于查询条件
+  private Date startDate_begin;// 款项开始日期-始（查询条件）
+  private Date startDate_end;// 款项开始日期-终（查询条件）
+  private Date startDate; // 交易款项开始时间
+  private Date expiredDate; // 交易款项到期时间
+  private Date expiredDate_begin;// 款项到期日期-始（查询条件）
+  private Date expiredDate_end;// 款项到期日期-终（查询条件）
   private Double tradeAmount; // 应该交易金额
   private Double transAmount; // 实际交易金额
   private Double lastAmount; // 剩余交易金额
@@ -39,7 +43,8 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   private String lastAmount4Export; // 剩余交易金额（导出用）
   private Double transferDepositAmount; // 定金转合同的实转金额
   private String transStatus; // 交易款项状态
-  private String remittanceDate;
+  private String remittanceDate;// 查询条件：打款日期
+  private String splitPaidMonths;// 查询结果：款项付费周期（表明该合同的房租是几个月一付的）
 
   public PaymentTrans() {
     super();
@@ -86,7 +91,23 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   }
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  @NotNull(message = "交易款项开始时间不能为空")
+  public Date getStartDate_begin() {
+    return startDate_begin;
+  }
+
+  public void setStartDate_begin(Date startDate_begin) {
+    this.startDate_begin = startDate_begin;
+  }
+
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  public Date getStartDate_end() {
+    return startDate_end;
+  }
+
+  public void setStartDate_end(Date startDate_end) {
+    this.startDate_end = startDate_end;
+  }
+
   public Date getStartDate() {
     return startDate;
   }
@@ -96,13 +117,28 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   }
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  @NotNull(message = "交易款项到期时间不能为空")
   public Date getExpiredDate() {
     return expiredDate;
   }
 
   public void setExpiredDate(Date expiredDate) {
     this.expiredDate = expiredDate;
+  }
+
+  public Date getExpiredDate_begin() {
+    return expiredDate_begin;
+  }
+
+  public void setExpiredDate_begin(Date expiredDate_begin) {
+    this.expiredDate_begin = expiredDate_begin;
+  }
+
+  public Date getExpiredDate_end() {
+    return expiredDate_end;
+  }
+
+  public void setExpiredDate_end(Date expiredDate_end) {
+    this.expiredDate_end = expiredDate_end;
   }
 
   @NotNull(message = "应该交易金额不能为空")
@@ -195,4 +231,13 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   public void setRemittanceDate(String remittanceDate) {
     this.remittanceDate = remittanceDate;
   }
+
+  public String getSplitPaidMonths() {
+    return splitPaidMonths;
+  }
+
+  public void setSplitPaidMonths(String splitPaidMonths) {
+    this.splitPaidMonths = splitPaidMonths;
+  }
+
 }

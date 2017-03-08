@@ -75,7 +75,7 @@
             <div class="controls">
                 <input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
                        value=""
-                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true});"/>
                 <span class="help-inline"><font color="red">*</font> </span>
             </div>
 		</div>
@@ -84,7 +84,7 @@
             <div class="controls">
                 <input name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
                        value=""
-                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:true});"/>
                 <span class="help-inline"><font color="red">*</font> </span>
             </div>
 		</div>

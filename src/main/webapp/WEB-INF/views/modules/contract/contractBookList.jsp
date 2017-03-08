@@ -33,7 +33,7 @@
 			<li><label>预约时间：</label>
 				<input name="bookDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${contractBook.bookDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label>预约状态：</label>
 				<form:select path="bookStatus" class="input-medium" style="width:210px;">
