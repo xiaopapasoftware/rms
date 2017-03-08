@@ -19,7 +19,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
 
     var RentDueUrgeReportCommon = {
         baseUrl: "/rms/a/report/",
-        pageNo: 1,
+        pageNum: 1,
         pageSize: 15,
         exportNum : 1000
     };
@@ -31,7 +31,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
                 method: "POST"
             },
             query: {
-                url: RentDueUrgeReportCommon.baseUrl + "rentdueurge/query?pageNo=" + RentDueUrgeReportCommon.pageNo + "&pageSize=" + RentDueUrgeReportCommon.pageSize,
+                url: RentDueUrgeReportCommon.baseUrl + "rentdueurge/query",
                 method: "GET"
             },
             dict :{
@@ -50,7 +50,11 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
         },
         Controller: {
             export: function () {
-                layer.prompt({
+                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",function(index){
+                    $("#queryFrom").attr("action", RentDueUrgeReportMVC.URLs.export.url).attr("method", RentDueUrgeReportMVC.URLs.export.method).submit();
+                    layer.close(index);
+                });
+                /*layer.prompt({
                     formType: 3,
                     value: RentDueUrgeReportCommon.exportNum,
                     title: '导出条数',
@@ -64,7 +68,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
                     var url = RentDueUrgeReportMVC.URLs.export.url + "?pageSize=" + value;
                     $("#queryFrom").attr("action", url).attr("method", RentDueUrgeReportMVC.URLs.export.method).submit();
                     layer.close(index);
-                });
+                });*/
             },
             undo: function () {
                 $("#queryFrom input").val("");
@@ -72,7 +76,8 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
             },
             query: function () {
                 var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
-                $.getJSON(RentDueUrgeReportMVC.URLs.query.url, RentDueUrgeReportMVC.Controller.params(), function (data) {
+                var url = RentDueUrgeReportMVC.URLs.query.url + "?pageNum=" + RentDueUrgeReportCommon.pageNum + "&pageSize=" + RentDueUrgeReportCommon.pageSize;
+                $.getJSON(url, RentDueUrgeReportMVC.Controller.params(), function (data) {
                     layer.close(index);
 
                     var getTpl = rentDueUrgeTpl.innerHTML;
@@ -83,12 +88,12 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
                     laypage({
                         cont : 'rentDueUrgePage',
                         pages : data.totalPage,
-                        curr : data.pageNo,
+                        curr : data.pageNum,
                         groups : 5,
                         skip : true,
                         jump : function (obj, first) {
                             if (!first) {
-                                RentDueUrgeReportCommon.pageNo = obj.curr;
+                                RentDueUrgeReportCommon.pageNum = obj.curr;
                                 RentDueUrgeReportMVC.Controller.query();
                             }
                         }

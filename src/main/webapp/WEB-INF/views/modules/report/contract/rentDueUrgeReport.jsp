@@ -17,7 +17,14 @@
         .layui-form-item .m-large {
             width: 224px !important;
         }
+        table {
+          table-layout:fixed;
+        }
 
+        table td{
+            word-wrap:break-word;
+            word-break:break-all;
+        }
     </style>
 </head>
 
@@ -113,26 +120,26 @@
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <table class="layui-table">
                 <thead>
-                <tr>
-                    <th>合同编号</th>
-                    <th>合同名称</th>
-                    <th>出租方式</th>
-                    <th>物业项目</th>
-                    <th>楼号</th>
-                    <th>房号</th>
-                    <th>室号</th>
-                    <th>服务管家</th>
-                    <th>承租人</th>
-                    <th>承租人电话</th>
-                    <th>入住人</th>
-                    <th>入住人电话</th>
-                    <th>生效日期</th>
-                    <th>到期日期</th>
-                    <th>付费方式</th>
-                    <th>月租金</th>
-                    <th>上次支付到期日</th>
-                    <th>到期剩余天数</th>
-                </tr>
+                    <tr>
+                        <th>合同编号</th>
+                        <th>合同名称</th>
+                        <th>出租方式</th>
+                        <th>物业项目</th>
+                        <th>楼号</th>
+                        <th>房号</th>
+                        <th>室号</th>
+                        <th>服务管家</th>
+                        <th>承租人</th>
+                        <th>承租人电话</th>
+                        <th>入住人</th>
+                        <th>入住人电话</th>
+                        <th>生效日期</th>
+                        <th>到期日期</th>
+                        <th>付费方式</th>
+                        <th>月租金</th>
+                        <th>上次支付到期日</th>
+                        <th>到期剩余天数</th>
+                    </tr>
                 </thead>
                 <tbody id="rentDueUrgeContent">
                 </tbody>

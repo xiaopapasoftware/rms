@@ -20,9 +20,9 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
 
     var ContractReportCommon = {
         baseUrl: "/rms/a/report/",
-        pageNo: 1,
+        pageNum: 1,
         pageSize: 15,
-        exportNum : 1000
+        exportNum : 110000
     };
 
     var ContractReportMVC = {
@@ -32,7 +32,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                 method: "POST"
             },
             query: {
-                url: ContractReportCommon.baseUrl + "contract/query?pageNo=" + ContractReportCommon.pageNo + "&pageSize=" + ContractReportCommon.pageSize,
+                url: ContractReportCommon.baseUrl + "contract/query",
                 method: "GET"
             },
             dict :{
@@ -83,23 +83,34 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             }
         },
         Controller: {
-            export: function () {
-                layer.prompt({
+            export: function (){
+                layer.open({
+                    content: '测试回调',
+                    success: function(layero, index){
+                        console.log(layero, index);
+                    }
+                });
+                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",function(index){
+                    $("#queryFrom").attr("action", ContractReportMVC.URLs.export.url).attr("method", ContractReportMVC.URLs.export.method).submit();
+                    layer.close(index);
+                });
+
+               /* layer.prompt({
                     formType: 3,
                     value: ContractReportCommon.exportNum,
                     title: '导出条数',
                     area: ['100px', '30px'] //自定义文本域宽高
                 }, function(value, index, elem){
                     if(isNaN(value)) return;
-                    if(value > ContractReportCommon.exportNum){
+                    /!*if(value > ContractReportCommon.exportNum){
                         layer.alert("导出条数不能大于:" + ContractReportCommon.exportNum);
                         return;
-                    }
+                    }*!/
 
                     var url = ContractReportMVC.URLs.export.url + "?pageSize=" + value;
                     $("#queryFrom").attr("action", url).attr("method", ContractReportMVC.URLs.export.method).submit();
                     layer.close(index);
-                });
+                });*/
             },
             undo: function () {
                 $("#queryFrom input").val("");
@@ -107,7 +118,8 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             },
             query: function () {
                 var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
-                $.getJSON(ContractReportMVC.URLs.query.url, ContractReportMVC.Controller.params(), function (data) {
+                var url = ContractReportMVC.URLs.query.url + "?pageNum=" + ContractReportCommon.pageNum + "&pageSize=" + ContractReportCommon.pageSize;
+                $.getJSON(url, ContractReportMVC.Controller.params(), function (data) {
                     layer.close(index);
 
                     var getTpl = contractTpl.innerHTML;
@@ -118,12 +130,12 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                     laypage({
                         cont : 'contractPage',
                         pages : data.totalPage,
-                        curr : data.pageNo,
+                        curr : data.pageNum,
                         groups : 5,
                         skip : true,
                         jump : function (obj, first) {
                             if (!first) {
-                                ContractReportCommon.pageNo = obj.curr;
+                                ContractReportCommon.pageNum = obj.curr;
                                 ContractReportMVC.Controller.query();
                             }
                         }

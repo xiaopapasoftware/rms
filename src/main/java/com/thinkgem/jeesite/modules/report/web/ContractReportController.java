@@ -46,29 +46,29 @@ public class ContractReportController extends BaseController {
     private ReportComponentSrervice reportComponentSrervice;
 
     @RequestMapping("index")
-    public String redirectIndex(){
+    public String redirectIndex() {
         return "modules/report/contract/contractReport";
     }
 
     @RequestMapping("query")
     @ResponseBody
     public Object queryContract(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        fillTenantInfo(reportEntities);
+        reportComponentSrervice.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
 
     @RequestMapping("export")
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
-        Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        //Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        fillTenantInfo(reportEntities);
+        reportComponentSrervice.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         logger.debug("查询到合同数据为:" + reportEntities.toString());
@@ -158,43 +158,6 @@ public class ContractReportController extends BaseController {
         }
 
         return propertyFilterBuilder.end();
-    }
-
-    /**
-     * 填充合同日期
-     **/
-    private void fillTenantInfo(List<Map> maps) {
-        maps.stream().forEach(map -> {
-            List<Map> tenants = reportComponentSrervice.queryTenant(map);
-
-            final StringBuffer cellPhone = new StringBuffer();
-            final StringBuffer tenantName = new StringBuffer();
-            final StringBuffer tenantIdNo = new StringBuffer();
-            final StringBuffer tenantNameLead = new StringBuffer();
-            final StringBuffer cellPhoneLead = new StringBuffer();
-
-
-            if(tenants != null && tenants.size() > 0){
-                tenants.stream().forEach(t -> {
-
-                    if (StringUtils.equals(MapUtils.getString(t,"contract_id"), MapUtils.getString(map,"contract_id"))) {
-                        cellPhone.append(t.get("cell_phone").toString()).append(";");
-                        tenantName.append(t.get("tenant_name").toString()).append(";");
-                        tenantIdNo.append(t.get("id_no").toString()).append(";");
-                    }
-                    if (StringUtils.equals(MapUtils.getString(t,"lease_contract_id"), MapUtils.getString(map,"contract_id"))) {
-                        tenantNameLead.append(t.get("tenant_name").toString()).append(";");
-                        cellPhoneLead.append(t.get("cell_phone").toString()).append(";");
-                    }
-                });
-            }
-
-            map.put("tenant_name", StringUtils.substringBeforeLast(tenantName.toString(), ";"));
-            map.put("cell_phone", StringUtils.substringBeforeLast(cellPhone.toString(), ";"));
-            map.put("id_no", StringUtils.substringBeforeLast(tenantIdNo.toString(), ";"));
-            map.put("tenant_name_lead", StringUtils.substringBeforeLast(tenantNameLead.toString(), ";"));
-            map.put("cell_phone_lead", StringUtils.substringBeforeLast(cellPhoneLead.toString(), ";"));
-        });
     }
 
 }

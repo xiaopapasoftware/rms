@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.RentDueUrgeReportService;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,9 @@ public class RentDueUrgeReportController extends BaseController {
     @Autowired
     private RentDueUrgeReportService rentDueUrgeReportService;
 
+    @Autowired
+    private ReportComponentSrervice reportComponentSrervice;
+
     @RequestMapping("index")
     public String redirectIndex(){
         return "modules/report/contract/rentDueUrgeReport";
@@ -48,18 +52,20 @@ public class RentDueUrgeReportController extends BaseController {
     @RequestMapping("query")
     @ResponseBody
     public Object queryRentDueUrge(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(getFilterParams(request), sorts);
+        reportComponentSrervice.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
 
     @RequestMapping("export")
     public void exportRentDueUrge(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.contract_code").end();
-        Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        //Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(getFilterParams(request), sorts);
+        reportComponentSrervice.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         logger.debug("查询到待催款数据为:" + reportEntities.toString());
@@ -117,12 +123,12 @@ public class RentDueUrgeReportController extends BaseController {
         String freeDayBegin = request.getParameter("freeDayBegin");
         if (StringUtils.isNotBlank(freeDayBegin)) {
             propertyFilterBuilder.matchTye(MatchType.GE).propertyType(PropertyType.I)
-                    .add("trc.start_date", StringUtils.trimToEmpty(freeDayBegin));
+                    .add("temp.free_day", StringUtils.trimToEmpty(freeDayBegin));
         }
         String freeDayEnd = request.getParameter("freeDayEnd");
         if (StringUtils.isNotBlank(freeDayEnd)) {
             propertyFilterBuilder.matchTye(MatchType.LE).propertyType(PropertyType.I)
-                    .add("trc.start_date", StringUtils.trimToEmpty(freeDayEnd));
+                    .add("temp.free_day", StringUtils.trimToEmpty(freeDayEnd));
         }
 
         return propertyFilterBuilder.end();

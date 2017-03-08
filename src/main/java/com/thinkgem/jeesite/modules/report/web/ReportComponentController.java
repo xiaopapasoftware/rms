@@ -53,4 +53,6 @@ public class ReportComponentController {
         List<PropertyProject> dicts = reportComponentSrervice.queryProject(null, sorts);
         return MessageSupport.successDataMsg(dicts, "查询成功");
     }
+
+
 }
