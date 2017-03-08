@@ -28,12 +28,12 @@
 		<ul class="ul-form">
 			<li><label style="width: 120px;">开始时间：</label> 
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required" value="<fmt:formatDate value="${rentAveragePriceReport.startDate}" pattern="yyyy-MM-dd"/>" 
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width: 196px;" />
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width: 196px;" />
 			</li>
 			<li><label style="width: 120px;">结束时间：</label> 
 				<input name="endDate" type="text" readonly="readonly" maxlength="20"
 				class="input-medium Wdate required" value="<fmt:formatDate value="${rentAveragePriceReport.endDate}" pattern="yyyy-MM-dd"/>"
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"
 				style="width: 196px;" /></li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary"
 				type="submit" value="查询" /></li>

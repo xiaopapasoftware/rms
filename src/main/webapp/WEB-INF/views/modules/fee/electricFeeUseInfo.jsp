@@ -50,14 +50,14 @@
 				id="startDate" name="startDate" type="text" readonly="readonly"
 				maxlength="20" class="input-medium Wdate required"
 				value="${electricFeeUseInfo.startDate}"
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"
 				style="width: 196px;" /> <span class="help-inline"><font
 					color="red">*</font></span></li>
 			<li><label style="width: 120px;">结束日期：</label> <input
 				id="endDate" name="endDate" type="text" readonly="readonly"
 				maxlength="20" class="input-medium Wdate required"
 				value="${electricFeeUseInfo.endDate}"
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"
 				style="width: 196px;" /> <span class="help-inline"><font
 					color="red">*</font></span></li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary"

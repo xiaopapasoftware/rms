@@ -385,7 +385,7 @@
 			<div class="controls">
 				<input name="contractDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${leaseContract.contractDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -394,7 +394,7 @@
 			<div class="controls">
 				<input name="effectiveDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" onchange="effectiveDateChange()"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" onchange="effectiveDateChange()"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -403,7 +403,7 @@
 			<div class="controls">
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${leaseContract.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -412,7 +412,7 @@
 			<div class="controls">
 				<input name="firstRemittanceDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${leaseContract.firstRemittanceDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -513,11 +513,11 @@
 								<input id="leaseContractDtlList{{idx}}_delFlag" name="leaseContractDtlList[{{idx}}].delFlag" type="hidden" value="0"/>
 							</td>
 							<td>
-								<input id="leaseContractDtlList{{idx}}_startDate" name="leaseContractDtlList[{{idx}}].startDate" type="text" readonly="readonly" value="{{row.startDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required"/>
+								<input id="leaseContractDtlList{{idx}}_startDate" name="leaseContractDtlList[{{idx}}].startDate" type="text" readonly="readonly" value="{{row.startDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" class="input-medium Wdate required"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>
-								<input id="leaseContractDtlList{{idx}}_endDate" name="leaseContractDtlList[{{idx}}].endDate" type="text" readonly="readonly" value="{{row.endDateStr}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required"/>
+								<input id="leaseContractDtlList{{idx}}_endDate" name="leaseContractDtlList[{{idx}}].endDate" type="text" readonly="readonly" value="{{row.endDateStr}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" class="input-medium Wdate required"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>

@@ -93,6 +93,23 @@
 			<li><label style="width:500px;">出租合同编号/承租合同编号/定金协议编号：</label>
 				<form:input path="transObjectNo" htmlEscape="false" maxlength="64" class="input-medium" style="width:450px;"/>
 			</li><br/>
+			<li>
+				<label style="width:120px;">交易款项开始时间：</label>
+				<input name="startDate_begin" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.startDate_begin}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>至
+				<input name="startDate_end" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.startDate_end}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>
+			</li><br/>
+			<li><label style="width:120px;">交易款项到期时间：</label>
+				<input name="expiredDate_begin" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.expiredDate_begin}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>
+				<input name="expiredDate_end" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${paymentTrans.expiredDate_end}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>
+			</li><br/>
 			<li><label style="width:120px;">交易类型：</label>
 				<form:select path="tradeType" class="input-medium" style="width:200px;">
 					<form:option value="" label="全部"/>
@@ -124,16 +141,6 @@
 					<form:options items="${fns:getDictList('trade_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:120px;">交易款项开始时间：</label>
-				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
-			<li><label style="width:120px;">交易款项到期时间：</label>
-				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${paymentTrans.expiredDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:185px;"/>
-			</li>
 			<li class="btns">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
@@ -157,6 +164,7 @@
 				<th>实际交易金额</th>
 				<th>剩余交易金额</th>
 				<th>交易款项状态</th>
+				<th>款项付费周期（月数）</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 			</tr>
@@ -214,6 +222,9 @@
 				</td>
 				<td>
 					${fns:getDictLabel(paymentTrans.transStatus, 'trade_status', '')}
+				</td>
+				<td>
+					${paymentTrans.splitPaidMonths}
 				</td>
 				<td>
 					<fmt:formatDate value="${paymentTrans.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

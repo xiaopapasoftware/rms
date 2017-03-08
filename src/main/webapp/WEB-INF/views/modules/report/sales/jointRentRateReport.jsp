@@ -33,7 +33,7 @@
 				name="startDate" type="text" readonly="readonly" maxlength="20"
 				class="input-medium Wdate required"
 				value="<fmt:formatDate value="${jointRentRateReport.startDate}" pattern="yyyy-MM-dd"/>"
-				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"
 				style="width: 196px;" /></li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary"
 				type="submit" value="查询" /></li>

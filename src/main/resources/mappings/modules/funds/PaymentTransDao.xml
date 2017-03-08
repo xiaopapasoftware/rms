@@ -5,39 +5,37 @@
 	<sql id="paymentTransColumns">
 		a.id AS "id",
 		a.trade_type AS "tradeType",
-		a.payment_type AS
-		"paymentType",
+		a.payment_type AS "paymentType",
 		a.trans_id AS "transId",
-		a.trade_direction AS
-		"tradeDirection",
+		a.trade_direction AS "tradeDirection",
 		a.start_date AS "startDate",
-		a.expired_date AS
-		"expiredDate",
+		a.expired_date AS "expiredDate",
 		a.trade_amount AS "tradeAmount",
-		a.trans_amount AS
-		"transAmount",
+		a.trans_amount AS "transAmount",
 		a.last_amount AS "lastAmount",
-		a.transfer_deposit_amount
-		AS "transferDepositAmount",
+		a.transfer_deposit_amount AS "transferDepositAmount",
 		a.trans_status AS "transStatus",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		a.remarks
-		AS "remarks",
+		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		case when a.trade_type=1 or
-		a.trade_type=2 then ta.agreement_name
-		when a.trade_type=0 then tl.contract_name
-		else tc.contract_name
+		case 
+			 when a.trade_type=1 or a.trade_type=2 then ta.agreement_name
+		     when a.trade_type=0 then tl.contract_name
+		     else tc.contract_name
 		end transName,
-		case when a.trade_type=1 or a.trade_type=2 then
-		ta.agreement_code
-		when a.trade_type=0 then tl.contract_code
-		else tc.contract_code
+		case 
+			when a.trade_type=1 or a.trade_type=2 then ta.agreement_code
+			when a.trade_type=0 then tl.contract_code
+			else tc.contract_code
 		end transObjectNo,
-		tl.remittance_date as "remittanceDate"
+		tl.remittance_date as "remittanceDate",
+		case
+			when a.payment_type=6 or a.payment_type=14 or a.payment_type=16 or a.payment_type=18 or a.payment_type=20 or a.payment_type=22 then tc.ren_months
+			else 0
+		end splitPaidMonths
 	</sql>
 
 	<sql id="paymentTransJoins">
@@ -77,11 +75,17 @@
 			<if test="transStatus != null and transStatus != ''">
 				AND a.trans_status = #{transStatus}
 			</if>
-			<if test="startDate != null and startDate != ''">
-				AND a.start_date >= #{startDate}
+			<if test="startDate_begin != null and startDate_begin != ''">
+				<![CDATA[AND a.start_date >= #{startDate_begin}]]>
 			</if>
-			<if test="expiredDate != null and expiredDate != ''">
-				<![CDATA[AND a.expired_date <= #{expiredDate}]]>
+			<if test="startDate_end != null and startDate_end != ''">
+				<![CDATA[AND a.start_date <= #{startDate_end}]]>
+			</if>
+			<if test="expiredDate_begin != null and expiredDate_begin != ''">
+				<![CDATA[AND a.expired_date >= #{expiredDate_begin}]]>
+			</if>
+			<if test="expiredDate_end != null and expiredDate_end != ''">
+				<![CDATA[AND a.expired_date <= #{expiredDate_end}]]>
 			</if>
 		</where>
 		order by FIELD(a.payment_type, '2', '3', '4', '5',

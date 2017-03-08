@@ -55,7 +55,7 @@
 			<li><label style="width:100px;">出生日期：</label>
 				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:177px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:177px;"/>
 			</li>
 			<li><label style="width:100px;">学历：</label>
 				<form:select path="degrees" class="input-medium" style="width:177px;">

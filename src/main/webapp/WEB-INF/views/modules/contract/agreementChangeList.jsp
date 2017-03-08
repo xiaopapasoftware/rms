@@ -64,7 +64,7 @@
 			<li><label style="width:120px;">协议生效时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${agreementChange.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">协议审核状态：</label>
 				<form:select path="agreementStatus" class="input-medium" style="width:210px;">

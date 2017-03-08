@@ -188,7 +188,7 @@
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>
-								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" class="input-medium Wdate required" style="width:100px;"/>
+								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" class="input-medium Wdate required" style="width:100px;"/>
 								<span class="help-inline"><font color="red">*</font> </span>
 							</td>
 							<td>

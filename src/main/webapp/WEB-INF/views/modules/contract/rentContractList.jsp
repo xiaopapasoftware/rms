@@ -128,7 +128,7 @@
 				var html = '<label style="width:120px;">实际退房日期：</label>';
 				html += '<input name="returnDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"';
 				html += 'value="'+curDateStyle+'"';
-				html += 'onclick="WdatePicker({dateFmt:\'yyyy-MM-dd\',isShowClear:false});" style="width:196px;"/>';
+				html += 'onclick="WdatePicker({dateFmt:\'yyyy-MM-dd\',isShowClear:true});" style="width:196px;"/>';
 				
 				var submit = function (v, h, f) {
 				    window.location.href="${ctx}/contract/rentContract/specialReturnContract?id="+id+"&returnDate="+f.returnDate;
@@ -220,17 +220,17 @@
 			<li><label style="width:120px;">合同生效时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd、"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同签订时间：</label>
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd、"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});" style="width:196px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同审核状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:210px;">
