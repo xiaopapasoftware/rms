@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao">
+
+	<sql id="paymentTransColumns">
+		a.id AS "id",
+		a.trade_type AS "tradeType",
+		a.payment_type AS "paymentType",
+		a.trans_id AS "transId",
+		a.trade_direction AS "tradeDirection",
+		a.start_date AS "startDate",
+		a.expired_date AS "expiredDate",
+		a.trade_amount AS "tradeAmount",
+		a.trans_amount AS "transAmount",
+		a.last_amount AS "lastAmount",
+		a.transfer_deposit_amount AS "transferDepositAmount",
+		a.trans_status AS "transStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		case 
+			 when a.trade_type=1 or a.trade_type=2 then ta.agreement_name
+		     when a.trade_type=0 then tl.contract_name
+		     else tc.contract_name
+		end transName,
+		case 
+			when a.trade_type=1 or a.trade_type=2 then ta.agreement_code
+			when a.trade_type=0 then tl.contract_code
+			else tc.contract_code
+		end transObjectNo,
+		tl.remittance_date as "remittanceDate",
+		case
+			when a.payment_type=6 or a.payment_type=14 or a.payment_type=16 or a.payment_type=18 or a.payment_type=20 or a.payment_type=22 then tc.ren_months
+			else 0
+		end splitPaidMonths
+	</sql>
+
+	<sql id="paymentTransJoins">
+		left join t_deposit_agreement ta on a.trans_id=ta.id 
+		left join t_rent_contract tc on a.trans_id=tc.id
+		left join t_lease_contract tl on a.trans_id=tl.id
+	</sql>
+
+	<select id="get" resultType="PaymentTrans">
+		SELECT
+		<include refid="paymentTransColumns" />
+		FROM t_payment_trans a
+		<include refid="paymentTransJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="PaymentTrans">
+		select * from(
+		SELECT
+		<include refid="paymentTransColumns" />
+		FROM t_payment_trans a
+		<include refid="paymentTransJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tradeType != null and tradeType != ''">
+				AND a.trade_type = #{tradeType}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+				AND a.payment_type = #{paymentType}
+			</if>
+			<if test="transId != null and transId != ''">
+				AND a.trans_id = #{transId}
+			</if>
+			<if test="tradeDirection != null and tradeDirection != ''">
+				AND a.trade_direction = #{tradeDirection}
+			</if>
+			<if test="transStatus != null and transStatus != ''">
+				AND a.trans_status = #{transStatus}
+			</if>
+			<if test="startDate_begin != null and startDate_begin != ''">
+				<![CDATA[AND a.start_date >= #{startDate_begin}]]>
+			</if>
+			<if test="startDate_end != null and startDate_end != ''">
+				<![CDATA[AND a.start_date <= #{startDate_end}]]>
+			</if>
+			<if test="expiredDate_begin != null and expiredDate_begin != ''">
+				<![CDATA[AND a.expired_date >= #{expiredDate_begin}]]>
+			</if>
+			<if test="expiredDate_end != null and expiredDate_end != ''">
+				<![CDATA[AND a.expired_date <= #{expiredDate_end}]]>
+			</if>
+		</where>
+		order by FIELD(a.payment_type, '2', '3', '4', '5',
+		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),a.start_date
+		) t
+		<where>
+			<if test="transName != null and transName != ''">
+				AND t.transName like concat('%',#{transName},'%')
+			</if>
+			<if test="transObjectNo != null and transObjectNo != ''">
+				AND t.transObjectNo like concat('%',#{transObjectNo},'%')
+			</if>
+			<if test="remittanceDate != null and remittanceDate != ''">
+				AND t.remittanceDate = #{remittanceDate}
+			</if>
+		</where>
+	</select>
+
+	<select id="findAllList" resultType="PaymentTrans">
+		SELECT
+		<include refid="paymentTransColumns" />
+		FROM t_payment_trans a
+		<include refid="paymentTransJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5',
+		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),a.start_date
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_payment_trans(
+		id,
+		trade_type,
+		payment_type,
+		trans_id,
+		trade_direction,
+		start_date,
+		expired_date,
+		trade_amount,
+		trans_amount,
+		last_amount,
+		transfer_deposit_amount,
+		trans_status,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+		#{tradeType},
+		#{paymentType},
+		#{transId},
+		#{tradeDirection},
+		#{startDate},
+		#{expiredDate},
+		#{tradeAmount},
+		#{transAmount},
+		#{lastAmount},
+		#{transferDepositAmount},
+		#{transStatus},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_payment_trans SET
+		trade_type = #{tradeType},
+		payment_type = #{paymentType},
+		trans_id = #{transId},
+		trade_direction =
+		#{tradeDirection},
+		start_date = #{startDate},
+		expired_date =
+		#{expiredDate},
+		trade_amount = #{tradeAmount},
+		trans_amount =
+		#{transAmount},
+		last_amount = #{lastAmount},
+		transfer_deposit_amount =
+		#{transferDepositAmount},
+		trans_status = #{transStatus},
+		update_by =
+		#{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks}
+		WHERE
+		id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_payment_trans SET
+		del_flag = #{DEL_FLAG_DELETE},
+		update_by =
+		#{updateBy.id},
+		update_date = #{updateDate}
+		<where>
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="transId != null and transId != ''">
+				and trans_id = #{transId}
+			</if>
+			<if test="tradeType != null and tradeType != ''">
+				and trade_type = #{tradeType}
+			</if>
+			<if test="paymentType != null and paymentType != ''">
+				and payment_type = #{paymentType}
+			</if>
+			<if test="tradeDirection != null and tradeDirection != ''">
+				and trade_direction = #{tradeDirection}
+			</if>
+			<if test="transStatus != null and transStatus != ''">
+				and trans_status = #{transStatus}
+			</if>
+		</where>
+	</update>
+</mapper>

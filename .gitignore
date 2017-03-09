@@ -4,3 +4,4 @@
 /target/
 /.gitignore
 /src/main/webapp/userfiles
+.idea/

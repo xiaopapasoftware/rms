@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.device.dao.DevicesDao">
+    
+	<sql id="devicesColumns">
+		a.id AS "id",
+		a.device_id AS "deviceId",
+		a.device_name AS "deviceName",
+		a.device_model AS "deviceModel",
+		a.device_type AS "deviceType",
+		a.device_price AS "devicePrice",
+		a.device_brand AS "deviceBrand",
+		a.device_status AS "deviceStatus",
+		a.devices_choose_flag AS "devicesChooseFlag",
+		a.distr_serl_num AS "distrSerlNum",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="devicesJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="Devices">
+		SELECT 
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Devices">
+		SELECT
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="deviceId != null and deviceId != ''">
+				AND a.device_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceId},'%')</if>
+			</if>
+			<if test="deviceName != null and deviceName != ''">
+				AND a.device_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceName},'%')</if>
+			</if>
+			<if test="deviceModel != null and deviceModel != ''">
+				AND a.device_model LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceModel}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceModel}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceModel},'%')</if>
+			</if>
+			<if test="deviceType != null and deviceType != ''">
+				AND a.device_type = #{deviceType}
+			</if>
+			<if test="deviceBrand != null and deviceBrand != ''">
+				AND a.device_brand LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deviceBrand}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deviceBrand}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deviceBrand},'%')</if>
+			</if>
+			<if test="deviceStatus != null and deviceStatus != ''">
+				AND a.device_status = #{deviceStatus}
+			</if>
+			<if test="devicesChooseFlag != null and devicesChooseFlag != ''">
+				AND a.devices_choose_flag = #{devicesChooseFlag}
+			</if>
+			<if test="distrSerlNum != null and distrSerlNum != ''">
+				AND a.distr_serl_num LIKE 
+					<if test="dbName == 'oracle'">'%'||#{distrSerlNum}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{distrSerlNum}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{distrSerlNum},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Devices">
+		SELECT 
+			<include refid="devicesColumns"/>
+		FROM t_devices a
+		<include refid="devicesJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findExistedDevices" resultType="Devices">
+		SELECT 
+				a.id AS "id",
+				a.device_id AS "deviceId",
+				a.device_name AS "deviceName",
+				a.device_model AS "deviceModel",
+				a.device_type AS "deviceType",
+				a.device_price AS "devicePrice",
+				a.device_brand AS "deviceBrand",
+				a.device_status AS "deviceStatus",
+				a.devices_choose_flag AS "devicesChooseFlag",
+				a.distr_serl_num AS "distrSerlNum",
+				a.del_flag AS "delFlag"
+		FROM t_devices a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			and a.device_status != '5'
+			and a.device_id =  #{deviceId}
+			and a.device_name = #{deviceName}
+			and a.device_model = #{deviceModel}
+			and a.device_type = #{deviceType}
+			and a. device_brand = #{deviceBrand}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_devices(
+			id,
+			device_id,
+			device_name,
+			device_model,
+			device_type,
+			device_price,
+			device_brand,
+			device_status,
+			devices_choose_flag,
+			distr_serl_num,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{deviceId},
+			#{deviceName},
+			#{deviceModel},
+			#{deviceType},
+			#{devicePrice},
+			#{deviceBrand},
+			#{deviceStatus},
+			#{devicesChooseFlag},
+			#{distrSerlNum},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_devices SET 	
+			device_id = #{deviceId},
+			device_name = #{deviceName},
+			device_model = #{deviceModel},
+			device_type = #{deviceType},
+			device_price = #{devicePrice},
+			device_brand = #{deviceBrand},
+			device_status = #{deviceStatus},
+			devices_choose_flag = #{devicesChooseFlag},
+			distr_serl_num = #{distrSerlNum},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateDevicesStatus">
+		UPDATE t_devices SET 	
+			device_status = #{deviceStatus},
+			distr_serl_num = #{distrSerlNum},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateDevicesChooseFlag">
+		UPDATE t_devices SET
+			devices_choose_flag = #{devicesChooseFlag},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}	
+	</update>
+	
+	<update id="delete">
+		UPDATE t_devices SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

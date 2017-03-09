@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.company.dao.WorkRecordDao">
+    
+	<sql id="workRecordColumns">
+		a.id AS "id",
+		a.record_type AS "recordType",
+		a.record_title AS "recordTitle",
+		a.record_content AS "recordContent",
+		a.record_status AS "recordStatus",
+		a.review_by AS "user.id",
+		a.review_date AS "reviewDate",
+		a.review_remarks AS "reviewRemarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u6.name AS "user.name"
+	</sql>
+	
+	<sql id="workRecordJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.review_by
+	</sql>
+    
+	<select id="get" resultType="WorkRecord">
+		SELECT 
+			<include refid="workRecordColumns"/>
+		FROM t_work_record a
+		<include refid="workRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WorkRecord">
+		SELECT 
+			<include refid="workRecordColumns"/>
+		FROM t_work_record a
+		<include refid="workRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="recordType != null and recordType != ''">
+				AND a.record_type = #{recordType}
+			</if>
+			<if test="recordTitle != null and recordTitle != ''">
+				AND a.record_title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{recordTitle}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{recordTitle}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{recordTitle},'%')</if>
+			</if>
+			<if test="recordStatus != null and recordStatus != ''">
+				AND a.record_status = #{recordStatus}
+			</if>
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.review_by = #{user.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WorkRecord">
+		SELECT 
+			<include refid="workRecordColumns"/>
+		FROM t_work_record a
+		<include refid="workRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_work_record(
+			id,
+			record_type,
+			record_title,
+			record_content,
+			record_status,
+			review_by,
+			review_date,
+			review_remarks,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{recordType},
+			#{recordTitle},
+			#{recordContent},
+			#{recordStatus},
+			#{user.id},
+			#{reviewDate},
+			#{reviewRemarks},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_work_record SET 	
+			record_type = #{recordType},
+			record_title = #{recordTitle},
+			record_content = #{recordContent},
+			record_status = #{recordStatus},
+			review_by = #{user.id},
+			review_date = #{reviewDate},
+			review_remarks = #{reviewRemarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_work_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

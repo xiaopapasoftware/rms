@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.AuditDao">
+
+	<sql id="auditColumns">
+		a.id AS "id",
+		a.object_type AS "objectType",
+		a.object_id AS
+		"objectId",
+		a.next_role AS "nextRole",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS
+		"delFlag"
+	</sql>
+
+	<sql id="auditJoins">
+	</sql>
+
+	<select id="get" resultType="Audit">
+		SELECT
+		<include refid="auditColumns" />
+		FROM t_audit a
+		<include refid="auditJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="Audit">
+		SELECT
+		<include refid="auditColumns" />
+		FROM t_audit a
+		<include refid="auditJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="Audit">
+		SELECT
+		<include refid="auditColumns" />
+		FROM t_audit a
+		<include refid="auditJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_audit(
+		id,
+		object_type,
+		object_id,
+		next_role,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+		#{objectType},
+		#{objectId},
+		#{nextRole},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_audit SET
+		next_role = #{nextRole},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks}
+		WHERE object_id = #{objectId}
+	</update>
+
+	<update id="delete">
+		UPDATE t_audit SET 
+			del_flag = #{DEL_FLAG_DELETE},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE object_id = #{objectId}
+	</update>
+
+</mapper>

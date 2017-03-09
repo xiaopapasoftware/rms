@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.LeaseContractDtlDao">
+    
+	<sql id="leaseContractDtlColumns">
+		a.id AS "id",
+		a.lease_contract_id AS "leaseContractId",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.deposit AS "deposit",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="leaseContractDtlJoins">
+	</sql>
+    
+	<select id="get" resultType="LeaseContractDtl">
+		SELECT 
+			<include refid="leaseContractDtlColumns"/>
+		FROM t_lease_contract_dtl a
+		<include refid="leaseContractDtlJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LeaseContractDtl">
+		SELECT 
+			<include refid="leaseContractDtlColumns"/>
+		FROM t_lease_contract_dtl a
+		<include refid="leaseContractDtlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
+		</where>
+		ORDER BY a.start_date 
+	</select>
+	
+	<select id="findAllList" resultType="LeaseContractDtl">
+		SELECT 
+			<include refid="leaseContractDtlColumns"/>
+		FROM t_lease_contract_dtl a
+		<include refid="leaseContractDtlJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
+		</where>		
+		ORDER BY a.start_date
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_lease_contract_dtl(
+			id,
+			lease_contract_id,
+			start_date,
+			end_date,
+			deposit,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{leaseContractId},
+			#{startDate},
+			#{endDate},
+			#{deposit},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_lease_contract_dtl SET 	
+			lease_contract_id = #{leaseContractId},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			deposit = #{deposit},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_lease_contract_dtl SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
