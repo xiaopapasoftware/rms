@@ -5,3 +5,4 @@
 /.gitignore
 /src/main/webapp/userfiles
 .idea/
+*.iml
