@@ -17,9 +17,10 @@
         <property name="ignoreUnresolvablePlaceholders" value="true" />
         <property name="locations">
             <list>
-                <value>classpath:xqsight.jdbc.mysql.cfg.properties</value>
+                <value>classpath:jeesite.properties</value>
             </list>
         </property>
     </bean>
-    <import resource="rms-dao.xml"></import>
+
+    <import resource="spring-mvc*.xml"></import>
 </beans>
