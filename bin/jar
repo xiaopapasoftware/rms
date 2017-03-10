@@ -1,9 +1,0 @@
-mvn install:install-file -Dfile=./analyzer-2012_u6.jar -DgroupId=org.wltea -DartifactId=analyzer -Dversion=2012_u6 -Dpackaging=jar 
- mvn install:install-file -Dfile=./apache-ant-zip-2.3.jar -DgroupId=com.ckfinder -DartifactId=apache-ant-zip -Dversion=2.3 -Dpackaging=jar
- mvn install:install-file -Dfile=./ckfinder-2.3.jar -DgroupId=com.ckfinder -DartifactId=ckfinder -Dversion=2.3 -Dpackaging=jar
-  mvn install:install-file -Dfile=./ckfinderplugin-fileeditor-2.3.jar -DgroupId=com.ckfinder -DartifactId=ckfinderplugin-fileeditor -Dversion=2.3 -Dpackaging=jar
- mvn install:install-file -Dfile=./ckfinderplugin-imageresize-2.3.jar -DgroupId=com.ckfinder -DartifactId=ckfinderplugin-imageresize -Dversion=2.3 -Dpackaging=jar
- mvn install:install-file -Dfile=./UserAgentUtils-1.13.jar -DgroupId=bitwalker -DartifactId=UserAgentUtils -Dversion=1.13 -Dpackaging=jar
- mvn install:install-file -Dfile=./XingeApp.jar -DgroupId=com.xinge -DartifactId=xinge -Dversion=1.0 -Dpackaging=jar
- mvn install:install-file -Dfile=./javabase64-1.3.1.jar -DgroupId=com.javabase64 -DartifactId=javabase64 -Dversion=1.0 -Dpackaging=jar
-
