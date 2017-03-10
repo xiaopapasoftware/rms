@@ -63,7 +63,6 @@ public class RentContract extends DataEntity<RentContract> {
   private Double meterValue; // 入住分电表系数
   private Double totalMeterValue; // 入住总电表系数
   private Double peakMeterValue; // 入住峰电系数
-  private Double flatMeterValue; // 入住平电系数
   private Double valleyMeterValue; // 入住谷电系数
   private Double coalValue; // 入住煤表系数
   private Double waterValue; // 入住水表系数
@@ -377,14 +376,6 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setPeakMeterValue(Double peakMeterValue) {
     this.peakMeterValue = peakMeterValue;
-  }
-
-  public Double getFlatMeterValue() {
-    return flatMeterValue;
-  }
-
-  public void setFlatMeterValue(Double flatMeterValue) {
-    this.flatMeterValue = flatMeterValue;
   }
 
   public Double getValleyMeterValue() {

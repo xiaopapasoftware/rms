@@ -36,10 +36,9 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
- * 电费结算Controller
+ * 电费管理
  * 
- * @author huangsc
- * @version 2015-07-04
+ * @author wangshujin
  */
 @Controller
 @RequestMapping(value = "${adminPath}/fee/electricFee")

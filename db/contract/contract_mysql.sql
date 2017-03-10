@@ -140,7 +140,6 @@ create table T_RENT_CONTRACT
    METER_VALUE         float comment '入住分电表系数',
    TOTAL_METER_VALUE         float comment '入住总电表系数',
    PEAK_METER_VALUE         float comment '入住峰电系数',
-   FLAT_METER_VALUE         float comment '入住平电系数',
    VALLEY_METER_VALUE         float comment '入住谷电系数',
    COAL_VALUE          float comment '入住煤表系数',
    WATER_VALUE         float comment '入住水表系数',

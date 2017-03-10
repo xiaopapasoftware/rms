@@ -38,8 +38,7 @@
 		<li><a href="${ctx}/fee/electricFee/form">电费充值</a></li>
 		<li class="active"><a href="${ctx}/fee/electricFee/viewUseInfo">电费使用查询</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="electricFeeUseInfo"
-		action="${ctx}/fee/electricFee/viewUseInfo" method="post"
+	<form:form id="searchForm" modelAttribute="electricFeeUseInfo" action="${ctx}/fee/electricFee/viewUseInfo" method="post"
 		class="breadcrumb form-search">
 		<ul class="ul-form">
 			<li><label style="width: 120px;">出租合同编号：</label> <form:input

@@ -44,26 +44,19 @@
 		a.meter_value AS "meterValue",
 		a.total_meter_value AS "totalMeterValue",
 		a.peak_meter_value AS "peakMeterValue",
-		a.flat_meter_value AS "flatMeterValue",
 		a.valley_meter_value AS "valleyMeterValue",
-		a.coal_value AS
-		"coalValue",
+		a.coal_value AS "coalValue",
 		a.water_value AS "waterValue",
-		a.remind_time AS
-		"remindTime",
+		a.remind_time AS "remindTime",
 		a.contract_status AS "contractStatus",
 		a.contract_busi_status AS "contractBusiStatus",
-		a.create_by AS
-		"createBy.id",
+		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
-		a.create_date AS
-		"createDate",
+		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
-		u2.login_name AS
-		"updateBy.loginName",
+		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
-		a.remarks AS
-		"remarks",
+		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		a.return_remark as "returnRemark",
 		u9.name AS "user.name",
@@ -492,7 +485,6 @@
 		#{meterValue},
 		#{totalMeterValue},
 		#{peakMeterValue},
-		#{flatMeterValue},
 		#{valleyMeterValue},
 		#{coalValue},
 		#{waterValue},
@@ -548,7 +540,6 @@
 		meter_value = #{meterValue},
 		total_meter_value = #{totalMeterValue},
 		peak_meter_value = #{peakMeterValue},
-		flat_meter_value = #{flatMeterValue},
 		valley_meter_value = #{valleyMeterValue},
 		coal_value = #{coalValue},
 		water_value = #{waterValue},

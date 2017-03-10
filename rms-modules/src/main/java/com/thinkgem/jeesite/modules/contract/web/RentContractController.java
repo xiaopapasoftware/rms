@@ -72,6 +72,7 @@ import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 
+
 /**
  * @author huangsc
  * @author wangshujin
@@ -1212,4 +1213,18 @@ public class RentContractController extends BaseController {
       contractTenantService.updateTenantList(rentContractId, tenants);
     }
   }
+
+  /**
+   * 跳转到公共基础事业费用管理页面
+   */
+  @RequestMapping(value = "initFeeMgt")
+  public String initFeeMgt(HttpServletRequest request, HttpServletResponse response) {
+    return "modules/fee/contractInitFeeMgt";
+  }
+  
+  @RequestMapping(value = "queryPublicBasicFeeInfo")
+  public String queryPublicBasicFeeInfo(HttpServletRequest request, HttpServletResponse response) {
+    return "modules/fee/contractInitFeeMgt";
+  }
+  
 }

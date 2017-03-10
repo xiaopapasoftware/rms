@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #flatMeterValue, #valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
+			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
