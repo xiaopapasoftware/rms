@@ -58,11 +58,11 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">到期范围(天)</label>
                     <div class="layui-input-inline" style="width: 100px;">
-                        <input type="text" id="freeDayBegin" name="freeDayBegin" value="0" class="layui-input">
+                        <input type="number" id="freeDayBegin" name="freeDayBegin" value="0" class="layui-input">
                     </div>
                     <div class="layui-form-mid">-</div>
                     <div class="layui-input-inline" style="width: 100px;">
-                        <input type="text" id="freeDayEnd" name="freeDayEnd" value="20" class="layui-input">
+                        <input type="number" id="freeDayEnd" name="freeDayEnd" value="15" class="layui-input">
                     </div>
                 </div>
 

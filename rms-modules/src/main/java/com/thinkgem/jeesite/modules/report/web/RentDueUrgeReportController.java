@@ -75,7 +75,7 @@ public class RentDueUrgeReportController extends BaseController {
         dataMap.put("parametersMap", request.getParameterMap());
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
-        excelUtils.setTemplatePath("/templates/report/rent_due_urge.xls");
+        excelUtils.setTemplatePath("/templates/report/rent_due_urge_template.xls");
         excelUtils.setFilename("房租到期催款报表_" + DateUtils.getDate() + ".xls");
         try {
             excelUtils.export(request, response);
