@@ -50,7 +50,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
         },
         Controller: {
             export: function () {
-                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",function(index){
+                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",{offset: 100},function(index){
                     $("#queryFrom").attr("action", RentDueUrgeReportMVC.URLs.export.url).attr("method", RentDueUrgeReportMVC.URLs.export.method).submit();
                     layer.close(index);
                 });

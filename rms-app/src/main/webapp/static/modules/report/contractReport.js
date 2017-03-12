@@ -90,7 +90,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                         console.log(layero, index);
                     }
                 });
-                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",function(index){
+                layer.alert("导出比较慢,请耐心等待，如果失败5分钟之后再试",{offset: 100},function(index){
                     $("#queryFrom").attr("action", ContractReportMVC.URLs.export.url).attr("method", ContractReportMVC.URLs.export.method).submit();
                     layer.close(index);
                 });
