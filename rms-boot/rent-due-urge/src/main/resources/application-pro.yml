@@ -7,7 +7,7 @@ server:
 rent:
   due:
     urge:
-      cron: 0 */1 * * * ?
+      cron: 0 2 * * * ?
 
 ###===  文件上传处理   =====##
 file:

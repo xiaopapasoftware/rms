@@ -22,5 +22,4 @@
         </property>
     </bean>
 
-    <import resource="spring-mvc*.xml"></import>
 </beans>

@@ -13,7 +13,8 @@
 		<module>rms-modules</module>
 		<module>rms-app</module>
 		<module>rms-boot</module>
-	</modules>
+        <module>rms-job</module>
+    </modules>
 
 
 	<!-- 项目属性 -->
