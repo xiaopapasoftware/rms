@@ -27,3 +27,4 @@
 /temp
 /logs
 /rms-job/target
+/rms-app/src/main/resources/jeesite.properties
