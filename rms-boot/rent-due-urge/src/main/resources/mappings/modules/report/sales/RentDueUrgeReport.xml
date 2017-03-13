@@ -4,9 +4,12 @@
 
     <select id="queryRentDueUrge" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
         select
-        temp.* ,
+        temp.free_day ,
+        temp.contract_id ,
+        temp.pre_pay_date ,
         trc.contract_code,
         trc.contract_name,
+        trc.expired_date,
         case trc.rent_mode when 0 then '整租' when 1 then '单间' end rent_mode,
         tpp.project_name,
         trc.start_date,
@@ -18,17 +21,17 @@
         su.name server_name
         from
         ( SELECT
-            DATEDIFF(MAX(tpt.EXPIRED_DATE), NOW()) free_day,
-            tpt.TRANS_ID as contract_id ,
-            MAX(tpt.EXPIRED_DATE) as  EXPIRED_DATE
+            DATEDIFF(MAX(tpt.expired_date), NOW()) free_day,
+            tpt.trans_id as contract_id ,
+            MAX(tpt.EXPIRED_DATE) as  pre_pay_date
             FROM
             t_payment_trans tpt
-            WHERE tpt.DEL_FLAG = '0'
-            AND tpt.PAYMENT_TYPE = '6'
-            <![CDATA[  AND 3 <= tpt.TRADE_TYPE <= 5  ]]>
-            AND tpt.TRANS_STATUS = '2'
-            AND tpt.TRADE_DIRECTION = '1'
-            GROUP BY tpt.TRANS_ID
+            WHERE tpt.del_flag = '0'
+            AND tpt.payment_type = '6'
+            <![CDATA[  AND 3 <= tpt.trade_type <= 5  ]]>
+            AND tpt.trans_status = '2'
+            AND tpt.trade_direction = '1'
+            GROUP BY tpt.trans_id
         ) temp
 
         left join t_rent_contract trc on trc.ID = temp.contract_id
@@ -38,7 +41,7 @@
         left join sys_user su on th.service_user = su.id and su.del_flag=0
         left join t_property_project tpp on tpp.id = trc.property_project_id and tpp.del_flag=0
 
-        where <![CDATA[ temp.EXPIRED_DATE <> trc.EXPIRED_DATE   ]]>
+        where <![CDATA[ temp.pre_pay_date <> trc.expired_date   ]]>
 
         ${whereSqlString}
 
@@ -48,24 +51,4 @@
 
     </select>
 
-    <select id="queryPaymentTrade">
-        SELECT
-        DATEDIFF(MAX(tpt.`EXPIRED_DATE`), NOW()),
-
-        tpt.`TRANS_ID`,
-        MAX(tpt.`EXPIRED_DATE`) ,
-        trc.CONTRACT_CODE,trc.START_DATE,trc.EXPIRED_DATE
-        FROM
-        t_payment_trans tpt
-
-        left join t_rent_contract trc on trc.ID = tpt.TRANS_ID
-        WHERE tpt.`DEL_FLAG` = '0'
-        AND tpt.`PAYMENT_TYPE` = '6'
-        <!--AND 3 <= tpt.`TRADE_TYPE` <= 5-->
-        AND tpt.`TRANS_STATUS` = '2'
-        AND tpt.`TRADE_DIRECTION` = '1'
-       <!-- and tpt.EXPIRED_DATE <> trc.EXPIRED_DATE-->
-        GROUP BY tpt.`TRANS_ID`
-        HAVING DATEDIFF(MAX(tpt.`EXPIRED_DATE`), NOW()) between 3 and 15
-    </select>
 </mapper>
