@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.CustomerDao">
+    
+	<sql id="customerColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		su.name AS "user.name",
+		a.contact_name AS "contactName",
+		a.gender AS "gender",
+		a.cell_phone AS "cellPhone",
+		a.is_tenant AS "isTenant",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="customerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_user su ON su.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM t_customer a
+		<include refid="customerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM t_customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="contactName != null and contactName != ''">
+				AND a.contact_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contactName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contactName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contactName},'%')</if>
+			</if>
+			<if test="gender != null and gender != ''">
+				AND a.gender = #{gender}
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
+			</if>
+			<if test="isTenant != null and isTenant != ''">
+				AND a.is_tenant = #{isTenant}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM t_customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCustomerByTelNo" resultType="Customer">
+		SELECT 
+				a.id AS "id",
+				a.user_id AS "user.id",
+				a.contact_name AS "contactName",
+				a.gender AS "gender",
+				a.cell_phone AS "cellPhone",
+				a.is_tenant AS "isTenant",
+				a.del_flag AS "delFlag"
+		FROM t_customer a
+		WHERE
+			 a.del_flag = #{DEL_FLAG_NORMAL}
+			 <if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone = #{cellPhone}
+			</if>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_customer(
+			id,
+			user_id,
+			contact_name,
+			gender,
+			cell_phone,
+			is_tenant,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{contactName},
+			#{gender},
+			#{cellPhone},
+			#{isTenant},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_customer SET
+			user_id = #{user.id},
+			contact_name = #{contactName},
+			gender = #{gender},
+			cell_phone = #{cellPhone},
+		 	<if test="isTenant != null and isTenant != ''">
+				is_tenant = #{isTenant},
+			</if>
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_customer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateCustomerTransStat">
+		UPDATE t_customer SET is_tenant = #{isTenant}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

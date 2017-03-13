@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>rms</artifactId>
+        <groupId>com.thinkgem.jeesite</groupId>
+        <version>1.2.7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>rms-task</artifactId>
+    <packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.thinkgem.jeesite</groupId>
+            <artifactId>rms-job</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>rms-task</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty9.version}</version>
+                <configuration>
+                    <scanIntervalSeconds>1</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/rms</contextPath>
+                        <defaultsDescriptor>webdefault.xml</defaultsDescriptor>
+                    </webApp>
+                    <httpConnector>
+                        <port>12303</port>
+                    </httpConnector>
+                    <webAppSourceDirectory>src/main/webapp</webAppSourceDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

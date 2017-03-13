@@ -20,7 +20,8 @@
 		<module>rms-app</module>
 		<module>rms-boot</module>
         <module>rms-job</module>
-    </modules>
+		<module>rms-task</module>
+	</modules>
 
 
 	<!-- 项目属性 -->
