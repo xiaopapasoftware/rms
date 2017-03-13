@@ -435,7 +435,6 @@
 		meter_value,
 		total_meter_value,
 		peak_meter_value,
-		flat_meter_value,
 		valley_meter_value,
 		coal_value,
 		water_value,

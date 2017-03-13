@@ -53,10 +53,11 @@
 				<th>入住谷电系数</th>
 				<th>入住煤表系数</th>
 				<th>入住水表系数</th>
+				<th style="width:250px;">操作</th>
 			</tr>
 		</thead>
 		<tbody>
-			<!--<c:forEach items="${list}" var="rentContractInfo">
+			<c:forEach items="${list}" var="rentContractInfo">
 				<tr>
 					<td>${rentContractInfo.contractCode}</td>
 					<td>${rentContractInfo.contractName}</td>
@@ -67,7 +68,7 @@
 					<td>${rentContractInfo.coalValue}</td>
 					<td>${rentContractInfo.waterValue}</td>
 				</tr>
-			</c:forEach>-->
+			</c:forEach>
 		</tbody>
 	</table>
 </body>
