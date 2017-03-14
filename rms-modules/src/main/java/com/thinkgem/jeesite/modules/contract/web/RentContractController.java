@@ -1225,10 +1225,8 @@ public class RentContractController extends BaseController {
 
     @RequestMapping(value = "queryPublicBasicFeeInfo")
     public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
-        RentContract rc = rentContractService.get(rentContract);
-        if (rc != null) {
-            List<RentContract> rcs = new ArrayList<RentContract>();
-            rcs.add(rc);
+        List<RentContract> rcs = rentContractService.findList(rentContract);
+        if (CollectionUtils.isNotEmpty(rcs)) {
             model.addAttribute("list", rcs);
         }
         return "modules/fee/contractInitFeeMgt";

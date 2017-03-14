@@ -67,6 +67,9 @@
 					<td>${rentContractInfo.valleyMeterValue}</td>
 					<td>${rentContractInfo.coalValue}</td>
 					<td>${rentContractInfo.waterValue}</td>
+					<shiro:hasPermission name="contract:rentContract:editContractFeeInfo">
+					<td></td>
+					</shiro:hasPermission>
 				</tr>
 			</c:forEach>
 		</tbody>
