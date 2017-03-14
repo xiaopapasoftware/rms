@@ -28,3 +28,14 @@
 /logs
 /rms-job/target
 /rms-app/src/main/resources/jeesite.properties
+/rms-job/.classpath
+/rms-job/.project
+/rms-job/.settings/org.eclipse.core.resources.prefs
+/rms-job/.settings/org.eclipse.jdt.core.prefs
+/rms-job/.settings/org.eclipse.m2e.core.prefs
+/rms-app-task/.project
+/rms-app-task/.settings
+/rms-app-task/target
+/rms-app-task/.classpath
+/rms-job/.settings/org.eclipse.wst.common.component
+/rms-job/.settings/org.eclipse.wst.common.project.facet.core.xml
