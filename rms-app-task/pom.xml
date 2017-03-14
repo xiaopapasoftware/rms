@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rms-task</artifactId>
+    <artifactId>rms-app-task</artifactId>
     <packaging>war</packaging>
 
     <dependencies>
@@ -21,7 +21,7 @@
     </dependencies>
 
     <build>
-        <finalName>rms-task</finalName>
+        <finalName>rms-app-task</finalName>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
