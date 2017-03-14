@@ -20,7 +20,7 @@
 		<module>rms-app</module>
 		<module>rms-boot</module>
         <module>rms-job</module>
-		<module>rms-task</module>
+		<module>rms-app-task</module>
 	</modules>
 
 

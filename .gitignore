@@ -28,3 +28,8 @@
 /logs
 /rms-job/target
 /rms-app/src/main/resources/jeesite.properties
+/rms-job/.classpath
+/rms-job/.project
+/rms-job/.settings/org.eclipse.core.resources.prefs
+/rms-job/.settings/org.eclipse.jdt.core.prefs
+/rms-job/.settings/org.eclipse.m2e.core.prefs
