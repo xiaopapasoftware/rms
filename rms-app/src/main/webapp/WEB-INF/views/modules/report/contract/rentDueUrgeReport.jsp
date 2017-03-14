@@ -24,6 +24,10 @@
         table td{
             word-wrap:break-word;
             word-break:break-all;
+            align-content: center;
+        }
+        table thead td{
+            align-content: center;
         }
     </style>
 </head>
@@ -119,6 +123,26 @@
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <table class="layui-table">
+                <colgroup>
+                    <col width="120">
+                    <col width="120">
+                    <col width="80">
+                    <col width="100">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="80">
+                    <col width="100">
+                    <col width="120">
+                    <col width="120">
+                    <col width="120">
+                    <col width="110">
+                    <col width="110">
+                    <col width="100">
+                    <col width="100">
+                    <col width="110">
+                    <col width="60">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>合同编号</th>

@@ -18,6 +18,14 @@
             width: 224px !important;
         }
 
+        table {
+            table-layout:fixed;
+        }
+
+        table td{
+            word-wrap:break-word;
+            word-break:break-all;
+        }
     </style>
 </head>
 
@@ -136,6 +144,23 @@
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <table class="layui-table">
+                <colgroup>
+                    <col width="120">
+                    <col width="120">
+                    <col width="120">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="110">
+                    <col width="110">
+                    <col width="110">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="120">
+                </colgroup>
                 <thead>
                 <tr>
                     <th>合同编号</th>
