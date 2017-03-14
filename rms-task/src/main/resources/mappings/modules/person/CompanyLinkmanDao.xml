@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.CompanyLinkmanDao">
+    
+	<sql id="companyLinkmanColumns">
+		a.id AS "id",
+		a.company_id AS "company.id",
+		tc.company_name AS "company.companyName",
+		a.person_name AS "personName",
+		a.cell_phone AS "cellPhone",
+		a.tell_phone AS "tellPhone",
+		a.email AS "email",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="companyLinkmanJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+	 	LEFT JOIN t_company tc ON tc.id = a.company_id
+	</sql>
+    
+	<select id="get" resultType="CompanyLinkman">
+		SELECT 
+			<include refid="companyLinkmanColumns"/>
+		FROM t_company_linkman a
+		<include refid="companyLinkmanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CompanyLinkman">
+		SELECT 
+			<include refid="companyLinkmanColumns"/>
+		FROM t_company_linkman a
+		<include refid="companyLinkmanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="company != null and company.id != null and company.id != ''">
+				AND a.company_id = #{company.id}
+			</if>
+			<if test="personName != null and personName != ''">
+				AND a.person_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{personName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{personName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{personName},'%')</if>
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
+			</if>
+			<if test="tellPhone != null and tellPhone != ''">
+				AND a.tell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tellPhone},'%')</if>
+			</if>
+			<if test="email != null and email != ''">
+				AND a.email LIKE 
+					<if test="dbName == 'oracle'">'%'||#{email}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{email}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{email},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CompanyLinkman">
+		SELECT 
+			<include refid="companyLinkmanColumns"/>
+		FROM t_company_linkman a
+		<include refid="companyLinkmanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCompLinkMansByCompAndTelNo" resultType="CompanyLinkman">
+		SELECT	
+		a.id AS "id",
+		a.company_id AS "company.id",
+		a.person_name AS "personName",
+		a.cell_phone AS "cellPhone",
+		a.tell_phone AS "tellPhone",
+		a.email AS "email",
+		a.del_flag AS "delFlag"
+	FROM t_company_linkman a
+	<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.company_id = #{company.id}
+			AND a.cell_phone = #{cellPhone}
+	</where>
+	</select>
+	
+	
+	
+	<insert id="insert">
+		INSERT INTO t_company_linkman(
+			id,
+			company_id,
+			person_name,
+			cell_phone,
+			tell_phone,
+			email,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{company.id},
+			#{personName},
+			#{cellPhone},
+			#{tellPhone},
+			#{email},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_company_linkman SET 	
+			company_id = #{company.id},
+			person_name = #{personName},
+			cell_phone = #{cellPhone},
+			tell_phone = #{tellPhone},
+			email = #{email},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_company_linkman SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

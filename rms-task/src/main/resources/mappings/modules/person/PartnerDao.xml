@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.PartnerDao">
+    
+	<sql id="partnerColumns">
+		a.id AS "id",
+		a.partner_type AS "partnerType",
+		a.partner_name AS "partnerName",
+		a.cell_phone AS "cellPhone",
+		a.desk_phone AS "deskPhone",
+		a.user_name AS "userName",
+		a.bank_name AS "bankName",
+		a.bank_account AS "bankAccount",
+		a.commission_percent AS "commissionPercent",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="partnerJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="Partner">
+		SELECT 
+			<include refid="partnerColumns"/>
+		FROM t_partner a
+		<include refid="partnerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Partner">
+		SELECT 
+			<include refid="partnerColumns"/>
+		FROM t_partner a
+		<include refid="partnerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="partnerName != null and partnerName != ''">
+				AND a.partner_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{partnerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{partnerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{partnerName},'%')</if>
+			</if>
+			<if test="cellPhone != null and cellPhone != ''">
+				AND a.cell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
+			</if>
+			<if test="deskPhone != null and deskPhone != ''">
+				AND a.desk_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{deskPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{deskPhone},'%')</if>
+			</if>
+			<if test="partnerType != null and partnerType != ''">
+				AND a.partner_type = #{partnerType}
+			</if>
+			<if test="userName != null and userName != ''">
+				AND a.user_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{userName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{userName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{userName},'%')</if>
+			</if>
+			<if test="bankName != null and bankName != ''">
+				AND a.bank_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankName},'%')</if>
+			</if>
+			<if test="bankAccount != null and bankAccount != ''">
+				AND a.bank_account LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankAccount}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankAccount}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankAccount},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Partner">
+		SELECT 
+			<include refid="partnerColumns"/>
+		FROM t_partner a
+		<include refid="partnerJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findPartnersByCellNoAndType" resultType="Partner">
+		SELECT 
+				a.id AS "id",
+				a.partner_type AS "partnerType",
+				a.partner_name AS "partnerName",
+				a.cell_phone AS "cellPhone",
+				a.desk_phone AS "deskPhone",
+				a.user_name AS "userName",
+				a.bank_name AS "bankName",
+				a.bank_account AS "bankAccount",
+				a.commission_percent AS "commissionPercent",
+				a.del_flag AS "delFlag"
+		FROM t_partner a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.partner_type = #{partnerType}
+			AND a.cell_phone = #{cellPhone}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_partner(
+			id,
+			partner_type,
+			partner_name,
+			cell_phone,
+			desk_phone,
+			user_name,
+			bank_name,
+			bank_account,
+			commission_percent,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{partnerType},
+			#{partnerName},
+			#{cellPhone},
+			#{deskPhone},
+			#{userName},
+			#{bankName},
+			#{bankAccount},
+			#{commissionPercent},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_partner SET 	
+			partner_type = #{partnerType},
+			partner_name = #{partnerName},
+			cell_phone = #{cellPhone},
+			desk_phone = #{deskPhone},
+			user_name = #{userName},
+			bank_name = #{bankName},
+			bank_account = #{bankAccount},
+			commission_percent = #{commissionPercent},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_partner SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.app.dao.RepairDao">
+    
+	<sql id="repairColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.user_name AS "userName",
+		a.user_mobile AS "userMobile",
+		a.repair_mobile AS "repairMobile",
+		a.expect_repair_time AS "expectRepairTime",
+		a.contract_id AS "contractId",
+		a.room_id AS "roomId",
+		a.description AS "description",
+		a.keeper AS "keeper",
+		a.keeper_mobile AS "keeperMobile",
+		a.status AS "status",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="repairJoins">
+	</sql>
+    
+	<select id="get" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>, attach.ATTACHMENT_PATH AS "picture"
+		FROM t_repair a left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='REPAIR_PICTURE' and attach.del_flag = 0
+		<include refid="repairJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>, attach.ATTACHMENT_PATH AS "picture"
+		FROM t_repair a left join t_attachment attach on a.id=attach.BIZ_ID and attach.attachment_type='REPAIR_PICTURE' and attach.del_flag = 0
+		<include refid="repairJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="userName != null and userName != ''">
+				AND a.user_name = #{userName}
+			</if>
+			<if test="userMobile != null and userMobile != ''">
+				AND a.user_mobile = #{userMobile}
+			</if>
+			<if test="repairMobile != null and repairMobile != ''">
+				AND a.repair_mobile = #{repairMobile}
+			</if>
+			<if test="description != null and description != ''">
+				AND a.description LIKE 
+					<if test="dbName == 'oracle'">'%'||#{description}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{description},'%')</if>
+			</if>
+			<if test="keeper != null and keeper != ''">
+				AND a.keeper = #{keeper}
+			</if>
+			<if test="keeperMobile != null and keeperMobile != ''">
+				AND a.keeper_mobile = #{keeperMobile}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Repair">
+		SELECT 
+			<include refid="repairColumns"/>
+		FROM t_repair a
+		<include refid="repairJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_repair(
+			id,
+			user_id,
+			user_name,
+			user_mobile,
+			repair_mobile,
+			expect_repair_time,
+			contract_id,
+			room_id,
+			description,
+			keeper,
+			keeper_mobile,
+			status,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{userId},
+			#{userName},
+			#{userMobile},
+			#{repairMobile},
+			#{expectRepairTime},
+			#{contractId},
+			#{roomId},
+			#{description},
+			#{keeper},
+			#{keeperMobile},
+			#{status},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_repair SET 	
+			user_name = #{userName},
+			user_mobile = #{userMobile},
+			repair_mobile = #{repairMobile},
+			expect_repair_time = #{expectRepairTime},
+			contract_id = #{contractId},
+			room_id = #{roomId},
+			description = #{description},
+			keeper = #{keeper},
+			keeper_mobile = #{keeperMobile},
+			status = #{status},
+			create_by = #{createBy.id},
+			create_date = #{createDate},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_repair SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

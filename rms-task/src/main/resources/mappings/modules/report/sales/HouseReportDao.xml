@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.HouseReportDao">
+	<select id="housesCount" resultType="HouseReport">
+		SELECT 
+		       t1.project_name AS projectName,
+		       (IFNULL(SUM(t1.renovationNum),0) + IFNULL(SUM(t1.toBeReservedNum),0) + IFNULL(SUM(t1.reservedNum),0)
+		        + IFNULL(SUM(t1.partRentNum),0) + IFNULL(SUM(t1.wholeRentNum),0)) AS totalNum,
+		       IFNULL(SUM(t1.renovationNum),0) AS renovationNum,
+		       IFNULL(SUM(t1.toBeReservedNum),0) AS toBeReservedNum,
+		       IFNULL(SUM(t1.reservedNum),0) AS reservedNum,
+		       IFNULL(SUM(t1.partRentNum),0) AS partRentNum,
+		        IFNULL(SUM(t1.wholeRentNum),0) AS wholeRentNum
+		FROM(SELECT 
+		       t.project_name,
+		       CASE t.status WHEN '0' THEN t.num END AS renovationNum ,
+		       CASE t.STATUS WHEN '1' THEN t.num END AS toBeReservedNum ,
+		       CASE t.STATUS WHEN '2' THEN t.num END  AS reservedNum ,
+		       CASE t.STATUS WHEN '3' THEN t.num  END AS partRentNum ,
+		       CASE t.STATUS WHEN '4' THEN t.num END AS wholeRentNum
+		     FROM(
+			SELECT tpp.project_name, th.`house_status` AS STATUS , COUNT(*) AS NUM
+			FROM t_house th LEFT JOIN t_property_project tpp ON tpp.id = th.property_project_id AND tpp.`DEL_FLAG` = '0'
+			WHERE th.`PROPERTY_PROJECT_ID` = #{propertyProject.id} AND th.`DEL_FLAG` = '0'
+			GROUP BY th.`HOUSE_STATUS`)t
+		     )t1
+	</select>
+</mapper>
