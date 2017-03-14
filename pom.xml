@@ -18,7 +18,6 @@
         <module>rms-common</module>
 		<module>rms-modules</module>
 		<module>rms-app</module>
-		<module>rms-boot</module>
         <module>rms-job</module>
 		<module>rms-app-task</module>
 	</modules>
