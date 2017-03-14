@@ -112,10 +112,10 @@ public class RentDueUrgeReportController extends BaseController {
 
 
         /** 物业项目 **/
-        String projectId = request.getParameter("projectId");
-        if (StringUtils.isNotBlank(projectId)) {
+        String projectValue = request.getParameter("projectValue");
+        if (StringUtils.isNotBlank(projectValue)) {
             propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
-                    .add("tpp.id", StringUtils.trimToEmpty(projectId));
+                    .add("tpp.id", StringUtils.trimToEmpty(projectValue));
         }
 
 

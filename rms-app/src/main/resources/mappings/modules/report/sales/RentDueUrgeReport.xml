@@ -43,6 +43,8 @@
 
         where <![CDATA[ temp.pre_pay_date <> trc.expired_date   ]]>
 
+        and trc.contract_busi_status=0 and trc.contract_status=6
+
         ${whereSqlString}
 
         <if test="orderBy != null">
