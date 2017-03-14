@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.web;
 
 import java.math.BigDecimal;
@@ -12,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +66,9 @@ import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
- * @author huangsc
  * @author wangshujin
  */
 @Controller
@@ -127,75 +123,46 @@ public class RentContractController extends BaseController {
   public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
     model.addAttribute("page", page);
+    initContractSearchConditions(rentContract, model, request, response);
+    return "modules/contract/rentContractList";
+  }
 
+  private void initContractSearchConditions(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
+    Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
+    model.addAttribute("page", page);
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
-    if (null != rentContract.getPropertyProject()) {
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setId(rentContract.getPropertyProject().getId());
-      Building building = new Building();
-      building.setPropertyProject(propertyProject);
-      List<Building> buildingList = buildingService.findList(building);
-      model.addAttribute("buildingList", buildingList);
+    if (rentContract != null) {
+      if (null != rentContract.getPropertyProject() && StringUtils.isNotBlank(rentContract.getPropertyProject().getId())) {
+        PropertyProject propertyProject = new PropertyProject();
+        propertyProject.setId(rentContract.getPropertyProject().getId());
+        Building building = new Building();
+        building.setPropertyProject(propertyProject);
+        List<Building> buildingList = buildingService.findList(building);
+        model.addAttribute("buildingList", buildingList);
+      }
+      if (null != rentContract.getBuilding() && StringUtils.isNotBlank(rentContract.getBuilding().getId())) {
+        House house = new House();
+        Building building = new Building();
+        building.setId(rentContract.getBuilding().getId());
+        house.setBuilding(building);
+        List<House> houseList = houseService.findList(house);
+        model.addAttribute("houseList", houseList);
+      }
+      if (null != rentContract.getHouse() && StringUtils.isNotBlank(rentContract.getHouse().getId())) {
+        Room room = new Room();
+        House house = new House();
+        house.setId(rentContract.getHouse().getId());
+        room.setHouse(house);
+        List<Room> roomList = roomServie.findList(room);
+        model.addAttribute("roomList", roomList);
+      }
     }
-
-    if (null != rentContract.getBuilding()) {
-      House house = new House();
-      Building building = new Building();
-      building.setId(rentContract.getBuilding().getId());
-      house.setBuilding(building);
-      List<House> houseList = houseService.findList(house);
-      model.addAttribute("houseList", houseList);
-    }
-
-    if (null != rentContract.getHouse()) {
-      Room room = new Room();
-      House house = new House();
-      house.setId(rentContract.getHouse().getId());
-      room.setHouse(house);
-      List<Room> roomList = roomServie.findList(room);
-      model.addAttribute("roomList", roomList);
-    }
-
-    return "modules/contract/rentContractList";
   }
 
   @RequestMapping(value = {"rentContractDialogList"})
   public String rentContractDialogList(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-    Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
-    model.addAttribute("page", page);
-
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
-
-    if (null != rentContract.getPropertyProject()) {
-      Building building = new Building();
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setId(rentContract.getPropertyProject().getId());
-      building.setPropertyProject(propertyProject);
-      List<Building> buildingList = buildingService.findList(building);
-      model.addAttribute("buildingList", buildingList);
-    }
-
-    if (null != rentContract.getBuilding()) {
-      House house = new House();
-      Building building = new Building();
-      building.setId(rentContract.getBuilding().getId());
-      house.setBuilding(building);
-      List<House> houseList = houseService.findList(house);
-      model.addAttribute("houseList", houseList);
-    }
-
-    if (null != rentContract.getRoom()) {
-      Room room = new Room();
-      House house = new House();
-      house.setId(rentContract.getRoom().getId());
-      room.setHouse(house);
-      List<Room> roomList = roomServie.findList(room);
-      model.addAttribute("roomList", roomList);
-    }
-
+    initContractSearchConditions(rentContract, model, request, response);
     return "modules/contract/rentContractDialog";
   }
 
@@ -203,40 +170,7 @@ public class RentContractController extends BaseController {
   public String rentContractDialog(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue());
     model.addAttribute("rentContract", rentContract);
-
-    Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
-    model.addAttribute("page", page);
-
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
-
-    if (null != rentContract.getPropertyProject()) {
-      Building building = new Building();
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setId(rentContract.getPropertyProject().getId());
-      building.setPropertyProject(propertyProject);
-      List<Building> buildingList = buildingService.findList(building);
-      model.addAttribute("buildingList", buildingList);
-    }
-
-    if (null != rentContract.getBuilding()) {
-      House house = new House();
-      Building building = new Building();
-      building.setId(rentContract.getBuilding().getId());
-      house.setBuilding(building);
-      List<House> houseList = houseService.findList(house);
-      model.addAttribute("houseList", houseList);
-    }
-
-    if (null != rentContract.getRoom()) {
-      Room room = new Room();
-      House house = new House();
-      house.setId(rentContract.getRoom().getId());
-      room.setHouse(house);
-      List<Room> roomList = roomServie.findList(room);
-      model.addAttribute("roomList", roomList);
-    }
-
+    initContractSearchConditions(rentContract, model, request, response);
     return "modules/contract/rentContractDialog";
   }
 
@@ -1215,17 +1149,17 @@ public class RentContractController extends BaseController {
    * 跳转到公共基础事业费用管理页面
    */
   @RequestMapping(value = "initFeeMgt")
-  public String initFeeMgt(HttpServletRequest request, HttpServletResponse response) {
+  public String initFeeMgt(RentContract rentContract, Model model) {
     return "modules/fee/contractInitFeeMgt";
   }
 
+  /**
+   * 公共事业费点击查询按钮
+   */
   @RequestMapping(value = "queryPublicBasicFeeInfo")
-  public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request) {
-    List<RentContract> rcs = rentContractService.findList(rentContract);
-    if (CollectionUtils.isNotEmpty(rcs)) {
-      model.addAttribute("list", rcs);
-    }
-    return "modules/fee/contractInitFeeMgt";
+  public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
+    initContractSearchConditions(rentContract, model, request, response);
+    return initFeeMgt(rentContract, model);
   }
 
   /**
@@ -1240,8 +1174,8 @@ public class RentContractController extends BaseController {
    * 导向修改合同公共基础费用的页面
    */
   @RequestMapping(value = "basicFeeSave")
-  public String basicFeeSave(RentContract rentContract, Model model, HttpServletRequest request) {
+  public String basicFeeSave(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     rentContractService.save(rentContract);
-    return queryPublicBasicFeeInfo(rentContract, model, request);
+    return queryPublicBasicFeeInfo(rentContract, model, request, response);
   }
 }
