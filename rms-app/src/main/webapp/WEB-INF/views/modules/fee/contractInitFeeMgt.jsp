@@ -29,7 +29,7 @@
 	</script>
 </head>
 <body>
-	<ul class="nav nav-tabs"><li class="active"><a href="${ctx}/contract/rentContract/initFeeMgt">公共事业费管理</a></li></ul>
+	<ul class="nav nav-tabs"><li class="active"><a href="${ctx}/contract/rentContract/initFeeMgt">公共事业费查询</a></li></ul>
 	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/queryPublicBasicFeeInfo" method="post" class="breadcrumb form-search">
 		<ul class="ul-form">
 			<li>
@@ -68,7 +68,9 @@
 					<td>${rentContractInfo.coalValue}</td>
 					<td>${rentContractInfo.waterValue}</td>
 					<shiro:hasPermission name="contract:rentContract:editContractFeeInfo">
-					<td></td>
+					  <td>
+						<a href="${ctx}/contract/rentContract/basicFeeForm?id=${rentContractInfo.id}">修改</a>
+					  </td>				
 					</shiro:hasPermission>
 				</tr>
 			</c:forEach>
