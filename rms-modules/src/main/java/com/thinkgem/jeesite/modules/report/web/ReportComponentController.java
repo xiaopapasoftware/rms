@@ -9,7 +9,7 @@ import com.thinkgem.jeesite.common.support.MessageSupport;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
-import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +29,7 @@ import java.util.List;
 public class ReportComponentController {
 
     @Autowired
-    private ReportComponentSrervice reportComponentSrervice;
+    private ReportComponentService reportComponentService;
 
     @RequestMapping("dict")
     @ResponseBody
@@ -42,7 +42,7 @@ public class ReportComponentController {
         }
         List<Sort> sorts = SortBuilder.create().addAsc("sort").end();
 
-        List<Dict> dicts = reportComponentSrervice.queryDict(propertyFilterBuilder.end(), sorts);
+        List<Dict> dicts = reportComponentService.queryDict(propertyFilterBuilder.end(), sorts);
         return MessageSupport.successDataMsg(dicts, "查询成功");
     }
 
@@ -50,7 +50,7 @@ public class ReportComponentController {
     @ResponseBody
     public Object queryProject(HttpServletRequest request) {
         List<Sort> sorts = SortBuilder.create().addAsc("project_name").end();
-        List<PropertyProject> dicts = reportComponentSrervice.queryProject(null, sorts);
+        List<PropertyProject> dicts = reportComponentService.queryProject(null, sorts);
         return MessageSupport.successDataMsg(dicts, "查询成功");
     }
 

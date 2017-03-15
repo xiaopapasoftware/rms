@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.person.dao.CompanyDao">
+    
+	<sql id="companyColumns">
+		a.id AS "id",
+		a.company_name AS "companyName",
+		a.tell_phone AS "tellPhone",
+		a.id_type AS "idType",
+		a.id_no AS "idNo",
+		a.company_adress AS "companyAdress",
+		a.business_adress AS "businessAdress",
+		a.bank_name AS "bankName",
+		a.bank_account AS "bankAccount",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="companyJoins">
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="Company">
+		SELECT 
+			<include refid="companyColumns"/>
+		FROM t_company a
+		<include refid="companyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Company">
+		SELECT 
+			<include refid="companyColumns"/>
+		FROM t_company a
+		<include refid="companyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="companyName != null and companyName != ''">
+				AND a.company_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{companyName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{companyName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{companyName},'%')</if>
+			</if>
+			<if test="idType != null and idType != ''">
+				AND a.id_type = #{idType}
+			</if>
+			<if test="idNo != null and idNo != ''">
+				AND a.id_no LIKE 
+					<if test="dbName == 'oracle'">'%'||#{idNo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{idNo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{idNo},'%')</if>
+			</if>
+			<if test="tellPhone != null and tellPhone != ''">
+					AND a.tell_phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tellPhone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tellPhone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tellPhone},'%')</if>
+			</if>
+			<if test="companyAdress != null and companyAdress != ''">
+				AND a.company_adress LIKE 
+					<if test="dbName == 'oracle'">'%'||#{companyAdress}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{companyAdress}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{companyAdress},'%')</if>
+			</if>
+			<if test="businessAdress != null and businessAdress != ''">
+				AND a.business_adress LIKE 
+					<if test="dbName == 'oracle'">'%'||#{businessAdress}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{businessAdress}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{businessAdress},'%')</if>
+			</if>
+			<if test="bankName != null and bankName != ''">
+				AND a.bank_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankName},'%')</if>
+			</if>
+			<if test="bankAccount != null and bankAccount != ''">
+				AND a.bank_account LIKE 
+					<if test="dbName == 'oracle'">'%'||#{bankAccount}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{bankAccount}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{bankAccount},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Company">
+		SELECT 
+			<include refid="companyColumns"/>
+		FROM t_company a
+		<include refid="companyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCompanyByIdTypeAndVal" resultType="Company">
+		SELECT 
+				a.id AS "id",
+				a.company_name AS "companyName",
+				a.tell_phone AS "tellPhone",
+				a.id_type AS "idType",
+				a.id_no AS "idNo",
+				a.company_adress AS "companyAdress",
+				a.business_adress AS "businessAdress",
+				a.bank_name AS "bankName",
+				a.bank_account AS "bankAccount",
+				a.del_flag AS "delFlag"
+		FROM t_company a
+		<where>
+				a.del_flag = #{DEL_FLAG_NORMAL}
+				AND a.id_type = #{idType}
+				AND a.id_no = #{idNo}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_company(
+			id,
+			company_name,
+			tell_phone,
+			id_type,
+			id_no,
+			company_adress,
+			business_adress,
+			bank_name,
+			bank_account,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{companyName},
+			#{tellPhone},
+			#{idType},
+			#{idNo},
+			#{companyAdress},
+			#{businessAdress},
+			#{bankName},
+			#{bankAccount},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_company SET 	
+			company_name = #{companyName},
+			tell_phone = #{tellPhone},
+			id_type = #{idType},
+			id_no = #{idNo},
+			company_adress = #{companyAdress},
+			business_adress = #{businessAdress},
+			bank_name = #{bankName},
+			bank_account = #{bankAccount},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_company SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

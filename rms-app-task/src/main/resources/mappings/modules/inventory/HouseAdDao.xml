@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.HouseAdDao">
+    
+	<sql id="houseAdColumns">
+		a.id AS "id",
+		a.ad_type AS "adType",
+		a.ad_name AS "adName",
+		a.ad_value AS "adValue",
+		a.ad_url AS "adUrl",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.room_id AS "room.id"
+	</sql>
+	
+	<sql id="houseAdJoins">
+	</sql>
+    
+	<select id="get" resultType="HouseAd">
+		SELECT 
+			<include refid="houseAdColumns"/>
+		FROM t_house_ad a
+		<include refid="houseAdJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="HouseAd">
+		SELECT 
+			<include refid="houseAdColumns"/>
+		FROM t_house_ad a
+		<include refid="houseAdJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="HouseAd">
+		SELECT 
+			<include refid="houseAdColumns"/>
+		FROM t_house_ad a
+		<include refid="houseAdJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_house_ad(
+			id,
+			ad_type,
+			ad_name,
+			ad_value,
+			ad_url,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			property_project_id,
+			building_id,
+			house_id,
+			room_id
+		) VALUES (
+			#{id},
+			#{adType},
+			#{adName},
+			#{adValue},
+			#{adUrl},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{propertyProject.id},
+			#{building.id},
+			#{house.id},
+			#{room.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_house_ad SET 	
+			ad_type = #{adType},
+			ad_name = #{adName},
+			ad_value = #{adValue},
+			ad_url = #{adUrl},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			property_project_id = #{propertyProject.id},
+			building_id = #{building.id},
+			house_id = #{house.id},
+			room_id = #{room.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_house_ad SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.task;
+package com.thinkgem.jeesite.task.service;
 
 import com.thinkgem.jeesite.common.filter.search.MatchType;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
@@ -12,13 +12,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.report.service.RentDueUrgeReportService;
-import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,8 @@ import java.util.Map;
  * @author wangganggang
  * @date 2017/03/12
  */
-@Component
+@Service
+@Lazy(false)
 public class RentDueUrgeTask {
 
     protected Logger logger = LoggerFactory.getLogger(RentDueUrgeTask.class);
@@ -45,15 +47,15 @@ public class RentDueUrgeTask {
     private RentDueUrgeReportService rentDueUrgeReportService;
 
     @Autowired
-    private ReportComponentSrervice reportComponentSrervice;
+    private ReportComponentService reportComponentService;
 
-    @Scheduled(cron = "${rent.due.urge.cron}")
+    @Scheduled(cron = "0 7 * * * ?")
     public void reportCurrentTime() {
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.IN)
                 .propertyType(PropertyType.I).add("temp.free_day", "7,15").end();
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(propertyFilters, sorts);
-        reportComponentSrervice.fillTenantInfo(reportEntities);
+        reportComponentService.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         sendMsg(reportEntities);
@@ -72,7 +74,7 @@ public class RentDueUrgeTask {
             String cellPhoneLead = MapUtils.getString(map, "cellPhoneLead");
             String[] tenantNames = StringUtils.split(tenantNameLead, ";");
             String[] cellPhones = StringUtils.split(cellPhoneLead, ";");
-            for (int i = 0; i < cellPhones.length; i++) {
+            for (int i = 0; tenantNames !=null && i < cellPhones.length; i++) {
                 count[0]++;
                 Map remindMap = new HashMap();
                 remindMap.put("name", tenantNames[i]);

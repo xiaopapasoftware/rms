@@ -14,9 +14,8 @@ import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.RentDueUrgeReportService;
-import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +40,7 @@ public class RentDueUrgeReportController extends BaseController {
     private RentDueUrgeReportService rentDueUrgeReportService;
 
     @Autowired
-    private ReportComponentSrervice reportComponentSrervice;
+    private ReportComponentService reportComponentService;
 
     @RequestMapping("index")
     public String redirectIndex(){
@@ -52,20 +51,22 @@ public class RentDueUrgeReportController extends BaseController {
     @RequestMapping("query")
     @ResponseBody
     public Object queryRentDueUrge(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(getFilterParams(request), sorts);
-        reportComponentSrervice.fillTenantInfo(reportEntities);
+
+        reportComponentService.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
+
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
 
     @RequestMapping("export")
     public void exportRentDueUrge(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         //Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(getFilterParams(request), sorts);
-        reportComponentSrervice.fillTenantInfo(reportEntities);
+        reportComponentService.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         logger.debug("查询到待催款数据为:" + reportEntities.toString());

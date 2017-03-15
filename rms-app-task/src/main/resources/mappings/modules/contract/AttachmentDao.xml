@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.common.dao.AttachmentDao">
+    
+	<sql id="attachmentColumns">
+		a.id AS "id",
+		a.lease_contract_id AS "leaseContractId",
+		a.rent_contract_id AS "rentContractId",
+		a.deposit_agreem_id AS "depositAgreemId",
+		a.trading_accounts_id AS "tradingAccountsId",
+		a.property_project_id AS "propertyProjectId",
+		a.building_id AS "buildingId",
+		a.house_id AS "houseId",
+		a.room_id AS "roomId",
+		a.attachment_name AS "attachmentName",
+		a.attachment_type AS "attachmentType",
+		a.attachment_path AS "attachmentPath",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.biz_id as "bizId"
+	</sql>
+	
+	<sql id="attachmentJoins">
+	</sql>
+    
+	<select id="get" resultType="Attachment">
+		SELECT 
+			<include refid="attachmentColumns"/>
+		FROM t_attachment a
+		<include refid="attachmentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Attachment">
+		SELECT 
+		<include refid="attachmentColumns"/>
+		FROM t_attachment a 
+		<include refid="attachmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="leaseContractId != null and leaseContractId != ''">
+				and a.lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="rentContractId != null and rentContractId != ''">
+				and a.rent_contract_id = #{rentContractId}
+			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+				and a.deposit_agreem_id = #{depositAgreemId}
+			</if>
+			<if test="tradingAccountsId != null and tradingAccountsId != ''">
+				and a.trading_accounts_id = #{tradingAccountsId}
+			</if>
+			<if test="propertyProjectId != null and propertyProjectId != ''">
+				and a.property_project_id = #{propertyProjectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				and a.building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				and a.house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				and a.room_id = #{roomId}
+			</if>
+			<if test="id != null and id != ''">
+				and a.id = #{id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Attachment">
+		SELECT 
+			<include refid="attachmentColumns"/>
+		FROM t_attachment a
+		<include refid="attachmentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_attachment(
+			id,
+			lease_contract_id,
+			rent_contract_id,
+		 	deposit_agreem_id,
+		 	trading_accounts_id,
+			property_project_id,
+			building_id,
+			house_id,
+			room_id,
+			attachment_name,
+			attachment_type,
+			attachment_path,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			biz_id
+		) VALUES (
+			#{id},
+			#{leaseContractId},
+			#{rentContractId},
+			#{depositAgreemId},
+			#{tradingAccountsId},
+			#{propertyProjectId},
+			#{buildingId},
+			#{houseId},
+			#{roomId},
+			#{attachmentName},
+			#{attachmentType},
+			#{attachmentPath},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{bizId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_attachment SET 
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+			<if test="attachmentPath != null and attachmentPath != ''">
+				,attachment_path = #{attachmentPath}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				,lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="rentContractId != null and rentContractId != ''">
+				,rent_contract_id = #{rentContractId}
+			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+				,deposit_agreem_id = #{depositAgreemId}
+			</if>
+			<if test="tradingAccountsId != null and tradingAccountsId != ''">
+				,trading_accounts_id = #{tradingAccountsId}
+			</if>
+			<if test="propertyProjectId != null and propertyProjectId != ''">
+				,property_project_id = #{propertyProjectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				,building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				,house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				,room_id = #{roomId}
+			</if>
+			<if test="attachmentName != null and attachmentName != ''">
+				,attachment_name = #{attachmentName}
+			</if>
+			<if test="attachmentType != null and attachmentType != ''">
+				,attachment_type = #{attachmentType}
+			</if>
+			<if test="bizId != null and bizId != ''">
+				,biz_id = #{bizId}
+			</if>
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateAttachmentPathByType">
+		UPDATE t_attachment SET 
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks},
+		attachment_path = #{attachmentPath}
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="leaseContractId != null and leaseContractId != ''">
+				and lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="rentContractId != null and rentContractId != ''">
+			 	and rent_contract_id = #{rentContractId}
+			</if>
+			<if test="depositAgreemId != null and depositAgreemId != ''">
+			 	and deposit_agreem_id = #{depositAgreemId}
+			</if>
+			<if test="tradingAccountsId != null and tradingAccountsId != ''">
+			 	and trading_accounts_id = #{tradingAccountsId}
+			</if>
+			<if test="propertyProjectId != null and propertyProjectId != ''">
+				and property_project_id = #{propertyProjectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				and building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				and house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				and room_id = #{roomId}
+			</if>
+			<if test="bizId != null and bizId != ''">
+				and biz_id = #{bizId}
+			</if>
+	</update>
+	
+	<update id="delete">
+		UPDATE 	t_attachment 
+		SET 	del_flag = #{DEL_FLAG_DELETE},
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
+		WHERE  del_flag = #{DEL_FLAG_NORMAL}
+		<if test="leaseContractId != null and leaseContractId != ''">
+			and lease_contract_id = #{leaseContractId}
+		</if>
+		<if test="rentContractId != null and rentContractId != ''">
+			and rent_contract_id = #{rentContractId}
+		</if>
+		<if test="depositAgreemId != null and depositAgreemId != ''">
+		    and deposit_agreem_id = #{depositAgreemId}
+		</if>
+		<if test="tradingAccountsId != null and tradingAccountsId != ''">
+		    and trading_accounts_id = #{tradingAccountsId}
+		</if>
+		<if test="propertyProjectId != null and propertyProjectId != ''">
+			and property_project_id = #{propertyProjectId}
+		</if>
+		<if test="buildingId != null and buildingId != ''">
+			and building_id = #{buildingId}
+		</if>
+		<if test="houseId != null and houseId != ''">
+			and house_id = #{houseId}
+		</if>
+		<if test="roomId != null and roomId != ''">
+			and room_id = #{roomId}
+		</if>
+		<if test="id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test="bizId != null and bizId != ''">
+			and biz_id = #{bizId}
+		</if>
+		<if test="attachmentType != null and attachmentType != ''">
+			and attachment_type = #{attachmentType}
+		</if>
+	</update>
+	
+</mapper>

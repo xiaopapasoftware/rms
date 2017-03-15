@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.report.service;
 import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.Sort;
+import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -21,7 +22,7 @@ import java.util.Map;
  * @date 2017/03/04
  */
 @Service
-public class ReportComponentSrervice {
+public class ReportComponentService {
 
     @Autowired
     private ReportComponentDao reportComponentDao;
@@ -43,19 +44,15 @@ public class ReportComponentSrervice {
      * 填充合同日期
      **/
     public void fillTenantInfo(List<Map> maps) {
-        maps.stream().forEach(map -> {
+        maps.parallelStream().forEach(map -> {
             List<Map> tenants = queryTenant(map);
-
             final StringBuffer cellPhone = new StringBuffer();
             final StringBuffer tenantName = new StringBuffer();
             final StringBuffer tenantIdNo = new StringBuffer();
             final StringBuffer tenantNameLead = new StringBuffer();
             final StringBuffer cellPhoneLead = new StringBuffer();
-
-
             if (tenants != null && tenants.size() > 0) {
                 tenants.stream().forEach(t -> {
-
                     if (StringUtils.equals(MapUtils.getString(t, "contract_id"), MapUtils.getString(map, "contract_id"))) {
                         cellPhone.append(MapUtils.getString(t, "cell_phone")).append(";");
                         tenantName.append(MapUtils.getString(t, "tenant_name")).append(";");
@@ -67,12 +64,13 @@ public class ReportComponentSrervice {
                     }
                 });
             }
-
             map.put("tenant_name", StringUtils.substringBeforeLast(tenantName.toString(), ";"));
             map.put("cell_phone", StringUtils.substringBeforeLast(cellPhone.toString(), ";"));
             map.put("id_no", StringUtils.substringBeforeLast(tenantIdNo.toString(), ";"));
             map.put("tenant_name_lead", StringUtils.substringBeforeLast(tenantNameLead.toString(), ";"));
             map.put("cell_phone_lead", StringUtils.substringBeforeLast(cellPhoneLead.toString(), ";"));
+
+            MapKeyHandle.keyToJavaProperty(map);
         });
     }
 }
