@@ -2,7 +2,6 @@ package com.thinkgem.jeesite.modules.report.web;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.MatchType;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.PropertyType;
@@ -16,9 +15,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
-import com.thinkgem.jeesite.modules.report.service.ReportComponentSrervice;
-import org.apache.commons.collections.ListUtils;
-import org.apache.commons.collections.MapUtils;
+import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +40,7 @@ public class ContractReportController extends BaseController {
     private ContractReportService contractReportService;
 
     @Autowired
-    private ReportComponentSrervice reportComponentSrervice;
+    private ReportComponentService reportComponentService;
 
     @RequestMapping("index")
     public String redirectIndex() {
@@ -53,22 +50,23 @@ public class ContractReportController extends BaseController {
     @RequestMapping("query")
     @ResponseBody
     public Object queryContract(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        reportComponentSrervice.fillTenantInfo(reportEntities);
+        reportComponentService.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
+
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
 
     @RequestMapping("export")
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
+        List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
         //Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        reportComponentSrervice.fillTenantInfo(reportEntities);
+        reportComponentService.fillTenantInfo(reportEntities);
         reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
 
         logger.debug("查询到合同数据为:" + reportEntities.toString());

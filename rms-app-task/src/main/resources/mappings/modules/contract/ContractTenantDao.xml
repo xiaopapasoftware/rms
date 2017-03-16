@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao">
+    
+	<sql id="contractTenantColumns">
+		a.id AS "id",
+		a.deposit_agreement_id AS "depositAgreementId",
+		a.contract_id AS "contractId",
+		a.tenant_id AS "tenantId",
+		a.lease_contract_id AS "leaseContractId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.agreement_change_id as "agreementChangeId",
+		a.leasagrem_change_id as "leasagremChangeId"
+	</sql>
+	
+	<sql id="contractTenantJoins">
+	</sql>
+    
+	<select id="get" resultType="ContractTenant">
+		SELECT 
+			<include refid="contractTenantColumns"/>
+		FROM t_contract_tenant a
+		<include refid="contractTenantJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ContractTenant">
+		SELECT 
+			<include refid="contractTenantColumns"/>
+		FROM t_contract_tenant a
+		<include refid="contractTenantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				AND a.deposit_agreement_id = #{depositAgreementId}
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+				AND a.agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leasagremChangeId != null and leasagremChangeId != ''">
+				AND a.leasagrem_change_id = #{leasagremChangeId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				AND a.lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="tenantId != null and tenantId != ''">
+				AND a.tenant_id = #{tenantId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ContractTenant">
+		SELECT 
+			<include refid="contractTenantColumns"/>
+		FROM t_contract_tenant a
+		<include refid="contractTenantJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO t_contract_tenant(
+			id,
+			deposit_agreement_id,
+			contract_id,
+			tenant_id,
+			lease_contract_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			agreement_change_id,
+			leasagrem_change_id
+		) VALUES (
+			#{id},
+			#{depositAgreementId},
+			#{contractId},
+			#{tenantId},
+			#{leaseContractId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{agreementChangeId},
+			#{leasagremChangeId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_contract_tenant SET 	
+			deposit_agreement_id = #{depositAgreementId},
+			contract_id = #{contractId},
+			tenant_id = #{tenantId},
+			lease_contract_id = #{leaseContractId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			agreement_change_id = #{agreementChangeId},
+			leasagrem_change_id = #{leasagremChangeId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE t_contract_tenant SET 
+			del_flag = #{DEL_FLAG_DELETE},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tenantId != null and tenantId != ''">
+				and tenant_id = #{tenantId}
+			</if>
+			<if test="depositAgreementId != null and depositAgreementId != ''">
+				and deposit_agreement_id =  #{depositAgreementId}
+			</if>
+			<if test="contractId != null and contractId != ''">
+				and contract_id = #{contractId}
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+				and lease_contract_id = #{leaseContractId}
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+				and agreement_change_id = #{agreementChangeId}
+			</if>
+			<if test="leasagremChangeId != null and leasagremChangeId != ''">
+				and leasagrem_change_id = #{leasagremChangeId}
+			</if>
+	</update>
+	
+</mapper>

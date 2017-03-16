@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao">
+
+	<sql id="tradingAccountsColumns">
+		a.id AS "id",
+		a.trade_id AS "tradeId",
+		a.trade_type AS
+		"tradeType",
+		a.trade_direction AS "tradeDirection",
+		a.trade_amount AS
+		"tradeAmount",
+		a.payee_name AS "payeeName",
+		a.payee_type AS "payeeType",
+		a.trade_status AS "tradeStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS
+		"delFlag",
+		at3.attachment_path as "rentContractReceiptFile",
+		at2.attachment_path as "depositReceiptFile",
+		case 
+			 when a.trade_type=0 then tlc.contract_name
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_name 
+			 else tc.contract_name end tradeName,
+		case 
+			 when a.trade_type=0 then tlc.contract_code
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_code 
+			 else tc.contract_code end tradeObjectNo,
+		case 
+			 when a.trade_type=0 then tlc.contract_status
+			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_status 
+			 else tc.contract_status end transStatus,
+		case 
+			 when a.trade_type=1 or a.trade_type=2 then ta.agreement_busi_status 
+			 else tc.contract_busi_status end transBusiStatus,
+		tc.data_source as "contractDataSource",
+		ta.data_source as "agreementDataSource"
+	</sql>
+
+	<sql id="tradingAccountsJoins">
+		left join t_deposit_agreement ta on a.trade_id=ta.id
+		left join t_rent_contract tc on a.trade_id=tc.id
+		left join t_lease_contract tlc on a.trade_id = tlc.id
+		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
+		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
+	</sql>
+
+	<select id="get" resultType="TradingAccounts">
+		SELECT
+		<include refid="tradingAccountsColumns" />
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="TradingAccounts">
+		select * from(
+		SELECT <include refid="tradingAccountsColumns" />
+		FROM t_trading_accounts a <include refid="tradingAccountsJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tradeId != null and tradeId != ''">
+				AND a.trade_id = #{tradeId}
+			</if>
+			<if test="tradeType != null and tradeType != ''">
+				AND a.trade_type = #{tradeType}
+			</if>
+			<if test="tradeDirection != null and tradeDirection != ''">
+				AND a.trade_direction = #{tradeDirection}
+			</if>
+			<if test="tradeStatus != null and tradeStatus != ''">
+				AND a.trade_status = #{tradeStatus}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+		) t where t.tradeName is not null
+		<if test="tradeName != null and tradeName != ''">
+			AND t.tradeName like concat('%',#{tradeName},'%')
+		</if>
+		<if test="tradeObjectNo != null and tradeObjectNo != ''">
+			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
+		</if>
+	</select>
+
+	<select id="findAllList" resultType="TradingAccounts">
+		SELECT
+		<include refid="tradingAccountsColumns" />
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_trading_accounts(
+		id,
+		trade_id,
+		trade_type,
+		trade_direction,
+		trade_amount,
+		payee_name,
+		payee_type,
+		trade_status,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+		#{tradeId},
+		#{tradeType},
+		#{tradeDirection},
+		#{tradeAmount},
+		#{payeeName},
+		#{payeeType},
+		#{tradeStatus},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_trading_accounts SET
+		trade_id = #{tradeId},
+		trade_type = #{tradeType},
+		trade_direction = #{tradeDirection},
+		trade_amount = #{tradeAmount},
+		payee_name = #{payeeName},
+		payee_type =
+		#{payeeType},
+		trade_status = #{tradeStatus},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_trading_accounts 
+		SET del_flag = #{DEL_FLAG_DELETE}, update_by = #{updateBy.id}, update_date = #{updateDate}
+		<where>
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="tradeId != null and tradeId != ''">
+				and trade_id = #{tradeId}
+			</if>
+			<if test="tradeStatus != null and tradeStatus != ''">
+				and trade_status = #{tradeStatus}
+			</if>
+		</where>
+	</update>
+
+</mapper>

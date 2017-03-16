@@ -15,7 +15,7 @@ public class MapKeyHandle {
   /** map 的 key 转成 java命名方式 **/
   public static Map keyToJavaProperty(Map map) {
     Map retMap = new HashMap();
-    if (map == null) return null;
+    if (map == null){ return null;}
 
     for (Object key : map.keySet()) {
       String newKey = StringUtils.lowerFirst(StringUtils.toCamelCase(key.toString()));
@@ -27,7 +27,7 @@ public class MapKeyHandle {
   /** map 的 key 转成 java命名方式 **/
   public static List<Map> keyToJavaProperty(List<Map> listMap) {
     List<Map> newListMap = new ArrayList<Map>();
-    if (listMap == null) return null;
+    if (listMap == null) {return null;}
 
     for (Map<String, Object> map : listMap) {
       newListMap.add(keyToJavaProperty(map));
