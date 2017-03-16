@@ -121,8 +121,6 @@ public class RentContractController extends BaseController {
   // @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = {"list", ""})
   public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-    Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
-    model.addAttribute("page", page);
     initContractSearchConditions(rentContract, model, request, response);
     return "modules/contract/rentContractList";
   }
