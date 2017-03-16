@@ -1,15 +1,12 @@
 package com.thinkgem.jeesite.modules.report.web;
 
-import com.thinkgem.jeesite.common.filter.search.MatchType;
-import com.thinkgem.jeesite.common.filter.search.PropertyType;
 import com.thinkgem.jeesite.common.filter.search.Sort;
-import com.thinkgem.jeesite.common.filter.search.builder.PropertyFilterBuilder;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
 import com.thinkgem.jeesite.common.support.MessageSupport;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,24 +31,17 @@ public class ReportComponentController {
     @RequestMapping("dict")
     @ResponseBody
     public Object queryDict(HttpServletRequest request) {
-        PropertyFilterBuilder propertyFilterBuilder = PropertyFilterBuilder.create();
         String type = request.getParameter("type");
-        if (StringUtils.isNotBlank(type)) {
-            propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
-                    .add("type", StringUtils.trimToEmpty(type));
-        }
-        List<Sort> sorts = SortBuilder.create().addAsc("sort").end();
-
-        List<Dict> dicts = reportComponentService.queryDict(propertyFilterBuilder.end(), sorts);
+        List<Dict> dicts = DictUtils.getDictList(type);
         return MessageSupport.successDataMsg(dicts, "查询成功");
     }
 
     @RequestMapping("project")
     @ResponseBody
-    public Object queryProject(HttpServletRequest request) {
+    public Object queryProject() {
         List<Sort> sorts = SortBuilder.create().addAsc("project_name").end();
-        List<PropertyProject> dicts = reportComponentService.queryProject(null, sorts);
-        return MessageSupport.successDataMsg(dicts, "查询成功");
+        List<PropertyProject> propertyProjects = reportComponentService.queryProject(null, sorts);
+        return MessageSupport.successDataMsg(propertyProjects, "查询成功");
     }
 
 
