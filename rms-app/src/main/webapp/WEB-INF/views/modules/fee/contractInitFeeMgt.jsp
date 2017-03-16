@@ -98,7 +98,7 @@
 	</script>
 </head>
 <body>
-	<ul class="nav nav-tabs"><li class="active"><a href="${ctx}/contract/rentContract/initFeeMgt">公共事业费查询</a></li></ul>
+	<ul class="nav nav-tabs"><li class="active"><a href="${ctx}/contract/rentContract/queryPublicBasicFeeInfo">公共事业费查询</a></li></ul>
 	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/queryPublicBasicFeeInfo" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
