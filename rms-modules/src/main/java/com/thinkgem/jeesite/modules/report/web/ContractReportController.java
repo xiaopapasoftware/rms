@@ -10,7 +10,6 @@ import com.thinkgem.jeesite.common.filter.search.builder.PropertyFilterBuilder;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
 import com.thinkgem.jeesite.common.support.MessageSupport;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -54,8 +53,7 @@ public class ContractReportController extends BaseController {
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        reportComponentService.fillTenantInfo(reportEntities);
-        reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
+        reportEntities = reportComponentService.fillTenantInfo(reportEntities);
 
         return MessageSupport.successDataTableMsg(page, reportEntities);
     }
@@ -66,8 +64,7 @@ public class ContractReportController extends BaseController {
         //Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
 
-        reportComponentService.fillTenantInfo(reportEntities);
-        reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
+        reportEntities = reportComponentService.fillTenantInfo(reportEntities);
 
         logger.debug("查询到合同数据为:" + reportEntities.toString());
         List<Map> dataList = new ArrayList<>();

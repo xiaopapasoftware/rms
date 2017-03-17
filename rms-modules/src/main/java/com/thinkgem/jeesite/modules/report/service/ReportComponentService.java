@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by wangganggang on 17/3/4.
@@ -43,8 +44,8 @@ public class ReportComponentService {
     /**
      * 填充合同日期
      **/
-    public void fillTenantInfo(List<Map> maps) {
-        maps.parallelStream().forEach(map -> {
+    public List<Map> fillTenantInfo(List<Map> maps) {
+        return maps.parallelStream().map(map -> {
             List<Map> tenants = queryTenant(map);
             final StringBuffer cellPhone = new StringBuffer();
             final StringBuffer tenantName = new StringBuffer();
@@ -52,13 +53,14 @@ public class ReportComponentService {
             final StringBuffer tenantNameLead = new StringBuffer();
             final StringBuffer cellPhoneLead = new StringBuffer();
             if (tenants != null && tenants.size() > 0) {
+                Map finalMap = map;
                 tenants.stream().forEach(t -> {
-                    if (StringUtils.equals(MapUtils.getString(t, "contract_id"), MapUtils.getString(map, "contract_id"))) {
+                    if (StringUtils.equals(MapUtils.getString(t, "contract_id"), MapUtils.getString(finalMap, "contract_id"))) {
                         cellPhone.append(MapUtils.getString(t, "cell_phone")).append(";");
                         tenantName.append(MapUtils.getString(t, "tenant_name")).append(";");
                         tenantIdNo.append(MapUtils.getString(t, "id_no")).append(";");
                     }
-                    if (StringUtils.equals(MapUtils.getString(t, "lease_contract_id"), MapUtils.getString(map, "contract_id"))) {
+                    if (StringUtils.equals(MapUtils.getString(t, "lease_contract_id"), MapUtils.getString(finalMap, "contract_id"))) {
                         tenantNameLead.append(MapUtils.getString(t, "tenant_name")).append(";");
                         cellPhoneLead.append(MapUtils.getString(t, "cell_phone")).append(";");
                     }
@@ -70,7 +72,7 @@ public class ReportComponentService {
             map.put("tenant_name_lead", StringUtils.substringBeforeLast(tenantNameLead.toString(), ";"));
             map.put("cell_phone_lead", StringUtils.substringBeforeLast(cellPhoneLead.toString(), ";"));
 
-            MapKeyHandle.keyToJavaProperty(map);
-        });
+            return MapKeyHandle.keyToJavaProperty(map);
+        }).collect(Collectors.toList()) ;
     }
 }
