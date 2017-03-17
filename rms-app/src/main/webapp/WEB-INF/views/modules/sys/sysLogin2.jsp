@@ -78,7 +78,7 @@
 		</div>
 	</form>
 	<div class="footer">
-		Copyright &copy; 2015-${fns:getConfig('copyrightYear')} ${fns:getConfig('productName')}<br/>Powered By 小爬爬软件工作室 ${fns:getConfig('version')}
+		Copyright&copy;2015-${fns:getConfig('copyrightYear')}${fns:getConfig('productName')}v${fns:getConfig('version')}<br/>PoweredBy 小爬爬软件工作室 
 	</div>
 	<script src="${ctxStatic}/flash/zoom.min.js" type="text/javascript"></script>
 </body>
