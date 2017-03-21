@@ -49,15 +49,13 @@ public class RentDueUrgeTask {
     @Autowired
     private ReportComponentService reportComponentService;
 
-    @Scheduled(cron = "0 7 * * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")
     public void reportCurrentTime() {
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.IN)
                 .propertyType(PropertyType.I).add("temp.free_day", "7,15").end();
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(propertyFilters, sorts);
-        reportComponentService.fillTenantInfo(reportEntities);
-        reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
-
+        reportEntities = reportComponentService.fillTenantInfo(reportEntities);
         sendMsg(reportEntities);
 
     }
