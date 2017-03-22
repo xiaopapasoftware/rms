@@ -19,7 +19,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
     }
 
     var ContractReportCommon = {
-        baseUrl: "/rms/a/report/",
+        baseUrl: ctx + "/a/report/",
         pageNum: 1,
         pageSize: 50,
         exportNum : 110000

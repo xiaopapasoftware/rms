@@ -90,6 +90,12 @@ public class RentDueUrgeReportController extends BaseController {
         PropertyFilterBuilder propertyFilterBuilder = PropertyFilterBuilder.create().matchTye(MatchType.LIKE).propertyType(PropertyType.S)
                 .add("trc.contract_code", StringUtils.trimToEmpty(request.getParameter("contractCode")));
 
+        /** 服务管家 **/
+        String serverName = request.getParameter("serverName");
+        if (StringUtils.isNotBlank(serverName)) {
+            propertyFilterBuilder.add("su.name", StringUtils.trimToEmpty(serverName));
+        }
+
         /** 楼宇号 **/
         String buildingName = request.getParameter("buildingName");
         if (StringUtils.isNotBlank(buildingName)) {

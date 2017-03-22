@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
+<script type="text/javascript">var ctx = '${ctx}', ctxStatic='${ctxStatic}';</script>
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -143,7 +145,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-table">
+            <table class="layui-table" lay-even>
                 <colgroup>
                     <col width="120">
                     <col width="120">
