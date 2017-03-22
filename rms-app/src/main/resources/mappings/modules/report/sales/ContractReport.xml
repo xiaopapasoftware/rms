@@ -33,7 +33,7 @@
         <!--销售-->
         ifnull(tc.contact_name,ifnull(sell.name,'')) as sell_name,
 
-        case trc.contract_source when 0 then '本部' when 1 then '合作' end contract_source,
+        case trc.contract_source when 0 then '合作' when 1 then '本部' end contract_source,
         sd.label as contract_busi_status_name,
         concat('付',ifnull(trc.ren_months,0),'押',ifnull(trc.deposit_months,0)) as pay_type,
         tb.building_name,
