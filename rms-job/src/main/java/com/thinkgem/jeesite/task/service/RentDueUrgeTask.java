@@ -68,6 +68,7 @@ public class RentDueUrgeTask {
         logger.debug("需要发短信的合同为 " + maps.toString());
         maps.stream().forEach(map -> {
             String expiredDate = MapUtils.getString(map, "expiredDate");
+            String prePayDate = MapUtils.getString(map, "prePayDate");
             String tenantNameLead = MapUtils.getString(map, "tenantNameLead");
             String cellPhoneLead = MapUtils.getString(map, "cellPhoneLead");
             String[] tenantNames = StringUtils.split(tenantNameLead, ";");
@@ -81,7 +82,7 @@ public class RentDueUrgeTask {
                 String str = cellPhones[i];
                 //str = "18621509689";
                 logger.debug(DateUtils.getDateTime() + "开始给" + str + "发送房租交费短信提心");
-                smsService.sendSms(str, String.format(sms_template, expiredDate));
+                smsService.sendSms(str, String.format(sms_template, prePayDate));
                 logger.debug(DateUtils.getDateTime() + "给" + str + "发送房租交费短信提心结束");
             }
 
