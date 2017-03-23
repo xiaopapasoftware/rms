@@ -30,7 +30,7 @@
                 <configuration>
                     <scanIntervalSeconds>1</scanIntervalSeconds>
                     <webApp>
-                        <contextPath>/rms</contextPath>
+                        <contextPath>/</contextPath>
                         <defaultsDescriptor>webdefault.xml</defaultsDescriptor>
                     </webApp>
                     <httpConnector>

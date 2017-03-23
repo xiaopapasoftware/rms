@@ -7,7 +7,6 @@ import com.thinkgem.jeesite.common.filter.search.Sort;
 import com.thinkgem.jeesite.common.filter.search.builder.PropertyFilterBuilder;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -36,6 +35,7 @@ import java.util.Map;
 @Lazy(false)
 public class RentDueUrgeTask {
 
+
     protected Logger logger = LoggerFactory.getLogger(RentDueUrgeTask.class);
 
     private static String sms_template = "尊敬的客户:您的房费即将于%s号到期。为了保障正常居住,请及时缴费。";
@@ -49,15 +49,14 @@ public class RentDueUrgeTask {
     @Autowired
     private ReportComponentService reportComponentService;
 
-    @Scheduled(cron = "0 7 * * * ?")
+    @Scheduled(cron = "0 0 12 * * ?")
     public void reportCurrentTime() {
+
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.IN)
                 .propertyType(PropertyType.I).add("temp.free_day", "7,15").end();
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(propertyFilters, sorts);
-        reportComponentService.fillTenantInfo(reportEntities);
-        reportEntities = MapKeyHandle.keyToJavaProperty(reportEntities);
-
+        reportEntities = reportComponentService.fillTenantInfo(reportEntities);
         sendMsg(reportEntities);
 
     }
@@ -70,6 +69,7 @@ public class RentDueUrgeTask {
         logger.debug("需要发短信的合同为 " + maps.toString());
         maps.stream().forEach(map -> {
             String expiredDate = MapUtils.getString(map, "expiredDate");
+            String prePayDate = MapUtils.getString(map, "prePayDate");
             String tenantNameLead = MapUtils.getString(map, "tenantNameLead");
             String cellPhoneLead = MapUtils.getString(map, "cellPhoneLead");
             String[] tenantNames = StringUtils.split(tenantNameLead, ";");
@@ -83,7 +83,8 @@ public class RentDueUrgeTask {
                 String str = cellPhones[i];
                 //str = "18621509689";
                 logger.debug(DateUtils.getDateTime() + "开始给" + str + "发送房租交费短信提心");
-                smsService.sendSms(str, String.format(sms_template, expiredDate));
+                logger.debug("发送内容为:" + String.format(sms_template, prePayDate));
+                smsService.sendSms(str, String.format(sms_template, prePayDate));
                 logger.debug(DateUtils.getDateTime() + "给" + str + "发送房租交费短信提心结束");
             }
 

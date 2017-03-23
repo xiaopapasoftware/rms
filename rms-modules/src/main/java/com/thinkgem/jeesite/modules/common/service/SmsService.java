@@ -33,7 +33,8 @@ public class SmsService {
 	    jsonParam.put("msgid", UUID.randomUUID().toString().replaceAll("-", ""));
 	    jsonParam.put("phones", phones);
 	    jsonParam.put("content", content);
-	    jsonParam.put("sign", "【唐巢人才公寓】");
+	    jsonParam.put("sign", "【唐巢公寓】");
+	    log.debug("签名之后发送内容:" + jsonParam.toString());
 	    StringEntity entity = new StringEntity(jsonParam.toString(), "utf-8");
 	    entity.setContentEncoding("UTF-8");
 	    entity.setContentType("application/json");

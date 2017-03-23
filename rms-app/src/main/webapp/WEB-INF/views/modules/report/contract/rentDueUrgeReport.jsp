@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
+<script type="text/javascript">var ctx = '${ctx}', ctxStatic='${ctxStatic}';</script>
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -62,7 +64,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">到期范围(天)</label>
                     <div class="layui-input-inline" style="width: 100px;">
-                        <input type="number" id="freeDayBegin" name="freeDayBegin" value="0" class="layui-input">
+                        <input type="number" id="freeDayBegin" name="freeDayBegin" value="" class="layui-input">
                     </div>
                     <div class="layui-form-mid">-</div>
                     <div class="layui-input-inline" style="width: 100px;">
@@ -83,6 +85,13 @@
                         <select id="projectValue" name="projectValue" lay-search="" placeholder="合同业务状态">
                             <option value="">物业项目</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">服务管家</label>
+                    <div class="layui-input-inline m-large">
+                        <input type="text" name="serverName" placeholder="服务管家" class="layui-input">
                     </div>
                 </div>
 
@@ -122,7 +131,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-table">
+            <table class="layui-table" lay-even>
                 <colgroup>
                     <col width="120">
                     <col width="120">
