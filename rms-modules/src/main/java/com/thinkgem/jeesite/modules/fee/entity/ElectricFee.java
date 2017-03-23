@@ -1,7 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.fee.entity;
 
 import java.util.Date;
@@ -11,12 +7,6 @@ import org.hibernate.validator.constraints.Length;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
-/**
- * 电费结算Entity
- * 
- * @author huangsc
- * @version 2015-07-04
- */
 public class ElectricFee extends DataEntity<ElectricFee> {
 
   private static final long serialVersionUID = 1L;
@@ -30,6 +20,7 @@ public class ElectricFee extends DataEntity<ElectricFee> {
   private String settleStatus;// 结算状态
   private String contractName;// 专用来查询使用的合同名变量
   private String chargeId;// 电表充值系统返回的充值编号
+  private String tradingAccountStatus;// 该笔电费充值记录所属的账务交易记录的状态
 
   public ElectricFee() {
     super();
@@ -123,4 +114,11 @@ public class ElectricFee extends DataEntity<ElectricFee> {
     this.settleStatus = settleStatus;
   }
 
+  public String getTradingAccountStatus() {
+    return tradingAccountStatus;
+  }
+
+  public void setTradingAccountStatus(String tradingAccountStatus) {
+    this.tradingAccountStatus = tradingAccountStatus;
+  }
 }

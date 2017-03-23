@@ -1,13 +1,12 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.fee.web;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,11 +26,14 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
@@ -50,6 +52,8 @@ public class ElectricFeeController extends BaseController {
   private ElectricFeeService electricFeeService;
   @Autowired
   private RentContractService rentContractService;
+  @Autowired
+  private TradingAccountsService tradingAccountsService;
 
   @ModelAttribute
   public ElectricFee get(@RequestParam(required = false) String id) {
@@ -153,6 +157,42 @@ public class ElectricFeeController extends BaseController {
   public String delete(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
     electricFeeService.delete(electricFee);
     addMessage(redirectAttributes, "删除电费结算成功");
+    return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
+  }
+
+  @RequestMapping(value = "retryFail")
+  public String retryFail(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
+    ElectricFee fee = electricFeeService.get(electricFee.getId());
+    if (fee != null) {
+      RentContract rc = rentContractService.get(fee.getRentContractId());
+      if (rc != null) {
+        String id = tradingAccountsService.charge(roomServie.get(rc.getRoom().getId()).getMeterNo(), new DecimalFormat("0").format(fee.getChargeAmount()));
+        if (StringUtils.isNotBlank(id) && !"0".equals(id)) {
+          Pattern pattern = Pattern.compile("[0-9]*");
+          Matcher isNum = pattern.matcher(id);
+          if (isNum.matches()) {
+            fee.setChargeId(id);
+            fee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
+            fee.setChargeStatus(ElectricChargeStatusEnum.SUCCESSED.getValue());
+            fee.preUpdate();
+            electricFeeService.update(fee);
+            addMessage(redirectAttributes, "充值成功！");
+          } else {
+            fee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+            fee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
+            fee.preUpdate();
+            electricFeeService.update(fee);
+            addMessage(redirectAttributes, "充值失败！");
+          }
+        } else {
+          fee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+          fee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
+          fee.preUpdate();
+          electricFeeService.update(fee);
+          addMessage(redirectAttributes, "充值失败！");
+        }
+      }
+    }
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 

@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.service;
 
@@ -74,7 +73,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 /**
  * 账务交易Service
  * 
- * @author huangsc
  * @author wangshujin
  */
 @Service
@@ -160,36 +158,40 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     saveAuditHis.setAuditTime(new Date());
     saveAuditHis.setAuditUser(UserUtils.getUser().getId());
     auditHisDao.insert(saveAuditHis);
+
     TradingAccounts tradingAccounts = tradingAccountsDao.get(auditHis.getObjectId());
     tradingAccounts.preUpdate();
     tradingAccounts.setTradeStatus(auditHis.getAuditStatus());
     tradingAccountsDao.update(tradingAccounts);
-    if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) { // 款项做到账
-      PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setTradeId(tradingAccounts.getId());
-      List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
-      if (null != paymentTradeList && paymentTradeList.size() > 0) {
-        for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
-          String transId = tmpPaymentTradeList.getTransId();
-          PaymentTrans paymentTrans = paymentTransDao.get(transId);
-          paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-          paymentTrans.setLastAmount(0d);// 剩余交易金额
-          paymentTrans.setTransAmount(paymentTrans.getTradeAmount());// 实际交易金额
-          paymentTrans.preUpdate();
-          paymentTransDao.update(paymentTrans);
-        }
-      }
-    } else {
-      PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setTradeId(tradingAccounts.getId());
-      List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
-      if (null != paymentTradeList && paymentTradeList.size() > 0) {
-        for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
-          String transId = tmpPaymentTradeList.getTransId();
-          PaymentTrans paymentTrans = paymentTransDao.get(transId);
-          if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
+
+    RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
+
+    if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) { // 手机APP端处理
+      if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+        PaymentTrade paymentTrade = new PaymentTrade();
+        paymentTrade.setTradeId(tradingAccounts.getId());
+        List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+        if (CollectionUtils.isNotEmpty(paymentTradeList)) {
+          for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+            PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
+            paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+            paymentTrans.setLastAmount(0d);
+            paymentTrans.setTransAmount(paymentTrans.getTradeAmount());
             paymentTrans.preUpdate();
-            paymentTransDao.delete(paymentTrans);
+            paymentTransDao.update(paymentTrans);
+          }
+        }
+      } else {// APP移动端合同特殊处理
+        PaymentTrade paymentTrade = new PaymentTrade();
+        paymentTrade.setTradeId(tradingAccounts.getId());
+        List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+        if (CollectionUtils.isNotEmpty(paymentTradeList)) {
+          for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+            PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
+            if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
+              paymentTrans.preUpdate();
+              paymentTransDao.delete(paymentTrans);
+            }
           }
         }
       }
@@ -218,7 +220,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       depositAgreementDao.update(depositAgreement);
     } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradingAccounts.getTradeType())
         || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradingAccounts.getTradeType())) {
-      RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
       if (!ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
         if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
           if (checkRentContractTransAmountEnough(rentContract)) {
@@ -238,99 +239,53 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         doProcessWithPaymentOrder(auditHis.getObjectId());
       }
       // 如果同时有电费充值的交易类型
-      PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-      paymentTrade.setTradeId(tradingAccounts.getId());
-      List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
-      for (PaymentTrade tmpPaymentTrade : list) { /* 更新充值记录 */
-        PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
-        if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
-          ElectricFee electricFee = new ElectricFee();
-          electricFee.setPaymentTransId(paymentTrans.getId());
-          electricFee.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-          electricFee = electricFeeDao.get(electricFee);
-          if (null != electricFee) {
-            if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
-              if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
-                Room room = rentContract.getRoom();
-                room = roomDao.get(room);
-                String meterNo = room.getMeterNo();
-                DecimalFormat df = new DecimalFormat("0");
-                String id = charge(meterNo, df.format(electricFee.getChargeAmount()));
-                if (StringUtils.isNotBlank(id) && !"0".equals(id)) {// 充值成功
-                  Pattern pattern = Pattern.compile("[0-9]*");
-                  Matcher isNum = pattern.matcher(id);
-                  if (isNum.matches()) {
-                    electricFee.setChargeId(id);
-                    electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
-                    electricFee.setChargeStatus(ElectricChargeStatusEnum.SUCCESSED.getValue());
-                    electricFee.preUpdate();
-                    electricFeeDao.update(electricFee);
-                  }
-                } else {// 充值失败
-                  electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
-                  electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
-                  electricFee.preUpdate();
-                  electricFeeDao.update(electricFee);
-                  // TODO 把相应的款项及账务交易等数据都更新为未到账和审核失败。
-                }
-              }
-            } else {// 审核不通过
-              electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
-              electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
-              electricFee.preUpdate();
-              electricFeeDao.update(electricFee);
-              // TODO 把相应的款项及账务交易等数据都更新为未到账和审核失败。
-            }
-          }
-        }
-      }
+      processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
     } else if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
-      RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
       rentContract.setContractBusiStatus(
           AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.NORMAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
-      RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
       rentContract.setContractBusiStatus(
           AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.EARLY_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
-      RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
       rentContract.setContractBusiStatus(
           AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.LATE_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
-      RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
       rentContract.setContractBusiStatus(
           AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.SPECIAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
-      PaymentTrade paymentTrade = new PaymentTrade();
-      paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-      paymentTrade.setTradeId(tradingAccounts.getId());
-      List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
-      /* 更新充值记录 */
-      for (PaymentTrade tmpPaymentTrade : list) {
-        PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+      processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
+    }
+  }
+
+  /**
+   * 电费充值
+   */
+  private void processElectricCharge(String tradingAccountsId, String auditStatus, RentContract rentContract) {
+    PaymentTrade paymentTrade = new PaymentTrade();
+    paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
+    paymentTrade.setTradeId(tradingAccountsId);
+    List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+    for (PaymentTrade tmpPaymentTrade : list) {
+      PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
+      if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
         ElectricFee electricFee = new ElectricFee();
         electricFee.setPaymentTransId(paymentTrans.getId());
         electricFee.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
         electricFee = electricFeeDao.get(electricFee);
         if (null != electricFee) {
-          if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {// 审核通过
-            RentContract rentContract = rentContractDao.get(electricFee.getRentContractId());/* 智能电表充值 */
+          if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
             if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
-              Room room = rentContract.getRoom();
-              room = roomDao.get(room);
-              String meterNo = room.getMeterNo();
-              DecimalFormat df = new DecimalFormat("0");
-              String id = charge(meterNo, df.format(electricFee.getChargeAmount()));
-              if (!StringUtils.isBlank(id)) {
+              Room room = roomDao.get(rentContract.getRoom());
+              String id = charge(room.getMeterNo(), new DecimalFormat("0").format(electricFee.getChargeAmount()));
+              if (StringUtils.isNotBlank(id) && !"0".equals(id)) {
                 Pattern pattern = Pattern.compile("[0-9]*");
                 Matcher isNum = pattern.matcher(id);
                 if (isNum.matches()) {
@@ -340,14 +295,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
                   electricFee.preUpdate();
                   electricFeeDao.update(electricFee);
                 }
-              } else {// 充值失败
+              } else {
                 electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
                 electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
                 electricFee.preUpdate();
                 electricFeeDao.update(electricFee);
               }
             }
-          } else {// 审核不通过
+          } else {
             electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
             electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
             electricFee.preUpdate();
@@ -378,10 +333,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     String id = super.saveAndReturnId(tradingAccounts);
     boolean isChoosedEleFlag = false;// 有可能用户同时选中了电费充值和新签合同的款项，设立一个是否有选中的电费充值的款项标示。
     String elePaymentTransId = "";// 电费充值的那笔款项
-    /* 更新款项状态 */
     if (StringUtils.isNotEmpty(tradingAccounts.getTransIds())) {
       String[] transIds = tradingAccounts.getTransIds().split(",");
-      /* 款项账务关联 */
       PaymentTrade paymentTrade = new PaymentTrade();
       paymentTrade.setTradeId(id);
       paymentTrade.preUpdate();

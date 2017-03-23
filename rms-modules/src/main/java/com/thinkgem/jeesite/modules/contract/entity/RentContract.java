@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
@@ -76,7 +75,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String validatorFlag;
   private List<Tenant> tenantList = new ArrayList<Tenant>();// 承租人
   private List<Tenant> liveList = new ArrayList<Tenant>();// 入住人
-  private String chargeType;
+  private String chargeType;// 公用事业费付费方式
   private List<Accounting> accountList = new ArrayList<Accounting>();
   private List<Accounting> outAccountList = new ArrayList<Accounting>();
   private String tradeType;

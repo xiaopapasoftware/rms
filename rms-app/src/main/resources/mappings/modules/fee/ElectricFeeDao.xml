@@ -10,27 +10,25 @@
 		a.charge_amount AS "chargeAmount",
 		a.charge_status AS "chargeStatus",
 		a.settle_status AS "settleStatus",
-		a.charge_id AS
-		"chargeId",
+		a.charge_id AS "chargeId",
 		a.create_by AS "createBy.id",
-		u1.login_name AS
-		"createBy.loginName",
+		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS
-		"updateBy.id",
+		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
-		u2.login_name AS
-		"updateBy.loginName",
+		u2.login_name AS "updateBy.loginName",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		tc.contract_name as "contractName"
+		tc.contract_name as "contractName",
+		tta.TRADE_STATUS as "tradingAccountStatus"
 	</sql>
 
 	<sql id="electricFeeJoins">
 		left join t_rent_contract tc on a.rent_contract_id = tc.id
+		left join t_payment_trade tpt on tpt.TRANS_ID = a.PAYMENT_TRANS_ID
+		left join t_trading_accounts tta on tpt.TRADE_ID = tta.ID
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN sys_user u2 ON
-		u2.id = a.update_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
 
 	<select id="get" resultType="ElectricFee">
@@ -44,7 +42,7 @@
 	<select id="findList" resultType="ElectricFee">
 		SELECT
 		<include refid="electricFeeColumns" />
-		FROM t_electric_fee a
+		from t_electric_fee a
 		<include refid="electricFeeJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}

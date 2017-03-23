@@ -1,7 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.funds.web;
 
 import java.math.BigDecimal;
@@ -48,11 +44,9 @@ import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 
+
 /**
- * 账务交易Controller
- * 
- * @author huangsc
- * @version 2015-06-11
+ * @author wangshujin
  */
 @Controller
 @RequestMapping(value = "${adminPath}/funds/tradingAccounts")

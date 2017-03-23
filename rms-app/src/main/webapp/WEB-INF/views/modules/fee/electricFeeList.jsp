@@ -69,6 +69,7 @@
 				<th>创建人</th>
 				<th>更新人</th>
 				<th>备注信息</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -98,6 +99,13 @@
 				<td>${electricFee.createBy.loginName}</td>
 				<td>${electricFee.updateBy.loginName}</td>
 				<td>${electricFee.remarks}</td>
+				<shiro:hasPermission name="fee:electricFee:retryFail">
+					<c:if test="${electricFee.chargeStatus=='2' && electricFee.settleStatus=='2' && electricFee.tradingAccountStatus =='1'}">
+					  <td>
+						 <a href="${ctx}/fee/electricFee/retryFail?id=${electricFee.id}">失败重试</a>
+				  	  </td>
+					</c:if>
+				</shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>
