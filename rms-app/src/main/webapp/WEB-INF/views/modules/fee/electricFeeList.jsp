@@ -99,13 +99,13 @@
 				<td>${electricFee.createBy.loginName}</td>
 				<td>${electricFee.updateBy.loginName}</td>
 				<td>${electricFee.remarks}</td>
-				<shiro:hasPermission name="fee:electricFee:retryFail">
-					<c:if test="${electricFee.chargeStatus=='2' && electricFee.settleStatus=='2' && electricFee.tradingAccountStatus =='1'}">
-					  <td>
-						 <a href="${ctx}/fee/electricFee/retryFail?id=${electricFee.id}">失败重试</a>
-				  	  </td>
-					</c:if>
-				</shiro:hasPermission>
+				<td>
+					<shiro:hasPermission name="fee:electricFee:retryFail">
+						<c:if test="${electricFee.chargeStatus=='2' && electricFee.settleStatus=='2' && electricFee.tradingAccountStatus =='1'}">
+							 <a href="${ctx}/fee/electricFee/retryFail?id=${electricFee.id}">失败重试</a>
+						</c:if>
+					</shiro:hasPermission>
+				 </td>
 			</tr>
 		</c:forEach>
 		</tbody>

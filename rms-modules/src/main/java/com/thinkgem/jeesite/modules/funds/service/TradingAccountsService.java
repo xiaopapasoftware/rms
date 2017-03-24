@@ -165,32 +165,33 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     tradingAccountsDao.update(tradingAccounts);
 
     RentContract rentContract = rentContractDao.get(tradingAccounts.getTradeId());
-
-    if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) { // 手机APP端处理
-      if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
-        PaymentTrade paymentTrade = new PaymentTrade();
-        paymentTrade.setTradeId(tradingAccounts.getId());
-        List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
-        if (CollectionUtils.isNotEmpty(paymentTradeList)) {
-          for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
-            PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
-            paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-            paymentTrans.setLastAmount(0d);
-            paymentTrans.setTransAmount(paymentTrans.getTradeAmount());
-            paymentTrans.preUpdate();
-            paymentTransDao.update(paymentTrans);
-          }
-        }
-      } else {// APP移动端合同特殊处理
-        PaymentTrade paymentTrade = new PaymentTrade();
-        paymentTrade.setTradeId(tradingAccounts.getId());
-        List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
-        if (CollectionUtils.isNotEmpty(paymentTradeList)) {
-          for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
-            PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
-            if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
+    if (rentContract != null) {
+      if (DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) { // 手机APP端处理
+        if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+          PaymentTrade paymentTrade = new PaymentTrade();
+          paymentTrade.setTradeId(tradingAccounts.getId());
+          List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+          if (CollectionUtils.isNotEmpty(paymentTradeList)) {
+            for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+              PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
+              paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+              paymentTrans.setLastAmount(0d);
+              paymentTrans.setTransAmount(paymentTrans.getTradeAmount());
               paymentTrans.preUpdate();
-              paymentTransDao.delete(paymentTrans);
+              paymentTransDao.update(paymentTrans);
+            }
+          }
+        } else {// APP移动端合同特殊处理
+          PaymentTrade paymentTrade = new PaymentTrade();
+          paymentTrade.setTradeId(tradingAccounts.getId());
+          List<PaymentTrade> paymentTradeList = paymentTradeDao.findList(paymentTrade);
+          if (CollectionUtils.isNotEmpty(paymentTradeList)) {
+            for (PaymentTrade tmpPaymentTradeList : paymentTradeList) {
+              PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTradeList.getTransId());
+              if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
+                paymentTrans.preUpdate();
+                paymentTransDao.delete(paymentTrans);
+              }
             }
           }
         }

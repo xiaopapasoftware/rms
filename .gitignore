@@ -40,3 +40,5 @@
 /rms-job/.settings/org.eclipse.wst.common.component
 /rms-job/.settings/org.eclipse.wst.common.project.facet.core.xml
 /rms-job/.settings
+/rms-app/temp
+/rms-app/logs
