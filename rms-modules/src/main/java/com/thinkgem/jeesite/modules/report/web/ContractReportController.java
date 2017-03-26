@@ -124,10 +124,10 @@ public class ContractReportController extends BaseController {
         }
 
         /** 合同类型 **/
-        String signType = request.getParameter("projectValue");
+        String signType = request.getParameter("signType");
         if (StringUtils.isNotBlank(signType)) {
             propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
-                    .add("tpp.id", StringUtils.trimToEmpty(signType));
+                    .add("trc.sign_type", StringUtils.trimToEmpty(signType ));
         }
 
         /** 签订日期范围 **/
