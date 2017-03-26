@@ -110,6 +110,27 @@
                 </div>
 
                 <div class="layui-inline">
+                    <label class="layui-form-label">物业项目</label>
+                    <div class="layui-input-inline m-large">
+                        <select id="projectValue" name="projectValue" lay-search="" placeholder="合同业务状态">
+                            <option value="">物业项目</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">合同类型</label>
+                    <div class="layui-input-inline m-large">
+                        <select id="signType" name="projectValue" lay-search="" placeholder="合同业务状态">
+                            <option value="">合同类型</option>
+                            <option value="0">新签</option>
+                            <option value="1">正常续签</option>
+                            <option value="2">逾租续签</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-inline">
                     <label class="layui-form-label">楼号</label>
                     <div class="layui-input-inline m-large">
                         <input type="text" name="buildingName" placeholder="楼号" class="layui-input">
@@ -245,6 +266,12 @@
     <option value="">合同业务状态</option>
     {{#  layui.each(d.data, function(index, item){ }}
     <option value="{{ item.value }}">{{ item.label }}</option>
+    {{#  }); }}
+</script>
+<script id="projectValueTpl" type="text/html">
+    <option value="">物业项目</option>
+    {{#  layui.each(d.data, function(index, item){ }}
+    <option value="{{ item.id }}">{{ item.projectName }}</option>
     {{#  }); }}
 </script>
 </body>

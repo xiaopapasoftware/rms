@@ -34,7 +34,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
                 url: RentDueUrgeReportCommon.baseUrl + "rentdueurge/query",
                 method: "GET"
             },
-            dict :{
+            project :{
                 url: RentDueUrgeReportCommon.baseUrl + "component/project",
                 method: "GET"
             }
@@ -102,7 +102,7 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
             },
             loadProject : function(){
                 var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
-                $.getJSON(RentDueUrgeReportMVC.URLs.dict.url, "", function (data) {
+                $.getJSON(RentDueUrgeReportMVC.URLs.project.url, "", function (data) {
                     layer.close(index);
                     var getTpl = projectValueTpl.innerHTML;
                     laytpl(getTpl).render(data, function (html) {
