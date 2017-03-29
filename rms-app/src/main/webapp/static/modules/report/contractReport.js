@@ -15,6 +15,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             ContractReportMVC.View.initControl();
             ContractReportMVC.View.bindEvent();
             ContractReportMVC.Controller.loadDict();
+            ContractReportMVC.Controller.loadProject();
         }
     }
 
@@ -37,6 +38,10 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             },
             dict :{
                 url: ContractReportCommon.baseUrl + "component/dict",
+                method: "GET"
+            },
+            project :{
+                url: ContractReportCommon.baseUrl + "component/project",
                 method: "GET"
             }
         },
@@ -149,6 +154,17 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                     var getTpl = dictValueTpl.innerHTML;
                     laytpl(getTpl).render(data, function (html) {
                         dictValue.innerHTML = html;
+                        form.render('select');
+                    });
+                });
+            },
+            loadProject : function(){
+                var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
+                $.getJSON(ContractReportMVC.URLs.project.url, "", function (data) {
+                    layer.close(index);
+                    var getTpl = projectValueTpl.innerHTML;
+                    laytpl(getTpl).render(data, function (html) {
+                        projectValue.innerHTML = html;
                         form.render('select');
                     });
                 });

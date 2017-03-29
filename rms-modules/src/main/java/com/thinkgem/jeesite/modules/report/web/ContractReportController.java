@@ -116,6 +116,20 @@ public class ContractReportController extends BaseController {
                     .add("trc.contract_busi_status", StringUtils.trimToEmpty(dictValue));
         }
 
+        /** 物业项目 **/
+        String projectValue = request.getParameter("projectValue");
+        if (StringUtils.isNotBlank(projectValue)) {
+            propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
+                    .add("tpp.id", StringUtils.trimToEmpty(projectValue));
+        }
+
+        /** 合同类型 **/
+        String signType = request.getParameter("signType");
+        if (StringUtils.isNotBlank(signType)) {
+            propertyFilterBuilder.matchTye(MatchType.EQ).propertyType(PropertyType.S)
+                    .add("trc.sign_type", StringUtils.trimToEmpty(signType ));
+        }
+
         /** 签订日期范围 **/
         String signDateStart = request.getParameter("signDateStart");
         if (StringUtils.isNotBlank(signDateStart)) {
