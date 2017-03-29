@@ -573,9 +573,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
    * @param value 充值金额
    */
   public String charge(String meterNo, String value) {
+    String result = "";
     PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
     String meterurl = proper.getProperty("meter.url") + "pay.action?addr=" + meterNo + "&pay_value=" + value;
-    String result = "";
+    logger.info("the full meterURL is:{}", meterurl);
     BufferedReader read = null;
     try {
       URLConnection connection = new URL(meterurl).openConnection();

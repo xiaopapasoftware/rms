@@ -166,7 +166,9 @@ public class ElectricFeeController extends BaseController {
     if (fee != null) {
       RentContract rc = rentContractService.get(fee.getRentContractId());
       if (rc != null) {
-        String id = tradingAccountsService.charge(roomServie.get(rc.getRoom().getId()).getMeterNo(), new DecimalFormat("0").format(fee.getChargeAmount()));
+        String meterNo = roomServie.get(rc.getRoom().getId()).getMeterNo();
+        logger.info("begin RetryFail! Call recharge service! electric meter no is:{},chargeAmount is:{}", meterNo, fee.getChargeAmount());
+        String id = tradingAccountsService.charge(meterNo, new DecimalFormat("0").format(fee.getChargeAmount()));
         if (StringUtils.isNotBlank(id) && !"0".equals(id)) {
           Pattern pattern = Pattern.compile("[0-9]*");
           Matcher isNum = pattern.matcher(id);
