@@ -36,7 +36,15 @@
 		<include refid="electricFeeColumns" />
 		FROM t_electric_fee a
 		<include refid="electricFeeJoins" />
-		WHERE a.payment_trans_id = #{paymentTransId}
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getElectricFeeByPaymentTransId" resultType="ElectricFee">
+		SELECT
+		<include refid="electricFeeColumns" />
+		FROM t_electric_fee a
+		<include refid="electricFeeJoins" />
+		WHERE a.PAYMENT_TRANS_ID = #{paymentTransId}
 	</select>
 
 	<select id="findList" resultType="ElectricFee">

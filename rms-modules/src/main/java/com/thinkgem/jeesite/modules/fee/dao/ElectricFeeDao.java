@@ -9,10 +9,12 @@ import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 
 /**
  * 电费结算DAO接口
+ * 
  * @author huangsc
  * @version 2015-07-04
  */
 @MyBatisDao
 public interface ElectricFeeDao extends CrudDao<ElectricFee> {
-	
+
+  ElectricFee getElectricFeeByPaymentTransId(String paymentTransId);
 }
