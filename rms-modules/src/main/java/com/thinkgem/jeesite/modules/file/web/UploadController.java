@@ -24,13 +24,18 @@ import java.util.Map;
  * @date 2017/03/26
  */
 @Controller
-@RequestMapping("/file/")
+@RequestMapping(value = "${adminPath}/file")
 public class UploadController {
 
     @Autowired
     private UploadService uploadService;
 
-    @RequestMapping("upload")
+    @RequestMapping("/index")
+    public String redirectIndex() {
+        return "modules/file/cropperUpload";
+    }
+
+    @RequestMapping("/upload")
     @ResponseBody
     public Object uploadImg(HttpServletRequest request) {
         MultipartFile multipartFile = getMultipartFile(request);
@@ -44,7 +49,7 @@ public class UploadController {
         return MessageSupport.successDataMsg(filePath, "上传成功");
     }
 
-    @RequestMapping("download")
+    @RequestMapping("/download")
     @ResponseBody
     public Object download(String columnName, String relatedId) {
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.EQ)
