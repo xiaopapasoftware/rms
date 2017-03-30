@@ -277,10 +277,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     for (PaymentTrade tmpPaymentTrade : list) {
       PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
       if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
-        ElectricFee electricFee = new ElectricFee();
-        electricFee.setPaymentTransId(paymentTrans.getId());
-        electricFee.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-        electricFee = electricFeeDao.get(electricFee);
+        ElectricFee electricFee = electricFeeDao.getElectricFeeByPaymentTransId(paymentTrans.getId());
         if (null != electricFee) {
           if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
             if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
@@ -396,9 +393,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       }
       // 如果带有电费充值的款项
       if (isChoosedEleFlag) {
-        ElectricFee fee = new ElectricFee();
-        fee.setPaymentTransId(elePaymentTransId);
-        ElectricFee upFee = electricFeeDao.get(fee);
+        ElectricFee upFee = electricFeeDao.getElectricFeeByPaymentTransId(elePaymentTransId);
         upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
         upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
         upFee.preUpdate();
@@ -445,9 +440,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
           }
         }
         for (String eleTransId : eleTransIds) {
-          ElectricFee fee = new ElectricFee();
-          fee.setPaymentTransId(eleTransId);
-          ElectricFee upFee = electricFeeDao.get(fee);
+          ElectricFee upFee = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
           upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
           upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
           upFee.preUpdate();
@@ -580,9 +573,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
    * @param value 充值金额
    */
   public String charge(String meterNo, String value) {
+    String result = "";
     PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
     String meterurl = proper.getProperty("meter.url") + "pay.action?addr=" + meterNo + "&pay_value=" + value;
-    String result = "";
+    logger.info("the full meterURL is:{}", meterurl);
     BufferedReader read = null;
     try {
       URLConnection connection = new URL(meterurl).openConnection();

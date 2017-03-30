@@ -34,16 +34,16 @@ public class CKFinderConfig extends Configuration {
 		}
 		boolean isView = true;//UserUtils.getSubject().isPermitted("cms:ckfinder:view");
 		boolean isUpload = true;//UserUtils.getSubject().isPermitted("cms:ckfinder:upload");
-		boolean isEdit = true;//UserUtils.getSubject().isPermitted("cms:ckfinder:edit");
+//		boolean isEdit = false;//UserUtils.getSubject().isPermitted("cms:ckfinder:edit");
 		AccessControlLevel alc = this.getAccessConrolLevels().get(0);
-		alc.setFolderView(isView);
-		alc.setFolderCreate(isEdit);
-		alc.setFolderRename(isEdit);
-		alc.setFolderDelete(isEdit);
+		alc.setFolderView(true);
+		alc.setFolderCreate(true);
+		alc.setFolderRename(false);
+		alc.setFolderDelete(false);
 		alc.setFileView(isView);
 		alc.setFileUpload(isUpload);
-		alc.setFileRename(isEdit);
-		alc.setFileDelete(isEdit);
+		alc.setFileRename(false);
+		alc.setFileDelete(false);
 //		for (AccessControlLevel a : this.getAccessConrolLevels()){
 //			System.out.println(a.getRole()+", "+a.getResourceType()+", "+a.getFolder()
 //					+", "+a.isFolderView()+", "+a.isFolderCreate()+", "+a.isFolderRename()+", "+a.isFolderDelete()
