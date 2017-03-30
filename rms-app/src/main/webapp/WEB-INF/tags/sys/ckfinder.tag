@@ -9,7 +9,7 @@
 <%@ attribute name="maxHeight" type="java.lang.String" required="false" description="最大高度"%>
 <ol id="${input}Preview"></ol><c:if test="${!readonly}">
     <div class="layui-box layui-upload-button">
-       <input type="file" id="_upload_file" name="file" class="layui-upload-file" lay-title="添加" onchange="uploadFile();">
+       <input type="file" id="${input}_upload_file" name="file" class="layui-upload-file" lay-title="添加" onchange="${input}UploadFile();">
      <span class="layui-upload-icon"><i class="layui-icon"></i>添加</span></div>
     <%--<input type="file" id="_btn_upload" name="file" class="layui-upload-file" lay-title="添加">--%>
     <%--<a href="javascript:" id="_btn_upload" class="btn">${selectMultiple?'添加':'选择'}</a>--%>&nbsp;
@@ -89,9 +89,9 @@
 
 	${input}Preview();
 
-    function uploadFile(){
+    function ${input}UploadFile(){
         var formData = new FormData();
-        formData.append("uploadFile", $("#_upload_file")[0].files[0]);
+        formData.append("uploadFile", $("#${input}_upload_file")[0].files[0]);
         $.support.cors = true;
         $.ajax({
             type: "POST",
