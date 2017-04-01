@@ -111,6 +111,7 @@
                 } catch (e) {
                     console.log(e.message);
                 }
+                $("#${input}_upload_file").val("");
             },
             error: function (err) {
                 alert(err);
