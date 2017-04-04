@@ -100,7 +100,8 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/contract/rentContract/queryPublicBasicFeeInfo">合同初始事业费管理</a></li>
-		<li><a href="${ctx}/fee/electricFee/postpaidFeeList">后付费管理</a></li>
+		<li><a href="${ctx}/fee/electricFee/postpaidFeeList">后付费查询</a></li>
+		<li><a href="${ctx}/fee/electricFee/postpaidFeeForm">后付费付款</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/queryPublicBasicFeeInfo" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>

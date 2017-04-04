@@ -37,6 +37,18 @@
 				}
 			}
 			if(check) {
+				//校验后付费的款项不能一起到账
+				var counted = 0;
+				for(var i=0;i<transIds;i++) {
+					var selTradeType = $("input[name='transIds']:checked").eq(i).attr("tradetype");
+					if(selTradeType == '12'||selTradeType == '13'||selTradeType == '14'||selTradeType == '15'||selTradeType == '16'||selTradeType == '17'||selTradeType == '18'){
+						counted = counted + 1;
+					}
+				}
+				if(counted>1){
+					top.$.jBox.tip('后付费款项只能单独到账登记！','warning');
+					return;	
+				}
 				var transId=new Array();
 				for(var i=0;i<transIds;i++) {
 					transId.push($("input[name='transIds']:checked").eq(i).val());

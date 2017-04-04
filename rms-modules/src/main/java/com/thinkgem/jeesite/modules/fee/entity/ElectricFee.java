@@ -8,8 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 public class ElectricFee extends DataEntity<ElectricFee> {
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -5561131694314203469L;
   private String rentContractId; // 出租合同
   private String paymentTransId;// 款项ID
   private Date chargeDate; // 充值时间
@@ -21,6 +20,7 @@ public class ElectricFee extends DataEntity<ElectricFee> {
   private String contractName;// 专用来查询使用的合同名变量
   private String chargeId;// 电表充值系统返回的充值编号
   private String tradingAccountStatus;// 该笔电费充值记录所属的账务交易记录的状态
+  private String remarks;// 备注
 
   public ElectricFee() {
     super();
@@ -121,4 +121,13 @@ public class ElectricFee extends DataEntity<ElectricFee> {
   public void setTradingAccountStatus(String tradingAccountStatus) {
     this.tradingAccountStatus = tradingAccountStatus;
   }
+
+  public String getRemarks() {
+    return remarks;
+  }
+
+  public void setRemarks(String remarks) {
+    this.remarks = remarks;
+  }
+
 }

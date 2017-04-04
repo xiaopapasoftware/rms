@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +50,15 @@ import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PublicFeePayStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
+import com.thinkgem.jeesite.modules.fee.service.PostpaidFeeService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
@@ -69,6 +71,7 @@ import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
  * 账务交易Service
@@ -103,6 +106,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
   private AttachmentDao attachmentDao;
   @Autowired
   private RoomDao roomDao;
+  @Autowired
+  private PostpaidFeeService postpaidFeeService;
 
   private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";// 账务审批
 
@@ -263,6 +268,25 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
       processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
+    } else if (TradeTypeEnum.POSTPAID_SELF.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_SHARE.getValue().equals(tradingAccounts.getTradeType())
+        || TradeTypeEnum.POSTPAID_WATER.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_NET.getValue().equals(tradingAccounts.getTradeType())
+        || TradeTypeEnum.POSTPAID_TV.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_GAS.getValue().equals(tradingAccounts.getTradeType())
+        || TradeTypeEnum.POSTPAID_SERVICE.getValue().equals(tradingAccounts.getTradeType())) {
+      PaymentTrade paymentTrade = new PaymentTrade();
+      paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
+      paymentTrade.setTradeId(tradingAccounts.getId());
+      List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
+      for (PaymentTrade tmpPaymentTrade : list) {
+        PostpaidFee postpaidFee = postpaidFeeService.getPostpaidFeeByTransId(tmpPaymentTrade.getTransId());
+        if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+          postpaidFee.setPayStatus(PublicFeePayStatusEnum.SUCCESSED.getValue());
+          postpaidFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
+        } else {
+          postpaidFee.setPayStatus(PublicFeePayStatusEnum.FAILED.getValue());
+          postpaidFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+        }
+        postpaidFeeService.save(postpaidFee);
+      }
     }
   }
 

@@ -43,7 +43,7 @@
 			<div class="controls">
 				<div class="input-append">
 					<input id="rentContractId" name="rentContractId" class="" type="hidden" value="${rentContractId}">
-					<input id="contractName" readonly="readonly" type="text"  value="${contractName}" data-msg-required="" class="" style="">
+					<input id="contractName" readonly="readonly" type="text"  value="${contractName}">
 					<a id="rentContractButton" href="javascript:" class="btn" style="">&nbsp;<i class="icon-search"></i>&nbsp;</a>&nbsp;&nbsp;
 				</div>
 				<span class="help-inline"><font color="red">*</font></span>

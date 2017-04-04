@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao">
+<mapper namespace="com.thinkgem.jeesite.modules.fee.dao.PostpaidFeeDao">
 
-	<sql id="electricFeeColumns">
+	<sql id="postpaidFeeColumns">
 		a.id AS "id",
 		a.rent_contract_id AS "rentContractId",
 		a.payment_trans_id AS "paymentTransId",
-		a.charge_date AS "chargeDate",
-		a.charge_amount AS "chargeAmount",
-		a.charge_status AS "chargeStatus",
+		a.public_fee_type AS "publicFeeType",
+		a.pay_date AS "payDate",
+		a.pay_amount AS "payAmount",
+		a.pay_status AS "payStatus",
 		a.settle_status AS "settleStatus",
-		a.charge_id AS "chargeId",
 		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
@@ -19,39 +19,36 @@
 		u2.login_name AS "updateBy.loginName",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		tc.contract_name as "contractName",
-		tta.TRADE_STATUS as "tradingAccountStatus"
+		tc.contract_name as "contractName"
 	</sql>
 
-	<sql id="electricFeeJoins">
+	<sql id="postpaidFeeJoins">
 		left join t_rent_contract tc on a.rent_contract_id = tc.id
-		left join t_payment_trade tpt on tpt.TRANS_ID = a.PAYMENT_TRANS_ID
-		left join t_trading_accounts tta on tpt.TRADE_ID = tta.ID
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
 
-	<select id="get" resultType="ElectricFee">
-		SELECT
-		<include refid="electricFeeColumns" />
-		FROM t_electric_fee a
-		<include refid="electricFeeJoins" />
+	<select id="get" resultType="PostpaidFee">
+		SELECT 
+		<include refid="postpaidFeeColumns" />
+		FROM t_postpaid_fee a
+		<include refid="postpaidFeeJoins" />
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="getElectricFeeByPaymentTransId" resultType="ElectricFee">
+	<select id="getPostpaidFeeByTransId" resultType="PostpaidFee">
 		SELECT
-		<include refid="electricFeeColumns" />
-		FROM t_electric_fee a
-		<include refid="electricFeeJoins" />
+		<include refid="postpaidFeeColumns" />
+		FROM t_postpaid_fee a
+		<include refid="postpaidFeeJoins" />
 		WHERE a.PAYMENT_TRANS_ID = #{paymentTransId}
 	</select>
 
-	<select id="findList" resultType="ElectricFee">
+	<select id="findList" resultType="PostpaidFee">
 		SELECT
-		<include refid="electricFeeColumns" />
-		from t_electric_fee a
-		<include refid="electricFeeJoins" />
+		<include refid="postpaidFeeColumns" />
+		from t_postpaid_fee a
+		<include refid="postpaidFeeJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="rentContractId != null and rentContractId != ''">
@@ -60,14 +57,17 @@
 			<if test="paymentTransId != null and paymentTransId != ''">
 				AND a.payment_trans_id = #{paymentTransId}
 			</if>
+			<if test="publicFeeType != null and publicFeeType != ''">
+				AND a.public_Fee_Type = #{publicFeeType}
+			</if>
 			<if test="startDate != null and startDate != ''">
-				AND a.charge_date >= str_to_date(#{startDate},'%Y-%m-%d')
+				<![CDATA[AND a.pay_date >= str_to_date(#{startDate},'%Y-%m-%d')]]>
 			</if>
 			<if test="endDate != null and endDate != ''">
-				<![CDATA[AND a.charge_date <= str_to_date(#{endDate},'%Y-%m-%d')]]>
+				<![CDATA[AND a.pay_date <= str_to_date(#{endDate},'%Y-%m-%d')]]>
 			</if>
-			<if test="chargeStatus != null and chargeStatus != ''">
-				AND a.charge_status = #{chargeStatus}
+			<if test="payStatus != null and payStatus != ''">
+				AND a.pay_status = #{payStatus}
 			</if>
 			<if test="settleStatus != null and settleStatus != ''">
 				AND a.settle_status = #{settleStatus}
@@ -86,11 +86,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="ElectricFee">
+	<select id="findAllList" resultType="PostpaidFee">
 		SELECT
-		<include refid="electricFeeColumns" />
-		FROM t_electric_fee a
-		<include refid="electricFeeJoins" />
+		<include refid="postpaidFeeColumns" />
+		FROM t_postpaid_fee a
+		<include refid="postpaidFeeJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -105,15 +105,15 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO t_electric_fee(
+		INSERT INTO t_postpaid_fee(
 		id,
 		rent_contract_id,
 		payment_trans_id,
-		charge_date,
-		charge_amount,
-		charge_status,
+		public_fee_type,
+		pay_date,
+		pay_amount,
+		pay_status,
 		settle_status,
-		charge_id,
 		create_by,
 		create_date,
 		update_by,
@@ -124,11 +124,11 @@
 		#{id},
 		#{rentContractId},
 		#{paymentTransId},
-		#{chargeDate},
-		#{chargeAmount},
-		#{chargeStatus},
+		#{publicFeeType},
+		#{payDate},
+		#{payAmount},
+		#{payStatus},
 		#{settleStatus},
-		#{chargeId},
 		#{createBy.id},
 		#{createDate},
 		#{updateBy.id},
@@ -139,14 +139,14 @@
 	</insert>
 
 	<update id="update">
-		UPDATE t_electric_fee SET
+		UPDATE t_postpaid_fee SET
 		rent_contract_id = #{rentContractId},
 		payment_trans_id = #{paymentTransId},
-		charge_date = #{chargeDate},
-		charge_amount = #{chargeAmount},
-		charge_status = #{chargeStatus},
+		public_fee_type = #{publicFeeType},
+		pay_date = #{payDate},
+		pay_amount = #{payAmount},
+		pay_status = #{payStatus},
 		settle_status = #{settleStatus},
-		charge_id = #{chargeId},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate},
 		remarks = #{remarks}
@@ -154,14 +154,14 @@
 	</update>
 
 	<update id="delete">
-		UPDATE    t_electric_fee 
-		   SET    del_flag = #{DEL_FLAG_DELETE},
-		   		  update_by = #{updateBy.id},
-				  update_date = #{updateDate}
-		 WHERE    id = #{id}
-		          <if test="rentContractId != null and rentContractId != ''">
-		 	        AND rent_contract_id = #{rentContractId}
-		          </if>
+		UPDATE t_postpaid_fee
+		SET del_flag = #{DEL_FLAG_DELETE},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+		<if test="rentContractId != null and rentContractId != ''">
+			AND rent_contract_id = #{rentContractId}
+		</if>
 	</update>
 
 </mapper>

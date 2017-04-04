@@ -32,7 +32,9 @@ import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
+import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.fee.service.PostpaidFeeService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
@@ -50,6 +52,8 @@ public class ElectricFeeController extends BaseController {
   private RoomService roomServie;
   @Autowired
   private ElectricFeeService electricFeeService;
+  @Autowired
+  private PostpaidFeeService postpaidFeeService;
   @Autowired
   private RentContractService rentContractService;
   @Autowired
@@ -196,6 +200,28 @@ public class ElectricFeeController extends BaseController {
       }
     }
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
+  }
+
+  @RequestMapping(value = {"postpaidFeeList"})
+  public String postpaidFeeList(PostpaidFee postpaidFee, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<PostpaidFee> page = postpaidFeeService.findPage(new Page<PostpaidFee>(request, response), postpaidFee);
+    model.addAttribute("page", page);
+    return "modules/fee/postpaidFeeList";
+  }
+
+  @RequestMapping(value = "postpaidFeeForm")
+  public String postpaidFeeForm(PostpaidFee postpaidFee, Model model) {
+    model.addAttribute("postpaidFee", postpaidFee);
+    return "modules/fee/postpaidFeeForm";
+  }
+
+  @RequestMapping(value = "postpaidFeeSave")
+  public String postpaidFeeSave(PostpaidFee postpaidFee, Model model) {
+    if (!beanValidator(model, postpaidFee)) {
+      return postpaidFeeForm(postpaidFee, model);
+    }
+    postpaidFeeService.saveBusiPostpaidFee(postpaidFee);
+    return "redirect:" + Global.getAdminPath() + "/fee/electricFee/postpaidFeeList";
   }
 
   private String setValues(Model model, RentContract rc, int chargeAmount, String message) {

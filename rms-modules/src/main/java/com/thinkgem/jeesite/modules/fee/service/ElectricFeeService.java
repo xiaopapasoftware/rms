@@ -38,8 +38,6 @@ import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 /**
- * 电费结算Service
- * 
  * @author huangsc
  * @version 2015-07-04
  */

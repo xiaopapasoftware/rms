@@ -60,7 +60,42 @@ public enum TradeTypeEnum {
   /**
    * 电费充值
    */
-  ELECTRICITY_CHARGE("11");
+  ELECTRICITY_CHARGE("11"),
+
+  /**
+   * 后付费自用电费付费
+   */
+  POSTPAID_SELF("12"),
+
+  /**
+   * 后付费分摊电费付费
+   */
+  POSTPAID_SHARE("13"),
+
+  /**
+   * 后付费水费付费
+   */
+  POSTPAID_WATER("14"),
+
+  /**
+   * 后付费宽带费付费
+   */
+  POSTPAID_NET("15"),
+
+  /**
+   * 后付费电视费付费
+   */
+  POSTPAID_TV("16"),
+
+  /**
+   * 后付费燃气费付费
+   */
+  POSTPAID_GAS("17"),
+
+  /**
+   * 后付费服务费付费
+   */
+  POSTPAID_SERVICE("18");
 
   TradeTypeEnum(String value) {
     this.value = value;
