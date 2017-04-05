@@ -468,7 +468,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         }
         for (String eleTransId : eleTransIds) {
           List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
-          logger.info("result is : {}", JsonUtil.object2Json(upFees));
           ElectricFee upFee = upFees.get(0);
           upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
           upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
