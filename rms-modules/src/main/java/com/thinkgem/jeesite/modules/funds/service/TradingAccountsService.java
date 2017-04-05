@@ -26,6 +26,7 @@ import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
@@ -301,8 +302,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     for (PaymentTrade tmpPaymentTrade : list) {
       PaymentTrans paymentTrans = paymentTransDao.get(tmpPaymentTrade.getTransId());
       if (PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue().equals(paymentTrans.getPaymentType())) {
-        ElectricFee electricFee = electricFeeDao.getElectricFeeByPaymentTransId(paymentTrans.getId());
-        if (null != electricFee) {
+        List<ElectricFee> electricFees = electricFeeDao.getElectricFeeByPaymentTransId(paymentTrans.getId());
+        if (CollectionUtils.isNotEmpty(electricFees)) {
+          ElectricFee electricFee = electricFees.get(0);
           if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
             if (null != rentContract && RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
               Room room = roomDao.get(rentContract.getRoom());
@@ -417,7 +419,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       }
       // 如果带有电费充值的款项
       if (isChoosedEleFlag) {
-        ElectricFee upFee = electricFeeDao.getElectricFeeByPaymentTransId(elePaymentTransId);
+        List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(elePaymentTransId);
+        ElectricFee upFee = upFees.get(0);
         upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
         upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
         upFee.preUpdate();
@@ -464,7 +467,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
           }
         }
         for (String eleTransId : eleTransIds) {
-          ElectricFee upFee = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
+          List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
+          logger.info("result is : {}", JsonUtil.object2Json(upFees));
+          ElectricFee upFee = upFees.get(0);
           upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
           upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
           upFee.preUpdate();
