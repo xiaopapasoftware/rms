@@ -356,9 +356,9 @@
 	<ul class="nav nav-tabs">
 		<li><a href="${ctx}/contract/depositAgreement/">定金协议列表</a></li>
 		<li>
-		<shiro:hasPermission name="contract:depositAgreement:edit">
-		<a href="${ctx}/contract/depositAgreement/form">定金协议添加</a>
-		</shiro:hasPermission>
+			<shiro:hasPermission name="contract:depositAgreement:edit">
+				<a href="${ctx}/contract/depositAgreement/form">定金协议添加</a>
+			</shiro:hasPermission>
 		</li>
 		<li class="active"><a href="javascript:void(0);">出租合同添加</a></li>
 	</ul><br/>
@@ -629,6 +629,32 @@
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出租合同：</label>
+			<div class="controls">
+				<c:if test="${'2'==rentContract.dataSource && rentContract.contractStatus != '0'}">
+					<a target="_blank" href="http://rms.tangroom.com:12302/rms-api/rentContractAgreement.html?id=${rentContract.id}">合同附件</a>
+				</c:if>
+				<c:if test="${'2'!=rentContract.dataSource}">
+					<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+					<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
+				</c:if>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">租客身份证：</label>
+			<div class="controls">
+				<form:hidden id="rentContractCusIDFile" path="rentContractCusIDFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="rentContractCusIDFile" type="files" uploadPath="/租客身份证" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">出租合同其他附件：</label>
+			<div class="controls">
+				<form:hidden id="rentContractOtherFile" path="rentContractOtherFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="rentContractOtherFile" type="files" uploadPath="/出租合同其他附件" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">
