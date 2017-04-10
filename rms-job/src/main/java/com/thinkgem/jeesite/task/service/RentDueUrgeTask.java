@@ -70,10 +70,10 @@ public class RentDueUrgeTask {
         maps.stream().forEach(map -> {
             String expiredDate = MapUtils.getString(map, "expiredDate");
             String prePayDate = MapUtils.getString(map, "prePayDate");
-            String tenantNameLead = MapUtils.getString(map, "tenantNameLead");
-            String cellPhoneLead = MapUtils.getString(map, "cellPhoneLead");
-            String[] tenantNames = StringUtils.split(tenantNameLead, ";");
-            String[] cellPhones = StringUtils.split(cellPhoneLead, ";");
+            String tenantName = MapUtils.getString(map, "tenantName");
+            String cellPhone = MapUtils.getString(map, "cellPhone");
+            String[] tenantNames = StringUtils.split(tenantName, ";");
+            String[] cellPhones = StringUtils.split(cellPhone, ";");
             for (int i = 0; tenantNames !=null && i < cellPhones.length; i++) {
                 count[0]++;
                 Map remindMap = new HashMap();
