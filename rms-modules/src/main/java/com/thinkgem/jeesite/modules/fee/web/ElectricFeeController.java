@@ -60,10 +60,13 @@ public class ElectricFeeController extends BaseController {
   private TradingAccountsService tradingAccountsService;
 
   @ModelAttribute
-  public ElectricFee get(@RequestParam(required = false) String id) {
-    ElectricFee entity = null;
+  public Object get(@RequestParam(required = false) String id) {
+    Object entity = null;
     if (StringUtils.isNotBlank(id)) {
       entity = electricFeeService.get(id);
+    }
+    if (entity == null) {
+      entity = postpaidFeeService.get(id);
     }
     if (entity == null) {
       entity = new ElectricFee();

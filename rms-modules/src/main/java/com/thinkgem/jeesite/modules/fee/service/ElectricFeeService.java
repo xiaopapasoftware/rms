@@ -67,7 +67,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
   public void save(ElectricFee electricFee) {
     Date nowDate = new Date();
     String id = paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.ELECTRICITY_CHARGE.getValue(), PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), electricFee.getRentContractId(),
-        TradeDirectionEnum.IN.getValue(), electricFee.getChargeAmount(), electricFee.getChargeAmount(), 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, nowDate);
+        TradeDirectionEnum.IN.getValue(), electricFee.getChargeAmount(), electricFee.getChargeAmount(), 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, nowDate, null);
     electricFee.setChargeDate(nowDate);
     electricFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
     electricFee.setPaymentTransId(id);

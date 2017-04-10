@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
@@ -127,7 +126,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 expiredDate = tmpAccounting.getFeeDate();
               }
               paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue(), feeType, rentContractId, tmpAccounting.getFeeDirection(), feeAmt, feeAmt, 0D,
-                  PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), expiredDate);
+                  PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), expiredDate, null);
             }
           }
         }
@@ -452,7 +451,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentType = PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue();
         }
         paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), electricAmount, electricAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
-            startDate, expireDate);
+            startDate, expireDate, null);
       }
       Double rentDepositAmt = rentContract.getDepositAmount();
       if (rentDepositAmt != null && rentDepositAmt > 0) {
@@ -466,7 +465,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentType = PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue();
         }
         paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), rentDepositAmt, rentDepositAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
-            startDate, expireDate);
+            startDate, expireDate, null);
       }
       // 如果有电费充值金额，需要同时生成电费充值款项和电费充值记录
       Double eleRechargeAmount = rentContract.getEleRechargeAmount();
@@ -474,7 +473,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         Date nowDate = new Date();
         Date endDate = DateUtils.parseDate(DateUtils.lastDateOfCurrentMonth());
         String paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), id, TradeDirectionEnum.IN.getValue(), eleRechargeAmount,
-            eleRechargeAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, endDate);
+            eleRechargeAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), nowDate, endDate, null);
         ElectricFee ef = new ElectricFee();
         ef.preInsert();
         ef.setChargeAmount(eleRechargeAmount);
@@ -625,19 +624,19 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         Double waterFeeAmt = rentContract.getWaterFee();
         if (null != waterFeeAmt && waterFeeAmt > 0) {
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), waterFeeAmt, waterFeeAmt, 0D,
-              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate);
+              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
         // 电视费
         Double tvFeeAmt = rentContract.getTvFee();
         if ("1".equals(rentContract.getHasTv()) && null != tvFeeAmt && tvFeeAmt > 0) {
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.TV_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), tvFeeAmt, tvFeeAmt, 0D,
-              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate);
+              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
         // 宽带费
         Double netFee = rentContract.getNetFee();
         if ("1".equals(rentContract.getHasNet()) && null != netFee && netFee > 0) {
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.NET_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), netFee, netFee, 0D,
-              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate);
+              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
 
         // 服务费，按照比例计算
@@ -645,7 +644,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         if (null != serviceFee && serviceFee > 0) {
           Double tradeAmt = rentContract.getServiceFee() * rentContract.getRental();
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), tradeAmt, tradeAmt, 0D,
-              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate);
+              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
         startD = DateUtils.dateAddMonth(startD, 1);
       }

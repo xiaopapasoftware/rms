@@ -15,6 +15,7 @@
 		a.last_amount AS "lastAmount",
 		a.transfer_deposit_amount AS "transferDepositAmount",
 		a.trans_status AS "transStatus",
+		a.postpaid_fee_id AS "postpaidFeeId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -75,6 +76,9 @@
 			<if test="transStatus != null and transStatus != ''">
 				AND a.trans_status = #{transStatus}
 			</if>
+			<if test="postpaidFeeId != null and postpaidFeeId != ''">
+				and postpaid_fee_id = #{postpaidFeeId}
+			</if>
 			<if test="startDate_begin != null and startDate_begin != ''">
 				<![CDATA[AND a.start_date >= #{startDate_begin}]]>
 			</if>
@@ -130,6 +134,7 @@
 		last_amount,
 		transfer_deposit_amount,
 		trans_status,
+		postpaid_fee_id,
 		create_by,
 		create_date,
 		update_by,
@@ -149,6 +154,7 @@
 		#{lastAmount},
 		#{transferDepositAmount},
 		#{transStatus},
+		#{postpaidFeeId},
 		#{createBy.id},
 		#{createDate},
 		#{updateBy.id},
@@ -186,8 +192,7 @@
 	<update id="delete">
 		UPDATE t_payment_trans SET
 		del_flag = #{DEL_FLAG_DELETE},
-		update_by =
-		#{updateBy.id},
+		update_by = #{updateBy.id},
 		update_date = #{updateDate}
 		<where>
 			<if test="id != null and id != ''">
@@ -207,6 +212,9 @@
 			</if>
 			<if test="transStatus != null and transStatus != ''">
 				and trans_status = #{transStatus}
+			</if>
+			<if test="postpaidFeeId != null and postpaidFeeId != ''">
+				and postpaid_fee_id = #{postpaidFeeId}
 			</if>
 		</where>
 	</update>

@@ -1,11 +1,12 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 
   @Transactional(readOnly = false)
   public String generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus,
-      Date startDate, Date expiredDate) {
+      Date startDate, Date expiredDate, String postpaidFeeId) {
     String id = "";
     if (null != tradeAmount && tradeAmount > 0) {
       PaymentTrans paymentTrans = new PaymentTrans();
@@ -63,6 +64,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
       paymentTrans.setLastAmount(lastAmount);
       paymentTrans.setTransAmount(transAmount);
       paymentTrans.setTransStatus(transStatus);
+      paymentTrans.setPostpaidFeeId(postpaidFeeId);
       id = super.saveAndReturnId(paymentTrans);
     }
     return id;
@@ -144,7 +146,6 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   /**
    * 检查退租时，合同下是否还有未到账的款项，有返回true，无返回false
    */
-  @Transactional(readOnly = true)
   public boolean checkNotSignedPaymentTrans(String rentContractId) {
     boolean paymentTransFlag = false;
     PaymentTrans paymentTrans = new PaymentTrans();
@@ -159,5 +160,55 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
       }
     }
     return paymentTransFlag;
+  }
+
+  /**
+   * 删除后付费交易对应的所有的款项，账务，款项账务关联关系，以及相关收据
+   * 前提：
+   * 1、到账登记时，不能跟别的交易类型一起混合到账登记，必须只能是后付费这一种账务交易类型。
+   * 2、到账登记的款项必须是 同一笔后付费交易，不能跨两笔后付费交易。
+   */
+  @Transactional(readOnly = false)
+  public void deletePaymentTransAndTradingAcctounsWithPostpaidFee(String postpaidFeeId) {
+    // 根据后付费交易ID查询账务交易集合
+    Set<String> tradingAccountsIdSet = new HashSet<String>();
+    PaymentTrans delPaymentTrans = new PaymentTrans();
+    delPaymentTrans.setPostpaidFeeId(postpaidFeeId);
+    List<PaymentTrans> transList = super.findList(delPaymentTrans);
+    if (CollectionUtils.isNotEmpty(transList)) {
+      for (PaymentTrans tempTrans : transList) {
+        PaymentTrade pt = new PaymentTrade();
+        pt.setTransId(tempTrans.getId());
+        List<PaymentTrade> paymentTrades = paymentTradeDao.findList(pt);
+        if (CollectionUtils.isNotEmpty(paymentTrades)) {
+          tradingAccountsIdSet.add(paymentTrades.get(0).getTradeId());
+        }
+      }
+    }
+    // 删除款项记录
+    delPaymentTrans.preUpdate();
+    super.delete(delPaymentTrans);
+    // 删除款项账务的关联关系、收据、附件
+    if (CollectionUtils.isNotEmpty(tradingAccountsIdSet)) {
+      for (String tradingAccountsId : tradingAccountsIdSet) {
+        TradingAccounts tradingAccount = tradingAccountsDao.get(tradingAccountsId);
+        if (tradingAccount != null) {
+          PaymentTrade pt = new PaymentTrade();
+          pt.setTradeId(tradingAccountsId);
+          pt.preUpdate();
+          paymentTradeDao.delete(pt);
+          Receipt receipt = new Receipt();
+          receipt.setTradingAccounts(tradingAccount);
+          receipt.preUpdate();
+          receiptService.delete(receipt);
+          Attachment attachment = new Attachment();
+          attachment.setTradingAccountsId(tradingAccountsId);
+          attachmentService.delete(attachment);
+          // 删除账务交易记录
+          tradingAccount.preUpdate();
+          tradingAccountsDao.delete(tradingAccount);
+        }
+      }
+    }
   }
 }

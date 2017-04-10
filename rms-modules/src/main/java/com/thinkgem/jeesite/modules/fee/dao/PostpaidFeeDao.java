@@ -12,5 +12,4 @@ import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
 @MyBatisDao
 public interface PostpaidFeeDao extends CrudDao<PostpaidFee> {
 
-  PostpaidFee getPostpaidFeeByTransId(String paymentTransId);
 }

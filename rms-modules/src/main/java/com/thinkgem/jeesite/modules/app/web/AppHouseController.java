@@ -2242,7 +2242,7 @@ public class AppHouseController {
         // 记录款项
         String paymentTransId =
             paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.ELECTRICITY_CHARGE.getValue(), PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue(), request.getParameter("contract_id"),
-                TradeDirectionEnum.IN.getValue(), Double.valueOf(chargeValue), 0d, Double.valueOf(chargeValue), PaymentTransStatusEnum.WHOLE_SIGN.getValue(), new Date(), new Date());
+                TradeDirectionEnum.IN.getValue(), Double.valueOf(chargeValue), 0d, Double.valueOf(chargeValue), PaymentTransStatusEnum.WHOLE_SIGN.getValue(), new Date(), new Date(), null);
         // 账务交易
         TradingAccounts tradingAccounts = new TradingAccounts();
         tradingAccounts.preInsert();

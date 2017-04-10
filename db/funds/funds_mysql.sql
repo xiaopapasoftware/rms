@@ -4,9 +4,8 @@ drop table if exists T_PAYMENT_TRANS;
 drop table if exists T_RECEIPT;
 drop table if exists T_INVOICE;
 drop table if exists T_PAYMENT_TRADE;
+DROP TABLE IF EXISTS t_payment_order;
 
-
-/* Create Tables */
 create table T_TRADING_ACCOUNTS
 (
    ID                   varchar(64) NOT NULL,
@@ -40,6 +39,7 @@ create table T_PAYMENT_TRANS
    LAST_AMOUNT          float comment '剩余交易金额',
    TRANS_STATUS         VARCHAR(64) COMMENT '交易款项状态',
    TRANSFER_DEPOSIT_AMOUNT FLOAT COMMENT '已转定金金额',
+   postpaid_fee_id		varchar(64) '后付费记录ID',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -104,3 +104,23 @@ create table T_INVOICE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '发票信息';
+
+create table t_payment_order
+(
+	ID                   varchar(64) NOT NULL,
+	order_id             varchar(64),
+	order_amount         float,
+	order_date           DATETIME,
+	order_status         varchar(2),
+	trade_id             varchar(64) comment '账务交易ID',
+	trans_id             varchar(64) comment '支付交易单号',
+	trans_date           DATETIME,
+	house_id 			 varchar(64),
+	CREATE_BY            VARCHAR(64) COMMENT '创建者',
+  CREATE_DATE          DATETIME 	COMMENT '创建时间',
+  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+  REMARKS              VARCHAR(255) COMMENT '备注信息',
+  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+	primary key (ID)
+) comment = '支付订单信息';

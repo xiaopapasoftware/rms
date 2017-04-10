@@ -5,12 +5,15 @@
 	<sql id="postpaidFeeColumns">
 		a.id AS "id",
 		a.rent_contract_id AS "rentContractId",
-		a.payment_trans_id AS "paymentTransId",
-		a.public_fee_type AS "publicFeeType",
+		a.electric_Self_Amt AS "electricSelfAmt",
+		a.electric_share_Amt AS "electricShareAmt",
+		a.water_amt AS "waterAmt",
+		a.gas_amt AS "gasAmt",
+		a.tv_amt AS "tvAmt",
+		a.net_amt AS "netAmt",
+		a.service_amt AS "serviceAmt",
 		a.pay_date AS "payDate",
-		a.pay_amount AS "payAmount",
 		a.pay_status AS "payStatus",
-		a.settle_status AS "settleStatus",
 		a.create_by AS "createBy.id",
 		u1.login_name AS "createBy.loginName",
 		a.create_date AS "createDate",
@@ -36,14 +39,6 @@
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="getPostpaidFeeByTransId" resultType="PostpaidFee">
-		SELECT
-		<include refid="postpaidFeeColumns" />
-		FROM t_postpaid_fee a
-		<include refid="postpaidFeeJoins" />
-		WHERE a.PAYMENT_TRANS_ID = #{paymentTransId}
-	</select>
-
 	<select id="findList" resultType="PostpaidFee">
 		SELECT
 		<include refid="postpaidFeeColumns" />
@@ -54,12 +49,6 @@
 			<if test="rentContractId != null and rentContractId != ''">
 				AND a.rent_contract_id = #{rentContractId}
 			</if>
-			<if test="paymentTransId != null and paymentTransId != ''">
-				AND a.payment_trans_id = #{paymentTransId}
-			</if>
-			<if test="publicFeeType != null and publicFeeType != ''">
-				AND a.public_Fee_Type = #{publicFeeType}
-			</if>
 			<if test="startDate != null and startDate != ''">
 				<![CDATA[AND a.pay_date >= str_to_date(#{startDate},'%Y-%m-%d')]]>
 			</if>
@@ -68,9 +57,6 @@
 			</if>
 			<if test="payStatus != null and payStatus != ''">
 				AND a.pay_status = #{payStatus}
-			</if>
-			<if test="settleStatus != null and settleStatus != ''">
-				AND a.settle_status = #{settleStatus}
 			</if>
 			<if test="contractName != null and contractName != ''">
 				AND tc.contract_name like concat('%',#{contractName},'%')
@@ -108,12 +94,15 @@
 		INSERT INTO t_postpaid_fee(
 		id,
 		rent_contract_id,
-		payment_trans_id,
-		public_fee_type,
 		pay_date,
-		pay_amount,
 		pay_status,
-		settle_status,
+		electric_Self_Amt,
+		electric_share_Amt,
+		water_amt,
+		gas_amt,
+		tv_amt,
+		net_amt,
+		service_amt,
 		create_by,
 		create_date,
 		update_by,
@@ -123,12 +112,15 @@
 		) VALUES (
 		#{id},
 		#{rentContractId},
-		#{paymentTransId},
-		#{publicFeeType},
 		#{payDate},
-		#{payAmount},
 		#{payStatus},
-		#{settleStatus},
+		#{electricSelfAmt},
+		#{electricShareAmt},
+		#{waterAmt},
+		#{gasAmt},
+		#{tvAmt},
+		#{netAmt},
+		#{serviceAmt},
 		#{createBy.id},
 		#{createDate},
 		#{updateBy.id},
@@ -141,12 +133,15 @@
 	<update id="update">
 		UPDATE t_postpaid_fee SET
 		rent_contract_id = #{rentContractId},
-		payment_trans_id = #{paymentTransId},
-		public_fee_type = #{publicFeeType},
 		pay_date = #{payDate},
-		pay_amount = #{payAmount},
 		pay_status = #{payStatus},
-		settle_status = #{settleStatus},
+		electric_Self_Amt = #{electricSelfAmt},
+		electric_share_Amt = #{electricShareAmt},
+		water_amt = #{waterAmt},
+		gas_amt = #{gasAmt},
+		tv_amt = #{tvAmt},
+		net_amt = #{netAmt},
+		service_amt= #{serviceAmt},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate},
 		remarks = #{remarks}

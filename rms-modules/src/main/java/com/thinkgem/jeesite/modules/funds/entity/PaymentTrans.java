@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.entity;
 
@@ -45,6 +44,7 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
   private String transStatus; // 交易款项状态
   private String remittanceDate;// 查询条件：打款日期
   private String splitPaidMonths;// 查询结果：款项付费周期（表明该合同的房租是几个月一付的）
+  private String postpaidFeeId;// 后付费交易存在一笔交易与多笔款项相对应的情况，所以新增一个字段
 
   public PaymentTrans() {
     super();
@@ -240,4 +240,11 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
     this.splitPaidMonths = splitPaidMonths;
   }
 
+  public String getPostpaidFeeId() {
+    return postpaidFeeId;
+  }
+
+  public void setPostpaidFeeId(String postpaidFeeId) {
+    this.postpaidFeeId = postpaidFeeId;
+  }
 }

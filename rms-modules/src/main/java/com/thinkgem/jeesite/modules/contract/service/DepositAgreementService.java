@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
@@ -73,7 +72,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
    * 根据定金协议设置其对应的承租人姓名和手机号列表
    */
   public void setDepositNameAndPhoneList(DepositAgreement depositAgreement) {
-    
+
   }
 
   public List<Tenant> findTenant(DepositAgreement depositAgreement) {
@@ -179,7 +178,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
       Double depositAmount = depositAgreement.getDepositAmount();
       if (depositAmount != null && depositAmount > 0D) { // 生成定金协议款项
         paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_AGREEMENT.getValue(), PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), id, TradeDirectionEnum.IN.getValue(),
-            depositAmount, depositAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), depositAgreement.getStartDate(), depositAgreement.getExpiredDate());
+            depositAmount, depositAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), depositAgreement.getStartDate(), depositAgreement.getExpiredDate(), null);
       }
       auditService.delete(id);// 审核
       auditService.insert(AuditTypeEnum.DEPOSIT_AGREEMENT_CONTENT.getValue(), "deposit_agreement_role", id, "");

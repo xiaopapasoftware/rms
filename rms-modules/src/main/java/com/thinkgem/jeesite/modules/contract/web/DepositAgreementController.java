@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
@@ -292,15 +291,15 @@ public class DepositAgreementController extends BaseController {
     // 生成定金转违约退费款项
     if (null != refundAmount && refundAmount > 0) {
       paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue(), agreementId, TradeDirectionEnum.OUT.getValue(),
-          refundAmount, refundAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), startDate, expireDate);
+          refundAmount, refundAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), startDate, expireDate, null);
     }
     // 生成完全到账的应出定金款项
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue(), agreementId, TradeDirectionEnum.OUT.getValue(),
-        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate);
+        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
 
     // 生成完全到账的应收定金违约金款项
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue(), agreementId, TradeDirectionEnum.IN.getValue(),
-        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate);
+        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
     // 更新定金协议业务状态
     if (null != refundAmount && refundAmount > 0) {
       depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue());

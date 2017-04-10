@@ -10,8 +10,6 @@ drop table if exists T_AUDIT_HIS;
 drop table if exists T_CONTRACT_TENANT;
 drop table if exists t_contract_book;
 
-
-/* Create Tables */
 create table T_LEASE_CONTRACT
 (
    ID                   varchar(64) NOT NULL,
@@ -78,6 +76,7 @@ create table T_DEPOSIT_AGREEMENT
    HOUSING_RENT         float comment '房屋租金',
    AGREEMENT_STATUS  varchar(64) comment '定金协议审核状态',
    AGREEMENT_BUSI_STATUS  varchar(64) comment '定金协议业务状态',
+   data_source 			VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -86,6 +85,7 @@ create table T_DEPOSIT_AGREEMENT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '定金协议';
+update T_DEPOSIT_AGREEMENT set data_source = '1';
 
 create table T_CONTRACT_TENANT
 (
@@ -148,6 +148,7 @@ create table T_RENT_CONTRACT
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
    CHARGE_TYPE          VARCHAR(64) COMMENT '付费方式',
    return_remark 		VARCHAR(64) COMMENT '退租备注',
+   data_source 			VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -156,11 +157,12 @@ create table T_RENT_CONTRACT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '出租合同';
+update T_RENT_CONTRACT set data_source = '1';
 
 create table T_ACCOUNTING
 (
-	 ID                   varchar(64) NOT NULL,
-	 RENT_CONTRACT_ID     varchar(64) comment '出租合同',
+   ID                   varchar(64) NOT NULL,
+   RENT_CONTRACT_ID     varchar(64) comment '出租合同',
    ACCOUNTING_TYPE      varchar(64) comment '核算类型',
    FEE_DIRECTION        varchar(64) comment '核算费用方向',
    FEE_TYPE             varchar(64) comment '核算费用类别',
@@ -210,6 +212,7 @@ create table T_ATTACHMENT
    ATTACHMENT_TYPE      varchar(64) comment '附件类型',
    ATTACHMENT_PATH      varchar(4000) comment '附件地址',
    trading_accounts_id  VARCHAR(64) COMMENT '账务交易ID',
+   BIZ_ID 				varchar(64) comment '业务ID',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME 	COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

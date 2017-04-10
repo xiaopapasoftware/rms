@@ -268,24 +268,23 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
       processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
-    } else if (TradeTypeEnum.POSTPAID_SELF.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_SHARE.getValue().equals(tradingAccounts.getTradeType())
-        || TradeTypeEnum.POSTPAID_WATER.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_NET.getValue().equals(tradingAccounts.getTradeType())
-        || TradeTypeEnum.POSTPAID_TV.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.POSTPAID_GAS.getValue().equals(tradingAccounts.getTradeType())
-        || TradeTypeEnum.POSTPAID_SERVICE.getValue().equals(tradingAccounts.getTradeType())) {
+    } else if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(tradingAccounts.getTradeType())) {
       PaymentTrade paymentTrade = new PaymentTrade();
       paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       paymentTrade.setTradeId(tradingAccounts.getId());
-      List<PaymentTrade> list = paymentTradeDao.findList(paymentTrade);
-      for (PaymentTrade tmpPaymentTrade : list) {
-        PostpaidFee postpaidFee = postpaidFeeService.getPostpaidFeeByTransId(tmpPaymentTrade.getTransId());
-        if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
-          postpaidFee.setPayStatus(PublicFeePayStatusEnum.SUCCESSED.getValue());
-          postpaidFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_PASSED.getValue());
-        } else {
-          postpaidFee.setPayStatus(PublicFeePayStatusEnum.FAILED.getValue());
-          postpaidFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
+      List<PaymentTrade> ptList = paymentTradeDao.findList(paymentTrade);
+      for (PaymentTrade tmpPaymentTrade : ptList) {
+        PaymentTrans pt = paymentTransDao.get(tmpPaymentTrade.getTransId());
+        if (StringUtils.isNotEmpty(pt.getPostpaidFeeId())) {
+          PostpaidFee postpaidFee = postpaidFeeService.get(pt.getPostpaidFeeId());
+          if (AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus())) {
+            postpaidFee.setPayStatus(PublicFeePayStatusEnum.AUDITED_PASS.getValue());
+          } else {
+            postpaidFee.setPayStatus(PublicFeePayStatusEnum.AUDITED_REFUSE.getValue());
+          }
+          postpaidFeeService.save(postpaidFee);
+          break;
         }
-        postpaidFeeService.save(postpaidFee);
       }
     }
   }
@@ -351,6 +350,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     }
   }
 
+  /**
+   * 到账登记，保存功能
+   */
   @Transactional(readOnly = false)
   public void save(TradingAccounts tradingAccounts) {
     String id = super.saveAndReturnId(tradingAccounts);
@@ -439,7 +441,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContract.setContractBusiStatus(ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue());
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradeType)) {
-      if (!StringUtils.isEmpty(tradingAccounts.getTransIds())) {
+      if (StringUtils.isNotEmpty(tradingAccounts.getTransIds())) {
         String[] transIds = tradingAccounts.getTransIds().split(",");
         List<String> eleTransIds = new ArrayList<String>();// 电费充值的款项ID列表
         boolean isChoosed = false;// 除了电费充值外，是否还有其他的款项
@@ -472,6 +474,23 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
           upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
           upFee.preUpdate();
           electricFeeDao.update(upFee);
+        }
+      }
+    } else if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(tradeType)) {
+      String postpaidFeeId = null;
+      if (StringUtils.isNotBlank(tradingAccounts.getTransIds())) {
+        for (String transId : tradingAccounts.getTransIds().split(",")) {
+          PaymentTrans paymentTrans = paymentTransDao.get(transId);
+          if (StringUtils.isNotBlank(paymentTrans.getPostpaidFeeId())) {
+            postpaidFeeId = paymentTrans.getPostpaidFeeId();
+            break;
+          }
+        }
+        PostpaidFee ppf = postpaidFeeService.get(postpaidFeeId);
+        if (ppf != null) {
+          ppf.preUpdate();
+          ppf.setPayStatus(PublicFeePayStatusEnum.TO_AUDIT.getValue());
+          postpaidFeeService.save(ppf);
         }
       }
     }

@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
@@ -114,7 +113,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       // 1.押金款项
       paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(), PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), leaseContract.getId(),
           TradeDirectionEnum.OUT.getValue(), leaseContract.getDeposit(), leaseContract.getDeposit(), 0d, PaymentTransStatusEnum.NO_SIGN.getValue(), leaseContract.getEffectiveDate(),
-          leaseContract.getExpiredDate());
+          leaseContract.getExpiredDate(), null);
 
       // 2.房租款项
       LeaseContractDtl leaseContractDtl = new LeaseContractDtl();

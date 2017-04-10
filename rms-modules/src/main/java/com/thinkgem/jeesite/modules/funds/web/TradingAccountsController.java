@@ -101,12 +101,15 @@ public class TradingAccountsController extends BaseController {
   public String form(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
     String type = tradingAccounts.getTradeType();
     String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
-
+    String postpaidFeeId = "";// 后付费交易ID
     // 防止同时开多个浏览器，需对传进的款项id做查询判断
     boolean check = true;
     if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
       for (String transId : paymentTransIdArray) {
         PaymentTrans pt = paymentTransService.get(transId);
+        if (StringUtils.isNotBlank(pt.getPostpaidFeeId())) {
+          postpaidFeeId = pt.getPostpaidFeeId();
+        }
         if (pt == null || (pt != null && pt.getDelFlag().equals(BaseEntity.DEL_FLAG_DELETE))) {
           check = false;
           break;
@@ -120,6 +123,22 @@ public class TradingAccountsController extends BaseController {
       addMessage(redirectAttributes, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
+
+    // 校验 如果账务交易类型是 后付费付款，则必须后付费款项一次性全部到账
+    int postpaidfeeTransCount = 0;// 后付费交易原生包含的款项数
+    if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(type)) {
+      PaymentTrans temppt = new PaymentTrans();
+      temppt.setPostpaidFeeId(postpaidFeeId);
+      List<PaymentTrans> postpaidFeeTransList = paymentTransService.findList(temppt);
+      if (CollectionUtils.isNotEmpty(postpaidFeeTransList)) {
+        postpaidfeeTransCount = postpaidFeeTransList.size();
+      }
+    }
+    if (postpaidfeeTransCount != paymentTransIdArray.length) {
+      addMessage(redirectAttributes, "后付费款项需要一次性全部到账登记，您已遗漏，请重新进行到账登记操作！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+
     if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(type)) {
       tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
       tradingAccounts.setTradeDirection(TradeDirectionEnum.OUT.getValue());

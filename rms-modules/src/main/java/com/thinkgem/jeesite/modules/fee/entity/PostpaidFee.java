@@ -12,16 +12,75 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 public class PostpaidFee extends DataEntity<PostpaidFee> {
   private static final long serialVersionUID = -8735779649332180454L;
   private String rentContractId; // 出租合同
-  private String paymentTransId;// 款项ID
   private Date payDate; // 付费时间
-  private Double payAmount; // 付费金额
-  private String payStatus;// 付费状态,0=付费中,1=付费成功,2=付费失败
-  private String settleStatus;// 结算状态，0=待结算；1=结算待审核；2=审核拒绝；3=审核通过
-  private String publicFeeType;// 电费=11， 水费=14，电视费=18，宽带费=20
+  private String payStatus;// 1=到账收据待登记;4=到账收据待审核;5=到账收据审核拒绝;6=到账收据审核通过
+  private Double electricSelfAmt;// 电费自用金额
+  private Double electricShareAmt;
+  private Double waterAmt;
+  private Double gasAmt;
+  private Double tvAmt;
+  private Double netAmt;
+  private Double serviceAmt;
   private String remarks;// 备注
   private Date startDate;// 专用来查询使用的选择的开始时间
   private Date endDate;// 专用来查询使用的选择的结束时间
   private String contractName;// 专用来查询使用的合同名变量
+
+  public Double getElectricSelfAmt() {
+    return electricSelfAmt;
+  }
+
+  public void setElectricSelfAmt(Double electricSelfAmt) {
+    this.electricSelfAmt = electricSelfAmt;
+  }
+
+  public Double getElectricShareAmt() {
+    return electricShareAmt;
+  }
+
+  public void setElectricShareAmt(Double electricShareAmt) {
+    this.electricShareAmt = electricShareAmt;
+  }
+
+  public Double getWaterAmt() {
+    return waterAmt;
+  }
+
+  public void setWaterAmt(Double waterAmt) {
+    this.waterAmt = waterAmt;
+  }
+
+  public Double getGasAmt() {
+    return gasAmt;
+  }
+
+  public void setGasAmt(Double gasAmt) {
+    this.gasAmt = gasAmt;
+  }
+
+  public Double getTvAmt() {
+    return tvAmt;
+  }
+
+  public void setTvAmt(Double tvAmt) {
+    this.tvAmt = tvAmt;
+  }
+
+  public Double getNetAmt() {
+    return netAmt;
+  }
+
+  public void setNetAmt(Double netAmt) {
+    this.netAmt = netAmt;
+  }
+
+  public Double getServiceAmt() {
+    return serviceAmt;
+  }
+
+  public void setServiceAmt(Double serviceAmt) {
+    this.serviceAmt = serviceAmt;
+  }
 
   public String getRentContractId() {
     return rentContractId;
@@ -29,14 +88,6 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
 
   public void setRentContractId(String rentContractId) {
     this.rentContractId = rentContractId;
-  }
-
-  public String getPaymentTransId() {
-    return paymentTransId;
-  }
-
-  public void setPaymentTransId(String paymentTransId) {
-    this.paymentTransId = paymentTransId;
   }
 
   public Date getPayDate() {
@@ -47,36 +98,12 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
     this.payDate = payDate;
   }
 
-  public Double getPayAmount() {
-    return payAmount;
-  }
-
-  public void setPayAmount(Double payAmount) {
-    this.payAmount = payAmount;
-  }
-
   public String getPayStatus() {
     return payStatus;
   }
 
   public void setPayStatus(String payStatus) {
     this.payStatus = payStatus;
-  }
-
-  public String getSettleStatus() {
-    return settleStatus;
-  }
-
-  public void setSettleStatus(String settleStatus) {
-    this.settleStatus = settleStatus;
-  }
-
-  public String getPublicFeeType() {
-    return publicFeeType;
-  }
-
-  public void setPublicFeeType(String publicFeeType) {
-    this.publicFeeType = publicFeeType;
   }
 
   public String getRemarks() {

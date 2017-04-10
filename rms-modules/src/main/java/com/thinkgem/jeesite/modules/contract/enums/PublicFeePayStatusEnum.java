@@ -8,20 +8,24 @@ package com.thinkgem.jeesite.modules.contract.enums;
 public enum PublicFeePayStatusEnum {
 
   /**
-   * 付费中
+   * 到账收据待登记
    */
-  PROCESSING("0"),
+  TO_SIGN("1"),
 
   /**
-   * 付费成功
+   * 到账收据待审核
    */
-  SUCCESSED("1"),
+  TO_AUDIT("4"),
 
   /**
-   * 付费失败
+   * 到账收据审核拒绝
    */
-  FAILED("2");
+  AUDITED_REFUSE("5"),
 
+  /**
+   * 到账收据审核通过
+   */
+  AUDITED_PASS("6");
 
   PublicFeePayStatusEnum(String value) {
     this.value = value;

@@ -47,23 +47,6 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<!--<div class="control-group">
-			<label class="control-label">款项类型：</label>
-			<div class="controls">
-				<form:select path="paymentType" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>-->
-		<!--<div class="control-group">
-			<label class="control-label">交易对象：</label>
-			<div class="controls">
-				<form:input path="transId" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>-->
 		<div class="control-group">
 			<label class="control-label">交易款项方向：</label>
 			<div class="controls">
@@ -113,16 +96,6 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
-		<!--<div class="control-group">
-			<label class="control-label">交易款项状态：</label>
-			<div class="controls">
-				<form:select path="transStatus" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>-->
 		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">

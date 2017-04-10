@@ -98,16 +98,19 @@
 		trans_id = #{transId},
 		trade_id = #{tradeId},
 		update_by = #{updateBy.id},
-		update_date = #{updateDate},
+		update_date =
+		#{updateDate},
 		remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
 
 	<update id="delete">
 		UPDATE t_payment_trade SET
-		del_flag = #{DEL_FLAG_DELETE},
+		del_flag =
+		#{DEL_FLAG_DELETE},
 		update_by = #{updateBy.id},
-		update_date = #{updateDate}
+		update_date =
+		#{updateDate}
 		WHERE trade_id = #{tradeId}
 	</update>
 

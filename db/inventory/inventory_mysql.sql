@@ -87,8 +87,15 @@ create table T_HOUSE
    DECORA_STRUC_ROOM_NUM    	int comment 	'装修房屋结构房数',
    DECORA_STRUC_CUSSPAC_NUM    int comment 		'装修房屋结构厅数',
    DECORA_STRUC_WASHRO_NUM     int comment		'装修房屋结构卫数',
-   CERTIFICATE_NO		varchar(64) comment '房屋产权证号',
+   CERTIFICATE_NO			varchar(64) comment '房屋产权证号',
+   intent_mode 				varchar(64) comment '意向租赁类型';
    HOUSE_STATUS         varchar(100) comment '房屋状态',
+   service_user 		varchar(64) comment '服务管家',
+   is_feature 			varchar(64) comment '是否精选房源',
+   rental 				float comment '意向租金',
+   short_desc 			varchar(255) comment '描述',
+   short_location 		varchar(255) comment '地址描述',
+   pay_way 				varchar(2) comment '付款方式',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -97,6 +104,7 @@ create table T_HOUSE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '房屋信息';
+update t_house set is_feature='0' where is_feature is null;
 
 create table T_ROOM
 (
@@ -110,6 +118,11 @@ create table T_ROOM
    ORIENTATION          varchar(64) comment '朝向',
    STRUCTURE            varchar(64) comment '附属结构',
    ROOM_STATUS          varchar(100) comment '房间状态',
+   is_feature 			varchar(64) comment '是否精选房源',
+   rental 				float 		comment '意向租金',
+   short_desc 			varchar(255) comment '描述',
+   short_location 		varchar(255) comment '地址描述',
+   pay_way 				varchar(2) 	comment '付款方式',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -118,6 +131,7 @@ create table T_ROOM
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '房间信息';
+update t_room set is_feature='0' where is_feature is null;
 
 create table T_DEVICES
 (
