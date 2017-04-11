@@ -82,7 +82,7 @@
 		<tbody>
 			<c:forEach items="${page.list}" var="postpaidFee">
 				<tr>
-					<td>${postpaidFee.contractName}</td>
+					<td><a href="${ctx}/fee/electricFee/postpaidFeeForm?id=${postpaidFee.id}">${postpaidFee.contractName}</a></td>
 					<td>${fns:getDictLabel(postpaidFee.payStatus, 'public_fee_pay_status', '')}</td>
 					<td><fmt:formatDate value="${postpaidFee.payDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${postpaidFee.electricSelfAmt}</td>

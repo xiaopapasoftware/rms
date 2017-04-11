@@ -15,12 +15,26 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
   private Date payDate; // 付费时间
   private String payStatus;// 1=到账收据待登记;4=到账收据待审核;5=到账收据审核拒绝;6=到账收据审核通过
   private Double electricSelfAmt;// 电费自用金额
+  private Date electricSelfAmtStartDate;
+  private Date electricSelfAmtEndDate;
   private Double electricShareAmt;
+  private Date electricShareAmtStartDate;
+  private Date electricShareAmtEndDate;
   private Double waterAmt;
+  private Date waterAmtStartDate;
+  private Date waterAmtEndDate;
   private Double gasAmt;
+  private Date gasAmtStartDate;
+  private Date gasAmtEndDate;
   private Double tvAmt;
+  private Date tvAmtStartDate;
+  private Date tvAmtEndDate;
   private Double netAmt;
+  private Date netAmtStartDate;
+  private Date netAmtEndDate;
   private Double serviceAmt;
+  private Date serviceAmtStartDate;
+  private Date serviceAmtEndDate;
   private String remarks;// 备注
   private Date startDate;// 专用来查询使用的选择的开始时间
   private Date endDate;// 专用来查询使用的选择的结束时间
@@ -32,6 +46,22 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
 
   public void setElectricSelfAmt(Double electricSelfAmt) {
     this.electricSelfAmt = electricSelfAmt;
+  }
+
+  public Date getElectricSelfAmtStartDate() {
+    return electricSelfAmtStartDate;
+  }
+
+  public void setElectricSelfAmtStartDate(Date electricSelfAmtStartDate) {
+    this.electricSelfAmtStartDate = electricSelfAmtStartDate;
+  }
+
+  public Date getElectricSelfAmtEndDate() {
+    return electricSelfAmtEndDate;
+  }
+
+  public void setElectricSelfAmtEndDate(Date electricSelfAmtEndDate) {
+    this.electricSelfAmtEndDate = electricSelfAmtEndDate;
   }
 
   public Double getElectricShareAmt() {
@@ -144,5 +174,101 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
 
   public PostpaidFee(String id) {
     super(id);
+  }
+
+  public Date getElectricShareAmtStartDate() {
+    return electricShareAmtStartDate;
+  }
+
+  public void setElectricShareAmtStartDate(Date electricShareAmtStartDate) {
+    this.electricShareAmtStartDate = electricShareAmtStartDate;
+  }
+
+  public Date getElectricShareAmtEndDate() {
+    return electricShareAmtEndDate;
+  }
+
+  public void setElectricShareAmtEndDate(Date electricShareAmtEndDate) {
+    this.electricShareAmtEndDate = electricShareAmtEndDate;
+  }
+
+  public Date getWaterAmtStartDate() {
+    return waterAmtStartDate;
+  }
+
+  public void setWaterAmtStartDate(Date waterAmtStartDate) {
+    this.waterAmtStartDate = waterAmtStartDate;
+  }
+
+  public Date getWaterAmtEndDate() {
+    return waterAmtEndDate;
+  }
+
+  public void setWaterAmtEndDate(Date waterAmtEndDate) {
+    this.waterAmtEndDate = waterAmtEndDate;
+  }
+
+  public Date getGasAmtStartDate() {
+    return gasAmtStartDate;
+  }
+
+  public void setGasAmtStartDate(Date gasAmtStartDate) {
+    this.gasAmtStartDate = gasAmtStartDate;
+  }
+
+  public Date getGasAmtEndDate() {
+    return gasAmtEndDate;
+  }
+
+  public void setGasAmtEndDate(Date gasAmtEndDate) {
+    this.gasAmtEndDate = gasAmtEndDate;
+  }
+
+  public Date getTvAmtStartDate() {
+    return tvAmtStartDate;
+  }
+
+  public void setTvAmtStartDate(Date tvAmtStartDate) {
+    this.tvAmtStartDate = tvAmtStartDate;
+  }
+
+  public Date getTvAmtEndDate() {
+    return tvAmtEndDate;
+  }
+
+  public void setTvAmtEndDate(Date tvAmtEndDate) {
+    this.tvAmtEndDate = tvAmtEndDate;
+  }
+
+  public Date getNetAmtStartDate() {
+    return netAmtStartDate;
+  }
+
+  public void setNetAmtStartDate(Date netAmtStartDate) {
+    this.netAmtStartDate = netAmtStartDate;
+  }
+
+  public Date getNetAmtEndDate() {
+    return netAmtEndDate;
+  }
+
+  public void setNetAmtEndDate(Date netAmtEndDate) {
+    this.netAmtEndDate = netAmtEndDate;
+  }
+
+  public Date getServiceAmtStartDate() {
+    return serviceAmtStartDate;
+  }
+
+  public void setServiceAmtStartDate(Date serviceAmtStartDate) {
+    this.serviceAmtStartDate = serviceAmtStartDate;
+  }
+
+  public Date getServiceAmtEndDate() {
+    return serviceAmtEndDate;
+  }
+
+  public void setServiceAmtEndDate(Date serviceAmtEndDate) {
+    this.serviceAmtEndDate = serviceAmtEndDate;
   }
 }

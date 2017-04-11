@@ -19,8 +19,36 @@
 							&& ""==$("#tvAmt").val()
 							&& ""==$("#netAmt").val()
 							&& ""==$("#serviceAmt").val()) {
-							   top.$.jBox.tip('后付费费用不能全部为空值！','warning');
+							   top.$.jBox.tip('后付费费用不能全部为空值！','warning')
 							   return;
+					}
+					if(""!=$("input[name='electricSelfAmtStartDate']").val() && ""!=$("input[name='electricSelfAmtEndDate']").val() && !dateCompare($("input[name='electricSelfAmtStartDate']").val(),$("input[name='electricSelfAmtEndDate']").val())){
+						  top.$.jBox.tip('自用电费开始日期不能超过结束日期！','warning');
+						  return;
+					}
+					if(""!=$("input[name='electricShareAmtStartDate']").val() && ""!=$("input[name='electricShareAmtEndDate']").val() && !dateCompare($("input[name='electricShareAmtStartDate']").val(),$("input[name='electricShareAmtEndDate']").val())){
+						top.$.jBox.tip('分摊电费开始日期不能超过结束日期！','warning');
+						  return;				
+					}
+					if(""!=$("input[name='waterAmtStartDate']").val() && ""!=$("input[name='waterAmtEndDate']").val() && !dateCompare($("input[name='waterAmtStartDate']").val(),$("input[name='waterAmtEndDate']").val())){
+						top.$.jBox.tip('水费开始日期不能超过结束日期！','warning');
+						  return;
+					}
+					if(""!=$("input[name='gasAmtStartDate']").val() && ""!=$("input[name='gasAmtEndDate']").val() && !dateCompare($("input[name='gasAmtStartDate']").val(),$("input[name='gasAmtEndDate']").val())){
+						top.$.jBox.tip('燃气费开始日期不能超过结束日期！','warning');
+						  return;
+					}
+					if(""!=$("input[name='tvAmtStartDate']").val() && ""!=$("input[name='tvAmtEndDate']").val() && !dateCompare($("input[name='tvAmtStartDate']").val(),$("input[name='tvAmtEndDate']").val())){
+						top.$.jBox.tip('电视费开始日期不能超过结束日期！','warning');
+						  return;
+					}
+					if(""!=$("input[name='netAmtStartDate']").val() && ""!=$("input[name='netAmtEndDate']").val() && !dateCompare($("input[name='netAmtStartDate']").val(),$("input[name='netAmtEndDate']").val())){
+						top.$.jBox.tip('宽带费开始日期不能超过结束日期！','warning');
+						  return;
+					}
+					if(""!=$("input[name='serviceAmtStartDate']").val() && ""!=$("input[name='serviceAmtEndDate']").val() && !dateCompare($("input[name='serviceAmtStartDate']").val(),$("input[name='serviceAmtEndDate']").val())){
+						top.$.jBox.tip('服务费开始日期不能超过结束日期！','warning');
+						  return;
 					}
 					loading('正在提交，请稍等...');
 					$("#btnSubmit").attr("disabled",true);
@@ -37,6 +65,18 @@
 				}
 			});
 		});
+		
+		function dateCompare(startdate,enddate){   
+			var arr=startdate.split("-");    
+			var starttime= new Date(arr[0],arr[1],arr[2]);    
+			var arrs=enddate.split("-");    
+			var endtime=new Date(arrs[0],arrs[1],arrs[2]);    
+			if(starttime>=endtime){   
+				return false;   
+			}else{
+				return true;		
+			}
+		}
 	</script>
 </head>
 <body>
@@ -85,43 +125,85 @@
 		<div class="control-group">
 			<label class="control-label">自用电费</label>
 			<div class="controls">
-				<form:input path="electricSelfAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="electricSelfAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="electricSelfAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.electricSelfAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="electricSelfAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.electricSelfAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">分摊电费</label>
 			<div class="controls">
-				<form:input path="electricShareAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="electricShareAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="electricShareAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.electricShareAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name=electricShareAmtEndDate type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.electricShareAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">水费</label>
 			<div class="controls">
-				<form:input path="waterAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="waterAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="waterAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.waterAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="waterAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.waterAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">燃气费</label>
 			<div class="controls">
-				<form:input path="gasAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="gasAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="gasAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.gasAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="gasAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.gasAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">电视费</label>
 			<div class="controls">
-				<form:input path="tvAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="tvAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="tvAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.tvAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="tvAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.tvAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">宽带费</label>
 			<div class="controls">
-				<form:input path="netAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="netAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="netAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.netAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="netAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.netAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">服务费</label>
 			<div class="controls">
-				<form:input path="serviceAmt" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="serviceAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="serviceAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.serviceAmtStartDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="serviceAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+					value="<fmt:formatDate value="${postpaidFee.serviceAmtEndDate}" pattern="yyyy-MM-dd"/>"
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -132,7 +214,12 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="fee:postpaidFee:edit">
+			<c:if test="${postpaidFee.id==''||postpaidFee.id==null}">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+			</c:if>
+			<c:if test="${postpaidFee.id!=''&& postpaidFee.id!=null && (postpaidFee.payStatus=='1'||postpaidFee.payStatus=='5')}">
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+			</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>
