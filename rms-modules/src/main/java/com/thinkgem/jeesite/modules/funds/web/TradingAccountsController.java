@@ -133,12 +133,11 @@ public class TradingAccountsController extends BaseController {
       if (CollectionUtils.isNotEmpty(postpaidFeeTransList)) {
         postpaidfeeTransCount = postpaidFeeTransList.size();
       }
+      if (postpaidfeeTransCount != paymentTransIdArray.length) {
+        addMessage(redirectAttributes, "后付费款项需要一次性全部到账登记，您已遗漏，请重新进行到账登记操作！");
+        return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+      }
     }
-    if (postpaidfeeTransCount != paymentTransIdArray.length) {
-      addMessage(redirectAttributes, "后付费款项需要一次性全部到账登记，您已遗漏，请重新进行到账登记操作！");
-      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
-    }
-
     if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(type)) {
       tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
       tradingAccounts.setTradeDirection(TradeDirectionEnum.OUT.getValue());
