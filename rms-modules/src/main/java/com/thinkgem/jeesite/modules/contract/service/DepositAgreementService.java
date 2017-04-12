@@ -6,7 +6,6 @@ package com.thinkgem.jeesite.modules.contract.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,7 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
  * 定金协议Service
@@ -71,9 +71,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
   /**
    * 根据定金协议设置其对应的承租人姓名和手机号列表
    */
-  public void setDepositNameAndPhoneList(DepositAgreement depositAgreement) {
-
-  }
+  public void setDepositNameAndPhoneList(DepositAgreement depositAgreement) {}
 
   public List<Tenant> findTenant(DepositAgreement depositAgreement) {
     List<Tenant> tenantList = new ArrayList<Tenant>();
@@ -143,29 +141,57 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
       roomId = depositAgreement.getRoom().getId();
     }
     if (depositAgreement.getIsNewRecord()) {// 新增,包括手机APP在线预订申请以及后台直接新增预订，需要锁定房源
-      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租
-        boolean isLock = houseService.isLockWholeHouse4Deposit(houseId);
-        if (isLock) {
-          roomService.depositAllRooms(houseId);
-          doSaveDepositAgreement(depositAgreement);
-          return 0;
-        } else {
-          return -1;
-        }
-      } else {// 合租
-        boolean isLock = roomService.isLockSingleRoom4Deposit(roomId);
-        if (isLock) {
-          houseService.calculateHouseStatus(roomId);
-          doSaveDepositAgreement(depositAgreement);
-          return 0;
-        } else {
-          return -1;
+      return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
+    } else { // 点修改后的保存
+      if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {// 点“暂存”按钮
+        doSaveDepositAgreement(depositAgreement); // 后台暂存无须改变房源状态
+      } else {// 点“保存”按钮
+        DepositAgreement originalDepositAgreement = super.get(depositAgreement.getId());
+        if (AgreementAuditStatusEnum.TEMP_EXIST.getValue().equals(originalDepositAgreement.getAgreementStatus())) {// 以前是暂存的定金协议，修改后点保存，要更新房源状态
+          return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
+        } else { // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+          String originalHouseId = originalDepositAgreement.getHouse().getId();
+          String originalRoomId = originalDepositAgreement.getRoom() == null ? "" : originalDepositAgreement.getRoom().getId();
+          originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
+          String curHouseId = depositAgreement.getHouse().getId();
+          String curRoomId = depositAgreement.getRoom() == null ? "" : depositAgreement.getRoom().getId();
+          curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
+          if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 定金协议修改了房屋或房间
+            // 回滚前房源
+            if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已预定”改为“待出租可预订”
+              houseService.releaseSingleRoom(roomService.get(originalRoomId));
+            } else {// 整租，把房屋从“已预定”改为“待出租可预订”
+              houseService.releaseWholeHouse(houseService.get(originalHouseId));
+            }
+            // 预定新房源
+            return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
+          }
         }
       }
-    } else {// APP端的预定，管家修改保存，或者后台直接修改
-      doSaveDepositAgreement(depositAgreement);
+      return 0;
     }
-    return 0;
+  }
+
+  private int proccessHouseRoomStatus(DepositAgreement depositAgreement, String houseId, String roomId) {
+    if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租
+      boolean isLock = houseService.isLockWholeHouse4Deposit(houseId);
+      if (isLock) {
+        roomService.depositAllRooms(houseId);
+        doSaveDepositAgreement(depositAgreement);
+        return 0;
+      } else {
+        return -1;
+      }
+    } else {// 合租
+      boolean isLock = roomService.isLockSingleRoom4Deposit(roomId);
+      if (isLock) {
+        houseService.calculateHouseStatus(roomId);
+        doSaveDepositAgreement(depositAgreement);
+        return 0;
+      } else {
+        return -1;
+      }
+    }
   }
 
   /**

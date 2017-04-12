@@ -633,7 +633,6 @@ public class RentContractController extends BaseController {
         }
       }
     }
-
     double refundAmount = totalInAmt - totalOutAmt;
     return new BigDecimal(refundAmount).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
   }
@@ -682,7 +681,6 @@ public class RentContractController extends BaseController {
       eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
     }
     outAccountings.add(eaccounting);
-
     // 房租押金
     Accounting accounting = new Accounting();
     accounting.setRentContract(rentContract);
@@ -711,7 +709,6 @@ public class RentContractController extends BaseController {
       }
       outAccountings.add(preBackRentalAcc);
     }
-
     // 预充---应退 智能电表剩余电费
     // 整租不装智能电表，只有合租会装智能电表
     if ("1".equals(rentContract.getRentMode())) {
@@ -744,10 +741,8 @@ public class RentContractController extends BaseController {
         outAccountings.add(elctrBackAcc);
       }
     }
-
     // 预付费
     if ("0".equals(rentContract.getChargeType())) {
-
       // 预付 ---应退 水费剩余金额
       if (rentContract.getWaterFee() != null && rentContract.getWaterFee() > 0) {
         Accounting waterAcc = new Accounting();
@@ -922,9 +917,7 @@ public class RentContractController extends BaseController {
    * @param monthFeeAmount 每月费用金额
    */
   private Double commonCalculateBackAmount(RentContract rentContract, String paymentType, double monthFeeAmount) {
-
     Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
-
     Date endDate = new Date();
     if ("1".equals(rentContract.getIsSpecial())) {// 特殊退租时
       endDate = DateUtils.parseDate(rentContract.getReturnDate());
@@ -932,7 +925,6 @@ public class RentContractController extends BaseController {
     double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数
     double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
     double hasLivedAmount = dates * dailyFee;
-
     Double refundAmount = totalAmount - hasLivedAmount;// 提前退租应退金额
     if (refundAmount < 0) {
       return 0d;

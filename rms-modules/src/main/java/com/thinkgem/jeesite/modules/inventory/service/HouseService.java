@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
@@ -125,7 +124,8 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 取消预定（整租房屋）
+   * 取消预定（整租房屋） 把房屋；
+   * 把房屋从“已预定”改为“待出租可预订”
    */
   @Transactional(readOnly = false)
   public void releaseWholeHouse(House house) {
@@ -148,7 +148,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 取消预定（单间）
+   * 取消预定（单间） 把单间从“已预定”改为“待出租可预订”
    */
   @Transactional(readOnly = false)
   public void releaseSingleRoom(Room room) {
@@ -217,7 +217,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 新签-整租，是否成功锁定房源
+   * 新签-整租，是否成功锁定房源 把房屋从“待出租可预订”变为“完全出租”
    * 
    * @return true表示已经成功锁定房源，false表示未能锁定房源
    */
@@ -269,7 +269,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 退租（整租房屋）
+   * 退租（整租房屋） 把房屋从“完全出租”改为“待出租可预订”
    */
   @Transactional(readOnly = false)
   public void returnWholeHouse(House house) {
@@ -291,7 +291,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 退租（单间）
+   * 退租（单间） 把单间从“已出租”改为“待出租可预订”
    */
   @Transactional(readOnly = false)
   public void returnSingleRoom(Room room) {

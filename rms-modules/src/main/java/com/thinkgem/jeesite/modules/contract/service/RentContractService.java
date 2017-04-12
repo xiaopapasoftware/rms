@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.service;
 
 import java.util.ArrayList;
@@ -63,7 +60,6 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 /**
  * 出租合同Service
  * 
- * @author huangsc
  * @author wangshujin
  */
 @Service
@@ -318,7 +314,40 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(originalRentContract.getContractStatus())) {// 以前是暂存的合同，修改后点保存，要更新房源状态
           return persistentHouseInfo(rentContract, houseId, roomId);
         } else {
-          doSaveContractBusiness(rentContract); // 修改合同，不需修改房源状态
+          // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+          String originalHouseId = originalRentContract.getHouse().getId();
+          String originalRoomId = originalRentContract.getRoom() == null ? "" : originalRentContract.getRoom().getId();
+          originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
+          String curHouseId = rentContract.getHouse().getId();
+          String curRoomId = rentContract.getRoom() == null ? "" : rentContract.getRoom().getId();
+          curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
+          if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 合同修改了房屋或房间
+            // 回滚前房源
+            if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已出租”改为“待出租可预订”
+              houseService.returnSingleRoom(roomService.get(originalRoomId));
+            } else {// 整租，把房屋从“完全出租”改为“待出租可预订”
+              houseService.returnWholeHouse(houseService.get(originalHouseId));
+            }
+            // 出租新房源
+            if (StringUtils.isNotBlank(curRoomId)) {// 合租，把单间从“待出租可预订”改为“已出租”
+              boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);// 合租，把房间从“待出租可预订”变为“已出租”
+              if (isLock) {
+                houseService.calculateHouseStatus(curRoomId);
+                return 0;
+              } else {
+                return -1;
+              }
+            } else {// 整租，把房屋从“待出租可预订”改为“完全出租”
+              boolean isLock = houseService.isLockWholeHouse4NewSign(curHouseId);
+              if (isLock) {
+                roomService.lockRooms(curHouseId);
+                return 0;
+              } else {
+                return -1;
+              }
+            }
+          }
+          doSaveContractBusiness(rentContract); // 修改合同数据
         }
       }
     }
@@ -348,7 +377,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           }
         }
       } else {// 非定金转合同，直接新签
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租，把房屋从“待出租可预订”变为“完全出租”
           boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
           if (isLock) {
             roomService.lockRooms(houseId);
@@ -357,8 +386,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           } else {
             return -1;
           }
-        } else {// 合租
-          boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);
+        } else {
+          boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
           if (isLock) {
             houseService.calculateHouseStatus(roomId);
             doSaveContractBusiness(rentContract);

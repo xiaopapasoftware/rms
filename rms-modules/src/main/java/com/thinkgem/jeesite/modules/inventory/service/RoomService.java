@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
@@ -87,7 +86,7 @@ public class RoomService extends CrudService<RoomDao, Room> {
   }
 
   /**
-   * 新签-单间，是否成功锁定房源
+   * 新签-单间，是否成功锁定房源 把房间从“待出租可预订”变为“已出租”
    */
   @Transactional(readOnly = false)
   public boolean isLockSingleRoom4NewSign(String roomId) {
@@ -171,7 +170,8 @@ public class RoomService extends CrudService<RoomDao, Room> {
   }
 
   /**
-   * 预定-单间，是否成功锁定房源
+   * 预定-单间，是否成功锁定房源 
+   * 把房间从“待出租可预订”变为“已预定”
    */
   @Transactional(readOnly = false)
   public boolean isLockSingleRoom4Deposit(String roomId) {
