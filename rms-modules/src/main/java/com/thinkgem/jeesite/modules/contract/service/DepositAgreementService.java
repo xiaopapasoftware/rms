@@ -141,7 +141,11 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
       roomId = depositAgreement.getRoom().getId();
     }
     if (depositAgreement.getIsNewRecord()) {// 新增,包括手机APP在线预订申请以及后台直接新增预订，需要锁定房源
-      return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
+      if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
+        doSaveDepositAgreement(depositAgreement); // 后台暂存无须改变房源状态
+      } else {// 保存
+        return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
+      }
     } else { // 点修改后的保存
       if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {// 点“暂存”按钮
         doSaveDepositAgreement(depositAgreement); // 后台暂存无须改变房源状态
@@ -168,8 +172,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
           }
         }
       }
-      return 0;
     }
+    return 0;
   }
 
   private int proccessHouseRoomStatus(DepositAgreement depositAgreement, String houseId, String roomId) {
