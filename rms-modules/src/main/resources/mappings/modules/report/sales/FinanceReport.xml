@@ -3,23 +3,50 @@
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.ContractReportDao">
 
     <select id="queryFinance" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        select tr.receipt_date,tr.receipt_amount,tpp.project_name,tb.building_name,th.house_no,tro.room_no
-        from t_receipt tr
-        left join t_trading_accounts tta on tr.trading_accounts_id = tta.id and tta.del_flag=0
-        left join t_payment_trade tpt on tpt.trade_id = tta.id and tpt.del_flag=0
-        left join t_payment_trans tpta on tpta.id = tpt.trans_id and tpta.del_flag=0
-        left join t_rent_contract trc on tpta.trans_id = trc.id
+        SELECT  trc.contract_name, trc.PROPERTY_PROJECT_ID,trc.BUILDING_ID,trc.HOUSE_ID,trc.ROOM_ID,
+        temp.房租金额 , temp.水电费押金, temp.房租押金, temp.定金 , temp.服务费
+        ,CASE WHEN trc.ELE_RECHARGE_AMOUNT IS NULL THEN '0' ELSE trc.ELE_RECHARGE_AMOUNT END AS '首充电费'
+        FROM (SELECT t.trade_id,   SUM(CASE t.`PAYMENT_TYPE` WHEN '6' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '房租金额',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '水电费押金',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '房租押金',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '定金',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '22' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '服务费'
+        FROM
+        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`
+        FROM   t_trading_accounts t1 , t_receipt t2
+        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
+        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
+        AND  t1.`TRADE_STATUS` = '1'
+        AND  t2.`RECEIPT_DATE` >  '2017-04-17'
+        AND  t2.`RECEIPT_DATE` <  '2017-04-20'
+        AND  t1.`TRADE_TYPE` IN  ('3','4','5')
+        GROUP BY t1.`TRADE_ID` ,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT` )t
+        GROUP BY t.trade_id )temp, t_rent_contract trc
+        WHERE trc.`DEL_FLAG` = '0'
+        AND trc.`ID` = temp.trade_id
 
-        left join t_building tb on trc.building_id = tb.id and tb.del_flag =0
-        left join t_property_project tpp on tb.t_property_project_main_id = tpp.id and tpp.del_flag =0
-        left join t_house th on trc.house_id = th.id and th.del_flag =0
-        left join t_room tro on trc.room_id = tro.id and tr.del_flag =0
-        where tr.del_flag=0
+        UNION
 
-        ${whereSqlString}
-        <if test="orderBy != null">
-            ${orderBySqlString}
-        </if>
+        SELECT  tda.AGREEMENT_NAME, tda.PROPERTY_PROJECT_ID,tda.BUILDING_ID,tda.HOUSE_ID,tda.ROOM_ID,
+        temp.房租金额 , temp.水电费押金, temp.房租押金, temp.定金 , temp.服务费 , '0' AS '首充电费'
+        FROM (SELECT t.trade_id,   '0' AS '房租金额',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '水电费押金',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '房租押金',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS '定金',
+        '0' AS '服务费'
+        FROM
+        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`
+        FROM   t_trading_accounts t1 , t_receipt t2
+        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
+        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
+        AND  t1.`TRADE_STATUS` = '1'
+        AND  t2.`RECEIPT_DATE` >  '2016-04-17'
+        AND  t2.`RECEIPT_DATE` <  '2017-04-20'
+        AND  t1.`TRADE_TYPE`   = '1'
+        GROUP BY t1.`TRADE_ID` ,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT` )t
+        GROUP BY t.trade_id )temp, t_deposit_agreement tda
+        WHERE tda.`DEL_FLAG` = '0'
+        AND tda.`ID` = temp.trade_id;
 
     </select>
 
