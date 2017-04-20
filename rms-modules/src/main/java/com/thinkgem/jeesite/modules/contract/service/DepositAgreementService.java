@@ -100,15 +100,15 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     } else { // 审核拒绝
       if (DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
         depositAgreement.setUpdateUser(auditHis.getUpdateUser());
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
-          House house = houseService.get(depositAgreement.getHouse().getId());
-          houseService.releaseWholeHouse(house);
-        } else {// 合租,更新房间状态
-          Room room = roomService.get(depositAgreement.getRoom().getId());
-          houseService.releaseSingleRoom(room);
-        }
       } else {
         depositAgreement.setUpdateUser(UserUtils.getUser().getId());
+      }
+      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
+        House house = houseService.get(depositAgreement.getHouse().getId());
+        houseService.releaseWholeHouse(house);
+      } else {
+        Room room = roomService.get(depositAgreement.getRoom().getId());
+        houseService.releaseSingleRoom(room);
       }
       paymentTransService.deletePaymentTransAndTradingAcctouns(depositAgreemId); // 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据
       depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue());
@@ -132,48 +132,31 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
         return -2;
       }
     }
-    String houseId = "";
-    String roomId = "";
-    if (depositAgreement.getHouse() != null) {
-      houseId = depositAgreement.getHouse().getId();
-    }
-    if (depositAgreement.getRoom() != null) {
-      roomId = depositAgreement.getRoom().getId();
-    }
+    String curHouseId = depositAgreement.getHouse().getId();
+    String curRoomId = depositAgreement.getRoom() == null ? "" : depositAgreement.getRoom().getId();
+    curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
     if (depositAgreement.getIsNewRecord()) {// 新增,包括手机APP在线预订申请以及后台直接新增预订，需要锁定房源
-      if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
-        doSaveDepositAgreement(depositAgreement); // 后台暂存无须改变房源状态
-      } else {// 保存
-        return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
-      }
-    } else { // 点修改后的保存
-      if (ValidatorFlagEnum.TEMP_SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {// 点“暂存”按钮
-        doSaveDepositAgreement(depositAgreement); // 后台暂存无须改变房源状态
-      } else {// 点“保存”按钮
-        DepositAgreement originalDepositAgreement = super.get(depositAgreement.getId());
-        if (AgreementAuditStatusEnum.TEMP_EXIST.getValue().equals(originalDepositAgreement.getAgreementStatus())) {// 以前是暂存的定金协议，修改后点保存，要更新房源状态
-          return proccessHouseRoomStatus(depositAgreement, houseId, roomId);
-        } else { // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
-          String originalHouseId = originalDepositAgreement.getHouse().getId();
-          String originalRoomId = originalDepositAgreement.getRoom() == null ? "" : originalDepositAgreement.getRoom().getId();
-          originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
-          String curHouseId = depositAgreement.getHouse().getId();
-          String curRoomId = depositAgreement.getRoom() == null ? "" : depositAgreement.getRoom().getId();
-          curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
-          if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 定金协议修改了房屋或房间
-            // 回滚前房源
-            if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已预定”改为“待出租可预订”
-              houseService.releaseSingleRoom(roomService.get(originalRoomId));
-            } else {// 整租，把房屋从“已预定”改为“待出租可预订”
-              houseService.releaseWholeHouse(houseService.get(originalHouseId));
-            }
-            // 预定新房源
-            return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
-          }
+      return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
+    } else { // 手机APP签约、后台 修改- 保存/暂存
+      DepositAgreement originalDepositAgreement = super.get(depositAgreement.getId());
+      // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+      String originalHouseId = originalDepositAgreement.getHouse().getId();
+      String originalRoomId = originalDepositAgreement.getRoom() == null ? "" : originalDepositAgreement.getRoom().getId();
+      originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
+      if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 定金协议修改了房屋或房间
+        // 回滚前房源
+        if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已预定”改为“待出租可预订”
+          houseService.releaseSingleRoom(roomService.get(originalRoomId));
+        } else {// 整租，把房屋从“已预定”改为“待出租可预订”
+          houseService.releaseWholeHouse(houseService.get(originalHouseId));
         }
+        // 预定新房源
+        return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
+      } else {
+        doSaveDepositAgreement(depositAgreement);
+        return 0;
       }
     }
-    return 0;
   }
 
   private int proccessHouseRoomStatus(DepositAgreement depositAgreement, String houseId, String roomId) {
