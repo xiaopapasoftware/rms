@@ -364,6 +364,11 @@
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 						</c:if>
 					</shiro:hasPermission>
+					<shiro:hasPermission name="contract:superRentContract:edit"><!-- 出租合同已经被审核通过，且有效的情况下，后门修改 -->
+						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
+    						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">【后门修改】</a>
+						</c:if>
+					</shiro:hasPermission>
 					<shiro:hasPermission name="contract:rentContract:return">
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
 	    				 	<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>

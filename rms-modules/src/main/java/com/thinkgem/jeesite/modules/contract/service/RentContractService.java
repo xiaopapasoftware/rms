@@ -299,6 +299,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       return persistentHouseInfo(rentContract, curHouseId, curRoomId);
     } else {// 手机APP签约、后台 修改- 保存/暂存
       RentContract originalRentContract = super.get(rentContract.getId());
+      // 如果是合同审核通过且已生效情况下，进行的后门修改，则把新合同的业务状态置为空值
+      if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(originalRentContract.getContractStatus())
+          && ContractBusiStatusEnum.VALID.getValue().equals(originalRentContract.getContractBusiStatus())) {
+        rentContract.setContractStatus(ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue());
+        rentContract.setContractBusiStatus("");
+      }
       // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
       String originalHouseId = originalRentContract.getHouse().getId();
       String originalRoomId = originalRentContract.getRoom() == null ? "" : originalRentContract.getRoom().getId();

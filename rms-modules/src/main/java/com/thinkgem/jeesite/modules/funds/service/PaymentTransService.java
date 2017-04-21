@@ -20,7 +20,6 @@ import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
@@ -83,7 +82,6 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     // 删除款项账务的关联关系、收据、附件
     TradingAccounts tradingAccounts = new TradingAccounts();
     tradingAccounts.setTradeId(objectID);
-    tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
     List<TradingAccounts> list = tradingAccountsDao.findList(tradingAccounts);
     if (CollectionUtils.isNotEmpty(list)) {
       for (TradingAccounts tmpTradingAccounts : list) {
@@ -163,10 +161,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   }
 
   /**
-   * 删除后付费交易对应的所有的款项，账务，款项账务关联关系，以及相关收据
-   * 前提：
-   * 1、到账登记时，不能跟别的交易类型一起混合到账登记，必须只能是后付费这一种账务交易类型。
-   * 2、到账登记的款项必须是 同一笔后付费交易，不能跨两笔后付费交易。
+   * 删除后付费交易对应的所有的款项，账务，款项账务关联关系，以及相关收据 前提： 1、到账登记时，不能跟别的交易类型一起混合到账登记，必须只能是后付费这一种账务交易类型。 2、到账登记的款项必须是 同一笔后付费交易，不能跨两笔后付费交易。
    */
   @Transactional(readOnly = false)
   public void deletePaymentTransAndTradingAcctounsWithPostpaidFee(String postpaidFeeId) {
