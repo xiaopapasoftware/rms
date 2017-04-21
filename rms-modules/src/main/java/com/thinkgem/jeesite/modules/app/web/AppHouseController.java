@@ -2265,8 +2265,8 @@ public class AppHouseController {
         tradingAccounts.setPayeeName(apptoken.getPhone());
         List<Receipt> receiptList = new ArrayList<Receipt>();
         Receipt receipt = new Receipt();
-        receipt.setTradeMode("4");// 支付宝
-        receipt.setPaymentType("11");// 电费自用金额
+        receipt.setTradeMode(TradeModeTypeEnum.ALIPAY.getValue());
+        receipt.setPaymentType(PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue());
         receipt.setReceiptAmount(Double.valueOf(chargeValue));
         receiptList.add(receipt);
         tradingAccounts.setReceiptList(receiptList);
