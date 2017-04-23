@@ -493,16 +493,42 @@ public class RentContractController extends BaseController {
   }
 
   /**
+   * 把出租合同业务状态从“正常退租待核算”回滚为 “有效”
+   */
+  @RequestMapping(value = "rollbackToNormal")
+  public String rollbackContractToValidFromNormalReturn(RentContract rentContract, RedirectAttributes redirectAttributes) {
+    rentContract = rentContractService.get(rentContract.getId());
+    rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
+    rentContractService.save(rentContract);
+    addMessage(redirectAttributes, "已恢复为有效合同！");
+    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+  }
+
+  /**
    * 点击“提前退租”按钮触发的业务
    */
   @RequestMapping(value = "earlyReturnContract")
   public String earlyReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     String rentContractId = rentContract.getId();
+    paymentTransService.deleteNotSignPaymentTrans(rentContractId);
     rentContract = rentContractService.get(rentContractId);
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
-    paymentTransService.deleteNotSignPaymentTrans(rentContractId);
     addMessage(redirectAttributes, "提前退租成功，接下来请进行提前退租核算！");
+    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+  }
+
+  /**
+   * 把出租合同业务状态从“提前退租待核算”回滚为 “有效”
+   */
+  @RequestMapping(value = "rollbackFromPreturnToNormal")
+  public String rollbackContractToValidFromPrereturn(RentContract rentContract, RedirectAttributes redirectAttributes) {
+    String rentContractId = rentContract.getId();
+    paymentTransService.rollbackDeleteNotSignPaymentTrans(rentContractId);
+    rentContract = rentContractService.get(rentContractId);
+    rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
+    rentContractService.save(rentContract);
+    addMessage(redirectAttributes, "已恢复为有效合同！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 

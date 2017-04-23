@@ -300,8 +300,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     } else {// 手机APP签约、后台 修改- 保存/暂存
       RentContract originalRentContract = super.get(rentContract.getId());
       // 如果是合同审核通过且已生效情况下，进行的后门修改，则把新合同的业务状态置为空值
-      if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(originalRentContract.getContractStatus())
-          && ContractBusiStatusEnum.VALID.getValue().equals(originalRentContract.getContractBusiStatus())) {
+      // 如果是合同被账务审核拒绝情况下，进行后门修改
+      if ((ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(originalRentContract.getContractStatus())
+          && ContractBusiStatusEnum.VALID.getValue().equals(originalRentContract.getContractBusiStatus()))
+          || (ContractAuditStatusEnum.INVOICE_AUDITED_REFUSE.getValue().equals(originalRentContract.getContractStatus()) && StringUtils.isBlank(originalRentContract.getContractBusiStatus()))) {
         rentContract.setContractStatus(ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue());
         rentContract.setContractBusiStatus("");
       }

@@ -1,7 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.funds.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
@@ -10,9 +6,12 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 
 /**
  * 款项交易DAO接口
- * 
- * @author huangsc
- * @version 2015-06-11
  */
 @MyBatisDao
-public interface PaymentTransDao extends CrudDao<PaymentTrans> {}
+public interface PaymentTransDao extends CrudDao<PaymentTrans> {
+
+  /**
+   * 退租删除未到账的款项之回滚，包括： 交易类型【新签合同、正常人工续签、逾期自动续签】；款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】
+   */
+  void rollbackDelete(PaymentTrans p);
+}

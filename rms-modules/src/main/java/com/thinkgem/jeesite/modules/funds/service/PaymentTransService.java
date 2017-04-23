@@ -142,6 +142,39 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   }
 
   /**
+   * 退租删除未到账的款项之回滚，包括： 交易类型【新签合同、正常人工续签、逾期自动续签】；款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
+   */
+  @Transactional(readOnly = false)
+  public void rollbackDeleteNotSignPaymentTrans(String rentContractId) {
+    PaymentTrans p = new PaymentTrans();
+    p.preUpdate();
+    p.setTransId(rentContractId);
+    p.setTradeDirection(TradeDirectionEnum.IN.getValue());
+    p.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+    p.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+    p.setPaymentType(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+    p.setPaymentType(PaymentTransTypeEnum.GAS_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+    p.setPaymentType(PaymentTransTypeEnum.TV_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+    p.setPaymentType(PaymentTransTypeEnum.NET_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+    p.setPaymentType(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
+    rollbackDelete3TradeType(p);
+  }
+
+  private void rollbackDelete3TradeType(PaymentTrans p) {
+    p.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
+    dao.rollbackDelete(p);
+    p.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
+    dao.rollbackDelete(p);
+    p.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
+    dao.rollbackDelete(p);
+  }
+
+  /**
    * 检查退租时，合同下是否还有未到账的款项，有返回true，无返回false
    */
   public boolean checkNotSignedPaymentTrans(String rentContractId) {
