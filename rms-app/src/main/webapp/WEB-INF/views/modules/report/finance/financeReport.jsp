@@ -97,6 +97,14 @@
                     </div>
                 </div>
 
+                <div class="layui-inline">
+                    <label class="layui-form-label">账单方向</label>
+                    <div class="layui-input-inline m-large">
+                        <input type="radio" name="tradeDirection" value="1" title="进账" checked>
+                        <input type="radio" name="tradeDirection" value="0" title="出账">
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>
@@ -128,6 +136,10 @@
                     <col width="100">
                     <col width="100">
                     <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
                 </colgroup>
                 <thead>
                 <tr>
@@ -138,15 +150,34 @@
                     <th>室号</th>
                     <th>总金额</th>
                     <th>房租</th>
+                    <th>归属年月</th>
                     <th>房租押金</th>
                     <th>水电费押金</th>
                     <th>定金</th>
                     <th>首充电费</th>
                     <th>服务费</th>
+                    <th>水费</th>
+                    <th>宽带费</th>
+                    <th>电视费</th>
                 </tr>
                 </thead>
                 <tbody id="financeContent">
                 </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="5">合计</th>
+                    <th id="totalAmount"></th>
+                    <th id="houseAmount" colspan="2"></th>
+                    <th id="houseDeposit"></th>
+                    <th id="waterDeposit"></th>
+                    <th id="agreeAmount"></th>
+                    <th id="firstEleAmount"></th>
+                    <th id="serviceAmount"></th>
+                    <th id="waterAmount"></th>
+                    <th id="netAmount"></th>
+                    <th id="tvAmount"></th>
+                </tr>
+                </tfoot>
             </table>
             <div id="financePage"></div>
         </div>
@@ -160,23 +191,27 @@
 <script src="${ctxStatic}/modules/report/financeReport.js"></script>
 
 <script id="financeTpl" type="text/html">
-    {{#  layui.each(d.data, function(index, item){ }}
+    {{#  layui.each(d.dataList, function(index, item){ }}
     <tr>
         <td>{{ item.receiptDate }}</td>
         <td>{{ item.projectName }}</td>
         <td>{{ item.buildingName || '' }}</td>
         <td>{{ item.houseNo || '' }}</td>
         <td>{{ item.roomNo || '' }}</td>
-        <td>{{ item.totalAmount || '' }}</td>
+        <td>{{ item.totalAmount | a }}</td>
         <td>{{ item.houseAmount || '' }}</td>
+        <td>{{ item.mouth || '' }}</td>
         <td>{{ item.houseDeposit || '' }}</td>
         <td>{{ item.waterDeposit || ''}}</td>
         <td>{{ item.agreeAmount || '' }}</td>
         <td>{{ item.firstEleAmount || '' }}</td>
         <td>{{ item.serviceAmount || '' }}</td>
+        <td>{{ item.waterAmount || '' }}</td>
+        <td>{{ item.netAmount || '' }}</td>
+        <td>{{ item.tvAmount || '' }}</td>
     </tr>
     {{#  }); }}
-    {{#  if(d.data.length === 0){ }}
+    {{#  if(d.dataList.length === 0){ }}
     无数据
     {{#  } }}
 </script>

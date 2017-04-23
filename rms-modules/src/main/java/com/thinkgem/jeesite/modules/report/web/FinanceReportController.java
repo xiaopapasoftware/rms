@@ -2,7 +2,9 @@ package com.thinkgem.jeesite.modules.report.web;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.thinkgem.jeesite.common.filter.search.MatchType;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
+import com.thinkgem.jeesite.common.filter.search.PropertyType;
 import com.thinkgem.jeesite.common.filter.search.Sort;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
 import com.thinkgem.jeesite.common.support.MessageSupport;
@@ -10,6 +12,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.report.service.FinanceReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,8 +49,19 @@ public class FinanceReportController extends BaseController {
         List<Sort> sorts = SortBuilder.create().addDesc("main.receipt_date").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = financeReportService.queryFinace(getFilterParams(request), sorts);
-        reportEntities = financeReportService.convertOutFinance(reportEntities);
-        return MessageSupport.successDataTableMsg(page, reportEntities);
+        String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
+        Map map = new HashMap(2);
+        if(StringUtils.equals(tradeDirection,TradeDirectionEnum.IN.getValue())){
+            reportEntities = financeReportService.convertInFinance(reportEntities);
+            map.put("dataList",reportEntities);
+            map.put("totalAmount",financeReportService.calculateInTotalAmount(reportEntities));
+        }else{
+            reportEntities = financeReportService.convertOutFinance(reportEntities);
+            map.put("dataList",reportEntities);
+            map.put("totalAmount",financeReportService.calculateOutTotalAmount(reportEntities));
+        }
+
+        return MessageSupport.successDataTableMsg(page, map);
     }
 
     @RequestMapping("export")
@@ -62,7 +76,7 @@ public class FinanceReportController extends BaseController {
         dataMap.put("parametersMap", request.getParameterMap());
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
-        String tradeDirection = request.getParameter("filter_eqi_trade_direction") == null ? "1" : request.getParameter("filter_eqi_trade_direction");
+        String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
         String template = StringUtils.equals("0",tradeDirection)?"finance_out_report_template.xls":"finance_import_report_template.xls";
         String fileName = StringUtils.equals("0",tradeDirection)?"收款":"出款";
         excelUtils.setTemplatePath("/templates/report/" + template);
@@ -79,9 +93,15 @@ public class FinanceReportController extends BaseController {
      * 添加查询判断的条件
      **/
     private List<PropertyFilter> getFilterParams(HttpServletRequest request) {
-
         List<PropertyFilter> propertyFilters = getFilter(request);
-
+        String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
+        String value="";
+        if(StringUtils.equals(tradeDirection,TradeDirectionEnum.IN.getValue())){
+            value = "1,3,4,5";
+        }else{
+            value = "6,7,8,9";
+        }
+        propertyFilters.add(new PropertyFilter(MatchType.IN, PropertyType.I,"main.trade_type",value));
         return propertyFilters;
     }
 
