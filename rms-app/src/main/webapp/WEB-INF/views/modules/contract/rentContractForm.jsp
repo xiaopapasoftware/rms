@@ -836,7 +836,10 @@
 			<shiro:hasPermission name="contract:superRentContract:edit"><!-- 出租合同已经被审核通过，且有效的情况下，后门修改的保存 -->
  				<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="【后门修改保存】" onclick="submitData()"/>&nbsp;
-				</c:if> 
+				</c:if>
+				<c:if test="${rentContract.contractStatus=='5' && (rentContract.contractBusiStatus==''||rentContract.contractBusiStatus==null)}">
+    				<input id="btnSubmit" class="btn btn-primary" type="submit" value="【后门修改保存】" onclick="submitData()"/>&nbsp;		 
+				</c:if>
 			</shiro:hasPermission>
 			<shiro:hasPermission name="contract:rentContract:audit">
 				<c:if test="${rentContract.contractBusiStatus!=null&&rentContract.contractBusiStatus!='0'&&rentContract.contractBusiStatus!='1'&&rentContract.contractBusiStatus!='2'&&rentContract.contractBusiStatus!='3'&&rentContract.contractBusiStatus!='14'&&rentContract.contractBusiStatus!='15'}">

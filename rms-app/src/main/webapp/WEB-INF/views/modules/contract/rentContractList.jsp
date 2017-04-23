@@ -364,8 +364,13 @@
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 						</c:if>
 					</shiro:hasPermission>
-					<shiro:hasPermission name="contract:superRentContract:edit"><!-- 出租合同已经被审核通过，且有效的情况下，后门修改 -->
+					<!-- 出租合同已经被审核通过，且有效的情况下的后门修改 -->
+					<!-- 出租合同账务收据审核拒绝，后门修改 -->
+					<shiro:hasPermission name="contract:superRentContract:edit">
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
+    						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">【后门修改】</a>
+						</c:if>
+						<c:if test="${rentContract.contractStatus=='5' && (rentContract.contractBusiStatus==''||rentContract.contractBusiStatus==null)}">
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">【后门修改】</a>
 						</c:if>
 					</shiro:hasPermission>
