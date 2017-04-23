@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.Sort;
 import com.thinkgem.jeesite.common.filter.search.builder.SortBuilder;
-import com.thinkgem.jeesite.common.filter.search.support.PropertyFilterSupport;
 import com.thinkgem.jeesite.common.support.MessageSupport;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -44,7 +43,7 @@ public class FinanceReportController extends BaseController {
     @RequestMapping("query")
     @ResponseBody
     public Object queryFinance(HttpServletRequest request) {
-        List<Sort> sorts = SortBuilder.create().addAsc("tr.receipt_date").end();
+        List<Sort> sorts = SortBuilder.create().addDesc("main.receipt_date").end();
         Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
         List<Map> reportEntities = financeReportService.queryFinace(getFilterParams(request), sorts);
         reportEntities = financeReportService.convertOutFinance(reportEntities);
@@ -53,7 +52,7 @@ public class FinanceReportController extends BaseController {
 
     @RequestMapping("export")
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
-        List<Sort> sorts = SortBuilder.create().addAsc("tr.receipt_date").end();
+        List<Sort> sorts = SortBuilder.create().addDesc("main.receipt_date").end();
         List<Map> reportEntities = financeReportService.queryFinace(getFilterParams(request), sorts);
         reportEntities = financeReportService.convertOutFinance(reportEntities);
         logger.debug("查询到数据为:" + reportEntities.toString());
@@ -81,7 +80,7 @@ public class FinanceReportController extends BaseController {
      **/
     private List<PropertyFilter> getFilterParams(HttpServletRequest request) {
 
-        List<PropertyFilter> propertyFilters = PropertyFilterSupport.buildPropertyFilters(request);
+        List<PropertyFilter> propertyFilters = getFilter(request);
 
         return propertyFilters;
     }

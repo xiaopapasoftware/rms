@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 
+import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
+import com.thinkgem.jeesite.common.filter.search.support.PropertyFilterSupport;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.Logger;
@@ -214,6 +217,16 @@ public abstract class BaseController {
         setValue(DateUtils.parseDate(text));
       }
     });
+  }
+
+
+  /**
+   * 获取查询的参数
+   *
+   * @return
+   */
+  protected List<PropertyFilter> getFilter(HttpServletRequest request) {
+    return PropertyFilterSupport.buildPropertyFilters(request);
   }
 
 }
