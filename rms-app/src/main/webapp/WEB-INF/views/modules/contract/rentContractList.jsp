@@ -373,8 +373,14 @@
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
 	    				 	<a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}" onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
 	    				</c:if>
+	    				<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='2'}">
+	    				 	<a href="${ctx}/contract/rentContract/rollbackToNormal?id=${rentContract.id}" onclick="return confirmx('确认要把正常退租合同恢复为有效合同吗?', this.href)">恢复有效</a>
+	    				</c:if>
 	    				<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
 	    					<a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要提前退租吗,提前退租将删除未到账款项?', this.href)">提前退租</a>
+	    				</c:if>
+	    				<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='1'}">
+	    					<a href="${ctx}/contract/rentContract/rollbackFromPreturnToNormal?id=${rentContract.id}" onclick="return confirmx('确认要把提前退租合同恢复为有效合同吗?', this.href)">恢复有效</a>
 	    				</c:if>
     					 <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">		
     						<a href="${ctx}/contract/rentContract/lateReturnContract?id=${rentContract.id}" onclick="return confirmx('确认要逾期退租吗?', this.href)">逾期退租</a>
