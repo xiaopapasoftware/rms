@@ -80,6 +80,9 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                 $("#btn-export").on("click", FinanceReportMVC.Controller.export);
                 $("#btn-search").on("click", FinanceReportMVC.Controller.query);
                 $("#btn-undo").on("click", FinanceReportMVC.Controller.undo);
+                $(":radio[name='tradeDirection']").on("click",function(){
+                    alert(this.val());
+                })
             }
         },
         Controller: {
