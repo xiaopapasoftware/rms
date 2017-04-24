@@ -107,16 +107,16 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
 
                 var index = layer.load(0, {shade: [0.1, '#000'], time: 5000});
                 var url = FinanceReportMVC.URLs.query.url + "?pageNum=" + FinanceReportCommon.pageNum + "&pageSize=" + FinanceReportCommon.pageSize;
-                $.getJSON(url, FinanceReportMVC.Controller.params(), function (data) {
+                $.getJSON(url, FinanceReportMVC.Controller.params(), function (rep) {
                     layer.close(index);
                     var getTpl = financeTpl.innerHTML;
-                    laytpl(getTpl).render(data, function (html) {
+                    laytpl(getTpl).render(rep.data, function (html) {
                         financeContent.innerHTML = html;
                     });
                     laypage({
                         cont : 'financePage',
-                        pages : data.totalPage,
-                        curr : data.pageNum,
+                        pages : rep.totalPage,
+                        curr : rep.pageNum,
                         groups : 5,
                         skip : true,
                         jump : function (obj, first) {
@@ -126,6 +126,17 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                             }
                         }
                     });
+
+                    $("#totalAmount").html(rep.data.totalAmount.sumTotalAmount);
+                    $("#houseAmount").html(rep.data.totalAmount.sumHouseAmount);
+                    $("#houseDeposit").html(rep.data.totalAmount.sumHouseDeposit);
+                    $("#waterDeposit").html(rep.data.totalAmount.sumWaterDeposit);
+                    $("#agreeAmount").html(rep.data.totalAmount.sumAgreeAmount);
+                    $("#firstEleAmount").html(rep.data.totalAmount.sumFirstEleAmount);
+                    $("#serviceAmount").html(rep.data.totalAmount.sumServiceAmount);
+                    $("#waterAmount").html(rep.data.totalAmount.sumWaterAmount);
+                    $("#netAmount").html(rep.data.totalAmount.sumNetAmount);
+                    $("#tvAmount").html(rep.data.totalAmount.sumTvAmount);
                 });
             },
             loadProject : function(){
@@ -148,6 +159,10 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
     FinanceReport.init();
 });
 
+
+function a(a){
+    alert(a);
+}
 
 
 

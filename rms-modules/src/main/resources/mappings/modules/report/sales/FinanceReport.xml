@@ -3,63 +3,39 @@
 <mapper namespace="com.thinkgem.jeesite.modules.report.dao.FinanceReportDao">
 
     <select id="queryFinance" resultType="java.util.Map" parameterType="com.thinkgem.jeesite.common.filter.search.Criterion">
-        select tpp.project_name,tb.building_name,th.house_no,tr.room_no,main.* from
-        (SELECT trc.contract_name,trc.PROPERTY_PROJECT_ID,trc.BUILDING_ID,trc.HOUSE_ID,trc.ROOM_ID,
-        temp.house_amount,temp.water_deposit,temp.house_deposit,temp.agree_amount,temp.service_amount,temp.RECEIPT_DATE
-        ,CASE WHEN trc.ELE_RECHARGE_AMOUNT IS NULL THEN '0' ELSE trc.ELE_RECHARGE_AMOUNT END AS 'first_ele_amount'
-        FROM (SELECT t.trade_id, t.RECEIPT_DATE,  SUM(CASE t.`PAYMENT_TYPE` WHEN '6' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_amount',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'water_deposit',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_deposit',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'agree_amount',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '22' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'service_amount'
-        FROM
-        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE`
-        FROM   t_trading_accounts t1 , t_receipt t2
-        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
-        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
-        AND  t1.`TRADE_STATUS` = '1'
-        AND  t1.`TRADE_TYPE` IN  ('3','4','5')
-        GROUP BY t1.`TRADE_ID`,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE` )t
-        GROUP BY t.trade_id,t.RECEIPT_DATE )temp, t_rent_contract trc
-        WHERE trc.`DEL_FLAG` = '0'
-        AND trc.`ID` = temp.trade_id
-        UNION
-        SELECT tda.AGREEMENT_NAME,tda.PROPERTY_PROJECT_ID,tda.BUILDING_ID,tda.HOUSE_ID,tda.ROOM_ID,
-        temp.house_amount,temp.water_deposit,temp.house_deposit,temp.agree_amount,temp.service_amount,
-        temp.RECEIPT_DATE,'0' AS 'first_ele_amount'
-        FROM (SELECT t.trade_id, t.RECEIPT_DATE,  '0' AS 'house_amount',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'water_deposit',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_deposit',
-        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'agree_amount',
-        '0' AS 'service_amount'
-        FROM
-        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE`
-        FROM   t_trading_accounts t1 , t_receipt t2
-        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
-        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
-        AND  t1.`TRADE_STATUS` = '1'
-        AND  t1.`TRADE_TYPE`   = '1'
-        GROUP BY t1.`TRADE_ID` ,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE` )t
-        GROUP BY t.trade_id ,t.RECEIPT_DATE)temp, t_deposit_agreement tda
-        WHERE tda.`DEL_FLAG` = '0'
-        AND tda.`ID` = temp.trade_id)main
-        left join t_building tb on main.BUILDING_ID = tb.id and tb.del_flag =0
-        left join t_property_project tpp on main.PROPERTY_PROJECT_ID = tpp.id and tpp.del_flag =0
+        select
+          tpp.project_name,tb.building_name,th.house_no,tro.room_no,
+          main.receipt_date,main.receipt_amount,main.ele_recharge_amount,
+          main.payment_type,main.trade_type,main.trade_direction,
+          main.trade_status,main.id,main.trade_id
+        from (
+            select
+                tr.receipt_date,tr.receipt_amount,tr.payment_type,
+                tta.trade_type,tta.trade_direction,tta.trade_status,tta.id,
+                case when trc.ele_recharge_amount is null then 0 else trc.ele_recharge_amount end ele_recharge_amount,
+                case when tda.id is null then trc.id else tda.id end trade_id,
+                case when tda.property_project_id is null then trc.property_project_id else tda.property_project_id end property_project_id,
+                case when tda.building_id is null then trc.building_id else tda.building_id end building_id,
+                case when tda.house_id is null then trc.house_id else tda.house_id end house_id,
+                case when tda.room_id is null then trc.room_id else tda.room_id end room_id
+            from t_receipt tr
+            left join t_trading_accounts tta on tr.trading_accounts_id = tta.id and tta.del_flag=0
+            left join t_deposit_agreement tda on tta.trade_id = tda.id and tda.del_flag=0
+            left join t_rent_contract trc on tta.trade_id = trc.id and trc.del_flag=0
+            where tr.del_flag=0
+            and tta.trade_status= 1
+        ) main
+        left join t_building tb on main.building_id = tb.id and tb.del_flag =0
+        left join t_property_project tpp on main.property_project_id = tpp.id and tpp.del_flag =0
         left join t_house th on main.house_id = th.id and th.del_flag =0
-        left join t_room tr on main.room_id = tr.id and tr.del_flag =0
-
+        left join t_room tro on main.room_id = tro.id and tro.del_flag =0
         where 1=1
 
         ${whereSqlString}
+
         <if test="orderBy != null">
             ${orderBySqlString}
         </if>
-
-
-
-
-
-
     </select>
 
     <!--查询账务信息以及票据的金额-->
@@ -108,6 +84,52 @@
         GROUP BY t.trade_id )temp, t_deposit_agreement tda
         WHERE tda.`DEL_FLAG` = '0'
         AND tda.`ID` = temp.trade_id;
+
+        <!-- 改动原有sql-->
+        select tpp.project_name,tb.building_name,th.house_no,tr.room_no,main.* from
+        (SELECT trc.contract_name,trc.PROPERTY_PROJECT_ID,trc.BUILDING_ID,trc.HOUSE_ID,trc.ROOM_ID,
+        temp.house_amount,temp.water_deposit,temp.house_deposit,temp.agree_amount,temp.service_amount,temp.RECEIPT_DATE
+        ,CASE WHEN trc.ELE_RECHARGE_AMOUNT IS NULL THEN '0' ELSE trc.ELE_RECHARGE_AMOUNT END AS 'first_ele_amount'
+        FROM (SELECT t.trade_id, t.RECEIPT_DATE,  SUM(CASE t.`PAYMENT_TYPE` WHEN '6' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_amount',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'water_deposit',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_deposit',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'agree_amount',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '22' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'service_amount'
+        FROM
+        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE`
+        FROM   t_trading_accounts t1 , t_receipt t2
+        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
+        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
+        AND  t1.`TRADE_STATUS` = '1'
+        AND  t1.`TRADE_TYPE` IN  ('3','4','5')
+        GROUP BY t1.`TRADE_ID`,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE` )t
+        GROUP BY t.trade_id,t.RECEIPT_DATE )temp, t_rent_contract trc
+        WHERE trc.`DEL_FLAG` = '0'
+        AND trc.`ID` = temp.trade_id
+        UNION
+        SELECT tda.AGREEMENT_NAME,tda.PROPERTY_PROJECT_ID,tda.BUILDING_ID,tda.HOUSE_ID,tda.ROOM_ID,
+        temp.house_amount,temp.water_deposit,temp.house_deposit,temp.agree_amount,temp.service_amount,
+        temp.RECEIPT_DATE,'0' AS 'first_ele_amount'
+        FROM (SELECT t.trade_id, t.RECEIPT_DATE,  '0' AS 'house_amount',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '2' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'water_deposit',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '4' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'house_deposit',
+        SUM(CASE t.`PAYMENT_TYPE` WHEN '0' THEN t.RECEIPT_AMOUNT ELSE '' END) AS 'agree_amount',
+        '0' AS 'service_amount'
+        FROM
+        (SELECT  t1.`TRADE_ID` , t2.`PAYMENT_TYPE`, t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE`
+        FROM   t_trading_accounts t1 , t_receipt t2
+        WHERE  t1.`DEL_FLAG` = '0'  AND t2.`DEL_FLAG` = '0'
+        AND  t1.`ID` = t2.`TRADING_ACCOUNTS_ID`
+        AND  t1.`TRADE_STATUS` = '1'
+        AND  t1.`TRADE_TYPE`   = '1'
+        GROUP BY t1.`TRADE_ID` ,  t2.`PAYMENT_TYPE`,t2.`RECEIPT_AMOUNT`,t2.`RECEIPT_DATE` )t
+        GROUP BY t.trade_id ,t.RECEIPT_DATE)temp, t_deposit_agreement tda
+        WHERE tda.`DEL_FLAG` = '0'
+        AND tda.`ID` = temp.trade_id)main
+        left join t_building tb on main.BUILDING_ID = tb.id and tb.del_flag =0
+        left join t_property_project tpp on main.PROPERTY_PROJECT_ID = tpp.id and tpp.del_flag =0
+        left join t_house th on main.house_id = th.id and th.del_flag =0
+        left join t_room tr on main.room_id = tr.id and tr.del_flag =0
     </select>
 
 </mapper>
