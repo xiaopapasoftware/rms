@@ -35,6 +35,8 @@ import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
 import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.fee.service.PostpaidFeeService;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
@@ -58,6 +60,8 @@ public class ElectricFeeController extends BaseController {
   private RentContractService rentContractService;
   @Autowired
   private TradingAccountsService tradingAccountsService;
+  @Autowired
+  private PaymentTransService paymentTransService;
 
   @ModelAttribute
   public Object get(@RequestParam(required = false) String id) {
@@ -87,6 +91,23 @@ public class ElectricFeeController extends BaseController {
   public String form(ElectricFee electricFee, Model model) {
     model.addAttribute("electricFee", electricFee);
     return "modules/fee/electricFeeForm";
+  }
+
+  @RequestMapping(value = "removeEletricFee")
+  public String removeEletricFee(ElectricFee electricFee, Model model, RedirectAttributes redirectAttributes) {
+    if (ElectricChargeStatusEnum.PROCESSING.getValue().equals(electricFee.getChargeStatus()) && FeeSettlementStatusEnum.NOT_SETTLED.getValue().equals(electricFee.getSettleStatus())) {
+      PaymentTrans pt = paymentTransService.get(electricFee.getPaymentTransId());
+      if (pt != null) {
+        pt.preUpdate();
+        paymentTransService.delete(pt);
+      }
+      electricFee.preUpdate();
+      electricFeeService.delete(electricFee);
+      addMessage(redirectAttributes, "删除成功！");
+    } else {
+      addMessage(redirectAttributes, "该电费充值记录不可删除！");
+    }
+    return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
   @RequestMapping(value = "viewUseInfo")

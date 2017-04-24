@@ -105,6 +105,11 @@
 							 <a href="${ctx}/fee/electricFee/retryFail?id=${electricFee.id}">失败重试</a>
 						</c:if>
 					</shiro:hasPermission>
+					<shiro:hasPermission name="fee:electricFee:remove">
+						<c:if test="${electricFee.chargeStatus=='0' && electricFee.settleStatus=='0'}">
+							 <a href="${ctx}/fee/electricFee/removeEletricFee?id=${electricFee.id}">删除充值记录</a>
+						</c:if>
+					</shiro:hasPermission>
 				 </td>
 			</tr>
 		</c:forEach>
