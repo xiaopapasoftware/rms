@@ -37,9 +37,14 @@ public class FinanceReportController extends BaseController {
     @Autowired
     private FinanceReportService financeReportService;
 
-    @RequestMapping("index")
-    public String redirectIndex() {
-        return "modules/report/finance/financeReport";
+    @RequestMapping("inIndex")
+    public String redirectInIndex() {
+        return "modules/report/finance/financeInReport";
+    }
+
+    @RequestMapping("outIndex")
+    public String redirectPutIndex() {
+        return "modules/report/finance/financeOutReport";
     }
 
 
@@ -51,14 +56,14 @@ public class FinanceReportController extends BaseController {
         List<Map> reportEntities = financeReportService.queryFinace(getFilterParams(request), sorts);
         String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
         Map map = new HashMap(2);
-        if(StringUtils.equals(tradeDirection,TradeDirectionEnum.IN.getValue())){
+        if (StringUtils.equals(tradeDirection, TradeDirectionEnum.IN.getValue())) {
             reportEntities = financeReportService.convertInFinance(reportEntities);
-            map.put("dataList",reportEntities);
-            map.put("totalAmount",financeReportService.calculateInTotalAmount(reportEntities));
-        }else{
+            map.put("dataList", reportEntities);
+            map.put("totalAmount", financeReportService.calculateInTotalAmount(reportEntities));
+        } else {
             reportEntities = financeReportService.convertOutFinance(reportEntities);
-            map.put("dataList",reportEntities);
-            map.put("totalAmount",financeReportService.calculateOutTotalAmount(reportEntities));
+            map.put("dataList", reportEntities);
+            map.put("totalAmount", financeReportService.calculateOutTotalAmount(reportEntities));
         }
 
         return MessageSupport.successDataTableMsg(page, map);
@@ -77,8 +82,8 @@ public class FinanceReportController extends BaseController {
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
         String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
-        String template = StringUtils.equals("0",tradeDirection)?"finance_out_report_template.xls":"finance_import_report_template.xls";
-        String fileName = StringUtils.equals("0",tradeDirection)?"收款":"出款";
+        String template = StringUtils.equals("0", tradeDirection) ? "finance_out_report_template.xls" : "finance_import_report_template.xls";
+        String fileName = StringUtils.equals("0", tradeDirection) ? "收款" : "出款";
         excelUtils.setTemplatePath("/templates/report/" + template);
         excelUtils.setFilename(fileName + "报表_" + DateUtils.getDate() + ".xls");
         try {
@@ -95,13 +100,13 @@ public class FinanceReportController extends BaseController {
     private List<PropertyFilter> getFilterParams(HttpServletRequest request) {
         List<PropertyFilter> propertyFilters = getFilter(request);
         String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
-        String value="";
-        if(StringUtils.equals(tradeDirection,TradeDirectionEnum.IN.getValue())){
+        String value = "";
+        if (StringUtils.equals(tradeDirection, TradeDirectionEnum.IN.getValue())) {
             value = "1,3,4,5";
-        }else{
+        } else {
             value = "6,7,8,9";
         }
-        propertyFilters.add(new PropertyFilter(MatchType.IN, PropertyType.I,"main.trade_type",value));
+        propertyFilters.add(new PropertyFilter(MatchType.IN, PropertyType.I, "main.trade_type", value));
         return propertyFilters;
     }
 

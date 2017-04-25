@@ -80,9 +80,6 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                 $("#btn-export").on("click", FinanceReportMVC.Controller.export);
                 $("#btn-search").on("click", FinanceReportMVC.Controller.query);
                 $("#btn-undo").on("click", FinanceReportMVC.Controller.undo);
-                $(":radio[name='tradeDirection']").on("click",function(){
-                    alert(this.val());
-                })
             }
         },
         Controller: {
@@ -101,7 +98,6 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                     layer.alert("收据结束日期和开始日期不能空!");
                     return;
                 }
-
                 var day = moment($("#receiptDateEnd").val()).diff(moment($("#receiptDateBegin").val()),'days');
                 if(day > 30){
                     layer.alert("收据结束日期和开始日期之差不能超过30天!");
@@ -112,10 +108,12 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                 var url = FinanceReportMVC.URLs.query.url + "?pageNum=" + FinanceReportCommon.pageNum + "&pageSize=" + FinanceReportCommon.pageSize;
                 $.getJSON(url, FinanceReportMVC.Controller.params(), function (rep) {
                     layer.close(index);
+
                     var getTpl = financeTpl.innerHTML;
                     laytpl(getTpl).render(rep.data, function (html) {
                         financeContent.innerHTML = html;
                     });
+
                     laypage({
                         cont : 'financePage',
                         pages : rep.totalPage,
@@ -130,7 +128,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                         }
                     });
 
-                    $("#totalAmount").html(rep.data.totalAmount.sumTotalAmount);
+                    $("#totalAmount").html(rep.data.totalAmount.sumInTotalAmount);
                     $("#houseAmount").html(rep.data.totalAmount.sumHouseAmount);
                     $("#houseDeposit").html(rep.data.totalAmount.sumHouseDeposit);
                     $("#waterDeposit").html(rep.data.totalAmount.sumWaterDeposit);

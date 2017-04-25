@@ -110,9 +110,11 @@ public class FinanceReportService {
                     final double[] totalAmount = {0};
                     v.forEach(m -> {
                         int paymentType = MapUtils.getInteger(m, "payment_type");
-                        double receiptAmount = MapUtils.getDoubleValue(m,"receipt_amount");
+                        double receiptAmount = MapUtils.getDoubleValue(m,"receipt_amount",0);
                         switch (paymentType){
                             case 2:
+                            case 3:
+                            case 14:
                                 data.put("water_deposit_refund", receiptAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
@@ -120,11 +122,13 @@ public class FinanceReportService {
                                 data.put("house_deposit_refund", receiptAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
+                            case 6:
                             case 7:
                                 data.put("house_refund", receiptAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 13:
+                            case 11:
                                 data.put("ele_refund", receiptAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
@@ -138,6 +142,14 @@ public class FinanceReportService {
                                 break;
                             case 18:
                                 data.put("tv_refund", receiptAmount);
+                                totalAmount[0] += receiptAmount;
+                                break;
+                            case 9:
+                                data.put("unagree_refund", receiptAmount);
+                                totalAmount[0] += receiptAmount;
+                                break;
+                            case 22:
+                                data.put("service_refund", receiptAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             default:
@@ -155,7 +167,7 @@ public class FinanceReportService {
     public Map calculateInTotalAmount(List<Map> financeData){
         Map totalMap =new HashMap();
         financeData.stream().forEach(map -> {
-            totalMap.put("sumTotalAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumTotalAmount",0.0))
+            totalMap.put("sumInTotalAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumInTotalAmount",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"totalAmount",0.0))));
 
             totalMap.put("sumHouseAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumHouseAmount",0.0))
@@ -188,6 +200,9 @@ public class FinanceReportService {
     public Map calculateOutTotalAmount(List<Map> financeData){
         Map totalMap =new HashMap();
         financeData.stream().forEach(map -> {
+            totalMap.put("sumOutTotalAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumOutTotalAmount",0.0))
+                    .add(BigDecimal.valueOf(MapUtils.getDouble(map,"totalAmount",0.0))));
+
             totalMap.put("sumWaterDepositRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumWaterDepositRefund",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"waterDepositRefund",0.0))));
 
@@ -208,6 +223,12 @@ public class FinanceReportService {
 
             totalMap.put("sumTvRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumTvRefund",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"tvRefund",0.0))));
+
+            totalMap.put("sumServiceRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumServiceRefund",0.0))
+                    .add(BigDecimal.valueOf(MapUtils.getDouble(map,"serviceRefund",0.0))));
+
+            totalMap.put("sumUnagreeRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumUnagreeRefund",0.0))
+                    .add(BigDecimal.valueOf(MapUtils.getDouble(map,"unagreeRefund",0.0))));
 
             totalMap.put("sumOtherRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumOtherRefund",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"otherRefund",0.0))));
