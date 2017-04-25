@@ -113,17 +113,17 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header">
-        <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>合同列表 (单位:元)</h4>
+        <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>流水列表 (单位:元)</h4>
         <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-export" class="white">
+            <a href="javascript:void(0);" id="btn-in-export" class="white">
                 <i class="ace-icon fa fa-download"></i> 导出
             </a>
         </div>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-table" lay-even>
-                <colgroup>
+            <table id="in-table" class="layui-table" lay-even>
+                <colgroup id="in-colgroup">
                     <col width="120">
                     <col width="120">
                     <col width="80">
@@ -141,8 +141,25 @@
                     <col width="100">
                     <col width="100">
                 </colgroup>
+                <colgroup id="out-colgroup" style="display: none;">
+                    <col width="120">
+                    <col width="120">
+                    <col width="80">
+                    <col width="80">
+                    <col width="80">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                    <col width="100">
+                </colgroup>
                 <thead>
-                <tr>
+                <tr id="in-head">
                     <th>收据日期</th>
                     <th>物业项目</th>
                     <th>楼号</th>
@@ -159,6 +176,23 @@
                     <th>水费</th>
                     <th>宽带费</th>
                     <th>电视费</th>
+                </tr>
+                <tr id="out-head" style="display: none;">
+                    <th>收据日期</th>
+                    <th>物业项目</th>
+                    <th>楼号</th>
+                    <th>房号</th>
+                    <th>室号</th>
+                    <th>总金额</th>
+                    <th>应退房租押金</th>
+                    <th>应退水电费押金</th>
+                    <th>应退房租金额</th>
+                    <th>应退电费余额</th>
+                    <th>应退水费余额</th>
+                    <th>应退宽带费余额</th>
+                    <th>应退有线电视费余额</th>
+                    <th>其他</th>
+                    <th>备注</th>
                 </tr>
                 </thead>
                 <tbody id="financeContent">
@@ -199,6 +233,32 @@
         <td>{{ item.houseNo || '' }}</td>
         <td>{{ item.roomNo || '' }}</td>
         <td>{{ item.totalAmount | a }}</td>
+        <td>{{ item.houseAmount || '' }}</td>
+        <td>{{ item.mouth || '' }}</td>
+        <td>{{ item.houseDeposit || '' }}</td>
+        <td>{{ item.waterDeposit || ''}}</td>
+        <td>{{ item.agreeAmount || '' }}</td>
+        <td>{{ item.firstEleAmount || '' }}</td>
+        <td>{{ item.serviceAmount || '' }}</td>
+        <td>{{ item.waterAmount || '' }}</td>
+        <td>{{ item.netAmount || '' }}</td>
+        <td>{{ item.tvAmount || '' }}</td>
+    </tr>
+    {{#  }); }}
+    {{#  if(d.dataList.length === 0){ }}
+    无数据
+    {{#  } }}
+</script>
+
+<script id="financeOutTpl" type="text/html">
+    {{#  layui.each(d.dataList, function(index, item){ }}
+    <tr>
+        <td>{{ item.receiptDate }}</td>
+        <td>{{ item.projectName }}</td>
+        <td>{{ item.buildingName || '' }}</td>
+        <td>{{ item.houseNo || '' }}</td>
+        <td>{{ item.roomNo || '' }}</td>
+        <td>{{ item.totalAmount & a }}</td>
         <td>{{ item.houseAmount || '' }}</td>
         <td>{{ item.mouth || '' }}</td>
         <td>{{ item.houseDeposit || '' }}</td>
