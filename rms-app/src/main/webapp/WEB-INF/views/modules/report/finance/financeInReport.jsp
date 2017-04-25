@@ -107,7 +107,7 @@
     <div class="widget-header">
         <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>进账流水列表 (单位:元)</h4>
         <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-in-export" class="white">
+            <a href="javascript:void(0);" id="btn-export" class="white">
                 <i class="ace-icon fa fa-download"></i> 导出
             </a>
         </div>
@@ -158,7 +158,7 @@
                 <tfoot>
                     <tr>
                         <th colspan="5">合计</th>
-                        <th id="inTotalAmount"></th>
+                        <th id="totalAmount"></th>
                         <th id="houseAmount" colspan="2"></th>
                         <th id="houseDeposit"></th>
                         <th id="waterDeposit"></th>
@@ -180,6 +180,7 @@
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
 <script src="${ctxStatic}/xqsight/moment.js"></script>
+<script src="${ctxStatic}/xqsight/pub.js"></script>
 <script src="${ctxStatic}/modules/report/financeInReport.js"></script>
 
 <script id="financeTpl" type="text/html">
@@ -190,17 +191,17 @@
         <td>{{ item.buildingName || '' }}</td>
         <td>{{ item.houseNo || '' }}</td>
         <td>{{ item.roomNo || '' }}</td>
-        <td>{{ item.totalAmount & a }}</td>
-        <td>{{ item.houseAmount || '' }}</td>
-        <td>{{ item.mouth || '' }}</td>
-        <td>{{ item.houseDeposit || '' }}</td>
-        <td>{{ item.waterDeposit || ''}}</td>
-        <td>{{ item.agreeAmount || '' }}</td>
-        <td>{{ item.firstEleAmount || '' }}</td>
-        <td>{{ item.serviceAmount || '' }}</td>
-        <td>{{ item.waterAmount || '' }}</td>
-        <td>{{ item.netAmount || '' }}</td>
-        <td>{{ item.tvAmount || '' }}</td>
+        <td>{{ renderMoney(item.totalAmount) || '' }}</td>
+        <td>{{ renderMoney(item.houseAmount) || '' }}</td>
+        <td>{{ item.belongDate || '' }}</td>
+        <td>{{ renderMoney(item.houseDeposit) || '' }}</td>
+        <td>{{ renderMoney(item.waterDeposit) || ''}}</td>
+        <td>{{ renderMoney(item.agreeAmount) || '' }}</td>
+        <td>{{ renderMoney(item.firstEleAmount) || '' }}</td>
+        <td>{{ renderMoney(item.serviceAmount) || '' }}</td>
+        <td>{{ renderMoney(item.waterAmount) || '' }}</td>
+        <td>{{ renderMoney(item.netAmount) || '' }}</td>
+        <td>{{ renderMoney(item.tvAmount) || '' }}</td>
     </tr>
     {{#  }); }}
     {{#  if(d.dataList.length === 0){ }}

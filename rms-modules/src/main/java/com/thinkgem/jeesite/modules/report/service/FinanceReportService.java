@@ -51,6 +51,7 @@ public class FinanceReportService {
                 switch (paymentType){
                     case 6:
                         data.put("house_amount", receiptAmount);
+                        data.put("belong_date",getRentHouseAmountBelongDate(m));
                         totalAmount[0] += receiptAmount;
                         break;
                     case 2:
@@ -92,7 +93,6 @@ public class FinanceReportService {
         });
         return dataList;
     }
-
 
     public List convertOutFinance(List<Map> financeData) {
         List<Map> dataList = new ArrayList<>();
@@ -182,6 +182,9 @@ public class FinanceReportService {
             totalMap.put("sumAgreeAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumAgreeAmount",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"agreeAmount",0.0))));
 
+            totalMap.put("sumFirstEleAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumFirstEleAmount",0.0))
+                    .add(BigDecimal.valueOf(MapUtils.getDouble(map,"firstEleAmount",0.0))));
+
             totalMap.put("sumServiceAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumServiceAmount",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"serviceAmount",0.0))));
 
@@ -236,5 +239,26 @@ public class FinanceReportService {
         return totalMap;
     }
 
-
+    /**
+     * by 25 evey mouth get receipt amount belong year and mouth
+     * @param map
+     * @return
+     */
+    public String getRentHouseAmountBelongDate(Map map){
+        double receiptAmount = MapUtils.getDoubleValue(map,"receipt_amount",0);
+        double rental = MapUtils.getDoubleValue(map,"rental",0);
+        int mouth = (int) (receiptAmount/rental);
+        String date = MapUtils.getString(map,"receipt_date");
+        String[] dates = StringUtils.split(date,"-");
+        String[] ret = new String[mouth];
+        for (int i = 0; i < mouth; i++) {
+            int m = Integer.valueOf(dates[1]) + ((Integer.valueOf(dates[2]) < 25) ? i : i + 1);
+            if(m > 12 ){
+                ret[i] = Integer.valueOf(dates[1]) + 1 + "-" + (m - 12);
+            }else {
+                ret[i] = dates[0] + "-" + m;
+            }
+        }
+        return StringUtils.join(ret,";");
+    }
 }

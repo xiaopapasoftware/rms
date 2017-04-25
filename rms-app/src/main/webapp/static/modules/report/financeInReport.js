@@ -128,16 +128,16 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                         }
                     });
 
-                    $("#totalAmount").html(rep.data.totalAmount.sumInTotalAmount);
-                    $("#houseAmount").html(rep.data.totalAmount.sumHouseAmount);
-                    $("#houseDeposit").html(rep.data.totalAmount.sumHouseDeposit);
-                    $("#waterDeposit").html(rep.data.totalAmount.sumWaterDeposit);
-                    $("#agreeAmount").html(rep.data.totalAmount.sumAgreeAmount);
-                    $("#firstEleAmount").html(rep.data.totalAmount.sumFirstEleAmount);
-                    $("#serviceAmount").html(rep.data.totalAmount.sumServiceAmount);
-                    $("#waterAmount").html(rep.data.totalAmount.sumWaterAmount);
-                    $("#netAmount").html(rep.data.totalAmount.sumNetAmount);
-                    $("#tvAmount").html(rep.data.totalAmount.sumTvAmount);
+                    $("#totalAmount").html(renderMoney(rep.data.totalAmount.sumInTotalAmount));
+                    $("#houseAmount").html(renderMoney(rep.data.totalAmount.sumHouseAmount));
+                    $("#houseDeposit").html(renderMoney(rep.data.totalAmount.sumHouseDeposit));
+                    $("#waterDeposit").html(renderMoney(rep.data.totalAmount.sumWaterDeposit));
+                    $("#agreeAmount").html(renderMoney(rep.data.totalAmount.sumAgreeAmount));
+                    $("#firstEleAmount").html(renderMoney(rep.data.totalAmount.sumFirstEleAmount));
+                    $("#serviceAmount").html(renderMoney(rep.data.totalAmount.sumServiceAmount));
+                    $("#waterAmount").html(renderMoney(rep.data.totalAmount.sumWaterAmount));
+                    $("#netAmount").html(renderMoney(rep.data.totalAmount.sumNetAmount));
+                    $("#tvAmount").html(renderMoney(rep.data.totalAmount.sumTvAmount));
                 });
             },
             loadProject : function(){
@@ -161,8 +161,8 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
 });
 
 
-function a(a){
-    alert(a);
+function renderMoney(amount){
+    return utils.money.format(amount,2);
 }
 
 

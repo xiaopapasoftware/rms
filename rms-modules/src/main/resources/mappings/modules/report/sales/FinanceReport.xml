@@ -7,10 +7,10 @@
           tpp.project_name,tb.building_name,th.house_no,tro.room_no,
           main.receipt_date,main.receipt_amount,main.ele_recharge_amount,
           main.payment_type,main.trade_type,main.trade_direction,
-          main.trade_status,main.id,main.trade_id
+          main.trade_status,main.id,main.trade_id,main.rental
         from (
             select
-                tr.receipt_date,tr.receipt_amount,tr.payment_type,
+                tr.receipt_date,tr.receipt_amount,tr.payment_type,trc.rental,
                 tta.trade_type,tta.trade_direction,tta.trade_status,tta.id,
                 case when trc.ele_recharge_amount is null then 0 else trc.ele_recharge_amount end ele_recharge_amount,
                 case when tda.id is null then trc.id else tda.id end trade_id,

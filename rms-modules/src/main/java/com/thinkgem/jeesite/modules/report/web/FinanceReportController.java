@@ -73,15 +73,21 @@ public class FinanceReportController extends BaseController {
     public void exportContract(HttpServletRequest request, HttpServletResponse response) {
         List<Sort> sorts = SortBuilder.create().addDesc("main.receipt_date").end();
         List<Map> reportEntities = financeReportService.queryFinace(getFilterParams(request), sorts);
-        reportEntities = financeReportService.convertOutFinance(reportEntities);
         logger.debug("查询到数据为:" + reportEntities.toString());
+        String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
         List<Map> dataList = new ArrayList<>();
         Map dataMap = new HashMap();
-        dataMap.put("fieldsList", reportEntities);
-        dataMap.put("parametersMap", request.getParameterMap());
+        if (StringUtils.equals(tradeDirection, TradeDirectionEnum.IN.getValue())) {
+            reportEntities = financeReportService.convertInFinance(reportEntities);
+            dataMap.put("fieldsList", reportEntities);
+            dataMap.put("parametersMap", financeReportService.calculateInTotalAmount(reportEntities));
+        } else {
+            reportEntities = financeReportService.convertOutFinance(reportEntities);
+            dataMap.put("fieldsList", reportEntities);
+            dataMap.put("parametersMap", financeReportService.calculateOutTotalAmount(reportEntities));
+        }
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
-        String tradeDirection = StringUtils.defaultIfBlank(request.getParameter("tradeDirection"), TradeDirectionEnum.IN.getValue());
         String template = StringUtils.equals("0", tradeDirection) ? "finance_out_report_template.xls" : "finance_import_report_template.xls";
         String fileName = StringUtils.equals("0", tradeDirection) ? "收款" : "出款";
         excelUtils.setTemplatePath("/templates/report/" + template);
@@ -109,5 +115,6 @@ public class FinanceReportController extends BaseController {
         propertyFilters.add(new PropertyFilter(MatchType.IN, PropertyType.I, "main.trade_type", value));
         return propertyFilters;
     }
-
 }
+
+

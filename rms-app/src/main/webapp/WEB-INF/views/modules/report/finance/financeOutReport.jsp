@@ -107,7 +107,7 @@
     <div class="widget-header">
         <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>出账流水列表 (单位:元)</h4>
         <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-in-export" class="white">
+            <a href="javascript:void(0);" id="btn-export" class="white">
                 <i class="ace-icon fa fa-download"></i> 导出
             </a>
         </div>
@@ -121,6 +121,8 @@
                     <col width="80">
                     <col width="80">
                     <col width="80">
+                    <col width="100">
+                    <col width="100">
                     <col width="100">
                     <col width="100">
                     <col width="100">
@@ -182,6 +184,7 @@
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
 <script src="${ctxStatic}/xqsight/moment.js"></script>
+<script src="${ctxStatic}/xqsight/pub.js"></script>
 <script src="${ctxStatic}/modules/report/financeOutReport.js"></script>
 
 <script id="financeTpl" type="text/html">
@@ -192,17 +195,17 @@
         <td>{{ item.buildingName || '' }}</td>
         <td>{{ item.houseNo || '' }}</td>
         <td>{{ item.roomNo || '' }}</td>
-        <td>{{ item.totalAmount }}</td>
-        <td>{{ item.houseDepositRefund || '' }}</td>
-        <td>{{ item.waterDepositRefund || '' }}</td>
-        <td>{{ item.houseRefund || ''}}</td>
-        <td>{{ item.eleRefund || '' }}</td>
-        <td>{{ item.waterRefund || '' }}</td>
-        <td>{{ item.netRefund || '' }}</td>
-        <td>{{ item.tvRefund || '' }}</td>
-        <td>{{ item.unagreeRefund || '' }}</td>
-        <td>{{ item.serviceRefund || '' }}</td>
-        <td>{{ item.otherRefund || '' }}</td>
+        <td>{{ renderMoney(item.totalAmount) }}</td>
+        <td>{{ renderMoney(item.houseDepositRefund) || '' }}</td>
+        <td>{{ renderMoney(item.waterDepositRefund) || '' }}</td>
+        <td>{{ renderMoney(item.houseRefund) || ''}}</td>
+        <td>{{ renderMoney(item.eleRefund) || '' }}</td>
+        <td>{{ renderMoney(item.waterRefund) || '' }}</td>
+        <td>{{ renderMoney(item.netRefund) || '' }}</td>
+        <td>{{ renderMoney(item.tvRefund) || '' }}</td>
+        <td>{{ renderMoney(item.unagreeRefund) || '' }}</td>
+        <td>{{ renderMoney(item.serviceRefund)|| '' }}</td>
+        <td>{{ renderMoney(item.otherRefund) || '' }}</td>
         <td>{{ item.remark || '' }}</td>
     </tr>
     {{#  }); }}
