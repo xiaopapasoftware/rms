@@ -24,9 +24,9 @@
 	</sql>
 
 	<sql id="electricFeeJoins">
-		left join t_rent_contract tc on a.rent_contract_id = tc.id
-		left join t_payment_trade tpt on tpt.TRANS_ID = a.PAYMENT_TRANS_ID
-		left join t_trading_accounts tta on tpt.TRADE_ID = tta.ID
+		left join t_rent_contract tc on a.rent_contract_id = tc.id and tc.del_flag = '0'
+		left join t_payment_trade tpt on tpt.TRANS_ID = a.PAYMENT_TRANS_ID and tpt.del_flag = '0'
+		left join t_trading_accounts tta on tpt.TRADE_ID = tta.ID and tta.del_flag = '0'
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
