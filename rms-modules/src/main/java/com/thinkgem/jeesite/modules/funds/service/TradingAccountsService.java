@@ -246,7 +246,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         doProcessWithPaymentOrder(auditHis.getObjectId());
       }
       // 如果同时有电费充值的交易类型
-      processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
+      processElectricCharge(tradingAccounts.getTradeType(), tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
     } else if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       rentContract.setContractBusiStatus(
           AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.NORMAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
@@ -268,7 +268,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {
-      processElectricCharge(tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
+      processElectricCharge(tradingAccounts.getTradeType(), tradingAccounts.getId(), auditHis.getAuditStatus(), rentContract);
     } else if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(tradingAccounts.getTradeType())) {
       PaymentTrade paymentTrade = new PaymentTrade();
       paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
@@ -293,7 +293,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
   /**
    * 电费充值
    */
-  private void processElectricCharge(String tradingAccountsId, String auditStatus, RentContract rentContract) {
+  private void processElectricCharge(String tradeType, String tradingAccountsId, String auditStatus, RentContract rentContract) {
     PaymentTrade paymentTrade = new PaymentTrade();
     paymentTrade.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
     paymentTrade.setTradeId(tradingAccountsId);
@@ -326,6 +326,9 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
               }
             }
           } else {
+            if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradeType)) {
+              paymentTransDao.delete(paymentTrans);
+            }
             electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
             electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
             electricFee.preUpdate();
