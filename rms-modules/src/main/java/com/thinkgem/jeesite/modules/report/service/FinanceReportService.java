@@ -260,7 +260,7 @@ public class FinanceReportService {
         double receiptAmount = MapUtils.getDoubleValue(map,"receipt_amount",0);
         double rental = MapUtils.getDoubleValue(map,"rental",0);
         int mouth = (int) (receiptAmount/rental);
-        String date = MapUtils.getString(map,"receipt_date");
+        String date = MapUtils.getString(map,"receipt_date").split(" ")[0];
         String[] dates = StringUtils.split(date,"-");
         String[] ret = new String[mouth];
         for (int i = 0; i < mouth; i++) {
