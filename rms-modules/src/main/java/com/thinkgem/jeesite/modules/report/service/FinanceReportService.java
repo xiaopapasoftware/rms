@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,8 @@ public class FinanceReportService {
 
     @Autowired
     private FinanceReportDao financeReportDao;
+
+    DecimalFormat format = new DecimalFormat("###,###.00");
 
     public List queryFinace(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
         return financeReportDao.queryFinance(new Criterion(propertyFilters, sorts));
@@ -48,47 +51,48 @@ public class FinanceReportService {
             v.forEach(m -> {
                 int paymentType = MapUtils.getInteger(m, "payment_type");
                 double receiptAmount = MapUtils.getDoubleValue(m,"receipt_amount",0);
+                String formatAmount = format.format(receiptAmount);
                 switch (paymentType){
                     case 6:
-                        data.put("house_amount", receiptAmount);
+                        data.put("house_amount", formatAmount);
                         data.put("belong_date",getRentHouseAmountBelongDate(m));
                         totalAmount[0] += receiptAmount;
                         break;
                     case 2:
                     case 3:
-                        data.put("water_deposit", receiptAmount);
+                        data.put("water_deposit", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 4:
                     case 5:
-                        data.put("house_deposit", receiptAmount);
+                        data.put("house_deposit", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 0:
-                        data.put("agree_amount", receiptAmount);
+                        data.put("agree_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 22:
-                        data.put("service_amount", receiptAmount);
+                        data.put("service_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 20:
-                        data.put("net_amount", receiptAmount);
+                        data.put("net_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 24:
-                        data.put("water_amount", receiptAmount);
+                        data.put("water_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 18:
-                        data.put("tv_amount", receiptAmount);
+                        data.put("tv_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     default:
 
                 }
             });
-            data.put("total_amount",totalAmount[0]);
+            data.put("total_amount",format.format(totalAmount[0]));
             dataList.add(MapKeyHandle.keyToJavaProperty(data));
         });
         return dataList;
@@ -111,54 +115,55 @@ public class FinanceReportService {
                     v.forEach(m -> {
                         int paymentType = MapUtils.getInteger(m, "payment_type");
                         double receiptAmount = MapUtils.getDoubleValue(m,"receipt_amount",0);
+                        String formatAmount = format.format(receiptAmount);
                         switch (paymentType){
                             case 2:
                             case 3:
                             case 14:
-                                data.put("water_deposit_refund", receiptAmount);
+                                data.put("water_deposit_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 4:
-                                data.put("house_deposit_refund", receiptAmount);
+                                data.put("house_deposit_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 6:
                             case 7:
-                                data.put("house_refund", receiptAmount);
+                                data.put("house_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 13:
                             case 11:
-                                data.put("ele_refund", receiptAmount);
+                                data.put("ele_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 15:
-                                data.put("water_refund", receiptAmount);
+                                data.put("water_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 20:
-                                data.put("net_refund", receiptAmount);
+                                data.put("net_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 18:
-                                data.put("tv_refund", receiptAmount);
+                                data.put("tv_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 9:
-                                data.put("unagree_refund", receiptAmount);
+                                data.put("unagree_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 22:
-                                data.put("service_refund", receiptAmount);
+                                data.put("service_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                             default:
-                                data.put("other_refund", receiptAmount);
+                                data.put("other_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;
                         }
                     });
-                    data.put("total_amount",totalAmount[0]);
+                    data.put("total_amount",format.format(totalAmount[0]));
                     dataList.add(MapKeyHandle.keyToJavaProperty(data));
                 });
         return dataList;
@@ -196,6 +201,10 @@ public class FinanceReportService {
 
             totalMap.put("sumTvAmount", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumTvAmount",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"tvAmount",0.0))));
+        });
+
+        totalMap.forEach((k,v) ->{
+            totalMap.put(k,format.format(v));
         });
         return totalMap;
     }
@@ -235,6 +244,9 @@ public class FinanceReportService {
 
             totalMap.put("sumOtherRefund", BigDecimal.valueOf(MapUtils.getDouble(totalMap,"sumOtherRefund",0.0))
                     .add(BigDecimal.valueOf(MapUtils.getDouble(map,"otherRefund",0.0))));
+        });
+        totalMap.forEach((k,v) ->{
+            totalMap.put(k,format.format(v));
         });
         return totalMap;
     }

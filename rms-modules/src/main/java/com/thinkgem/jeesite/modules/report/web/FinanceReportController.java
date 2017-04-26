@@ -89,7 +89,7 @@ public class FinanceReportController extends BaseController {
         dataList.add(dataMap);
         ExcelUtils excelUtils = new ExcelUtils(dataList);
         String template = StringUtils.equals("0", tradeDirection) ? "finance_out_report_template.xls" : "finance_import_report_template.xls";
-        String fileName = StringUtils.equals("0", tradeDirection) ? "收款" : "出款";
+        String fileName = StringUtils.equals("0", tradeDirection) ? "出款" : "收款";
         excelUtils.setTemplatePath("/templates/report/" + template);
         excelUtils.setFilename(fileName + "报表_" + DateUtils.getDate() + ".xls");
         try {
