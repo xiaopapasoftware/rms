@@ -40,3 +40,13 @@ utils.money = {
         return money;
     }
 }
+
+
+utils.moment = {
+    formatYMDHms: function (value) {
+        return moment(value).format("YYYY-MM-DD HH:mm:ss");
+    },
+    formatYMD: function (value) {
+        return moment(value).format("YYYY-MM-DD");
+    }
+}

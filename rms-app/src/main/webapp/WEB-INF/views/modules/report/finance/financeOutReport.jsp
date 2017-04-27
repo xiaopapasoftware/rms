@@ -190,7 +190,7 @@
 <script id="financeTpl" type="text/html">
     {{#  layui.each(d.dataList, function(index, item){ }}
     <tr>
-        <td>{{ item.receiptDate }}</td>
+        <td>{{ utils.moment.formatYMD(item.receiptDate) }}</td>
         <td>{{ item.projectName }}</td>
         <td>{{ item.buildingName || '' }}</td>
         <td>{{ item.houseNo || '' }}</td>

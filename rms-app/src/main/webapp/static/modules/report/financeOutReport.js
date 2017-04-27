@@ -52,9 +52,6 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                     choose: function (datas) {
                         end.min = datas; //开始日选好后，重置结束日的最小日期
                         end.start = datas;//将结束日的初始值设定为开始日
-                        /* if(moment().diff(datas) > 30){
-                         end.max = moment(datas).add(30,"days");
-                         }*/
                     }
                 };
 
