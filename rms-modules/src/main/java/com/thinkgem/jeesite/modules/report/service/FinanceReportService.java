@@ -80,7 +80,7 @@ public class FinanceReportService {
                         data.put("net_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
-                    case 24:
+                    case 14:
                         data.put("water_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
