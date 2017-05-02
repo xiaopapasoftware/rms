@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.entity.Office;
 import com.thinkgem.jeesite.modules.entity.Role;
 import com.thinkgem.jeesite.modules.entity.User;
@@ -126,6 +127,15 @@ public class UserController extends BaseController {
 	    }
 	}
 	user.setRoleList(roleList);
+
+	//保存用户区域
+	List<String> areaList = Lists.newArrayList();
+	String[] areas = user.getAreaId().split(",");
+	for (String r : areas) {
+		areaList.add(r);
+	}
+	user.setAreaList(areaList);
+
 	// 保存用户信息
 	systemService.saveUser(user);
 	// 清除当前用户缓存

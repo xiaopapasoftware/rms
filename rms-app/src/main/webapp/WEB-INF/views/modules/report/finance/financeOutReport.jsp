@@ -61,12 +61,12 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">收据日期</label>
                     <div class="layui-input-inline date" style="width: 100px;">
-                        <input type="text" id="receiptDateBegin" name="filter_GES_receipt_date" placeholder="开始日期"
+                        <input type="text" id="receiptDateBegin" name="filter_GES_main.update_date" placeholder="开始日期"
                                class="layui-input">
                     </div>
                     <div class="layui-form-mid">-</div>
                     <div class="layui-input-inline" style="width: 100px;">
-                        <input type="text" id="receiptDateEnd" name="filter_LES_receipt_date" placeholder="结束日期" class="layui-input">
+                        <input type="text" id="receiptDateEnd" name="filter_LES_main.update_date" placeholder="结束日期" class="layui-input">
                     </div>
                 </div>
 

@@ -52,6 +52,9 @@ public class User extends DataEntity<User> {
 	
 	private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表
 
+	private String areaId;	// 区域
+	private List<String> areaList = Lists.newArrayList(); // 拥有区域列表
+
 	public User() {
 		super();
 		this.loginFlag = Global.YES;
@@ -277,9 +280,25 @@ public class User extends DataEntity<User> {
 	public List<Role> getRoleList() {
 		return roleList;
 	}
-	
+
 	public void setRoleList(List<Role> roleList) {
 		this.roleList = roleList;
+	}
+
+	public List<String> getAreaList() {
+		return areaList;
+	}
+
+	public void setAreaList(List<String> areaList) {
+		this.areaList = areaList;
+	}
+
+	public String getAreaId() {
+		return areaId;
+	}
+
+	public void setAreaId(String areaId) {
+		this.areaId = areaId;
 	}
 
 	@JsonIgnore

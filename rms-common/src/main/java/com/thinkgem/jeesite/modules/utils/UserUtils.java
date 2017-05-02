@@ -16,6 +16,7 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户工具类
@@ -56,6 +57,7 @@ public class UserUtils {
                 return null;
             }
             user.setRoleList(roleDao.findList(new Role(user)));
+            user.setAreaId(userDao.getUserArea(user).stream().collect(Collectors.joining(",")));
             CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
             CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
         }

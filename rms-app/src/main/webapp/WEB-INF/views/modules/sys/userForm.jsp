@@ -61,6 +61,7 @@
 					title="部门" url="/sys/office/treeData?type=2" cssClass="required" notAllowSelectParent="true"/>
 			</div>
 		</div>
+
 		<div class="control-group">
 			<label class="control-label">工号:</label>
 			<div class="controls">
@@ -134,6 +135,17 @@
 				</form:select>
 			</div>
 		</div>
+
+		<div class="control-group">
+			<label class="control-label">管理区域:</label>
+			<div class="controls">
+				<sys:treeselect id="area" name="areaId" value="${areaId}" labelName="area.name"
+								labelValue="${area.name}" checked="true"
+								notAllowSelectParent="true" title="区域" url="/sys/area/treeData" extId="${area.id}"
+								cssClass="" allowClear="true"/>
+			</div>
+		</div>
+
 		<div class="control-group">
 			<label class="control-label">用户角色:</label>
 			<div class="controls">

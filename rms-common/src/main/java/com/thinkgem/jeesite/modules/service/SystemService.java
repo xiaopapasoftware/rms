@@ -145,6 +145,7 @@ public class SystemService extends BaseService implements InitializingBean {
             user.preUpdate();
             userDao.update(user);
         }
+
         if (StringUtils.isNotBlank(user.getId())) {
             // 更新用户与角色关联
             userDao.deleteUserRole(user);
@@ -153,6 +154,15 @@ public class SystemService extends BaseService implements InitializingBean {
             } else {
                 throw new ServiceException(user.getLoginName() + "没有设置角色！");
             }
+
+            // 更新用户与区域关联
+            userDao.deleteUserArea(user);
+            if (user.getAreaList() != null && user.getAreaList().size() > 0) {
+                userDao.insertUserArea(user);
+            } else {
+                throw new ServiceException(user.getLoginName() + "没有设置区域！");
+            }
+
             // 将当前用户同步到Activiti
             saveActivitiUser(user);
             // 清除用户缓存

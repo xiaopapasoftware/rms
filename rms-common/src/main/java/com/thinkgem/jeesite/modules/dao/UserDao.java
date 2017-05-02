@@ -57,6 +57,15 @@ public interface UserDao extends CrudDao<User> {
 	 * @return
 	 */
 	public int deleteUserRole(User user);
+
+	/**
+	 * 删除用户区域关联数据
+	 * @param user
+	 * @return
+	 */
+	public int deleteUserArea(User user);
+
+	public List<String> getUserArea(User user);
 	
 	/**
 	 * 插入用户角色关联数据
@@ -64,6 +73,13 @@ public interface UserDao extends CrudDao<User> {
 	 * @return
 	 */
 	public int insertUserRole(User user);
+
+	/**
+	 * 插入用户区域关联数据
+	 * @param user
+	 * @return
+	 */
+	public int insertUserArea(User user);
 	
 	/**
 	 * 更新用户信息

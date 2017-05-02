@@ -293,6 +293,11 @@
 	<delete id="deleteUserRole">
 		DELETE FROM sys_user_role WHERE user_id = #{id}
 	</delete>
+
+	<!-- 删除用户和区域关联表数据 -->
+	<delete id="deleteUserArea">
+		DELETE FROM sys_user_area WHERE user_id = #{id}
+	</delete>
 	
 	<!-- 插入用户和角色关联表数据 -->
 	<insert id="insertUserRole">
@@ -301,6 +306,17 @@
 			SELECT #{id}, #{role.id} FROM dual
 		</foreach>
 	</insert>
+	<!-- 插入用户和区域关联表数据 -->
+	<insert id="insertUserArea">
+		INSERT INTO sys_user_area(user_id, area_id)
+		<foreach collection="areaList" item="areaId" separator=" union all ">
+			SELECT #{id}, #{areaId} FROM dual
+		</foreach>
+	</insert>
+
+	<select id="getUserArea"  resultType="java.lang.String">
+		select area_id from sys_user_area  WHERE user_id = #{id}
+	</select>
 	
 	<!-- 更新用户信息  -->
 	<update id="updateUserInfo">

@@ -25,6 +25,8 @@ public class PropertyProject extends DataEntity<PropertyProject> {
   private String projectAddr; // 物业项目地址
   private String attachmentPath;// 物业项目图片
 
+  private String areaId; //区域ID
+
   public PropertyProject() {
     super();
   }
@@ -71,6 +73,14 @@ public class PropertyProject extends DataEntity<PropertyProject> {
   @Length(min = 1, max = 300, message = "物业项目地址长度必须介于 1 和 300 之间")
   public String getProjectAddr() {
     return projectAddr;
+  }
+
+  public String getAreaId() {
+    return areaId;
+  }
+
+  public void setAreaId(String areaId) {
+    this.areaId = areaId;
   }
 
   public void setProjectAddr(String projectAddr) {
