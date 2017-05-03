@@ -132,7 +132,9 @@ public class UserController extends BaseController {
 	List<String> areaList = Lists.newArrayList();
 	String[] areas = user.getAreaId().split(",");
 	for (String r : areas) {
-		areaList.add(r);
+		if(StringUtils.isNotBlank(r)){
+			areaList.add(r);
+		}
 	}
 	user.setAreaList(areaList);
 

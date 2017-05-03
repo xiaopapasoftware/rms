@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.dao;
 
+import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
@@ -65,7 +66,7 @@ public interface UserDao extends CrudDao<User> {
 	 */
 	public int deleteUserArea(User user);
 
-	public List<String> getUserArea(User user);
+	List<Area> getAreaByUserId(User user);
 	
 	/**
 	 * 插入用户角色关联数据

@@ -61,7 +61,7 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
 		ORDER BY a.code
 	</select>
-	
+
 	<insert id="insert">
 		INSERT INTO sys_area(
 			id, 

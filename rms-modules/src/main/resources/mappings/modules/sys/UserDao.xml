@@ -314,8 +314,11 @@
 		</foreach>
 	</insert>
 
-	<select id="getUserArea"  resultType="java.lang.String">
-		select area_id from sys_user_area  WHERE user_id = #{id}
+	<select id="getAreaByUserId" resultType="Area">
+		SELECT * FROM
+		sys_area sa
+		LEFT JOIN sys_user_area sua on sa.id = sua.area_id
+		WHERE sua.user_id = #{id}
 	</select>
 	
 	<!-- 更新用户信息  -->

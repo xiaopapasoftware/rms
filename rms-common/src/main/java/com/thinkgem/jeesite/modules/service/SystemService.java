@@ -159,8 +159,6 @@ public class SystemService extends BaseService implements InitializingBean {
             userDao.deleteUserArea(user);
             if (user.getAreaList() != null && user.getAreaList().size() > 0) {
                 userDao.insertUserArea(user);
-            } else {
-                throw new ServiceException(user.getLoginName() + "没有设置区域！");
             }
 
             // 将当前用户同步到Activiti

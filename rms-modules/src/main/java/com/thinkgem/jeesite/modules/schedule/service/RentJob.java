@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy(false)
+@Deprecated
 public class RentJob {
 
 

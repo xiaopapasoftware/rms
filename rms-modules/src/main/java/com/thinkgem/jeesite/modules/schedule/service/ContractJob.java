@@ -1,7 +1,6 @@
 package com.thinkgem.jeesite.modules.schedule.service;
 
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,10 +8,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Lazy(false)
+@Deprecated
 public class ContractJob {
 
     //合同房租 每天18:00执行
-    @Scheduled(cron="0 0 18 * * *")
+    //@Scheduled(cron="0 0 18 * * *")
     public void contractExpireReminderJob(){
         System.out.println("do contractExpireReminderJob 合同到期房租");
     }

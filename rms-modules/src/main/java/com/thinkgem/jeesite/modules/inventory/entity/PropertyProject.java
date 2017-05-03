@@ -5,6 +5,8 @@
 package com.thinkgem.jeesite.modules.inventory.entity;
 
 import javax.validation.constraints.NotNull;
+
+import com.thinkgem.jeesite.modules.entity.Area;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -25,7 +27,7 @@ public class PropertyProject extends DataEntity<PropertyProject> {
   private String projectAddr; // 物业项目地址
   private String attachmentPath;// 物业项目图片
 
-  private String areaId; //区域ID
+  private Area area; //区域
 
   public PropertyProject() {
     super();
@@ -75,12 +77,12 @@ public class PropertyProject extends DataEntity<PropertyProject> {
     return projectAddr;
   }
 
-  public String getAreaId() {
-    return areaId;
+  public Area getArea() {
+    return area;
   }
 
-  public void setAreaId(String areaId) {
-    this.areaId = areaId;
+  public void setArea(Area area) {
+    this.area = area;
   }
 
   public void setProjectAddr(String projectAddr) {

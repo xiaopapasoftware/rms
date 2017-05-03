@@ -53,6 +53,7 @@ public class User extends DataEntity<User> {
 	private List<Role> roleList = Lists.newArrayList(); // 拥有角色列表
 
 	private String areaId;	// 区域
+	private String areaName;	// 区域
 	private List<String> areaList = Lists.newArrayList(); // 拥有区域列表
 
 	public User() {
@@ -299,6 +300,14 @@ public class User extends DataEntity<User> {
 
 	public void setAreaId(String areaId) {
 		this.areaId = areaId;
+	}
+
+	public String getAreaName() {
+		return areaName;
+	}
+
+	public void setAreaName(String areaName) {
+		this.areaName = areaName;
 	}
 
 	@JsonIgnore

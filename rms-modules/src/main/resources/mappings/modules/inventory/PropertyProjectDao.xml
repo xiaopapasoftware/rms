@@ -19,7 +19,9 @@
 		a.del_flag AS "delFlag",
 		n.neighborhood_name AS "neighborhood.neighborhoodName",
 		c.company_name AS "managementCompany.companyName",
-		atta.attachment_path AS "attachmentPath"
+		atta.attachment_path AS "attachmentPath",
+		sa.id as "area.id",
+		sa.name as "area.name"
 	</sql>
 	
 	<sql id="propertyProjectJoins">
@@ -28,6 +30,7 @@
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 		LEFT JOIN t_attachment atta ON atta.property_project_id = a.id
+		LEFT JOIN sys_area sa ON a.area_id = sa.id
 	</sql>
     
 	<select id="get" resultType="PropertyProject">
@@ -103,6 +106,7 @@
 			id,
 			t_neighborhood_main_id,
 			t_management_company_main_id,
+			area_id,
 			project_name,
 			project_simple_name,
 			project_addr,
@@ -116,6 +120,7 @@
 			#{id},
 			#{neighborhood.id},
 			#{managementCompany.id},
+			#{area.id},
 			#{projectName},
 			#{projectSimpleName},
 			#{projectAddr},
@@ -132,6 +137,7 @@
 		UPDATE t_property_project SET 	
 			t_neighborhood_main_id = #{neighborhood.id},
 			t_management_company_main_id = #{managementCompany.id},
+			area_id = #{area.id},
 			project_name = #{projectName},
 			project_simple_name = #{projectSimpleName},
 			project_addr = #{projectAddr},

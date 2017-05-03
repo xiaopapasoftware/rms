@@ -57,7 +57,9 @@ public class UserUtils {
                 return null;
             }
             user.setRoleList(roleDao.findList(new Role(user)));
-            user.setAreaId(userDao.getUserArea(user).stream().collect(Collectors.joining(",")));
+            List<Area> areas = userDao.getAreaByUserId(user);
+            user.setAreaId(areas.stream().map(Area::getId).collect(Collectors.joining(",")));
+            user.setAreaName(areas.stream().map(Area::getName).collect(Collectors.joining(",")));
             CacheUtils.put(USER_CACHE, USER_CACHE_ID_ + user.getId(), user);
             CacheUtils.put(USER_CACHE, USER_CACHE_LOGIN_NAME_ + user.getLoginName(), user);
         }

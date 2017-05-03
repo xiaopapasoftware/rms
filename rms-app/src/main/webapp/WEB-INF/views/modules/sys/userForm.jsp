@@ -139,10 +139,10 @@
 		<div class="control-group">
 			<label class="control-label">管理区域:</label>
 			<div class="controls">
-				<sys:treeselect id="area" name="areaId" value="${areaId}" labelName="area.name"
-								labelValue="${area.name}" checked="true"
-								notAllowSelectParent="true" title="区域" url="/sys/area/treeData" extId="${area.id}"
-								cssClass="" allowClear="true"/>
+				<sys:treeselect id="area" name="areaId" value="${user.areaId}" labelName="areaName"
+					labelValue="${user.areaName}" checked="true"
+					notAllowSelectParent="true" title="区域" url="/sys/area/treeData"
+					cssClass="" allowClear="true"/>
 			</div>
 		</div>
 
