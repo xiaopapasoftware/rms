@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.contract.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,18 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
   private AttachmentService attachmentService;
   @Autowired
   private LeaseContractService leaseContractService;
+
+  @Override
+  public List<DepositAgreement> findList(DepositAgreement entity) {
+    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<DepositAgreement> findPage(Page<DepositAgreement> page, DepositAgreement entity) {
+    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
 
   /**
    * 根据定金协议设置其对应的承租人姓名和手机号列表

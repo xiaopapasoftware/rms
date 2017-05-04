@@ -5,6 +5,8 @@ package com.thinkgem.jeesite.common.service;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.modules.entity.Area;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -190,6 +192,40 @@ public abstract class BaseService {
 		// 设置到自定义SQL对象
 		entity.getSqlMap().put(sqlMapKey, sqlString.toString());
 		
+	}
+
+
+	/**
+	 * 数据范围过滤（符合业务表字段不同的时候使用，采用exists方法）
+	 * @param entity 当前过滤的实体类
+	 * @param sqlMapKey sqlMap的键值，例如设置“dsf”时，调用方法：${sqlMap.sdf}
+	 * @param areaWheres user表条件，组成：用户表字段=业务表的用户字段
+	 * @example
+	 * 		dataScopeFilter(areaWheres, "dsf", "id=a.office_id", "id=a.create_by");
+	 */
+	public static void areaScopeFilter(BaseEntity<?> entity, String sqlMapKey, String areaWheres) {
+
+		User user = entity.getCurrentUser();
+
+		// 如果是超级管理员，则不过滤数据
+		if (user.isAdmin()) {
+			return;
+		}
+
+		return ;
+
+		/*StringBuilder sqlString = new StringBuilder();
+		sqlString.append(" and exists (select 1 from sys_user_area sua");
+		sqlString.append(" where sua.user_id = '" + user.getId() + "'");
+		// 生成区域权限SQL语句
+		for (String where : StringUtils.split(areaWheres, ",")){
+			sqlString.append(" and " + where);
+		}
+		sqlString.append(")");
+
+		// 设置到自定义SQL对象
+		entity.getSqlMap().put(sqlMapKey, sqlString.toString());*/
+
 	}
 
 }

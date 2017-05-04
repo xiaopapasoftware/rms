@@ -40,6 +40,18 @@ public class HouseService extends CrudService<HouseDao, House> {
   @Autowired
   private HouseOwnerService houseOwnerService;
 
+  @Override
+  public List<House> findList(House entity) {
+    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<House> findPage(Page<House> page, House entity) {
+    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
+
   /**
    * 精选房源
    */

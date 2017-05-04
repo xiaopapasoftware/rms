@@ -51,7 +51,7 @@ public class QuartzJob {
 
   @Scheduled(cron = "0 */1 * * * ?")
   public void scanPaymentOrder() {
-    log.debug("------扫描未支付超时订单开始------");
+    log.info("------扫描未支付超时订单开始------");
     PaymentOrder paymentOrder = new PaymentOrder();
     paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
     List<PaymentOrder> allNotPaidOrders = paymentOrderDao.findList(paymentOrder);// 所有未支付成功的订单
@@ -102,6 +102,6 @@ public class QuartzJob {
         }
       }
     }
-    log.debug("------扫描未支付超时订单结束------");
+    log.info("------扫描未支付超时订单结束------");
   }
 }

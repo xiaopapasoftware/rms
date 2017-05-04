@@ -16,10 +16,7 @@ import com.thinkgem.jeesite.common.web.Servlets;
 import com.thinkgem.jeesite.modules.dao.MenuDao;
 import com.thinkgem.jeesite.modules.dao.RoleDao;
 import com.thinkgem.jeesite.modules.dao.UserDao;
-import com.thinkgem.jeesite.modules.entity.Menu;
-import com.thinkgem.jeesite.modules.entity.Office;
-import com.thinkgem.jeesite.modules.entity.Role;
-import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.entity.*;
 import com.thinkgem.jeesite.modules.utils.LogUtils;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.activiti.engine.IdentityService;
@@ -271,6 +268,10 @@ public class SystemService extends BaseService implements InitializingBean {
 
     public List<Role> findAllRole() {
         return UserUtils.getRoleList();
+    }
+
+    public List<Area> findAllArea() {
+        return UserUtils.getAreaList();
     }
 
     @Transactional(readOnly = false)
