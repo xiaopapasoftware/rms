@@ -73,6 +73,10 @@
 					<if test="dbName == 'mysql'">concat('%',#{projectAddr},'%')</if>
 			</if>
 		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -90,7 +94,11 @@
 		<include refid="propertyProjectJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

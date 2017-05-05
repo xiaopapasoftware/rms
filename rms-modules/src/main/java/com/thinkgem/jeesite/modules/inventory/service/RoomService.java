@@ -40,6 +40,18 @@ public class RoomService extends CrudService<RoomDao, Room> {
     return page;
   }
 
+  @Override
+  public List<Room> findList(Room entity) {
+    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<Room> findPage(Page<Room> page, Room entity) {
+    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
+
   @Transactional(readOnly = false)
   public void saveRoom(Room room) {
     if (room.getIsNewRecord()) {// 新增

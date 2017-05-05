@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,18 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   private LeaseContractService leaseContractService;
   @Autowired
   private ElectricFeeDao electricFeeDao;
+
+  @Override
+  public List<RentContract> findList(RentContract entity) {
+    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<RentContract> findPage(Page<RentContract> page, RentContract entity) {
+    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
 
   @Transactional(readOnly = false)
   public void audit(AuditHis auditHis) {

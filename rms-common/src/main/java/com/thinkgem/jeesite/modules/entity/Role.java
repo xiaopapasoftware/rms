@@ -191,6 +191,8 @@ public class Role extends DataEntity<Role> {
 			setMenuIdList(Lists.newArrayList(ids));
 		}
 	}
+
+
 	
 	public List<Office> getOfficeList() {
 		return officeList;
@@ -228,7 +230,9 @@ public class Role extends DataEntity<Role> {
 			setOfficeIdList(Lists.newArrayList(ids));
 		}
 	}
-	
+
+
+
 	/**
 	 * 获取权限字符串列表
 	 */

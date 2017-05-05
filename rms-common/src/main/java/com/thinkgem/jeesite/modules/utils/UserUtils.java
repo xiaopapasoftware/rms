@@ -186,6 +186,15 @@ public class UserUtils {
             areaList = areaDao.findAllList(new Area());
             putCache(CACHE_AREA_LIST, areaList);
         }
+       /* if (areaList == null) {
+            User user = getUser();
+            if (user.isAdmin()) {
+                areaList = areaDao.findAllList(new Area());
+            } else {
+                areaList = userDao.getAreaByUserId(user);
+            }
+            putCache(CACHE_AREA_LIST, areaList);
+        }*/
         return areaList;
     }
 
