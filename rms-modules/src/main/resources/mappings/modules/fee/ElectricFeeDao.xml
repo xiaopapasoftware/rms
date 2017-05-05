@@ -20,7 +20,8 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
 		tc.contract_name as "contractName",
-		tta.TRADE_STATUS as "tradingAccountStatus"
+		tta.TRADE_STATUS as "tradingAccountStatus",
+		tta.TRADE_TYPE as "tradeType"
 	</sql>
 
 	<sql id="electricFeeJoins">

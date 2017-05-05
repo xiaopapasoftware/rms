@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.funds.service;
 
 import java.util.Date;
@@ -237,6 +234,39 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
           tradingAccountsDao.delete(tradingAccount);
         }
       }
+    }
+  }
+
+  /**
+   * 删除电费充值对应的所有的款项，账务，款项账务关联关系，以及相关收据 ，用于电费充值记录信息的修改
+   */
+  @Transactional(readOnly = false)
+  public void deletePaymentTransAndTradingAcctounsWithChargeFee(String electricFeeId) {
+    ElectricFee electricFee = electricFeeDao.get(electricFeeId);
+    if (electricFee != null) {
+      String paymentTransId = electricFee.getPaymentTransId();
+      PaymentTrans pt = new PaymentTrans();
+      pt.setId(paymentTransId);
+      super.delete(pt);
+      PaymentTrade ptd = new PaymentTrade();
+      ptd.setTransId(paymentTransId);
+      List<PaymentTrade> ptds = paymentTradeDao.findList(ptd);
+      if (CollectionUtils.isNotEmpty(ptds)) {
+        TradingAccounts tradingAccount = tradingAccountsDao.get(ptds.get(0).getTradeId());
+        if (tradingAccount != null) {
+          Receipt receipt = new Receipt();
+          receipt.setTradingAccounts(tradingAccount);
+          receipt.preUpdate();
+          receiptService.delete(receipt);
+          Attachment attachment = new Attachment();
+          attachment.setTradingAccountsId(tradingAccount.getId());
+          attachmentService.delete(attachment);
+          tradingAccount.preUpdate();
+          tradingAccountsDao.delete(tradingAccount);
+        }
+      }
+      ptd.preUpdate();
+      paymentTradeDao.delete(ptd);
     }
   }
 }
