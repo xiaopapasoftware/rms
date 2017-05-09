@@ -327,7 +327,10 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             }
           } else {
             if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradeType)) {
+              paymentTrans.preUpdate();
               paymentTransDao.delete(paymentTrans);
+              tmpPaymentTrade.preUpdate();
+              paymentTradeDao.delete(tmpPaymentTrade);
             }
             electricFee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
             electricFee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());

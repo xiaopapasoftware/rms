@@ -109,7 +109,7 @@
 						<c:if test="${electricFee.chargeStatus=='0' && electricFee.settleStatus=='0'}">
 							 <a href="${ctx}/fee/electricFee/removeEletricFee?id=${electricFee.id}">删除</a>
 						</c:if>
-						<c:if test="${electricFee.tradeType=='11' && (electricFee.chargeStatus=='0' || electricFee.chargeStatus=='2')}">
+						<c:if test="${(electricFee.tradeType=='11' || electricFee.tradeType=='' || electricFee.tradeType == null) && (electricFee.chargeStatus=='0' || electricFee.chargeStatus=='2')}">
 							 <a href="${ctx}/fee/electricFee/form?id=${electricFee.id}">修改</a>
 						</c:if>
 					</shiro:hasPermission>

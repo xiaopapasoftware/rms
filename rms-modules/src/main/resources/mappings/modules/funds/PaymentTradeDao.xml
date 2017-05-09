@@ -105,13 +105,14 @@
 	</update>
 
 	<update id="delete">
-		UPDATE t_payment_trade SET
-		del_flag =
-		#{DEL_FLAG_DELETE},
-		update_by = #{updateBy.id},
-		update_date =
-		#{updateDate}
-		WHERE trade_id = #{tradeId}
+		UPDATE    	 t_payment_trade 
+		   SET       del_flag = #{DEL_FLAG_DELETE},
+				     update_by = #{updateBy.id},
+				     update_date = #{updateDate}
+		 WHERE 	     trade_id = #{tradeId}
+		<if test="transId != null and transId != ''">
+				AND trans_id = #{transId}
+		</if>
 	</update>
 
 </mapper>
