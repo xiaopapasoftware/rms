@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.funds.web;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TenantTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
@@ -43,6 +47,7 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
 
 
 /**
@@ -102,17 +107,18 @@ public class TradingAccountsController extends BaseController {
     String type = tradingAccounts.getTradeType();
     String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
     String postpaidFeeId = "";// 后付费交易ID
+
     // 防止同时开多个浏览器，需对传进的款项id做查询判断
     boolean check = true;
     if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
       for (String transId : paymentTransIdArray) {
         PaymentTrans pt = paymentTransService.get(transId);
-        if (StringUtils.isNotBlank(pt.getPostpaidFeeId())) {
-          postpaidFeeId = pt.getPostpaidFeeId();
-        }
         if (pt == null || (pt != null && pt.getDelFlag().equals(BaseEntity.DEL_FLAG_DELETE))) {
           check = false;
           break;
+        }
+        if (StringUtils.isNotBlank(pt.getPostpaidFeeId())) {
+          postpaidFeeId = pt.getPostpaidFeeId();
         }
       }
     } else {
@@ -138,6 +144,33 @@ public class TradingAccountsController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
       }
     }
+
+    // 校验指定款项不能跨月到账，涉及到的款项类型有（房租金额6，水费金额14，燃气金额16，电视费18，宽带费20，服务费22）
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.RENT_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的房租款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.WATER_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的水费款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.GAS_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的燃气款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.TV_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的电视费款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.NET_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的宽带费款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+    if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue())) {
+      addMessage(redirectAttributes, "您选择到账的服务费款项之前的月份有仍未到账的，请依次到账！");
+      return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+    }
+
     if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(type)) {
       tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
       tradingAccounts.setTradeDirection(TradeDirectionEnum.OUT.getValue());
@@ -205,11 +238,11 @@ public class TradingAccountsController extends BaseController {
           List<Tenant> tenants = depositAgreementService.findTenant(da);// 定金协议的承租人列表
           if (CollectionUtils.isNotEmpty(tenants)) {
             tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-            String tenantType = tenants.get(0).getTenantType();// 租客类型
-            if ("0".equals(tenantType)) {// 个人租客
+            String tenantType = tenants.get(0).getTenantType();
+            if (TenantTypeEnum.PERSONAL.getValue().equals(tenantType)) {
               tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
             }
-            if ("1".equals(tenantType)) {// 企业租客
+            if (TenantTypeEnum.AGENCY.getValue().equals(tenantType)) {
               tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
             }
           }
@@ -219,11 +252,11 @@ public class TradingAccountsController extends BaseController {
             List<Tenant> tenants = rentContractService.findTenant(rc);
             if (CollectionUtils.isNotEmpty(tenants)) {
               tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-              String tenantType = tenants.get(0).getTenantType();// 租客类型
-              if ("0".equals(tenantType)) {// 个人租客
+              String tenantType = tenants.get(0).getTenantType();
+              if (TenantTypeEnum.PERSONAL.getValue().equals(tenantType)) {
                 tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
               }
-              if ("1".equals(tenantType)) {// 企业租客
+              if (TenantTypeEnum.AGENCY.getValue().equals(tenantType)) {
                 tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
               }
             }
@@ -239,6 +272,42 @@ public class TradingAccountsController extends BaseController {
       tradingAccounts.setReceiptList(receiptList);
       return "modules/funds/tradingAccountsForm";
     }
+  }
+
+
+  @SuppressWarnings("unchecked")
+  private boolean checkPaymentTransSignDateValid(String[] paymentTransIdArray, String paymentTransType) {
+    String rentContractId = "";
+    List<PaymentTrans> tempTrans = new ArrayList<PaymentTrans>();// 选中的指定款项类型的款项集合
+    for (String transId : paymentTransIdArray) {
+      PaymentTrans pt = paymentTransService.get(transId);
+      String tradeType = pt.getTradeType();
+      if (paymentTransType.equals(pt.getPaymentType()) && (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)
+          || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType))) {
+        tempTrans.add(pt);
+        rentContractId = pt.getTransId();
+      }
+    }
+    List<PaymentTrans> untradedTransList = null;// 合同下所有未到账的指定款项类型的款项集合
+    if (CollectionUtils.isNotEmpty(tempTrans)) {
+      untradedTransList = paymentTransService.getPaymentTransByTypeAndStatus(paymentTransType, rentContractId, PaymentTransStatusEnum.NO_SIGN.getValue());
+    }
+    // 先从所有未到账的指定款项类型列表里过滤掉 选择的需到账登记的款项列表，
+    List<PaymentTrans> substractedList = null;
+    if (CollectionUtils.isNotEmpty(untradedTransList) && CollectionUtils.isNotEmpty(tempTrans)) {
+      substractedList = (List<PaymentTrans>) CollectionUtils.subtract(untradedTransList, tempTrans);
+      // 再把过滤出来的款项列表中的开始时间最早的一个a取出，再把用户选择的款项列表里开始时间最早的一个b取出来。如果a<b，则报错提醒用户还有更早的款项未到账。
+      if (CollectionUtils.isNotEmpty(substractedList)) {
+        Collections.sort(substractedList);
+        Collections.sort(tempTrans);
+        Date substractedPT = substractedList.get(0).getStartDate();
+        Date choosedDate = tempTrans.get(0).getStartDate();
+        if (substractedPT.before(choosedDate)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   @RequestMapping(value = "edit")

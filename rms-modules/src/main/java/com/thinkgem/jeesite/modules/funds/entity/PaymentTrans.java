@@ -19,7 +19,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  * @author huangsc
  * @version 2015-06-11
  */
-public class PaymentTrans extends DataEntity<PaymentTrans> {
+public class PaymentTrans extends DataEntity<PaymentTrans> implements Comparable<PaymentTrans> {
 
   private static final long serialVersionUID = 1L;
   private String tradeType; // 交易类型
@@ -246,5 +246,14 @@ public class PaymentTrans extends DataEntity<PaymentTrans> {
 
   public void setPostpaidFeeId(String postpaidFeeId) {
     this.postpaidFeeId = postpaidFeeId;
+  }
+
+  @Override
+  public int compareTo(PaymentTrans o) {
+    if (this.getStartDate().before(o.getStartDate())) {
+      return -1;
+    } else {
+      return 1;
+    }
   }
 }

@@ -269,4 +269,16 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
       paymentTradeDao.delete(ptd);
     }
   }
+
+  /**
+   * 获取某出租合同下， 所有指定款项类型并且指定款项状态的款项记录
+   */
+  public List<PaymentTrans> getPaymentTransByTypeAndStatus(String paymentTransType, String rentContractId, String paymentTransStatus) {
+    PaymentTrans pt = new PaymentTrans();
+    pt.setPaymentType(paymentTransType);
+    pt.setTransId(rentContractId);
+    pt.setTransStatus(paymentTransStatus);
+    return super.findList(pt);
+  }
+
 }

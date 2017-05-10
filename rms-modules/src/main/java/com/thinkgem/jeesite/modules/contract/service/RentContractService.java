@@ -97,13 +97,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
   @Override
   public List<RentContract> findList(RentContract entity) {
-    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
     return super.findList(entity);
   }
 
   @Override
   public Page<RentContract> findPage(Page<RentContract> page, RentContract entity) {
-    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
     return super.findPage(page, entity);
   }
 
@@ -675,7 +675,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         // 服务费，按照比例计算
         Double serviceFee = rentContract.getServiceFee();
         if (null != serviceFee && serviceFee > 0) {
-          Double tradeAmt = rentContract.getServiceFee() * rentContract.getRental();
+          Double tradeAmt = serviceFee * rentContract.getRental();
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), tradeAmt, tradeAmt, 0D,
               PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
