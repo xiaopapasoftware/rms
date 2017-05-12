@@ -308,52 +308,75 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     String curHouseId = rentContract.getHouse().getId();
     String curRoomId = rentContract.getRoom() == null ? "" : rentContract.getRoom().getId();
     curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
-    if (rentContract.getIsNewRecord()) {// 手机APP签约、后台的新增-保存/暂存, 锁定房源
+    if (rentContract.getIsNewRecord()) {// 手机APP签约、后台的合同新增
       return persistentHouseInfo(rentContract, curHouseId, curRoomId);
-    } else {// 手机APP签约、后台 修改- 保存/暂存
+    } else {// 手机APP签约、后台的合同修改
       RentContract originalRentContract = super.get(rentContract.getId());
-      // 如果是合同审核通过且已生效情况下，进行的后门修改，则把新合同的业务状态置为空值
-      // 如果是合同被账务审核拒绝情况下，进行后门修改
-      if ((ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(originalRentContract.getContractStatus())
-          && ContractBusiStatusEnum.VALID.getValue().equals(originalRentContract.getContractBusiStatus()))
-          || (ContractAuditStatusEnum.INVOICE_AUDITED_REFUSE.getValue().equals(originalRentContract.getContractStatus()) && StringUtils.isBlank(originalRentContract.getContractBusiStatus()))) {
+      String contractAuditStatus = originalRentContract.getContractStatus();
+      String contractBusiStatus = originalRentContract.getContractBusiStatus();
+      if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(contractAuditStatus)) {
+        return doProcessHouseRoomStatusChanged(originalRentContract, rentContract, curHouseId, curRoomId);
+      }
+      if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(contractAuditStatus)) {
+        return doProcessHouseRoomStatusChanged(originalRentContract, rentContract, curHouseId, curRoomId);
+      }
+      if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(contractAuditStatus)) {
+        return doRentHouseOrRoom(rentContract, curHouseId, curRoomId); // 出租新房源
+      }
+      // 如果合同业务状态为 有效 或者 账务审核拒绝，进行后门修改，则把新合同的业务状态置为空值
+      if ((ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(contractAuditStatus) && ContractBusiStatusEnum.VALID.getValue().equals(contractBusiStatus))
+          || (ContractAuditStatusEnum.INVOICE_AUDITED_REFUSE.getValue().equals(contractAuditStatus) && StringUtils.isBlank(contractBusiStatus))) {
         rentContract.setContractStatus(ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue());
         rentContract.setContractBusiStatus("");
+        return doProcessHouseRoomStatusChanged(originalRentContract, rentContract, curHouseId, curRoomId);
       }
-      // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
-      String originalHouseId = originalRentContract.getHouse().getId();
-      String originalRoomId = originalRentContract.getRoom() == null ? "" : originalRentContract.getRoom().getId();
-      originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
-      if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 修改了房屋或房间
-        // 回滚前房源
-        if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已出租”改为“待出租可预订”
-          houseService.returnSingleRoom(roomService.get(originalRoomId));
-        } else {// 整租，把房屋从“完全出租”改为“待出租可预订”
-          houseService.returnWholeHouse(houseService.get(originalHouseId));
-        }
-        // 出租新房源
-        if (StringUtils.isNotBlank(curRoomId)) {// 合租，把单间从“待出租可预订”改为“已出租”
-          boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);// 合租，把房间从“待出租可预订”变为“已出租”
-          if (isLock) {
-            houseService.calculateHouseStatus(curRoomId);
-            doSaveContractBusiness(rentContract); // 修改合同数据
-            return 0;
-          } else {
-            return -1;
-          }
-        } else {// 整租，把房屋从“待出租可预订”改为“完全出租”
-          boolean isLock = houseService.isLockWholeHouse4NewSign(curHouseId);
-          if (isLock) {
-            roomService.lockRooms(curHouseId);
-            doSaveContractBusiness(rentContract); // 修改合同数据
-            return 0;
-          } else {
-            return -1;
-          }
-        }
-      } else {// 未修改房源
-        doSaveContractBusiness(rentContract);
+      return -3;
+    }
+  }
+
+  /**
+   * 房源状态变更，如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+   */
+  private int doProcessHouseRoomStatusChanged(RentContract originalRentContract, RentContract rentContract, String curHouseId, String curRoomId) {
+    String originalHouseId = originalRentContract.getHouse().getId();
+    String originalRoomId = originalRentContract.getRoom() == null ? "" : originalRentContract.getRoom().getId();
+    originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
+    if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 修改了房屋或房间
+      // 回滚前房源
+      if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已出租”改为“待出租可预订”
+        houseService.returnSingleRoom(roomService.get(originalRoomId));
+      } else {// 整租，把房屋从“完全出租”改为“待出租可预订”
+        houseService.returnWholeHouse(houseService.get(originalHouseId));
+      }
+      return doRentHouseOrRoom(rentContract, curHouseId, curRoomId); // 出租新房源
+    } else {// 未修改房源
+      doSaveContractBusiness(rentContract);
+      return 0;
+    }
+  }
+
+  /**
+   * 直接出租房源
+   */
+  private int doRentHouseOrRoom(RentContract rentContract, String curHouseId, String curRoomId) {
+    // 出租新房源
+    if (StringUtils.isNotBlank(curRoomId)) {// 合租，把单间从“待出租可预订”改为“已出租”
+      boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);// 合租，把房间从“待出租可预订”变为“已出租”
+      if (isLock) {
+        houseService.calculateHouseStatus(curRoomId);
+        doSaveContractBusiness(rentContract); // 修改合同数据
         return 0;
+      } else {
+        return -1;
+      }
+    } else {// 整租，把房屋从“待出租可预订”改为“完全出租”
+      boolean isLock = houseService.isLockWholeHouse4NewSign(curHouseId);
+      if (isLock) {
+        roomService.lockRooms(curHouseId);
+        doSaveContractBusiness(rentContract); // 修改合同数据
+        return 0;
+      } else {
+        return -1;
       }
     }
   }

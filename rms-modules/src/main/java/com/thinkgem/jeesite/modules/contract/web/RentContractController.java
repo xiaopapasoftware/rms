@@ -394,7 +394,12 @@ public class RentContractController extends BaseController {
       rentContract.setDataSource(DataSourceEnum.BACK_SYSTEM.getValue());
     }
     int result = rentContractService.saveContract(rentContract);
-    if (result == -2) {
+    if (result == -3) {
+      model.addAttribute("message", "系统异常，请联系管理员！");
+      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+      initExceptionedModel(model, rentContract);
+      return "modules/contract/rentContractForm";
+    } else if (result == -2) {
       model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
       model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
       initExceptionedModel(model, rentContract);
