@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,9 +112,22 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
 
   private static final String TRADING_ACCOUNTS_ROLE = "trading_accounts_role";// 账务审批
 
+  @Override
+  public List<TradingAccounts> findList(TradingAccounts entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<TradingAccounts> findPage(Page<TradingAccounts> page, TradingAccounts entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
+
   public List<Receipt> findReceiptList(TradingAccounts tradingAccounts) {
     Receipt receipt = new Receipt();
     receipt.setTradingAccounts(tradingAccounts);
+    areaScopeFilter(receipt, "dsf", "tp.area_id=sua.area_id");
     return receiptDao.findList(receipt);
   }
 

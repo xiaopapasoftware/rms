@@ -38,6 +38,10 @@
 				AND a.lease_contract_id = #{leaseContractId}
 			</if>
 		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		ORDER BY a.start_date 
 	</select>
 	
@@ -51,7 +55,11 @@
 			<if test="leaseContractId != null and leaseContractId != ''">
 				AND a.lease_contract_id = #{leaseContractId}
 			</if>
-		</where>		
+		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		ORDER BY a.start_date
 	</select>
 	

@@ -25,7 +25,8 @@
 	<sql id="agreementChangeJoins">
 		LEFT JOIN sys_user u7 ON u7.id = a.user_id 
 		left join t_rent_contract tc on a.rent_contract_id=tc.id 
-		left join sys_user u on a.create_by=u.id 
+		left join sys_user u on a.create_by=u.id
+		left join t_property_project tp on tc.property_project_id = tp.id
 	</sql>
     
 	<select id="get" resultType="AgreementChange">
@@ -62,6 +63,10 @@
 				AND a.user_id = #{user.id}
 			</if>
 		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -79,7 +84,11 @@
 		<include refid="agreementChangeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
+		</where>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

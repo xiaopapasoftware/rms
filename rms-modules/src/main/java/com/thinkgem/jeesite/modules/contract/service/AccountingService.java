@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.contract.service;
 
 import java.util.List;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,18 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
 
   @Autowired
   private PaymentTransService paymentTransService;
+
+  @Override
+  public List<Accounting> findList(Accounting entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<Accounting> findPage(Page<Accounting> page, Accounting entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
 
   @Transactional(readOnly = false)
   public int delByRent(Accounting accounting) {

@@ -33,9 +33,13 @@
 	</select>
 	
 	<select id="findList" resultType="Receipt">
-	  select * from(
-		select t.*,case when t.tradeType=1 then ta.agreement_name 
-		else tc.contract_name end tradeName from(
+	  select tt.* from(
+		select t.*,
+		case when t.tradeType=1 then ta.agreement_name
+		else tc.contract_name end tradeName,
+		CASE WHEN t.tradeType = 1 THEN ta.PROPERTY_PROJECT_ID
+		ELSE tc.PROPERTY_PROJECT_ID END PROPERTY_PROJECT_ID
+		from(
 		SELECT 
 			<include refid="receiptColumns"/>
 		FROM t_receipt a
@@ -73,12 +77,19 @@
 			</otherwise>
 		</choose>
 		) t left join t_deposit_agreement ta on t.trade_id=ta.id 
-			left join t_rent_contract tc on t.trade_id=tc.id) tt 
+			left join t_rent_contract tc on t.trade_id=tc.id) tt
+		left join t_property_project tp on tt.property_project_id = tp.id
 	  <where>
 	  	<if test="tradeName != null and tradeName != ''">
 			AND tt.tradeName like concat('%',#{tradeName},'%')
 		</if>
+
+		  1=1
+
+		  <!-- 数据范围过滤 -->
+		  ${sqlMap.dsf}
 	  </where>
+
 	</select>
 	
 	<select id="findAllList" resultType="Receipt">

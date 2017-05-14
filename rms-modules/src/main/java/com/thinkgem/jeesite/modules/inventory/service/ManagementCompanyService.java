@@ -35,10 +35,12 @@ public class ManagementCompanyService extends CrudService<ManagementCompanyDao, 
 	}
 
 	public List<ManagementCompany> findList(ManagementCompany managementCompany) {
+		areaScopeFilter(managementCompany,"dsf","a.area_id=sua.area_id");
 		return super.findList(managementCompany);
 	}
 
 	public Page<ManagementCompany> findPage(Page<ManagementCompany> page, ManagementCompany managementCompany) {
+		areaScopeFilter(managementCompany,"dsf","a.area_id=sua.area_id");
 		return super.findPage(page, managementCompany);
 	}
 
@@ -63,6 +65,7 @@ public class ManagementCompanyService extends CrudService<ManagementCompanyDao, 
 
 	@Transactional(readOnly = true)
 	public List<ManagementCompany> findCompanyByNameAndAddress(ManagementCompany managementCompany) {
+		areaScopeFilter(managementCompany,"dsf","a.area_id=sua.area_id");
 		return dao.findCompanyByNameAndAddress(managementCompany);
 	}
 

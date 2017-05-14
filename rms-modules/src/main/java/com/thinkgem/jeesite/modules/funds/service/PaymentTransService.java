@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,18 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   private ReceiptService receiptService;
   @Autowired
   private AttachmentService attachmentService;
+
+  @Override
+  public List<PaymentTrans> findList(PaymentTrans entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<PaymentTrans> findPage(Page<PaymentTrans> page, PaymentTrans entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
+  }
 
   @Transactional(readOnly = false)
   public String generateAndSavePaymentTrans(String tradeType, String paymentType, String transId, String tradeDirection, Double tradeAmount, Double lastAmount, Double transAmount, String transStatus,

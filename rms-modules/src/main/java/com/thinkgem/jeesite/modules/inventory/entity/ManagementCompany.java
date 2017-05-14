@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
+import com.thinkgem.jeesite.modules.entity.Area;
 import org.hibernate.validator.constraints.Length;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -17,7 +18,8 @@ public class ManagementCompany extends DataEntity<ManagementCompany> {
 	private static final long serialVersionUID = 1L;
 	private String companyName;		// 物业公司名称
 	private String companyAddr;		// 物业公司地址
-	
+	private Area area; //区域
+
 	public ManagementCompany() {
 		super();
 	}
@@ -43,5 +45,12 @@ public class ManagementCompany extends DataEntity<ManagementCompany> {
 	public void setCompanyAddr(String companyAddr) {
 		this.companyAddr = companyAddr;
 	}
-	
+
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
 }

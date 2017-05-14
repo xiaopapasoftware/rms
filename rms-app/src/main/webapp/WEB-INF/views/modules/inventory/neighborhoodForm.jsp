@@ -49,6 +49,16 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">所属区域:</label>
+			<div class="controls">
+				<sys:treeselect id="area" name="area.id" value="${propertyProject.area.id}" labelName="area.name"
+								labelValue="${propertyProject.area.name}"
+								notAllowSelectParent="true" title="区域" url="/sys/area/treeData"
+								cssClass="required" allowClear="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">居委会地址：</label>
 			<div class="controls">
 				<form:input path="neighborhoodAddr" htmlEscape="false" maxlength="100" class="input-xlarge required"/>

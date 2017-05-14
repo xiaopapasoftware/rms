@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,18 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
         contractTenantDao.insert(contractTenant);
       }
     }
+  }
+
+  @Override
+  public List<AgreementChange> findList(AgreementChange entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<AgreementChange> findPage(Page<AgreementChange> page, AgreementChange entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
   }
 
   /**

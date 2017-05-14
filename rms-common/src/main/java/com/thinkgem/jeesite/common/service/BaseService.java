@@ -212,9 +212,8 @@ public abstract class BaseService {
 			return;
 		}
 
-		return ;
 
-		/*StringBuilder sqlString = new StringBuilder();
+		StringBuilder sqlString = new StringBuilder();
 		sqlString.append(" and exists (select 1 from sys_user_area sua");
 		sqlString.append(" where sua.user_id = '" + user.getId() + "'");
 		// 生成区域权限SQL语句
@@ -224,7 +223,7 @@ public abstract class BaseService {
 		sqlString.append(")");
 
 		// 设置到自定义SQL对象
-		entity.getSqlMap().put(sqlMapKey, sqlString.toString());*/
+		entity.getSqlMap().put(sqlMapKey, sqlString.toString());
 
 	}
 

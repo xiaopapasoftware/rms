@@ -65,7 +65,7 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">管理区域:</label>
+        <label class="control-label">所属区域:</label>
         <div class="controls">
             <sys:treeselect id="area" name="area.id" value="${propertyProject.area.id}" labelName="area.name"
                     labelValue="${propertyProject.area.name}"

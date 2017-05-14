@@ -35,10 +35,12 @@ public class NeighborhoodService extends CrudService<NeighborhoodDao, Neighborho
 	}
 
 	public List<Neighborhood> findList(Neighborhood neighborhood) {
+		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
 		return super.findList(neighborhood);
 	}
 
 	public Page<Neighborhood> findPage(Page<Neighborhood> page, Neighborhood neighborhood) {
+		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
 		return super.findPage(page, neighborhood);
 	}
 
@@ -66,6 +68,7 @@ public class NeighborhoodService extends CrudService<NeighborhoodDao, Neighborho
 	 * */
 	@Transactional(readOnly = true)
 	public List<Neighborhood> findNeighborhoodByNameAndAddress(Neighborhood neighborhood) {
+		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
 		return dao.findNeighborhoodByNameAndAddress(neighborhood);
 	}
 }

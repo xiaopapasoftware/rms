@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +77,18 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       leaseContract.setLeaseContractDtlList(leaseContractDtlList);
     }
     return leaseContract;
+  }
+
+  @Override
+  public List<LeaseContract> findList(LeaseContract entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(entity);
+  }
+
+  @Override
+  public Page<LeaseContract> findPage(Page<LeaseContract> page, LeaseContract entity) {
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, entity);
   }
 
   @Transactional(readOnly = false)
