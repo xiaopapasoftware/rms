@@ -26,6 +26,10 @@
 			 when a.trade_type=0 then tlc.contract_name
 			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_name 
 			 else tc.contract_name end tradeName,
+		case
+			 when a.trade_type=1 or a.trade_type=2 then ta.property_project_id
+		     when a.trade_type=0 then tlc.property_project_id
+		     else tc.property_project_id end property_project_id,
 		case 
 			 when a.trade_type=0 then tlc.contract_code
 			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_code 
@@ -47,7 +51,6 @@
 		left join t_lease_contract tlc on a.trade_id = tlc.id
 		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
 		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
-		left join t_property_project tp on tc.property_project_id = tp.id
 	</sql>
 
 	<select id="get" resultType="TradingAccounts">
@@ -59,7 +62,7 @@
 	</select>
 
 	<select id="findList" resultType="TradingAccounts">
-		select * from(
+		select t.* from(
 		SELECT <include refid="tradingAccountsColumns" />
 		FROM t_trading_accounts a <include refid="tradingAccountsJoins" />
 		<where>
@@ -78,9 +81,6 @@
 			</if>
 		</where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -89,13 +89,20 @@
 				ORDER BY a.update_date DESC
 			</otherwise>
 		</choose>
-		) t where t.tradeName is not null
+		) t
+		left join t_property_project tp on t.property_project_id = tp.id
+
+		where t.tradeName is not null
 		<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
 		</if>
 		<if test="tradeObjectNo != null and tradeObjectNo != ''">
 			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
 		</if>
+
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 	</select>
 
 	<select id="findAllList" resultType="TradingAccounts">

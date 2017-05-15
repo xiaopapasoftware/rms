@@ -27,6 +27,13 @@
 		     when a.trade_type=0 then tl.contract_name
 		     else tc.contract_name
 		end transName,
+
+		case
+			 when a.trade_type=1 or a.trade_type=2 then ta.property_project_id
+		     when a.trade_type=0 then tl.property_project_id
+		     else tc.property_project_id
+		end property_project_id,
+
 		case 
 			when a.trade_type=1 or a.trade_type=2 then ta.agreement_code
 			when a.trade_type=0 then tl.contract_code
@@ -43,7 +50,6 @@
 		left join t_deposit_agreement ta on a.trans_id=ta.id 
 		left join t_rent_contract tc on a.trans_id=tc.id
 		left join t_lease_contract tl on a.trans_id=tl.id
-		left join t_property_project tp on tc.property_project_id = tp.id
 	</sql>
 
 	<select id="get" resultType="PaymentTrans">
@@ -55,7 +61,7 @@
 	</select>
 
 	<select id="findList" resultType="PaymentTrans">
-		select * from(
+		select t.* from(
 		SELECT
 		<include refid="paymentTransColumns" />
 		FROM t_payment_trans a
@@ -94,12 +100,11 @@
 			</if>
 		</where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
-
 		order by FIELD(a.payment_type, '2', '3', '4', '5',
 		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),a.start_date
 		) t
+
+		left join t_property_project tp on t.property_project_id = tp.id
 		<where>
 			<if test="transName != null and transName != ''">
 				AND t.transName like concat('%',#{transName},'%')
@@ -112,6 +117,9 @@
 			</if>
 		</where>
 
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+
 	</select>
 
 	<select id="findAllList" resultType="PaymentTrans">
@@ -122,9 +130,6 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
 
 		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5',
 		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),a.start_date
