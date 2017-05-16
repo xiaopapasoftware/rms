@@ -6,13 +6,13 @@ package com.thinkgem.jeesite.modules.contract.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
@@ -71,13 +71,13 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
 
   @Override
   public List<DepositAgreement> findList(DepositAgreement entity) {
-    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
     return super.findList(entity);
   }
 
   @Override
   public Page<DepositAgreement> findPage(Page<DepositAgreement> page, DepositAgreement entity) {
-    areaScopeFilter(entity,"dsf","tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
     return super.findPage(page, entity);
   }
 
@@ -148,27 +148,34 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
     String curHouseId = depositAgreement.getHouse().getId();
     String curRoomId = depositAgreement.getRoom() == null ? "" : depositAgreement.getRoom().getId();
     curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
-    if (depositAgreement.getIsNewRecord()) {// 新增,包括手机APP在线预订申请以及后台直接新增预订，需要锁定房源
+    if (depositAgreement.getIsNewRecord()) {// 手机APP在线预订申请、后台直接新增预订
       return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
-    } else { // 手机APP签约、后台 修改- 保存/暂存
+    } else { // 手机APP签约、后台的修改
       DepositAgreement originalDepositAgreement = super.get(depositAgreement.getId());
-      // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
-      String originalHouseId = originalDepositAgreement.getHouse().getId();
-      String originalRoomId = originalDepositAgreement.getRoom() == null ? "" : originalDepositAgreement.getRoom().getId();
-      originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
-      if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 定金协议修改了房屋或房间
-        // 回滚前房源
-        if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已预定”改为“待出租可预订”
-          houseService.releaseSingleRoom(roomService.get(originalRoomId));
-        } else {// 整租，把房屋从“已预定”改为“待出租可预订”
-          houseService.releaseWholeHouse(houseService.get(originalHouseId));
+      String agreementAuditStatus = originalDepositAgreement.getAgreementStatus();
+      if (AgreementAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(agreementAuditStatus) || AgreementAuditStatusEnum.TEMP_EXIST.getValue().equals(agreementAuditStatus)) {
+        // 如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+        String originalHouseId = originalDepositAgreement.getHouse().getId();
+        String originalRoomId = originalDepositAgreement.getRoom() == null ? "" : originalDepositAgreement.getRoom().getId();
+        originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
+        if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 定金协议修改了房屋或房间
+          // 回滚前房源
+          if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已预定”改为“待出租可预订”
+            houseService.releaseSingleRoom(roomService.get(originalRoomId));
+          } else {// 整租，把房屋从“已预定”改为“待出租可预订”
+            houseService.releaseWholeHouse(houseService.get(originalHouseId));
+          }
+          // 预定新房源
+          return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
+        } else {
+          doSaveDepositAgreement(depositAgreement);
+          return 0;
         }
-        // 预定新房源
-        return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
-      } else {
-        doSaveDepositAgreement(depositAgreement);
-        return 0;
       }
+      if (AgreementAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(agreementAuditStatus)) {// 预定新房源
+        return proccessHouseRoomStatus(depositAgreement, curHouseId, curRoomId);
+      }
+      return -3;
     }
   }
 

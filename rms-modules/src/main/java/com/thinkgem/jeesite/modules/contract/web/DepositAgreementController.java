@@ -236,7 +236,11 @@ public class DepositAgreementController extends BaseController {
       depositAgreement.setDataSource(DataSourceEnum.BACK_SYSTEM.getValue());
     }
     int result = depositAgreementService.saveDepositAgreement(depositAgreement);
-    if (result == -2) {
+    if (result == -3) {
+      model.addAttribute("message", "系统繁忙，请稍后再试！");
+      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+      return "modules/contract/depositAgreementForm";
+    } else if (result == -2) {
       model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
       model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
       return "modules/contract/depositAgreementForm";

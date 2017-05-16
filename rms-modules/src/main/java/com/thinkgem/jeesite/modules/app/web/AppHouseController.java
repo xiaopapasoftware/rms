@@ -1247,6 +1247,9 @@ public class AppHouseController {
         mobile = user.getMobile();
       }
       smsService.sendSms(mobile, proper.getProperty("sign.sms.content"));
+    } else if (result == -3) {
+      data.setCode("400");
+      data.setMsg("系统繁忙，请稍后再试！");
     } else if (result == -2) {// 选择的租赁期限过长
       data.setCode("400");
       data.setMsg("您设置的签约周期过长，请重新设置！");

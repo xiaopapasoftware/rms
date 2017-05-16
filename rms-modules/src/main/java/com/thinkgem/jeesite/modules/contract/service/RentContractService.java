@@ -314,10 +314,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       RentContract originalRentContract = super.get(rentContract.getId());
       String contractAuditStatus = originalRentContract.getContractStatus();
       String contractBusiStatus = originalRentContract.getContractBusiStatus();
-      if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(contractAuditStatus)) {
-        return doProcessHouseRoomStatusChanged(originalRentContract, rentContract, curHouseId, curRoomId);
-      }
-      if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(contractAuditStatus)) {
+      if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(contractAuditStatus) || ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(contractAuditStatus)) {
         return doProcessHouseRoomStatusChanged(originalRentContract, rentContract, curHouseId, curRoomId);
       }
       if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(contractAuditStatus)) {
