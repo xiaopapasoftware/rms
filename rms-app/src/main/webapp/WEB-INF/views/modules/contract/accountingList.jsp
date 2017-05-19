@@ -70,7 +70,6 @@
 				<th>核算人</th>
 				<th>核算时间</th>
 				<th>备注信息</th>
-				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -100,11 +99,6 @@
 				<td>
 					${accounting.remarks}
 				</td>
-				<shiro:hasPermission name="contract:accounting:edit"><td>
-					<c:if test="${accounting.contractBusiStatus=='4' || accounting.contractBusiStatus=='6'}">
-    					<a href="${ctx}/contract/accounting/form?id=${accounting.id}">修改</a>
-    				</c:if>
-				</td></shiro:hasPermission>
 			</tr>
 		</c:forEach>
 		</tbody>

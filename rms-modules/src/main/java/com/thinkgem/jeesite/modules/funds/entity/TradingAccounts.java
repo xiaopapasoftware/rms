@@ -40,6 +40,7 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
   private String depositReceiptFile;// 定金协议收据附件路径
   private String contractDataSource;// 出租合同的数据来源（管理系统/APP）
   private String agreementDataSource;// 定金协议的数据来源（管理系统/APP）
+  private List<String> tradeTypeList;// SQL条件
 
   public TradingAccounts() {
     super();
@@ -204,5 +205,13 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 
   public void setAgreementDataSource(String agreementDataSource) {
     this.agreementDataSource = agreementDataSource;
+  }
+
+  public List<String> getTradeTypeList() {
+    return tradeTypeList;
+  }
+
+  public void setTradeTypeList(List<String> tradeTypeList) {
+    this.tradeTypeList = tradeTypeList;
   }
 }

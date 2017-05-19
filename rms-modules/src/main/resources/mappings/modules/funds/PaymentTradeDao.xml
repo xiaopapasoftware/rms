@@ -109,10 +109,20 @@
 		   SET       del_flag = #{DEL_FLAG_DELETE},
 				     update_by = #{updateBy.id},
 				     update_date = #{updateDate}
-		 WHERE 	     trade_id = #{tradeId}
-		<if test="transId != null and transId != ''">
-				AND trans_id = #{transId}
-		</if>
+		 WHERE 	     
+		 			del_flag = #{DEL_FLAG_NORMAL}
+					<if test="tradeId != null and tradeId != ''">
+						AND trade_id = #{tradeId}
+					</if>
+					<if test="transId != null and transId != ''">
+						AND trans_id = #{transId}
+					</if>
+					<if test="tradeIdList != null">
+					 	and trade_id in 
+				         <foreach item="item" index="index" collection="tradeIdList" open="(" separator="," close=")">  
+				             #{item}  
+				         </foreach>  
+			      	</if>
 	</update>
 
 </mapper>

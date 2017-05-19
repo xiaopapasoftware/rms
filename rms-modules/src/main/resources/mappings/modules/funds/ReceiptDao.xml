@@ -157,11 +157,21 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE t_receipt SET 
-			del_flag = #{DEL_FLAG_DELETE},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate}
-		WHERE trading_accounts_id = #{tradingAccounts.id}
+		UPDATE 		t_receipt 
+		SET  		del_flag = #{DEL_FLAG_DELETE},
+					update_by = #{updateBy.id},
+					update_date = #{updateDate}
+		WHERE
+		    del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tradingAccounts != null">
+				and trading_accounts_id = #{tradingAccounts.id}
+			</if>
+			<if test="tradingAccountsIdList != null">
+			    and trading_accounts_id in 
+		         <foreach item="item" index="index" collection="tradingAccountsIdList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+	      	</if>
 	</update>
 	
 </mapper>

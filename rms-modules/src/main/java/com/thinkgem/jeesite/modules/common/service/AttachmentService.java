@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.common.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +27,14 @@ public class AttachmentService extends CrudService<AttachmentDao, Attachment> {
   @Transactional(readOnly = false)
   public void delete(Attachment attachment) {
     attachment.preUpdate();
-    dao.delete(attachment);
+    super.delete(attachment);
   }
 
+  @Transactional(readOnly = false)
+  public void deleteByTradeIds(List<String> tradingAccountsIds) {
+    Attachment attachment = new Attachment();
+    attachment.setTradingAccountsIdList(tradingAccountsIds);
+    attachment.preUpdate();
+    super.delete(attachment);
+  }
 }

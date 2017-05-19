@@ -29,6 +29,7 @@ import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
+import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
@@ -41,18 +42,21 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
+import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTradeService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -94,7 +98,7 @@ public class RentContractController extends BaseController {
   @Autowired
   private TradingAccountsService tradingAccountsService;
   @Autowired
-  private PaymentTradeDao paymentTradeDao;
+  private PaymentTradeService paymentTradeService;
   @Autowired
   private RoomService roomService;
   @Autowired
@@ -105,6 +109,12 @@ public class RentContractController extends BaseController {
   private ContractTenantService contractTenantService;
   @Autowired
   private MessageService messageService;// APP消息推送
+  @Autowired
+  private AccountingService accountingService;
+  @Autowired
+  private ReceiptService receiptService;
+  @Autowired
+  private AttachmentService attachmentService;
 
   @ModelAttribute
   public RentContract get(@RequestParam(required = false) String id) {
@@ -598,7 +608,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
-    rentContract.setTradeType(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());// 正常退租
+    rentContract.setTradeType(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
@@ -620,7 +630,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
-    rentContract.setTradeType("6");// 提前退租
+    rentContract.setTradeType(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
@@ -638,7 +648,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("outAccountSize", outAccountList.size());
     model.addAttribute("accountList", inAccountList);
     model.addAttribute("accountSize", inAccountList.size());
-    rentContract.setTradeType("8");// 逾期退租
+    rentContract.setTradeType(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
@@ -900,7 +910,7 @@ public class RentContractController extends BaseController {
       for (TradingAccounts taccount : tradingAccounts) {
         PaymentTrade paymentTrade = new PaymentTrade();
         paymentTrade.setTradeId(taccount.getId());
-        List<PaymentTrade> pts = paymentTradeDao.findList(paymentTrade);// 账务-款项关联表
+        List<PaymentTrade> pts = paymentTradeService.findList(paymentTrade);// 账务-款项关联表
         if (CollectionUtils.isNotEmpty(pts)) {
           for (PaymentTrade pt : pts) {
             PaymentTrans paymentTran = paymentTransService.get(pt.getTransId());
@@ -1190,5 +1200,62 @@ public class RentContractController extends BaseController {
   public String basicFeeSave(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     rentContractService.save(rentContract);
     return queryPublicBasicFeeInfo(rentContract, model, request, response);
+  }
+
+  /**
+   * 出租合同的审核状态为审核通过，同时出租合同业务状态为【退租核算完成到账收据待登记4、退租款项待审核5、退租款项审核拒绝6】的后门撤销
+   */
+  @RequestMapping(value = "backCancelRetreat")
+  public String backCancelRetreat(RentContract rentContract, RedirectAttributes redirectAttributes) {
+    if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
+      backCancelRetreatDeleteBusi(rentContract, rentContract.getContractBusiStatus());
+      addMessage(redirectAttributes, "该出租合同的退租核算数据已被清空，合同已恢复为有效合同！");
+    } else {
+      addMessage(redirectAttributes, "该出租合同不是到账收据审核通过的!");
+    }
+    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
+  }
+
+  private void backCancelRetreatDeleteBusi(RentContract rentContract, String contractBusiStatus) {
+    List<String> tradeTypeList = new ArrayList<String>();
+    tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
+    tradeTypeList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
+    tradeTypeList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
+    accountingService.delRentContractAccountings(rentContract);
+    paymentTransService.deleteRentContractTradeTypeList(rentContract.getId(), tradeTypeList);
+    rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
+    rentContractService.save(rentContract);
+    if (RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
+      String roomId = rentContract.getRoom().getId();
+      boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
+      if (isLock) {
+        houseService.calculateHouseStatus(roomId);
+      }
+    } else {
+      String houseId = rentContract.getHouse().getId();
+      boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
+      if (isLock) {
+        roomService.lockRooms(houseId);
+      }
+    }
+    if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
+      TradingAccounts ta = new TradingAccounts();
+      ta.setTradeId(rentContract.getId());
+      ta.setTradeTypeList(tradeTypeList);
+      List<TradingAccounts> tradingAccounts = tradingAccountsService.findList(ta);
+      List<String> tradingAccountsIds = new ArrayList<String>();
+      if (CollectionUtils.isNotEmpty(tradingAccounts)) {
+        for (TradingAccounts tempTa : tradingAccounts) {
+          tradingAccountsIds.add(tempTa.getId());
+        }
+      }
+      paymentTradeService.deleteByTradeIds(tradingAccountsIds);
+      if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus)) {
+        receiptService.deleteByTradeIds(tradingAccountsIds);
+        attachmentService.deleteByTradeIds(tradingAccountsIds);
+        ta.preUpdate();
+        tradingAccountsService.delete(ta);
+      }
+    }
   }
 }

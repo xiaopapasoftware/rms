@@ -1,10 +1,10 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +31,7 @@ public class Receipt extends DataEntity<Receipt> {
   private String tradeName;
   private String tradeType;
   private String paymentType;
+  private List<String> tradingAccountsIdList; // 用于sql条件
 
   public Receipt() {
     super();
@@ -115,5 +116,13 @@ public class Receipt extends DataEntity<Receipt> {
 
   public void setTradeId(String tradeId) {
     this.tradeId = tradeId;
+  }
+
+  public List<String> getTradingAccountsIdList() {
+    return tradingAccountsIdList;
+  }
+
+  public void setTradingAccountsIdList(List<String> tradingAccountsIdList) {
+    this.tradingAccountsIdList = tradingAccountsIdList;
   }
 }

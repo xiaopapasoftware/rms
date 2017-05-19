@@ -231,6 +231,18 @@
 			<if test="postpaidFeeId != null and postpaidFeeId != ''">
 				and postpaid_fee_id = #{postpaidFeeId}
 			</if>
+			<if test="tradeTypeList != null">
+			    and trade_type in 
+		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
+      		<if test="paymentTypeList != null">
+			    and payment_type in 
+		         <foreach item="item" index="index" collection="paymentTypeList" open="(" separator="," close=")">  
+		             #{item}
+		         </foreach>  
+      		</if>
 		</where>
 	</update>
 	
@@ -262,6 +274,18 @@
 			<if test="postpaidFeeId != null and postpaidFeeId != ''">
 				and postpaid_fee_id = #{postpaidFeeId}
 			</if>
+			<if test="tradeTypeList != null">
+			    and trade_type in 
+		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
+      		<if test="paymentTypeList != null">
+			    and payment_type in 
+		         <foreach item="item" index="index" collection="paymentTypeList" open="(" separator="," close=")">  
+		             #{item}
+		         </foreach>  
+      		</if>
 		</where>
 	</update>
 </mapper>

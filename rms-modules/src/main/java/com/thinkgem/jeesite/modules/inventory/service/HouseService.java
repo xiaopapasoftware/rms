@@ -42,13 +42,13 @@ public class HouseService extends CrudService<HouseDao, House> {
 
   @Override
   public List<House> findList(House entity) {
-    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "pp.area_id=sua.area_id");
     return super.findList(entity);
   }
 
   @Override
   public Page<House> findPage(Page<House> page, House entity) {
-    areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "pp.area_id=sua.area_id");
     return super.findPage(page, entity);
   }
 
@@ -114,6 +114,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     // 删除房屋附件
     Attachment atta = new Attachment();
     atta.setHouseId(house.getId());
+    atta.preUpdate();
     attachmentService.delete(atta);
 
     // 删除房屋所属房间
@@ -136,8 +137,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   }
 
   /**
-   * 取消预定（整租房屋） 把房屋；
-   * 把房屋从“已预定”改为“待出租可预订”
+   * 取消预定（整租房屋） 把房屋； 把房屋从“已预定”改为“待出租可预订”
    */
   @Transactional(readOnly = false)
   public void releaseWholeHouse(House house) {
@@ -361,6 +361,7 @@ public class HouseService extends CrudService<HouseDao, House> {
   /**
    * 根据单间的状态变更，改变房屋的状态（适用于合租的情况）
    */
+  @Transactional(readOnly = false)
   public void calculateHouseStatus(String roomId) {
     Room room = roomService.get(roomId);
     House h = dao.get(room.getHouse().getId());

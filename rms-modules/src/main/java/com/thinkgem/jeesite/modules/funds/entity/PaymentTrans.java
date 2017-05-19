@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.funds.entity;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -45,6 +46,8 @@ public class PaymentTrans extends DataEntity<PaymentTrans> implements Comparable
   private String remittanceDate;// 查询条件：打款日期
   private String splitPaidMonths;// 查询结果：款项付费周期（表明该合同的房租是几个月一付的）
   private String postpaidFeeId;// 后付费交易存在一笔交易与多笔款项相对应的情况，所以新增一个字段
+  private List<String> tradeTypeList;// 查询条件
+  private List<String> paymentTypeList;// 查询条件
 
   public PaymentTrans() {
     super();
@@ -255,5 +258,21 @@ public class PaymentTrans extends DataEntity<PaymentTrans> implements Comparable
     } else {
       return 1;
     }
+  }
+
+  public List<String> getTradeTypeList() {
+    return tradeTypeList;
+  }
+
+  public void setTradeTypeList(List<String> tradeTypeList) {
+    this.tradeTypeList = tradeTypeList;
+  }
+
+  public List<String> getPaymentTypeList() {
+    return paymentTypeList;
+  }
+
+  public void setPaymentTypeList(List<String> paymentTypeList) {
+    this.paymentTypeList = paymentTypeList;
   }
 }

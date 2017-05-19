@@ -153,17 +153,21 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE t_accounting SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
-	</update>
-	
-	<update id="delByRent">
-		UPDATE t_accounting SET 
-			del_flag = #{DEL_FLAG_DELETE},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate}
-		WHERE rent_contract_id = #{rentContract.id} 
-		and   accounting_type = #{accountingType}
+		UPDATE 	t_accounting 
+		SET  	del_flag = #{DEL_FLAG_DELETE},
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
+		<where>
+			    del_flag = #{DEL_FLAG_NORMAL} 	
+				<if test="id != null and id != ''">
+					 and id = #{id}
+			 	</if>
+				<if test="rentContract != null">
+					 and rent_contract_id = #{rentContract.id} 
+			 	</if>
+				<if test="accountingType != null and accountingType != ''">
+					 and accounting_type = #{accountingType}
+			 	</if>
+		</where>
 	</update>
 </mapper>

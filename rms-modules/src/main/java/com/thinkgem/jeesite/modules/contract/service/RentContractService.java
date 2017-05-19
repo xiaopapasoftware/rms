@@ -221,20 +221,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
     rentContract.setReturnRemark(returnRemark);
     super.save(rentContract);
-    // 删除核算记录
-    Accounting delAccounting = new Accounting();
-    delAccounting.setRentContract(rentContract);
-    delAccounting.preUpdate();
-    if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)) {
-      delAccounting.setAccountingType(AccountingTypeEnum.NORMAL_RETURN_ACCOUNT.getValue());
-    } else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
-      delAccounting.setAccountingType(AccountingTypeEnum.ADVANCE_RETURN_ACCOUNT.getValue());
-    } else if (TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType)) {
-      delAccounting.setAccountingType(AccountingTypeEnum.LATE_RETURN_ACCOUNT.getValue());
-    } else if (TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
-      delAccounting.setAccountingType(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());
-    }
-    accountingService.delByRent(delAccounting);
+    accountingService.delRentContractAccountings(rentContract);// 删除核算记录
     generatePaymentTransAndAccounts(accountList, rentContract, tradeType, TradeDirectionEnum.IN.getValue());
     generatePaymentTransAndAccounts(outAccountList, rentContract, tradeType, TradeDirectionEnum.OUT.getValue());
     // 变更房屋及房间的状态

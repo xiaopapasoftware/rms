@@ -8,12 +8,7 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 
 /**
- * 退租核算DAO接口
- * 
- * @author huangsc
- * @version 2015-06-11
+ * @author wangshujin
  */
 @MyBatisDao
-public interface AccountingDao extends CrudDao<Accounting> {
-  int delByRent(Accounting accounting);
-}
+public interface AccountingDao extends CrudDao<Accounting> {}

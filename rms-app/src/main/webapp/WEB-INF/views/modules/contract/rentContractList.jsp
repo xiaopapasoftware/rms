@@ -377,6 +377,10 @@
 						<c:if test="${rentContract.contractStatus=='5' && (rentContract.contractBusiStatus==''||rentContract.contractBusiStatus==null)}">
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">【后门修改】</a>
 						</c:if>
+						<!-- 出租合同的审核状态为审核通过，同时出租合同业务状态为【退租核算完成到账收据待登记4、退租款项待审核5、退租款项审核拒绝6】，后门撤销 -->
+						<c:if test="${rentContract.contractStatus=='6' && (rentContract.contractBusiStatus=='4' || rentContract.contractBusiStatus=='5' || rentContract.contractBusiStatus=='6' )}">
+							<a href="${ctx}/contract/rentContract/backCancelRetreat?id=${rentContract.id}">【后门退租核算撤销】</a>
+						</c:if>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="contract:rentContract:return">
 						<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">

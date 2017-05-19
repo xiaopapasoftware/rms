@@ -14,37 +14,32 @@ import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
 
 /**
- * 账务收据Service
+ * @author wangshujin
  *
- * @author huangsc
- * @version 2015-06-11
  */
 @Service
 @Transactional(readOnly = true)
 public class ReceiptService extends CrudService<ReceiptDao, Receipt> {
 
-    public Receipt get(String id) {
-        return super.get(id);
-    }
+  public Receipt get(String id) {
+    return super.get(id);
+  }
 
-    public List<Receipt> findList(Receipt receipt) {
-        areaScopeFilter(receipt, "dsf", "tp.area_id=sua.area_id");
-        return super.findList(receipt);
-    }
+  public List<Receipt> findList(Receipt receipt) {
+    areaScopeFilter(receipt, "dsf", "tp.area_id=sua.area_id");
+    return super.findList(receipt);
+  }
 
-    public Page<Receipt> findPage(Page<Receipt> page, Receipt receipt) {
-        areaScopeFilter(receipt, "dsf", "tp.area_id=sua.area_id");
-        return super.findPage(page, receipt);
-    }
+  public Page<Receipt> findPage(Page<Receipt> page, Receipt receipt) {
+    areaScopeFilter(receipt, "dsf", "tp.area_id=sua.area_id");
+    return super.findPage(page, receipt);
+  }
 
-    @Transactional(readOnly = false)
-    public void save(Receipt receipt) {
-        super.save(receipt);
-    }
-
-    @Transactional(readOnly = false)
-    public void delete(Receipt receipt) {
-        super.delete(receipt);
-    }
-
+  @Transactional(readOnly = false)
+  public void deleteByTradeIds(List<String> tradingAccountsIds) {
+    Receipt receipt = new Receipt();
+    receipt.setTradingAccountsIdList(tradingAccountsIds);
+    receipt.preUpdate();
+    super.delete(receipt);
+  }
 }

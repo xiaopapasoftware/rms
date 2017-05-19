@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.funds.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -123,32 +124,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void deleteNotSignPaymentTrans(String rentContractId) {
-    PaymentTrans p = new PaymentTrans();
-    p.preUpdate();
-    p.setTransId(rentContractId);
-    p.setTradeDirection(TradeDirectionEnum.IN.getValue());
-    p.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-    p.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
-    delete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
-    delete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.GAS_AMOUNT.getValue());
-    delete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.TV_AMOUNT.getValue());
-    delete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.NET_AMOUNT.getValue());
-    delete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
-    delete3TradeType(p);
-  }
-
-  private void delete3TradeType(PaymentTrans p) {
-    p.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
-    dao.delete(p);
-    p.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
-    dao.delete(p);
-    p.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
-    dao.delete(p);
+    dao.delete(prepareNotSignPaymentCondition(rentContractId));
   }
 
   /**
@@ -156,32 +132,29 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void rollbackDeleteNotSignPaymentTrans(String rentContractId) {
+    dao.rollbackDelete(prepareNotSignPaymentCondition(rentContractId));
+  }
+
+  private PaymentTrans prepareNotSignPaymentCondition(String rentContractId) {
     PaymentTrans p = new PaymentTrans();
     p.preUpdate();
     p.setTransId(rentContractId);
     p.setTradeDirection(TradeDirectionEnum.IN.getValue());
     p.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-    p.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.GAS_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.TV_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.NET_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-    p.setPaymentType(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
-    rollbackDelete3TradeType(p);
-  }
-
-  private void rollbackDelete3TradeType(PaymentTrans p) {
-    p.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
-    dao.rollbackDelete(p);
-    p.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
-    dao.rollbackDelete(p);
-    p.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
-    dao.rollbackDelete(p);
+    List<String> paymentTypeList = new ArrayList<String>();
+    paymentTypeList.add(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
+    paymentTypeList.add(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
+    paymentTypeList.add(PaymentTransTypeEnum.GAS_AMOUNT.getValue());
+    paymentTypeList.add(PaymentTransTypeEnum.TV_AMOUNT.getValue());
+    paymentTypeList.add(PaymentTransTypeEnum.NET_AMOUNT.getValue());
+    paymentTypeList.add(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
+    p.setPaymentTypeList(paymentTypeList);
+    List<String> tradeTypeList = new ArrayList<String>();
+    tradeTypeList.add(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
+    tradeTypeList.add(TradeTypeEnum.NORMAL_RENEW.getValue());
+    tradeTypeList.add(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
+    p.setTradeTypeList(tradeTypeList);
+    return p;
   }
 
   /**
@@ -294,4 +267,15 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     return super.findList(pt);
   }
 
+  /**
+   * 删除合同下指定的账务交易类型集合的款项
+   */
+  @Transactional(readOnly = false)
+  public void deleteRentContractTradeTypeList(String rentContractId, List<String> tradeTypeList) {
+    PaymentTrans pts = new PaymentTrans();
+    pts.preUpdate();
+    pts.setTransId(rentContractId);
+    pts.setTradeTypeList(tradeTypeList);
+    super.delete(pts);
+  }
 }

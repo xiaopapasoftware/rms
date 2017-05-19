@@ -262,6 +262,13 @@
 		<if test="attachmentType != null and attachmentType != ''">
 			and attachment_type = #{attachmentType}
 		</if>
+		<if test="tradingAccountsIdList != null">
+			    and trading_accounts_id in 
+		         <foreach item="item" index="index" collection="tradingAccountsIdList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+	    </if>
+		
 	</update>
 	
 </mapper>

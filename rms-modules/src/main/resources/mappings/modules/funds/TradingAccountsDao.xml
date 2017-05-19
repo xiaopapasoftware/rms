@@ -79,6 +79,12 @@
 			<if test="tradeStatus != null and tradeStatus != ''">
 				AND a.trade_status = #{tradeStatus}
 			</if>
+			<if test="tradeTypeList != null">
+			    and a.trade_type in 
+		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
 		</where>
 
 		<choose>
@@ -178,9 +184,12 @@
 	</update>
 
 	<update id="delete">
-		UPDATE t_trading_accounts 
-		SET del_flag = #{DEL_FLAG_DELETE}, update_by = #{updateBy.id}, update_date = #{updateDate}
+		UPDATE 		t_trading_accounts 
+		SET 		del_flag = #{DEL_FLAG_DELETE}, 
+					update_by = #{updateBy.id}, 
+					update_date = #{updateDate}
 		<where>
+			del_flag = #{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">
 				and id = #{id}
 			</if>
@@ -190,6 +199,12 @@
 			<if test="tradeStatus != null and tradeStatus != ''">
 				and trade_status = #{tradeStatus}
 			</if>
+			<if test="tradeTypeList != null">
+			    and trade_type in 
+		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
 		</where>
 	</update>
 
