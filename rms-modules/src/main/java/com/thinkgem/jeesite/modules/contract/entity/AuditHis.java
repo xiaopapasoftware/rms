@@ -11,106 +11,112 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
  * 审核历史Entity
+ * 
  * @author huangsc
  * @version 2015-06-14
  */
 public class AuditHis extends DataEntity<AuditHis> {
-	
-	private static final long serialVersionUID = 1L;
-	private String objectType;		// 审核类型
-	private String objectId;		// 审核对象ID
-	private String auditUser;		// 审核人
-	private Date auditTime;			// 审核时间
-	private String auditStatus;		// 审核状态
-	private String auditMsg;		// 审核意见
-	private String auditUserName;
-	private String updateUser;
-	
-	private String type;
-	
-	public AuditHis() {
-		super();
-	}
 
-	public AuditHis(String id){
-		super(id);
-	}
+  private static final long serialVersionUID = 1L;
+  private String objectType; // 审核类型
+  private String objectId; // 审核对象ID
+  private String auditUser; // 审核人
+  private Date auditTime; // 审核时间
+  private String auditStatus; // 审核状态
+  private String auditMsg; // 审核意见
+  private String auditUserName;
+  private String updateUser;
+  /**
+   * 前台页面标识，1=到账收据完成合同内容待审核；2=特殊退租内容待审核
+   */
+  private String type;
 
-	@Length(min=0, max=64, message="审核类型长度必须介于 0 和 64 之间")
-	public String getObjectType() {
-		return objectType;
-	}
+  public AuditHis() {
+    super();
+  }
 
-	public void setObjectType(String objectType) {
-		this.objectType = objectType;
-	}
-	
-	@Length(min=0, max=64, message="审核对象ID长度必须介于 0 和 64 之间")
-	public String getObjectId() {
-		return objectId;
-	}
+  public AuditHis(String id) {
+    super(id);
+  }
 
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
-	
-	@Length(min=0, max=100, message="审核人长度必须介于 0 和 100 之间")
-	public String getAuditUser() {
-		return auditUser;
-	}
+  @Length(min = 0, max = 64, message = "审核类型长度必须介于 0 和 64 之间")
+  public String getObjectType() {
+    return objectType;
+  }
 
-	public void setAuditUser(String auditUser) {
-		this.auditUser = auditUser;
-	}
-	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	public Date getAuditTime() {
-		return auditTime;
-	}
+  public void setObjectType(String objectType) {
+    this.objectType = objectType;
+  }
 
-	public void setAuditTime(Date auditTime) {
-		this.auditTime = auditTime;
-	}
-	
-	@Length(min=0, max=100, message="审核状态长度必须介于 0 和 100 之间")
-	public String getAuditStatus() {
-		return auditStatus;
-	}
+  @Length(min = 0, max = 64, message = "审核对象ID长度必须介于 0 和 64 之间")
+  public String getObjectId() {
+    return objectId;
+  }
 
-	public void setAuditStatus(String auditStatus) {
-		this.auditStatus = auditStatus;
-	}
-	
-	@Length(min=0, max=100, message="审核意见长度必须介于 0 和 100 之间")
-	public String getAuditMsg() {
-		return auditMsg;
-	}
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
+  }
 
-	public void setAuditMsg(String auditMsg) {
-		this.auditMsg = auditMsg;
-	}
+  @Length(min = 0, max = 100, message = "审核人长度必须介于 0 和 100 之间")
+  public String getAuditUser() {
+    return auditUser;
+  }
 
-	public String getAuditUserName() {
-		return auditUserName;
-	}
+  public void setAuditUser(String auditUser) {
+    this.auditUser = auditUser;
+  }
 
-	public void setAuditUserName(String auditUserName) {
-		this.auditUserName = auditUserName;
-	}
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  public Date getAuditTime() {
+    return auditTime;
+  }
 
-	public String getType() {
-		return type;
-	}
+  public void setAuditTime(Date auditTime) {
+    this.auditTime = auditTime;
+  }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+  @Length(min = 0, max = 100, message = "审核状态长度必须介于 0 和 100 之间")
+  public String getAuditStatus() {
+    return auditStatus;
+  }
 
-	public String getUpdateUser() {
-		return updateUser;
-	}
+  public void setAuditStatus(String auditStatus) {
+    this.auditStatus = auditStatus;
+  }
 
-	public void setUpdateUser(String updateUser) {
-		this.updateUser = updateUser;
-	}	
+  @Length(min = 0, max = 100, message = "审核意见长度必须介于 0 和 100 之间")
+  public String getAuditMsg() {
+    return auditMsg;
+  }
+
+  public void setAuditMsg(String auditMsg) {
+    this.auditMsg = auditMsg;
+  }
+
+  public String getAuditUserName() {
+    return auditUserName;
+  }
+
+  public void setAuditUserName(String auditUserName) {
+    this.auditUserName = auditUserName;
+  }
+
+  /**
+   * 前台页面标识，1=到账收据完成合同内容待审核；2=特殊退租内容待审核
+   */
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public String getUpdateUser() {
+    return updateUser;
+  }
+
+  public void setUpdateUser(String updateUser) {
+    this.updateUser = updateUser;
+  }
 }

@@ -124,7 +124,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void deleteNotSignPaymentTrans(String rentContractId) {
-    dao.delete(prepareNotSignPaymentCondition(rentContractId));
+    super.delete(prepareNotSignPaymentCondition(rentContractId));
   }
 
   /**

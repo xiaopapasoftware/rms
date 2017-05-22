@@ -278,7 +278,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradingAccounts.getTradeType())) {
       rentContract.setContractBusiStatus(
-          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.SPECIAL_RETURN.getValue() : ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
+          AuditStatusEnum.PASS.getValue().equals(auditHis.getAuditStatus()) ? ContractBusiStatusEnum.SPECIAL_RETURN.getValue() : ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE.getValue());
       rentContract.preUpdate();
       rentContractDao.update(rentContract);
     } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(tradingAccounts.getTradeType())) {

@@ -90,7 +90,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String rentContractOtherFile;// 出租合同其他附件
   private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
   private String oriEndDate;// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
-  private String returnDate;
+  private String returnDate;//用户输入的退租日期
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;

@@ -74,11 +74,6 @@ public enum ContractBusiStatusEnum {
   SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE("12"),
 
   /**
-   * 特殊退租结算审核通过
-   */
-  SPECAIL_RETURN_ACCOUNT_AUDIT_PASS("13"),
-
-  /**
    * 正常人工续签
    */
   NORMAL_RENEW("14"),

@@ -92,7 +92,7 @@
 		INSERT INTO t_neighborhood(
 			id,
 			neighborhood_name,
-			aera_id,
+			AREA_ID,
 			neighborhood_addr,
 			create_by,
 			create_date,

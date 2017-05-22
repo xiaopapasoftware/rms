@@ -1217,44 +1217,52 @@ public class RentContractController extends BaseController {
   }
 
   private void backCancelRetreatDeleteBusi(RentContract rentContract, String contractBusiStatus) {
-    List<String> tradeTypeList = new ArrayList<String>();
-    tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
-    tradeTypeList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
-    tradeTypeList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
-    accountingService.delRentContractAccountings(rentContract);
-    paymentTransService.deleteRentContractTradeTypeList(rentContract.getId(), tradeTypeList);
-    rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
-    rentContractService.save(rentContract);
-    if (RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
-      String roomId = rentContract.getRoom().getId();
-      boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
-      if (isLock) {
-        houseService.calculateHouseStatus(roomId);
-      }
-    } else {
-      String houseId = rentContract.getHouse().getId();
-      boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
-      if (isLock) {
-        roomService.lockRooms(houseId);
-      }
-    }
-    if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
-      TradingAccounts ta = new TradingAccounts();
-      ta.setTradeId(rentContract.getId());
-      ta.setTradeTypeList(tradeTypeList);
-      List<TradingAccounts> tradingAccounts = tradingAccountsService.findList(ta);
-      List<String> tradingAccountsIds = new ArrayList<String>();
-      if (CollectionUtils.isNotEmpty(tradingAccounts)) {
-        for (TradingAccounts tempTa : tradingAccounts) {
-          tradingAccountsIds.add(tempTa.getId());
+    if (ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus)
+        || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT.getValue().equals(contractBusiStatus)
+        || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)
+        || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
+      tradeTypeList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
+      tradeTypeList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
+      tradeTypeList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
+      accountingService.delRentContractAccountings(rentContract);
+      paymentTransService.deleteRentContractTradeTypeList(rentContract.getId(), tradeTypeList);
+      rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
+      rentContractService.save(rentContract);
+      if (RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
+        String roomId = rentContract.getRoom().getId();
+        boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
+        if (isLock) {
+          houseService.calculateHouseStatus(roomId);
+        }
+      } else {
+        String houseId = rentContract.getHouse().getId();
+        boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
+        if (isLock) {
+          roomService.lockRooms(houseId);
         }
       }
-      paymentTradeService.deleteByTradeIds(tradingAccountsIds);
-      if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus)) {
-        receiptService.deleteByTradeIds(tradingAccountsIds);
-        attachmentService.deleteByTradeIds(tradingAccountsIds);
-        ta.preUpdate();
-        tradingAccountsService.delete(ta);
+      if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)
+          || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)
+          || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
+        TradingAccounts ta = new TradingAccounts();
+        ta.setTradeId(rentContract.getId());
+        ta.setTradeTypeList(tradeTypeList);
+        List<TradingAccounts> tradingAccounts = tradingAccountsService.findList(ta);
+        List<String> tradingAccountsIds = new ArrayList<String>();
+        if (CollectionUtils.isNotEmpty(tradingAccounts)) {
+          for (TradingAccounts tempTa : tradingAccounts) {
+            tradingAccountsIds.add(tempTa.getId());
+          }
+        }
+        paymentTradeService.deleteByTradeIds(tradingAccountsIds);
+        if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)) {
+          receiptService.deleteByTradeIds(tradingAccountsIds);
+          attachmentService.deleteByTradeIds(tradingAccountsIds);
+          ta.preUpdate();
+          tradingAccountsService.delete(ta);
+        }
       }
     }
   }
