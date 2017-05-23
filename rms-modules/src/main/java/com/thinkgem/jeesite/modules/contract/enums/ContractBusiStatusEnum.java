@@ -59,21 +59,6 @@ public enum ContractBusiStatusEnum {
   LATE_RETURN("9"),
 
   /**
-   * 特殊退租待结算
-   */
-  SPECAIL_RETURN_ACCOUNT("10"),
-
-  /**
-   * 特殊退租结算待审核
-   */
-  SPECAIL_RETURN_ACCOUNT_AUDIT("11"),
-
-  /**
-   * 特殊退租结算审核拒绝
-   */
-  SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE("12"),
-
-  /**
    * 正常人工续签
    */
   NORMAL_RENEW("14"),

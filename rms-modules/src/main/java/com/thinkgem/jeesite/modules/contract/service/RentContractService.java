@@ -140,14 +140,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           }
         }
         paymentTransService.deleteNotSignPaymentTrans(rentContractId);// 删除未到账款项
-        rentContract.setContractBusiStatus(ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT.getValue());
-        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
-          House house = houseService.get(rentContract.getHouse().getId());
-          houseService.returnWholeHouse(house);
-        } else {
-          Room room = roomService.get(rentContract.getRoom().getId());
-          houseService.returnSingleRoom(room);
-        }
+        rentContract.setContractBusiStatus(ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue());
       } else {// 原出租合同的审核状态为：到账收据完成合同内容待审核
         rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue());
       }
@@ -229,17 +222,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     rentContract.setReturnRemark(returnRemark);
     super.save(rentContract);
     accountingService.delRentContractAccountings(rentContract);// 删除核算记录
+    // 特殊退租暂时不生成款项
     generatePaymentTransAndAccounts(accountList, rentContract, tradeType, TradeDirectionEnum.IN.getValue());
     generatePaymentTransAndAccounts(outAccountList, rentContract, tradeType, TradeDirectionEnum.OUT.getValue());
-    if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {// 特殊退租与其他退租类型不同，需要人工先进行审核
-      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
-        House house = houseService.get(rentContract.getHouse().getId());
-        houseService.returnWholeHouse(house);
-      } else {
-        Room room = roomService.get(rentContract.getRoom().getId());
-        houseService.returnSingleRoom(room);
-      }
-    }
   }
 
   @Transactional(readOnly = false)

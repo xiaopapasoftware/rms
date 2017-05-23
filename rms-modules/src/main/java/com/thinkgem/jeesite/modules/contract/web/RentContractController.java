@@ -42,7 +42,6 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
@@ -1218,9 +1217,7 @@ public class RentContractController extends BaseController {
 
   private void backCancelRetreatDeleteBusi(RentContract rentContract, String contractBusiStatus) {
     if (ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus)
-        || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT.getValue().equals(contractBusiStatus)
-        || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)
-        || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
+        || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
       List<String> tradeTypeList = new ArrayList<String>();
       tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
       tradeTypeList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
@@ -1230,22 +1227,7 @@ public class RentContractController extends BaseController {
       paymentTransService.deleteRentContractTradeTypeList(rentContract.getId(), tradeTypeList);
       rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
       rentContractService.save(rentContract);
-      if (RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
-        String roomId = rentContract.getRoom().getId();
-        boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
-        if (isLock) {
-          houseService.calculateHouseStatus(roomId);
-        }
-      } else {
-        String houseId = rentContract.getHouse().getId();
-        boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
-        if (isLock) {
-          roomService.lockRooms(houseId);
-        }
-      }
-      if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)
-          || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)
-          || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
+      if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {
         TradingAccounts ta = new TradingAccounts();
         ta.setTradeId(rentContract.getId());
         ta.setTradeTypeList(tradeTypeList);
@@ -1257,7 +1239,7 @@ public class RentContractController extends BaseController {
           }
         }
         paymentTradeService.deleteByTradeIds(tradingAccountsIds);
-        if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.SPECAIL_RETURN_ACCOUNT_AUDIT.getValue().equals(contractBusiStatus)) {
+        if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus)) {
           receiptService.deleteByTradeIds(tradingAccountsIds);
           attachmentService.deleteByTradeIds(tradingAccountsIds);
           ta.preUpdate();

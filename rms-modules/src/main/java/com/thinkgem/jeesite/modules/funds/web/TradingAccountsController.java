@@ -202,9 +202,14 @@ public class TradingAccountsController extends BaseController {
         tradeType = paymentTrans.getTradeType();// 交易类型
         tradeObjectId = paymentTrans.getTransId();// 交易对象ID
         String paymentType = paymentTrans.getPaymentType();// 款项类型
-        if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue()
-            .equals(tradeType)) {} else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
-                || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {} else {// 交易类型里的款项全是收款，不包含出款
+        List<String> containedOutTransList = new ArrayList<String>();// 所有可能包含 出款方向的交易类型集合
+        containedOutTransList.add(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
+        containedOutTransList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
+        containedOutTransList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
+        containedOutTransList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
+        containedOutTransList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
+        containedOutTransList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
+        if (!containedOutTransList.contains(tradeType)) { // 交易类型里的款项全是收款，不包含出款
           if (TradeDirectionEnum.IN.getValue().equals(paymentTrans.getTradeDirection())) {
             Receipt receipt = new Receipt();
             if (paymentTypeMap.containsKey(paymentType)) {
@@ -217,9 +222,10 @@ public class TradingAccountsController extends BaseController {
         }
       }
       List<Receipt> receiptList = new ArrayList<Receipt>(); /* 收据 */
-      if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue()
-          .equals(tradeType)) {} else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
-              || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
+      if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradeType)) {
+        // DONOTHING
+      } else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
+          || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
         if (amount > 0) {// 总到账金额大于0
           Receipt receipt = new Receipt();
           receipt.setReceiptAmount(new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -343,11 +349,9 @@ public class TradingAccountsController extends BaseController {
   @RequestMapping(value = "save")
   public String save(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
     String id = tradingAccounts.getId();
-
     if (!beanValidator(model, tradingAccounts)) {
       return form(tradingAccounts, model, redirectAttributes);
     }
-
     /* 校验收据编号重复 */
     boolean check = true;
     String receiptNo = "";
@@ -387,7 +391,6 @@ public class TradingAccountsController extends BaseController {
         return "modules/funds/tradingAccountsForm";
       }
     }
-
     // 检查款项的状态是否正常,防止因为别的操作导致款项被删了。。不能继续进行到账登记
     boolean check2 = true;
     if (StringUtils.isNotEmpty(tradingAccounts.getTransIds())) {
