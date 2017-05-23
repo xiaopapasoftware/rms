@@ -105,17 +105,18 @@
 		) t
 
 		left join t_property_project tp on t.property_project_id = tp.id
-		<where>
-			<if test="transName != null and transName != ''">
-				AND t.transName like concat('%',#{transName},'%')
-			</if>
-			<if test="transObjectNo != null and transObjectNo != ''">
-				AND t.transObjectNo like concat('%',#{transObjectNo},'%')
-			</if>
-			<if test="remittanceDate != null and remittanceDate != ''">
-				AND t.remittanceDate = #{remittanceDate}
-			</if>
-		</where>
+
+		where 1=1
+
+		<if test="transName != null and transName != ''">
+			AND t.transName like concat('%',#{transName},'%')
+		</if>
+		<if test="transObjectNo != null and transObjectNo != ''">
+			AND t.transObjectNo like concat('%',#{transObjectNo},'%')
+		</if>
+		<if test="remittanceDate != null and remittanceDate != ''">
+			AND t.remittanceDate = #{remittanceDate}
+		</if>
 
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}

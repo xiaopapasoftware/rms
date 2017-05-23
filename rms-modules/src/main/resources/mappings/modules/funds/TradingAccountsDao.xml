@@ -64,7 +64,8 @@
 	<select id="findList" resultType="TradingAccounts">
 		select t.* from(
 		SELECT <include refid="tradingAccountsColumns" />
-		FROM t_trading_accounts a <include refid="tradingAccountsJoins" />
+		FROM t_trading_accounts a
+		<include refid="tradingAccountsJoins" />
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="tradeId != null and tradeId != ''">
