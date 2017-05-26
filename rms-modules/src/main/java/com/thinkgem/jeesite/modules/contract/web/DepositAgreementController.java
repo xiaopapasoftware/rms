@@ -1,8 +1,6 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.web;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +30,7 @@ import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.AgreementAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
@@ -43,6 +42,9 @@ import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTradeService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -58,10 +60,7 @@ import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
- * 定金协议Controller
- * 
- * @author huangsc
- * @version 2015-06-09
+ * @author wangshujin
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/depositAgreement")
@@ -79,7 +78,7 @@ public class DepositAgreementController extends BaseController {
   @Autowired
   private HouseService houseService;
   @Autowired
-  private RoomService roomServie;
+  private RoomService roomService;
   @Autowired
   private TenantService tenantService;
   @Autowired
@@ -88,6 +87,8 @@ public class DepositAgreementController extends BaseController {
   private MessageService messageService;// APP消息推送
   @Autowired
   private PaymentTransService paymentTransService;
+  @Autowired
+  private PaymentTradeService paymentTradeService;
 
   @ModelAttribute
   public DepositAgreement get(@RequestParam(required = false) String id) {
@@ -127,7 +128,6 @@ public class DepositAgreementController extends BaseController {
       }
     }
     model.addAttribute("page", page);
-
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
 
@@ -154,7 +154,7 @@ public class DepositAgreementController extends BaseController {
       House house = new House();
       house.setId(depositAgreement.getHouse().getId());
       room.setHouse(house);
-      List<Room> roomList = roomServie.findList(room);
+      List<Room> roomList = roomService.findList(room);
       model.addAttribute("roomList", roomList);
     }
     return "modules/contract/depositAgreementList";
@@ -203,9 +203,9 @@ public class DepositAgreementController extends BaseController {
       room.setHouse(house);
       room.setChoose("1");
       List<Room> roomList = Lists.newArrayList();
-      roomList = roomServie.findList(room);
+      roomList = roomService.findList(room);
       if (null != depositAgreement.getRoom()) {
-        Room rm = roomServie.get(depositAgreement.getRoom());
+        Room rm = roomService.get(depositAgreement.getRoom());
         if (null != rm) {
           roomList.add(rm);
         }
@@ -282,11 +282,10 @@ public class DepositAgreementController extends BaseController {
   }
 
   /**
-   * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费
+   * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费款项。
    */
   @RequestMapping(value = "breakContract")
   public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
-
     Double refundAmount = depositAgreement.getRefundAmount();// 转违约，可能要退一点费用给客户，这里就是退费的金额
     String agreementId = depositAgreement.getId();// 定金协议ID
     depositAgreement = depositAgreementService.get(agreementId);
@@ -300,7 +299,6 @@ public class DepositAgreementController extends BaseController {
     // 生成完全到账的应出定金款项
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue(), agreementId, TradeDirectionEnum.OUT.getValue(),
         refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
-
     // 生成完全到账的应收定金违约金款项
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue(), agreementId, TradeDirectionEnum.IN.getValue(),
         refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
@@ -309,16 +307,15 @@ public class DepositAgreementController extends BaseController {
       depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue());
     } else {
       depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue());
+      if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
+        House house = houseService.get(depositAgreement.getHouse().getId());
+        houseService.releaseWholeHouse(house);
+      } else {
+        Room room = roomService.get(depositAgreement.getRoom().getId());
+        houseService.releaseSingleRoom(room);
+      }
     }
     depositAgreementService.update(depositAgreement);
-    // 更新房源状态,需校验房源状态为已预定才可以变更
-    if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租,释放房源
-      House house = houseService.get(depositAgreement.getHouse().getId());
-      houseService.releaseWholeHouse(house);
-    } else {// 单间
-      Room room = roomServie.get(depositAgreement.getRoom().getId());
-      houseService.releaseSingleRoom(room);
-    }
     if (refundAmount != null && refundAmount > 0) {
       model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
     } else {
@@ -327,6 +324,89 @@ public class DepositAgreementController extends BaseController {
     model.addAttribute("messageType", ViewMessageTypeEnum.SUCCESS.getValue());
     model.addAttribute("depositAgreement", new DepositAgreement());
     return list(new DepositAgreement(), request, response, model);
+  }
+
+  /**
+   * 撤销定金转违约 可撤销的定金协议状态为：已转违约、 定金转违约到账待登记、定金转违约到账待审核、定金转违约到账审核拒绝 4种
+   */
+  @RequestMapping(value = "backDoorRevokeBreak")
+  public String backDoorRevokeBreak(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+    if (AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(depositAgreement.getAgreementStatus())) {
+      String agreementId = depositAgreement.getId();
+      String agreementBusiStatus = depositAgreement.getAgreementBusiStatus();
+      // 删除生成的完全到账的应出定金款项、完全到账的应收定金违约金款项、定金转违约退费款项（如果有的话）
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
+      List<String> paymentTypeList = new ArrayList<String>();
+      paymentTypeList.add(PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue());
+      paymentTypeList.add(PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue());
+      paymentTransService.deleteTransList(agreementId, tradeTypeList, paymentTypeList);
+      if (AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue().equals(agreementBusiStatus)) {
+        PaymentTrans pt = new PaymentTrans();
+        pt.setTransId(agreementId);
+        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+        PaymentTrans targetPT = paymentTransService.get(pt);
+        if (targetPT != null) {
+          PaymentTrade ptrade = new PaymentTrade();
+          ptrade.setTransId(targetPT.getId());
+          List<String> tradeIdList = new ArrayList<String>();
+          tradeIdList.add(paymentTradeService.findList(ptrade).get(0).getTradeId());
+          paymentTransService.deleteAttachReceiptTradingAccounts(tradeIdList);
+          paymentTransService.delete(pt);
+        }
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租
+          String houseId = depositAgreement.getHouse().getId();
+          boolean isLock = houseService.isLockWholeHouse4Deposit(houseId);
+          if (isLock) {
+            roomService.depositAllRooms(houseId);
+          }
+        } else {// 合租
+          String roomId = depositAgreement.getRoom().getId();
+          boolean isLock = roomService.isLockSingleRoom4Deposit(roomId);
+          if (isLock) {
+            houseService.calculateHouseStatus(roomId);
+          }
+        }
+      }
+      if (AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue().equals(agreementBusiStatus)) {
+        PaymentTrans pt = new PaymentTrans();
+        pt.setTransId(agreementId);
+        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+        paymentTransService.delete(pt);
+      }
+      if (AgreementBusiStatusEnum.CONVERTBREAK_TO_AUDIT.getValue().equals(agreementBusiStatus)) {
+        PaymentTrans pt = new PaymentTrans();
+        pt.setTransId(agreementId);
+        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+        PaymentTrans targetPT = paymentTransService.get(pt);
+        if (targetPT != null) {
+          PaymentTrade ptrade = new PaymentTrade();
+          ptrade.setTransId(targetPT.getId());
+          List<String> tradeIdList = new ArrayList<String>();
+          tradeIdList.add(paymentTradeService.findList(ptrade).get(0).getTradeId());
+          paymentTransService.deleteAttachReceiptTradingAccounts(tradeIdList);
+          paymentTransService.delete(pt);
+        }
+      }
+      if (AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue().equals(agreementBusiStatus)) {
+        PaymentTrans pt = new PaymentTrans();
+        pt.setTransId(agreementId);
+        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+        PaymentTrans targetPT = paymentTransService.get(pt);
+        if (targetPT != null) {
+          PaymentTrade ptrade = new PaymentTrade();
+          ptrade.setTransId(targetPT.getId());
+          paymentTradeService.delete(ptrade);
+          paymentTransService.delete(pt);
+        }
+      }
+      depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.TOBE_CONVERTED.getValue());
+      depositAgreementService.update(depositAgreement);
+      addMessage(redirectAttributes, "该定金协议已成功恢复为待转合同状态！");
+    } else {
+      addMessage(redirectAttributes, "该定金协议的审核状态不通过！");
+    }
+    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
   /**
@@ -380,7 +460,7 @@ public class DepositAgreementController extends BaseController {
       House house = new House();
       house.setId(rentContract.getHouse().getId());
       room.setHouse(house);
-      List<Room> roomList = roomServie.findList(room);
+      List<Room> roomList = roomService.findList(room);
       model.addAttribute("roomList", roomList);
     }
     model.addAttribute("partnerList", partnerService.findList(new Partner()));

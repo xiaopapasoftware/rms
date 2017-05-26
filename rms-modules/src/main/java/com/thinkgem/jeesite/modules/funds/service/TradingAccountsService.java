@@ -244,8 +244,18 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     } else if (TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradingAccounts.getTradeType())) {
       DepositAgreement depositAgreement = depositAgreementDao.get(tradingAccounts.getTradeId());
       depositAgreement.preUpdate();
-      depositAgreement.setAgreementBusiStatus(
-          AuditStatusEnum.PASS.getValue().equals(auditStatus) ? AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue() : AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue());
+      if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
+        depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue());
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
+          House house = houseService.get(depositAgreement.getHouse().getId());
+          houseService.releaseWholeHouse(house);
+        } else {
+          Room room = roomService.get(depositAgreement.getRoom().getId());
+          houseService.releaseSingleRoom(room);
+        }
+      } else {
+        depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue());
+      }
       depositAgreementDao.update(depositAgreement);
     } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradingAccounts.getTradeType())
         || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradingAccounts.getTradeType())) {

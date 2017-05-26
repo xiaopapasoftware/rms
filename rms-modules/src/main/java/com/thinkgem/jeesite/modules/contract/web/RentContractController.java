@@ -1224,7 +1224,7 @@ public class RentContractController extends BaseController {
       tradeTypeList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
       tradeTypeList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
       accountingService.delRentContractAccountings(rentContract);
-      paymentTransService.deleteRentContractTradeTypeList(rentContract.getId(), tradeTypeList);
+      paymentTransService.deleteTransList(rentContract.getId(), tradeTypeList, null);
       rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
       rentContractService.save(rentContract);
       if (ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue().equals(contractBusiStatus) || ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue().equals(contractBusiStatus)) {

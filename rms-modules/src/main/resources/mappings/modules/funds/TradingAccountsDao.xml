@@ -206,6 +206,12 @@
 		             #{item}  
 		         </foreach>  
       		</if>
+      		<if test="tradeIdList != null">
+			    and id in 
+		         <foreach item="item" index="index" collection="tradeIdList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
 		</where>
 	</update>
 

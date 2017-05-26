@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.thinkgem.jeesite.common.persistence.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
@@ -85,33 +85,20 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void deletePaymentTransAndTradingAcctouns(String objectID) {
-    // 删除款项记录
-    PaymentTrans delPaymentTrans = new PaymentTrans();
+    PaymentTrans delPaymentTrans = new PaymentTrans(); // 删除款项记录
     delPaymentTrans.setTransId(objectID);
     delPaymentTrans.preUpdate();
     dao.delete(delPaymentTrans);
-    // 删除款项账务的关联关系、收据、附件
     TradingAccounts tradingAccounts = new TradingAccounts();
     tradingAccounts.setTradeId(objectID);
     List<TradingAccounts> list = tradingAccountsDao.findList(tradingAccounts);
     if (CollectionUtils.isNotEmpty(list)) {
+      List<String> tradeIdList = new ArrayList<String>();
       for (TradingAccounts tmpTradingAccounts : list) {
-        PaymentTrade pt = new PaymentTrade();
-        pt.setTradeId(tmpTradingAccounts.getId());
-        pt.preUpdate();
-        paymentTradeDao.delete(pt);
-        Receipt receipt = new Receipt();
-        receipt.setTradingAccounts(tmpTradingAccounts);
-        receipt.preUpdate();
-        receiptService.delete(receipt);
-        Attachment attachment = new Attachment();
-        attachment.setTradingAccountsId(tmpTradingAccounts.getId());
-        attachmentService.delete(attachment);
+        tradeIdList.add(tmpTradingAccounts.getId());
       }
+      deleteAttachReceiptTradingAccounts(tradeIdList);
     }
-    // 删除账务交易记录
-    tradingAccounts.preUpdate();
-    tradingAccountsDao.delete(tradingAccounts);
     // 如果合同有同步的电费充值金额，需要把同时生成的电费充值记录删除
     ElectricFee ele = new ElectricFee();
     ele.preUpdate();
@@ -120,7 +107,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   }
 
   /**
-   * 退租，删除未到账的款项，包括： 交易类型【新签合同、正常人工续签、逾期自动续签】；款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
+   * 退租，删除未到账的款项，包括：
+   * 
+   * 交易类型【新签合同、正常人工续签、逾期自动续签】；
+   * 
+   * 款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
    */
   @Transactional(readOnly = false)
   public void deleteNotSignPaymentTrans(String rentContractId) {
@@ -128,7 +119,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   }
 
   /**
-   * 退租删除未到账的款项之回滚，包括： 交易类型【新签合同、正常人工续签、逾期自动续签】；款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
+   * 退租删除未到账的款项之回滚，包括：
+   * 
+   * 交易类型【新签合同、正常人工续签、逾期自动续签】；
+   * 
+   * 款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
    */
   @Transactional(readOnly = false)
   public void rollbackDeleteNotSignPaymentTrans(String rentContractId) {
@@ -181,7 +176,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void deletePaymentTransAndTradingAcctounsWithPostpaidFee(String postpaidFeeId) {
-    // 根据后付费交易ID查询账务交易集合
+    // 根据后付费交易ID 查询账务交易集合
     Set<String> tradingAccountsIdSet = new HashSet<String>();
     PaymentTrans delPaymentTrans = new PaymentTrans();
     delPaymentTrans.setPostpaidFeeId(postpaidFeeId);
@@ -201,25 +196,9 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     super.delete(delPaymentTrans);
     // 删除款项账务的关联关系、收据、附件
     if (CollectionUtils.isNotEmpty(tradingAccountsIdSet)) {
-      for (String tradingAccountsId : tradingAccountsIdSet) {
-        TradingAccounts tradingAccount = tradingAccountsDao.get(tradingAccountsId);
-        if (tradingAccount != null) {
-          PaymentTrade pt = new PaymentTrade();
-          pt.setTradeId(tradingAccountsId);
-          pt.preUpdate();
-          paymentTradeDao.delete(pt);
-          Receipt receipt = new Receipt();
-          receipt.setTradingAccounts(tradingAccount);
-          receipt.preUpdate();
-          receiptService.delete(receipt);
-          Attachment attachment = new Attachment();
-          attachment.setTradingAccountsId(tradingAccountsId);
-          attachmentService.delete(attachment);
-          // 删除账务交易记录
-          tradingAccount.preUpdate();
-          tradingAccountsDao.delete(tradingAccount);
-        }
-      }
+      List<String> tradingAccountsIdList = new ArrayList<String>();
+      tradingAccountsIdList.addAll(tradingAccountsIdSet);
+      deleteAttachReceiptTradingAccounts(tradingAccountsIdList);
     }
   }
 
@@ -237,22 +216,15 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
       PaymentTrade ptd = new PaymentTrade();
       ptd.setTransId(paymentTransId);
       List<PaymentTrade> ptds = paymentTradeDao.findList(ptd);
+      List<String> tradingAccountsIdList = new ArrayList<String>();
       if (CollectionUtils.isNotEmpty(ptds)) {
-        TradingAccounts tradingAccount = tradingAccountsDao.get(ptds.get(0).getTradeId());
-        if (tradingAccount != null) {
-          Receipt receipt = new Receipt();
-          receipt.setTradingAccounts(tradingAccount);
-          receipt.preUpdate();
-          receiptService.delete(receipt);
-          Attachment attachment = new Attachment();
-          attachment.setTradingAccountsId(tradingAccount.getId());
-          attachmentService.delete(attachment);
-          tradingAccount.preUpdate();
-          tradingAccountsDao.delete(tradingAccount);
+        for (PaymentTrade tempPT : ptds) {
+          tradingAccountsIdList.add(tempPT.getTradeId());
         }
       }
-      ptd.preUpdate();
-      paymentTradeDao.delete(ptd);
+      if (CollectionUtils.isNotEmpty(tradingAccountsIdList)) {
+        deleteAttachReceiptTradingAccounts(tradingAccountsIdList);
+      }
     }
   }
 
@@ -268,14 +240,39 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   }
 
   /**
-   * 删除合同下指定的账务交易类型集合的款项
+   * 删除出租合同/定金协议 指定的账务交易类型集和指定的款项类型集合 的款项
    */
   @Transactional(readOnly = false)
-  public void deleteRentContractTradeTypeList(String rentContractId, List<String> tradeTypeList) {
+  public void deleteTransList(String objectId, List<String> tradeTypeList, List<String> paymentTypeList) {
     PaymentTrans pts = new PaymentTrans();
     pts.preUpdate();
-    pts.setTransId(rentContractId);
+    pts.setTransId(objectId);
     pts.setTradeTypeList(tradeTypeList);
+    pts.setPaymentTypeList(paymentTypeList);
     super.delete(pts);
   }
+
+  /**
+   * 根据账务交易记录ID集合删除 账务交易、收据、附件、账务交易和款项的关联关系
+   */
+  @Transactional(readOnly = false)
+  public void deleteAttachReceiptTradingAccounts(List<String> tradingAccountsIdList) {
+    PaymentTrade pt = new PaymentTrade();
+    pt.setTradeIdList(tradingAccountsIdList);
+    pt.preUpdate();
+    paymentTradeDao.delete(pt);
+    Receipt receipt = new Receipt();
+    receipt.setTradingAccountsIdList(tradingAccountsIdList);
+    receipt.preUpdate();
+    receiptService.delete(receipt);
+    Attachment attachment = new Attachment();
+    attachment.setTradingAccountsIdList(tradingAccountsIdList);
+    attachment.preUpdate();
+    attachmentService.delete(attachment);
+    TradingAccounts ta = new TradingAccounts();
+    ta.preUpdate();
+    ta.setTradeIdList(tradingAccountsIdList);
+    tradingAccountsDao.delete(ta);
+  }
+
 }

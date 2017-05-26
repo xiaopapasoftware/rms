@@ -352,6 +352,11 @@
 							<a href="${ctx}/contract/depositAgreement/intoContract?id=${depositAgreement.id}" onclick="return confirmx('确认要转合同吗?', this.href)">转合同</a>
 						</c:if>
 					</shiro:hasPermission>
+					<shiro:hasPermission name="contract:depositAgreement:backDoor">
+						<c:if test="${depositAgreement.agreementStatus=='5' && (depositAgreement.agreementBusiStatus=='1'||depositAgreement.agreementBusiStatus=='3'||depositAgreement.agreementBusiStatus=='4'||depositAgreement.agreementBusiStatus=='6')}">
+						 	<a href="javascript:void(0);" onclick="javascript:backDoorRevokeBreak('${depositAgreement.id}');">撤销定金转违约</a>
+						</c:if>
+					</shiro:hasPermission>
 					<c:if test="${depositAgreement.agreementStatus!='6' &&depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">
 						<a href="javascript:void(0);" onclick="auditHis('${depositAgreement.id}')">审核记录</a></td>
 					</c:if>
