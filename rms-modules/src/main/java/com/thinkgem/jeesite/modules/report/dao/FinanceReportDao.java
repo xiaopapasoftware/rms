@@ -14,5 +14,4 @@ public interface FinanceReportDao {
 
     List<Map> queryFinance(Criterion criterion);
 
-    List<Map> qeueryTrade(Criterion criterion);
 }

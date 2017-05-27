@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.report.dao.ReportComponentDao;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,17 @@ public class ReportComponentService {
     @Autowired
     private ReportComponentDao reportComponentDao;
 
+    @Autowired
+    private PropertyProjectService propertyProjectService;
+
+
     public List<Dict> queryDict(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
         return reportComponentDao.queryDict(new Criterion(propertyFilters, sorts));
     }
 
     public List<PropertyProject> queryProject(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
-        return reportComponentDao.queryProject(new Criterion(propertyFilters, sorts));
+        //return reportComponentDao.queryProject(new Criterion(propertyFilters, sorts));
+        return propertyProjectService.findList(new PropertyProject());
     }
 
     public List<Map> queryTenant(Map map) {

@@ -116,7 +116,7 @@
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <table id="in-table" class="layui-table" lay-even>
                 <colgroup>
-                    <col width="120">
+                    <col width="110">
                     <col width="120">
                     <col width="80">
                     <col width="80">
