@@ -87,15 +87,6 @@
 		         </foreach>  
       		</if>
 		</where>
-
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
 		) t
 		left join t_property_project tp on t.property_project_id = tp.id
 
@@ -109,6 +100,16 @@
 
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
+
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY t.updateDate DESC
+			</otherwise>
+		</choose>
 
 	</select>
 

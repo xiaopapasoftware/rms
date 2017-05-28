@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.report.service;
 import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.Sort;
+import com.thinkgem.jeesite.common.service.BaseService;
 import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.modules.report.dao.ContractReportDao;
 import com.thinkgem.jeesite.modules.report.dao.FinanceReportDao;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * Created by wangganggang on 17/2/26.
  */
 @Service
-public class FinanceReportService {
+public class FinanceReportService extends BaseService{
 
     @Autowired
     private FinanceReportDao financeReportDao;
@@ -31,7 +32,9 @@ public class FinanceReportService {
     DecimalFormat format = new DecimalFormat("###,###.00");
 
     public List queryFinace(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
-        return financeReportDao.queryFinance(new Criterion(propertyFilters, sorts));
+        Criterion criterion = new Criterion(propertyFilters, sorts);
+        criterion.setCustomCriteria(areaScopeFilter("tpp.area_id=sua.area_id"));
+        return financeReportDao.queryFinance(criterion);
     }
 
     public List convertInFinance(List<Map> financeData) {
@@ -43,6 +46,7 @@ public class FinanceReportService {
             data.put("water_deposit", 0);
             data.put("house_deposit", 0);
             data.put("agree_amount", 0);
+            data.put("first_ele_amount", 0);
             data.put("service_amount", 0);
             data.put("net_amount", 0);
             data.put("water_amount", 0);
@@ -70,6 +74,11 @@ public class FinanceReportService {
                         break;
                     case 0:
                         data.put("agree_amount", formatAmount);
+                        totalAmount[0] += receiptAmount;
+                        break;
+                    case 11:
+                    case 12:
+                        data.put("first_ele_amount", formatAmount);
                         totalAmount[0] += receiptAmount;
                         break;
                     case 22:
@@ -133,7 +142,6 @@ public class FinanceReportService {
                                 totalAmount[0] += receiptAmount;
                                 break;
                             case 13:
-                            case 11:
                                 data.put("ele_refund", formatAmount);
                                 totalAmount[0] += receiptAmount;
                                 break;

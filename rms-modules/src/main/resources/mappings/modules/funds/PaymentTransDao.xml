@@ -62,10 +62,12 @@
 
 	<select id="findList" resultType="PaymentTrans">
 		select t.* from(
+
 		SELECT
 		<include refid="paymentTransColumns" />
 		FROM t_payment_trans a
 		<include refid="paymentTransJoins" />
+
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="tradeType != null and tradeType != ''">
@@ -99,9 +101,6 @@
 				<![CDATA[AND a.expired_date <= #{expiredDate_end}]]>
 			</if>
 		</where>
-
-		order by FIELD(a.payment_type, '2', '3', '4', '5',
-		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),a.start_date
 		) t
 
 		left join t_property_project tp on t.property_project_id = tp.id
@@ -120,6 +119,9 @@
 
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
+
+		order by FIELD(t.paymentType, '2', '3', '4', '5',
+		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24'),t.startDate
 
 	</select>
 
