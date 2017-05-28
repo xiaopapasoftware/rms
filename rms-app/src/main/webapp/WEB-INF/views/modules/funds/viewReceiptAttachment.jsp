@@ -7,7 +7,7 @@
 </head>
 <body>
 <form:form id="inputForm" modelAttribute="tradingAccounts" action="${ctx}/contract/depositAgreement/save" method="post" class="form-horizontal">
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<form:hidden id="depositReceiptFile" path="depositReceiptFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 	<sys:ckfinder maxHeight="100%" maxWidth="100%" readonly="true" input="depositReceiptFile" type="files" uploadPath="/定金收据凭证" selectMultiple="false"/>
 </form:form>

@@ -18,12 +18,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -66,8 +66,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("房间数量统计报表", HouseRoomReport.class).setDataList(page.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出房间数量统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出房间数量统计报表失败！失败信息：" + e.getMessage());
     }
     return roomsCount(houseRoomReport, request, response, model);
   }
@@ -135,8 +134,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("房屋数量统计报表", HouseReport.class).setDataList(page.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出房间数量统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出房间数量统计报表失败！失败信息：" + e.getMessage());
     }
     return housesCount(houseReport, request, response, model);
   }
@@ -207,8 +205,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("单间出租率统计报表", JointRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出单间出租率统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出单间出租率统计报表失败！失败信息：" + e.getMessage());
     }
     return jointRentRateReport(jointRentRateReport, request, response, model);
   }
@@ -281,8 +278,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("整租出租率统计报表", EntireRentRateReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出整租出租率统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出整租出租率统计报表失败！失败信息：" + e.getMessage());
     }
     return entireRentRateReport(entireRentRateReport, request, response, model);
   }
@@ -357,8 +353,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("单间平均房租价格统计报表", RentAveragePriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出单间平均房租价格统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出单间平均房租价格统计报表失败！失败信息：" + e.getMessage());
     }
     return rentAveragePriceReport(rentAveragePriceReport, request, response, model);
   }
@@ -430,8 +425,7 @@ public class SalesReportController extends BaseController {
       new ExportExcel("整租平均房租价格统计报表", WholeAvgPriceReport.class).setDataList(totalPage.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      model.addAttribute("message", "导出整租平均房租价格统计报表失败！失败信息：" + e.getMessage());
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出整租平均房租价格统计报表失败！失败信息：" + e.getMessage());
     }
     return wholeRentAveragePriceReport(wholeAvgPriceReport, request, response, model);
   }

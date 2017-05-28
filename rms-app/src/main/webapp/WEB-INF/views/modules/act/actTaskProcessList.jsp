@@ -28,7 +28,7 @@
 		</select>
 		&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 	</form>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<table class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>

@@ -33,7 +33,7 @@
 			&nbsp;&nbsp;&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>&nbsp;&nbsp;
 		</div>
 	</form:form>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead><tr><th>操作菜单</th><th>操作用户</th><th>所在公司</th><th>所在部门</th><th>URI</th><th>提交方式</th><th>操作者IP</th><th>操作时间</th></thead>
 		<tbody><%request.setAttribute("strEnter", "\n");request.setAttribute("strTab", "\t");%>

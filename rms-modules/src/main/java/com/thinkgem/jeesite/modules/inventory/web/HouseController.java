@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
@@ -22,10 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
@@ -213,12 +212,11 @@ public class HouseController extends BaseController {
         house.setId(houses.get(0).getId());
       }
       houseService.saveHouse(house);
-      addMessage(redirectAttributes, "修改房屋信息成功");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房屋信息成功");
       return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
     } else {// 新增
       if (CollectionUtils.isNotEmpty(houses)) {
-        model.addAttribute("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
-        model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+        addMessage(model, ViewMessageTypeEnum.WARNING, "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
         model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
         PropertyProject pp = new PropertyProject();
         pp.setId(house.getPropertyProject().getId());
@@ -236,7 +234,7 @@ public class HouseController extends BaseController {
           house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
         }
         houseService.saveHouse(house);
-        addMessage(redirectAttributes, "保存房屋信息成功");
+        addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房屋信息成功");
         return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
       }
     }
@@ -257,9 +255,8 @@ public class HouseController extends BaseController {
       List<PropertyProject> list = new ArrayList<PropertyProject>();
       list.add(propertyProjectService.get(house.getPropertyProject()));
       model.addAttribute("listPropertyProject", list);
-
       model.addAttribute("listOwner", ownerService.findList(new Owner()));
-      jsonObject.put("message", "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
+      addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
     } else {
       if (StringUtils.isBlank(house.getHouseStatus())) house.setHouseStatus(HouseStatusEnum.TO_RENOVATION.getValue());
       String houseCode = house.getHouseCode();
@@ -272,7 +269,6 @@ public class HouseController extends BaseController {
       jsonObject.put("id", house.getId());
       jsonObject.put("name", house.getHouseNo());
     }
-
     return jsonObject.toString();
   }
 
@@ -282,10 +278,10 @@ public class HouseController extends BaseController {
     House queryhouse = houseService.get(house);
     String houseStatus = queryhouse.getHouseStatus();
     if (HouseStatusEnum.BE_RESERVED.getValue().equals(houseStatus) || HouseStatusEnum.PART_RENT.getValue().equals(houseStatus) || HouseStatusEnum.WHOLE_RENT.getValue().equals(houseStatus)) {
-      addMessage(redirectAttributes, "房屋已预定或已出租，不能删除！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋已预定或已出租，不能删除！");
     } else {
       houseService.delete(house);
-      addMessage(redirectAttributes, "删除房屋、房间及其图片信息成功");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除房屋、房间及其图片信息成功");
     }
     return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
   }

@@ -44,7 +44,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="workRecord" action="${ctx}/company/workRecord/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
-		<sys:message content="${message}"/>		
+		<sys:message content="${message}" type="${messageType}"/>		
 		<div class="control-group">
 			<label class="control-label">记录类型：</label>
 			<div class="controls">

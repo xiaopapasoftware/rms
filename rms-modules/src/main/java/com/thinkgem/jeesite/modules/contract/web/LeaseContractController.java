@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
@@ -18,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
@@ -162,14 +161,12 @@ public class LeaseContractController extends BaseController {
       tmpLeaseContract = list.get(0);
       if ("0".equals(tmpLeaseContract.getContractStatus()) || "1".equals(tmpLeaseContract.getContractStatus())) {
         if ("add".equals(leaseContract.getType())) {
-          model.addAttribute("message", "该房屋已签承租合同");
-          model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+          addMessage(model, ViewMessageTypeEnum.ERROR, "该房屋已签承租合同！");
           return form(leaseContract, model);
         } else {
           if (!leaseContract.getPropertyProject().getId().equals(tmpLeaseContract.getPropertyProject().getId()) || !leaseContract.getBuilding().getId().equals(tmpLeaseContract.getBuilding().getId())
               || !leaseContract.getHouse().getId().equals(tmpLeaseContract.getHouse().getId())) {
-            model.addAttribute("message", "该房屋已签承租合同");
-            model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+            addMessage(model, ViewMessageTypeEnum.ERROR, "该房屋已签承租合同！");
             return form(leaseContract, model);
           }
         }
@@ -182,7 +179,7 @@ public class LeaseContractController extends BaseController {
     }
 
     leaseContractService.save(leaseContract);
-    addMessage(redirectAttributes, "保存承租合同成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存承租合同成功");
     return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
   }
 
@@ -190,7 +187,7 @@ public class LeaseContractController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(LeaseContract leaseContract, RedirectAttributes redirectAttributes) {
     leaseContractService.delete(leaseContract);
-    addMessage(redirectAttributes, "删除承租合同成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除承租合同成功");
     return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
   }
 

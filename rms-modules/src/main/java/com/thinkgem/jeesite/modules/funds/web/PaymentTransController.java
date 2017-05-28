@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -78,7 +78,7 @@ public class PaymentTransController extends BaseController {
       return form(paymentTrans, model);
     }
     paymentTransService.save(paymentTrans);
-    addMessage(redirectAttributes, "保存款项交易成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存款项交易成功");
     return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
   }
 
@@ -86,7 +86,7 @@ public class PaymentTransController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(PaymentTrans paymentTrans, RedirectAttributes redirectAttributes) {
     paymentTransService.delete(paymentTrans);
-    addMessage(redirectAttributes, "删除款项交易成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除款项交易成功");
     return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
   }
 
@@ -112,7 +112,7 @@ public class PaymentTransController extends BaseController {
       new ExportExcel("款项交易数据", PaymentTrans4Export.class).setDataList(page.getList()).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      addMessage(redirectAttributes, "导出用户失败！失败信息：" + e.getMessage());
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "导出用户失败！失败信息：" + e.getMessage());
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
   }

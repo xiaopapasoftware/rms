@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/sys/menu/">菜单列表</a></li>
 		<shiro:hasPermission name="sys:menu:edit"><li><a href="${ctx}/sys/menu/form">菜单添加</a></li></shiro:hasPermission>
 	</ul>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<form id="listForm" method="post">
 		<table id="treeTable" class="table table-striped table-bordered table-condensed hide">
 			<thead><tr><th>名称</th><th>链接</th><th style="text-align:center;">排序</th><th>可见</th><th>权限标识</th><shiro:hasPermission name="sys:menu:edit"><th>操作</th></shiro:hasPermission></tr></thead>

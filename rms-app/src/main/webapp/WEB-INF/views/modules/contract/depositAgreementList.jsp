@@ -233,7 +233,7 @@
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:2200px">
 		<thead>
 			<tr>
@@ -354,7 +354,7 @@
 					</shiro:hasPermission>
 					<shiro:hasPermission name="contract:depositAgreement:backDoor">
 						<c:if test="${depositAgreement.agreementStatus=='5' && (depositAgreement.agreementBusiStatus=='1'||depositAgreement.agreementBusiStatus=='3'||depositAgreement.agreementBusiStatus=='4'||depositAgreement.agreementBusiStatus=='6')}">
-						 	<a href="javascript:void(0);" onclick="javascript:backDoorRevokeBreak('${depositAgreement.id}');">【后门撤销定金转违约】</a>
+						 	<a href="${ctx}/contract/depositAgreement/backDoorRevokeBreak?id=${depositAgreement.id}" onclick="return confirmx('确认要撤销定金转违约吗?', this.href)">【后门撤销定金转违约】</a>
 						</c:if>
 					</shiro:hasPermission>
 					<c:if test="${depositAgreement.agreementStatus!='6' &&depositAgreement.agreementStatus!='0' && depositAgreement.agreementStatus!='1'}">

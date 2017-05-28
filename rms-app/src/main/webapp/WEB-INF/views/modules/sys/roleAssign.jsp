@@ -22,7 +22,7 @@
 			<span class="span4">数据范围: ${fns:getDictLabel(dictvalue, 'sys_data_scope', '')}</span>
 		</div>
 	</div>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<div class="breadcrumb">
 		<form id="assignRoleForm" action="${ctx}/sys/role/assignrole" method="post" class="hide">
 			<input type="hidden" name="id" value="${role.id}"/>

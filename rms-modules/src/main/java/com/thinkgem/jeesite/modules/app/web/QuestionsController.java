@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -23,6 +24,7 @@ import com.thinkgem.jeesite.modules.app.service.QuestionsService;
 
 /**
  * 常见问题Controller
+ * 
  * @author daniel
  * @version 2016-05-10
  */
@@ -30,53 +32,53 @@ import com.thinkgem.jeesite.modules.app.service.QuestionsService;
 @RequestMapping(value = "${adminPath}/app/questions")
 public class QuestionsController extends BaseController {
 
-	@Autowired
-	private QuestionsService questionsService;
-	
-	@ModelAttribute
-	public Questions get(@RequestParam(required=false) String id) {
-		Questions entity = null;
-		if (StringUtils.isNotBlank(id)){
-			entity = questionsService.get(id);
-		}
-		if (entity == null){
-			entity = new Questions();
-		}
-		return entity;
-	}
-	
-	//@RequiresPermissions("app:questions:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(Questions questions, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<Questions> page = questionsService.findPage(new Page<Questions>(request, response), questions); 
-		model.addAttribute("page", page);
-		return "modules/app/questionsList";
-	}
+  @Autowired
+  private QuestionsService questionsService;
 
-	//@RequiresPermissions("app:questions:view")
-	@RequestMapping(value = "form")
-	public String form(Questions questions, Model model) {
-		model.addAttribute("questions", questions);
-		return "modules/app/questionsForm";
-	}
+  @ModelAttribute
+  public Questions get(@RequestParam(required = false) String id) {
+    Questions entity = null;
+    if (StringUtils.isNotBlank(id)) {
+      entity = questionsService.get(id);
+    }
+    if (entity == null) {
+      entity = new Questions();
+    }
+    return entity;
+  }
 
-	//@RequiresPermissions("app:questions:edit")
-	@RequestMapping(value = "save")
-	public String save(Questions questions, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, questions)){
-			return form(questions, model);
-		}
-		questionsService.save(questions);
-		addMessage(redirectAttributes, "保存常见问题成功");
-		return "redirect:"+Global.getAdminPath()+"/app/questions/?repage";
-	}
-	
-	//@RequiresPermissions("app:questions:edit")
-	@RequestMapping(value = "delete")
-	public String delete(Questions questions, RedirectAttributes redirectAttributes) {
-		questionsService.delete(questions);
-		addMessage(redirectAttributes, "删除常见问题成功");
-		return "redirect:"+Global.getAdminPath()+"/app/questions/?repage";
-	}
+  // @RequiresPermissions("app:questions:view")
+  @RequestMapping(value = {"list", ""})
+  public String list(Questions questions, HttpServletRequest request, HttpServletResponse response, Model model) {
+    Page<Questions> page = questionsService.findPage(new Page<Questions>(request, response), questions);
+    model.addAttribute("page", page);
+    return "modules/app/questionsList";
+  }
+
+  // @RequiresPermissions("app:questions:view")
+  @RequestMapping(value = "form")
+  public String form(Questions questions, Model model) {
+    model.addAttribute("questions", questions);
+    return "modules/app/questionsForm";
+  }
+
+  // @RequiresPermissions("app:questions:edit")
+  @RequestMapping(value = "save")
+  public String save(Questions questions, Model model, RedirectAttributes redirectAttributes) {
+    if (!beanValidator(model, questions)) {
+      return form(questions, model);
+    }
+    questionsService.save(questions);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存常见问题成功");
+    return "redirect:" + Global.getAdminPath() + "/app/questions/?repage";
+  }
+
+  // @RequiresPermissions("app:questions:edit")
+  @RequestMapping(value = "delete")
+  public String delete(Questions questions, RedirectAttributes redirectAttributes) {
+    questionsService.delete(questions);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除常见问题成功");
+    return "redirect:" + Global.getAdminPath() + "/app/questions/?repage";
+  }
 
 }

@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.lock.web;
 
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -151,7 +151,7 @@ public class ScienerLockKeyController extends BaseController {
     }
     // 调用科技侠分配钥匙接口
     scienerLockService.sendKey(Integer.parseInt(key.getLockId()), key.getUsername(), key.getStartDate().getTime(), key.getEndDate().getTime(), key.getRemark());
-    addMessage(redirectAttributes, "分配钥匙成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "分配钥匙成功");
     Message message = new Message();
     message.setContent("您收到管理员分配的门锁钥匙");
     message.setTitle("门锁钥匙");
@@ -166,7 +166,7 @@ public class ScienerLockKeyController extends BaseController {
   public String delete(ScienerKey key, RedirectAttributes redirectAttributes) {
     logger.debug("))))))))))))))))))))))" + key);
     scienerLockService.deleteKey(Integer.parseInt(key.getLockId()), Integer.parseInt(key.getOpenid()), Integer.parseInt(key.getKeyId()));
-    addMessage(redirectAttributes, "删除钥匙成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除钥匙成功");
     return "redirect:" + Global.getAdminPath() + "/lock/scienerLockKey/?repage";
   }
 

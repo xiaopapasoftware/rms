@@ -24,8 +24,8 @@
 		<li class="active"><a href="${ctx}/act/task/form?taskId=${act.taskId}&taskName=${act.taskName}&taskDefKey=${act.taskDefKey}&procInsId=${act.procInsId}&procDefId${act.procDefId}">${empty act.procInsId?"新建任务":"任务处理"}</a></li>
 	</ul>
 	<form:form method="post" class="form-horizontal">
-		<sys:message content="${message}"/><%--
-		<legend>表单信息</legend> --%>
+		<sys:message content="${message}" type="${messageType}"/>
+		<%--<legend>表单信息</legend> --%>
 		<div id="formContent">
 			<iframe id="reportFrame" src="${formUrl}" width="100%" height="500" style="border:0;" noresize="noresize"></iframe>
 		</div>

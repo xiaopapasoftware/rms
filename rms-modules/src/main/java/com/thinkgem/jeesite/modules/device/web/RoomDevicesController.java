@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.device.web;
 
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -108,7 +108,7 @@ public class RoomDevicesController extends BaseController {
     if (CollectionUtils.isNotEmpty(deletedDevices)) {
       roomDevicesService.deleteRoomDevices(roomDevices, deletedDevices);
     }
-    addMessage(redirectAttributes, "房间设备配备成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间设备配备成功");
     return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
   }
 
@@ -116,7 +116,7 @@ public class RoomDevicesController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(RoomDevices roomDevices, RedirectAttributes redirectAttributes) {
     roomDevicesService.delete(roomDevices);
-    addMessage(redirectAttributes, "删除房屋设备关联信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除房屋设备关联信息成功");
     return "redirect:" + Global.getAdminPath() + "/device/roomDevices/?repage";
   }
 

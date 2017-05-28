@@ -7,7 +7,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
@@ -26,7 +26,6 @@ import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -50,6 +49,8 @@ import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
+import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -58,6 +59,7 @@ import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
  * @author wangshujin
@@ -237,17 +239,11 @@ public class DepositAgreementController extends BaseController {
     }
     int result = depositAgreementService.saveDepositAgreement(depositAgreement);
     if (result == -3) {
-      model.addAttribute("message", "系统繁忙，请稍后再试！");
-      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-      return "modules/contract/depositAgreementForm";
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "系统繁忙，请稍后再试！");
     } else if (result == -2) {
-      model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
-      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-      return "modules/contract/depositAgreementForm";
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "出租合同结束日期不能晚于承租合同截止日期，请重试！");
     } else if (result == -1) {
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-      addMessage(model, "房源已出租！");
-      return form(depositAgreement, model);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房源已出租，保存失败，请重试！");
     } else {
       if (StringUtils.isNotEmpty(depositAgreement.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {// APP订单后台保存
         try {
@@ -262,9 +258,9 @@ public class DepositAgreementController extends BaseController {
           logger.error("预订推送异常:", e);
         }
       }
-      addMessage(redirectAttributes, "保存定金协议成功");
-      return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存定金协议成功！");
     }
+    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
   @RequestMapping(value = "audit")
@@ -296,12 +292,13 @@ public class DepositAgreementController extends BaseController {
       paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue(), agreementId, TradeDirectionEnum.OUT.getValue(),
           refundAmount, refundAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), startDate, expireDate, null);
     }
+    double depositAmount = depositAgreement.getDepositAmount();
     // 生成完全到账的应出定金款项
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue(), agreementId, TradeDirectionEnum.OUT.getValue(),
-        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
-    // 生成完全到账的应收定金违约金款项
+        depositAmount, 0D, depositAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
+    // 生成完全到账的应收定金违约金款项,默认为定金金额
     paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue(), PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue(), agreementId, TradeDirectionEnum.IN.getValue(),
-        refundAmount, 0D, refundAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
+        depositAmount, 0D, depositAmount, PaymentTransStatusEnum.WHOLE_SIGN.getValue(), startDate, expireDate, null);
     // 更新定金协议业务状态
     if (null != refundAmount && refundAmount > 0) {
       depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue());
@@ -317,11 +314,10 @@ public class DepositAgreementController extends BaseController {
     }
     depositAgreementService.update(depositAgreement);
     if (refundAmount != null && refundAmount > 0) {
-      model.addAttribute("message", "定金转违约成功，请进行到账登记操作！");
+      addMessage(model, ViewMessageTypeEnum.SUCCESS, "定金转违约成功，请进行到账登记操作！");
     } else {
-      model.addAttribute("message", "定金转违约成功！");
+      addMessage(model, ViewMessageTypeEnum.SUCCESS, "定金转违约成功！");
     }
-    model.addAttribute("messageType", ViewMessageTypeEnum.SUCCESS.getValue());
     model.addAttribute("depositAgreement", new DepositAgreement());
     return list(new DepositAgreement(), request, response, model);
   }
@@ -331,29 +327,24 @@ public class DepositAgreementController extends BaseController {
    */
   @RequestMapping(value = "backDoorRevokeBreak")
   public String backDoorRevokeBreak(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
+    String agreementId = depositAgreement.getId();
+    String agreementBusiStatus = depositAgreement.getAgreementBusiStatus();
     if (AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(depositAgreement.getAgreementStatus())) {
-      String agreementId = depositAgreement.getId();
-      String agreementBusiStatus = depositAgreement.getAgreementBusiStatus();
-      // 删除生成的完全到账的应出定金款项、完全到账的应收定金违约金款项、定金转违约退费款项（如果有的话）
-      List<String> tradeTypeList = new ArrayList<String>();
-      tradeTypeList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
-      List<String> paymentTypeList = new ArrayList<String>();
-      paymentTypeList.add(PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue());
-      paymentTypeList.add(PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue());
-      paymentTransService.deleteTransList(agreementId, tradeTypeList, paymentTypeList);
       if (AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue().equals(agreementBusiStatus)) {
-        PaymentTrans pt = new PaymentTrans();
-        pt.setTransId(agreementId);
-        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
-        PaymentTrans targetPT = paymentTransService.get(pt);
-        if (targetPT != null) {
-          PaymentTrade ptrade = new PaymentTrade();
-          ptrade.setTransId(targetPT.getId());
-          List<String> tradeIdList = new ArrayList<String>();
-          tradeIdList.add(paymentTradeService.findList(ptrade).get(0).getTradeId());
-          paymentTransService.deleteAttachReceiptTradingAccounts(tradeIdList);
-          paymentTransService.delete(pt);
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
+          House house = houseService.get(depositAgreement.getHouse().getId());
+          if (!HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) { // 房源已被租，不能被撤销
+            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "该房源已被出租，不能撤回！");
+            return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+          }
+        } else {
+          Room r = roomService.get(depositAgreement.getRoom().getId());
+          if (!RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(r.getRoomStatus())) { // 房源已被租，不能被撤销
+            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "该房源已被出租，不能撤回！");
+            return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+          }
         }
+        doDeleteRefundFeeTrans(agreementId);
         if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {// 整租
           String houseId = depositAgreement.getHouse().getId();
           boolean isLock = houseService.isLockWholeHouse4Deposit(houseId);
@@ -367,46 +358,61 @@ public class DepositAgreementController extends BaseController {
             houseService.calculateHouseStatus(roomId);
           }
         }
-      }
-      if (AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue().equals(agreementBusiStatus)) {
-        PaymentTrans pt = new PaymentTrans();
-        pt.setTransId(agreementId);
-        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
-        paymentTransService.delete(pt);
-      }
-      if (AgreementBusiStatusEnum.CONVERTBREAK_TO_AUDIT.getValue().equals(agreementBusiStatus)) {
-        PaymentTrans pt = new PaymentTrans();
-        pt.setTransId(agreementId);
-        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
-        PaymentTrans targetPT = paymentTransService.get(pt);
-        if (targetPT != null) {
-          PaymentTrade ptrade = new PaymentTrade();
-          ptrade.setTransId(targetPT.getId());
-          List<String> tradeIdList = new ArrayList<String>();
-          tradeIdList.add(paymentTradeService.findList(ptrade).get(0).getTradeId());
-          paymentTransService.deleteAttachReceiptTradingAccounts(tradeIdList);
+      } else {
+        if (AgreementBusiStatusEnum.CONVERTBREAK_TO_SIGN.getValue().equals(agreementBusiStatus)) {
+          PaymentTrans pt = new PaymentTrans();
+          pt.setTransId(agreementId);
+          pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
           paymentTransService.delete(pt);
         }
-      }
-      if (AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue().equals(agreementBusiStatus)) {
-        PaymentTrans pt = new PaymentTrans();
-        pt.setTransId(agreementId);
-        pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
-        PaymentTrans targetPT = paymentTransService.get(pt);
-        if (targetPT != null) {
-          PaymentTrade ptrade = new PaymentTrade();
-          ptrade.setTransId(targetPT.getId());
-          paymentTradeService.delete(ptrade);
-          paymentTransService.delete(pt);
+        if (AgreementBusiStatusEnum.CONVERTBREAK_TO_AUDIT.getValue().equals(agreementBusiStatus)) {
+          doDeleteRefundFeeTrans(agreementId);
+        }
+        if (AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue().equals(agreementBusiStatus)) {
+          PaymentTrans pt = new PaymentTrans();
+          pt.setTransId(agreementId);
+          pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+          List<PaymentTrans> targetPTs = paymentTransService.findList(pt);
+          if (CollectionUtils.isNotEmpty(targetPTs)) {
+            PaymentTrade ptrade = new PaymentTrade();
+            ptrade.setTransId(targetPTs.get(0).getId());
+            paymentTradeService.delete(ptrade);
+            paymentTransService.delete(pt);
+          }
         }
       }
+      // 删除生成的完全到账的应出定金款项、完全到账的应收定金违约金款项、定金转违约退费款项（如果有的话）
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
+      List<String> paymentTypeList = new ArrayList<String>();
+      paymentTypeList.add(PaymentTransTypeEnum.OUT_DEPOSIT_AMOUNT.getValue());
+      paymentTypeList.add(PaymentTransTypeEnum.LIQUIDATED_DEPOSIT.getValue());
+      paymentTransService.deleteTransList(agreementId, tradeTypeList, paymentTypeList);
       depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.TOBE_CONVERTED.getValue());
       depositAgreementService.update(depositAgreement);
-      addMessage(redirectAttributes, "该定金协议已成功恢复为待转合同状态！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "该定金协议已成功恢复为待转合同状态！");
     } else {
-      addMessage(redirectAttributes, "该定金协议的审核状态不通过！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "该定金协议的审核状态非法！");
     }
     return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+  }
+
+  /**
+   * 删除定金转违约退费款项及其账务记录，账务款项关联记录等
+   */
+  private void doDeleteRefundFeeTrans(String agreementId) {
+    PaymentTrans pt = new PaymentTrans();
+    pt.setTransId(agreementId);
+    pt.setPaymentType(PaymentTransTypeEnum.DEPOSIT_REFUND_FEE.getValue());
+    List<PaymentTrans> targetPTs = paymentTransService.findList(pt);
+    if (CollectionUtils.isNotEmpty(targetPTs)) {
+      PaymentTrade ptrade = new PaymentTrade();
+      ptrade.setTransId(targetPTs.get(0).getId());
+      List<String> tradeIdList = new ArrayList<String>();
+      tradeIdList.add(paymentTradeService.findList(ptrade).get(0).getTradeId());
+      paymentTransService.deleteAttachReceiptTradingAccounts(tradeIdList);
+      paymentTransService.delete(pt);
+    }
   }
 
   /**
@@ -474,7 +480,7 @@ public class DepositAgreementController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(DepositAgreement depositAgreement, RedirectAttributes redirectAttributes) {
     depositAgreementService.delete(depositAgreement);
-    addMessage(redirectAttributes, "删除定金协议成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除定金协议成功！");
     return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 

@@ -32,7 +32,7 @@
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="genScheme" action="${ctx}/gen/genScheme/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/><form:hidden path="flag"/>
-		<sys:message content="${message}"/>
+		<sys:message content="${message}" type="${messageType}"/>
 		<div class="control-group">
 			<label class="control-label">方案名称:</label>
 			<div class="controls">

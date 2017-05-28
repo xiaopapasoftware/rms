@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.web;
 
@@ -23,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -87,7 +87,7 @@ public class InvoiceController extends BaseController {
       return form(invoice, model);
     }
     invoiceService.save(invoice);
-    addMessage(redirectAttributes, "保存发票信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存发票信息成功");
     return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
   }
 
@@ -95,7 +95,7 @@ public class InvoiceController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(Invoice invoice, RedirectAttributes redirectAttributes) {
     invoiceService.delete(invoice);
-    addMessage(redirectAttributes, "删除发票信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除发票信息成功");
     return "redirect:" + Global.getAdminPath() + "/funds/invoice/?repage";
   }
 
@@ -108,7 +108,7 @@ public class InvoiceController extends BaseController {
       new ExportExcel("发票数据", Invoice.class, 2).setDataList(list).write(response, fileName).dispose();
       return null;
     } catch (Exception e) {
-      addMessage(redirectAttributes, "导入模板下载失败！失败信息：" + e.getMessage());
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "导入模板下载失败！失败信息：" + e.getMessage());
     }
     return "redirect:" + adminPath + "/funds/invoice/list?repage";
   }
@@ -170,9 +170,9 @@ public class InvoiceController extends BaseController {
       if (failureNum > 0) {
         failureMsg.insert(0, "，失败 " + failureNum + " 条发票，导入信息如下：");
       }
-      addMessage(redirectAttributes, "已成功导入 " + successNum + " 条发票" + failureMsg);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "已成功导入 " + successNum + " 条发票" + failureMsg);
     } catch (Exception e) {
-      addMessage(redirectAttributes, "导入发票失败！失败信息：" + e.getMessage());
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "导入发票失败！失败信息：" + e.getMessage());
     }
     return "redirect:" + adminPath + "/funds/invoice/list?repage";
   }

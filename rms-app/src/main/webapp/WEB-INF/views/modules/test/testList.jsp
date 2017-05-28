@@ -88,7 +88,7 @@
 		<label>名称 ：</label><form:input path="name" htmlEscape="false" maxlength="50" class="input-medium"/>
 		&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 	</form:form>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<div id="supcan" class="supcan">
 		<script>insertTreeList('AF', 'border=none;')</script>
 	</div>

@@ -1,8 +1,9 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.common.web;
+
+import org.activiti.engine.impl.util.json.JSONObject;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
@@ -15,8 +16,6 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 
-import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
-import com.thinkgem.jeesite.common.filter.search.support.PropertyFilterSupport;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.Logger;
@@ -31,6 +30,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
+import com.thinkgem.jeesite.common.filter.search.support.PropertyFilterSupport;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 
@@ -84,7 +86,7 @@ public abstract class BaseController {
     } catch (ConstraintViolationException ex) {
       List<String> list = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
       list.add(0, "数据验证失败：");
-      addMessage(model, list.toArray(new String[] {}));
+      addMessage(model, ViewMessageTypeEnum.ERROR, list.toArray(new String[] {}));
       return false;
     }
     return true;
@@ -103,7 +105,7 @@ public abstract class BaseController {
     } catch (ConstraintViolationException ex) {
       List<String> list = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
       list.add(0, "数据验证失败：");
-      addMessage(redirectAttributes, list.toArray(new String[] {}));
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, list.toArray(new String[] {}));
       return false;
     }
     return true;
@@ -121,16 +123,30 @@ public abstract class BaseController {
   }
 
   /**
+   * 添加JSON消息
+   */
+  protected void addMessage(JSONObject jsonObject, ViewMessageTypeEnum messageTypeEnum, String... messages) {
+    StringBuilder sb = new StringBuilder();
+    for (String message : messages) {
+      sb.append(message).append(messages.length > 1 ? "<br/>" : "");
+    }
+    jsonObject.put("message", sb.toString());
+    jsonObject.put("messageType", messageTypeEnum.getValue());
+  }
+
+
+  /**
    * 添加Model消息
    * 
    * @param message
    */
-  protected void addMessage(Model model, String... messages) {
+  protected void addMessage(Model model, ViewMessageTypeEnum messageTypeEnum, String... messages) {
     StringBuilder sb = new StringBuilder();
     for (String message : messages) {
       sb.append(message).append(messages.length > 1 ? "<br/>" : "");
     }
     model.addAttribute("message", sb.toString());
+    model.addAttribute("messageType", messageTypeEnum.getValue());
   }
 
   /**
@@ -138,12 +154,13 @@ public abstract class BaseController {
    * 
    * @param message
    */
-  protected void addMessage(RedirectAttributes redirectAttributes, String... messages) {
+  protected void addMessage(RedirectAttributes redirectAttributes, ViewMessageTypeEnum messageTypeEnum, String... messages) {
     StringBuilder sb = new StringBuilder();
     for (String message : messages) {
       sb.append(message).append(messages.length > 1 ? "<br/>" : "");
     }
     redirectAttributes.addFlashAttribute("message", sb.toString());
+    redirectAttributes.addFlashAttribute("messageType", messageTypeEnum.getValue());
   }
 
   /**

@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -30,7 +31,6 @@ import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
@@ -252,7 +252,7 @@ public class RentContractController extends BaseController {
   public String renewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String contractId = rentContract.getId();
     if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
-      addMessage(redirectAttributes, "有款项未到账,不能续签！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能续签！");
       return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
     rentContract = rentContractService.get(contractId);
@@ -326,7 +326,7 @@ public class RentContractController extends BaseController {
   public String autoRenewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String contractId = rentContract.getId();
     if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
-      addMessage(redirectAttributes, "有款项未到账,不能续签！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能续签！");
       return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
     rentContract = rentContractService.get(contractId);
@@ -404,19 +404,11 @@ public class RentContractController extends BaseController {
     }
     int result = rentContractService.saveContract(rentContract);
     if (result == -3) {
-      model.addAttribute("message", "系统异常，请联系管理员！");
-      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-      initExceptionedModel(model, rentContract);
-      return "modules/contract/rentContractForm";
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "系统异常，保存失败，请联系管理员！");
     } else if (result == -2) {
-      model.addAttribute("message", "出租合同结束日期不能晚于承租合同截止日期.");
-      model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
-      initExceptionedModel(model, rentContract);
-      return "modules/contract/rentContractForm";
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "出租合同结束日期不能晚于承租合同截止日期,保存失败，请重试！");
     } else if (result == -1) {
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
-      addMessage(model, "房源已出租！");
-      return form(rentContract, model, request);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房源已出租，保存失败，请重试！");
     } else {
       if (StringUtils.isNotEmpty(rentContract.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {// APP订单后台保存
         try {
@@ -431,51 +423,13 @@ public class RentContractController extends BaseController {
           logger.error("签约推送异常:", e);
         }
       }
-      addMessage(redirectAttributes, "保存出租合同成功");
-      if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
-        return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
-      } else {
-        return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
-      }
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "出租合同保存成功！");
     }
-  }
-
-  private void initExceptionedModel(Model model, RentContract rentContract) {
-    model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
-    if (null != rentContract.getPropertyProject()) {
-      Building building = new Building();
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setId(rentContract.getPropertyProject().getId());
-      building.setPropertyProject(propertyProject);
-      List<Building> buildingList = buildingService.findList(building);
-      model.addAttribute("buildingList", buildingList);
+    if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
+      return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
+    } else {
+      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
-
-    if (null != rentContract.getBuilding()) {
-      House house = new House();
-      Building building = new Building();
-      building.setId(rentContract.getBuilding().getId());
-      house.setBuilding(building);
-      house.setChoose("1");
-      List<House> houseList = houseService.findList(house);
-      if (null != rentContract.getHouse()) houseList.add(houseService.get(rentContract.getHouse()));
-      model.addAttribute("houseList", houseList);
-    }
-
-    if (null != rentContract.getRoom()) {
-      Room room = new Room();
-      House house = new House();
-      house.setId(rentContract.getHouse().getId());
-      room.setHouse(house);
-      room.setChoose("1");
-      List<Room> roomList = roomServie.findList(room);
-      if (null != rentContract.getRoom()) {
-        Room rm = roomServie.get(rentContract.getRoom());
-        if (null != rm) roomList.add(rm);
-      }
-      model.addAttribute("roomList", roomList);
-    }
-    model.addAttribute("tenantList", tenantService.findList(new Tenant()));
   }
 
   @RequestMapping(value = "saveAdditional")
@@ -486,7 +440,7 @@ public class RentContractController extends BaseController {
       return changeContract(rentContract, model);
     }
     rentContractService.saveAdditional(agreementChange);
-    addMessage(redirectAttributes, "保存变更协议成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存变更协议成功 ！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -496,13 +450,13 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "returnContract")
   public String returnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
-      addMessage(redirectAttributes, "有款项未到账,不能正常退租。");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能正常退租!");
       return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
     rentContract = rentContractService.get(rentContract.getId());
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "正常退租成功，接下来请进行正常退租核算！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "正常退租成功，接下来请进行正常退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -514,7 +468,7 @@ public class RentContractController extends BaseController {
     rentContract = rentContractService.get(rentContract.getId());
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
     rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "已恢复为有效合同！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "已恢复为有效合同！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -528,7 +482,7 @@ public class RentContractController extends BaseController {
     rentContract = rentContractService.get(rentContractId);
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "提前退租成功，接下来请进行提前退租核算！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "提前退租成功，接下来请进行提前退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -542,7 +496,7 @@ public class RentContractController extends BaseController {
     rentContract = rentContractService.get(rentContractId);
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
     rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "已恢复为有效合同！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "已恢复为有效合同！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -552,13 +506,13 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "lateReturnContract")
   public String lateReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
-      addMessage(redirectAttributes, "有款项未到账,不能逾期退租。");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能逾期退租!");
       return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
     rentContract = rentContractService.get(rentContract.getId());
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.LATE_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
-    addMessage(redirectAttributes, "逾期退租成功，接下来请进行逾期退租核算！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "逾期退租成功，接下来请进行逾期退租核算！");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -684,9 +638,9 @@ public class RentContractController extends BaseController {
   public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContractService.returnCheck(rentContract, rentContract.getTradeType());
     if (!StringUtils.isBlank(rentContract.getIsSpecial())) {
-      addMessage(redirectAttributes, "特殊退租成功！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "特殊退租成功！");
     } else {
-      addMessage(redirectAttributes, "退租核算成功！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "退租核算成功！");
     }
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
@@ -696,7 +650,7 @@ public class RentContractController extends BaseController {
   public String delete(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContract.preUpdate();
     rentContractService.delete(rentContract);
-    addMessage(redirectAttributes, "删除出租合同成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除出租合同成功");
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -1208,9 +1162,9 @@ public class RentContractController extends BaseController {
   public String backCancelRetreat(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
       backCancelRetreatDeleteBusi(rentContract, rentContract.getContractBusiStatus());
-      addMessage(redirectAttributes, "该出租合同的退租核算数据已被清空，合同已恢复为有效合同！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "该出租合同的退租核算数据已被清空，合同已恢复为有效合同！");
     } else {
-      addMessage(redirectAttributes, "该出租合同不是到账收据审核通过的!");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "该出租合同不是到账收据审核通过的!");
     }
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }

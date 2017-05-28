@@ -10,7 +10,7 @@
 		<li class="active"><a href="${ctx}/sys/role/">角色列表</a></li>
 		<shiro:hasPermission name="sys:role:edit"><li><a href="${ctx}/sys/role/form">角色添加</a></li></shiro:hasPermission>
 	</ul>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<tr><th>角色名称</th><th>英文名称</th><th>归属机构</th><th>数据范围</th><shiro:hasPermission name="sys:role:edit"><th>操作</th></shiro:hasPermission></tr>
 		<c:forEach items="${list}" var="role">

@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.common.web;
+package com.thinkgem.jeesite.common.enums;
 
 /**
  * 页面消息类别

@@ -34,7 +34,7 @@
 		<li><a href="${ctx}/act/model/">模型管理</a></li>
 		<li class="active"><a href="${ctx}/act/model/create">新建模型</a></li>
 	</ul><br/>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<form id="inputForm" action="${ctx}/act/model/create" target="_blank" method="post" class="form-horizontal">
 		<div class="control-group">
 			<label class="control-label">流程分类：</label>

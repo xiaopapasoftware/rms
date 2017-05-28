@@ -10,7 +10,7 @@
 	</style>
 </head>
 <body>
-	<sys:message content="${message}"/>
+	<sys:message content="${message}" type="${messageType}"/>
 	<div id="content" class="row-fluid">
 		<div id="left" class="accordion-group">
 			<div class="accordion-heading">

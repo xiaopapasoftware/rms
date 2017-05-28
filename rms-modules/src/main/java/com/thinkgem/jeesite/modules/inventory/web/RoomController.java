@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
@@ -25,10 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -226,12 +225,11 @@ public class RoomController extends BaseController {
         }
         roomService.saveRoom(room);
       }
-      addMessage(redirectAttributes, "修改房间信息成功");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房间信息成功");
       return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
     } else {// 新增
       if (CollectionUtils.isNotEmpty(rooms)) {// 重复
-        model.addAttribute("message", "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加");
-        model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+        addMessage(model, ViewMessageTypeEnum.WARNING, "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加!");
         model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
         PropertyProject pp = new PropertyProject();
         pp.setId(room.getPropertyProject().getId());
@@ -264,7 +262,7 @@ public class RoomController extends BaseController {
           room.setOrientation(convertToStrFromList(room.getOrientationList()));
         }
         roomService.saveRoom(room);
-        addMessage(redirectAttributes, "保存房间信息成功");
+        addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房间信息成功");
         return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
       }
     }
@@ -280,21 +278,17 @@ public class RoomController extends BaseController {
       PropertyProject propertyProject = propertyProjectService.get(room.getPropertyProject());
       list.add(propertyProject);
       model.addAttribute("listPropertyProject", list);
-
       List<Building> listBuilding = new ArrayList<Building>();
       Building building = buildingService.get(room.getBuilding());
       listBuilding.add(building);
       model.addAttribute("listBuilding", listBuilding);
-
       List<House> listHouse = new ArrayList<House>();
       House house = houseService.get(room.getHouse());
       listHouse.add(house);
       model.addAttribute("listHouse", listHouse);
-
       model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
       model.addAttribute("listStructure", DictUtils.getDictList("structure"));
-
-      jsonObject.put("message", "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加");
+      addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加!");
     } else {// 可以新增
       room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
       if (CollectionUtils.isNotEmpty(room.getStructureList())) {
@@ -316,10 +310,10 @@ public class RoomController extends BaseController {
     Room queryRoom = roomService.get(room);
     String roomStatus = queryRoom.getRoomStatus();
     if (RoomStatusEnum.BE_RESERVED.getValue().equals(roomStatus) || RoomStatusEnum.RENTED.getValue().equals(roomStatus)) {
-      addMessage(redirectAttributes, "房间已预定或已出租，不能删除！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间已预定或已出租，不能删除！");
     } else {
       roomService.delete(room);
-      addMessage(redirectAttributes, "删除房间及图片信息成功");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除房间及图片信息成功");
     }
     return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
   }

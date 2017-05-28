@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
@@ -103,9 +103,9 @@ public class ElectricFeeController extends BaseController {
       }
       electricFee.preUpdate();
       electricFeeService.delete(electricFee);
-      addMessage(redirectAttributes, "删除成功！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除成功！");
     } else {
-      addMessage(redirectAttributes, "该电费充值记录不可删除！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "该电费充值记录不可删除！");
     }
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
@@ -176,7 +176,7 @@ public class ElectricFeeController extends BaseController {
       }
     }
     electricFeeService.save(electricFee);
-    addMessage(redirectAttributes, "电费充值申请成功提交！请等待审核结果。");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "电费充值申请成功提交！请等待审核结果。");
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
@@ -184,7 +184,7 @@ public class ElectricFeeController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
     electricFeeService.delete(electricFee);
-    addMessage(redirectAttributes, "删除电费结算成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除电费结算成功");
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
@@ -206,20 +206,20 @@ public class ElectricFeeController extends BaseController {
             fee.setChargeStatus(ElectricChargeStatusEnum.SUCCESSED.getValue());
             fee.preUpdate();
             electricFeeService.update(fee);
-            addMessage(redirectAttributes, "充值成功！");
+            addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "充值成功！");
           } else {
             fee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
             fee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
             fee.preUpdate();
             electricFeeService.update(fee);
-            addMessage(redirectAttributes, "充值失败！");
+            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "充值失败！");
           }
         } else {
           fee.setSettleStatus(FeeSettlementStatusEnum.AUDIT_REFUSED.getValue());
           fee.setChargeStatus(ElectricChargeStatusEnum.FAILED.getValue());
           fee.preUpdate();
           electricFeeService.update(fee);
-          addMessage(redirectAttributes, "充值失败！");
+          addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "充值失败！");
         }
       }
     }
@@ -249,8 +249,7 @@ public class ElectricFeeController extends BaseController {
   }
 
   private String setValues(Model model, RentContract rc, int chargeAmount, String message) {
-    model.addAttribute("message", message);
-    model.addAttribute("messageType", ViewMessageTypeEnum.WARNING.getValue());
+    addMessage(model, ViewMessageTypeEnum.WARNING, message);
     model.addAttribute("rentContractId", rc.getId());
     model.addAttribute("contractName", rc.getContractName());
     model.addAttribute("chargeAmount", chargeAmount);

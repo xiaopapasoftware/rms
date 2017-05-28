@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.web;
 
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -73,7 +73,7 @@ public class ContractBookController extends BaseController {
     }
     contractBook.setSalesId(UserUtils.getUser().getId());
     contractBookService.save(contractBook);
-    addMessage(redirectAttributes, "保存预约看房信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存预约看房信息成功");
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 
@@ -84,7 +84,7 @@ public class ContractBookController extends BaseController {
     contractBook.setBookStatus("1");// 预约成功
     contractBook.setSalesId(UserUtils.getUser().getId());
     contractBookService.save(contractBook);
-    addMessage(redirectAttributes, "确认预约信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "确认预约信息成功");
     Message message = new Message();
     message.setContent("您的预约申请已被确认,请按约定日期联系管家看房!");
     message.setTitle("预约提醒");
@@ -101,7 +101,7 @@ public class ContractBookController extends BaseController {
     contractBook.setBookStatus("3");// 管家取消预约
     contractBook.setSalesId(UserUtils.getUser().getId());
     contractBookService.save(contractBook);
-    addMessage(redirectAttributes, "取消预约信息成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "取消预约信息成功");
     Message message = new Message();
     message.setContent("您的预约申请已被管家取消,请联系管家!");
     message.setTitle("预约提醒");

@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.common.web.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -123,11 +123,11 @@ public class TradingAccountsController extends BaseController {
         }
       }
     } else {
-      addMessage(redirectAttributes, "请选择款项进行到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "请选择款项进行到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!check) {
-      addMessage(redirectAttributes, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
 
@@ -141,34 +141,34 @@ public class TradingAccountsController extends BaseController {
         postpaidfeeTransCount = postpaidFeeTransList.size();
       }
       if (postpaidfeeTransCount != paymentTransIdArray.length) {
-        addMessage(redirectAttributes, "后付费款项需要一次性全部到账登记，您已遗漏，请重新进行到账登记操作！");
+        addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "后付费款项需要一次性全部到账登记，您已遗漏，请重新进行到账登记操作！");
         return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
       }
     }
 
     // 校验指定款项不能跨月到账，涉及到的款项类型有（房租金额6，水费金额14，燃气金额16，电视费18，宽带费20，服务费22）
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.RENT_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的房租款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的房租款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.WATER_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的水费款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的水费款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.GAS_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的燃气款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的燃气款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.TV_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的电视费款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的电视费款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.NET_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的宽带费款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的宽带费款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue())) {
-      addMessage(redirectAttributes, "您选择到账的服务费款项之前的月份有仍未到账的，请依次到账！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的服务费款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
 
@@ -186,7 +186,7 @@ public class TradingAccountsController extends BaseController {
           tradingAccountsService.save(tradingAccounts);
         }
       }
-      addMessage(redirectAttributes, "保存账务交易成功");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存账务交易成功");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     } else {
       double amount = 0;// 实际交易金额
@@ -371,9 +371,10 @@ public class TradingAccountsController extends BaseController {
   }
 
   @RequestMapping(value = "audit")
-  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String audit(AuditHis auditHis, RedirectAttributes redirectAttributes) {
     tradingAccountsService.audit(auditHis);
-    return list(new TradingAccounts(), request, response, model);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "账务交易审核完成！");
+    return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
   }
 
   // @RequiresPermissions("funds:tradingAccounts:edit")
@@ -414,8 +415,7 @@ public class TradingAccountsController extends BaseController {
       }
     }
     if (!check) {
-      model.addAttribute("message", "收据编号:" + receiptNo + "重复或已存在.");
-      model.addAttribute("messageType", ViewMessageTypeEnum.ERROR.getValue());
+      addMessage(model, ViewMessageTypeEnum.ERROR, "收据编号:" + receiptNo + "重复或已存在.");
       if (StringUtils.isEmpty(id)) {
         return form(tradingAccounts, model, redirectAttributes);
       } else {
@@ -435,20 +435,20 @@ public class TradingAccountsController extends BaseController {
           }
         }
         if (!check2) {
-          addMessage(redirectAttributes, "您选择的款项记录已被修改，请重新进行款项到账登记！");
+          addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择的款项记录已被修改，请重新进行款项到账登记！");
           return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
         }
       } else {
-        addMessage(redirectAttributes, "您还未选择款项记录！");
+        addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您还未选择款项记录！");
         return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
       }
     } else {
-      addMessage(redirectAttributes, "您还未选择款项记录！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您还未选择款项记录！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
     tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
     tradingAccountsService.save(tradingAccounts);
-    addMessage(redirectAttributes, "保存账务交易成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存账务交易成功");
     if (StringUtils.isEmpty(id)) {
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     } else {
@@ -460,7 +460,7 @@ public class TradingAccountsController extends BaseController {
   @RequestMapping(value = "delete")
   public String delete(TradingAccounts tradingAccounts, RedirectAttributes redirectAttributes) {
     tradingAccountsService.delete(tradingAccounts);
-    addMessage(redirectAttributes, "删除账务交易成功");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除账务交易成功");
     return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
   }
 
