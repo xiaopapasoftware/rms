@@ -33,11 +33,6 @@ public enum TradeTypeEnum {
   NORMAL_RENEW("4"),
 
   /**
-   * 逾期自动续签
-   */
-  OVERDUE_AUTO_RENEW("5"),
-
-  /**
    * 提前退租
    */
   ADVANCE_RETURN_RENT("6"),

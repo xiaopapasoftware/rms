@@ -147,7 +147,6 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     List<String> tradeTypeList = new ArrayList<String>();
     tradeTypeList.add(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
     tradeTypeList.add(TradeTypeEnum.NORMAL_RENEW.getValue());
-    tradeTypeList.add(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
     p.setTradeTypeList(tradeTypeList);
     return p;
   }

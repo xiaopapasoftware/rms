@@ -257,8 +257,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
         depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue());
       }
       depositAgreementDao.update(depositAgreement);
-    } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradingAccounts.getTradeType())
-        || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradingAccounts.getTradeType())) {
+    } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradingAccounts.getTradeType()) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradingAccounts.getTradeType())) {
       if (!ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
         if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
           if (checkRentContractTransAmountEnough(rentContract)) {
@@ -448,8 +447,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       }
       depositAgreement.preUpdate();
       depositAgreementDao.update(depositAgreement);
-    } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)
-        || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
+    } else if (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
       RentContract rentContract = rentContractDao.get(tradeId);
       if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
         rentContract.setContractStatus(ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue());
@@ -600,9 +598,6 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     }
     if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
       ta.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
-    }
-    if (ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
-      ta.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
     }
     BigDecimal totalAmount = BigDecimal.ZERO;// 合同已经被审核通过的总已到账款项
     List<TradingAccounts> tradingAccounts = tradingAccountsDao.findList(ta);

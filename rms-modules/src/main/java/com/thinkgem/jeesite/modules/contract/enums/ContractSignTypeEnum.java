@@ -15,12 +15,7 @@ public enum ContractSignTypeEnum {
   /**
    * 正常续签
    */
-  RENEW_SIGN("1"),
-
-  /**
-   * 逾租续签
-   */
-  LATE_RENEW_SIGN("2");
+  RENEW_SIGN("1");
 
   ContractSignTypeEnum(String value) {
     this.value = value;

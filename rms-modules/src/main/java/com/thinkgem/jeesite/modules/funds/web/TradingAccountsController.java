@@ -319,8 +319,7 @@ public class TradingAccountsController extends BaseController {
     for (String transId : paymentTransIdArray) {
       PaymentTrans pt = paymentTransService.get(transId);
       String tradeType = pt.getTradeType();
-      if (paymentTransType.equals(pt.getPaymentType()) && (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)
-          || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType))) {
+      if (paymentTransType.equals(pt.getPaymentType()) && (TradeTypeEnum.SIGN_NEW_CONTRACT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType))) {
         tempTrans.add(pt);
         rentContractId = pt.getTransId();
       }

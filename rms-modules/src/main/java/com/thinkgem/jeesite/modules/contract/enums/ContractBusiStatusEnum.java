@@ -64,11 +64,6 @@ public enum ContractBusiStatusEnum {
   NORMAL_RENEW("14"),
 
   /**
-   * 逾期自动续签
-   */
-  LATE_AUTO_RENEW("15"),
-
-  /**
    * 特殊退租
    */
   SPECIAL_RETURN("16"),

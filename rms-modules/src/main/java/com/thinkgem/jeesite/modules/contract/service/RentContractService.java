@@ -402,7 +402,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         }
       }
     }
-    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType()) || ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 正常人工续签或逾期自动续签，把房源状态从“已出租”变更为“已出租”
+    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 正常人工续签，把房源状态从“已出租”变更为“已出租”
       if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
         boolean isLock = houseService.isLockWholeHouse4RenewSign(houseId);
         if (isLock) {
@@ -469,8 +469,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         tradeType = TradeTypeEnum.SIGN_NEW_CONTRACT.getValue();
       } else if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(contractSignType)) {
         tradeType = TradeTypeEnum.NORMAL_RENEW.getValue();
-      } else if (ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(contractSignType)) {
-        tradeType = TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue();
       }
       Double electricAmount = rentContract.getDepositElectricAmount();
       if (electricAmount != null && electricAmount > 0) {
@@ -480,7 +478,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentType = PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue();
         }
         // 生成水电费押金差额
-        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
+        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
           paymentType = PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue();
         }
         paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), electricAmount, electricAmount, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
@@ -494,7 +492,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentType = PaymentTransTypeEnum.RENT_DEPOSIT.getValue();
         }
         // 生成房租押金差额
-        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue().equals(tradeType)) {
+        if (TradeTypeEnum.NORMAL_RENEW.getValue().equals(tradeType)) {
           paymentType = PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue();
         }
         paymentTransService.generateAndSavePaymentTrans(tradeType, paymentType, id, TradeDirectionEnum.IN.getValue(), rentDepositAmt, rentDepositAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
@@ -538,12 +536,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(contractSignType)) {
         RentContract rentContractOld = super.get(rentContract.getContractId());
         rentContractOld.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RENEW.getValue());
-        super.save(rentContractOld);
-      }
-      // 逾期自动续签，则把原合同业务状态改成“逾期自动续签”
-      if (ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(contractSignType)) {
-        RentContract rentContractOld = super.get(rentContract.getContractId());
-        rentContractOld.setContractBusiStatus(ContractBusiStatusEnum.LATE_AUTO_RENEW.getValue());
         super.save(rentContractOld);
       }
       auditService.delete(id);

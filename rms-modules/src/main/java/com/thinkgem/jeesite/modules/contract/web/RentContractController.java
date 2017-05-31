@@ -320,73 +320,6 @@ public class RentContractController extends BaseController {
   }
 
   /**
-   * 点击“逾期自动续签”
-   */
-  @RequestMapping(value = "autoRenewContract")
-  public String autoRenewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-    String contractId = rentContract.getId();
-    if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
-      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能续签！");
-      return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
-    }
-    rentContract = rentContractService.get(contractId);
-    rentContract.setContractId(contractId);
-    rentContract.setSignType(ContractSignTypeEnum.LATE_RENEW_SIGN.getValue());
-    rentContract.setContractName(rentContract.getContractName().concat("(XU)"));
-    rentContract.setStartDate(null);
-    rentContract.setExpiredDate(null);
-    rentContract.setSignDate(null);
-    int currContractNum = 1;
-    List<RentContract> allContracts = rentContractService.findAllValidRentContracts();
-    if (CollectionUtils.isNotEmpty(allContracts)) {
-      currContractNum = currContractNum + allContracts.size();
-    }
-    rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    model.addAttribute("projectList", projectList);
-    rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
-    rentContract.setTenantList(rentContractService.findTenant(rentContract));
-    if (null != rentContract.getPropertyProject()) {
-      Building building = new Building();
-      PropertyProject propertyProject = new PropertyProject();
-      propertyProject.setId(rentContract.getPropertyProject().getId());
-      building.setPropertyProject(propertyProject);
-      List<Building> buildingList = buildingService.findList(building);
-      model.addAttribute("buildingList", buildingList);
-    }
-    if (null != rentContract.getBuilding()) {
-      House house = new House();
-      Building building = new Building();
-      building.setId(rentContract.getBuilding().getId());
-      house.setBuilding(building);
-      house.setChoose("1");
-      List<House> houseList = houseService.findList(house);
-      if (null != rentContract.getHouse()) houseList.add(houseService.get(rentContract.getHouse()));
-      model.addAttribute("houseList", houseList);
-    }
-    if (null != rentContract.getRoom()) {
-      Room room = new Room();
-      House house = new House();
-      house.setId(rentContract.getHouse().getId());
-      room.setHouse(house);
-      room.setChoose("1");
-      List<Room> roomList = roomServie.findList(room);
-      if (null != rentContract.getRoom()) {
-        Room rm = roomServie.get(rentContract.getRoom());
-        if (null != rm) roomList.add(rm);
-      }
-      model.addAttribute("roomList", roomList);
-    }
-    List<Tenant> tenantList = tenantService.findList(new Tenant());
-    model.addAttribute("tenantList", tenantList);
-    model.addAttribute("partnerList", partnerService.findList(new Partner()));
-    rentContract.setId(null);
-    rentContract.setAgreementId(null);// 防止对某些定金转的合同，再进行续签，导致最终续签合同还持有agreementId
-    model.addAttribute("rentContract", rentContract);
-    return "modules/contract/rentContractForm";
-  }
-
-  /**
    * 牵涉到后台合同的新增、修改；以及APP端合同的修改保存
    */
   // @RequiresPermissions("contract:rentContract:edit")
@@ -854,9 +787,6 @@ public class RentContractController extends BaseController {
     }
     if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
       ta.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
-    }
-    if (ContractSignTypeEnum.LATE_RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
-      ta.setTradeType(TradeTypeEnum.OVERDUE_AUTO_RENEW.getValue());
     }
     List<TradingAccounts> tradingAccounts = tradingAccountsService.findList(ta);
     if (CollectionUtils.isNotEmpty(tradingAccounts)) {
