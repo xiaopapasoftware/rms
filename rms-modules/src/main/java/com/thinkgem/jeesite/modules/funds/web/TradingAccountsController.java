@@ -220,7 +220,6 @@ public class TradingAccountsController extends BaseController {
         tradeType = paymentTrans.getTradeType();// 交易类型
         tradeObjectId = paymentTrans.getTransId();// 交易对象ID
         String paymentType = paymentTrans.getPaymentType();// 款项类型
-
         if (!containedOutTransList.contains(tradeType)) { // 交易类型里的款项全是收款，不包含出款
           if (TradeDirectionEnum.IN.getValue().equals(paymentTrans.getTradeDirection())) {
             Receipt receipt = null;

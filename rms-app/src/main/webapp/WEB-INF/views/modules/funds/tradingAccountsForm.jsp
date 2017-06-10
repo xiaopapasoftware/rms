@@ -8,6 +8,50 @@
 		$(document).ready(function() {
 			$("#inputForm").validate({
 				submitHandler: function(form){
+					var tradeTypeVar = $("#tradeType").val();
+					//当交易类型为定金转违约("2")时，不能人为添加收据记录（收据记录集合必须为空，收据总金额必须为0）
+					if(tradeTypeVar=="2"){
+						if($('input[id*="receiptList"]').size()>0){
+							top.$.jBox.tip('定金转违约账务交易类型，不能添加收据！','warning');
+							return;
+						}
+					}
+					//当交易类型为预约定金("1")、新签合同("3")、正常人工续签("4")、电费充值("11")、公共事业费后付("12")，则收据金额之和必须与账务交易金额一致；
+					if(tradeTypeVar=="1"||tradeTypeVar=="3"||tradeTypeVar=="4"||tradeTypeVar=="11"||tradeTypeVar=="12"){
+					 	var preTradeAmount = $("#tradeAmount").val();
+					 	var calculatedAmount = 0;
+					 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
+					 		calculatedAmount = calculatedAmount + Number($(this).val());
+					 	});
+					 	if(preTradeAmount!=calculatedAmount){
+					 		top.$.jBox.tip('账务交易总金额与收据总金额不相等！','warning');
+							return;
+					 	}
+					}
+					//当交易类型为提前退租("6")、正常退租("7")、逾期退租("8")、特殊退租("9")时;
+					//如果账务交易方向为应付（金额为0也是应付）， 则收据记录集合必须为空;
+					//如果账务交易方向为应收， 则收据金额必须与账务交易金额一致;
+					if(tradeTypeVar=="6" || tradeTypeVar=="7" || tradeTypeVar=="8" || tradeTypeVar=="9"){
+						var tradeDirect = $("#tradeDirection").val();
+						if("0" == tradeDirect){//应付
+							if($('input[id*="receiptList"]').size()>0){
+								top.$.jBox.tip('当前的账务交易类型，不能添加收据！','warning');
+								return;
+							}
+						}
+						if("1" == tradeDirect){//应收
+							var preTradeAmount = $("#tradeAmount").val();
+						 	var calculatedAmount = 0;
+						 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
+						 		calculatedAmount = calculatedAmount + Number($(this).val());
+						 	});
+						 	if(preTradeAmount!=calculatedAmount){
+						 		top.$.jBox.tip('账务交易总金额与收据总金额不相等！','warning');
+								return;
+						 	}
+						}
+					}
+					return;
 					loading('正在提交，请稍等...');
 					$("#btnSubmit").attr("disabled",true);
 					form.submit();
