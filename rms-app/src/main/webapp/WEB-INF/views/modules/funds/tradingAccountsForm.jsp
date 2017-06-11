@@ -51,7 +51,6 @@
 						 	}
 						}
 					}
-					return;
 					loading('正在提交，请稍等...');
 					$("#btnSubmit").attr("disabled",true);
 					form.submit();
