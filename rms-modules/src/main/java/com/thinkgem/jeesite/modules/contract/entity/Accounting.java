@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
@@ -24,7 +23,8 @@ public class Accounting extends DataEntity<Accounting> {
 
   private static final long serialVersionUID = 1L;
   private RentContract rentContract; // 出租合同
-  private String rentContractName;
+  private String rentContractName;// 出租合同名称
+  private String rentContractCode;// 出租合同编号
   private String accountingType; // 核算类型
   private String feeDirection; // 核算费用方向
   private String feeType; // 核算费用类别
@@ -32,8 +32,10 @@ public class Accounting extends DataEntity<Accounting> {
   private User user; // 核算人
   private Date feeDate; // 核算时间
   private String feeDateStr; // 核算时间字符串
+  private String paymentTransId;// 款项ID
   private String contractBusiStatus;
   private String rentContractId;
+  private String transStatus;// 对应款项的款项状态
 
   public Accounting() {
     super();
@@ -55,6 +57,14 @@ public class Accounting extends DataEntity<Accounting> {
   @Length(min = 1, max = 64, message = "核算类型长度必须介于 1 和 64 之间")
   public String getAccountingType() {
     return accountingType;
+  }
+
+  public String getPaymentTransId() {
+    return paymentTransId;
+  }
+
+  public void setPaymentTransId(String paymentTransId) {
+    this.paymentTransId = paymentTransId;
   }
 
   public void setAccountingType(String accountingType) {
@@ -123,6 +133,14 @@ public class Accounting extends DataEntity<Accounting> {
     this.rentContractName = rentContractName;
   }
 
+  public String getRentContractCode() {
+    return rentContractCode;
+  }
+
+  public void setRentContractCode(String rentContractCode) {
+    this.rentContractCode = rentContractCode;
+  }
+
   public String getContractBusiStatus() {
     return contractBusiStatus;
   }
@@ -137,5 +155,13 @@ public class Accounting extends DataEntity<Accounting> {
 
   public void setRentContractId(String rentContractId) {
     this.rentContractId = rentContractId;
+  }
+
+  public String getTransStatus() {
+    return transStatus;
+  }
+
+  public void setTransStatus(String transStatus) {
+    this.transStatus = transStatus;
   }
 }

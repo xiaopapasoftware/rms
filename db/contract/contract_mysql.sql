@@ -169,6 +169,7 @@ create table T_ACCOUNTING
    FEE_AMOUNT           float comment '核算金额',
    USER_ID              varchar(100) comment '核算人',
    FEE_DATE             datetime comment '核算时间',
+   payment_trans_id		varchar(32) comment '款项ID',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

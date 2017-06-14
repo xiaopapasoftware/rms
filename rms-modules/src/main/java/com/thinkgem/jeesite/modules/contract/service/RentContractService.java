@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
+import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
@@ -57,6 +56,7 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
  * 出租合同Service
@@ -134,8 +134,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
               } else {
                 expiredDate = tmpAccounting.getFeeDate();
               }
-              paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue(), feeType, rentContractId, tmpAccounting.getFeeDirection(), feeAmt, feeAmt, 0D,
-                  PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), expiredDate, null);
+              String paymentTransId = paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue(), feeType, rentContractId, tmpAccounting.getFeeDirection(), feeAmt,
+                  feeAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), expiredDate, null);
+              tmpAccounting.setPaymentTransId(paymentTransId);
+              tmpAccounting.preUpdate();
+              accountingService.save(tmpAccounting);
             }
           }
         }
@@ -681,24 +684,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.getByHouseId(rentContract);
   }
 
-  private void savePaymentTrans(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
-    if (accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
-      PaymentTrans paymentTrans = new PaymentTrans();
-      paymentTrans.setTradeType(tradeType);
-      paymentTrans.setPaymentType(accounting.getFeeType());
-      paymentTrans.setTransId(rentContract.getId());
-      paymentTrans.setTradeDirection(tradeDirection);
-      paymentTrans.setStartDate(rentContract.getStartDate());
-      paymentTrans.setExpiredDate(rentContract.getExpiredDate());
-      paymentTrans.setTradeAmount(accounting.getFeeAmount());
-      paymentTrans.setLastAmount(accounting.getFeeAmount());
-      paymentTrans.setTransAmount(0D);
-      paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-      paymentTransService.save(paymentTrans);
-    }
-  }
-
-  private void saveAccounting(String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
+  private void saveAccounting(String paymentTransId, String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
     accounting.setRentContract(rentContract);
     if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)) {
       accounting.setAccountingType(AccountingTypeEnum.NORMAL_RETURN_ACCOUNT.getValue());
@@ -711,6 +697,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
     accounting.setFeeDirection(tradeDirection);
     accounting.setUser(UserUtils.getUser());
+    accounting.setPaymentTransId(paymentTransId);
     if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
       accounting.setFeeDate(new Date());
     } else {
@@ -723,13 +710,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
   private void generatePaymentTransAndAccounts(List<Accounting> accountList, RentContract rentContract, String tradeType, String feeDirection) {
     for (Accounting accounting : accountList) {
-      if (accounting != null && accounting.getFeeAmount() != null && accounting.getFeeAmount() != 0) {
+      if (accounting != null && accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
+        String paymentTransId = "";
         if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {// 特殊退租不生成款项
-          if (accounting.getFeeAmount() > 0) {
-            savePaymentTrans(tradeType, accounting, rentContract, feeDirection);
-          }
+          paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, accounting.getFeeType(), rentContract.getId(), feeDirection, accounting.getFeeAmount(), accounting.getFeeAmount(),
+              0D, PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), rentContract.getExpiredDate(), null);
         }
-        saveAccounting(tradeType, accounting, rentContract, feeDirection);
+        saveAccounting(paymentTransId, tradeType, accounting, rentContract, feeDirection);
       }
     }
   }

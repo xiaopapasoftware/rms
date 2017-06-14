@@ -593,9 +593,7 @@ public class RentContractController extends BaseController {
    * @param isPre 是否提前
    */
   private List<Accounting> genOutAccountListBack(RentContract rentContract, String accountingType, boolean isPre) {
-
     List<Accounting> outAccountings = new ArrayList<Accounting>();
-
     // 水电费押金
     Accounting eaccounting = new Accounting();
     eaccounting.setRentContract(rentContract);
@@ -620,7 +618,6 @@ public class RentContractController extends BaseController {
     }
     accounting.setFeeType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
     outAccountings.add(accounting);
-
     if (isPre || "1".equals(rentContract.getIsSpecial())) {// 提前退租或许特殊退租，需计算应退房租金额
       Accounting preBackRentalAcc = new Accounting();
       preBackRentalAcc.setRentContract(rentContract);
@@ -686,7 +683,6 @@ public class RentContractController extends BaseController {
         }
         outAccountings.add(waterAcc);
       }
-
       // 预付 ---应退 电视费
       if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
         Accounting tvAcc = new Accounting();
@@ -703,7 +699,6 @@ public class RentContractController extends BaseController {
         }
         outAccountings.add(tvAcc);
       }
-
       // 预付 ---应退 宽带费
       if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee() && rentContract.getNetFee() > 0) {
         Accounting netAcc = new Accounting();
@@ -720,7 +715,6 @@ public class RentContractController extends BaseController {
         }
         outAccountings.add(netAcc);
       }
-
       // 预付 ---应退 服务费
       if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
         Accounting servAcc = new Accounting();

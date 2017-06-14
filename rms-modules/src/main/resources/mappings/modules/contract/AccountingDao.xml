@@ -16,22 +16,25 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
+		a.payment_trans_id as "paymentTransId",
 		a.del_flag AS "delFlag",
 		u7.name AS "user.name",
 		c.contract_name as rentContractName,
-		c.contract_busi_status as contractBusiStatus
+		c.contract_code as rentContractCode,
+		c.contract_busi_status as contractBusiStatus,
+		tpt.trans_status as transStatus
 	</sql>
 	
 	<sql id="accountingJoins">
 		LEFT JOIN sys_user u7 ON u7.id = a.user_id 
 		left join t_rent_contract c on a.rent_contract_id=c.id
+		left join t_payment_trans tpt on tpt.id = a.payment_trans_id
 		left join t_property_project tp on c.property_project_id = tp.id
 	</sql>
     
 	<select id="get" resultType="Accounting">
-		SELECT 
-			<include refid="accountingColumns"/>
-		FROM t_accounting a
+		SELECT  <include refid="accountingColumns"/>
+		FROM 	t_accounting a
 		<include refid="accountingJoins"/>
 		WHERE a.id = #{id}
 	</select>
@@ -44,6 +47,9 @@
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="rentContractName != null and rentContractName != ''">
 				AND c.contract_name like concat('%',#{rentContractName},'%')
+			</if>
+			<if test="rentContractCode != null and rentContractCode != ''">
+				AND c.contract_code = #{rentContractCode}
 			</if>
 			<if test="accountingType != null and accountingType != ''">
 				AND a.accounting_type = #{accountingType}
@@ -67,10 +73,8 @@
 				and c.id=#{rentContractId}
 			</if>
 		</where>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -113,6 +117,7 @@
 			fee_amount,
 			user_id,
 			fee_date,
+			payment_trans_id,
 			create_by,
 			create_date,
 			update_by,
@@ -128,6 +133,7 @@
 			#{feeAmount},
 			#{user.id},
 			#{feeDate},
+			#{paymentTransId},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -138,18 +144,19 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE t_accounting SET 	
-			rent_contract_id = #{rentContract.id},
-			accounting_type = #{accountingType},
-			fee_direction = #{feeDirection},
-			fee_type = #{feeType},
-			fee_amount = #{feeAmount},
-			user_id = #{user.id},
-			fee_date = #{feeDate},
-			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
-		WHERE id = #{id}
+		UPDATE 	 t_accounting
+		SET		 rent_contract_id = #{rentContract.id},
+				 accounting_type = #{accountingType},
+				 fee_direction = #{feeDirection},
+				 fee_type = #{feeType},
+				 fee_amount = #{feeAmount},
+				 payment_trans_id = #{paymentTransId},
+				 user_id = #{user.id},
+				 fee_date = #{feeDate},
+				 update_by = #{updateBy.id},
+				 update_date = #{updateDate},
+				 remarks = #{remarks}
+		WHERE 	 id = #{id}
 	</update>
 	
 	<update id="delete">

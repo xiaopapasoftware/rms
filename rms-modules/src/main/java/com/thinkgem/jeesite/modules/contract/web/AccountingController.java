@@ -12,12 +12,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.service.AccountingService;
+import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 
 /**
  * 退租核算Controller
@@ -29,6 +34,8 @@ import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 @RequestMapping(value = "${adminPath}/contract/accounting")
 public class AccountingController extends BaseController {
 
+  @Autowired
+  private PaymentTransService paymentTransService;
   @Autowired
   private AccountingService accountingService;
 
@@ -66,5 +73,18 @@ public class AccountingController extends BaseController {
     return "modules/contract/accountingForm";
   }
 
-
+  @RequestMapping(value = "deleteAccountingAndTrans")
+  public String deleteAccountingAndTrans(Accounting accounting, Model model, RedirectAttributes redirectAttributes) {
+    Accounting ating = accountingService.get(accounting);
+    if (ating != null) {
+      PaymentTrans pt = new PaymentTrans();
+      pt.setId(ating.getPaymentTransId());
+      paymentTransService.delete(pt);
+      accountingService.delete(ating);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除退租核算记录及其款项成功！");
+    } else {
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "退款核算记录不存在！");
+    }
+    return "redirect:" + Global.getAdminPath() + "/contract/accounting/?repage";
+  }
 }
