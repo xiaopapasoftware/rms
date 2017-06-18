@@ -23,6 +23,8 @@
 
         ${whereSqlString}
 
+        ${customSqlString}
+
         <if test="orderBy != null">
             ${orderBySqlString}
         </if>
