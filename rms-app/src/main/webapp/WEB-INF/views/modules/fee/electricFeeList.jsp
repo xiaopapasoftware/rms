@@ -26,8 +26,11 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label style="width:120px;">出租合同：</label>
+			<li><label style="width:120px;">出租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
+			</li>
+			<li><label style="width:120px;">出租合同编号：</label>
+				<form:input path="contractCode" htmlEscape="false" maxlength="64" class="input-medium" style="width:195px;"/>
 			</li>
 			<li><label style="width:120px;">电费充值开始时间：</label>
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
@@ -59,7 +62,8 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>出租合同名称</th>
+				<th>合同名称</th>
+				<th>合同编号</th>
 				<th>充值时间</th>
 				<th>充值金额</th>
 				<th>充值状态</th>
@@ -77,6 +81,9 @@
 			<tr>
 				<td>
 					${electricFee.contractName}
+				</td>
+				<td>
+					${electricFee.contractCode}
 				</td>
 				<td>
 					<fmt:formatDate value="${electricFee.chargeDate}" pattern="yyyy-MM-dd"/>

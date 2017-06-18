@@ -25,11 +25,11 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li>
-				<label style="width:120px;">出租合同名称：</label>
+				<label style="width:120px;">合同名称：</label>
 				<form:input path="rentContractName" htmlEscape="false" class="input-medium" style="width:195px;"/>
 			</li>
 			<li>
-				<label style="width:120px;">出租合同编号：</label>
+				<label style="width:120px;">合同编号：</label>
 				<form:input path="rentContractCode" htmlEscape="false" class="input-medium" style="width:195px;"/>
 			</li>
 			<li><label style="width:120px;">核算类型：</label>
@@ -67,7 +67,8 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>出租合同</th>
+				<th>合同名称</th>
+				<th>合同编号</th>
 				<th>核算类型</th>
 				<th>核算费用方向</th>
 				<th>核算费用类别</th>
@@ -83,6 +84,9 @@
 			<tr>
 				<td>
 					${accounting.rentContractName}
+				</td>
+				<td>
+					${accounting.rentContractCode}
 				</td>
 				<td>
 					${fns:getDictLabel(accounting.accountingType, 'accounting_type', '')}

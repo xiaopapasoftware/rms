@@ -18,6 +18,7 @@ public class ElectricFee extends DataEntity<ElectricFee> {
   private String chargeStatus;// 充值状态
   private String settleStatus;// 结算状态
   private String contractName;// 专用来查询使用的合同名变量
+  private String contractCode;// 专用来查询使用的合同编号
   private String chargeId;// 电表充值系统返回的充值编号
   private String tradingAccountStatus;// 该笔电费充值记录所属的账务交易记录的状态
   private String tradeType; // 账务交易类型
@@ -81,6 +82,14 @@ public class ElectricFee extends DataEntity<ElectricFee> {
 
   public void setContractName(String contractName) {
     this.contractName = contractName;
+  }
+
+  public String getContractCode() {
+    return contractCode;
+  }
+
+  public void setContractCode(String contractCode) {
+    this.contractCode = contractCode;
   }
 
   public String getChargeId() {
