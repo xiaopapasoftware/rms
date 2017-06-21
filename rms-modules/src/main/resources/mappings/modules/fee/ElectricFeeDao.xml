@@ -172,7 +172,10 @@
 		   SET    del_flag = #{DEL_FLAG_DELETE},
 		   		  update_by = #{updateBy.id},
 				  update_date = #{updateDate}
-		 WHERE    id = #{id}
+		 WHERE    del_flag = #{DEL_FLAG_NORMAL}
+				  <if test="id != null and id != ''">
+					AND id = #{id}
+				  </if>
 		          <if test="rentContractId != null and rentContractId != ''">
 		 	        AND rent_contract_id = #{rentContractId}
 		          </if>

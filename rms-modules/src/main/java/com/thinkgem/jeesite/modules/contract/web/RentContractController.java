@@ -182,9 +182,10 @@ public class RentContractController extends BaseController {
   }
 
   @RequestMapping(value = "audit")
-  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     rentContractService.audit(auditHis);
-    return list(new RentContract(), request, response, model);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "审核操作已完成！");
+    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
   @RequestMapping(value = "cancel")
