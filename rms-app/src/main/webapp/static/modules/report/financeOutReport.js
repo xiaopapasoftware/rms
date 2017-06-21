@@ -89,6 +89,7 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
             undo: function () {
                 $("#queryFrom input").val("");
                 $("#queryFrom select option:first").prop("selected", 'selected');
+                $("#tradeDirection").val("0");
             },
             query: function () {
                 if ($("#receiptDateBegin").val() == "" || $("#receiptDateEnd").val() == "") {

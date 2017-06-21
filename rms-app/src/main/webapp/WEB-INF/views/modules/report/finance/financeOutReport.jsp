@@ -57,7 +57,7 @@
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
-                <input type="hidden" name="tradeDirection" value="0" title="出账">
+                <input type="hidden" id="tradeDirection" name="tradeDirection" value="0" title="出账">
                 <div class="layui-inline">
                     <label class="layui-form-label">收据日期</label>
                     <div class="layui-input-inline date" style="width: 100px;">
