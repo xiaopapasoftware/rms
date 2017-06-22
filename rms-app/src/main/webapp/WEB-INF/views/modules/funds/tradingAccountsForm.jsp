@@ -21,9 +21,9 @@
 					 	var preTradeAmount = $("#tradeAmount").val();
 					 	var calculatedAmount = 0;
 					 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
-					 		calculatedAmount = calculatedAmount + Number($(this).val());
+					 		calculatedAmount =  calculatedAmount  + parseFloat($(this).val());
 					 	});
-					 	if(preTradeAmount!=calculatedAmount){
+					 	if(preTradeAmount.toFixed(2)!=calculatedAmount.toFixed(2)){
 					 		top.$.jBox.tip('账务交易总金额与收据总金额不相等！','warning');
 							return;
 					 	}
@@ -45,7 +45,7 @@
 						 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
 						 		calculatedAmount = calculatedAmount + Number($(this).val());
 						 	});
-						 	if(preTradeAmount!=calculatedAmount){
+						 	if(preTradeAmount.toFixed(2)!=calculatedAmount.toFixed(2)){
 						 		top.$.jBox.tip('账务交易总金额与收据总金额不相等！','warning');
 								return;
 						 	}
