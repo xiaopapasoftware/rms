@@ -240,11 +240,12 @@ public class ElectricFeeController extends BaseController {
   }
 
   @RequestMapping(value = "postpaidFeeSave")
-  public String postpaidFeeSave(PostpaidFee postpaidFee, Model model) {
+  public String postpaidFeeSave(PostpaidFee postpaidFee, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, postpaidFee)) {
       return postpaidFeeForm(postpaidFee, model);
     }
     postpaidFeeService.saveBusiPostpaidFee(postpaidFee);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存成功！");
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/postpaidFeeList";
   }
 
