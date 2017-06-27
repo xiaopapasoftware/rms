@@ -31,7 +31,9 @@
 		<input id="pageSize" name="pageSize" type="hidden"
 			value="${page.pageSize}" />
 		<ul class="ul-form">
-			<li><label style="width: 120px;">出租合同：</label> <form:input path="contractName" htmlEscape="false" maxlength="64"
+			<li><label style="width: 120px;">合同名称：</label> <form:input path="contractName" htmlEscape="false" maxlength="64"
+					class="input-medium" style="width:195px;" /></li>
+			<li><label style="width: 120px;">合同编号：</label> <form:input path="contractCode" htmlEscape="false" maxlength="64"
 					class="input-medium" style="width:195px;" /></li>
 			<li><label style="width: 120px;">付费状态：</label> <form:select
 					path="payStatus" class="input-medium" style="width:210px;">
@@ -61,7 +63,8 @@
 		class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>出租合同</th>
+				<th>合同名称</th>
+				<th>合同编号</th>
 				<th>付费状态</th>
 				<th>付费日期</th>
 				<th>自用电费</th>
@@ -83,6 +86,7 @@
 			<c:forEach items="${page.list}" var="postpaidFee">
 				<tr>
 					<td><a href="${ctx}/fee/electricFee/postpaidFeeForm?id=${postpaidFee.id}">${postpaidFee.contractName}</a></td>
+					<td>${postpaidFee.contractCode}</td>
 					<td>${fns:getDictLabel(postpaidFee.payStatus, 'public_fee_pay_status', '')}</td>
 					<td><fmt:formatDate value="${postpaidFee.payDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${postpaidFee.electricSelfAmt}</td>

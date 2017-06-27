@@ -39,6 +39,8 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
   private Date startDate;// 专用来查询使用的选择的开始时间
   private Date endDate;// 专用来查询使用的选择的结束时间
   private String contractName;// 专用来查询使用的合同名变量
+  private String contractCode;// 专用来查询使用的合同名变量
+
 
   public Double getElectricSelfAmt() {
     return electricSelfAmt;
@@ -271,4 +273,13 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
   public void setServiceAmtEndDate(Date serviceAmtEndDate) {
     this.serviceAmtEndDate = serviceAmtEndDate;
   }
+
+  public String getContractCode() {
+    return contractCode;
+  }
+
+  public void setContractCode(String contractCode) {
+    this.contractCode = contractCode;
+  }
+
 }

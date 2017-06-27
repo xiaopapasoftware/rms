@@ -36,7 +36,8 @@
 		u2.login_name AS "updateBy.loginName",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		tc.contract_name as "contractName"
+		tc.contract_name as "contractName",
+		tc.contract_code as "contractCode"
 	</sql>
 
 	<sql id="postpaidFeeJoins">
@@ -75,6 +76,9 @@
 			</if>
 			<if test="contractName != null and contractName != ''">
 				AND tc.contract_name like concat('%',#{contractName},'%')
+			</if>
+			<if test="contractCode != null and contractCode != ''">
+				AND tc.contract_code = #{contractCode}
 			</if>
 		</where>
 
