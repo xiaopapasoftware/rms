@@ -105,7 +105,6 @@
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
-			
 			//把物业项目简称带入房屋编号中
 			var projectSimpleName= $("[id='propertyProject.id']").find("option:selected").attr("projectSimpleName");
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
@@ -113,7 +112,6 @@
 			}else{
 				$("#contractCode").val(projectSimpleName + "-" + "${rentContract.contractCode}");
 			}
-			
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.ajaxSetup({ cache: false });
@@ -136,7 +134,6 @@
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
 			changeContractName();
 		}
 		
@@ -178,26 +175,21 @@
 			}
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
 			changeContractName();
 		}
 		
 		function roomChange(){
-			//更新合同名称
 			changeContractName();
 		}
 		
 		//更新合同名称
 		function changeContractName(){
 			var contractName = "";
-			
 			var porjectId = $("[id='propertyProject.id']").find("option:selected").val();
 			if(porjectId != null && porjectId != undefined && porjectId != ""){
 				var projectName = $("[id='propertyProject.id']").find("option:selected").text();
 				contractName = contractName + projectName;
 			}
-			
-			
 			var buildingId = $("[id='building.id']").find("option:selected").val();
 			if(buildingId != null && buildingId != undefined && buildingId != ""){
 				var buildingName = $("[id='building.id']").find("option:selected").text();
@@ -207,7 +199,6 @@
 					contractName = contractName + "-" + buildingName;
 				}
 			}
-			
 			var houseId = $("[id='house.id']").find("option:selected").val();
 			if(houseId != null && houseId != undefined && houseId != ""){
 				var houseNo = $("[id='house.id']").find("option:selected").text();
@@ -217,7 +208,6 @@
 					contractName = contractName + "-" + houseNo;
 				}
 			}
-			
 			var roomId = $("[id='room.id']").find("option:selected").val();
 			if(roomId != null && roomId != undefined && roomId != ""){
 				var roomNo = $("[id='room.id']").find("option:selected").text();
@@ -227,7 +217,6 @@
 					contractName = contractName + "-" + roomNo;
 				}
 			}
-			
 			$("#contractName").val(contractName);
 		}
 		
@@ -241,6 +230,7 @@
 				$("[id='room.id']").removeAttr("disabled");
 				$("[id='room.id']").next("a").show();
 			}
+			changeContractName();
 		}
 		
 		function addTenant() {
@@ -296,11 +286,9 @@
 		
 		function startDateChange() {
 			var startDate = new Date($("input[name='startDate']").val());
-			
 			var endDate = new Date(Date.parse(startDate));
 			endDate.setFullYear(endDate.getFullYear()+1);
 			endDate.setDate(endDate.getDate()-1);
-			
 			var year = endDate.getFullYear();
 			var month = endDate.getMonth()+1;
 			if(parseFloat(month)<10)
@@ -310,7 +298,6 @@
 				day = "0"+""+day;
 			var expiredDate=year+"-"+month+"-"+day;
 			$("input[name='expiredDate']").val(expiredDate);
-			
 			//合同续租提醒时间默认为结束时间前1个月
 			endDate.setMonth(endDate.getMonth() - 1);
 			year = endDate.getFullYear();
@@ -332,7 +319,6 @@
 			expiredDate.setFullYear(expiredDate.getFullYear());
 			expiredDate.setMonth(expiredDate.getMonth()-1);
 			expiredDate.setDate(expiredDate.getDate());
-			
 			var year = expiredDate.getFullYear();
 			var month = expiredDate.getMonth() + 1;
 			if(parseFloat(month)<10){

@@ -176,7 +176,6 @@
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
-			
 			//把物业项目简称带入房屋编号中
 			var projectSimpleName= $("[id='propertyProject.id']").find("option:selected").attr("projectSimpleName");
 			if(projectSimpleName==null || projectSimpleName =="" || projectSimpleName==undefined){
@@ -193,7 +192,6 @@
 					$("#contractCode").val(projectSimpleName + "-" + code[0]+"-"+code[1]);	
 				}
 			}
-			
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != project) {
 				$.ajaxSetup({ cache: false });
@@ -208,18 +206,13 @@
 			}
 			$("[id='building.id']").val("");
 			$("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("请选择...");
-			
 			$("[id='house.id']").html(html);
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
-			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
-			//更新合同名称
 			changeContractName();
-
 		}
 		
 		function buildingChange() {
@@ -239,19 +232,14 @@
 			}
 			$("[id='house.id']").val("");
 			$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("请选择...");
-			
 			$("[id='room.id']").html(html);
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
-			//更新合同名称
 			changeContractName();
-			
 		}
 		
 		function houseChange() {
 			var room = $("[id='house.id']").val();
-			
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != room) {
 				$.ajaxSetup({ cache: false });
@@ -266,27 +254,21 @@
 			}
 			$("[id='room.id']").val("");
 			$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
-			
-			//更新合同名称
 			changeContractName();
 		}
 		
 		function roomChange(){
-			//更新合同名称
 			changeContractName();
 		}
 		
 		//更新合同名称
 		function changeContractName(){
 			var contractName = "";
-			
 			var porjectId = $("[id='propertyProject.id']").find("option:selected").val();
 			if(porjectId != null && porjectId != undefined && porjectId != ""){
 				var projectName = $("[id='propertyProject.id']").find("option:selected").text();
 				contractName = contractName + projectName;
 			}
-			
-			
 			var buildingId = $("[id='building.id']").find("option:selected").val();
 			if(buildingId != null && buildingId != undefined && buildingId != ""){
 				var buildingName = $("[id='building.id']").find("option:selected").text();
@@ -296,7 +278,6 @@
 					contractName = contractName + "-" + buildingName;
 				}
 			}
-			
 			var houseId = $("[id='house.id']").find("option:selected").val();
 			if(houseId != null && houseId != undefined && houseId != ""){
 				var houseNo = $("[id='house.id']").find("option:selected").text();
@@ -306,7 +287,6 @@
 					contractName = contractName + "-" + houseNo;
 				}
 			}
-			
 			var roomId = $("[id='room.id']").find("option:selected").val();
 			if(roomId != null && roomId != undefined && roomId != ""){
 				var roomNo = $("[id='room.id']").find("option:selected").text();
@@ -316,20 +296,20 @@
 					contractName = contractName + "-" + roomNo;
 				}
 			}
-			
 			$("#contractName").val(contractName);
 		}
 		
 		function rentModeChange() {
-			if($("#rentMode").val()=="0") {
+			if($("#rentMode").val()=="0") {//0=整套
 				$("[id='room.id']").attr("disabled","disabled");
 				$("[id='room.id']").val("");
 				$("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("请选择...");
 				$("[id='room.id']").next("a").hide();
-			} else {
+			} else {//1=单间
 				$("[id='room.id']").removeAttr("disabled");
 				$("[id='room.id']").next("a").show();
 			}
+			changeContractName();
 		}
 		
 		function toAudit(id,type) {
