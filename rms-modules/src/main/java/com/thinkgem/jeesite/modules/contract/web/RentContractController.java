@@ -813,7 +813,12 @@ public class RentContractController extends BaseController {
     if (CollectionUtils.isNotEmpty(rentalPaymentTrans)) {
       for (PaymentTrans pt : rentalPaymentTrans) {
         if (pt.getTradeAmount() != null && paymentType.equals(pt.getPaymentType())) {// 款项类型为“房租金额”
-          totalAmount = totalAmount + pt.getTradeAmount();
+          // 对于某些定金转合同 并且 定金金额不足一个月房租的情况，此处应除去房租里定金转的部分 ，因为后续会单独把定金金额加上。
+          if (pt.getTransferDepositAmount() != null && pt.getTransferDepositAmount() > 0) {
+            totalAmount = totalAmount + (pt.getTradeAmount() - pt.getTransferDepositAmount());
+          } else {
+            totalAmount = totalAmount + pt.getTradeAmount();
+          }
         }
       }
     }
