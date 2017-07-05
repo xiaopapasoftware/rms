@@ -386,12 +386,8 @@ public class TradingAccountsController extends BaseController {
     if (null != tradingAccounts.getReceiptList()) {
       for (Receipt receipt : tradingAccounts.getReceiptList()) {
         if (receiptService.checkReceiptNoIsRepeat(receipt.getReceiptNo())) {
-          addMessage(model, ViewMessageTypeEnum.ERROR, "收据编号:" + receipt.getReceiptNo() + "重复或已存在.");
-          if (StringUtils.isEmpty(id)) {
-            return form(tradingAccounts, model, redirectAttributes);
-          } else {
-            return "modules/funds/tradingAccountsForm";
-          }
+          addMessage(model, ViewMessageTypeEnum.ERROR, "收据编号:" + receipt.getReceiptNo() + "重复!");
+          return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
         }
       }
     }
