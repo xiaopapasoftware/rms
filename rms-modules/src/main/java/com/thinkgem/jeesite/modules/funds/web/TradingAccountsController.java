@@ -382,42 +382,17 @@ public class TradingAccountsController extends BaseController {
     if (!beanValidator(model, tradingAccounts)) {
       return form(tradingAccounts, model, redirectAttributes);
     }
-    /* 校验收据编号重复 */
-    boolean check = true;
-    String receiptNo = "";
-    List<String> receiptNoList = new ArrayList<String>();
+    // 校验收据编号重复
     if (null != tradingAccounts.getReceiptList()) {
       for (Receipt receipt : tradingAccounts.getReceiptList()) {
-        if (StringUtils.isBlank(receipt.getReceiptNo())) {
-          continue;
-        }
-        Receipt tmpReceipt = new Receipt();
-        tmpReceipt.setReceiptNo(receipt.getReceiptNo());
-        tmpReceipt.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-        List<Receipt> list = receiptService.findList(tmpReceipt);
-        if ((null != list && list.size() > 0)) {
-          for (Receipt tReceipt : list) {
-            if (receipt.getReceiptNo().equals(tReceipt.getReceiptNo()) && !tReceipt.getTradingAccounts().getId().equals(tradingAccounts.getId())) {
-              receiptNo = receipt.getReceiptNo();
-              check = false;
-              break;
-            }
+        if (receiptService.checkReceiptNoIsRepeat(receipt.getReceiptNo())) {
+          addMessage(model, ViewMessageTypeEnum.ERROR, "收据编号:" + receipt.getReceiptNo() + "重复或已存在.");
+          if (StringUtils.isEmpty(id)) {
+            return form(tradingAccounts, model, redirectAttributes);
+          } else {
+            return "modules/funds/tradingAccountsForm";
           }
         }
-        if (receiptNoList.contains(receipt.getReceiptNo())) {
-          receiptNo = receipt.getReceiptNo();
-          check = false;
-        }
-        if (!check) break;
-        receiptNoList.add(receipt.getReceiptNo());
-      }
-    }
-    if (!check) {
-      addMessage(model, ViewMessageTypeEnum.ERROR, "收据编号:" + receiptNo + "重复或已存在.");
-      if (StringUtils.isEmpty(id)) {
-        return form(tradingAccounts, model, redirectAttributes);
-      } else {
-        return "modules/funds/tradingAccountsForm";
       }
     }
     // 检查款项的状态是否正常,防止因为别的操作导致款项被删了。。不能继续进行到账登记
@@ -453,6 +428,7 @@ public class TradingAccountsController extends BaseController {
       return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
     }
   }
+
 
   // @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = "delete")

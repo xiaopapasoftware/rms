@@ -1,5 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
+ * \ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.funds.entity;
 
@@ -29,8 +29,11 @@ public class Receipt extends DataEntity<Receipt> {
   private String tradeMode; // 交易方式
   private String tradeId;
   private String tradeName;
+  private String tradeNo;
   private String tradeType;
+  private String tradeTypeDesc;
   private String paymentType;
+  private String paymentTypeDesc;
   private List<String> tradingAccountsIdList; // 用于sql条件
 
   public Receipt() {
@@ -94,6 +97,14 @@ public class Receipt extends DataEntity<Receipt> {
     this.tradeName = tradeName;
   }
 
+  public String getTradeNo() {
+    return tradeNo;
+  }
+
+  public void setTradeNo(String tradeNo) {
+    this.tradeNo = tradeNo;
+  }
+
   public String getTradeType() {
     return tradeType;
   }
@@ -102,12 +113,28 @@ public class Receipt extends DataEntity<Receipt> {
     this.tradeType = tradeType;
   }
 
+  public String getTradeTypeDesc() {
+    return tradeTypeDesc;
+  }
+
+  public void setTradeTypeDesc(String tradeTypeDesc) {
+    this.tradeTypeDesc = tradeTypeDesc;
+  }
+
   public String getPaymentType() {
     return paymentType;
   }
 
   public void setPaymentType(String paymentType) {
     this.paymentType = paymentType;
+  }
+
+  public String getPaymentTypeDesc() {
+    return paymentTypeDesc;
+  }
+
+  public void setPaymentTypeDesc(String paymentTypeDesc) {
+    this.paymentTypeDesc = paymentTypeDesc;
   }
 
   public String getTradeId() {

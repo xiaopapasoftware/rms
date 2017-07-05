@@ -24,8 +24,11 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
-			<li><label style="width:120px;">账务交易对象：</label>
+			<li><label style="width:120px;">账务交易名称：</label>
 				<form:input path="tradeName" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
+			</li>
+			<li><label style="width:120px;">账务交易编号：</label>
+				<form:input path="tradeNo" htmlEscape="false" maxlength="64" class="input-medium" style="width:185px;"/>
 			</li>
 			<li><label style="width:120px;">账务交易类型：</label>
 				<form:select path="tradeType" class="input-medium" style="width:200px;">
@@ -50,7 +53,7 @@
 			</li>
 			<li><label style="width:120px;">收据日期：</label>
 				<input name="receiptDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>"
+					value="<fmt:formatDate value="${receiptDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:185px;"/>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -61,7 +64,8 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>账务交易对象</th>
+				<th>账务交易名称</th>
+				<th>账务交易编号</th>
 				<th>账务交易类型</th>
 				<th>账务交易方式</th>
 				<th>收据款项类型</th>
@@ -70,6 +74,7 @@
 				<th>收据日期</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -77,6 +82,9 @@
 			<tr>
 				<td>
 					${receipt.tradeName}
+				</td>
+				<td>
+					${receipt.tradeNo}
 				</td>
 				<td>
 					${fns:getDictLabel(receipt.tradeType, 'trans_type', '')}
@@ -101,6 +109,11 @@
 				</td>
 				<td>
 					${receipt.remarks}
+				</td>
+				<td>
+					<shiro:hasPermission name="funds:receipt:adminBackDoorModify">
+						<a href="${ctx}/funds/receipt/form?id=${receipt.id}">【后门修改】</a>
+					</shiro:hasPermission>
 				</td>
 			</tr>
 		</c:forEach>

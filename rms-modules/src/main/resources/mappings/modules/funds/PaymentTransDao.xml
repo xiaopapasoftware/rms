@@ -104,9 +104,7 @@
 		) t
 
 		left join t_property_project tp on t.property_project_id = tp.id
-
 		where 1=1
-
 		<if test="transName != null and transName != ''">
 			AND t.transName like concat('%',#{transName},'%')
 		</if>
@@ -116,13 +114,10 @@
 		<if test="remittanceDate != null and remittanceDate != ''">
 			AND t.remittanceDate = #{remittanceDate}
 		</if>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		order by FIELD(t.paymentType, '2', '3', '4', '5',
 		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24','25','26','27'),t.startDate
-
 	</select>
 
 	<select id="findAllList" resultType="PaymentTrans">

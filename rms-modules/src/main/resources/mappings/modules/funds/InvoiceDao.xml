@@ -81,12 +81,12 @@
 		left join t_rent_contract tc on t.trade_id=tc.id ) tt
 		left join t_property_project tp on tt.property_project_id = tp.id
 	  <where>
+	  	1=1
 	  	<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
 		</if>
-		  1=1
-		  <!-- 数据范围过滤 -->
-		  ${sqlMap.dsf}
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
 	  </where>
 	</select>
 	

@@ -18,7 +18,7 @@
 					}
 					//当交易类型为预约定金("1")、新签合同("3")、正常人工续签("4")、电费充值("11")、公共事业费后付("12")，则收据金额之和必须与账务交易金额一致；
 					if(tradeTypeVar=="1"||tradeTypeVar=="3"||tradeTypeVar=="4"||tradeTypeVar=="11"||tradeTypeVar=="12"){
-					 	var preTradeAmount = $("#tradeAmount").val();
+					 	var preTradeAmount = parseFloat($("#tradeAmount").val());
 					 	var calculatedAmount = 0;
 					 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
 					 		calculatedAmount =  calculatedAmount  + parseFloat($(this).val());
@@ -40,7 +40,7 @@
 							}
 						}
 						if("1" == tradeDirect){//应收
-							var preTradeAmount = $("#tradeAmount").val();
+							var preTradeAmount = parseFloat($("#tradeAmount").val());
 						 	var calculatedAmount = 0;
 						 	$("input[id^='receiptList'][id$='_receiptAmount']").each(function(){
 						 		calculatedAmount = calculatedAmount + Number($(this).val());
@@ -50,6 +50,22 @@
 								return;
 						 	}
 						}
+					}
+					//本次页面上的收据号码列表不能重复
+					var repeatFlag = false;
+					var receiptNos = new Array();
+					$("input[id^='receiptList'][id$='_receiptNo']").each(function(){
+						receiptNos.push($(this).val());
+				 	});
+					var nary = receiptNos.sort();
+					for(var i = 0; i < nary.length-1; i++){
+					   if (nary[i] == nary[i+1]){
+						   repeatFlag = true;
+					   }
+					}
+					if(repeatFlag){
+					 	top.$.jBox.tip('录入的收据编号有重复！','warning');
+						return;
 					}
 					loading('正在提交，请稍等...');
 					$("#btnSubmit").attr("disabled",true);

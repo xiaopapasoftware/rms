@@ -5,13 +5,14 @@ package com.thinkgem.jeesite.modules.funds.service;
 
 import java.util.List;
 
+import org.activiti.editor.language.json.converter.util.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.dao.ReceiptDao;
+import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 
 /**
  * @author wangshujin
@@ -42,4 +43,20 @@ public class ReceiptService extends CrudService<ReceiptDao, Receipt> {
     receipt.preUpdate();
     super.delete(receipt);
   }
+
+  /**
+   * 校验收据编号重复 true为重复，false为不重复
+   */
+  public boolean checkReceiptNoIsRepeat(String receiptNo) {
+    Receipt tmpReceipt = new Receipt();
+    tmpReceipt.setReceiptNo(receiptNo);
+    List<Receipt> list = super.findList(tmpReceipt);
+    if (CollectionUtils.isNotEmpty(list)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+
 }

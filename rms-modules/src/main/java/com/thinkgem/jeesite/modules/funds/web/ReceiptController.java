@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
 
 /**
  * 账务收据Controller
@@ -65,6 +66,8 @@ public class ReceiptController extends BaseController {
   // @RequiresPermissions("funds:receipt:view")
   @RequestMapping(value = "form")
   public String form(Receipt receipt, Model model) {
+    receipt.setTradeTypeDesc(DictUtils.getDictLabel(receipt.getTradeType(), "trans_type", ""));
+    receipt.setPaymentTypeDesc(DictUtils.getDictLabel(receipt.getPaymentType(), "payment_type", ""));
     model.addAttribute("receipt", receipt);
     return "modules/funds/receiptForm";
   }
@@ -75,8 +78,14 @@ public class ReceiptController extends BaseController {
     if (!beanValidator(model, receipt)) {
       return form(receipt, model);
     }
-    receiptService.save(receipt);
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存账务收据成功");
+    String oriReceiptNo = receiptService.get(receipt.getId()).getReceiptNo();
+    String newReceiptNo = receipt.getReceiptNo();
+    if (!oriReceiptNo.equals(newReceiptNo) && receiptService.checkReceiptNoIsRepeat(newReceiptNo)) {
+      addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "收据号码已经存在，修改失败!");
+    } else {
+      receiptService.save(receipt);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功!");
+    }
     return "redirect:" + Global.getAdminPath() + "/funds/receipt/?repage";
   }
 

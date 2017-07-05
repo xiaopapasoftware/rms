@@ -21,75 +21,103 @@
 	</sql>
 	
 	<sql id="receiptJoins">
-	left join t_trading_accounts ta on a.trading_accounts_id=ta.id 
+		left join t_trading_accounts ta on a.trading_accounts_id=ta.id 
 	</sql>
     
 	<select id="get" resultType="Receipt">
+	 select tt.* from(
+		select t.*,
+		case 
+			when t.tradeType=1 then ta.agreement_name
+			else tc.contract_name 
+		end tradeName,
+		case 
+			when t.tradeType=1 then ta.agreement_code
+			else tc.contract_Code 
+		end tradeNo,
+		CASE 
+			WHEN t.tradeType = 1 THEN ta.PROPERTY_PROJECT_ID
+			ELSE tc.PROPERTY_PROJECT_ID 
+		END PROPERTY_PROJECT_ID
+		from(
+		
 		SELECT 
 			<include refid="receiptColumns"/>
 		FROM t_receipt a
 		<include refid="receiptJoins"/>
 		WHERE a.id = #{id}
+		
+				) t left join t_deposit_agreement ta on t.trade_id=ta.id 
+			left join t_rent_contract tc on t.trade_id=tc.id) tt
+		left join t_property_project tp on tt.property_project_id = tp.id
 	</select>
 	
 	<select id="findList" resultType="Receipt">
 	  select tt.* from(
 		select t.*,
-		case when t.tradeType=1 then ta.agreement_name
-		else tc.contract_name end tradeName,
-		CASE WHEN t.tradeType = 1 THEN ta.PROPERTY_PROJECT_ID
-		ELSE tc.PROPERTY_PROJECT_ID END PROPERTY_PROJECT_ID
+		case 
+			when t.tradeType=1 then ta.agreement_name
+			else tc.contract_name 
+		end tradeName,
+		case 
+			when t.tradeType=1 then ta.agreement_code
+			else tc.contract_Code 
+		end tradeNo,
+		CASE 
+			WHEN t.tradeType = 1 THEN ta.PROPERTY_PROJECT_ID
+			ELSE tc.PROPERTY_PROJECT_ID 
+		END PROPERTY_PROJECT_ID
 		from(
-		SELECT 
-			<include refid="receiptColumns"/>
-		FROM t_receipt a
-		<include refid="receiptJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="tradingAccounts != null and tradingAccounts.id != null and tradingAccounts.id != ''">
-				AND a.trading_accounts_id = #{tradingAccounts.id}
-			</if>
-			<if test="tradeId != null and tradeId != ''">
-			AND a.trading_accounts_id = #{tradeId}
-			</if>
-			<if test="receiptNo != null and receiptNo != ''">
-				AND a.receipt_no =  #{receiptNo} 
-			</if>
-			<if test="receiptDate != null and receiptDate != ''">
-				AND a.receipt_date = #{receiptDate}
-			</if>
-			<if test="receiptAmount != null and receiptAmount != ''">
-				AND a.receipt_amount = #{receiptAmount}
-			</if>
-			<if test="tradeMode != null and tradeMode != ''">
-				AND a.trade_mode = #{tradeMode}
-			</if>
-			<if test="paymentType != null and paymentType != ''">
-				AND a.payment_type = #{paymentType}
-			</if>
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+				SELECT 
+					<include refid="receiptColumns"/>
+				FROM t_receipt a
+				<include refid="receiptJoins"/>
+				<where>
+					a.del_flag = #{DEL_FLAG_NORMAL}
+					<if test="tradingAccounts != null and tradingAccounts.id != null and tradingAccounts.id != ''">
+						AND a.trading_accounts_id = #{tradingAccounts.id}
+					</if>
+					<if test="tradeId != null and tradeId != ''">
+					AND a.trading_accounts_id = #{tradeId}
+					</if>
+					<if test="receiptNo != null and receiptNo != ''">
+						AND a.receipt_no =  #{receiptNo} 
+					</if>
+					<if test="receiptDate != null and receiptDate != ''">
+						AND a.receipt_date = #{receiptDate}
+					</if>
+					<if test="receiptAmount != null and receiptAmount != ''">
+						AND a.receipt_amount = #{receiptAmount}
+					</if>
+					<if test="tradeMode != null and tradeMode != ''">
+						AND a.trade_mode = #{tradeMode}
+					</if>
+					<if test="paymentType != null and paymentType != ''">
+						AND a.payment_type = #{paymentType}
+					</if>
+				</where>
+				<choose>
+					<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+						ORDER BY ${page.orderBy}
+					</when>
+					<otherwise>
+						ORDER BY a.update_date DESC
+					</otherwise>
+				</choose>
 		) t left join t_deposit_agreement ta on t.trade_id=ta.id 
 			left join t_rent_contract tc on t.trade_id=tc.id) tt
 		left join t_property_project tp on tt.property_project_id = tp.id
 	  <where>
+	  	1=1
 	  	<if test="tradeName != null and tradeName != ''">
 			AND tt.tradeName like concat('%',#{tradeName},'%')
 		</if>
-
-		  1=1
-
-		  <!-- 数据范围过滤 -->
-		  ${sqlMap.dsf}
+		<if test="tradeNo != null and tradeNo != ''">
+			AND tt.tradeNo = #{tradeNo}
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
 	  </where>
-
 	</select>
 	
 	<select id="findAllList" resultType="Receipt">
