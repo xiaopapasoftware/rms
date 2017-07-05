@@ -48,6 +48,7 @@
 		a.coal_value AS "coalValue",
 		a.water_value AS "waterValue",
 		a.remind_time AS "remindTime",
+		a.renew_count AS "renewCount",
 		a.contract_status AS "contractStatus",
 		a.contract_busi_status AS "contractBusiStatus",
 		a.create_by AS "createBy.id",
@@ -177,10 +178,8 @@
 				AND a.contract_id = #{contractId}
 			</if>
 		</where>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -199,10 +198,8 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -444,6 +441,7 @@
 		total_meter_value,
 		peak_meter_value,
 		valley_meter_value,
+		renew_count,
 		coal_value,
 		water_value,
 		remind_time,
@@ -493,6 +491,7 @@
 		#{totalMeterValue},
 		#{peakMeterValue},
 		#{valleyMeterValue},
+		#{renewCount},
 		#{coalValue},
 		#{waterValue},
 		#{remindTime},
@@ -527,16 +526,13 @@
 		rental = #{rental},
 		start_date = #{startDate},
 		expired_date = #{expiredDate},
-		sign_date =
-		#{signDate},
+		sign_date = #{signDate},
 		sign_type = #{signType},
 		has_tv = #{hasTv},
-		tv_fee =
-		#{tvFee},
+		tv_fee = #{tvFee},
 		has_net = #{hasNet},
 		net_fee = #{netFee},
-		water_fee =
-		#{waterFee},
+		water_fee = #{waterFee},
 		service_fee = #{serviceFee},
 		ren_months = #{renMonths},
 		deposit_months = #{depositMonths},
@@ -544,6 +540,7 @@
 		deposit_electric_amount = #{depositElectricAmount},
 		ele_recharge_amount = #{eleRechargeAmount},
 		has_visa = #{hasVisa},
+		renew_count = #{renewCount},
 		meter_value = #{meterValue},
 		total_meter_value = #{totalMeterValue},
 		peak_meter_value = #{peakMeterValue},

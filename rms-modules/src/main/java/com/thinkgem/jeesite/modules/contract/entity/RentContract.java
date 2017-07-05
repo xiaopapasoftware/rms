@@ -73,6 +73,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String houseNo;// 房屋编号
   private String roomNo;// 房间编号
   private String validatorFlag;
+  private Integer renewCount;// 续签次数
   private List<Tenant> tenantList = new ArrayList<Tenant>();// 承租人
   private List<Tenant> liveList = new ArrayList<Tenant>();// 入住人
   private String chargeType;// 公用事业费付费方式
@@ -90,7 +91,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String rentContractOtherFile;// 出租合同其他附件
   private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
   private String oriEndDate;// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
-  private String returnDate;//用户输入的退租日期
+  private String returnDate;// 用户输入的退租日期
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
@@ -465,6 +466,14 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setValidatorFlag(String validatorFlag) {
     this.validatorFlag = validatorFlag;
+  }
+
+  public Integer getRenewCount() {
+    return renewCount;
+  }
+
+  public void setRenewCount(Integer renewCount) {
+    this.renewCount = renewCount;
   }
 
   public List<Tenant> getTenantList() {

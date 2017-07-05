@@ -262,6 +262,7 @@
 				<th style="width:20px;">合同签订类型</th>
 				<th>合同编号</th>
 				<th>合同名称</th>
+				<th>续签次数</th>
 				<th style="width:20px;">出租方式</th>
 				<th style="width:120px;">物业项目</th>
 				<th style="width:120px;">楼宇</th>
@@ -308,6 +309,9 @@
 					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
 						${rentContract.contractName}
 					</a>
+				</td>
+				<td>
+					${rentContract.renewCount}
 				</td>
 				<td>
 					${fns:getDictLabel(rentContract.rentMode, 'rent_mode', '')}

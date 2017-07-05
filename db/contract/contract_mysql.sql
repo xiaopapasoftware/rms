@@ -148,6 +148,7 @@ create table T_RENT_CONTRACT
    CONTRACT_BUSI_STATUS      VARCHAR(64) COMMENT '合同业务状态',
    CHARGE_TYPE          VARCHAR(64) COMMENT '付费方式',
    return_remark 		VARCHAR(64) COMMENT '退租备注',
+   renew_count			INT			default 0 COMMENT '续签次数' ,
    data_source 			VARCHAR(64) default '1' COMMENT '数据来源 管理系统/APP',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
