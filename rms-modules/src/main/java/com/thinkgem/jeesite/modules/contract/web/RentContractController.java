@@ -127,16 +127,27 @@ public class RentContractController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("contract:rentContract:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-    initContractSearchConditions(rentContract, model, request, response);
+  /**
+   * 菜单跳转初始化
+   */
+  @RequestMapping(value = {""})
+  public String initPage(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initContractSearchConditions(rentContract, model, request, response, false);
     return "modules/contract/rentContractList";
   }
 
-  private void initContractSearchConditions(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
-    Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
-    model.addAttribute("page", page);
+  // @RequiresPermissions("contract:rentContract:view")
+  @RequestMapping(value = {"list"})
+  public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initContractSearchConditions(rentContract, model, request, response, true);
+    return "modules/contract/rentContractList";
+  }
+
+  private void initContractSearchConditions(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response, boolean needQuery) {
+    if (needQuery) {
+      Page<RentContract> page = rentContractService.findPage(new Page<RentContract>(request, response), rentContract);
+      model.addAttribute("page", page);
+    }
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
     if (rentContract != null) {
@@ -169,15 +180,15 @@ public class RentContractController extends BaseController {
 
   @RequestMapping(value = {"rentContractDialogList"})
   public String rentContractDialogList(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-    initContractSearchConditions(rentContract, model, request, response);
+    rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue());
+    initContractSearchConditions(rentContract, model, request, response, true);
     return "modules/contract/rentContractDialog";
   }
 
   @RequestMapping(value = {"rentContractDialog"})
   public String rentContractDialog(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-    rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue());
     model.addAttribute("rentContract", rentContract);
-    initContractSearchConditions(rentContract, model, request, response);
+    initContractSearchConditions(rentContract, model, request, response, false);
     return "modules/contract/rentContractDialog";
   }
 
@@ -1064,7 +1075,7 @@ public class RentContractController extends BaseController {
    */
   @RequestMapping(value = "queryPublicBasicFeeInfo")
   public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
-    initContractSearchConditions(rentContract, model, request, response);
+    initContractSearchConditions(rentContract, model, request, response, false);
     return "modules/fee/contractInitFeeMgt";
   }
 
