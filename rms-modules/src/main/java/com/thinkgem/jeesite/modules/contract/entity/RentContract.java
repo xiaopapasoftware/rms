@@ -84,8 +84,8 @@ public class RentContract extends DataEntity<RentContract> {
   private String name;
   private String tenantName;// 承租人姓名
   private String liveName;// 入住人姓名
-  private String refAgreementName;// 原定金协议名称，转合同的定金协议
-  private String refContractName;// 原合同名称，当前合同为续签合同时，保存原合同名称
+  private String refAgreementNo;// 原定金协议编号
+  private String refContractNo;// 原合同编号
   private String rentContractFile;// 出租合同文件
   private String rentContractCusIDFile;// 租客身份证
   private String rentContractOtherFile;// 出租合同其他附件
@@ -556,20 +556,20 @@ public class RentContract extends DataEntity<RentContract> {
     this.liveName = liveName;
   }
 
-  public String getRefAgreementName() {
-    return refAgreementName;
+  public String getRefAgreementNo() {
+    return refAgreementNo;
   }
 
-  public void setRefAgreementName(String refAgreementName) {
-    this.refAgreementName = refAgreementName;
+  public void setRefAgreementNo(String refAgreementNo) {
+    this.refAgreementNo = refAgreementNo;
   }
 
-  public String getRefContractName() {
-    return refContractName;
+  public String getRefContractNo() {
+    return refContractNo;
   }
 
-  public void setRefContractName(String refContractName) {
-    this.refContractName = refContractName;
+  public void setRefContractNo(String refContractNo) {
+    this.refContractNo = refContractNo;
   }
 
   public String getRentContractFile() {

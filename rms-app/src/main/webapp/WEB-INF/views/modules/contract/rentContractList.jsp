@@ -255,13 +255,13 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:3000px;">
 		<thead>
 			<tr>
-				<th>原出租合同名称</th>
-				<th>原定金协议名称</th>
+				<th>原合同编号</th>
+				<th>原定金编号</th>
+				<th>合同编号</th>
+				<th>合同名称</th>
 				<th style="width:20px;">合同来源</th>
 				<th>数据来源</th>
 				<th style="width:20px;">合同签订类型</th>
-				<th>合同编号</th>
-				<th>合同名称</th>
 				<th>续签次数</th>
 				<th style="width:20px;">出租方式</th>
 				<th style="width:120px;">物业项目</th>
@@ -288,10 +288,18 @@
 		<c:forEach items="${page.list}" var="rentContract">
 			<tr <c:if test="${rentContract.contractBusiStatus=='7'||rentContract.contractBusiStatus=='8'||rentContract.contractBusiStatus=='9'||rentContract.contractBusiStatus=='16'}">style="background-color:#f1f2f2;"</c:if>>
 				<td>
-					${rentContract.refContractName}
+					${rentContract.refContractNo}
 				</td>
 				<td>
-					${rentContract.refAgreementName}
+					${rentContract.refAgreementNo}
+				</td>
+				<td>
+					${rentContract.contractCode}
+				</td>
+				<td>
+					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
+						${rentContract.contractName}
+					</a>
 				</td>
 				<td>
 					${fns:getDictLabel(rentContract.contractSource, 'contract_source', '')}
@@ -301,14 +309,6 @@
 				</a>
 				<td>
 					${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
-				</td>
-				<td>
-					${rentContract.contractCode}
-				</td>
-				<td>
-					<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
-						${rentContract.contractName}
-					</a>
 				</td>
 				<td>
 					${rentContract.renewCount}
