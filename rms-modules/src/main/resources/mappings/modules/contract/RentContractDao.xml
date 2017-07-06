@@ -7,10 +7,10 @@
 		a.contract_code AS "contractCode",
 		a.contract_name AS "contractName",
 		a.agreement_id AS "agreementId",
-		tda.agreement_no AS "refAgreementNo",
+		tda.agreement_code AS "refAgreementNo",
 		a.contract_id AS
 		"contractId",
-		trc.contract_no AS "refContractNo",
+		trc.contract_code AS "refContractNo",
 		a.rent_mode AS
 		"rentMode",
 		a.property_project_id AS "propertyProject.id",
