@@ -1075,7 +1075,7 @@ public class RentContractController extends BaseController {
    */
   @RequestMapping(value = "queryPublicBasicFeeInfo")
   public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
-    initContractSearchConditions(rentContract, model, request, response, false);
+    initContractSearchConditions(rentContract, model, request, response, true);
     return "modules/fee/contractInitFeeMgt";
   }
 
