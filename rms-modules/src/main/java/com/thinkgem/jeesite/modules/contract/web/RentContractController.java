@@ -339,7 +339,7 @@ public class RentContractController extends BaseController {
   public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model, request);
-    }
+    }    
     if (rentContract.getIsNewRecord()) {
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
