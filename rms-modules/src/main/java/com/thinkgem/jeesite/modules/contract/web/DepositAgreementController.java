@@ -105,8 +105,15 @@ public class DepositAgreementController extends BaseController {
   }
 
   // @RequiresPermissions("contract:depositAgreement:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initQueryCondition(model, depositAgreement);
+    return "modules/contract/depositAgreementList";
+  }
+
+  // @RequiresPermissions("contract:depositAgreement:view")
+  @RequestMapping(value = {"list"})
+  public String listQuery(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<DepositAgreement> page = depositAgreementService.findPage(new Page<DepositAgreement>(request, response), depositAgreement);
     // 单独设置该定金协议下的承租人姓名和手机号列表
     if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
@@ -130,9 +137,13 @@ public class DepositAgreementController extends BaseController {
       }
     }
     model.addAttribute("page", page);
+    initQueryCondition(model, depositAgreement);
+    return "modules/contract/depositAgreementList";
+  }
+
+  private void initQueryCondition(Model model, DepositAgreement depositAgreement) {
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     if (null != depositAgreement.getPropertyProject()) {
       PropertyProject propertyProject = new PropertyProject();
       propertyProject.setId(depositAgreement.getPropertyProject().getId());
@@ -141,7 +152,6 @@ public class DepositAgreementController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != depositAgreement.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -150,7 +160,6 @@ public class DepositAgreementController extends BaseController {
       List<House> houseList = houseService.findList(house);
       model.addAttribute("houseList", houseList);
     }
-
     if (null != depositAgreement.getHouse()) {
       Room room = new Room();
       House house = new House();
@@ -159,7 +168,6 @@ public class DepositAgreementController extends BaseController {
       List<Room> roomList = roomService.findList(room);
       model.addAttribute("roomList", roomList);
     }
-    return "modules/contract/depositAgreementList";
   }
 
   // @RequiresPermissions("contract:depositAgreement:view")
@@ -264,24 +272,26 @@ public class DepositAgreementController extends BaseController {
   }
 
   @RequestMapping(value = "audit")
-  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     depositAgreementService.audit(auditHis);
-    return list(new DepositAgreement(), request, response, model);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
+    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
   @RequestMapping(value = "cancel")
-  public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
     auditHis.setUpdateUser(UserUtils.getUser().getId());
     depositAgreementService.audit(auditHis);
-    return list(new DepositAgreement(), request, response, model);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
+    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
   /**
    * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费款项。
    */
   @RequestMapping(value = "breakContract")
-  public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     Double refundAmount = depositAgreement.getRefundAmount();// 转违约，可能要退一点费用给客户，这里就是退费的金额
     String agreementId = depositAgreement.getId();// 定金协议ID
     depositAgreement = depositAgreementService.get(agreementId);
@@ -319,7 +329,8 @@ public class DepositAgreementController extends BaseController {
       addMessage(model, ViewMessageTypeEnum.SUCCESS, "定金转违约成功！");
     }
     model.addAttribute("depositAgreement", new DepositAgreement());
-    return list(new DepositAgreement(), request, response, model);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
+    return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
   /**

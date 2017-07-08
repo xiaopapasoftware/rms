@@ -59,10 +59,17 @@ public class BuildingController extends BaseController {
   }
 
   // @RequiresPermissions("inventory:building:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Building> page = buildingService.findPage(new Page<Building>(request, response), building);
     model.addAttribute("page", page);
+    model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
+    return "modules/inventory/buildingList";
+  }
+
+  // @RequiresPermissions("inventory:building:view")
+  @RequestMapping(value = {""})
+  public String listNoQuery(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
     return "modules/inventory/buildingList";
   }

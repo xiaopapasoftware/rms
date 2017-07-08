@@ -52,10 +52,15 @@ public class AccountingController extends BaseController {
   }
 
   // @RequiresPermissions("contract:accounting:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting);
     model.addAttribute("page", page);
+    return "modules/contract/accountingList";
+  }
+
+  @RequestMapping(value = {""})
+  public String listNoQuery(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/contract/accountingList";
   }
 

@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/person/partner/">合作人信息列表</a></li>
 		<shiro:hasPermission name="person:partner:edit"><li><a href="${ctx}/person/partner/form">合作人信息添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="partner" action="${ctx}/person/partner/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="partner" action="${ctx}/person/partner/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

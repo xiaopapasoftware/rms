@@ -71,14 +71,24 @@ public class LeaseContractController extends BaseController {
   }
 
   // @RequiresPermissions("contract:leaseContract:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<LeaseContract> page = leaseContractService.findPage(new Page<LeaseContract>(request, response), leaseContract);
     model.addAttribute("page", page);
+    initQueryCondition(model, leaseContract);
+    return "modules/contract/leaseContractList";
+  }
 
+  // @RequiresPermissions("contract:leaseContract:view")
+  @RequestMapping(value = {""})
+  public String listNoQuery(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initQueryCondition(model, leaseContract);
+    return "modules/contract/leaseContractList";
+  }
+
+  private void initQueryCondition(Model model, LeaseContract leaseContract) {
     List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
     model.addAttribute("projectList", projectList);
-
     if (null != leaseContract.getPropertyProject() && StringUtils.isNotEmpty(leaseContract.getPropertyProject().getId())) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -87,7 +97,6 @@ public class LeaseContractController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != leaseContract.getBuilding() && StringUtils.isNotEmpty(leaseContract.getBuilding().getId())) {
       House house = new House();
       Building building = new Building();
@@ -96,15 +105,13 @@ public class LeaseContractController extends BaseController {
       List<House> houseList = houseService.findList(house);
       model.addAttribute("houseList", houseList);
     }
-
-    return "modules/contract/leaseContractList";
   }
 
   @RequestMapping(value = "audit")
   public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
     leaseContractService.audit(auditHis);
-
-    return list(new LeaseContract(), request, response, model);
+    addMessage(model, ViewMessageTypeEnum.SUCCESS, "操作成功！");
+    return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
   }
 
   @RequestMapping(value = "auditHis")

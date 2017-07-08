@@ -53,10 +53,15 @@ public class PartnerController extends BaseController {
   }
 
   // @RequiresPermissions("person:partner:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Partner partner, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(Partner partner, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Partner> page = partnerService.findPage(new Page<Partner>(request, response), partner);
     model.addAttribute("page", page);
+    return "modules/person/partnerList";
+  }
+
+  @RequestMapping(value = {""})
+  public String listNoQuery(Partner partner, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/person/partnerList";
   }
 

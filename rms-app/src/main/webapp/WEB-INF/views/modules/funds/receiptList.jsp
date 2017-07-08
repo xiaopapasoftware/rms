@@ -20,7 +20,7 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/receipt/">账务收据列表</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="receipt" action="${ctx}/funds/receipt/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="receipt" action="${ctx}/funds/receipt/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

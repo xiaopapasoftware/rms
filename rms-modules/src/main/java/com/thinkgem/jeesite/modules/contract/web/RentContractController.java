@@ -1070,9 +1070,12 @@ public class RentContractController extends BaseController {
     }
   }
 
-  /**
-   * 跳转到公共事业费查询页面、公共事业费点击查询按钮
-   */
+  @RequestMapping(value = "initPublicBasicFeeInfo")
+  public String initPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
+    initContractSearchConditions(rentContract, model, request, response, false);
+    return "modules/fee/contractInitFeeMgt";
+  }
+
   @RequestMapping(value = "queryPublicBasicFeeInfo")
   public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     initContractSearchConditions(rentContract, model, request, response, true);

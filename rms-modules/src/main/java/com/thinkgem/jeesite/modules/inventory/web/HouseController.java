@@ -75,11 +75,10 @@ public class HouseController extends BaseController {
   }
 
   // @RequiresPermissions("inventory:house:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<House> page = houseService.findPage(new Page<House>(request, response), house);
     model.addAttribute("page", page);
-
     // 查询房屋下所有的业主信息
     if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
       for (House h : page.getList()) {
@@ -104,6 +103,18 @@ public class HouseController extends BaseController {
         h.setOwnerNamesOfHouse(ownerNamesOfHouse);
       }
     }
+    initQueryCondition(model, house);
+    return "modules/inventory/houseList";
+  }
+
+  // @RequiresPermissions("inventory:house:view")
+  @RequestMapping(value = {""})
+  public String listNoQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initQueryCondition(model, house);
+    return "modules/inventory/houseList";
+  }
+
+  private void initQueryCondition(Model model, House house) {
     // 组装物业项目搜索条件值
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
     // 组装业主搜索条件值
@@ -116,7 +127,6 @@ public class HouseController extends BaseController {
       bd.setPropertyProject(pp);
       model.addAttribute("listBuilding", buildingService.findList(bd));
     }
-    return "modules/inventory/houseList";
   }
 
   @RequestMapping(value = {"findList"})

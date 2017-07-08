@@ -18,10 +18,8 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li><a
-			href="${ctx}/contract/rentContract/queryPublicBasicFeeInfo">合同初始事业费管理</a></li>
-		<li class="active"><a
-			href="${ctx}/fee/electricFee/postpaidFeeList">后付费查询</a></li>
+		<li><a href="${ctx}/contract/rentContract/initPublicBasicFeeInfo">合同初始事业费管理</a></li>
+		<li class="active"><a href="${ctx}/fee/electricFee/initpostpaidFeeList">后付费查询</a></li>
 		<li><a href="${ctx}/fee/electricFee/postpaidFeeForm">后付费付款</a></li>
 	</ul>
 	<form:form id="searchForm" modelAttribute="postpaidFee"

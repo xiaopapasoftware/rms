@@ -74,13 +74,22 @@ public class RoomController extends BaseController {
   }
 
   // @RequiresPermissions("inventory:room:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Room room, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(Room room, HttpServletRequest request, HttpServletResponse response, Model model) {
+    initQueryCondition(room, model);
+    return "modules/inventory/roomList";
+  }
+
+  @RequestMapping(value = {"list"})
+  public String listQuery(Room room, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Room> page = roomService.findPage(new Page<Room>(request, response), room);
     model.addAttribute("page", page);
+    initQueryCondition(room, model);
+    return "modules/inventory/roomList";
+  }
 
+  private void initQueryCondition(Room room, Model model) {
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-
     if (room.getPropertyProject() != null && StringUtils.isNotEmpty(room.getPropertyProject().getId())) {
       PropertyProject pp = new PropertyProject();
       pp.setId(room.getPropertyProject().getId());
@@ -88,7 +97,6 @@ public class RoomController extends BaseController {
       bd.setPropertyProject(pp);
       model.addAttribute("listBuilding", buildingService.findList(bd));
     }
-
     if (room.getBuilding() != null && StringUtils.isNotEmpty(room.getBuilding().getId())) {
       Building bd = new Building();
       bd.setId(room.getBuilding().getId());
@@ -96,8 +104,6 @@ public class RoomController extends BaseController {
       h.setBuilding(bd);
       model.addAttribute("listHouse", houseService.findList(h));
     }
-
-    return "modules/inventory/roomList";
   }
 
   @RequestMapping(value = {"findList"})

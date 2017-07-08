@@ -95,10 +95,15 @@ public class TradingAccountsController extends BaseController {
   }
 
   // @RequiresPermissions("funds:tradingAccounts:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<TradingAccounts> page = tradingAccountsService.findPage(new Page<TradingAccounts>(request, response), tradingAccounts);
     model.addAttribute("page", page);
+    return "modules/funds/tradingAccountsList";
+  }
+
+  @RequestMapping(value = {""})
+  public String listNoQuery(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/funds/tradingAccountsList";
   }
 

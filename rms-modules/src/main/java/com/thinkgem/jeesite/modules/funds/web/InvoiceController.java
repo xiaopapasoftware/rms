@@ -66,12 +66,18 @@ public class InvoiceController extends BaseController {
   }
 
   // @RequiresPermissions("funds:invoice:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Invoice invoice, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(Invoice invoice, HttpServletRequest request, HttpServletResponse response, Model model) {
+    return "modules/funds/invoiceList";
+  }
+
+  @RequestMapping(value = {"list"})
+  public String listQuery(Invoice invoice, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Invoice> page = invoiceService.findPage(new Page<Invoice>(request, response), invoice);
     model.addAttribute("page", page);
     return "modules/funds/invoiceList";
   }
+
 
   // @RequiresPermissions("funds:invoice:view")
   @RequestMapping(value = "form")

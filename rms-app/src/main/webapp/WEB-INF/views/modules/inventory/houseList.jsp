@@ -56,7 +56,7 @@
 		</shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="house"
-		action="${ctx}/inventory/house/" method="post"
+		action="${ctx}/inventory/house/list" method="post"
 		class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}" />
 		<input id="pageSize" name="pageSize" type="hidden"

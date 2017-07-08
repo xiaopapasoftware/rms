@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/person/remittancer/">汇款人信息列表</a></li>
 		<shiro:hasPermission name="person:remittancer:edit"><li><a href="${ctx}/person/remittancer/form">汇款人信息添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="remittancer" action="${ctx}/person/remittancer/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="remittancer" action="${ctx}/person/remittancer/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

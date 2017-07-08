@@ -68,10 +68,17 @@ public class TenantController extends BaseController {
   }
 
   // @RequiresPermissions("person:tenant:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
     model.addAttribute("page", page);
+    model.addAttribute("listUser", systemService.findUser(new User()));
+    model.addAttribute("listCompany", companyService.findList(new Company()));
+    return "modules/person/tenantList";
+  }
+
+  @RequestMapping(value = {""})
+  public String listNoQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("listUser", systemService.findUser(new User()));
     model.addAttribute("listCompany", companyService.findList(new Company()));
     return "modules/person/tenantList";

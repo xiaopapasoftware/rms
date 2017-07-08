@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/inventory/building/">楼宇列表</a></li>
 		<shiro:hasPermission name="inventory:building:edit"><li><a href="${ctx}/inventory/building/form">楼宇添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="building" action="${ctx}/inventory/building/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="building" action="${ctx}/inventory/building/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

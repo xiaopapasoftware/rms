@@ -18,11 +18,11 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/fee/electricFee/">电费充值列表</a></li>
+		<li class="active"><a href="${ctx}/fee/electricFee">电费充值列表</a></li>
 		<li><a href="${ctx}/fee/electricFee/form">电费充值</a></li>
 		<li><a href="${ctx}/fee/electricFee/viewUseInfo">电费使用查询</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="electricFee" action="${ctx}/fee/electricFee/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="electricFee" action="${ctx}/fee/electricFee/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

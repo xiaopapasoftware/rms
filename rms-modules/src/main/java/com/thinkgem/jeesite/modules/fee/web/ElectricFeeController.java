@@ -79,8 +79,13 @@ public class ElectricFeeController extends BaseController {
   }
 
   // @RequiresPermissions("fee:electricFee:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
+    return "modules/fee/electricFeeList";
+  }
+
+  @RequestMapping(value = {"list"})
+  public String listQuery(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<ElectricFee> page = electricFeeService.findPage(new Page<ElectricFee>(request, response), electricFee);
     model.addAttribute("page", page);
     return "modules/fee/electricFeeList";
@@ -230,6 +235,11 @@ public class ElectricFeeController extends BaseController {
   public String postpaidFeeList(PostpaidFee postpaidFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<PostpaidFee> page = postpaidFeeService.findPage(new Page<PostpaidFee>(request, response), postpaidFee);
     model.addAttribute("page", page);
+    return "modules/fee/postpaidFeeList";
+  }
+
+  @RequestMapping(value = {"initpostpaidFeeList"})
+  public String initpostpaidFeeList(PostpaidFee postpaidFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/fee/postpaidFeeList";
   }
 

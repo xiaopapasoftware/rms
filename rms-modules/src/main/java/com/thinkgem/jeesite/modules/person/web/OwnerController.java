@@ -53,10 +53,16 @@ public class OwnerController extends BaseController {
   }
 
   // @RequiresPermissions("person:owner:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Owner> page = ownerService.findPage(new Page<Owner>(request, response), owner);
     model.addAttribute("page", page);
+    return "modules/person/ownerList";
+  }
+
+  // @RequiresPermissions("person:owner:view")
+  @RequestMapping(value = {""})
+  public String listNoQuery(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/person/ownerList";
   }
 

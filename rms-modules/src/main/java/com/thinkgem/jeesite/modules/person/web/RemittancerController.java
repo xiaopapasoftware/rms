@@ -53,8 +53,14 @@ public class RemittancerController extends BaseController {
   }
 
   // @RequiresPermissions("person:remittancer:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
+    return "modules/person/remittancerList";
+  }
+
+  // @RequiresPermissions("person:remittancer:view")
+  @RequestMapping(value = {"list"})
+  public String listQuery(Remittancer remittancer, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Remittancer> page = remittancerService.findPage(new Page<Remittancer>(request, response), remittancer);
     model.addAttribute("page", page);
     return "modules/person/remittancerList";

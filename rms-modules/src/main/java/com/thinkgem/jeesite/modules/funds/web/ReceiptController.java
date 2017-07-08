@@ -49,12 +49,19 @@ public class ReceiptController extends BaseController {
   }
 
   // @RequiresPermissions("funds:receipt:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {""})
+  public String listNoQuery(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
+    return "modules/funds/receiptList";
+  }
+
+  @RequestMapping(value = {"list"})
+  public String listQuery(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Receipt> page = receiptService.findPage(new Page<Receipt>(request, response), receipt);
     model.addAttribute("page", page);
     return "modules/funds/receiptList";
   }
+
+
 
   @RequestMapping(value = {"viewReceipt"})
   public String viewReceipt(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {

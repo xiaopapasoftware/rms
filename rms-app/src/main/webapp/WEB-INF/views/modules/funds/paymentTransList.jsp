@@ -104,7 +104,7 @@
 			<li><a href="javascript:void(0);" onclick="register()">到账登记</a></li>
 		</shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="paymentTrans" action="${ctx}/funds/paymentTrans/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="250"/>
 		<ul class="ul-form">

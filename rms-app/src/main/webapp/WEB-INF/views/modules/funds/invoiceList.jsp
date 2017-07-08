@@ -31,7 +31,7 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="${ctx}/funds/invoice/">发票信息列表</a></li>
 	</ul>
-	<form:form id="searchForm" modelAttribute="invoice" action="${ctx}/funds/invoice/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="invoice" action="${ctx}/funds/invoice/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

@@ -21,7 +21,7 @@
 		<li class="active"><a href="${ctx}/person/owner/">业主信息列表</a></li>
 		<shiro:hasPermission name="person:owner:edit"><li><a href="${ctx}/person/owner/form">业主信息添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="owner" action="${ctx}/person/owner/" method="post" class="breadcrumb form-search" cssStyle="width:1150px;">
+	<form:form id="searchForm" modelAttribute="owner" action="${ctx}/person/owner/list" method="post" class="breadcrumb form-search" cssStyle="width:1150px;">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

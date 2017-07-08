@@ -111,7 +111,7 @@
 		<li class="active"><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
 		<shiro:hasPermission name="contract:leaseContract:edit"><li><a href="${ctx}/contract/leaseContract/form?type=add">承租合同添加</a></li></shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/list" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">

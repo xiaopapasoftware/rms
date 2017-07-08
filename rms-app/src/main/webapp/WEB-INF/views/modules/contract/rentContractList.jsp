@@ -162,7 +162,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/contract/rentContract/list">出租合同列表</a></li>
+		<li class="active"><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
 		<shiro:hasPermission name="contract:rentContract:edit"><li><a href="${ctx}/contract/rentContract/form">出租合同添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="rentContract" action="${ctx}/contract/rentContract/list" method="post" class="breadcrumb form-search">

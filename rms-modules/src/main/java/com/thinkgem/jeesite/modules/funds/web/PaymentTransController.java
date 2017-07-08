@@ -55,12 +55,17 @@ public class PaymentTransController extends BaseController {
 
   // @RequiresPermissions("funds:paymentTrans:view")
   @SuppressWarnings({"rawtypes", "unchecked"})
-  @RequestMapping(value = {"list", ""})
-  public String list(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @RequestMapping(value = {"list"})
+  public String listQuery(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page pageParam = new Page<PaymentTrans>(request, response);
     pageParam.setPageSize(250);
     Page<PaymentTrans> page = paymentTransService.findPage(pageParam, paymentTrans);
     model.addAttribute("page", page);
+    return "modules/funds/paymentTransList";
+  }
+
+  @RequestMapping(value = {""})
+  public String listNoQuery(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/funds/paymentTransList";
   }
 
