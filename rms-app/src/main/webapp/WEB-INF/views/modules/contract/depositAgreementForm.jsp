@@ -507,7 +507,7 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:depositAgreement:edit">
-				<c:if test="${depositAgreement.agreementStatus=='0'||depositAgreement.agreementStatus=='2'|| depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">
+				<c:if test="${depositAgreement.agreementStatus=='6' || empty depositAgreement.id}">
 					<c:if test="${depositAgreement.dataSource!='2'}"><!-- 手机来源的定金协议不显示暂存 -->
 						<input id="saveBtn" class="btn btn-primary" type="button" value="暂 存" onclick="saveData()"/>
 					</c:if>
