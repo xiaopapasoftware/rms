@@ -8,8 +8,8 @@
 <!--[if lte IE 7]><link href="${ctxStatic}/bootstrap/2.3.1/awesome/font-awesome-ie7.min.css" type="text/css" rel="stylesheet" /><![endif]-->
 <!--[if lte IE 6]><link href="${ctxStatic}/bootstrap/bsie/css/bootstrap-ie6.min.css" type="text/css" rel="stylesheet" />
 <script src="${ctxStatic}/bootstrap/bsie/js/bootstrap-ie.min.js" type="text/javascript"></script><![endif]-->
-<link href="${ctxStatic}/jquery-select2/3.4/select2.min.css" rel="stylesheet" />
-<script src="${ctxStatic}/jquery-select2/3.4/select2.min.js" type="text/javascript"></script>
+<link href="${ctxStatic}/jquery-select2/4.0.3/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="${ctxStatic}/jquery-select2/4.0.3/dist/js/select2.min.js" type="text/javascript"></script>
 <link href="${ctxStatic}/jquery-validation/1.11.0/jquery.validate.min.css" type="text/css" rel="stylesheet" />
 <script src="${ctxStatic}/jquery-validation/1.11.0/jquery.validate.min.js" type="text/javascript"></script>
 <link href="${ctxStatic}/jquery-jbox/2.3/Skins/Blue/jbox.css" rel="stylesheet" />
@@ -18,8 +18,6 @@
 <script src="${ctxStatic}/common/mustache.min.js" type="text/javascript"></script>
 <link href="${ctxStatic}/common/jeesite.css" type="text/css" rel="stylesheet" />
 <script src="${ctxStatic}/common/jeesite.js" type="text/javascript"></script>
-
 <link href="${ctxStatic}/layui/css/layui.css" type="text/css" rel="stylesheet" />
 <script src="${ctxStatic}/layui/layui.js" type="text/javascript"></script>
-
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic='${ctxStatic}', ctxFile='${ctxFile}';</script>
