@@ -85,7 +85,18 @@ public class TenantController extends BaseController {
       for (Tenant t : allTenants) {
         HashMap<String, String> tempMap = new HashMap<String, String>();
         tempMap.put("id", t.getId());
-        tempMap.put("text", t.getTenantName().concat("-").concat(t.getIdNo()).concat("-").concat(t.getCellPhone()));
+        String text = "";
+        String companyName = "";
+        if (t.getCompany() != null && StringUtils.isNotEmpty(t.getCompany().getId())) {
+          Company c = companyService.get(t.getCompany().getId());
+          companyName = c.getCompanyName();
+        }
+        if (StringUtils.isNotEmpty(companyName)) {
+          text = t.getTenantName().concat("-").concat(t.getIdNo()).concat("-").concat(t.getCellPhone()).concat("-").concat(companyName);
+        } else {
+          text = t.getTenantName().concat("-").concat(t.getIdNo()).concat("-").concat(t.getCellPhone());
+        }
+        tempMap.put("text", text);
         resultMapList.add(tempMap);
       }
     }
