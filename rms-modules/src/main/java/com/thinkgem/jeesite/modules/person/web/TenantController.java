@@ -3,13 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.person.web;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.thinkgem.jeesite.modules.entity.User;
-import com.thinkgem.jeesite.modules.service.SystemService;
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +23,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
+import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.service.SystemService;
 
-/**
- * 租客信息Controller
- * 
- * @author huangsc
- * @version 2015-06-13
- */
 @Controller
 @RequestMapping(value = "${adminPath}/person/tenant")
 public class TenantController extends BaseController {
@@ -66,6 +63,35 @@ public class TenantController extends BaseController {
     }
     return entity;
   }
+
+  @RequestMapping(value = {"syncAjaxQuery"})
+  @ResponseBody
+  public String syncAjaxQuery(String q) {
+    List<Tenant> allTenants = new ArrayList<Tenant>();
+    Tenant parameterT1 = new Tenant();
+    parameterT1.setTenantName(q);
+    List<Tenant> tenantListByName = tenantService.findList(parameterT1);
+    Tenant parameterT2 = new Tenant();
+    parameterT2.setCellPhone(q);
+    List<Tenant> tenantListByCellNo = tenantService.findList(parameterT2);
+    Tenant parameterT3 = new Tenant();
+    parameterT3.setIdNo(q);
+    List<Tenant> tenantListByIdNo = tenantService.findList(parameterT3);
+    allTenants.addAll(tenantListByName);
+    allTenants.addAll(tenantListByCellNo);
+    allTenants.addAll(tenantListByIdNo);
+    List<HashMap<String, String>> resultMapList = new ArrayList<HashMap<String, String>>();
+    if (CollectionUtils.isNotEmpty(allTenants)) {
+      for (Tenant t : allTenants) {
+        HashMap<String, String> tempMap = new HashMap<String, String>();
+        tempMap.put("id", t.getId());
+        tempMap.put("text", t.getTenantName().concat("-").concat(t.getIdNo()).concat("-").concat(t.getCellPhone()));
+        resultMapList.add(tempMap);
+      }
+    }
+    return JsonMapper.toJsonString(resultMapList);
+  }
+
 
   // @RequiresPermissions("person:tenant:view")
   @RequestMapping(value = {"list"})
@@ -142,7 +168,16 @@ public class TenantController extends BaseController {
     } else {
       tenantService.save(tenant);
       jsonObject.put("id", tenant.getId());
-      jsonObject.put("name", tenant.getLabel());
+      String companyName = "";
+      if (tenant.getCompany() != null && StringUtils.isNotEmpty(tenant.getCompany().getId())) {
+        Company c = companyService.get(tenant.getCompany().getId());
+        companyName = c.getCompanyName();
+      }
+      if (StringUtils.isNotEmpty(companyName)) {
+        jsonObject.put("name", tenant.getLabel().concat("-").concat(companyName));
+      } else {
+        jsonObject.put("name", tenant.getLabel());
+      }
     }
     return jsonObject.toString();
   }

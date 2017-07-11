@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
@@ -65,8 +66,10 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
@@ -114,6 +117,9 @@ public class RentContractController extends BaseController {
   private ReceiptService receiptService;
   @Autowired
   private AttachmentService attachmentService;
+
+  @Autowired
+  private CompanyService companyService;
 
   @ModelAttribute
   public RentContract get(@RequestParam(required = false) String id) {
@@ -215,12 +221,7 @@ public class RentContractController extends BaseController {
       rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
     }
     model.addAttribute("rentContract", rentContract);
-    model.addAttribute("partnerList", partnerService.findList(new Partner()));
     model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
-    if (null != rentContract && !StringUtils.isBlank(rentContract.getId())) {
-      rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
-      rentContract.setTenantList(rentContractService.findTenant(rentContract));
-    }
     if (null != rentContract.getPropertyProject()) {
       Building building = new Building();
       PropertyProject propertyProject = new PropertyProject();
@@ -252,9 +253,57 @@ public class RentContractController extends BaseController {
       }
       model.addAttribute("roomList", roomList);
     }
-    List<Tenant> tenantList = tenantService.findList(new Tenant());
-    model.addAttribute("tenantList", tenantList);
+    model.addAttribute("partnerList", partnerService.findList(new Partner()));
     return "modules/contract/rentContractForm";
+  }
+
+  @RequestMapping(value = "ajaxQueryLivedTenants")
+  @ResponseBody
+  public String ajaxQueryLivedTenants(String rentContractId) {
+    if (StringUtils.isNotBlank(rentContractId)) {
+      RentContract rentContract = new RentContract();
+      rentContract.setId(rentContractId);
+      List<Tenant> livedTenants = rentContractService.findLiveTenant(rentContract);
+      if (CollectionUtils.isNotEmpty(livedTenants)) {
+        return getSelectOptionResult(livedTenants);
+      }
+    }
+    return "";
+  }
+
+  @RequestMapping(value = "ajaxQueryLeasedTenants")
+  @ResponseBody
+  public String ajaxQueryLeasedTenants(String rentContractId) {
+    if (StringUtils.isNotBlank(rentContractId)) {
+      RentContract rentContract = new RentContract();
+      rentContract.setId(rentContractId);
+      List<Tenant> leaseTenants = rentContractService.findTenant(rentContract);
+      if (CollectionUtils.isNotEmpty(leaseTenants)) {
+        return getSelectOptionResult(leaseTenants);
+      }
+    }
+    return "";
+  }
+
+  private String getSelectOptionResult(List<Tenant> tenants) {
+    StringBuffer optionResultBuf = new StringBuffer();
+    if (CollectionUtils.isNotEmpty(tenants)) {
+      for (Tenant t : tenants) {
+        String companyName = "";
+        if (t.getCompany() != null && StringUtils.isNotEmpty(t.getCompany().getId())) {
+          Company c = companyService.get(t.getCompany().getId());
+          companyName = c.getCompanyName();
+        }
+        if (StringUtils.isNotEmpty(companyName)) {
+          optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone()).append("-")
+              .append(companyName).append("</option>");
+        } else {
+          optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone())
+              .append("</option>");
+        }
+      }
+    }
+    return optionResultBuf.toString();
   }
 
   /**
@@ -339,7 +388,7 @@ public class RentContractController extends BaseController {
   public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
       return form(rentContract, model, request);
-    }    
+    }
     if (rentContract.getIsNewRecord()) {
       String[] codeArr = rentContract.getContractCode().split("-");
       rentContract.setContractCode(codeArr[0] + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");

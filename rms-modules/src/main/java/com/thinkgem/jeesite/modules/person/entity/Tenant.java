@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.person.entity;
 
@@ -14,9 +13,6 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
  * 租客信息Entity
- * 
- * @author huangsc
- * @version 2015-06-13
  */
 public class Tenant extends DataEntity<Tenant> {
 
@@ -172,7 +168,7 @@ public class Tenant extends DataEntity<Tenant> {
   }
 
   public String getLabel() {
-    return this.cellPhone + "-" + this.tenantName;
+    return this.tenantName + "-" + this.cellPhone + "-" + this.idNo;
   }
 
   public void setLabel(String label) {

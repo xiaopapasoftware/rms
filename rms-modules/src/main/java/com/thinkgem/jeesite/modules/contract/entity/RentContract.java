@@ -643,4 +643,5 @@ public class RentContract extends DataEntity<RentContract> {
   public void setUpdateUser(String updateUser) {
     this.updateUser = updateUser;
   }
+
 }

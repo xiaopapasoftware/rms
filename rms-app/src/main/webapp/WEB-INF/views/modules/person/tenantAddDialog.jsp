@@ -20,30 +20,29 @@
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
 					$.ajaxSetup({ cache: false });
-					$.get("${ctx}/person/tenant/ajaxSave", saveData, function(data){
-						var json = eval("("+data+")");
-						if(null!=json.message) top.$.jBox.tip(json.message,'warning');
-						if(null!=json.id) {
-							top.$.jBox.tip('保存成功!','success');
-							var iframe;
-							if(undefined == $(window.parent.document).find(".tab_content").html()) {
-								iframe = $(window.parent.document).find("iframe")[0];
-							} else {
-								iframe = $(window.parent.document).find(".tab_content").find(".curholder").find("iframe")[0];
-							}
-							var text = iframe.contentWindow.$("[id='tenantList']").html();
-							text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-							iframe.contentWindow.$("[id='tenantList']").html(text);
-							text = iframe.contentWindow.$("[id='liveList']").html();
-							text = "<option value='"+json.id+"'>"+json.name+"</option>"+text;
-							iframe.contentWindow.$("[id='liveList']").html(text);
-							if("tenant"==$("#type").val()) {
-								iframe.contentWindow.$("select[name='tenantList']").val(json.id).trigger("change");
-							} else if("live"==$("#type").val()) {
-								iframe.contentWindow.$("select[name='liveList']").val(json.id).trigger("change");
-							}
-							top.$.jBox.close();
-						}
+					$.get("${ctx}/person/tenant/ajaxSave",saveData, 
+						   function(data){
+								var json = eval("("+data+")");
+								if(null!=json.message) top.$.jBox.tip(json.message,'warning');
+								if(null!=json.id) {
+									top.$.jBox.tip('保存成功!','success');
+									var iframe;
+									if(undefined == $(window.parent.document).find(".tab_content").html()) {
+										iframe = $(window.parent.document).find("iframe")[0];
+									} else {
+										iframe = $(window.parent.document).find(".tab_content").find(".curholder").find("iframe")[0];
+									}
+									if("tenant"==$("#type").val()) {
+ 										iframe.contentWindow.$("select[name='tenantList']").append("<option selected value='"+json.id+"'>"+json.name+"</option>");
+ 										iframe.contentWindow.$("select[name='tenantList']").removeData();
+ 										iframe.contentWindow.$("select[name='tenantList']").trigger('change');
+									} else if("live"==$("#type").val()) {
+										iframe.contentWindow.$("select[name='liveList']").append("<option selected value='"+json.id+"'>"+json.name+"</option>");
+ 										iframe.contentWindow.$("select[name='liveList']").removeData();
+										iframe.contentWindow.$("select[name='liveList']").trigger('change');
+									}
+									top.$.jBox.close();
+							   }
 					});
 				},
 				errorContainer: "#messageBox",

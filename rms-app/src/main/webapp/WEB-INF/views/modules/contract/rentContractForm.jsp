@@ -6,6 +6,55 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$(".tanants").select2({
+			    ajax: {
+				    url: "${ctx}/person/tenant/syncAjaxQuery",
+				    dataType: 'json',
+				    delay: 250,
+				    data: function (params) {
+				      return {
+				        q: params.term,
+				        page: params.page
+				      };
+				    },
+				    processResults: function (data, params) {
+				      params.page = params.page || 1;
+				      return {
+				        results: data,
+				        pagination: {
+				          more: (params.page * 30) < data.total_count
+				        }
+				      };
+				    },
+				    cache: true
+				  },
+				  placeholder: "请选择",
+				  allowClear: true,
+				  escapeMarkup: function (markup) { return markup; },
+				  minimumInputLength: 1,
+				  templateResult: function (repo) { return repo.text;}
+ 			});
+			
+			$.ajax({
+				  type: 'GET',
+				  url: "${ctx}/contract/rentContract/ajaxQueryLivedTenants?rentContractId="+$("#id").val(),
+				  dataType: 'TEXT'
+			}).then(function(data){
+				  $("#liveList").append(data);
+				  $("#liveList").removeData();
+				  $("#liveList").trigger('change');
+			});
+
+			$.ajax({
+				  type: 'GET',
+				  url: "${ctx}/contract/rentContract/ajaxQueryLeasedTenants?rentContractId="+$("#id").val(),
+				  dataType: 'TEXT'
+			}).then(function(data){
+				  $("#tenantList").append(data);
+				  $("#tenantList").removeData();
+				  $("#tenantList").trigger('change');
+			});
+			
 			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
@@ -21,6 +70,7 @@
 		            event.preventDefault();
 		        }
 		    });
+			
 			var idVal = $("#id").val();
 			if(idVal == null || idVal == "" || idVal == undefined){//新增，而不是修改
 				var signtype = $("#signType").val();//签约类型
@@ -120,6 +170,11 @@
 				}
 			}
 		});
+		
+	    function formatRepoSelection (repo) {
+	      return repo.text;
+	    }
+
 		function submitData() {
 			$("#inputForm").validate({
 				submitHandler: function(form){//单间
@@ -579,25 +634,31 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true" onchange="changeTenantList('${rentContract.id}');">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}-${item.idNo}</form:option>
-					</c:forEach>
+				<form:select path="tenantList" class="input-xlarge required tanants" multiple="true" onchange="changeTenantList('${rentContract.id}');">
+					<option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addTenant()">添加承租人</a></shiro:hasPermission>
 			</div>
-		</div>
+		</div>	
 		<div class="control-group">
 			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true" onchange="changeLiveList('${rentContract.id}');">
-					<c:forEach items="${tenantList}" var="item">
-						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}-${item.idNo}</form:option>
-					</c:forEach>
+				<form:select path="liveList" class="input-xlarge required tanants" multiple="true" onchange="changeLiveList('${rentContract.id}');">
+				    <option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addLive()">添加入住人</a></shiro:hasPermission>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">合作人：</label>
+			<div class="controls">
+				<form:select path="partner.id" class="input-xlarge">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
+				</form:select>
+				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addPartner()">添加合作人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
@@ -654,16 +715,6 @@
 					value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">合作人：</label>
-			<div class="controls">
-				<form:select path="partner.id" class="input-xlarge">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${partnerList}" itemLabel="partnerName" itemValue="id" htmlEscape="false"/>
-				</form:select>
-				<shiro:hasPermission name="contract:rentContract:edit"><a href="#" onclick="addPartner()">添加合作人</a></shiro:hasPermission>
 			</div>
 		</div>
 		<div class="control-group">
