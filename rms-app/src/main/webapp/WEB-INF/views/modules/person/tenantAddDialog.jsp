@@ -60,7 +60,7 @@
 		function showBirthday(){
 			var idType = $("#idType").val();
 			var idNo = $("#idNo").val();
-			if(idType == "0" && idNo!=null && idNo != "" && idNo != undefined){
+			if(idType == "0"){
 				var birthdayValue;
 				var gender;
 				var genderDesc;
@@ -90,17 +90,21 @@
 						genderDesc='女';
 					}
 				}
-				if(birthdayValue!=null && birthdayValue != "" && birthdayValue != undefined
-				 	&& gender!=null && gender != "" && gender != undefined){
+				if(birthdayValue!=null && birthdayValue != "" && birthdayValue != undefined){
 					$("input[name=birthday]").val(birthdayValue);
-					$("[id='gender']").val(gender);
-					$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html(genderDesc);
 				}else{
 					$("input[name=birthday]").val("");
+				}
+				if(gender!=null && gender != "" && gender != undefined){
+					$("[id='gender']").val(gender);
+					$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html(genderDesc);
+					$("[id='gender']").trigger('change');
+				}else{
 					$("[id='gender']").val("");
 					$("[id='gender']").prev("[id='s2id_gender']").find(".select2-chosen").html("请选择...");
+					$("[id='gender']").trigger('change');
 				}
-			}
+			} 
 		}
 	</script>
 </head>
