@@ -259,29 +259,29 @@
 				<th>原定金编号</th>
 				<th>合同编号</th>
 				<th>合同名称</th>
-				<th style="width:20px;">合同来源</th>
+				<th>合同来源</th>
 				<th>数据来源</th>
-				<th style="width:20px;">合同签订类型</th>
+				<th>合同签订类型</th>
 				<th>续签次数</th>
-				<th style="width:20px;">出租方式</th>
-				<th style="width:120px;">物业项目</th>
-				<th style="width:120px;">楼宇</th>
-				<th style="width:80px;">房屋号</th>
+				<th>出租方式</th>
+				<th>物业项目</th>
+				<th>楼宇</th>
+				<th>房屋号</th>
 				<th>房间号</th>
-				<th style="width:120px;">月租金</th>
-				<th style="width:80px;">合同生效时间</th>
-				<th style="width:80px;">合同过期时间</th>
-				<th style="width:80px;">合同签订时间</th>
-				<th style="width:80px;">续租提醒时间</th>
-				<th style="width:150px;">合同审核状态</th>
-				<th style="width:180px;">合同业务状态</th>
-				<th style="width:20px;">销售姓名</th>
-				<th style="width:20px;">合作人姓名</th>
-				<th style="width:130px;">创建时间</th>
-				<th style="width:130px;">修改时间</th>
-				<th style="width:20px;">创建人</th>
-				<th style="width:20px;">修改人</th>
-				<th style="width:250px;">操作</th>
+				<th>月租金</th>
+				<th>合同生效时间</th>
+				<th>合同过期时间</th>
+				<th>合同签订时间</th>
+				<th>续租提醒时间</th>
+				<th>合同审核状态</th>
+				<th>合同业务状态</th>
+				<th>销售姓名</th>
+				<th>合作人姓名</th>
+				<th>创建时间</th>
+				<th>修改时间</th>
+				<th>创建人</th>
+				<th>修改人</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
