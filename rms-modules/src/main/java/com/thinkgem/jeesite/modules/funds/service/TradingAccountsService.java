@@ -632,7 +632,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     // 计算合同至少需到账金额
     BigDecimal needBeAmount = BigDecimal.ZERO;
     // 新签,至少需要到账金额满足水电押金+房租押金+1个月房租
-    // 正常续签时，到账金额至少满足水电押金差额+房租押金差额+1个月房租
+    // 续签，到账金额至少满足水电押金差额+房租押金差额+1个月房租
     if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType()) || ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {
       if (DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate()) < 1) {// 如果合同期不足一个月
         needBeAmount = new BigDecimal(rentContract.getDepositElectricAmount() + rentContract.getDepositAmount());

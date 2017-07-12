@@ -74,7 +74,7 @@
 			var idVal = $("#id").val();
 			if(idVal == null || idVal == "" || idVal == undefined){//新增，而不是修改
 				var signtype = $("#signType").val();//签约类型
-				if(signtype == "1" || signtype == "2"){//1=正常续签，2=逾期续签
+				if(signtype == "1"){//1=续签
  					var oriEndDate = $("#oriEndDate").val();
 					var oriEndDate = new Date(Date.parse(oriEndDate));
 					oriEndDate.setDate(oriEndDate.getDate()+1);//原合同结束日期基础上加一天

@@ -307,7 +307,7 @@ public class RentContractController extends BaseController {
   }
 
   /**
-   * 人工续签
+   * 续签
    */
   @RequestMapping(value = "renewContract")
   public String renewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
@@ -661,9 +661,9 @@ public class RentContractController extends BaseController {
     eaccounting.setAccountingType(accountingType);
     eaccounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
     eaccounting.setFeeType(PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue());
-    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
+    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
       eaccounting.setFeeAmount(calculateContinueContractAmount(rentContract, "2"));
-    } else {// 如果是新签合同、逾期续签合同则直接退水电费押金
+    } else {// 如果是新签合同则直接退水电费押金
       eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
     }
     outAccountings.add(eaccounting);
@@ -672,9 +672,9 @@ public class RentContractController extends BaseController {
     accounting.setRentContract(rentContract);
     accounting.setAccountingType(accountingType);
     accounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
-    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的房租押金+房租押金差额,需做递归处理
+    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的房租押金+房租押金差额,需做递归处理
       accounting.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
-    } else {// 如果是新签合同、逾期续签合同则直接退房租押金
+    } else {// 如果是新签合同则直接退房租押金
       accounting.setFeeAmount(rentContract.getDepositAmount());
     }
     accounting.setFeeType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
@@ -829,11 +829,11 @@ public class RentContractController extends BaseController {
   }
 
   /**
-   * 获取合同下账务交易类型为“新签合同”、“正常人工续签”、“逾期自动续签”的，审核通过的账务交易关联的所有款项列表
+   * 获取合同下账务交易类型为“新签合同”、“续签合同”的，审核通过的账务交易关联的所有款项列表
    */
   private List<PaymentTrans> genPaymentTrades(RentContract rentContract) {
     List<PaymentTrans> allPTs = Lists.newArrayList();
-    // 获取到所有的新签、人工续签、逾期续签的合同审批成功的账务交易记录
+    // 获取到所有的新签、续签合同审批成功的账务交易记录
     TradingAccounts ta = new TradingAccounts();
     ta.setTradeId(rentContract.getId());
     ta.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
@@ -932,9 +932,9 @@ public class RentContractController extends BaseController {
       earlyDepositAcc.setAccountingType(accountingType);
       earlyDepositAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
       earlyDepositAcc.setFeeType(PaymentTransTypeEnum.LEAVE_EARLY_DEPOSIT.getValue());
-      if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是正常续签的合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
+      if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
         earlyDepositAcc.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
-      } else {// 如果是新签合同、逾期续签合同则直接退水电费押金
+      } else {// 如果是新签合同则直接退水电费押金
         earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
       }
       inAccountings.add(earlyDepositAcc);

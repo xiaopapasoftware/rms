@@ -16,7 +16,7 @@
 							return;
 						}
 					}
-					//当交易类型为预约定金("1")、新签合同("3")、正常人工续签("4")、电费充值("11")、公共事业费后付("12")，则收据金额之和必须与账务交易金额一致；
+					//当交易类型为预约定金("1")、新签合同("3")、续签合同("4")、电费充值("11")、公共事业费后付("12")，则收据金额之和必须与账务交易金额一致；
 					if(tradeTypeVar=="1"||tradeTypeVar=="3"||tradeTypeVar=="4"||tradeTypeVar=="11"||tradeTypeVar=="12"){
 					 	var preTradeAmount = parseFloat($("#tradeAmount").val());
 					 	var calculatedAmount = 0;
@@ -246,7 +246,8 @@
 					</script>
 				</div>
 			</div>
-			<c:if test="${tradingAccounts.tradeDirection=='1' && (tradingAccounts.tradeType == '3'|| tradingAccounts.tradeType == '4'|| tradingAccounts.tradeType == '5'|| tradingAccounts.tradeType == '6'|| tradingAccounts.tradeType == '7'|| tradingAccounts.tradeType == '8'|| tradingAccounts.tradeType == '9'|| tradingAccounts.tradeType == '10'|| tradingAccounts.tradeType == '11'|| tradingAccounts.tradeType == '12'|| tradingAccounts.tradeType == '13'|| tradingAccounts.tradeType == '14'|| tradingAccounts.tradeType == '15')}"><!-- 新签合同/正常人工续签/逾期自动续签/提前退租/正常退租/逾期退租/特殊退租--入账 -->
+			<!-- 新签合同/续签合同/提前退租/正常退租/逾期退租/特殊退租--入账 -->
+			<c:if test="${tradingAccounts.tradeDirection=='1' && (tradingAccounts.tradeType == '3'|| tradingAccounts.tradeType == '4'|| tradingAccounts.tradeType == '6'|| tradingAccounts.tradeType == '7'|| tradingAccounts.tradeType == '8'|| tradingAccounts.tradeType == '9')}">
 				<div class="control-group">
 					<label class="control-label">出租合同收据：</label>
 					<div class="controls">

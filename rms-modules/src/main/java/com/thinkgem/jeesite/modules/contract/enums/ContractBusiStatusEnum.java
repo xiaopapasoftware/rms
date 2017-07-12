@@ -59,7 +59,7 @@ public enum ContractBusiStatusEnum {
   LATE_RETURN("9"),
 
   /**
-   * 正常人工续签
+   * 已续签
    */
   NORMAL_RENEW("14"),
 

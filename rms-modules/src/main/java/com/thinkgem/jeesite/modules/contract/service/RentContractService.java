@@ -273,7 +273,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   }
 
   /**
-   * 新签、正常人工续签、逾期自动续签、定金转合同，需首先根据不同请求类型锁定房源状态
+   * 新签、续签、定金转合同，需首先根据不同请求类型锁定房源状态
    * 
    * @return 0=成功；-1=房源已出租；-2=出租合同结束日期不能晚于承租合同截止日期；
    */
@@ -405,7 +405,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         }
       }
     }
-    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 正常人工续签，把房源状态从“已出租”变更为“已出租”
+    if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 续签，把房源状态从“已出租”变更为“已出租”
       if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租
         boolean isLock = houseService.isLockWholeHouse4RenewSign(houseId);
         if (isLock) {
@@ -535,7 +535,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         depositAgreement.preUpdate();
         depositAgreementDao.update(depositAgreement);
       }
-      // 续签合同，则把原合同业务状态改成“正常人工续签”
+      // 续签合同，则把原合同业务状态改成“已续签”
       if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(contractSignType)) {
         RentContract rentContractOld = super.get(rentContract.getContractId());
         rentContractOld.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RENEW.getValue());

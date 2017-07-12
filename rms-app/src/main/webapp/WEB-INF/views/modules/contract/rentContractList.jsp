@@ -368,7 +368,7 @@
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 						</c:if>
     					<c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
-    					    <a href="${ctx}/contract/rentContract/renewContract?id=${rentContract.id}" onclick="return confirmx('确认要人工续签吗?', this.href)">人工续签</a>
+    					    <a href="${ctx}/contract/rentContract/renewContract?id=${rentContract.id}" onclick="return confirmx('确认要续签吗?', this.href)">续签</a>
     					</c:if> 
 					</shiro:hasPermission>
 					<shiro:hasPermission name="contract:superRentContract:edit">

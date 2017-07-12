@@ -28,7 +28,7 @@ public enum TradeTypeEnum {
   SIGN_NEW_CONTRACT("3"),
 
   /**
-   * 正常人工续签
+   * 续签合同
    */
   NORMAL_RENEW("4"),
 

@@ -109,7 +109,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   /**
    * 退租，删除未到账的款项，包括：
    * 
-   * 交易类型【新签合同、正常人工续签、逾期自动续签】；
+   * 交易类型【新签合同、续签合同】；
    * 
    * 款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
    */
@@ -121,7 +121,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   /**
    * 退租删除未到账的款项之回滚，包括：
    * 
-   * 交易类型【新签合同、正常人工续签、逾期自动续签】；
+   * 交易类型【新签合同、续签合同】；
    * 
    * 款项类型【房租金额、水费金额、燃气金额、有线电视费、宽带费、服务费】。
    */

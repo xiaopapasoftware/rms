@@ -13,7 +13,7 @@ public enum ContractSignTypeEnum {
   NEW_SIGN("0"),
 
   /**
-   * 正常续签
+   * 续签
    */
   RENEW_SIGN("1");
 

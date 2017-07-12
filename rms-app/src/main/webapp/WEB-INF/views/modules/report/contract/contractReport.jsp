@@ -124,8 +124,7 @@
                         <select id="signType" name="projectValue" lay-search="" placeholder="合同业务状态">
                             <option value="">合同类型</option>
                             <option value="0">新签</option>
-                            <option value="1">正常续签</option>
-                            <option value="2">逾租续签</option>
+                            <option value="1">续签</option>
                         </select>
                     </div>
                 </div>

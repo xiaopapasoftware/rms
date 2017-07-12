@@ -11,7 +11,7 @@
         case trc.charge_type when 0 then '预付费' when 1 then '后付费' end charge_type_name,
         trc.sign_date,
         trc.sign_type,
-        case trc.sign_type when 0 then '新签' when 1 then '正常续签' when 2 then '逾租续签' end sign_type_name,
+        case trc.sign_type when 0 then '新签' when 1 then '续签' end sign_type_name,
         trc.start_date,
         trc.expired_date,
         trc.deposit_amount,
