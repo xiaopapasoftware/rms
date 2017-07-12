@@ -8,22 +8,17 @@
 		a.contract_name AS "contractName",
 		a.agreement_id AS "agreementId",
 		tda.agreement_code AS "refAgreementNo",
-		a.contract_id AS
-		"contractId",
+		a.contract_id AS "contractId",
 		trc.contract_code AS "refContractNo",
-		a.rent_mode AS
-		"rentMode",
+		a.rent_mode AS "rentMode",
 		a.property_project_id AS "propertyProject.id",
 		a.building_id AS "building.id",
 		a.house_id AS "house.id",
-		a.room_id AS
-		"room.id",
+		a.room_id AS "room.id",
 		a.user_id AS "user.id",
-		a.contract_source AS
-		"contractSource",
+		a.contract_source AS "contractSource",
 		a.partner_id AS "partner.id",
-		tpart.partner_name AS
-		"partner.partnerName",
+		tpart.partner_name AS "partner.partnerName",
 		a.rental AS "rental",
 		a.start_date AS "startDate",
 		a.expired_date AS "expiredDate",
@@ -64,15 +59,15 @@
 		tp.project_name as projectName,
 		tb.building_name as buildingBame,
 		th.house_no as houseNo,
-		tm.room_no as
-		roomNo,
+		tm.room_no as roomNo,
 		a.charge_type as chargeType,
-		at1.attachment_path as
-		"rentContractFile",
+		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
 		at4.attachment_path as "rentContractOtherFile",
-		a.data_source as
-		"dataSource"
+		a.data_source as "dataSource",
+		tt.tenant_name as "tenantName",
+		tt.id_no as "tenantIdNo",
+		tt.cell_phone as "tenantMobileNo"
 	</sql>
 
 	<sql id="rentContractJoins">
@@ -88,15 +83,14 @@
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 		left join t_attachment at1 on a.id=at1.rent_contract_id and at1.attachment_type='16' and at1.del_flag='0'
 		left join t_attachment at3 on a.id=at3.rent_contract_id and at3.attachment_type='4' and at3.del_flag='0'
-		left join t_attachment at4 on a.id=at4.rent_contract_id and at4.attachment_type='19' and
-		at4.del_flag='0'
+		left join t_attachment at4 on a.id=at4.rent_contract_id and at4.attachment_type='19' and at4.del_flag='0'
+		left join t_contract_tenant tct on tct.lease_contract_id = a.id and tct.del_flag='0'
+		left join t_tenant tt on tt.id = tct.tenant_id and tt.del_flag='0'
 	</sql>
 
 	<select id="get" resultType="RentContract">
-		SELECT
-		<include refid="rentContractColumns" />
-		FROM t_rent_contract a
-		<include refid="rentContractJoins" />
+		SELECT <include refid="rentContractColumns" />
+		FROM t_rent_contract a <include refid="rentContractJoins" />
 		WHERE a.id = #{id}
 	</select>
 
@@ -116,6 +110,7 @@
 	</select>
 
 	<select id="findList" resultType="RentContract">
+	select t.* from(
 		SELECT
 		<include refid="rentContractColumns" />
 		FROM t_rent_contract a
@@ -137,8 +132,7 @@
 			<if test="rentMode != null and rentMode != ''">
 				AND a.rent_mode = #{rentMode}
 			</if>
-			<if
-				test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
 				AND a.property_project_id = #{propertyProject.id}
 			</if>
 			<if test="building != null and building.id != null and building.id != ''">
@@ -178,6 +172,16 @@
 				AND a.contract_id = #{contractId}
 			</if>
 		</where>
+		) t where 1=1
+		<if test="tenantName != null and tenantName != ''">
+			AND t.tenantName like concat('%',#{tenantName},'%')
+		</if>
+		<if test="tenantMobileNo != null and tenantMobileNo != ''">
+			AND t.tenantMobileNo like concat('%',#{tenantMobileNo},'%')
+		</if>
+		<if test="tenantIdNo != null and tenantIdNo != ''">
+			AND t.tenantIdNo like concat('%',#{tenantIdNo},'%')
+		</if>
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
 		<choose>
@@ -185,7 +189,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY a.update_date DESC
+				ORDER BY t.updateDate DESC
 			</otherwise>
 		</choose>
 	</select>

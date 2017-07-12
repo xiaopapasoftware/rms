@@ -10,28 +10,22 @@
 		tc.company_name AS "company.companyName",
 		a.tenant_name AS "tenantName",
 		a.gender AS "gender",
-		a.tenant_type AS
-		"tenantType",
+		a.tenant_type AS "tenantType",
 		a.id_type AS "idType",
 		a.id_no AS "idNo",
-		a.birthday AS
-		"birthday",
+		a.birthday AS "birthday",
 		a.degrees AS "degrees",
 		a.cell_phone AS "cellPhone",
-		a.email
-		AS "email",
+		a.email AS "email",
 		a.house_register AS "houseRegister",
-		a.position AS
-		"position",
+		a.position AS "position",
 		a.create_by AS "createBy.id",
 		u1.login_name AS
 		"createBy.loginName",
 		a.create_date AS "createDate",
-		a.update_by AS
-		"updateBy.id",
+		a.update_by AS "updateBy.id",
 		u2.login_name AS "updateBy.loginName",
-		a.update_date AS
-		"updateDate",
+		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>

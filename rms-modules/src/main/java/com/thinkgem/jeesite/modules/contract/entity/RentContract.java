@@ -83,6 +83,8 @@ public class RentContract extends DataEntity<RentContract> {
   private String isSpecial;
   private String name;
   private String tenantName;// 承租人姓名
+  private String tenantMobileNo;// 承租人手机号
+  private String tenantIdNo;// 承租人身份证
   private String liveName;// 入住人姓名
   private String refAgreementNo;// 原定金协议编号
   private String refContractNo;// 原合同编号
@@ -95,7 +97,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
-
+  
   public RentContract() {
     super();
   }
@@ -547,7 +549,22 @@ public class RentContract extends DataEntity<RentContract> {
   public void setTenantName(String tenantName) {
     this.tenantName = tenantName;
   }
+  
+  public String getTenantMobileNo() {
+    return tenantMobileNo;
+  }
 
+  public void setTenantMobileNo(String tenantMobileNo) {
+    this.tenantMobileNo = tenantMobileNo;
+  }
+
+  public String getTenantIdNo() {
+    return tenantIdNo;
+  }
+
+  public void setTenantIdNo(String tenantIdNo) {
+    this.tenantIdNo = tenantIdNo;
+  }
   public String getLiveName() {
     return liveName;
   }

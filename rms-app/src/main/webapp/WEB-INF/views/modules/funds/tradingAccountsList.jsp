@@ -117,13 +117,14 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>账务交易对象</th>
+				<th>账务交易对象名称</th>
+				<th>账务交易对象编号</th>
 				<th>账务交易类型</th>
 				<th>账务交易方向</th>
-				<th>交易金额</th>
-				<th>交易方名称</th>
-				<th>交易方类型</th>
-				<th>账务状态</th>
+				<th>账务交易金额</th>
+				<th>账务交易状态</th>
+				<th>账务交易参与个体名称</th>
+				<th>账务交易参与个体类型</th>
 				<th>更新时间</th>
 				<th>备注信息</th>
 				<th>操作</th>
@@ -136,6 +137,9 @@
 					${tradingAccounts.tradeName}
 				</td>
 				<td>
+					${tradingAccounts.tradeObjectNo}
+				</td>
+				<td>
 					${fns:getDictLabel(tradingAccounts.tradeType, 'trans_type', '')}
 				</td>
 				<td>
@@ -145,13 +149,13 @@
 					${tradingAccounts.tradeAmount}
 				</td>
 				<td>
+					${fns:getDictLabel(tradingAccounts.tradeStatus, 'trading_status', '')}
+				</td>
+				<td>
 					${tradingAccounts.payeeName}
 				</td>
 				<td>
 					${fns:getDictLabel(tradingAccounts.payeeType, 'receive_type', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(tradingAccounts.tradeStatus, 'trading_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${tradingAccounts.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

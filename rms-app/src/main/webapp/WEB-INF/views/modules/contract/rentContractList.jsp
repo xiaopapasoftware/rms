@@ -244,6 +244,15 @@
 					<form:options items="${fns:getDictList('rent_contract_busi_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label style="width:120px;">承租人姓名：</label>
+				<form:input path="tenantName" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
+			</li>
+			<li><label style="width:120px;">承租人手机号：</label>
+				<form:input path="tenantMobileNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
+			</li>
+			<li><label style="width:120px;">承租人身份证：</label>
+				<form:input path="tenantIdNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
+			</li>
 			<li class="btns">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>

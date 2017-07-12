@@ -117,7 +117,6 @@ public class RentContractController extends BaseController {
   private ReceiptService receiptService;
   @Autowired
   private AttachmentService attachmentService;
-
   @Autowired
   private CompanyService companyService;
 
