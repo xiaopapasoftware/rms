@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
@@ -24,8 +23,13 @@ public class ContractTenant extends DataEntity<ContractTenant> {
   private String leasagremChangeId; // 承租的变更协议
   private String tenantId; // 租客ID
 
-  public ContractTenant() {
+  public ContractTenant() {//为了数据库字段不为NULL，可以走索引
     super();
+    this.depositAgreementId = "";
+    this.contractId = "";
+    this.leaseContractId = "";
+    this.agreementChangeId = "";
+    this.leasagremChangeId = "";
   }
 
   public ContractTenant(String id) {

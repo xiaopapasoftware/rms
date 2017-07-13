@@ -116,16 +116,29 @@
 	</insert>
 	
 	<update id="update">
-		UPDATE t_contract_tenant SET 	
-			deposit_agreement_id = #{depositAgreementId},
-			contract_id = #{contractId},
-			tenant_id = #{tenantId},
-			lease_contract_id = #{leaseContractId},
-			update_by = #{updateBy.id},
+		UPDATE t_contract_tenant 
+		SET
+		 	<if test="depositAgreementId != null and depositAgreementId != ''">
+			 	deposit_agreement_id =  #{depositAgreementId},
+			</if>
+ 			<if test="contractId != null and contractId != ''">
+			 	contract_id =  #{contractId},
+			</if>
+ 			<if test="tenantId != null and tenantId != ''">
+			 	tenant_id =  #{tenantId},
+			</if>
+			<if test="leaseContractId != null and leaseContractId != ''">
+			 	lease_contract_id =  #{leaseContractId},
+			</if>
+			<if test="agreementChangeId != null and agreementChangeId != ''">
+			 	agreement_change_id =  #{agreementChangeId},
+			</if>
+			<if test="leasagremChangeId != null and leasagremChangeId != ''">
+			 	leasagrem_change_id =  #{leasagremChangeId},
+			</if>
+  			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks},
-			agreement_change_id = #{agreementChangeId},
-			leasagrem_change_id = #{leasagremChangeId}
+			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
 	

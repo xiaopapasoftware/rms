@@ -1,4 +1,3 @@
-/* Drop Tables */
 drop table if exists T_TRADING_ACCOUNTS;
 drop table if exists T_PAYMENT_TRANS;
 drop table if exists T_RECEIPT;
@@ -24,6 +23,11 @@ create table T_TRADING_ACCOUNTS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '账务交易';
+CREATE INDEX TRADE_ID_INX  ON T_TRADING_ACCOUNTS ( TRADE_ID ASC);
+CREATE INDEX TRADE_TYPE_INX ON T_TRADING_ACCOUNTS ( TRADE_TYPE ASC);
+CREATE INDEX TRADE_DIRECTION_INX  ON T_TRADING_ACCOUNTS ( TRADE_DIRECTION ASC);
+CREATE INDEX TRADE_STATUS_INX  ON T_TRADING_ACCOUNTS ( TRADE_STATUS ASC);
+CREATE INDEX DEL_FLAG_INX  ON T_TRADING_ACCOUNTS ( DEL_FLAG ASC);
 
 create table T_PAYMENT_TRANS
 (
@@ -48,12 +52,12 @@ create table T_PAYMENT_TRANS
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '款项交易';
-alter table t_payment_trans add index idx_complex_pt(del_flag,payment_type,start_date);
-alter table t_payment_trans add index idx_del_flag(del_flag);
 alter table t_payment_trans add index idx_trade_type(trade_type);
 alter table t_payment_trans add index idx_payment_type(payment_type);
 alter table t_payment_trans add index idx_trans_id(trans_id);
 alter table t_payment_trans add index idx_start_date(start_date);
+alter table t_payment_trans add index idx_complex_pt(del_flag,payment_type,start_date);
+alter table t_payment_trans add index idx_del_flag(del_flag);
 
 create table T_PAYMENT_TRADE
 (
@@ -68,6 +72,9 @@ create table T_PAYMENT_TRADE
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '款项账务关联表';
+CREATE INDEX TRANS_ID_INX ON T_PAYMENT_TRADE (TRANS_ID ASC);
+CREATE INDEX TRADE_ID_INX ON T_PAYMENT_TRADE (TRADE_ID ASC);
+CREATE INDEX DEL_FLAG_INX ON T_PAYMENT_TRADE (DEL_FLAG ASC);
 
 create table T_RECEIPT
 (

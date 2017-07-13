@@ -214,10 +214,7 @@ CREATE TABLE sys_user_role
 	PRIMARY KEY (user_id, role_id)
 ) COMMENT = '用户-角色';
 
-
-
 /* Create Indexes */
-
 CREATE INDEX sys_area_parent_id ON sys_area (parent_id ASC);
 /*CREATE INDEX sys_area_parent_ids ON sys_area (parent_ids ASC);*/
 CREATE INDEX sys_area_del_flag ON sys_area (del_flag ASC);
@@ -245,6 +242,3 @@ CREATE INDEX sys_user_login_name ON sys_user (login_name ASC);
 CREATE INDEX sys_user_company_id ON sys_user (company_id ASC);
 CREATE INDEX sys_user_update_date ON sys_user (update_date ASC);
 CREATE INDEX sys_user_del_flag ON sys_user (del_flag ASC);
-
-
-

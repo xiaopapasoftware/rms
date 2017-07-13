@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
@@ -64,7 +63,6 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
         contractTenantDao.insert(contractTenant);
       }
     }
-
     ContractTenant delContractTenant2 = new ContractTenant();
     delContractTenant2.setLeasagremChangeId(id);// 承租的变更协议
     delContractTenant2.preUpdate();

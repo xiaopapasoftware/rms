@@ -748,7 +748,7 @@ public class AppHouseController {
       ContractTenant contractTenant = new ContractTenant();
       contractTenant.setDepositAgreementId(id);
       List<ContractTenant> contractTenantList = contractTenantDao.findList(contractTenant);
-      if (null != contractTenantList && contractTenantList.size() > 0) {
+      if (CollectionUtils.isNotEmpty(contractTenantList)) {
         contractTenant = contractTenantList.get(0);
         String tenantId = contractTenant.getTenantId();
         Tenant tenant = tenantService.get(tenantId);
