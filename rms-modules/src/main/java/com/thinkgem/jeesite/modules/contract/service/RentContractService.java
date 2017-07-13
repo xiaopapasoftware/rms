@@ -97,13 +97,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
 
   @Override
   public List<RentContract> findList(RentContract entity) {
-    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "t.area_id=sua.area_id");
     return super.findList(entity);
   }
 
   @Override
   public Page<RentContract> findPage(Page<RentContract> page, RentContract entity) {
-    areaScopeFilter(entity, "dsf", "tp.area_id=sua.area_id");
+    areaScopeFilter(entity, "dsf", "t.area_id=sua.area_id");
     return super.findPage(page, entity);
   }
 

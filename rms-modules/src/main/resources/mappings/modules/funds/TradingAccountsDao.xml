@@ -89,7 +89,8 @@
 		         </foreach>  
       		</if>
 		</where>
-		) t where 1=1
+		) t left join t_property_project tp on t.property_project_id = tp.id
+		where t.tradeName is not null
 		<if test="tradeName != null and tradeName != ''">
 			AND t.tradeName like concat('%',#{tradeName},'%')
 		</if>
