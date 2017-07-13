@@ -121,7 +121,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">合同类型</label>
                     <div class="layui-input-inline m-large">
-                        <select id="signType" name="projectValue" lay-search="" placeholder="合同业务状态">
+                        <select id="signType" name="signType" lay-search="" placeholder="合同业务状态">
                             <option value="">合同类型</option>
                             <option value="0">新签</option>
                             <option value="1">续签</option>

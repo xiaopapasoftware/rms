@@ -18,8 +18,6 @@ public class ContractReportService extends BaseService{
 
     @Autowired
     private ContractReportDao contractReportDao;
-
-
     public List queryContract(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
         Criterion criterion = new Criterion(propertyFilters, sorts);
         criterion.setCustomCriteria(areaScopeFilter("tpp.area_id=sua.area_id"));
