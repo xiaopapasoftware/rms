@@ -65,10 +65,7 @@
 		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
 		at4.attachment_path as "rentContractOtherFile",
-		a.data_source as "dataSource",
-		tt.tenant_name as "tenantName",
-		tt.id_no as "tenantIdNo",
-		tt.cell_phone as "tenantMobileNo"
+		a.data_source as "dataSource"
 	</sql>
 
 	<sql id="rentContractJoins">
@@ -85,8 +82,6 @@
 		left join t_attachment at1 on a.id=at1.rent_contract_id and at1.attachment_type='16' and at1.del_flag='0'
 		left join t_attachment at3 on a.id=at3.rent_contract_id and at3.attachment_type='4' and at3.del_flag='0'
 		left join t_attachment at4 on a.id=at4.rent_contract_id and at4.attachment_type='19' and at4.del_flag='0'
-		left join t_contract_tenant tct on tct.lease_contract_id = a.id and tct.del_flag='0'
-		left join t_tenant tt on tt.id = tct.tenant_id and tt.del_flag='0'
 	</sql>
 
 	<select id="get" resultType="RentContract">
@@ -111,7 +106,7 @@
 	</select>
 
 	<select id="findList" resultType="RentContract">
-	select t.* from(
+	select DISTINCT t.* from(
 		SELECT
 		<include refid="rentContractColumns" />
 		FROM t_rent_contract a
@@ -173,15 +168,17 @@
 				AND a.contract_id = #{contractId}
 			</if>
 		</where>
-		) t where 1=1
+		) t  LEFT JOIN t_contract_tenant tct ON tct.del_flag = '0' AND ( tct.lease_contract_id = t.id  OR tct.contract_id = t.id)
+  			 LEFT JOIN t_tenant tt ON tt.id = tct.tenant_id AND tt.del_flag = '0' 
+  		where 1=1 
 		<if test="tenantName != null and tenantName != ''">
-			AND t.tenantName like concat('%',#{tenantName},'%')
+			AND tt.tenant_name like concat('%',#{tenantName},'%')
 		</if>
 		<if test="tenantMobileNo != null and tenantMobileNo != ''">
-			AND t.tenantMobileNo like concat('%',#{tenantMobileNo},'%')
+			AND tt.cell_phone like concat('%',#{tenantMobileNo},'%')
 		</if>
 		<if test="tenantIdNo != null and tenantIdNo != ''">
-			AND t.tenantIdNo like concat('%',#{tenantIdNo},'%')
+			AND tt.id_no like concat('%',#{tenantIdNo},'%')
 		</if>
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
