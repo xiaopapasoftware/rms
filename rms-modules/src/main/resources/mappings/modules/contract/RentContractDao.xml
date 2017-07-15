@@ -106,11 +106,11 @@
 	</select>
 
 	<select id="findList" resultType="RentContract">
-	select DISTINCT t.* from(
-		SELECT
-		<include refid="rentContractColumns" />
-		FROM t_rent_contract a
+		SELECT <include refid="rentContractColumns" />
+		FROM t_rent_contract a 
 		<include refid="rentContractJoins" />
+		LEFT JOIN t_contract_tenant tct ON tct.`CONTRACT_ID` = a.`ID` AND tct.`DEL_FLAG` = '0'
+  		LEFT JOIN t_tenant tt ON tt.`ID` = tct.`TENANT_ID` AND tt.`DEL_FLAG` = '0' 
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="contractCode != null and contractCode != ''">
@@ -167,19 +167,90 @@
 			<if test="contractId != null and contractId != ''">
 				AND a.contract_id = #{contractId}
 			</if>
+			<if test="tenantName != null and tenantName != ''">
+				AND LOCATE(#{tenantName} , tt.tenant_name) > 0
+			</if>
+			<if test="tenantMobileNo != null and tenantMobileNo != ''">
+				AND LOCATE(#{tenantMobileNo} , tt.cell_phone) > 0
+			</if>
+			<if test="tenantIdNo != null and tenantIdNo != ''">
+				AND LOCATE(#{tenantIdNo} , tt.id_no) > 0
+			</if>
 		</where>
-		) t  LEFT JOIN t_contract_tenant tct ON tct.del_flag = '0' AND ( tct.lease_contract_id = t.id  OR tct.contract_id = t.id)
-  			 LEFT JOIN t_tenant tt ON tt.id = tct.tenant_id AND tt.del_flag = '0' 
-  		where 1=1 
-		<if test="tenantName != null and tenantName != ''">
-			AND tt.tenant_name like concat('%',#{tenantName},'%')
-		</if>
-		<if test="tenantMobileNo != null and tenantMobileNo != ''">
-			AND tt.cell_phone like concat('%',#{tenantMobileNo},'%')
-		</if>
-		<if test="tenantIdNo != null and tenantIdNo != ''">
-			AND tt.id_no like concat('%',#{tenantIdNo},'%')
-		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		union
+		SELECT <include refid="rentContractColumns" />
+		FROM t_rent_contract a 
+		<include refid="rentContractJoins" />
+  		LEFT JOIN t_contract_tenant tct ON tct.`LEASE_CONTRACT_ID` = a.`ID` AND tct.`DEL_FLAG` = '0'
+  		LEFT JOIN t_tenant tt ON tt.`ID` = tct.`TENANT_ID` AND tt.`DEL_FLAG` = '0'
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="contractCode != null and contractCode != ''">
+				AND a.contract_code LIKE
+				<if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
+			</if>
+			<if test="contractName != null and contractName != ''">
+				AND a.contract_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
+			</if>
+			<if test="rentMode != null and rentMode != ''">
+				AND a.rent_mode = #{rentMode}
+			</if>
+			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+				AND a.property_project_id = #{propertyProject.id}
+			</if>
+			<if test="building != null and building.id != null and building.id != ''">
+				AND a.building_id = #{building.id}
+			</if>
+			<if test="house != null and house.id != null and house.id != ''">
+				AND a.house_id = #{house.id}
+			</if>
+			<if test="room != null and room.id != null and room.id != ''">
+				AND a.room_id = #{room.id}
+			</if>
+			<if test="contractSource != null and contractSource != ''">
+				AND a.contract_source = #{contractSource}
+			</if>
+			<if test="startDate != null and startDate != ''">
+				AND a.start_date = #{startDate}
+			</if>
+			<if test="expiredDate != null and expiredDate != ''">
+				AND a.expired_date = #{expiredDate}
+			</if>
+			<if test="signDate != null and signDate != ''">
+				AND a.sign_date = #{signDate}
+			</if>
+			<if test="signType != null and signType != ''">
+				AND a.sign_type = #{signType}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.contract_name = #{name}
+			</if>
+			<if test="contractStatus != null and contractStatus != ''">
+				AND a.contract_status = #{contractStatus}
+			</if>
+			<if test="contractBusiStatus != null and contractBusiStatus != ''">
+				AND a.contract_busi_status = #{contractBusiStatus}
+			</if>
+			<if test="contractId != null and contractId != ''">
+				AND a.contract_id = #{contractId}
+			</if>
+			<if test="tenantName != null and tenantName != ''">
+				AND LOCATE(#{tenantName} , tt.tenant_name) > 0
+			</if>
+			<if test="tenantMobileNo != null and tenantMobileNo != ''">
+				AND LOCATE(#{tenantMobileNo} , tt.cell_phone) > 0
+			</if>
+			<if test="tenantIdNo != null and tenantIdNo != ''">
+				AND LOCATE(#{tenantIdNo} , tt.id_no) > 0
+			</if>
+		</where>
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
 		<choose>
@@ -187,7 +258,7 @@
 				ORDER BY ${page.orderBy}
 			</when>
 			<otherwise>
-				ORDER BY t.updateDate DESC
+				ORDER BY updateDate DESC
 			</otherwise>
 		</choose>
 	</select>

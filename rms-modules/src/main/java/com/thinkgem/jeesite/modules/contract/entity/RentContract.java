@@ -82,10 +82,11 @@ public class RentContract extends DataEntity<RentContract> {
   private String tradeType;
   private String isSpecial;
   private String name;
-  private String tenantName;// 承租人姓名
-  private String tenantMobileNo;// 承租人手机号
-  private String tenantIdNo;// 承租人身份证
-  private String liveName;// 入住人姓名
+  private String tenantName;// 租客姓名,用于查询条件
+  private String tenantMobileNo;// 租客手机号,用于查询条件
+  private String tenantIdNo;// 租客身份证,用于查询条件
+  private String leaseTenantNames;// 承租人姓名，用于显示查询结果
+  private String liveNames;// 入住人姓名，用于显示查询结果
   private String refAgreementNo;// 原定金协议编号
   private String refContractNo;// 原合同编号
   private String rentContractFile;// 出租合同文件
@@ -97,7 +98,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
-  
+
   public RentContract() {
     super();
   }
@@ -549,7 +550,7 @@ public class RentContract extends DataEntity<RentContract> {
   public void setTenantName(String tenantName) {
     this.tenantName = tenantName;
   }
-  
+
   public String getTenantMobileNo() {
     return tenantMobileNo;
   }
@@ -565,12 +566,21 @@ public class RentContract extends DataEntity<RentContract> {
   public void setTenantIdNo(String tenantIdNo) {
     this.tenantIdNo = tenantIdNo;
   }
-  public String getLiveName() {
-    return liveName;
+
+  public String getLeaseTenantNames() {
+    return leaseTenantNames;
   }
 
-  public void setLiveName(String liveName) {
-    this.liveName = liveName;
+  public void setLeaseTenantNames(String leaseTenantNames) {
+    this.leaseTenantNames = leaseTenantNames;
+  }
+
+  public String getLiveNames() {
+    return liveNames;
+  }
+
+  public void setLiveNames(String liveNames) {
+    this.liveNames = liveNames;
   }
 
   public String getRefAgreementNo() {
