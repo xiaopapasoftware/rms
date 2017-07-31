@@ -113,7 +113,7 @@
 						</c:if>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="fee:electricFee:remove">
-						<c:if test="${electricFee.chargeStatus=='0' && electricFee.settleStatus=='0'}">
+						<c:if test="${(electricFee.chargeStatus=='0' && electricFee.settleStatus=='0') || (electricFee.chargeStatus=='1' && electricFee.settleStatus=='3'&& electricFee.tradeType=='11' && electricFee.tradingAccountStatus =='1')}">
 							 <a href="${ctx}/fee/electricFee/removeEletricFee?id=${electricFee.id}">删除</a>
 						</c:if>
 						<c:if test="${(electricFee.tradeType=='11' || electricFee.tradeType=='' || electricFee.tradeType == null) && (electricFee.chargeStatus=='0' || electricFee.chargeStatus=='2')}">

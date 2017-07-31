@@ -29,6 +29,8 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
@@ -106,6 +108,12 @@ public class ElectricFeeController extends BaseController {
         pt.preUpdate();
         paymentTransService.delete(pt);
       }
+      electricFee.preUpdate();
+      electricFeeService.delete(electricFee);
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除成功！");
+    } else if (ElectricChargeStatusEnum.SUCCESSED.getValue().equals(electricFee.getChargeStatus()) && FeeSettlementStatusEnum.AUDIT_PASSED.getValue().equals(electricFee.getSettleStatus())
+        && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(electricFee.getTradingAccountStatus()) && TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(electricFee.getTradeType())) {
+      paymentTransService.deletePaymentTransAndTradingAcctounsWithChargeFee(electricFee.getId());
       electricFee.preUpdate();
       electricFeeService.delete(electricFee);
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除成功！");

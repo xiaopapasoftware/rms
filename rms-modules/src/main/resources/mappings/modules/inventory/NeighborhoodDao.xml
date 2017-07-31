@@ -52,10 +52,8 @@
 					<if test="dbName == 'mysql'">concat('%',#{neighborhoodAddr},'%')</if>
 			</if>
 		</where>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

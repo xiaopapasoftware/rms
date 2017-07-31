@@ -24,9 +24,11 @@ import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.ManagementCompany;
 import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.ManagementCompanyService;
 import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -49,6 +51,9 @@ public class PropertyProjectController extends BaseController {
 
   @Autowired
   private ManagementCompanyService managementCompanyService;
+
+  @Autowired
+  private HouseService houseService;
 
   @ModelAttribute
   public PropertyProject get(@RequestParam(required = false) String id) {
@@ -123,6 +128,19 @@ public class PropertyProjectController extends BaseController {
     if (!propertyProject.getIsNewRecord()) {// 更新
       if (CollectionUtils.isNotEmpty(pps)) {
         propertyProject.setId(pps.get(0).getId());
+      }
+      House house = new House();
+      house.setPropertyProject(propertyProject);
+      List<House> houses = houseService.findList(house);
+      if (CollectionUtils.isNotEmpty(houses)) {
+        for (House h : houses) {
+          if (StringUtils.isBlank(h.getHouseCode())) {
+            h.setHouseCode(propertyProject.getProjectSimpleName() + "-1");
+          } else {
+            h.setHouseCode(propertyProject.getProjectSimpleName() + "-" + (h.getHouseCode().split("-").length > 1 ? h.getHouseCode().split("-")[1] : h.getHouseCode().split("-")[0]));
+          }
+          houseService.save(h);
+        }
       }
       propertyProjectService.save(propertyProject);
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改物业项目成功");

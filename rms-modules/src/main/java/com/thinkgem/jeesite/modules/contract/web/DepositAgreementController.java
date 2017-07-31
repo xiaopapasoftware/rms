@@ -324,12 +324,11 @@ public class DepositAgreementController extends BaseController {
     }
     depositAgreementService.update(depositAgreement);
     if (refundAmount != null && refundAmount > 0) {
-      addMessage(model, ViewMessageTypeEnum.SUCCESS, "定金转违约成功，请进行到账登记操作！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "定金转违约成功，请进行到账登记操作！");
     } else {
-      addMessage(model, ViewMessageTypeEnum.SUCCESS, "定金转违约成功！");
+      addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "定金转违约成功！");
     }
     model.addAttribute("depositAgreement", new DepositAgreement());
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
     return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 

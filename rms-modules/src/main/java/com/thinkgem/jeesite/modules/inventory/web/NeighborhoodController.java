@@ -29,9 +29,6 @@ import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
 
 /**
  * 居委会Controller
- * 
- * @author huangsc
- * @version 2015-06-03
  */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/neighborhood")

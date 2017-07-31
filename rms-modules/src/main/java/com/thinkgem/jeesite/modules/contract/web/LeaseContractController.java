@@ -108,9 +108,9 @@ public class LeaseContractController extends BaseController {
   }
 
   @RequestMapping(value = "audit")
-  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     leaseContractService.audit(auditHis);
-    addMessage(model, ViewMessageTypeEnum.SUCCESS, "操作成功！");
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
     return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
   }
 

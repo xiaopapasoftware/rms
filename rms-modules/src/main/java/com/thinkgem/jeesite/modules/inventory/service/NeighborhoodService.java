@@ -27,48 +27,48 @@ import com.thinkgem.jeesite.modules.person.service.NeighborhoodContactService;
 @Transactional(readOnly = true)
 public class NeighborhoodService extends CrudService<NeighborhoodDao, Neighborhood> {
 
-	@Autowired
-	private NeighborhoodContactService neighborhoodContactService;
+  @Autowired
+  private NeighborhoodContactService neighborhoodContactService;
 
-	public Neighborhood get(String id) {
-		return super.get(id);
-	}
+  public Neighborhood get(String id) {
+    return super.get(id);
+  }
 
-	public List<Neighborhood> findList(Neighborhood neighborhood) {
-		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
-		return super.findList(neighborhood);
-	}
+  public List<Neighborhood> findList(Neighborhood neighborhood) {
+    areaScopeFilter(neighborhood, "dsf", "a.area_id=sua.area_id");
+    return super.findList(neighborhood);
+  }
 
-	public Page<Neighborhood> findPage(Page<Neighborhood> page, Neighborhood neighborhood) {
-		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
-		return super.findPage(page, neighborhood);
-	}
+  public Page<Neighborhood> findPage(Page<Neighborhood> page, Neighborhood neighborhood) {
+    areaScopeFilter(neighborhood, "dsf", "a.area_id=sua.area_id");
+    return super.findPage(page, neighborhood);
+  }
 
-	@Transactional(readOnly = false)
-	public void save(Neighborhood neighborhood) {
-		super.save(neighborhood);
-	}
+  @Transactional(readOnly = false)
+  public void save(Neighborhood neighborhood) {
+    super.save(neighborhood);
+  }
 
-	@Transactional(readOnly = false)
-	public void delete(Neighborhood neighborhood) {
-		super.delete(neighborhood);
+  @Transactional(readOnly = false)
+  public void delete(Neighborhood neighborhood) {
+    super.delete(neighborhood);
 
-		NeighborhoodContact neighborhoodContact = new NeighborhoodContact();
-		neighborhoodContact.setNeighborhood(neighborhood);
-		List<NeighborhoodContact> neiConts = neighborhoodContactService.findList(neighborhoodContact);
-		if (CollectionUtils.isNotEmpty(neiConts)) {
-			for (NeighborhoodContact nc : neiConts) {
-				neighborhoodContactService.delete(nc);
-			}
-		}
-	}
+    NeighborhoodContact neighborhoodContact = new NeighborhoodContact();
+    neighborhoodContact.setNeighborhood(neighborhood);
+    List<NeighborhoodContact> neiConts = neighborhoodContactService.findList(neighborhoodContact);
+    if (CollectionUtils.isNotEmpty(neiConts)) {
+      for (NeighborhoodContact nc : neiConts) {
+        neighborhoodContactService.delete(nc);
+      }
+    }
+  }
 
-	/**
-	 * 根据居委会名称+地址查询状态为正常/审核 的居委会数量
-	 * */
-	@Transactional(readOnly = true)
-	public List<Neighborhood> findNeighborhoodByNameAndAddress(Neighborhood neighborhood) {
-		areaScopeFilter(neighborhood,"dsf","a.area_id=sua.area_id");
-		return dao.findNeighborhoodByNameAndAddress(neighborhood);
-	}
+  /**
+   * 根据居委会名称+地址查询状态为正常/审核 的居委会数量
+   */
+  @Transactional(readOnly = true)
+  public List<Neighborhood> findNeighborhoodByNameAndAddress(Neighborhood neighborhood) {
+    areaScopeFilter(neighborhood, "dsf", "a.area_id=sua.area_id");
+    return dao.findNeighborhoodByNameAndAddress(neighborhood);
+  }
 }
