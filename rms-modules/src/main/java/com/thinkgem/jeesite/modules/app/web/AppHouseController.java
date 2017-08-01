@@ -1361,7 +1361,7 @@ public class AppHouseController {
         rentContract.setRemarks(request.getParameter("msg"));
         rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
         rentContract.setSignType(ContractSignTypeEnum.RENEW_SIGN.getValue());
-        rentContract.setRenewCount(oriRentContract.getRenewCount() + 1);
+        rentContract.setRenewCount(oriRentContract.getRenewCount() == null ? 1 : oriRentContract.getRenewCount() + 1);
         rentContract.setContractName(oriRentContract.getContractName());
         PropertyProject propertyProject = new PropertyProject();
         propertyProject.setId(house.getPropertyProject().getId());
