@@ -54,4 +54,13 @@ public class AppBaseController {
         data.setMsg(exception.getMessage());
         return data;
     }
+
+    @ExceptionHandler({Exception.class})
+    @ResponseBody
+    public ResponseData bindException(Exception exception) {
+        ResponseData data = new ResponseData();
+        data.setCode("500");
+        data.setMsg("服务器异常，稍后再试");
+        return data;
+    }
 }
