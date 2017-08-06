@@ -33,7 +33,11 @@ public class EhCacheUtils {
 	 * @return
 	 */
 	public static void put(String key, Object value) {
-		put(SYS_CACHE, key, value);
+		put(SYS_CACHE, key, value,null);
+	}
+
+	public static void put(String key, Object value,Integer seconds) {
+		put(SYS_CACHE, key, value,seconds);
 	}
 	
 	/**
@@ -62,8 +66,11 @@ public class EhCacheUtils {
 	 * @param key
 	 * @param value
 	 */
-	public static void put(String cacheName, String key, Object value) {
+	public static void put(String cacheName, String key, Object value,Integer seconds) {
 		Element element = new Element(key, value);
+		if(seconds != null && seconds > 0){
+			element.setTimeToLive(seconds);
+		}
 		getCache(cacheName).put(element);
 	}
 

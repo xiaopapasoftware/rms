@@ -6,6 +6,8 @@ package com.thinkgem.jeesite.common.filter.search;
  */
 public class Constants {
 
+    public static String APP_USER_TELPHONE = "app_user_telphone";
+
     public static final String MYSQL_LONG_TIME_FORMAT = "%Y-%m-%d %H:%i:%s";
 
     /**

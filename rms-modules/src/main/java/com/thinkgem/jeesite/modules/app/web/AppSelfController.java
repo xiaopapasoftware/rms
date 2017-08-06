@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -34,8 +36,8 @@ import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 
 @Controller
-@RequestMapping("self")
-public class AppSelfController {
+@RequestMapping(value = "${apiPath}/self")
+public class AppSelfController extends AppBaseController{
   Logger log = LoggerFactory.getLogger(AppSelfController.class);
 
   @Autowired
@@ -96,18 +98,13 @@ public class AppSelfController {
     return data;
   }
 
-  @RequestMapping(value = "info")
+  @RequestMapping(value = "info/{telPhone}")
   @ResponseBody
-  public ResponseData getInfo(HttpServletRequest request, HttpServletResponse response) {
+  public ResponseData getInfo(@PathVariable String telPhone) {
     ResponseData data = new ResponseData();
-    if (null == request.getParameter("mobile")) {
-      data.setCode("101");
-      return data;
-    }
     try {
-      String mobile = request.getParameter("mobile");
       AppUser appUser = new AppUser();
-      appUser.setPhone(mobile);
+      appUser.setPhone(telPhone);
       appUser = appUserService.getByPhone(appUser);
       Map<String, String> infoMap = new HashMap<String, String>();
       infoMap.put("name", appUser.getName());
@@ -117,8 +114,7 @@ public class AppSelfController {
       infoMap.put("age", appUser.getAge());
       infoMap.put("profession", appUser.getProfession());
       infoMap.put("corp", appUser.getCorp());
-      PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-      String img_url = proper.getProperty("img.url");
+      String img_url = Global.getConfig("img.url");
       String avatar = "";
       if (!StringUtils.isEmpty(appUser.getAvatar())) {
         avatar = img_url + appUser.getAvatar();
