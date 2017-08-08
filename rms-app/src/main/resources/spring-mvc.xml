@@ -58,6 +58,7 @@
 	<mvc:annotation-driven>
 		<mvc:argument-resolvers>
 			<bean class="com.thinkgem.jeesite.modules.app.resolver.CurrentUserPhoneArgumentResolver"></bean>
+			<bean class="com.thinkgem.jeesite.modules.app.resolver.CurrentUserArgumentResolver"></bean>
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 	
