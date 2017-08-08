@@ -4,7 +4,15 @@
  */
 package com.thinkgem.jeesite.modules.app.service;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
+
+import com.thinkgem.jeesite.common.filter.search.Constants;
+import com.thinkgem.jeesite.modules.app.entity.ResponseData;
+import com.thinkgem.jeesite.modules.app.util.TokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +71,17 @@ public class AppTokenService extends CrudService<AppTokenDao, AppToken> {
 
   public AppToken findByToken(AppToken appToken) {
     return appTokenDao.findByToken(appToken);
+  }
+
+  public ResponseData tokenMerge(String telPhone) {
+    AppToken appToken = new AppToken();
+    appToken.setPhone(telPhone);
+    appToken.setToken(TokenGenerator.generateValue());
+        /*token 有效期7天*/
+    LocalDate localDate = LocalDate.now().plusDays(Constants.TOKEN_EXPIRE_DAY);
+    Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
+    appToken.setExprie(Date.from(instant));
+    merge(appToken);
+    return ResponseData.success().message("登陆成功").data(appToken.getToken());
   }
 }

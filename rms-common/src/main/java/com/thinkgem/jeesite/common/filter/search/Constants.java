@@ -9,6 +9,8 @@ public class Constants {
     public static String APP_USER_TELPHONE = "app_user_telphone";
     public static String APP_CURRENT_USER = "app_current_user";
 
+    public static final int TOKEN_EXPIRE_DAY = 7;
+
     public static final String MYSQL_LONG_TIME_FORMAT = "%Y-%m-%d %H:%i:%s";
 
     /**
