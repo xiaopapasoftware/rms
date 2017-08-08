@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -10,7 +11,6 @@ import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
 import com.thinkgem.jeesite.modules.app.entity.*;
-import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
@@ -40,8 +40,6 @@ import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -399,7 +397,7 @@ public class AppHouseController extends AppBaseController {
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (StringUtils.isBlank(appUser.getIdCardNo())) {
-            return ResponseData.failure(RespConstants.ERROR_CODE_400).message(RespConstants.ERROR_MSG_400);
+            return ResponseData.failure(RespConstants.ERROR_CODE_102).message(RespConstants.ERROR_MSG_102);
         }
         House house = new House();
         house.setId(houseId);

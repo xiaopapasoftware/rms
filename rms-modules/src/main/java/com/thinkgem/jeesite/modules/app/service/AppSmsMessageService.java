@@ -52,6 +52,7 @@ public class AppSmsMessageService {
             throw new SmsValidCodeException(RespConstants.ERROR_CODE_301,"短信验证码错误，请重新获取");
         }
         EhCacheUtils.remove(VALIDATE_CODE + telPhone);
+        EhCacheUtils.remove(VALIDATE_CODE_TIMES + telPhone);
     }
 
 }
