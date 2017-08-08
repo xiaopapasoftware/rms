@@ -138,8 +138,11 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     return receiptDao.findList(receipt);
   }
 
+  /**
+   * 退回已到账的款项、删除收据
+   */
   @Transactional(readOnly = false)
-  public void remoke(String id) {/* 退回已到账的款项、删除收据 */
+  public void remoke(String id) {
     TradingAccounts tradingAccounts = tradingAccountsDao.get(id);
     PaymentTrade paymentTrade = new PaymentTrade();
     paymentTrade.setTradeId(tradingAccounts.getId());

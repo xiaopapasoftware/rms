@@ -361,8 +361,9 @@ public class TradingAccountsController extends BaseController {
   }
 
   @RequestMapping(value = "revoke")
-  public String revoke(String id) {
+  public String revoke(String id, RedirectAttributes redirectAttributes) {
     tradingAccountsService.remoke(id);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
     return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
   }
 
