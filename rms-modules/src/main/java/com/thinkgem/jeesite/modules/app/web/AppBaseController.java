@@ -1,9 +1,10 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import com.thinkgem.jeesite.common.RespConstants;
+import com.thinkgem.jeesite.common.exception.GlobalException;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.app.exception.ParamsException;
-import com.thinkgem.jeesite.modules.app.exception.SmsValidCodeException;
-import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -13,54 +14,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 public class AppBaseController {
 
-    /**
-     * token验证失效异常
-     */
-    @ExceptionHandler({ExpiredCredentialsException.class})
-    @ResponseBody
-    public ResponseData bindException(ExpiredCredentialsException exception) {
-        ResponseData data = new ResponseData();
-        data.setCode("401");
-        data.setMsg(exception.getMessage());
-        return data;
-    }
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * 短信验证异常
-     *
-     * @param exception
-     * @return
+     * 统一异常处理
      */
-    @ExceptionHandler({SmsValidCodeException.class})
+    @ExceptionHandler({GlobalException.class})
     @ResponseBody
-    public ResponseData bindException(SmsValidCodeException exception) {
-        ResponseData data = new ResponseData();
-        data.setCode("402");
-        data.setMsg(exception.getMessage());
-        return data;
+    public ResponseData bindException(GlobalException e) {
+        logger.error(e.getMessage());
+        e.printStackTrace();
+        return ResponseData.failure(e.getCode()).message(e.getMessage());
     }
 
-    /**
-     * 参数绑定异常
-     *
-     * @param exception
-     * @return
-     */
-    @ExceptionHandler({ParamsException.class})
-    @ResponseBody
-    public ResponseData bindException(ParamsException exception) {
-        ResponseData data = new ResponseData();
-        data.setCode(exception.getCode());
-        data.setMsg(exception.getMessage());
-        return data;
-    }
 
     @ExceptionHandler({Exception.class})
     @ResponseBody
-    public ResponseData bindException(Exception exception) {
-        ResponseData data = new ResponseData();
-        data.setCode("500");
-        data.setMsg("服务器异常，稍后再试");
-        return data;
+    public ResponseData bindException(Exception e) {
+        logger.error(e.getMessage());
+        e.printStackTrace();
+        return ResponseData.failure(RespConstants.ERROR_CODE_500).message(RespConstants.ERROR_MSG_500);
     }
 }

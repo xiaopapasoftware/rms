@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -9,6 +10,7 @@ import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
 import com.thinkgem.jeesite.modules.app.entity.*;
+import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
@@ -60,9 +62,10 @@ import java.util.*;
 @Controller
 @RequestMapping(value = "${apiPath}/house")
 public class AppHouseController extends AppBaseController {
-    Logger log = LoggerFactory.getLogger(AppHouseController.class);
+
     DecimalFormat df = new DecimalFormat("######0.00");
     DecimalFormat df1 = new DecimalFormat("######0.##");
+
     @Autowired
     private HouseService houseService;
     @Autowired
@@ -114,36 +117,28 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "ad")
     @ResponseBody
     public ResponseData ad() {
-        ResponseData data = new ResponseData();
-        try {
-            List<HouseAd> listAd = houseAdService.findList(new HouseAd());
-            Map<String, Object> map = new HashMap<String, Object>();
-            List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-            String img_url = Global.getConfig("img.url");
-            for (HouseAd ad : listAd) {
-                Map<String, String> adMap = new HashMap<String, String>();
-                adMap.put("id", ad.getId());
-                adMap.put("type", ad.getAdType());
-                if ("1".equals(ad.getAdType())) {
-                    String value = "";
-                    if (null != ad.getRoom() && !StringUtils.isBlank(ad.getRoom().getId())) {
-                        value = ad.getRoom().getId();
-                    } else {
-                        value = ad.getHouse().getId();
-                    }
-                    adMap.put("value", value);
+        List<HouseAd> listAd = houseAdService.findList(new HouseAd());
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        String img_url = Global.getConfig("img.url");
+        for (HouseAd ad : listAd) {
+            Map<String, String> adMap = new HashMap<String, String>();
+            adMap.put("id", ad.getId());
+            adMap.put("type", ad.getAdType());
+            if ("1".equals(ad.getAdType())) {
+                String value = "";
+                if (null != ad.getRoom() && !StringUtils.isBlank(ad.getRoom().getId())) {
+                    value = ad.getRoom().getId();
+                } else {
+                    value = ad.getHouse().getId();
                 }
-                adMap.put("url", img_url + ad.getAdUrl());
-                list.add(adMap);
+                adMap.put("value", value);
             }
-            map.put("ad", list);
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("list ad error:", e);
+            adMap.put("url", img_url + ad.getAdUrl());
+            list.add(adMap);
         }
-        return data;
+        map.put("list", list);
+        return ResponseData.success().data(map);
     }
 
     /**
@@ -153,41 +148,33 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "findFeatureList")
     @ResponseBody
     public ResponseData findFeatureList(@RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
-        ResponseData data = new ResponseData();
-        try {
-            Page<House> page = new Page<House>();
-            page.setPageSize(pageSize);
-            page.setPageNo(pageNo);
-            page = houseService.findFeaturePage(page, new House());
+        Page<House> page = new Page<House>();
+        page.setPageSize(pageSize);
+        page.setPageNo(pageNo);
+        page = houseService.findFeaturePage(page, new House());
 
-            Map<String, Object> map = new HashMap<String, Object>();
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            List<House> pageList = page.getList();
-            for (House h : pageList) {
-                Map<String, Object> mp = new HashMap<String, Object>();
-                mp.put("id", h.getId());
-                mp.put("house_code", h.getHouseCode());
-                mp.put("price", df.format(h.getRental()));
-                mp.put("short_desc", h.getShortDesc());
-                mp.put("short_location", h.getShortLocation());
-                mp.put("pay_way", h.getPayWay());
-                String cover = "";
-                if (!StringUtils.isEmpty(h.getAttachmentPath())) {
-                    String img_url = Global.getConfig("img.url");
-                    cover = img_url + StringUtils.split(h.getAttachmentPath(), "|")[0];
-                }
-                mp.put("cover", cover);
-                list.add(mp);
+        Map<String, Object> map = new HashMap<String, Object>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<House> pageList = page.getList();
+        for (House h : pageList) {
+            Map<String, Object> mp = new HashMap<String, Object>();
+            mp.put("id", h.getId());
+            mp.put("house_code", h.getHouseCode());
+            mp.put("price", df.format(h.getRental()));
+            mp.put("short_desc", h.getShortDesc());
+            mp.put("short_location", h.getShortLocation());
+            mp.put("pay_way", h.getPayWay());
+            String cover = "";
+            if (!StringUtils.isEmpty(h.getAttachmentPath())) {
+                String img_url = Global.getConfig("img.url");
+                cover = img_url + StringUtils.split(h.getAttachmentPath(), "|")[0];
             }
-            map.put("list", list);
-            map.put("totalCount", page.getCount());
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("findFeatureList error:", e);
+            mp.put("cover", cover);
+            list.add(mp);
         }
-        return data;
+        map.put("list", list);
+        map.put("totalCount", page.getCount());
+        return ResponseData.success().data(map);
     }
 
     /**
@@ -197,93 +184,90 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "getFeatureInfo/{houseId}")
     @ResponseBody
     public ResponseData getFeatureInfo(@PathVariable String houseId) {
-        ResponseData data = new ResponseData();
-        try {
-            House house = new House();
-            house.setId(houseId);
-            house = houseService.getFeatureInfo(house);
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("house_code", house.getHouseCode());
-            map.put("id", house.getId());
-            map.put("title", house.getShortDesc());
-            map.put("price", df1.format(house.getRental()));
-            map.put("pay_way", house.getPayWay());
-            String cover = "";
-            if (!StringUtils.isEmpty(house.getAttachmentPath())) {
-                String img_url = Global.getConfig("img.url");
-                String path[] = StringUtils.split(house.getAttachmentPath(), "|");
-                if (null != path && path.length > 0) {
-                    for (String p : path) {
-                        cover += img_url + p + ",";
-                    }
-                    if (cover.endsWith(",")) {
-                        cover = StringUtils.substringBeforeLast(cover, ",");
-                    }
+        House house = new House();
+        house.setId(houseId);
+        house = houseService.getFeatureInfo(house);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("house_code", house.getHouseCode());
+        map.put("id", house.getId());
+        map.put("title", house.getShortDesc());
+        map.put("price", df1.format(house.getRental()));
+        map.put("pay_way", house.getPayWay());
+        String cover = "";
+        if (!StringUtils.isEmpty(house.getAttachmentPath())) {
+            String img_url = Global.getConfig("img.url");
+            String path[] = StringUtils.split(house.getAttachmentPath(), "|");
+            if (null != path && path.length > 0) {
+                for (String p : path) {
+                    cover += img_url + p + ",";
+                }
+                if (cover.endsWith(",")) {
+                    cover = StringUtils.substringBeforeLast(cover, ",");
                 }
             }
-            map.put("previews", cover);// 预览图片多图`,`拼接
-            map.put("area", house.getHouseSpace());// 房屋面积
-            String decorate = "1";
-            map.put("decorate", decorate);// 装修情况=精装修
-            map.put("summary", house.getShortLocation());// 概况
-            map.put("floor", house.getHouseFloor());// 楼层
-            String orientate = "";
-            if (!StringUtils.isEmpty(house.getOrientation())) {
-                orientate = StringUtils.split(house.getOrientation(), ",")[0];
-                orientate = DictUtils.getDictLabel(orientate, "orientation", "");
-            }
-            map.put("orientate", orientate);// 朝向
-            map.put("address", house.getProjectAddr());// 地址
-            map.put("equipment", "1101111111");// (宽带、电视、沙发、洗衣机、床、冰箱、空调、衣柜、热水器、写字台)，1代表有0代表没有
-            /* 获取房屋房屋管家手机号码 */
-            String contact_phone = "4006-269-069";
-            String userId = house.getServcieUserName();
-            if (!StringUtils.isBlank(userId)) {
-                User user = this.systemService.getUser(userId);
-                String mobile = user.getMobile();
-                if (!StringUtils.isBlank(mobile)) {
-                    contact_phone = mobile;
-                }
-            }
-            map.put("contact_phone", contact_phone);// 联系电话
-            Integer fang = null, ting = null, wei = null;
-            if (null != this.roomService.get(house.getId())) {
-                house = this.houseService.get(this.roomService.get(house.getId()).getHouse().getId());
-            }
-            fang = house.getDecoraStrucRoomNum();
-            ting = house.getDecoraStrucCusspacNum();
-            wei = house.getDecoraStrucWashroNum();
-            String layout = "";
-            if (null != fang) {
-                layout += fang + "房";
-            }
-            if (null != ting) {
-                layout += ting + "厅";
-            }
-            if (null != wei) {
-                layout += wei + "卫";
-            }
-            map.put("layout", layout);// 户型
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("getFeatureInfo error:", e);
         }
-        return data;
+        map.put("previews", cover);// 预览图片多图`,`拼接
+        map.put("area", house.getHouseSpace());// 房屋面积
+        String decorate = "1";
+        map.put("decorate", decorate);// 装修情况=精装修
+        map.put("summary", house.getShortLocation());// 概况
+        map.put("floor", house.getHouseFloor());// 楼层
+        String orientate = "";
+        if (!StringUtils.isEmpty(house.getOrientation())) {
+            orientate = StringUtils.split(house.getOrientation(), ",")[0];
+            orientate = DictUtils.getDictLabel(orientate, "orientation", "");
+        }
+        map.put("orientate", orientate);// 朝向
+        map.put("address", house.getProjectAddr());// 地址
+        map.put("equipment", "1101111111");// (宽带、电视、沙发、洗衣机、床、冰箱、空调、衣柜、热水器、写字台)，1代表有0代表没有
+            /* 获取房屋房屋管家手机号码 */
+        String contact_phone = "4006-269-069";
+        String userId = house.getServcieUserName();
+        if (!StringUtils.isBlank(userId)) {
+            User user = this.systemService.getUser(userId);
+            String mobile = user.getMobile();
+            if (!StringUtils.isBlank(mobile)) {
+                contact_phone = mobile;
+            }
+        }
+        map.put("contact_phone", contact_phone);// 联系电话
+        Integer fang = null, ting = null, wei = null;
+        if (null != this.roomService.get(house.getId())) {
+            house = this.houseService.get(this.roomService.get(house.getId()).getHouse().getId());
+        }
+        fang = house.getDecoraStrucRoomNum();
+        ting = house.getDecoraStrucCusspacNum();
+        wei = house.getDecoraStrucWashroNum();
+        String layout = "";
+        if (null != fang) {
+            layout += fang + "房";
+        }
+        if (null != ting) {
+            layout += ting + "厅";
+        }
+        if (null != wei) {
+            layout += wei + "卫";
+        }
+        map.put("layout", layout);// 户型
+        return ResponseData.success().data(map);
     }
-
 
     /**
      * 预约房屋
      *
+     * @param houseId  房屋id
+     * @param telPhone 预约电话
+     * @param appTime  预约看房时间
+     * @param code     手机验证码
+     * @param userName 用户名称
+     * @param userSex  用户性别
+     * @param remark   备注
      * @return
      */
     @AuthIgnore
     @RequestMapping(value = "booking")
     @ResponseBody
     public ResponseData booking(String houseId, String telPhone, Date appTime, String code, String userName, String userSex, String remark) {
-        ResponseData data = new ResponseData();
         appSmsMessageService.verifyCode(telPhone, code);
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
@@ -295,9 +279,7 @@ public class AppHouseController extends AppBaseController {
         contractBook.setRoomId(StringUtils.isNotBlank(house.getRoomId()) ? house.getRoomId() : null);
         boolean ifCanBook = contractBookService.checkByUser(contractBook);
         if (!ifCanBook) {
-            data.setCode("400");
-            data.setMsg("您已预约该房间,不能重复预约!");
-            return data;
+            return ResponseData.failure(400).message("您已预约该房间,不能重复预约!");
         }
         contractBook.setUserName(userName);
         contractBook.setUserPhone(telPhone);
@@ -306,8 +288,7 @@ public class AppHouseController extends AppBaseController {
         contractBook.setBookDate(appTime);
         contractBook.setBookStatus("0");// 管家确认中
         contractBookService.save(contractBook);
-        data.setCode("200");
-            /* 获取房屋房屋管家手机号码 */
+        /* 获取房屋房屋管家手机号码 */
         String mobile = Global.getConfig("service.manager.mobile");
         String userId = house.getServcieUserName();
         if (!StringUtils.isBlank(userId)) {
@@ -316,10 +297,10 @@ public class AppHouseController extends AppBaseController {
                 mobile = user.getMobile();
             }
         }
-            /* 给服务管家发送短信 */
+        /* 给服务管家发送短信 */
         String content = Global.getConfig("service.sms.content");
         this.smsService.sendSms(mobile, content);
-        return data;
+        return ResponseData.success();
     }
 
     /**
@@ -331,33 +312,25 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booking_list")
     @ResponseBody
     public ResponseData bookingList(@CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserId(telPhone);
-            List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-            List<ContractBook> dataList = contractBookService.findList(contractBook);
-            for (ContractBook tmpContractBook : dataList) {
-                Map<String, Object> mp = new HashMap<String, Object>();
-                mp.put("id", tmpContractBook.getId());
-                mp.put("time", DateFormatUtils.format(tmpContractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
-                mp.put("progress", tmpContractBook.getBookStatus());
-                mp.put("short_desc", tmpContractBook.getShortDesc());
-                String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
-                if (null != path && path.length > 0) {
-                    mp.put("cover", Global.getConfig("img.url") + path[0]);
-                }
-                list.add(mp);
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserId(telPhone);
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List<ContractBook> dataList = contractBookService.findList(contractBook);
+        for (ContractBook tmpContractBook : dataList) {
+            Map<String, Object> mp = new HashMap<String, Object>();
+            mp.put("id", tmpContractBook.getId());
+            mp.put("time", DateFormatUtils.format(tmpContractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
+            mp.put("progress", tmpContractBook.getBookStatus());
+            mp.put("short_desc", tmpContractBook.getShortDesc());
+            String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
+            if (null != path && path.length > 0) {
+                mp.put("cover", Global.getConfig("img.url") + path[0]);
             }
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("list", list);
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("bookingList error:", e);
+            list.add(mp);
         }
-        return data;
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("list", list);
+        return ResponseData.success().data(map);
     }
 
     /**
@@ -367,64 +340,49 @@ public class AppHouseController extends AppBaseController {
      * @param telPhone
      * @return
      */
-    @RequestMapping(value = "booking_info／{id}")
+    @RequestMapping(value = "booking_info/{id}")
     @ResponseBody
     public ResponseData bookingInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserId(telPhone);
-            contractBook.setId(id);
-            contractBook = this.contractBookService.findOne(contractBook);
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("progress", contractBook.getBookStatus());
-            String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
-            if (null != path && path.length > 0) {
-                map.put("cover", Global.getConfig("img.url") + path[0]);
-            }
-            map.put("short_desc", contractBook.getShortDesc());
-            map.put("short_location", contractBook.getShortLocation());
-            map.put("id", contractBook.getId());
-            String houseCode = contractBook.getHouseCode();
-            if (!StringUtils.isBlank(contractBook.getRoomNo())) {
-                houseCode += "-" + contractBook.getRoomNo();
-            }
-            map.put("house_code", houseCode);
-            map.put("b_time", DateFormatUtils.format(contractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
-            map.put("b_name", contractBook.getUserName());
-            map.put("phone", contractBook.getUserPhone());
-            map.put("sex", contractBook.getUserGender());
-            map.put("msg", contractBook.getRemarks());
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("bookingInfo error:", e);
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserId(telPhone);
+        contractBook.setId(id);
+        contractBook = this.contractBookService.findOne(contractBook);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("progress", contractBook.getBookStatus());
+        String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
+        if (null != path && path.length > 0) {
+            map.put("cover", Global.getConfig("img.url") + path[0]);
         }
-        return data;
+        map.put("short_desc", contractBook.getShortDesc());
+        map.put("short_location", contractBook.getShortLocation());
+        map.put("id", contractBook.getId());
+        String houseCode = contractBook.getHouseCode();
+        if (!StringUtils.isBlank(contractBook.getRoomNo())) {
+            houseCode += "-" + contractBook.getRoomNo();
+        }
+        map.put("house_code", houseCode);
+        map.put("b_time", DateFormatUtils.format(contractBook.getBookDate(), "yyyy-MM-dd HH:mm"));
+        map.put("b_name", contractBook.getUserName());
+        map.put("phone", contractBook.getUserPhone());
+        map.put("sex", contractBook.getUserGender());
+        map.put("msg", contractBook.getRemarks());
+        return ResponseData.success().data(map);
     }
 
     /**
      * 取消预约
      *
-     * @param id
+     * @param id 预约id
      * @return
      */
     @RequestMapping(value = "booking_cancel/{id}")
     @ResponseBody
     public ResponseData bookingCancel(@PathVariable String id) {
-        ResponseData data = new ResponseData();
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setId(id);
-            contractBook.setBookStatus("2");// 用户取消预约
-            contractBookService.updateStatusByHouseId(contractBook);
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("cancel booking error:", e);
-        }
-        data.setCode("200");
-        return data;
+        ContractBook contractBook = new ContractBook();
+        contractBook.setId(id);
+        contractBook.setBookStatus("2");// 用户取消预约
+        contractBookService.updateStatusByHouseId(contractBook);
+        return ResponseData.success();
     }
 
     /**
@@ -433,71 +391,62 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booked／{houseId}")
     @ResponseBody
     public ResponseData booked(@PathVariable String houseId, @CurrentUserPhone String telPhone, Date expiredDate, Date signDate, String remark) {
-        ResponseData data = new ResponseData();
         if (null == signDate || null == expiredDate) {
-            data.setCode("101");
-            return data;
+            throw new ParamsException("签订日期和到期日不能为空");
         }
 
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (StringUtils.isBlank(appUser.getIdCardNo())) {
-            data.setCode("400");
-            data.setMsg("请填写身份证号码！");
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_400).message(RespConstants.ERROR_MSG_400);
         }
-        try {
-            House house = new House();
-            house.setId(houseId);
+        House house = new House();
+        house.setId(houseId);
+        house = houseService.get(house);
+        Room room = null;
+        if (null == house) {
+            room = new Room();
+            room.setId(houseId);
+            room = roomService.get(room);
+            house = new House();
+            house.setId(room.getHouse().getId());
             house = houseService.get(house);
-            Room room = null;
-            if (null == house) {
-                room = new Room();
-                room.setId(houseId);
-                room = roomService.get(room);
-                house = new House();
-                house.setId(room.getHouse().getId());
-                house = houseService.get(house);
-            }
-            // 物业项目
-            PropertyProject propertyProject = new PropertyProject();
-            propertyProject.setId(house.getPropertyProject().getId());
-            propertyProject = propertyProjectService.get(propertyProject);
-            // 楼宇
-            Building building = new Building();
-            building.setId(house.getBuilding().getId());
-            building = buildingService.get(building);
-            // 预定协议
-            DepositAgreement depositAgreement = new DepositAgreement();
-            depositAgreement.setAgreementCode(propertyProject.getProjectSimpleName() + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-XY");
-            String agreementName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
-            if (null != room) {
-                agreementName += "-" + room.getRoomNo();
-                depositAgreement.setRoom(room);
-            }
-            depositAgreement.setAgreementName(agreementName);
-            depositAgreement.setRentMode(null == room ? RentModelTypeEnum.WHOLE_RENT.getValue() : RentModelTypeEnum.JOINT_RENT.getValue());
-            depositAgreement.setPropertyProject(propertyProject);
-            depositAgreement.setBuilding(building);
-            depositAgreement.setHouse(house);
-            depositAgreement.setTenantList(appUserToTenant(appUser)); // APP用户转租客
-            depositAgreement.setSignDate(new Date());
-            depositAgreement.setAgreementDate(signDate);
-            depositAgreement.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
-            depositAgreement.setDataSource(DataSourceEnum.FRONT_APP.getValue());
-            depositAgreement.setRemarks(remark);
-            depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.TEMP_EXIST.getValue());
-            depositAgreement.setStartDate(signDate);
-            depositAgreement.setExpiredDate(expiredDate);
-            depositAgreement.setDepositCustomerIDFile(generateIdFilePath(appUser));// 租客身份证照片
-            int result = depositAgreementService.saveDepositAgreement(depositAgreement);
-            tailProcess(house, result, data);// 结果处理
-        } catch (Exception e) {
-            data.setCode("500");
-            data.setMsg("预订失败,请咨询人工客服!");
-            log.error("save contract book error:", e);
         }
+        // 物业项目
+        PropertyProject propertyProject = new PropertyProject();
+        propertyProject.setId(house.getPropertyProject().getId());
+        propertyProject = propertyProjectService.get(propertyProject);
+        // 楼宇
+        Building building = new Building();
+        building.setId(house.getBuilding().getId());
+        building = buildingService.get(building);
+        // 预定协议
+        DepositAgreement depositAgreement = new DepositAgreement();
+        depositAgreement.setAgreementCode(propertyProject.getProjectSimpleName() + "-" + (depositAgreementService.getTotalValidDACounts() + 1) + "-XY");
+        String agreementName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
+        if (null != room) {
+            agreementName += "-" + room.getRoomNo();
+            depositAgreement.setRoom(room);
+        }
+        depositAgreement.setAgreementName(agreementName);
+        depositAgreement.setRentMode(null == room ? RentModelTypeEnum.WHOLE_RENT.getValue() : RentModelTypeEnum.JOINT_RENT.getValue());
+        depositAgreement.setPropertyProject(propertyProject);
+        depositAgreement.setBuilding(building);
+        depositAgreement.setHouse(house);
+        depositAgreement.setTenantList(appUserToTenant(appUser)); // APP用户转租客
+        depositAgreement.setSignDate(new Date());
+        depositAgreement.setAgreementDate(signDate);
+        depositAgreement.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
+        depositAgreement.setDataSource(DataSourceEnum.FRONT_APP.getValue());
+        depositAgreement.setRemarks(remark);
+        depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.TEMP_EXIST.getValue());
+        depositAgreement.setStartDate(signDate);
+        depositAgreement.setExpiredDate(expiredDate);
+        depositAgreement.setDepositCustomerIDFile(generateIdFilePath(appUser));// 租客身份证照片
+        int result = depositAgreementService.saveDepositAgreement(depositAgreement);
+        ResponseData data = new ResponseData();
+        tailProcess(house, result, data);// 结果处理
         return data;
     }
 
@@ -510,127 +459,117 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booked_list")
     @ResponseBody
     public ResponseData bookedList(@CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserPhone(telPhone);
-            List<ContractBook> list = contractBookService.findBookedContract(contractBook);
-            List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
-            Map<String, Object> map = new HashMap<String, Object>();
-            for (ContractBook tmpContractBook : list) {
-                Map<String, String> mp = new HashMap<String, String>();
-                mp.put("id", tmpContractBook.getDepositId());
-                mp.put("desc", tmpContractBook.getShortDesc());
-                mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(), "yyyy-MM-dd"));
-                String status = "";// 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
-                if ("6".equals(tmpContractBook.getBookStatus())) {
-                    status = "0";
-                } else if ("0".equals(tmpContractBook.getBookStatus())) {
-                    status = "1";
-                } else if ("1".equals(tmpContractBook.getBookStatus()) || "3".equals(tmpContractBook.getBookStatus())) {
-                    status = "4";
-                } else if ("5".equals(tmpContractBook.getBookStatus())) {
-                    status = "2";
-                }
-                if ("2".equals(tmpContractBook.getBookStatus())) {
-                    status = "3";
-                    if (telPhone.equals(tmpContractBook.getUpdateUser())) {
-                        status = "5";
-                    }
-                }
-                mp.put("status", status);
-                String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
-                if (null != path && path.length > 0) {
-                    mp.put("cover", Global.getConfig("img.url") + path[0]);
-                }
-                dataList.add(mp);
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserPhone(telPhone);
+        List<ContractBook> list = contractBookService.findBookedContract(contractBook);
+        List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (ContractBook tmpContractBook : list) {
+            Map<String, String> mp = new HashMap<String, String>();
+            mp.put("id", tmpContractBook.getDepositId());
+            mp.put("desc", tmpContractBook.getShortDesc());
+            mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(), "yyyy-MM-dd"));
+            String status = "";// 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
+            if ("6".equals(tmpContractBook.getBookStatus())) {
+                status = "0";
+            } else if ("0".equals(tmpContractBook.getBookStatus())) {
+                status = "1";
+            } else if ("1".equals(tmpContractBook.getBookStatus()) || "3".equals(tmpContractBook.getBookStatus())) {
+                status = "4";
+            } else if ("5".equals(tmpContractBook.getBookStatus())) {
+                status = "2";
             }
-            map.put("list", dataList);
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("bookedList error:", e);
+            if ("2".equals(tmpContractBook.getBookStatus())) {
+                status = "3";
+                if (telPhone.equals(tmpContractBook.getUpdateUser())) {
+                    status = "5";
+                }
+            }
+            mp.put("status", status);
+            String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
+            if (null != path && path.length > 0) {
+                mp.put("cover", Global.getConfig("img.url") + path[0]);
+            }
+            dataList.add(mp);
         }
-        return data;
+        map.put("list", dataList);
+        return ResponseData.success().data(map);
     }
 
 
     @RequestMapping(value = "booked_protocol/{id}")
     @ResponseBody
     public ResponseData bookedProtocol(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            AppUser appUser = new AppUser();
-            appUser.setPhone(telPhone);
-            appUser = appUserService.getByPhone(appUser);
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserPhone(appUser.getPhone());
-            contractBook.setDepositId(id);
-            List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
-            if (null != list && list.size() > 0) {
-                contractBook = list.get(0);
-            }
-            DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
-            Map<String, Object> map = new HashMap<String, Object>();
-            String address = this.propertyProjectService.get(depositAgreement.getPropertyProject().getId()).getProjectAddr();
-            address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName() + "号楼";
-            address += this.houseService.get(depositAgreement.getHouse().getId()).getHouseNo() + "室";
-            if (null != depositAgreement.getRoom() && StringUtils.isNoneBlank(depositAgreement.getRoom().getId())) {
-                address += this.roomService.get(depositAgreement.getRoom().getId()).getRoomNo() + "部位";
-            }
-            if (null == depositAgreement.getDepositAmount()) depositAgreement.setDepositAmount(0d);
-            if (null == depositAgreement.getHousingRent()) depositAgreement.setHousingRent(0d);
-            StringBuffer html = new StringBuffer("<div>");
-            html.append("<p>");
-            html.append("<h3><center>唐巢人才公寓定金协议</center></h3>");
-            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
-            html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房屋租赁管理办法》的规定，甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，" + "乙方承租甲方位于<span style='text-decoration:underline;'>" + address
-                    + "</span>房屋，特向甲方支付房屋定金人民币：<span style='text-decoration:underline;'> " + depositAgreement.getDepositAmount() + " </span>元," + "大写:<span style='text-decoration:underline;'>"
-                    + getChineseNum(depositAgreement.getDepositAmount()) + "</span>。且双方达成以下约定：</br>");
-            html.append("&nbsp;&nbsp;一、该房屋月租金为人民币：<span style='text-decoration:underline;'>" + depositAgreement.getHousingRent() + "</span>元,大写:<span style='text-decoration:underline;'>"
-                    + getChineseNum(depositAgreement.getHousingRent()) + "</span>元整；" + "付款方式为付<span style='text-decoration:underline;'>&nbsp;"
-                    + (null == depositAgreement.getRenMonths() ? "" : depositAgreement.getRenMonths()) + "&nbsp;</span>押<span style='text-decoration:underline;'>&nbsp;"
-                    + (null == depositAgreement.getDepositMonths() ? "" : depositAgreement.getDepositMonths()) + "&nbsp;</span>；" + "租期为<span style='text-decoration:underline;'>"
-                    + df1.format(DateUtils.getMonthSpace(depositAgreement.getStartDate(), depositAgreement.getExpiredDate())) + "</span>个月；" + "期限为<span style='text-decoration:underline;'>"
-                    + DateUtils.formatDate(depositAgreement.getStartDate(), "yyyy年MM月dd日") + "</span>至<span style='text-decoration:underline;'>"
-                    + DateUtils.formatDate(depositAgreement.getExpiredDate(), "yyyy年MM月dd日") + "</span>并于<span style='text-decoration:underline;'>"
-                    + DateUtils.formatDate(depositAgreement.getAgreementDate(), "yyyy年MM月dd日") + "</span>前甲、乙双方签订此房屋租赁合同。</br>");
-            html.append("&nbsp;&nbsp;二、若甲方在约定的签约时间内将该房屋出租给他人，则需双倍退还乙方租房定金；</br>");
-            html.append("&nbsp;&nbsp;三、若因乙方原因未能如期与甲方签订租赁合同（签约标准按房屋现状且承租人无转租权），则视为乙方放弃承租该房屋，该笔定金作为违约金处理。若签订租赁合同后,该笔定金自动转为部分租金。</br>");
-            html.append("&nbsp;&nbsp;四、若因国家政策性原因或自然灾害等不可抗拒的原因致使甲方无法出租该房屋，本协议则自然终止。甲方应如数无息退还乙方所付定金。</br>");
-            html.append("&nbsp;&nbsp;五、本协议壹式贰份，甲、乙双方各执壹份，每份具有同等效力。</br></br>");
-            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-            html.append("&nbsp;&nbsp;代理人：</br>");
-            html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
-            html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
-            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd") + "</br></br>");
-            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
-            html.append("&nbsp;&nbsp;代理人：</br>");
-            html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
-            html.append("&nbsp;&nbsp;联系地址：</br>");
-            html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
-            html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
-            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd") + "</br>");
-            html.append("</p></div>");
-            html.append("</p></div>");
-            map.put("str_html", html);
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("find booked protocol error:", e);
+        AppUser appUser = new AppUser();
+        appUser.setPhone(telPhone);
+        appUser = appUserService.getByPhone(appUser);
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserPhone(appUser.getPhone());
+        contractBook.setDepositId(id);
+        List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
+        if (null != list && list.size() > 0) {
+            contractBook = list.get(0);
         }
-        return data;
+        DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
+        Map<String, Object> map = new HashMap<String, Object>();
+        String address = this.propertyProjectService.get(depositAgreement.getPropertyProject().getId()).getProjectAddr();
+        address += this.buildingService.get(depositAgreement.getBuilding().getId()).getBuildingName() + "号楼";
+        address += this.houseService.get(depositAgreement.getHouse().getId()).getHouseNo() + "室";
+        if (null != depositAgreement.getRoom() && StringUtils.isNoneBlank(depositAgreement.getRoom().getId())) {
+            address += this.roomService.get(depositAgreement.getRoom().getId()).getRoomNo() + "部位";
+        }
+        if (null == depositAgreement.getDepositAmount()) depositAgreement.setDepositAmount(0d);
+        if (null == depositAgreement.getHousingRent()) depositAgreement.setHousingRent(0d);
+        StringBuffer html = new StringBuffer("<div>");
+        html.append("<p>");
+        html.append("<h3><center>唐巢人才公寓定金协议</center></h3>");
+        html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+        html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
+        html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房屋租赁管理办法》的规定，甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，" + "乙方承租甲方位于<span style='text-decoration:underline;'>" + address
+                + "</span>房屋，特向甲方支付房屋定金人民币：<span style='text-decoration:underline;'> " + depositAgreement.getDepositAmount() + " </span>元," + "大写:<span style='text-decoration:underline;'>"
+                + getChineseNum(depositAgreement.getDepositAmount()) + "</span>。且双方达成以下约定：</br>");
+        html.append("&nbsp;&nbsp;一、该房屋月租金为人民币：<span style='text-decoration:underline;'>" + depositAgreement.getHousingRent() + "</span>元,大写:<span style='text-decoration:underline;'>"
+                + getChineseNum(depositAgreement.getHousingRent()) + "</span>元整；" + "付款方式为付<span style='text-decoration:underline;'>&nbsp;"
+                + (null == depositAgreement.getRenMonths() ? "" : depositAgreement.getRenMonths()) + "&nbsp;</span>押<span style='text-decoration:underline;'>&nbsp;"
+                + (null == depositAgreement.getDepositMonths() ? "" : depositAgreement.getDepositMonths()) + "&nbsp;</span>；" + "租期为<span style='text-decoration:underline;'>"
+                + df1.format(DateUtils.getMonthSpace(depositAgreement.getStartDate(), depositAgreement.getExpiredDate())) + "</span>个月；" + "期限为<span style='text-decoration:underline;'>"
+                + DateUtils.formatDate(depositAgreement.getStartDate(), "yyyy年MM月dd日") + "</span>至<span style='text-decoration:underline;'>"
+                + DateUtils.formatDate(depositAgreement.getExpiredDate(), "yyyy年MM月dd日") + "</span>并于<span style='text-decoration:underline;'>"
+                + DateUtils.formatDate(depositAgreement.getAgreementDate(), "yyyy年MM月dd日") + "</span>前甲、乙双方签订此房屋租赁合同。</br>");
+        html.append("&nbsp;&nbsp;二、若甲方在约定的签约时间内将该房屋出租给他人，则需双倍退还乙方租房定金；</br>");
+        html.append("&nbsp;&nbsp;三、若因乙方原因未能如期与甲方签订租赁合同（签约标准按房屋现状且承租人无转租权），则视为乙方放弃承租该房屋，该笔定金作为违约金处理。若签订租赁合同后,该笔定金自动转为部分租金。</br>");
+        html.append("&nbsp;&nbsp;四、若因国家政策性原因或自然灾害等不可抗拒的原因致使甲方无法出租该房屋，本协议则自然终止。甲方应如数无息退还乙方所付定金。</br>");
+        html.append("&nbsp;&nbsp;五、本协议壹式贰份，甲、乙双方各执壹份，每份具有同等效力。</br></br>");
+        html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+        html.append("&nbsp;&nbsp;代理人：</br>");
+        html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
+        html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
+        html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd") + "</br></br>");
+        html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
+        html.append("&nbsp;&nbsp;代理人：</br>");
+        html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
+        html.append("&nbsp;&nbsp;联系地址：</br>");
+        html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
+        html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
+        html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd") + "</br>");
+        html.append("</p></div>");
+        html.append("</p></div>");
+        map.put("str_html", html);
+        return ResponseData.success().data(map);
     }
 
+    /**
+     * @param request
+     * @param response
+     * @return
+     * @TODO 待优化
+     */
     @RequestMapping(value = "booked_protocol_byid")
     @ResponseBody
     public ResponseData bookedProtocolById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -701,10 +640,10 @@ public class AppHouseController extends AppBaseController {
             html.append("</p></div>");
             map.put("str_html", html);
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("find booked protocol error:", e);
+            data.setCode(500);
+            logger.error("find booked protocol error:", e);
         }
         return data;
     }
@@ -715,81 +654,71 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booked_order/{id}")
     @ResponseBody
     public ResponseData bookedOrder(String id, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserPhone(telPhone);
-            contractBook.setDepositId(id);
-            List<ContractBook> list = contractBookService.findBookedContract(contractBook);
-            if (CollectionUtils.isNotEmpty(list)) {
-                contractBook = list.get(0);
-            }
-            DepositAgreement depositAgreement = depositAgreementService.get(contractBook.getDepositId());
-            if (depositAgreement != null && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
-                PaymentTrans paymentTrans = new PaymentTrans();
-                paymentTrans.setTransId(depositAgreement.getId());
-                List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
-                String transIds = "";
-                double totalTradeAmount = 0;
-                List<Receipt> receiptList = new ArrayList<Receipt>();
-                Map<String, Object> resultMap = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), 1);
-                totalTradeAmount += (Double) (resultMap.get("1"));
-                transIds += (String) (resultMap.get("2"));
-                if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
-                    transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
-                }
-                /* 生成账务交易 */
-                TradingAccounts tradingAccounts = new TradingAccounts();
-                tradingAccounts.setTradeId(depositAgreement.getId());
-                List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
-                if (CollectionUtils.isNotEmpty(listTradingAccounts)) {
-                    String oldTradingAccountsId = listTradingAccounts.get(0).getId();
-                    PaymentOrder delPaymentOrder = new PaymentOrder();
-                    delPaymentOrder.setTradeId(oldTradingAccountsId);
-                    contractBookService.deleteByTradeId(delPaymentOrder);
-                }
-                tradingAccountsService.delete(tradingAccounts);
-                tradingAccounts.setTransIds(transIds);
-                tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
-                tradingAccounts.setTradeType(TradeTypeEnum.DEPOSIT_AGREEMENT.getValue());
-                tradingAccounts.setTradeAmount(totalTradeAmount);
-                tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
-                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
-                tradingAccounts.setPayeeName(contractBook.getUserName());
-                tradingAccounts.setReceiptList(receiptList);
-                tradingAccountsService.save(tradingAccounts);
-                // 订单生成
-                String houseId = "";
-                if (StringUtils.isNotBlank(contractBook.getRoomId())) {
-                    houseId = contractBook.getRoomId();
-                } else {
-                    houseId = contractBook.getHouseId();
-                }
-                PaymentOrder paymentOrder = new PaymentOrder();
-                paymentOrder.setOrderId(contractBookService.generateOrderId());
-                paymentOrder.setOrderDate(new Date());
-                paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
-                paymentOrder.setTradeId(tradingAccounts.getId());
-                paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
-                paymentOrder.setCreateDate(new Date());
-                paymentOrder.setHouseId(houseId);
-                this.contractBookService.saveOrder(paymentOrder);
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("order_id", paymentOrder.getOrderId());
-                map.put("price", df.format(paymentOrder.getOrderAmount()));
-                data.setData(map);
-                data.setCode("200");
-            } else {
-                log.error("bookedOrder's error!");
-                data.setCode("500");
-                data.setMsg("系统繁忙，请稍后再试！");
-                return data;
-            }
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("bookedOrder error:", e);
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserPhone(telPhone);
+        contractBook.setDepositId(id);
+        List<ContractBook> list = contractBookService.findBookedContract(contractBook);
+        if (CollectionUtils.isNotEmpty(list)) {
+            contractBook = list.get(0);
         }
-        return data;
+        DepositAgreement depositAgreement = depositAgreementService.get(contractBook.getDepositId());
+        if (depositAgreement != null && DataSourceEnum.FRONT_APP.getValue().equals(depositAgreement.getDataSource())) {
+            PaymentTrans paymentTrans = new PaymentTrans();
+            paymentTrans.setTransId(depositAgreement.getId());
+            List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans);
+            String transIds = "";
+            double totalTradeAmount = 0;
+            List<Receipt> receiptList = new ArrayList<Receipt>();
+            Map<String, Object> resultMap = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RECEIVABLE_DEPOSIT.getValue(), 1);
+            totalTradeAmount += (Double) (resultMap.get("1"));
+            transIds += (String) (resultMap.get("2"));
+            if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
+                transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
+            }
+                /* 生成账务交易 */
+            TradingAccounts tradingAccounts = new TradingAccounts();
+            tradingAccounts.setTradeId(depositAgreement.getId());
+            List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
+            if (CollectionUtils.isNotEmpty(listTradingAccounts)) {
+                String oldTradingAccountsId = listTradingAccounts.get(0).getId();
+                PaymentOrder delPaymentOrder = new PaymentOrder();
+                delPaymentOrder.setTradeId(oldTradingAccountsId);
+                contractBookService.deleteByTradeId(delPaymentOrder);
+            }
+            tradingAccountsService.delete(tradingAccounts);
+            tradingAccounts.setTransIds(transIds);
+            tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
+            tradingAccounts.setTradeType(TradeTypeEnum.DEPOSIT_AGREEMENT.getValue());
+            tradingAccounts.setTradeAmount(totalTradeAmount);
+            tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
+            tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
+            tradingAccounts.setPayeeName(contractBook.getUserName());
+            tradingAccounts.setReceiptList(receiptList);
+            tradingAccountsService.save(tradingAccounts);
+            // 订单生成
+            String houseId = "";
+            if (StringUtils.isNotBlank(contractBook.getRoomId())) {
+                houseId = contractBook.getRoomId();
+            } else {
+                houseId = contractBook.getHouseId();
+            }
+            PaymentOrder paymentOrder = new PaymentOrder();
+            paymentOrder.setOrderId(contractBookService.generateOrderId());
+            paymentOrder.setOrderDate(new Date());
+            paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
+            paymentOrder.setTradeId(tradingAccounts.getId());
+            paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+            paymentOrder.setCreateDate(new Date());
+            paymentOrder.setHouseId(houseId);
+            this.contractBookService.saveOrder(paymentOrder);
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("order_id", paymentOrder.getOrderId());
+            map.put("price", df.format(paymentOrder.getOrderAmount()));
+            return ResponseData.success().data(map);
+        } else {
+            logger.error("bookedOrder's error!");
+            return ResponseData.failure(RespConstants.ERROR_CODE_500).message(RespConstants.ERROR_MSG_500);
+        }
     }
 
     /**
@@ -802,83 +731,75 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booked_info/{id}")
     @ResponseBody
     public ResponseData bookedInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            AppUser appUser = new AppUser();
-            appUser.setPhone(telPhone);
-            appUser = appUserService.getByPhone(appUser);
-            ContractBook contractBook = new ContractBook();
-            // contractBook.setIdNo(appUser.getIdCardNo());
-            contractBook.setUserPhone(appUser.getPhone());
-            contractBook.setDepositId(id);
-            List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
-            if (null != list && list.size() > 0) {
-                contractBook = list.get(0);
+        AppUser appUser = new AppUser();
+        appUser.setPhone(telPhone);
+        appUser = appUserService.getByPhone(appUser);
+        ContractBook contractBook = new ContractBook();
+        // contractBook.setIdNo(appUser.getIdCardNo());
+        contractBook.setUserPhone(appUser.getPhone());
+        contractBook.setDepositId(id);
+        List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
+        if (null != list && list.size() > 0) {
+            contractBook = list.get(0);
+        }
+        DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", contractBook.getDepositId());
+        map.put("house_code", contractBook.getRoomNo());
+        String pay_way = contractBook.getPayWay();// 0:付三押一 1:付二押二
+        if (null != depositAgreement.getRenMonths()) {
+            if (3 == depositAgreement.getRenMonths()) {
+                pay_way = "0";
+            } else {
+                pay_way = "1";
             }
-            DepositAgreement depositAgreement = this.depositAgreementService.get(contractBook.getDepositId());
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("id", contractBook.getDepositId());
-            map.put("house_code", contractBook.getRoomNo());
-            String pay_way = contractBook.getPayWay();// 0:付三押一 1:付二押二
-            if (null != depositAgreement.getRenMonths()) {
-                if (3 == depositAgreement.getRenMonths()) {
-                    pay_way = "0";
-                } else {
-                    pay_way = "1";
-                }
-            }
-            map.put("pay_way", pay_way);
-            map.put("desc", contractBook.getShortDesc());
-            map.put("location", contractBook.getShortLocation());
-            String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
-            if (null != path && path.length > 0) {
-                map.put("cover", Global.getConfig("img.url") + path[0]);
-            }
-            map.put("rent_amount", depositAgreement.getHousingRent());
-            map.put("start_date", DateFormatUtils.format(depositAgreement.getStartDate(), "yyyy-MM-dd"));
-            map.put("end_date", DateFormatUtils.format(depositAgreement.getExpiredDate(), "yyyy-MM-dd"));
-            map.put("deposit_amount", depositAgreement.getDepositAmount());
-            map.put("rent_name", appUser.getName());
-            map.put("id_no", appUser.getIdCardNo());
-            map.put("rent_gender", appUser.getSex());
-            map.put("rent_phone", appUser.getPhone());
-            map.put("note", depositAgreement.getRemarks());
-            map.put("agreement_code", depositAgreement.getAgreementCode());
+        }
+        map.put("pay_way", pay_way);
+        map.put("desc", contractBook.getShortDesc());
+        map.put("location", contractBook.getShortLocation());
+        String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
+        if (null != path && path.length > 0) {
+            map.put("cover", Global.getConfig("img.url") + path[0]);
+        }
+        map.put("rent_amount", depositAgreement.getHousingRent());
+        map.put("start_date", DateFormatUtils.format(depositAgreement.getStartDate(), "yyyy-MM-dd"));
+        map.put("end_date", DateFormatUtils.format(depositAgreement.getExpiredDate(), "yyyy-MM-dd"));
+        map.put("deposit_amount", depositAgreement.getDepositAmount());
+        map.put("rent_name", appUser.getName());
+        map.put("id_no", appUser.getIdCardNo());
+        map.put("rent_gender", appUser.getSex());
+        map.put("rent_phone", appUser.getPhone());
+        map.put("note", depositAgreement.getRemarks());
+        map.put("agreement_code", depositAgreement.getAgreementCode());
           /*
            * 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
            */
-            String status = "";
-            if ("6".equals(contractBook.getBookStatus())) {
-                status = "0";
-            } else if ("0".equals(contractBook.getBookStatus())) {
-                status = "1";
-            } else if ("1".equals(contractBook.getBookStatus()) || "3".equals(contractBook.getBookStatus())) {
-                status = "4";
-            } else if ("5".equals(contractBook.getBookStatus())) {
-                status = "2";
-            }
-            if ("2".equals(contractBook.getBookStatus())) {
-                status = "3";
-                if (telPhone.equals(contractBook.getUpdateUser())) {
-                    status = "5";
-                }
-            }
-            map.put("status", status);
-            map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd"));
-            map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(), "yyyy-MM-dd"));
-            PaymentOrder paymentOrder = new PaymentOrder();
-            paymentOrder.setHouseId(contractBook.getHouseId());
-            paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
-            if (null != paymentOrder) {
-                map.put("order_id", paymentOrder.getOrderId());
-            }
-            data.setData(map);
-            data.setCode("200");
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("bookedInfo error:", e);
+        String status = "";
+        if ("6".equals(contractBook.getBookStatus())) {
+            status = "0";
+        } else if ("0".equals(contractBook.getBookStatus())) {
+            status = "1";
+        } else if ("1".equals(contractBook.getBookStatus()) || "3".equals(contractBook.getBookStatus())) {
+            status = "4";
+        } else if ("5".equals(contractBook.getBookStatus())) {
+            status = "2";
         }
-        return data;
+        if ("2".equals(contractBook.getBookStatus())) {
+            status = "3";
+            if (telPhone.equals(contractBook.getUpdateUser())) {
+                status = "5";
+            }
+        }
+        map.put("status", status);
+        map.put("sign_date", DateFormatUtils.format(depositAgreement.getSignDate(), "yyyy-MM-dd"));
+        map.put("contract_date", DateFormatUtils.format(depositAgreement.getAgreementDate(), "yyyy-MM-dd"));
+        PaymentOrder paymentOrder = new PaymentOrder();
+        paymentOrder.setHouseId(contractBook.getHouseId());
+        paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
+        if (null != paymentOrder) {
+            map.put("order_id", paymentOrder.getOrderId());
+        }
+        return ResponseData.success().data(map);
     }
 
     /**
@@ -891,18 +812,12 @@ public class AppHouseController extends AppBaseController {
     @RequestMapping(value = "booked_cancel/{id}")
     @ResponseBody
     public ResponseData bookedCancel(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            AuditHis auditHis = new AuditHis();
-            auditHis.setUpdateUser(telPhone);
-            auditHis.setObjectId(id);
-            auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
-            depositAgreementService.audit(auditHis);
-            data.setCode("200");
-        } catch (Exception e) {
-            log.error("取消预订失败:", e);
-        }
-        return data;
+        AuditHis auditHis = new AuditHis();
+        auditHis.setUpdateUser(telPhone);
+        auditHis.setObjectId(id);
+        auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
+        depositAgreementService.audit(auditHis);
+        return ResponseData.success().message("取消成功");
     }
 
     /**
@@ -916,7 +831,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData sign(@PathVariable String houseId, @CurrentUserPhone String telPhone, int contractCycle, String remark) {
         ResponseData data = new ResponseData();
         if (contractCycle < 1) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
 
@@ -924,135 +839,129 @@ public class AppHouseController extends AppBaseController {
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser == null) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("请注册账号！");
             return data;
         }
-        try {
-
-            DepositAgreement fromDepositAgreement = depositAgreementService.get(houseId);
-            if (null != fromDepositAgreement) {// 预订
-                if (fromDepositAgreement.getRoom() != null && StringUtils.isNotBlank(fromDepositAgreement.getRoom().getId())) {
-                    houseId = fromDepositAgreement.getRoom().getId();
-                } else {
-                    houseId = fromDepositAgreement.getHouse().getId();
-                }
-            }
-            boolean hasBooked = false;// 是否定金转合同
-            boolean dumpBooked = false;// 防止已经转合同的定金，重复转合同
-            String depositId = null;// 定金协议ID
-            ContractBook booked = new ContractBook();
-            booked.setUserPhone(appUser.getPhone());
-            List<ContractBook> bookedList = contractBookService.findBookedContract(booked);
-            if (CollectionUtils.isNotEmpty(bookedList)) {
-                for (ContractBook tContractBook : bookedList) {
-                    if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
-                            && AgreementBusiStatusEnum.BE_CONVERTED_CONTRACT.getValue().equals(tContractBook.getBookBusiStatus())) {
-                        dumpBooked = true;
-                        break;
-                    }
-                    if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
-                            && AgreementBusiStatusEnum.TOBE_CONVERTED.getValue().equals(tContractBook.getBookBusiStatus())) {
-                        hasBooked = true;
-                        depositId = tContractBook.getDepositId();
-                        break;
-                    }
-                }
-            }
-            if (dumpBooked) {// 已转定金重复转合同，报警提示
-                data.setCode("400");
-                data.setMsg("您预定的房源已签约！");
-                return data;
-            }
-            // 获取房屋、房间信息
-            Room room = null;
-            House house = new House();
-            house.setId(houseId);
-            house = houseService.get(house);
-            if (null == house) {// 传过来的其实是roomId
-                room = new Room();
-                room.setId(houseId);
-                room = roomService.get(room);
-                house = new House();
-                house.setId(room.getHouse().getId());
-                house = houseService.get(house);
-            }
-            // 物业项目
-            PropertyProject propertyProject = new PropertyProject();
-            propertyProject.setId(house.getPropertyProject().getId());
-            propertyProject = propertyProjectService.get(propertyProject);
-            // 楼宇
-            Building building = new Building();
-            building.setId(house.getBuilding().getId());
-            building = buildingService.get(building);
-            // 构建出租合同
-            RentContract rentContract = new RentContract();
-            rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
-            rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
-            rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
-            rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
-            rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
-            Date nowDate = new Date();
-            rentContract.setSignDate(nowDate);
-            rentContract.setStartDate(nowDate);
-            rentContract.setExpiredDate(DateUtils.dateAddMonth2(nowDate, contractCycle));
-            rentContract.setRemarks(remark);
-            rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
-            rentContract.setTenantList(appUserToTenant(appUser)); // APP用户转租客
-            rentContract.setRentContractCusIDFile(generateIdFilePath(appUser));// 租客身份证照片挂载到合同上
-            rentContract.setHouse(house);
-            String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
-            if (null != room) {
-                contractName += "-" + room.getRoomNo();
-                rentContract.setRentMode(RentModelTypeEnum.JOINT_RENT.getValue());
-                rentContract.setRoom(room);
+        DepositAgreement fromDepositAgreement = depositAgreementService.get(houseId);
+        if (null != fromDepositAgreement) {// 预订
+            if (fromDepositAgreement.getRoom() != null && StringUtils.isNotBlank(fromDepositAgreement.getRoom().getId())) {
+                houseId = fromDepositAgreement.getRoom().getId();
             } else {
-                rentContract.setRentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
+                houseId = fromDepositAgreement.getHouse().getId();
             }
-            rentContract.setContractName(contractName);
-            rentContract.setPropertyProject(propertyProject);
-            rentContract.setBuilding(building);
-            if (!hasBooked) {// 新签
-                String payWay = "";// 意向租赁方式
-                if (null != room) {
-                    rentContract.setRental(room.getRental());// 在管家确认前，房租取值于“意向房租”
-                    payWay = room.getPayWay();
-                } else {
-                    rentContract.setRental(house.getRental());// 在管家确认前，房租取值于“意向房租”
-                    payWay = house.getPayWay();
+        }
+        boolean hasBooked = false;// 是否定金转合同
+        boolean dumpBooked = false;// 防止已经转合同的定金，重复转合同
+        String depositId = null;// 定金协议ID
+        ContractBook booked = new ContractBook();
+        booked.setUserPhone(appUser.getPhone());
+        List<ContractBook> bookedList = contractBookService.findBookedContract(booked);
+        if (CollectionUtils.isNotEmpty(bookedList)) {
+            for (ContractBook tContractBook : bookedList) {
+                if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
+                        && AgreementBusiStatusEnum.BE_CONVERTED_CONTRACT.getValue().equals(tContractBook.getBookBusiStatus())) {
+                    dumpBooked = true;
+                    break;
                 }
-                if (RentPayTypeEnum.PAY_3_DEPOSIT_3.getValue().equals(payWay)) {
-                    rentContract.setRenMonths(3);
-                    rentContract.setDepositMonths(1);
-                } else if (RentPayTypeEnum.PAY_2_DEPOSIT_2.getValue().equals(payWay)) {
-                    rentContract.setRenMonths(2);
-                    rentContract.setDepositMonths(2);
+                if (houseId.equals(tContractBook.getHouseId()) && AgreementAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tContractBook.getBookStatus())
+                        && AgreementBusiStatusEnum.TOBE_CONVERTED.getValue().equals(tContractBook.getBookBusiStatus())) {
+                    hasBooked = true;
+                    depositId = tContractBook.getDepositId();
+                    break;
                 }
-                rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
+            }
+        }
+        if (dumpBooked) {// 已转定金重复转合同，报警提示
+            data.setCode(400);
+            data.setMsg("您预定的房源已签约！");
+            return data;
+        }
+        // 获取房屋、房间信息
+        Room room = null;
+        House house = new House();
+        house.setId(houseId);
+        house = houseService.get(house);
+        if (null == house) {// 传过来的其实是roomId
+            room = new Room();
+            room.setId(houseId);
+            room = roomService.get(room);
+            house = new House();
+            house.setId(room.getHouse().getId());
+            house = houseService.get(house);
+        }
+        // 物业项目
+        PropertyProject propertyProject = new PropertyProject();
+        propertyProject.setId(house.getPropertyProject().getId());
+        propertyProject = propertyProjectService.get(propertyProject);
+        // 楼宇
+        Building building = new Building();
+        building.setId(house.getBuilding().getId());
+        building = buildingService.get(building);
+        // 构建出租合同
+        RentContract rentContract = new RentContract();
+        rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
+        rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
+        rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
+        rentContract.setSignType(ContractSignTypeEnum.NEW_SIGN.getValue());
+        rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+        Date nowDate = new Date();
+        rentContract.setSignDate(nowDate);
+        rentContract.setStartDate(nowDate);
+        rentContract.setExpiredDate(DateUtils.dateAddMonth2(nowDate, contractCycle));
+        rentContract.setRemarks(remark);
+        rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
+        rentContract.setTenantList(appUserToTenant(appUser)); // APP用户转租客
+        rentContract.setRentContractCusIDFile(generateIdFilePath(appUser));// 租客身份证照片挂载到合同上
+        rentContract.setHouse(house);
+        String contractName = propertyProject.getProjectName() + "-" + building.getBuildingName() + "-" + house.getHouseNo();
+        if (null != room) {
+            contractName += "-" + room.getRoomNo();
+            rentContract.setRentMode(RentModelTypeEnum.JOINT_RENT.getValue());
+            rentContract.setRoom(room);
+        } else {
+            rentContract.setRentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
+        }
+        rentContract.setContractName(contractName);
+        rentContract.setPropertyProject(propertyProject);
+        rentContract.setBuilding(building);
+        if (!hasBooked) {// 新签
+            String payWay = "";// 意向租赁方式
+            if (null != room) {
+                rentContract.setRental(room.getRental());// 在管家确认前，房租取值于“意向房租”
+                payWay = room.getPayWay();
+            } else {
+                rentContract.setRental(house.getRental());// 在管家确认前，房租取值于“意向房租”
+                payWay = house.getPayWay();
+            }
+            if (RentPayTypeEnum.PAY_3_DEPOSIT_3.getValue().equals(payWay)) {
+                rentContract.setRenMonths(3);
+                rentContract.setDepositMonths(1);
+            } else if (RentPayTypeEnum.PAY_2_DEPOSIT_2.getValue().equals(payWay)) {
+                rentContract.setRenMonths(2);
+                rentContract.setDepositMonths(2);
+            }
+            rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
+            int result = rentContractService.saveContract(rentContract);
+            tailProcess(house, result, data);// 结果处理
+        } else {// 定金转合同
+            DepositAgreement depositAgreement = depositAgreementService.get(depositId);
+            if (depositAgreement != null) {
+                rentContract.setRental(depositAgreement.getHousingRent());
+                rentContract.setRenMonths(depositAgreement.getRenMonths());
+                rentContract.setDepositMonths(depositAgreement.getDepositMonths());
+                rentContract.setUser(depositAgreement.getUser());
+                rentContract.setAgreementId(depositId);
+                rentContract.setDepositAmount(depositAgreement.getDepositAmount());
                 int result = rentContractService.saveContract(rentContract);
                 tailProcess(house, result, data);// 结果处理
-            } else {// 定金转合同
-                DepositAgreement depositAgreement = depositAgreementService.get(depositId);
-                if (depositAgreement != null) {
-                    rentContract.setRental(depositAgreement.getHousingRent());
-                    rentContract.setRenMonths(depositAgreement.getRenMonths());
-                    rentContract.setDepositMonths(depositAgreement.getDepositMonths());
-                    rentContract.setUser(depositAgreement.getUser());
-                    rentContract.setAgreementId(depositId);
-                    rentContract.setDepositAmount(depositAgreement.getDepositAmount());
-                    int result = rentContractService.saveContract(rentContract);
-                    tailProcess(house, result, data);// 结果处理
-                } else {
-                    data.setCode("400");
-                    data.setMsg("系统繁忙，请稍后再试！");
-                }
+            } else {
+                return ResponseData.failure(401);
             }
-        } catch (Exception e) {
-            data.setCode("500");
-            log.error("sign contract error:", e);
         }
-        return data;
+        return null;
     }
+
 
     private String generateIdFilePath(AppUser appUser) {
         String rentContractCusIDFile = "";
@@ -1091,23 +1000,22 @@ public class AppHouseController extends AppBaseController {
 
     private void tailProcess(House house, int result, ResponseData data) {
         if (result == 0) {// 签约成功
-            data.setCode("200");
-            // 发送短信
-             /* 获取房屋房屋管家手机号码 */
+            // 发送短信  获取房屋房屋管家手机号码
             String mobile = Global.getConfig("service.manager.mobile");// 默认配置的大总管的手机
             User user = house.getServiceUser();
             if (user != null && StringUtils.isNotEmpty(user.getId()) && StringUtils.isNotEmpty(user.getName()) && StringUtils.isNotBlank(user.getMobile())) {
                 mobile = user.getMobile();
             }
             smsService.sendSms(mobile, Global.getConfig("sign.sms.content"));
+            data.setCode(200);
         } else if (result == -3) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("系统繁忙，请稍后再试！");
         } else if (result == -2) {// 选择的租赁期限过长
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("您设置的签约周期过长，请重新设置！");
         } else {// 房子状态不合法，为已出租
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("房源已出租！");
         }
     }
@@ -1126,9 +1034,9 @@ public class AppHouseController extends AppBaseController {
             auditHis.setUpdateUser(telPhone);
             rentContractService.audit(auditHis);
         } catch (Exception e) {
-            log.error("", e);
+            logger.error("", e);
         }
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -1137,10 +1045,11 @@ public class AppHouseController extends AppBaseController {
      */
     @RequestMapping(value = "contract_continue/{contractId}")
     @ResponseBody
-    public ResponseData contractContinue(@PathVariable String contractId, @CurrentUserPhone String telPhone, int contractCycle, String remark) {
+    public ResponseData contractContinue(@PathVariable String contractId, @CurrentUserPhone String telPhone,
+                                         int contractCycle, String remark) {
         ResponseData data = new ResponseData();
         if (contractCycle < 1) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         AppUser appUser = new AppUser();
@@ -1151,13 +1060,13 @@ public class AppHouseController extends AppBaseController {
         reNewRentContract.setContractId(contractId);
         List<RentContract> reNewRentContractList = rentContractService.findList(reNewRentContract);
         if (CollectionUtils.isNotEmpty(reNewRentContractList)) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("本合同已被续签，请重试！");
             return data;
         }
         // 检查合同的所有款项是否结清
         if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("当前合同还有未结清的款项，暂不能续签！");
             return data;
         }
@@ -1205,13 +1114,13 @@ public class AppHouseController extends AppBaseController {
                 int result = rentContractService.saveContract(rentContract);
                 tailProcess(house, result, data);// 结果处理
             } else {
-                data.setCode("400");
+                data.setCode(400);
                 data.setMsg("因当前合同状态非法，暂不支持续签，请联系客服！");
                 return data;
             }
         } catch (Exception e) {
-            log.error("[续签异常]:", e);
-            data.setCode("500");
+            logger.error("[续签异常]:", e);
+            data.setCode(500);
             data.setMsg("系统异常，请稍后再试！");
         }
         return data;
@@ -1228,7 +1137,7 @@ public class AppHouseController extends AppBaseController {
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser == null) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("请注册账号！");
             return data;
         }
@@ -1329,16 +1238,16 @@ public class AppHouseController extends AppBaseController {
                 map.put("order_id", paymentOrder.getOrderId());
                 map.put("price", df.format(paymentOrder.getOrderAmount()));
                 data.setData(map);
-                data.setCode("200");
+                data.setCode(200);
             } else {
-                log.error("signOrder's error!");
-                data.setCode("500");
+                logger.error("signOrder's error!");
+                data.setCode(500);
                 data.setMsg("系统繁忙，请稍后再试！");
                 return data;
             }
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("signOrder error:", e);
+            data.setCode(500);
+            logger.error("signOrder error:", e);
         }
         return data;
     }
@@ -1353,7 +1262,8 @@ public class AppHouseController extends AppBaseController {
      * @param receiptList       每笔款项对应生成一笔收据
      * @return Map<String,Object> key=1表示amount，key=2表示transIds
      */
-    private Map<String, Object> processCumulative(List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, int rentMonthes) {
+    private Map<String, Object> processCumulative
+    (List<PaymentTrans> paymentTransList, List<Receipt> receiptList, String targetPaymentType, int rentMonthes) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         double totalAmt = 0d;
         String transIds = "";
@@ -1385,7 +1295,8 @@ public class AppHouseController extends AppBaseController {
      */
     @RequestMapping(value = "contract_list")
     @ResponseBody
-    public ResponseData contractList(@CurrentUserPhone String telPhone, @RequestParam(defaultValue = "4") String type) {
+    public ResponseData contractList(@CurrentUserPhone String telPhone, @RequestParam(defaultValue = "4") String
+            type) {
         ResponseData data = new ResponseData();
         try {
             // 0:查询所有可续签的合同列表；1:查询所有可退租的合同列表；2:查询所有可报修的合同列表；
@@ -1433,10 +1344,10 @@ public class AppHouseController extends AppBaseController {
             }
             map.put("contracts", dataList);
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("contractList error:", e);
+            data.setCode(500);
+            logger.error("contractList error:", e);
         }
         return data;
     }
@@ -1545,10 +1456,10 @@ public class AppHouseController extends AppBaseController {
             paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
             if (null != paymentOrder) map.put("order_id", paymentOrder.getOrderId());
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("contract_info error:", e);
+            data.setCode(500);
+            logger.error("contract_info error:", e);
         }
         return data;
     }
@@ -1586,16 +1497,16 @@ public class AppHouseController extends AppBaseController {
             html.append("</p></div>");
             map.put("str_html", html);
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
+            data.setCode(500);
         }
         return data;
     }
 
     @RequestMapping(value = "alipaynNotify")
     public void alipaynNotify(HttpServletRequest request, HttpServletResponse response) {
-        this.log.info("rms start alipay notify......");
+        this.logger.info("rms start alipay notify......");
         try {
             // 获取支付宝POST过来反馈信息
             Map<String, String> params = new HashMap<String, String>();
@@ -1613,14 +1524,14 @@ public class AppHouseController extends AppBaseController {
             }
             // 交易状态
             String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
-            this.log.info("trade_status:" + trade_status);
+            this.logger.info("trade_status:" + trade_status);
             String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
-            this.log.info("out_trade_no:" + out_trade_no);
+            this.logger.info("out_trade_no:" + out_trade_no);
             String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
             if (AlipayNotify.verify(params)) {// 验证成功
-                this.log.info("verify success");
+                this.logger.info("verify success");
                 if (trade_status.equals("TRADE_SUCCESS")) {
-                    this.log.info("更改订单状态.");
+                    this.logger.info("更改订单状态.");
                     // 1.更改订单状态
                     PaymentOrder paymentOrder = this.contractBookService.findByOrderId(out_trade_no);
                     PaymentOrder updatePaymentOrder = new PaymentOrder();
@@ -1655,12 +1566,12 @@ public class AppHouseController extends AppBaseController {
                     response.getWriter().write("success");
                 }
             } else {
-                this.log.info("verify failed.");
+                this.logger.info("verify failed.");
             }
         } catch (Exception e) {
-            this.log.error("rms alipay notify error:", e);
+            this.logger.error("rms alipay notify error:", e);
         }
-        this.log.info("rms end alipay notify......");
+        this.logger.info("rms end alipay notify......");
     }
 
     @RequestMapping(value = "contract")
@@ -1668,7 +1579,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData contract(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("contract_id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -1677,7 +1588,7 @@ public class AppHouseController extends AppBaseController {
             apptoken.setToken(token);
             apptoken = appTokenService.findByToken(apptoken);
             if (null == apptoken) {
-                data.setCode("401");
+                data.setCode(401);
                 data.setMsg("请重新登录");
                 return data;
             }
@@ -1808,10 +1719,10 @@ public class AppHouseController extends AppBaseController {
             }
             map.put("str_html", html);
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("contract_info error:", e);
+            data.setCode(500);
+            logger.error("contract_info error:", e);
         }
         return data;
     }
@@ -1821,7 +1732,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData contractById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -1963,10 +1874,10 @@ public class AppHouseController extends AppBaseController {
             }
             map.put("str_html", html);
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("contract_info error:", e);
+            data.setCode(500);
+            logger.error("contract_info error:", e);
         }
         return data;
     }
@@ -1979,13 +1890,13 @@ public class AppHouseController extends AppBaseController {
     public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         String orderId = request.getParameter("order_id");
         PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
         if (null == paymentOrder) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("订单已过期");
             return data;
         }
@@ -1994,12 +1905,12 @@ public class AppHouseController extends AppBaseController {
         try {
             signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
         } catch (Exception e) {
-            this.log.error("get alipay sign error:", e);
+            this.logger.error("get alipay sign error:", e);
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sign", signStr);
         data.setData(map);
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -2008,13 +1919,13 @@ public class AppHouseController extends AppBaseController {
     public ResponseData paysignContract(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         String orderId = request.getParameter("order_id");
         PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
         if (null == paymentOrder) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("订单已过期");
             return data;
         }
@@ -2023,12 +1934,12 @@ public class AppHouseController extends AppBaseController {
         try {
             signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
         } catch (Exception e) {
-            this.log.error("get alipay sign error:", e);
+            this.logger.error("get alipay sign error:", e);
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sign", signStr);
         data.setData(map);
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -2037,7 +1948,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData recharge(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("contract_id") || null == request.getParameter("fee")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -2049,7 +1960,7 @@ public class AppHouseController extends AppBaseController {
                 meterNo = room.getMeterNo();
             }
             if (StringUtils.isBlank(meterNo)) {
-                data.setCode("400");
+                data.setCode(400);
                 data.setMsg("没有电表需要充值");
                 return data;
             }
@@ -2074,7 +1985,7 @@ public class AppHouseController extends AppBaseController {
                 apptoken.setToken(token);
                 apptoken = appTokenService.findByToken(apptoken);
                 if (null == apptoken) {
-                    data.setCode("401");
+                    data.setCode(401);
                     data.setMsg("请重新登录");
                     return data;
                 }
@@ -2106,12 +2017,12 @@ public class AppHouseController extends AppBaseController {
                 map.put("order_id", paymentOrder.getOrderId());
                 map.put("price", df.format(paymentOrder.getOrderAmount()));
                 data.setData(map);
-                data.setCode("200");
+                data.setCode(200);
             }
         } catch (Exception e) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("电费充值失败");
-            this.log.error("电表充值失败", e);
+            this.logger.error("电表充值失败", e);
         }
         return data;
     }
@@ -2122,7 +2033,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData checkinBill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("bill_id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         String token = (String) request.getHeader("token");
@@ -2130,7 +2041,7 @@ public class AppHouseController extends AppBaseController {
         apptoken.setToken(token);
         apptoken = appTokenService.findByToken(apptoken);
         if (null == apptoken) {
-            data.setCode("401");
+            data.setCode(401);
             data.setMsg("请重新登录");
             return data;
         }
@@ -2155,12 +2066,12 @@ public class AppHouseController extends AppBaseController {
             }
             orderAmount += tmpPaymentTrans.getTradeAmount();
             if (null != tradingAccounts && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(tradingAccounts.getTradeStatus())) {
-                data.setCode("400");
+                data.setCode(400);
                 break;
             }
         }
-        if ("400".equals(data.getCode())) {
-            // data.setCode("400");
+        if (400 == data.getCode()) {
+            // data.setCode(400);
             data.setMsg("账单已付清");
             return data;
         }
@@ -2189,7 +2100,7 @@ public class AppHouseController extends AppBaseController {
         map.put("order_id", paymentOrder.getOrderId());
         map.put("price", df.format(paymentOrder.getOrderAmount()));
         data.setData(map);
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -2198,13 +2109,13 @@ public class AppHouseController extends AppBaseController {
     public ResponseData payBill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         String orderId = request.getParameter("order_id");
         PaymentOrder paymentOrder = this.contractBookService.findByOrderId(orderId);
         if (null == paymentOrder) {
-            data.setCode("400");
+            data.setCode(400);
             data.setMsg("订单已过期");
             return data;
         }
@@ -2213,12 +2124,12 @@ public class AppHouseController extends AppBaseController {
         try {
             signStr = AlipayUtil.buildRequest(orderId, df.format(orderAmount));
         } catch (Exception e) {
-            this.log.error("get alipay sign error:", e);
+            this.logger.error("get alipay sign error:", e);
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("sign", signStr);
         data.setData(map);
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -2233,7 +2144,7 @@ public class AppHouseController extends AppBaseController {
         ResponseData data = new ResponseData();
         String contractId = request.getParameter("contract_id");
         if (StringUtils.isBlank(contractId)) {
-            data.setCode("101");
+            data.setCode(101);
             data.setMsg("合同编号'contract_id'不能为空");
             return data;
         }
@@ -2373,7 +2284,7 @@ public class AppHouseController extends AppBaseController {
                             }
                         }
                     } catch (Exception e) {
-                        this.log.error("查询电表异常:", e);
+                        this.logger.error("查询电表异常:", e);
                     }
                     mp.put("current_electric_amount", Double.valueOf(current_electric_balance) * Double.valueOf(electricPrice));// 当前电费余额
                     mp.put("current_electric_balance", current_electric_balance);// 当前电费度数
@@ -2400,12 +2311,12 @@ public class AppHouseController extends AppBaseController {
                 }
             }
         } catch (Exception e) {
-            log.error("", e);
+            logger.error("", e);
         }
         map.put("bill", list);
         map.put("totalHouse", list.size());
         data.setData(map);
-        data.setCode("200");
+        data.setCode(200);
         return data;
     }
 
@@ -2420,7 +2331,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("mobile")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -2440,7 +2351,7 @@ public class AppHouseController extends AppBaseController {
             repair.setDescription(request.getParameter("description"));
             User user = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
             if (user == null) {
-                data.setCode("400");
+                data.setCode(400);
                 data.setMsg("合同没有匹配的服务管家");
                 return data;
             }
@@ -2449,7 +2360,7 @@ public class AppHouseController extends AppBaseController {
             repairService.save(repair);
             String attach_path = request.getParameter("attach_path");
             if (attach_path == null) {
-                data.setCode("500");
+                data.setCode(500);
                 data.setMsg("上传有误");
                 return data;
             }
@@ -2463,11 +2374,11 @@ public class AppHouseController extends AppBaseController {
             map.put("steward", repair.getKeeper());
             map.put("steward_mobile", repair.getKeeperMobile());
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
             data.setMsg("报修已提交");
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("create repair error:", e);
+            data.setCode(500);
+            logger.error("create repair error:", e);
         }
         return data;
     }
@@ -2559,7 +2470,7 @@ public class AppHouseController extends AppBaseController {
             apptoken.setToken(token);
             apptoken = appTokenService.findByToken(apptoken);
             if (null == apptoken) {
-                data.setCode("401");
+                data.setCode(401);
                 data.setMsg("请重新登录");
                 return data;
             }
@@ -2567,7 +2478,7 @@ public class AppHouseController extends AppBaseController {
             appUser.setPhone(apptoken.getPhone());
             User serviceUser = appUserService.getServiceUserByContractId(request.getParameter("contract_id"));
             if (serviceUser == null) {
-                data.setCode("400");
+                data.setCode(400);
                 data.setMsg("未分配管家!");
             } else {
                 Map<String, Object> map = new HashMap<String, Object>();
@@ -2578,11 +2489,11 @@ public class AppHouseController extends AppBaseController {
                 map.put("level", "");
                 map.put("agency", serviceUser.getCompany().getName());
                 data.setData(map);
-                data.setCode("200");
+                data.setCode(200);
             }
         } catch (Exception e) {
-            data.setCode("500");
-            this.log.error("get house keeper error:", e);
+            data.setCode(500);
+            this.logger.error("get house keeper error:", e);
         }
         return data;
     }
@@ -2598,7 +2509,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData complain(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("mobile") || null == request.getParameter("id")) {
-            data.setCode("101");
+            data.setCode(101);
             return data;
         }
         try {
@@ -2612,11 +2523,11 @@ public class AppHouseController extends AppBaseController {
             serviceUserComplain.setServiceUser(user);
             serviceUserComplain.setContent(request.getParameter("desc"));
             serviceUserComplainService.save(serviceUserComplain);
-            data.setCode("200");
+            data.setCode(200);
             data.setMsg("已提交");
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("create complain error:", e);
+            data.setCode(500);
+            logger.error("create complain error:", e);
         }
         return data;
     }
