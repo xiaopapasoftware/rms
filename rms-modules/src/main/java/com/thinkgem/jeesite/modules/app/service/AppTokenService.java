@@ -50,7 +50,6 @@ public class AppTokenService extends CrudService<AppTokenDao, AppToken> {
   /**
    * 根据电话号码，更新TOKEN
    * 
-   * @param tAppCheckCode
    */
   @Transactional(readOnly = false)
   public void merge(AppToken appToken) {

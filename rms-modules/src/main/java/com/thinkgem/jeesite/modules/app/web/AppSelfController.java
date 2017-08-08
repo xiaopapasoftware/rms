@@ -38,7 +38,6 @@ import com.thinkgem.jeesite.modules.contract.enums.FileType;
 @Controller
 @RequestMapping(value = "${apiPath}/self")
 public class AppSelfController extends AppBaseController{
-  Logger log = LoggerFactory.getLogger(AppSelfController.class);
 
   @Autowired
   private MessageService messageService;
@@ -54,15 +53,15 @@ public class AppSelfController extends AppBaseController{
   @ResponseBody
   public ResponseData messageList(HttpServletRequest request, HttpServletResponse response, Model model) {
     ResponseData data = new ResponseData();
-    log.debug(request.getParameterMap().toString());
+    logger.debug(request.getParameterMap().toString());
     String mobile = (String) request.getParameter("mobile");
     if (mobile == null) {
-      data.setCode("101");
+      data.setCode(101);
       data.setMsg("用户获取失败");
       return data;
     }
     if (null == request.getParameter("p_n") || null == request.getParameter("p_s")) {
-      data.setCode("101");
+      data.setCode(101);
       return data;
     }
     try {
@@ -90,10 +89,10 @@ public class AppSelfController extends AppBaseController{
       map.put("p_t", page.getCount());
 
       data.setData(map);
-      data.setCode("200");
+      data.setCode(200);
     } catch (Exception e) {
-      data.setCode("500");
-      log.error("get messages error:", e);
+      data.setCode(500);
+      logger.error("get messages error:", e);
     }
     return data;
   }
@@ -133,10 +132,10 @@ public class AppSelfController extends AppBaseController{
       }
       infoMap.put("id_photo_back", idCardPhotoBack);
       data.setData(infoMap);
-      data.setCode("200");
+      data.setCode(200);
     } catch (Exception e) {
-      data.setCode("500");
-      log.error("getinfo error:", e);
+      data.setCode(500);
+      logger.error("getinfo error:", e);
     }
     return data;
   }
@@ -146,7 +145,7 @@ public class AppSelfController extends AppBaseController{
   public ResponseData avatar(HttpServletRequest request, HttpServletResponse response) {
     ResponseData data = new ResponseData();
     if (null == request.getParameter("mobile")) {
-      data.setCode("101");
+      data.setCode(101);
       return data;
     }
     try {
@@ -155,13 +154,13 @@ public class AppSelfController extends AppBaseController{
       appUser.setPhone(mobile);
       appUser = appUserService.getByPhone(appUser);
       if (appUser == null) {
-        data.setCode("200");
+        data.setCode(200);
         data.setMsg("用户不存在");
         return data;
       }
       String attach_path = request.getParameter("attach_path");
       if (attach_path == null) {
-        data.setCode("500");
+        data.setCode(500);
         data.setMsg("上传有误");
         return data;
       }
@@ -183,10 +182,10 @@ public class AppSelfController extends AppBaseController{
       PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
       String img_url = proper.getProperty("img.url");
       data.setData(img_url + attach_path);
-      data.setCode("200");
+      data.setCode(200);
     } catch (Exception e) {
-      data.setCode("500");
-      log.error("getinfo error:", e);
+      data.setCode(500);
+      logger.error("getinfo error:", e);
     }
     return data;
   }
@@ -196,7 +195,7 @@ public class AppSelfController extends AppBaseController{
   public ResponseData uploadIc(HttpServletRequest request, HttpServletResponse response) {
     ResponseData data = new ResponseData();
     if (null == request.getParameter("mobile")) {
-      data.setCode("101");
+      data.setCode(101);
       return data;
     }
     try {
@@ -205,14 +204,14 @@ public class AppSelfController extends AppBaseController{
       appUser.setPhone(mobile);
       appUser = appUserService.getByPhone(appUser);
       if (appUser == null) {
-        data.setCode("200");
+        data.setCode(200);
         data.setMsg("用户不存在");
         return data;
       }
       String front = request.getParameter("front");
       String back = request.getParameter("back");
       if (front == null || back == null) {
-        data.setCode("500");
+        data.setCode(500);
         data.setMsg("上传有误");
         return data;
       }
@@ -252,10 +251,10 @@ public class AppSelfController extends AppBaseController{
       icMap.put("front", img_url + front);
       icMap.put("back", img_url + back);
       data.setData(icMap);
-      data.setCode("200");
+      data.setCode(200);
     } catch (Exception e) {
-      data.setCode("500");
-      log.error("getinfo error:", e);
+      data.setCode(500);
+      logger.error("getinfo error:", e);
     }
     return data;
   }
@@ -265,7 +264,7 @@ public class AppSelfController extends AppBaseController{
   public ResponseData changeInfo(HttpServletRequest request, HttpServletResponse response) {
     ResponseData data = new ResponseData();
     if (null == request.getParameter("mobile")) {
-      data.setCode("101");
+      data.setCode(101);
       return data;
     }
     try {
@@ -282,10 +281,10 @@ public class AppSelfController extends AppBaseController{
       appUser.setCorp(request.getParameter("corp"));
       appUserService.save(appUser);
       data.setData("");
-      data.setCode("200");
+      data.setCode(200);
     } catch (Exception e) {
-      data.setCode("500");
-      log.error("change info error:", e);
+      data.setCode(500);
+      logger.error("change info error:", e);
     }
     return data;
   }

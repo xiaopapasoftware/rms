@@ -1,6 +1,6 @@
 package com.thinkgem.jeesite.modules.app.util;
 
-import com.thinkgem.jeesite.modules.app.exception.ParamsException;
+import com.thinkgem.jeesite.common.exception.ParamsException;
 
 import java.security.MessageDigest;
 import java.util.UUID;

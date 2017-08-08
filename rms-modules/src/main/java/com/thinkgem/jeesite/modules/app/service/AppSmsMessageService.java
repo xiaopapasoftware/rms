@@ -1,9 +1,10 @@
 package com.thinkgem.jeesite.modules.app.service;
 
+import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.utils.EhCacheUtils;
 import com.thinkgem.jeesite.common.utils.GenerateCode;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.app.exception.SmsValidCodeException;
+import com.thinkgem.jeesite.common.exception.SmsValidCodeException;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class AppSmsMessageService {
         int requestTimes = requestTime == null ? 0 : (int) requestTime;
 
         if (requestTimes >= VALIDATE_CODE_REQUEST_MAX_TIMES) {
-            throw new SmsValidCodeException("短信验证码连续发送次数最多不能超过:" + VALIDATE_CODE_REQUEST_MAX_TIMES + " 次");
+            throw new SmsValidCodeException(RespConstants.ERROR_CODE_300,"短信验证码连续发送次数最多不能超过:" + VALIDATE_CODE_REQUEST_MAX_TIMES + " 次");
         }
 
         String code = GenerateCode.generateCode();
@@ -48,7 +49,7 @@ public class AppSmsMessageService {
     public void verifyCode(String telPhone, String validcode) {
         String code = (String) EhCacheUtils.get(VALIDATE_CODE + telPhone);
         if (!StringUtils.equals(code, validcode)) {
-            throw new SmsValidCodeException("短信验证码错误，请重新获取");
+            throw new SmsValidCodeException(RespConstants.ERROR_CODE_301,"短信验证码错误，请重新获取");
         }
         EhCacheUtils.remove(VALIDATE_CODE + telPhone);
     }

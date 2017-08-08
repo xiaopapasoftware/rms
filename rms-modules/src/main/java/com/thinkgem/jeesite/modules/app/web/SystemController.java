@@ -28,8 +28,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping(value = "${apiPath}/system")
-public class SystemController extends AppBaseController{
-    Logger log = LoggerFactory.getLogger(SystemController.class);
+public class SystemController extends AppBaseController {
 
     private static final int TOKEN_EXPIRE_DAY = 7;
 
@@ -60,7 +59,7 @@ public class SystemController extends AppBaseController{
         String res;
         try {
             String token = (String) request.getHeader("token");
-            log.debug("in checkToken. token:" + token);
+            logger.debug("in checkToken. token:" + token);
             //验证token是否存在
             AppToken appToken = new AppToken();
             appToken.setToken(token);
@@ -70,10 +69,10 @@ public class SystemController extends AppBaseController{
                 res = appToken.getPhone();
             else
                 res = null;
-            log.debug("in chekcToken. return phone:" + res);
+            logger.debug("in chekcToken. return phone:" + res);
         } catch (Exception e) {
             res = null;
-            log.error("chekcToken error:", e);
+            logger.error("chekcToken error:", e);
         }
         return res;
     }
@@ -89,7 +88,7 @@ public class SystemController extends AppBaseController{
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser != null) {
-            return ResponseData.failure("200").message("用户已存在");
+            return ResponseData.failure(200).message("用户已存在");
         } else {
             //create app user
             appUser = new AppUser();
@@ -128,7 +127,7 @@ public class SystemController extends AppBaseController{
                 } catch (Exception e) {
                     log.error("register sciener account error. " + e.getMessage());
                 }*/
-            return ResponseData.success().code("200").message("注册成功").data(appToken.getToken());
+            return ResponseData.success().message("注册成功").data(appToken.getToken());
         }
     }
 
@@ -137,7 +136,7 @@ public class SystemController extends AppBaseController{
     @ResponseBody
     public ResponseData check_code(String telPhone) {
         if (StringUtils.isBlank(telPhone)) {
-            new ResponseData("101", "手机号码不能为空");
+            new ResponseData(101, "手机号码不能为空");
         }
         appSmsMessageService.sendValidCode(telPhone);
         return ResponseData.success().message("验证码发送成功，请注意查收");
@@ -151,9 +150,9 @@ public class SystemController extends AppBaseController{
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser == null) {
-            return new ResponseData("403", "当前用户不存在");
+            return new ResponseData(403, "当前用户不存在");
         } else if (PasswordHelper.checkPassword(appUser.getPassword(), password)) {
-            return new ResponseData("404", "用户名/密码有误");
+            return new ResponseData(404, "用户名/密码有误");
         } else {
             //generate new user token
             AppToken appToken = new AppToken();
@@ -164,7 +163,7 @@ public class SystemController extends AppBaseController{
             Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
             appToken.setExprie(Date.from(instant));
             appTokenService.merge(appToken);
-            return ResponseData.success().code("200").message("登陆成功").data(appToken.getToken());
+            return ResponseData.success().message("登陆成功").data(appToken.getToken());
         }
     }
 
@@ -183,7 +182,7 @@ public class SystemController extends AppBaseController{
         Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
         appToken.setExprie(Date.from(instant));
         appTokenService.merge(appToken);
-        return ResponseData.success().code("200").message("登陆成功").data(appToken.getToken());
+        return ResponseData.success().message("登陆成功").data(appToken.getToken());
     }
 
     @AuthIgnore
@@ -191,22 +190,22 @@ public class SystemController extends AppBaseController{
     @ResponseBody
     public ResponseData changePwd(String telPhone, String newPassword, String oldPassword) {
         if (telPhone == null || newPassword == null || oldPassword == null) {
-            return ResponseData.failure("101").message("必填参数不能为空 ");
+            return ResponseData.failure(101).message("必填参数不能为空 ");
         }
 
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser == null) {
-            return new ResponseData("403", "当前用户不存在");
+            return new ResponseData(403, "当前用户不存在");
         }
 
         if (PasswordHelper.checkPassword(appUser.getPassword(), oldPassword)) {
             appUser.setPassword(PasswordHelper.encryptPassword(newPassword));
             appUserService.save(appUser);
-            return new ResponseData("200", "修改密码成功");
+            return new ResponseData(200, "修改密码成功");
         } else {
-            return new ResponseData("404", "用户名/密码有误");
+            return new ResponseData(404, "用户名/密码有误");
         }
     }
 
@@ -215,7 +214,7 @@ public class SystemController extends AppBaseController{
     @ResponseBody
     public ResponseData resetPwd(String telPhone, String code, String password) {
         if (telPhone == null || code == null || password == null) {
-            return ResponseData.failure("101").message("必填参数不能为空 ");
+            return ResponseData.failure(101).message("必填参数不能为空 ");
         }
 
         appSmsMessageService.verifyCode(telPhone, code);
@@ -227,7 +226,7 @@ public class SystemController extends AppBaseController{
         Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
         appToken.setExprie(Date.from(instant));
         appTokenService.merge(appToken);
-        return ResponseData.success().code("200").message("登陆成功").data(appToken.getToken());
+        return ResponseData.success().message("登陆成功").data(appToken.getToken());
     }
 
     // 常见问题
@@ -254,10 +253,10 @@ public class SystemController extends AppBaseController{
             map.put("list", list);
 
             data.setData(map);
-            data.setCode("200");
+            data.setCode(200);
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("get messages error:", e);
+            data.setCode(500);
+            logger.error("get messages error:", e);
         }
         return data;
     }
@@ -267,7 +266,7 @@ public class SystemController extends AppBaseController{
     public ResponseData scienerToken(HttpServletRequest request, HttpServletResponse response, Model model) {
         ResponseData data = new ResponseData();
         try {
-            log.debug(request.getParameterMap().toString());
+            logger.debug(request.getParameterMap().toString());
             String mobile = (String) request.getParameter("mobile");
 
             AppUser appUser = new AppUser();
@@ -275,17 +274,17 @@ public class SystemController extends AppBaseController{
             appUser = appUserService.getByPhone(appUser);
             if (appUser.getScienerUserName() != null && appUser.getScienerPassword() != null) {
                 Map scienerRes = scienerLockService.authorize(appUser.getScienerUserName(), appUser.getScienerPassword());
-                data.setCode("200");
+                data.setCode(200);
                 data.setMsg("用户在锁平台授权成功");
                 data.setData(scienerRes.get("access_token"));
                 return data;
             } else {
-                data.setCode("400");
+                data.setCode(400);
                 data.setMsg("缺少锁平台账号，请联系客服");
             }
         } catch (Exception e) {
-            data.setCode("500");
-            log.error("scienerToken error:", e);
+            data.setCode(500);
+            logger.error("scienerToken error:", e);
         }
         return data;
     }
