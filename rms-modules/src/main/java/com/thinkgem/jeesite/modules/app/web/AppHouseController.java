@@ -2,7 +2,6 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.exception.AuthcException;
 import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -44,11 +43,7 @@ import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,7 +55,7 @@ import java.util.*;
  * @author huangsc
  * @author wangshujin
  */
-@Controller
+@RestController
 @RequestMapping(value = "${apiPath}/house")
 public class AppHouseController extends AppBaseController {
 
@@ -147,7 +142,6 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "findFeatureList")
-    @ResponseBody
     public ResponseData findFeatureList(@RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
         Page<House> page = new Page<House>();
         page.setPageSize(pageSize);
@@ -183,7 +177,6 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "getFeatureInfo/{houseId}")
-    @ResponseBody
     public ResponseData getFeatureInfo(@PathVariable String houseId) {
         House house = new House();
         house.setId(houseId);
@@ -267,7 +260,6 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "booking")
-    @ResponseBody
     public ResponseData booking(String houseId, String telPhone, Date appTime, String code, String userName, String userSex, String remark) {
         appSmsMessageService.verifyCode(telPhone, code);
 
@@ -319,7 +311,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booking_list")
-    @ResponseBody
     public ResponseData bookingList(@CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
@@ -351,7 +342,6 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "booking_info/{id}")
-    @ResponseBody
     public ResponseData bookingInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
@@ -399,7 +389,6 @@ public class AppHouseController extends AppBaseController {
      * APP在线申请预定
      */
     @RequestMapping(value = "booked／{houseId}")
-    @ResponseBody
     public ResponseData booked(@PathVariable String houseId, @CurrentUser AppUser appUser, Date expiredDate, Date signDate, String remark) {
         if (null == signDate || null == expiredDate) {
             throw new ParamsException("签订日期和到期日不能为空");
@@ -465,7 +454,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booked_list")
-    @ResponseBody
     public ResponseData bookedList(@CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(telPhone);
@@ -507,7 +495,6 @@ public class AppHouseController extends AppBaseController {
 
 
     @RequestMapping(value = "booked_protocol/{id}")
-    @ResponseBody
     public ResponseData bookedProtocol(@PathVariable String id, @CurrentUser AppUser appUser) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(appUser.getPhone());
@@ -571,7 +558,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 待优化
      */
     @RequestMapping(value = "booked_protocol_byid")
-    @ResponseBody
     public ResponseData bookedProtocolById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
@@ -658,7 +644,6 @@ public class AppHouseController extends AppBaseController {
      * 预定订单提交 》》》 管家审核通过，提交生成支付订单
      */
     @RequestMapping(value = "booked_order/{id}")
-    @ResponseBody
     public ResponseData bookedOrder(String id, @CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(telPhone);
@@ -735,7 +720,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booked_info/{id}")
-    @ResponseBody
     public ResponseData bookedInfo(@PathVariable String id, @CurrentUser AppUser appUser) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(appUser.getPhone());
@@ -813,7 +797,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booked_cancel/{id}")
-    @ResponseBody
     public ResponseData bookedCancel(@PathVariable String id, @CurrentUserPhone String telPhone) {
         AuditHis auditHis = new AuditHis();
         auditHis.setUpdateUser(telPhone);
@@ -1026,7 +1009,6 @@ public class AppHouseController extends AppBaseController {
      * 取消签约
      */
     @RequestMapping(value = "signed_cancel/{contractId}")
-    @ResponseBody
     public ResponseData signedCancel(@PathVariable String contractId, @CurrentUserPhone String telPhone) {
         AuditHis auditHis = new AuditHis();
         auditHis.setObjectId(contractId);
@@ -1040,7 +1022,6 @@ public class AppHouseController extends AppBaseController {
      * APP端在线续签
      */
     @RequestMapping(value = "contract_continue/{contractId}")
-    @ResponseBody
     public ResponseData contractContinue(@PathVariable String contractId, @CurrentUser AppUser appUser, int contractCycle, String remark) {
 
         if (contractCycle < 1) {
@@ -1113,7 +1094,6 @@ public class AppHouseController extends AppBaseController {
      * 用户在APP客户端进行签约信息确认，生成首期账单（包括账务交易记录和订单记录）
      */
     @RequestMapping(value = "sign_order/{contractId}")
-    @ResponseBody
     public ResponseData signOrder(@PathVariable String contractId, @CurrentUser AppUser appUser) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(appUser.getPhone());
@@ -1259,7 +1239,6 @@ public class AppHouseController extends AppBaseController {
      * 我的合同列表
      */
     @RequestMapping(value = "contract_list")
-    @ResponseBody
     public ResponseData contractList(@CurrentUserPhone String telPhone, @RequestParam(defaultValue = "4") String type) {
         // 0:查询所有可续签的合同列表；1:查询所有可退租的合同列表；2:查询所有可报修的合同列表；
         // 3：查询我的账单前的所有合同列表；4:查询该登录号名下的所有合同列表
@@ -1314,7 +1293,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "contract_info/{contractId}")
-    @ResponseBody
     public ResponseData contractInfo(@PathVariable String contractId) {
         RentContract rentContract = this.rentContractService.get(contractId);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -1417,7 +1395,6 @@ public class AppHouseController extends AppBaseController {
 
     @AuthIgnore
     @RequestMapping(value = "notice")
-    @ResponseBody
     public ResponseData notice() {
         Map<String, Object> map = new HashMap<String, Object>();
         StringBuffer html = new StringBuffer();
@@ -1528,7 +1505,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "contract_desp/{contractId}")
-    @ResponseBody
     public ResponseData contract(@PathVariable String contractId, @CurrentUser AppUser appUser) {
         RentContract rentContract = this.rentContractService.get(contractId);
         Map<String, Object> map = new HashMap<String, Object>();
@@ -1665,7 +1641,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 待优化
      */
     @RequestMapping(value = "contractById")
-    @ResponseBody
     public ResponseData contractById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
@@ -1824,7 +1799,6 @@ public class AppHouseController extends AppBaseController {
      * 》》》》》》》》》》》》》》》》》》》》》》支付另外处理》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》
      **/
     @RequestMapping(value = "pay_sign_booked")
-    @ResponseBody
     public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -1853,7 +1827,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "pay_sign_contract")
-    @ResponseBody
     public ResponseData paysignContract(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -1882,7 +1855,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "recharge")
-    @ResponseBody
     public ResponseData recharge(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("contract_id") || null == request.getParameter("fee")) {
@@ -1967,7 +1939,6 @@ public class AppHouseController extends AppBaseController {
 
 
     @RequestMapping(value = "checkin_bill")
-    @ResponseBody
     public ResponseData checkinBill(String billIds, @CurrentUser AppUser appUser) {
         List<Receipt> receiptList = new ArrayList<Receipt>();
         PaymentTrans paymentTrans = this.paymentTransService.get(billIds.split(",")[0]);
@@ -2017,7 +1988,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "pay_bill")
-    @ResponseBody
     public ResponseData payBill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -2051,7 +2021,6 @@ public class AppHouseController extends AppBaseController {
      * 我的账单列表 @TODO 账单列表不是跟合同走的吧
      */
     @RequestMapping(value = "bill")
-    @ResponseBody
     public ResponseData bill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         String contractId = request.getParameter("contract_id");
@@ -2239,7 +2208,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 报修怎么根据合同哦走
      */
     @RequestMapping(value = "repair")
-    @ResponseBody
     public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("mobile")) {
@@ -2373,7 +2341,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "keeper")
-    @ResponseBody
     public ResponseData keeper(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         try {
@@ -2415,7 +2382,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 投诉根据ID
      */
     @RequestMapping(value = "complain")
-    @ResponseBody
     public ResponseData complain(@CurrentUser AppUser appUser, String remark) {
 
         ServiceUserComplain serviceUserComplain = new ServiceUserComplain();

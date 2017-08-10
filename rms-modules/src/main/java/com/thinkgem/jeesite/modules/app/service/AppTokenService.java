@@ -23,65 +23,72 @@ import com.thinkgem.jeesite.modules.app.entity.AppToken;
 
 /**
  * TOKENService
- * 
+ *
  * @author mabindong
  * @version 2015-11-08
  */
 @Service
 @Transactional(readOnly = true)
 public class AppTokenService extends CrudService<AppTokenDao, AppToken> {
-  @Autowired
-  private AppTokenDao appTokenDao;
+    @Autowired
+    private AppTokenDao appTokenDao;
 
-  public AppToken get(String id) {
-    return super.get(id);
-  }
+    public AppToken get(String id) {
+        return super.get(id);
+    }
 
-  public List<AppToken> findList(AppToken appToken) {
-    return super.findList(appToken);
-  }
+    public List<AppToken> findList(AppToken appToken) {
+        return super.findList(appToken);
+    }
 
-  public Page<AppToken> findPage(Page<AppToken> page, AppToken appToken) {
-    return super.findPage(page, appToken);
-  }
+    public Page<AppToken> findPage(Page<AppToken> page, AppToken appToken) {
+        return super.findPage(page, appToken);
+    }
 
-  @Transactional(readOnly = false)
-  public void save(AppToken appToken) {
-    super.save(appToken);
-  }
+    @Transactional(readOnly = false)
+    public void save(AppToken appToken) {
+        super.save(appToken);
+    }
 
-  @Transactional(readOnly = false)
-  public void delete(AppToken appToken) {
-    super.delete(appToken);
-  }
+    @Transactional(readOnly = false)
+    public void delete(AppToken appToken) {
+        super.delete(appToken);
+    }
 
-  /**
-   * 根据电话号码，更新TOKEN
-   * 
-   */
-  @Transactional(readOnly = false)
-  public void merge(AppToken appToken) {
-    appTokenDao.delByPhone(appToken);
-    super.save(appToken);
-  }
+    /**
+     * 根据电话号码，更新TOKEN
+     */
+    @Transactional(readOnly = false)
+    public void merge(AppToken appToken) {
+        AppToken seachToken = new AppToken();
+        seachToken.setPhone(appToken.getPhone());
+        AppToken oldToken = appTokenDao.findByPhone(seachToken);
+        if (oldToken != null) {
+            appToken.setId(oldToken.getId());
+            appTokenDao.update(appToken);
+        } else {
+            super.save(appToken);
+        }
+    }
 
-  public AppToken findByTokenAndExpire(AppToken appToken) {
-    return appTokenDao.findByTokenAndExpire(appToken);
-  }
+    public AppToken findByTokenAndExpire(AppToken appToken) {
+        return appTokenDao.findByTokenAndExpire(appToken);
+    }
 
-  public AppToken findByToken(AppToken appToken) {
-    return appTokenDao.findByToken(appToken);
-  }
+    public AppToken findByToken(AppToken appToken) {
+        return appTokenDao.findByToken(appToken);
+    }
 
-  public ResponseData tokenMerge(String telPhone) {
-    AppToken appToken = new AppToken();
-    appToken.setPhone(telPhone);
-    appToken.setToken(TokenGenerator.generateValue());
+    @Transactional(readOnly = false)
+    public ResponseData tokenMerge(String telPhone) {
+        AppToken appToken = new AppToken();
+        appToken.setPhone(telPhone);
+        appToken.setToken(TokenGenerator.generateValue());
         /*token 有效期7天*/
-    LocalDate localDate = LocalDate.now().plusDays(Constants.TOKEN_EXPIRE_DAY);
-    Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
-    appToken.setExprie(Date.from(instant));
-    merge(appToken);
-    return ResponseData.success().message("登陆成功").data(appToken.getToken());
-  }
+        LocalDate localDate = LocalDate.now().plusDays(Constants.TOKEN_EXPIRE_DAY);
+        Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.of("GMT")));
+        appToken.setExprie(Date.from(instant));
+        merge(appToken);
+        return ResponseData.success().message("登陆成功").data(appToken.getToken());
+    }
 }
