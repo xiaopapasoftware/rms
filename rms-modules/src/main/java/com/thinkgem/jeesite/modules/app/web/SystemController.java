@@ -2,7 +2,6 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.exception.AuthcException;
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.PasswordHelper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -10,37 +9,25 @@ import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
 import com.thinkgem.jeesite.modules.app.entity.*;
 import com.thinkgem.jeesite.modules.app.service.*;
-import com.thinkgem.jeesite.modules.app.util.TokenGenerator;
-import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
-@Controller
+@RestController
 @RequestMapping(value = "${apiPath}/system")
 public class SystemController extends AppBaseController {
-
-
-    @Autowired
-    private TAppCheckCodeService tAppCheckCodeService;
 
     @Autowired
     private AppUserService appUserService;
 
     @Autowired
     private AppTokenService appTokenService;
-    @Autowired
-    private SmsService smsService;
     @Autowired
     private MessageService messageService;
     @Autowired
@@ -53,7 +40,6 @@ public class SystemController extends AppBaseController {
     private AppSmsMessageService appSmsMessageService;
 
     @RequestMapping(value = "checkToken")
-    @ResponseBody
     public String checkToken(HttpServletRequest request, HttpServletResponse response, Model model) {
         String res;
         try {
@@ -78,7 +64,6 @@ public class SystemController extends AppBaseController {
 
     @AuthIgnore
     @RequestMapping(value = "register")
-    @ResponseBody
     public ResponseData register(String telPhone, String code, String password) {
         appSmsMessageService.verifyCode(telPhone, code);
 
@@ -123,7 +108,6 @@ public class SystemController extends AppBaseController {
 
     @AuthIgnore
     @RequestMapping(value = "send_code")
-    @ResponseBody
     public ResponseData check_code(String telPhone) {
         if (StringUtils.isBlank(telPhone)) {
             new ResponseData(RespConstants.ERROR_CODE_103, RespConstants.ERROR_MSG_103);
@@ -134,14 +118,13 @@ public class SystemController extends AppBaseController {
 
     @AuthIgnore
     @RequestMapping(value = "login/pwd")
-    @ResponseBody
     public ResponseData loginWithPwd(String telPhone, String password) {
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
         appUser = appUserService.getByPhone(appUser);
         if (appUser == null) {
             throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
-        } else if (PasswordHelper.checkPassword(appUser.getPassword(), password)) {
+        } else if (!PasswordHelper.checkPassword(appUser.getPassword(), password)) {
             return new ResponseData(RespConstants.ERROR_CODE_406, RespConstants.ERROR_MSG_406);
         }
         return appTokenService.tokenMerge(telPhone);
@@ -149,7 +132,6 @@ public class SystemController extends AppBaseController {
 
     @AuthIgnore
     @RequestMapping(value = "login/code")
-    @ResponseBody
     public ResponseData loginWithCode(String telPhone, String code) {
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
@@ -164,7 +146,6 @@ public class SystemController extends AppBaseController {
 
 
     @RequestMapping(value = "self/pwd")
-    @ResponseBody
     public ResponseData changePwd(@CurrentUser AppUser appUser, String telPhone, String newPassword, String oldPassword) {
         if (telPhone == null || newPassword == null || oldPassword == null) {
             return ResponseData.failure(RespConstants.ERROR_CODE_101).message("必填参数不能为空");
@@ -179,14 +160,20 @@ public class SystemController extends AppBaseController {
         }
     }
 
+    @AuthIgnore
     @RequestMapping(value = "pwd/reset")
-    @ResponseBody
-    public ResponseData resetPwd(@CurrentUser AppUser appUser, String telPhone, String code, String password) {
+    public ResponseData resetPwd(String telPhone, String code, String password) {
         if (telPhone == null || code == null || password == null) {
             return ResponseData.failure(RespConstants.ERROR_CODE_101).message("必填参数不能为空 ");
         }
 
         appSmsMessageService.verifyCode(telPhone, code);
+        AppUser searchUser = new AppUser();
+        searchUser.setPhone(telPhone);
+        AppUser appUser = appUserService.getByPhone(searchUser);
+        if (appUser == null) {
+            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
+        }
         appUser.setPhone(telPhone);
         appUser.setPassword(PasswordHelper.encryptPassword(password));
         appUserService.save(appUser);
@@ -196,7 +183,6 @@ public class SystemController extends AppBaseController {
     // 常见问题
     @AuthIgnore
     @RequestMapping(value = "question")
-    @ResponseBody
     public ResponseData question() {
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Questions que = new Questions();
@@ -218,7 +204,6 @@ public class SystemController extends AppBaseController {
     }
 
     @RequestMapping(value = "scienerToken")
-    @ResponseBody
     public ResponseData scienerToken(@CurrentUser AppUser appUser) {
         if (appUser.getScienerUserName() != null && appUser.getScienerPassword() != null) {
             Map scienerRes = scienerLockService.authorize(appUser.getScienerUserName(), appUser.getScienerPassword());
