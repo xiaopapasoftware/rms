@@ -21,7 +21,7 @@ public class AppSmsMessageService {
 
     private static String VALIDATE_CODE_TIMES = "VALIDATE_CODE_TIMES_";
     private static String VALIDATE_CODE = "VALIDATE_CODE_";
-    private static String VALIDATE_CODE_TEMPLATE = "【唐巢公寓】尊敬的用户，您的验证码是%s，十分钟内有效。";
+    private static String VALIDATE_CODE_TEMPLATE = "尊敬的用户，您的验证码是%s，十分钟内有效。";
     private static final int VALIDATE_CODE_REQUEST_MAX_TIMES = 5;
 
     @Autowired
