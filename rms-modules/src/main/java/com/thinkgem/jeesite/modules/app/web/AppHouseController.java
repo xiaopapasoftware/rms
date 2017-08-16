@@ -181,6 +181,9 @@ public class AppHouseController extends AppBaseController {
         House house = new House();
         house.setId(houseId);
         house = houseService.getFeatureInfo(house);
+        if(house == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("house_code", house.getHouseCode());
         map.put("id", house.getId());
@@ -274,12 +277,15 @@ public class AppHouseController extends AppBaseController {
         House house = new House();
         house.setId(houseId);
         house = this.houseService.getHouseByHouseId(house);
+        if(house == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         /* 同一手机号不能预约同一房 */
         contractBook.setHouseId(house.getHouseId());
         contractBook.setRoomId(StringUtils.isNotBlank(house.getRoomId()) ? house.getRoomId() : null);
         boolean ifCanBook = contractBookService.checkByUser(contractBook);
         if (!ifCanBook) {
-            return ResponseData.failure(400).message("您已预约该房间,不能重复预约!");
+            return ResponseData.failure(RespConstants.ERROR_CODE_110).message(RespConstants.ERROR_MSG_110);
         }
         contractBook.setUserName(userName);
         contractBook.setUserPhone(telPhone);
@@ -347,6 +353,9 @@ public class AppHouseController extends AppBaseController {
         contractBook.setUserId(telPhone);
         contractBook.setId(id);
         contractBook = this.contractBookService.findOne(contractBook);
+        if(contractBook == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("progress", contractBook.getBookStatus());
         String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");

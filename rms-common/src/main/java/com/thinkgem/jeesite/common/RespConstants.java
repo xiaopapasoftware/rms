@@ -25,6 +25,10 @@ public class RespConstants {
     public static final String ERROR_MSG_107 = "当前合同还有未结清的款项,暂不能续签";
     public static final int ERROR_CODE_108 = 108;
     public static final String ERROR_MSG_108 = "因当前合同状态非法,暂不支持续签,请联系客服";
+    public static final int ERROR_CODE_109 = 109;
+    public static final String ERROR_MSG_109 = "当前信息不存在,查询后在操作";
+    public static final int ERROR_CODE_110 = 110;
+    public static final String ERROR_MSG_110 = "您已预约该房间,不能重复预约";
 
 
 
