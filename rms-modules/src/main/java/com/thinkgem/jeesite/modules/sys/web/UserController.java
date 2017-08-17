@@ -140,6 +140,8 @@ public class UserController extends BaseController {
 
     // 保存用户信息
     systemService.saveUser(user);
+    //清除修改用户的缓存
+    UserUtils.clearCache(user);
     // 清除当前用户缓存
     if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
       UserUtils.clearCache();
