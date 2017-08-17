@@ -27,6 +27,14 @@
 		<include refid="appTokenJoins"/>
 		WHERE a.token = #{token}
 	</select>
+
+	<select id="findByPhone" resultType="AppToken">
+		SELECT
+		<include refid="appTokenColumns"/>
+		FROM t_app_token a
+		<include refid="appTokenJoins"/>
+		WHERE a.phone = #{phone}
+	</select>
 	
 	<select id="findList" resultType="AppToken">
 		SELECT 

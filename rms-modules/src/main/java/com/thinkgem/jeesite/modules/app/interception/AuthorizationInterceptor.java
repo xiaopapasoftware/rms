@@ -1,10 +1,14 @@
 package com.thinkgem.jeesite.modules.app.interception;
 
+import com.thinkgem.jeesite.common.RespConstants;
+import com.thinkgem.jeesite.common.exception.AuthcException;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.entity.AppToken;
+import com.thinkgem.jeesite.modules.app.entity.AppUser;
 import com.thinkgem.jeesite.modules.app.service.AppTokenService;
+import com.thinkgem.jeesite.modules.app.service.AppUserService;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +24,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
+
     @Autowired
     private AppTokenService appTokenService;
+
+    @Autowired
+    private AppUserService appUserService;
 
     @Value("${apiPath}")
     private String apiPath;
@@ -30,7 +38,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         AuthIgnore annotation;
 
-        if(!request.getRequestURI().startsWith(apiPath)){
+        if (!request.getRequestURI().startsWith(apiPath)) {
             return true;
         }
 
@@ -54,7 +62,7 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
 
         //token为空
         if (StringUtils.isBlank(token)) {
-            throw new ExpiredCredentialsException( "token失效，请重新登录");
+            throw new AuthcException(RespConstants.ERROR_CODE_402, RespConstants.ERROR_MSG_402);
         }
 
         //查询token信息
@@ -62,10 +70,18 @@ public class AuthorizationInterceptor extends HandlerInterceptorAdapter {
         searchToken.setToken(token);
         AppToken userToken = appTokenService.findByToken(searchToken);
         if (userToken == null || userToken.getExprie().getTime() < System.currentTimeMillis()) {
-            throw new ExpiredCredentialsException( "token失效，请重新登录");
+            throw new AuthcException(RespConstants.ERROR_CODE_402, RespConstants.ERROR_MSG_402);
+        }
+
+        AppUser searchAppUser = new AppUser();
+        searchAppUser.setPhone(userToken.getPhone());
+        AppUser appUser = appUserService.getByPhone(searchAppUser);
+        if (appUser == null) {
+            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
         }
 
         request.setAttribute(Constants.APP_USER_TELPHONE, userToken.getPhone());
+        request.setAttribute(Constants.APP_CURRENT_USER, appUser);
         return true;
     }
 

@@ -2,15 +2,17 @@ package com.thinkgem.jeesite.modules.app.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.PasswordHelper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayNotify;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
+import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
 import com.thinkgem.jeesite.modules.app.entity.*;
-import com.thinkgem.jeesite.common.exception.ParamsException;
 import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
@@ -40,14 +42,8 @@ import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,7 +55,7 @@ import java.util.*;
  * @author huangsc
  * @author wangshujin
  */
-@Controller
+@RestController
 @RequestMapping(value = "${apiPath}/house")
 public class AppHouseController extends AppBaseController {
 
@@ -146,7 +142,6 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "findFeatureList")
-    @ResponseBody
     public ResponseData findFeatureList(@RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
         Page<House> page = new Page<House>();
         page.setPageSize(pageSize);
@@ -182,11 +177,13 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "getFeatureInfo/{houseId}")
-    @ResponseBody
     public ResponseData getFeatureInfo(@PathVariable String houseId) {
         House house = new House();
         house.setId(houseId);
         house = houseService.getFeatureInfo(house);
+        if(house == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("house_code", house.getHouseCode());
         map.put("id", house.getId());
@@ -266,20 +263,29 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "booking")
-    @ResponseBody
     public ResponseData booking(String houseId, String telPhone, Date appTime, String code, String userName, String userSex, String remark) {
         appSmsMessageService.verifyCode(telPhone, code);
+
+        //create app user
+        AppUser appUser = new AppUser();
+        appUser.setPhone(telPhone);
+        appUser.setPassword(PasswordHelper.encryptPassword(""));
+        appUserService.save(appUser);
+
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
         House house = new House();
         house.setId(houseId);
         house = this.houseService.getHouseByHouseId(house);
+        if(house == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         /* 同一手机号不能预约同一房 */
         contractBook.setHouseId(house.getHouseId());
         contractBook.setRoomId(StringUtils.isNotBlank(house.getRoomId()) ? house.getRoomId() : null);
         boolean ifCanBook = contractBookService.checkByUser(contractBook);
         if (!ifCanBook) {
-            return ResponseData.failure(400).message("您已预约该房间,不能重复预约!");
+            return ResponseData.failure(RespConstants.ERROR_CODE_110).message(RespConstants.ERROR_MSG_110);
         }
         contractBook.setUserName(userName);
         contractBook.setUserPhone(telPhone);
@@ -300,7 +306,8 @@ public class AppHouseController extends AppBaseController {
         /* 给服务管家发送短信 */
         String content = Global.getConfig("service.sms.content");
         this.smsService.sendSms(mobile, content);
-        return ResponseData.success();
+        //返回token
+        return appTokenService.tokenMerge(telPhone);
     }
 
     /**
@@ -310,7 +317,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booking_list")
-    @ResponseBody
     public ResponseData bookingList(@CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
@@ -340,13 +346,16 @@ public class AppHouseController extends AppBaseController {
      * @param telPhone
      * @return
      */
+    @AuthIgnore
     @RequestMapping(value = "booking_info/{id}")
-    @ResponseBody
     public ResponseData bookingInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
         contractBook.setId(id);
         contractBook = this.contractBookService.findOne(contractBook);
+        if(contractBook == null){
+            return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
+        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("progress", contractBook.getBookStatus());
         String path[] = StringUtils.split(contractBook.getAttachmentPath(), "|");
@@ -389,18 +398,15 @@ public class AppHouseController extends AppBaseController {
      * APP在线申请预定
      */
     @RequestMapping(value = "booked／{houseId}")
-    @ResponseBody
-    public ResponseData booked(@PathVariable String houseId, @CurrentUserPhone String telPhone, Date expiredDate, Date signDate, String remark) {
+    public ResponseData booked(@PathVariable String houseId, @CurrentUser AppUser appUser, Date expiredDate, Date signDate, String remark) {
         if (null == signDate || null == expiredDate) {
             throw new ParamsException("签订日期和到期日不能为空");
         }
 
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
         if (StringUtils.isBlank(appUser.getIdCardNo())) {
-            return ResponseData.failure(RespConstants.ERROR_CODE_400).message(RespConstants.ERROR_MSG_400);
+            return ResponseData.failure(RespConstants.ERROR_CODE_102).message(RespConstants.ERROR_MSG_102);
         }
+
         House house = new House();
         house.setId(houseId);
         house = houseService.get(house);
@@ -457,7 +463,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booked_list")
-    @ResponseBody
     public ResponseData bookedList(@CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(telPhone);
@@ -469,7 +474,8 @@ public class AppHouseController extends AppBaseController {
             mp.put("id", tmpContractBook.getDepositId());
             mp.put("desc", tmpContractBook.getShortDesc());
             mp.put("time", DateFormatUtils.format(tmpContractBook.getCreateDate(), "yyyy-MM-dd"));
-            String status = "";// 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
+            String status = "";
+            // 0:等待管家确认 1:等待用户确认 2:支付成功 3:管家已取消 4.等待用户支付 5.用户已取消 6.支付失败
             if ("6".equals(tmpContractBook.getBookStatus())) {
                 status = "0";
             } else if ("0".equals(tmpContractBook.getBookStatus())) {
@@ -498,11 +504,7 @@ public class AppHouseController extends AppBaseController {
 
 
     @RequestMapping(value = "booked_protocol/{id}")
-    @ResponseBody
-    public ResponseData bookedProtocol(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
+    public ResponseData bookedProtocol(@PathVariable String id, @CurrentUser AppUser appUser) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(appUser.getPhone());
         contractBook.setDepositId(id);
@@ -565,7 +567,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 待优化
      */
     @RequestMapping(value = "booked_protocol_byid")
-    @ResponseBody
     public ResponseData bookedProtocolById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
@@ -652,7 +653,6 @@ public class AppHouseController extends AppBaseController {
      * 预定订单提交 》》》 管家审核通过，提交生成支付订单
      */
     @RequestMapping(value = "booked_order/{id}")
-    @ResponseBody
     public ResponseData bookedOrder(String id, @CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
         contractBook.setUserPhone(telPhone);
@@ -675,7 +675,7 @@ public class AppHouseController extends AppBaseController {
             if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
                 transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
             }
-                /* 生成账务交易 */
+            /* 生成账务交易 */
             TradingAccounts tradingAccounts = new TradingAccounts();
             tradingAccounts.setTradeId(depositAgreement.getId());
             List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
@@ -724,18 +724,13 @@ public class AppHouseController extends AppBaseController {
     /**
      * 查看预定信息
      *
-     * @param id       预定id
-     * @param telPhone
+     * @param id      预定id
+     * @param appUser
      * @return
      */
     @RequestMapping(value = "booked_info/{id}")
-    @ResponseBody
-    public ResponseData bookedInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
+    public ResponseData bookedInfo(@PathVariable String id, @CurrentUser AppUser appUser) {
         ContractBook contractBook = new ContractBook();
-        // contractBook.setIdNo(appUser.getIdCardNo());
         contractBook.setUserPhone(appUser.getPhone());
         contractBook.setDepositId(id);
         List<ContractBook> list = this.contractBookService.findBookedContract(contractBook);
@@ -786,7 +781,7 @@ public class AppHouseController extends AppBaseController {
         }
         if ("2".equals(contractBook.getBookStatus())) {
             status = "3";
-            if (telPhone.equals(contractBook.getUpdateUser())) {
+            if (appUser.getPhone().equals(contractBook.getUpdateUser())) {
                 status = "5";
             }
         }
@@ -802,6 +797,7 @@ public class AppHouseController extends AppBaseController {
         return ResponseData.success().data(map);
     }
 
+
     /**
      * 取消预订
      *
@@ -810,7 +806,6 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "booked_cancel/{id}")
-    @ResponseBody
     public ResponseData bookedCancel(@PathVariable String id, @CurrentUserPhone String telPhone) {
         AuditHis auditHis = new AuditHis();
         auditHis.setUpdateUser(telPhone);
@@ -822,27 +817,19 @@ public class AppHouseController extends AppBaseController {
 
     /**
      * APP在线签约申请
+     * 签约时间为当前时间
      *
      * @param houseId       可能是从预订申请转过来的，也可能是houseId
      * @param contractCycle 签约的月数 》》》 租住几个月
      */
     @RequestMapping(value = "sign/{houseId}")
     @ResponseBody
-    public ResponseData sign(@PathVariable String houseId, @CurrentUserPhone String telPhone, int contractCycle, String remark) {
+    public ResponseData sign(@PathVariable String houseId, @CurrentUser AppUser appUser, int contractCycle, String remark) {
         ResponseData data = new ResponseData();
         if (contractCycle < 1) {
-            data.setCode(101);
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("合同最少签订为一月");
         }
 
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
-        if (appUser == null) {
-            data.setCode(400);
-            data.setMsg("请注册账号！");
-            return data;
-        }
         DepositAgreement fromDepositAgreement = depositAgreementService.get(houseId);
         if (null != fromDepositAgreement) {// 预订
             if (fromDepositAgreement.getRoom() != null && StringUtils.isNotBlank(fromDepositAgreement.getRoom().getId())) {
@@ -873,9 +860,7 @@ public class AppHouseController extends AppBaseController {
             }
         }
         if (dumpBooked) {// 已转定金重复转合同，报警提示
-            data.setCode(400);
-            data.setMsg("您预定的房源已签约！");
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_105).message(RespConstants.ERROR_MSG_105);
         }
         // 获取房屋、房间信息
         Room room = null;
@@ -926,6 +911,7 @@ public class AppHouseController extends AppBaseController {
         rentContract.setPropertyProject(propertyProject);
         rentContract.setBuilding(building);
         if (!hasBooked) {// 新签
+            logger.info("当前为新签合同");
             String payWay = "";// 意向租赁方式
             if (null != room) {
                 rentContract.setRental(room.getRental());// 在管家确认前，房租取值于“意向房租”
@@ -947,6 +933,7 @@ public class AppHouseController extends AppBaseController {
         } else {// 定金转合同
             DepositAgreement depositAgreement = depositAgreementService.get(depositId);
             if (depositAgreement != null) {
+                logger.info("当前为定金转合同");
                 rentContract.setRental(depositAgreement.getHousingRent());
                 rentContract.setRenMonths(depositAgreement.getRenMonths());
                 rentContract.setDepositMonths(depositAgreement.getDepositMonths());
@@ -956,7 +943,8 @@ public class AppHouseController extends AppBaseController {
                 int result = rentContractService.saveContract(rentContract);
                 tailProcess(house, result, data);// 结果处理
             } else {
-                return ResponseData.failure(401);
+                logger.error("找不到当前与处理的合同,处理[id={}]", houseId);
+                return ResponseData.failure(RespConstants.ERROR_CODE_500).message(RespConstants.ERROR_MSG_500);
             }
         }
         return null;
@@ -977,6 +965,12 @@ public class AppHouseController extends AppBaseController {
         return rentContractCusIDFile;
     }
 
+    /**
+     * app用户转为租客
+     *
+     * @param appUser
+     * @return
+     */
     private List<Tenant> appUserToTenant(AppUser appUser) {
         List<Tenant> tenantList = new ArrayList<Tenant>();
         Tenant tenant = new Tenant();
@@ -1024,232 +1018,192 @@ public class AppHouseController extends AppBaseController {
      * 取消签约
      */
     @RequestMapping(value = "signed_cancel/{contractId}")
-    @ResponseBody
     public ResponseData signedCancel(@PathVariable String contractId, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        try {
-            AuditHis auditHis = new AuditHis();
-            auditHis.setObjectId(contractId);
-            auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
-            auditHis.setUpdateUser(telPhone);
-            rentContractService.audit(auditHis);
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-        data.setCode(200);
-        return data;
+        AuditHis auditHis = new AuditHis();
+        auditHis.setObjectId(contractId);
+        auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
+        auditHis.setUpdateUser(telPhone);
+        rentContractService.audit(auditHis);
+        return ResponseData.success().message("取消成功");
     }
 
     /**
      * APP端在线续签
      */
     @RequestMapping(value = "contract_continue/{contractId}")
-    @ResponseBody
-    public ResponseData contractContinue(@PathVariable String contractId, @CurrentUserPhone String telPhone,
-                                         int contractCycle, String remark) {
-        ResponseData data = new ResponseData();
+    public ResponseData contractContinue(@PathVariable String contractId, @CurrentUser AppUser appUser, int contractCycle, String remark) {
+
         if (contractCycle < 1) {
-            data.setCode(101);
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("合同最少签订为一月");
         }
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
+
         // 检查此合同是否已被续签
         RentContract reNewRentContract = new RentContract();
         reNewRentContract.setContractId(contractId);
         List<RentContract> reNewRentContractList = rentContractService.findList(reNewRentContract);
+
         if (CollectionUtils.isNotEmpty(reNewRentContractList)) {
-            data.setCode(400);
-            data.setMsg("本合同已被续签，请重试！");
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_106).message(RespConstants.ERROR_MSG_106);
         }
         // 检查合同的所有款项是否结清
         if (paymentTransService.checkNotSignedPaymentTrans(contractId)) {
-            data.setCode(400);
-            data.setMsg("当前合同还有未结清的款项，暂不能续签！");
-            return data;
+            return ResponseData.failure(RespConstants.ERROR_CODE_107).message(RespConstants.ERROR_MSG_107);
         }
+
         RentContract oriRentContract = rentContractService.get(contractId);
-        try {
-            if (oriRentContract != null && ContractBusiStatusEnum.VALID.getValue().equals(oriRentContract.getContractBusiStatus())
-                    && ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(oriRentContract.getContractStatus())) {
-                House house = houseService.get(oriRentContract.getHouse().getId());
-                RentContract rentContract = new RentContract();
-                rentContract.setContractId(contractId);
-                rentContract.setRentMode(oriRentContract.getRentMode());
-                rentContract.setPropertyProject(oriRentContract.getPropertyProject());
-                rentContract.setBuilding(oriRentContract.getBuilding());
-                rentContract.setHouse(oriRentContract.getHouse());
-                rentContract.setRoom(oriRentContract.getRoom());
-                rentContract.setRental(oriRentContract.getRental());
-                rentContract.setDepositElectricAmount(0d);
-                rentContract.setDepositAmount(0d);
-                rentContract.setRenMonths(oriRentContract.getRenMonths());
-                rentContract.setDepositMonths(oriRentContract.getDepositMonths());
-                rentContract.setTenantList(appUserToTenant(appUser)); // APP用户转租客
-                rentContract.setRentContractCusIDFile(generateIdFilePath(appUser));// 租客身份证照片挂载到合同上
-                rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
-                rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
-                rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
-                rentContract.setSignDate(new Date());
-                Date beginDate = DateUtils.dateAddDay(oriRentContract.getExpiredDate(), 1);
-                rentContract.setStartDate(beginDate);
-                rentContract.setExpiredDate(DateUtils.dateAddMonth2(beginDate, contractCycle));
-                rentContract.setRemarks(remark);
-                rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
-                rentContract.setSignType(ContractSignTypeEnum.RENEW_SIGN.getValue());
-                rentContract.setRenewCount(oriRentContract.getRenewCount() == null ? 1 : oriRentContract.getRenewCount() + 1);
-                rentContract.setContractName(oriRentContract.getContractName());
-                PropertyProject propertyProject = new PropertyProject();
-                propertyProject.setId(house.getPropertyProject().getId());
-                propertyProject = propertyProjectService.get(propertyProject);
-                rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
-                rentContract.setChargeType(oriRentContract.getChargeType());
-                rentContract.setHasTv(oriRentContract.getHasTv());
-                rentContract.setTvFee(oriRentContract.getTvFee());
-                rentContract.setHasNet(oriRentContract.getHasNet());
-                rentContract.setNetFee(oriRentContract.getNetFee());
-                rentContract.setWaterFee(oriRentContract.getWaterFee());
-                int result = rentContractService.saveContract(rentContract);
-                tailProcess(house, result, data);// 结果处理
-            } else {
-                data.setCode(400);
-                data.setMsg("因当前合同状态非法，暂不支持续签，请联系客服！");
-                return data;
-            }
-        } catch (Exception e) {
-            logger.error("[续签异常]:", e);
-            data.setCode(500);
-            data.setMsg("系统异常，请稍后再试！");
+        if (oriRentContract != null && ContractBusiStatusEnum.VALID.getValue().equals(oriRentContract.getContractBusiStatus())
+                && ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(oriRentContract.getContractStatus())) {
+            House house = houseService.get(oriRentContract.getHouse().getId());
+            RentContract rentContract = new RentContract();
+            rentContract.setContractId(contractId);
+            rentContract.setRentMode(oriRentContract.getRentMode());
+            rentContract.setPropertyProject(oriRentContract.getPropertyProject());
+            rentContract.setBuilding(oriRentContract.getBuilding());
+            rentContract.setHouse(oriRentContract.getHouse());
+            rentContract.setRoom(oriRentContract.getRoom());
+            rentContract.setRental(oriRentContract.getRental());
+            rentContract.setDepositElectricAmount(0d);
+            rentContract.setDepositAmount(0d);
+            rentContract.setRenMonths(oriRentContract.getRenMonths());
+            rentContract.setDepositMonths(oriRentContract.getDepositMonths());
+            rentContract.setTenantList(appUserToTenant(appUser)); // APP用户转租客
+            rentContract.setRentContractCusIDFile(generateIdFilePath(appUser));// 租客身份证照片挂载到合同上
+            rentContract.setContractSource(ContractSourceEnum.SELF.getValue());
+            rentContract.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
+            rentContract.setDataSource(DataSourceEnum.FRONT_APP.getValue());
+            rentContract.setSignDate(new Date());
+            Date beginDate = DateUtils.dateAddDay(oriRentContract.getExpiredDate(), 1);
+            rentContract.setStartDate(beginDate);
+            rentContract.setExpiredDate(DateUtils.dateAddMonth2(beginDate, contractCycle));
+            rentContract.setRemarks(remark);
+            rentContract.setContractStatus(ContractAuditStatusEnum.TEMP_EXIST.getValue());
+            rentContract.setSignType(ContractSignTypeEnum.RENEW_SIGN.getValue());
+            rentContract.setRenewCount(oriRentContract.getRenewCount() == null ? 1 : oriRentContract.getRenewCount() + 1);
+            rentContract.setContractName(oriRentContract.getContractName());
+            PropertyProject propertyProject = new PropertyProject();
+            propertyProject.setId(house.getPropertyProject().getId());
+            propertyProject = propertyProjectService.get(propertyProject);
+            rentContract.setContractCode(propertyProject.getProjectSimpleName() + "-" + (rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
+            rentContract.setChargeType(oriRentContract.getChargeType());
+            rentContract.setHasTv(oriRentContract.getHasTv());
+            rentContract.setTvFee(oriRentContract.getTvFee());
+            rentContract.setHasNet(oriRentContract.getHasNet());
+            rentContract.setNetFee(oriRentContract.getNetFee());
+            rentContract.setWaterFee(oriRentContract.getWaterFee());
+            int result = rentContractService.saveContract(rentContract);
+            ResponseData data = new ResponseData();
+            tailProcess(house, result, data);// 结果处理
+            return data;
+        } else {
+            return ResponseData.failure(RespConstants.ERROR_CODE_108).message(RespConstants.ERROR_MSG_108);
         }
-        return data;
     }
 
     /**
      * 用户在APP客户端进行签约信息确认，生成首期账单（包括账务交易记录和订单记录）
      */
     @RequestMapping(value = "sign_order/{contractId}")
-    @ResponseBody
-    public ResponseData signOrder(@PathVariable String contractId, @CurrentUserPhone String telPhone) {
-        ResponseData data = new ResponseData();
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
-        if (appUser == null) {
-            data.setCode(400);
-            data.setMsg("请注册账号！");
-            return data;
+    public ResponseData signOrder(@PathVariable String contractId, @CurrentUser AppUser appUser) {
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserPhone(appUser.getPhone());
+        contractBook.setContractId(contractId);
+        List<ContractBook> list = contractBookService.findRentContract(contractBook);
+        if (CollectionUtils.isNotEmpty(list)) {
+            contractBook = list.get(0);
         }
-        try {
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserPhone(telPhone);
-            contractBook.setContractId(contractId);
-            List<ContractBook> list = contractBookService.findRentContract(contractBook);
-            if (CollectionUtils.isNotEmpty(list)) {
-                contractBook = list.get(0);
+        RentContract rentContract = rentContractService.get(contractBook.getContractId());
+        // 安全性校验
+        if (rentContract != null && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
+            PaymentTrans paymentTrans = new PaymentTrans();
+            paymentTrans.setTransId(rentContract.getId());
+            List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans); // 查询出来的结果是先按照款项类型排序，款项类型相同的再按照款项开始日期排序
+            int rentMonthes = rentContract.getRenMonths();// 要首付房租的月数
+            String transIds = "";// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
+            double totalTradeAmount = 0;// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
+            List<Receipt> receiptList = new ArrayList<Receipt>();// 款项类型为：'2', '3', '4', '5','6'的所有收据
+            if (CollectionUtils.isNotEmpty(paymentTransList)) {// 筛选对应款项类型的id及累计金额
+                Map<String, Object> resultMap1 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), 1);
+                totalTradeAmount += (Double) (resultMap1.get("1"));
+                transIds += (String) (resultMap1.get("2"));
+                Map<String, Object> resultMap2 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), 1);
+                totalTradeAmount += (Double) (resultMap2.get("1"));
+                transIds += (String) (resultMap2.get("2"));
+                Map<String, Object> resultMap3 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), 1);
+                totalTradeAmount += (Double) (resultMap3.get("1"));
+                transIds += (String) (resultMap3.get("2"));
+                Map<String, Object> resultMap4 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), 1);
+                totalTradeAmount += (Double) (resultMap4.get("1"));
+                transIds += (String) (resultMap4.get("2"));
+                Map<String, Object> resultMap5 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentMonthes);
+                totalTradeAmount += (Double) (resultMap5.get("1"));
+                transIds += (String) (resultMap5.get("2"));
+                Map<String, Object> resultMap6 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), rentMonthes);
+                totalTradeAmount += (Double) (resultMap6.get("1"));
+                transIds += (String) (resultMap6.get("2"));
+                Map<String, Object> resultMap7 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), rentMonthes);
+                totalTradeAmount += (Double) (resultMap7.get("1"));
+                transIds += (String) (resultMap7.get("2"));
+                Map<String, Object> resultMap8 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), rentMonthes);
+                totalTradeAmount += (Double) (resultMap8.get("1"));
+                transIds += (String) (resultMap8.get("2"));
+                Map<String, Object> resultMap9 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), rentMonthes);
+                totalTradeAmount += (Double) (resultMap9.get("1"));
+                transIds += (String) (resultMap9.get("2"));
             }
-            RentContract rentContract = rentContractService.get(contractBook.getContractId());
-            // 安全性校验
-            if (rentContract != null && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {
-                PaymentTrans paymentTrans = new PaymentTrans();
-                paymentTrans.setTransId(rentContract.getId());
-                List<PaymentTrans> paymentTransList = paymentTransService.findList(paymentTrans); // 查询出来的结果是先按照款项类型排序，款项类型相同的再按照款项开始日期排序
-                int rentMonthes = rentContract.getRenMonths();// 要首付房租的月数
-                String transIds = "";// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
-                double totalTradeAmount = 0;// 款项类型为：'2', '3', '4', '5','6'以及各费用款项的ID
-                List<Receipt> receiptList = new ArrayList<Receipt>();// 款项类型为：'2', '3', '4', '5','6'的所有收据
-                if (CollectionUtils.isNotEmpty(paymentTransList)) {// 筛选对应款项类型的id及累计金额
-                    Map<String, Object> resultMap1 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue(), 1);
-                    totalTradeAmount += (Double) (resultMap1.get("1"));
-                    transIds += (String) (resultMap1.get("2"));
-                    Map<String, Object> resultMap2 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_WATER_ELECT_DEPOSIT.getValue(), 1);
-                    totalTradeAmount += (Double) (resultMap2.get("1"));
-                    transIds += (String) (resultMap2.get("2"));
-                    Map<String, Object> resultMap3 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_DEPOSIT.getValue(), 1);
-                    totalTradeAmount += (Double) (resultMap3.get("1"));
-                    transIds += (String) (resultMap3.get("2"));
-                    Map<String, Object> resultMap4 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SUPPLY_RENT_DEPOSIT.getValue(), 1);
-                    totalTradeAmount += (Double) (resultMap4.get("1"));
-                    transIds += (String) (resultMap4.get("2"));
-                    Map<String, Object> resultMap5 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentMonthes);
-                    totalTradeAmount += (Double) (resultMap5.get("1"));
-                    transIds += (String) (resultMap5.get("2"));
-                    Map<String, Object> resultMap6 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), rentMonthes);
-                    totalTradeAmount += (Double) (resultMap6.get("1"));
-                    transIds += (String) (resultMap6.get("2"));
-                    Map<String, Object> resultMap7 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.TV_AMOUNT.getValue(), rentMonthes);
-                    totalTradeAmount += (Double) (resultMap7.get("1"));
-                    transIds += (String) (resultMap7.get("2"));
-                    Map<String, Object> resultMap8 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.NET_AMOUNT.getValue(), rentMonthes);
-                    totalTradeAmount += (Double) (resultMap8.get("1"));
-                    transIds += (String) (resultMap8.get("2"));
-                    Map<String, Object> resultMap9 = processCumulative(paymentTransList, receiptList, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), rentMonthes);
-                    totalTradeAmount += (Double) (resultMap9.get("1"));
-                    transIds += (String) (resultMap9.get("2"));
-                }
-                if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
-                    transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
-                }
-                // 生成账务交易记录，同时完成到账登记
-                TradingAccounts tradingAccounts = new TradingAccounts();
-                tradingAccounts.setTradeId(rentContract.getId());
-                List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
-                if (CollectionUtils.isNotEmpty(listTradingAccounts)) {
-                    String oldTradingAccountsId = listTradingAccounts.get(0).getId();
-                    PaymentOrder delPaymentOrder = new PaymentOrder();
-                    delPaymentOrder.setTradeId(oldTradingAccountsId);
-                    contractBookService.deleteByTradeId(delPaymentOrder);
-                }
-                tradingAccountsService.delete(tradingAccounts);
-                tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
-                tradingAccounts.setTransIds(transIds);
-                if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
-                    tradingAccounts.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
-                } else {
-                    tradingAccounts.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
-                }
-                if (StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同,则扣除定金
-                    DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
-                    totalTradeAmount -= depositAgreement.getDepositAmount();
-                }
-                tradingAccounts.setTradeAmount(totalTradeAmount);
-                tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
-                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
-                tradingAccounts.setPayeeName(appUser.getName());
-                tradingAccounts.setReceiptList(receiptList);
-                tradingAccountsService.save(tradingAccounts);
-                String houseId = "";/* 订单生成 */
-                if (StringUtils.isNoneBlank(contractBook.getRoomId())) {
-                    houseId = contractBook.getRoomId();
-                } else {
-                    houseId = contractBook.getHouseId();
-                }
-                PaymentOrder paymentOrder = new PaymentOrder();
-                paymentOrder.setOrderId(contractBookService.generateOrderId());
-                paymentOrder.setOrderDate(new Date());
-                paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
-                paymentOrder.setTradeId(tradingAccounts.getId());
-                paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
-                paymentOrder.setCreateDate(new Date());
-                paymentOrder.setHouseId(houseId);
-                contractBookService.saveOrder(paymentOrder);
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("order_id", paymentOrder.getOrderId());
-                map.put("price", df.format(paymentOrder.getOrderAmount()));
-                data.setData(map);
-                data.setCode(200);
+            if (org.apache.commons.lang3.StringUtils.endsWith(transIds, ",")) {
+                transIds = org.apache.commons.lang3.StringUtils.substringBeforeLast(transIds, ",");
+            }
+            // 生成账务交易记录，同时完成到账登记
+            TradingAccounts tradingAccounts = new TradingAccounts();
+            tradingAccounts.setTradeId(rentContract.getId());
+            List<TradingAccounts> listTradingAccounts = tradingAccountsService.findList(tradingAccounts);
+            if (CollectionUtils.isNotEmpty(listTradingAccounts)) {
+                String oldTradingAccountsId = listTradingAccounts.get(0).getId();
+                PaymentOrder delPaymentOrder = new PaymentOrder();
+                delPaymentOrder.setTradeId(oldTradingAccountsId);
+                contractBookService.deleteByTradeId(delPaymentOrder);
+            }
+            tradingAccountsService.delete(tradingAccounts);
+            tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.TO_AUDIT.getValue());
+            tradingAccounts.setTransIds(transIds);
+            if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
+                tradingAccounts.setTradeType(TradeTypeEnum.SIGN_NEW_CONTRACT.getValue());
             } else {
-                logger.error("signOrder's error!");
-                data.setCode(500);
-                data.setMsg("系统繁忙，请稍后再试！");
-                return data;
+                tradingAccounts.setTradeType(TradeTypeEnum.NORMAL_RENEW.getValue());
             }
-        } catch (Exception e) {
-            data.setCode(500);
-            logger.error("signOrder error:", e);
+            if (StringUtils.isNotBlank(rentContract.getAgreementId())) { // 定金转合同,则扣除定金
+                DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
+                totalTradeAmount -= depositAgreement.getDepositAmount();
+            }
+            tradingAccounts.setTradeAmount(totalTradeAmount);
+            tradingAccounts.setTradeDirection(TradeDirectionEnum.IN.getValue());
+            tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
+            tradingAccounts.setPayeeName(appUser.getName());
+            tradingAccounts.setReceiptList(receiptList);
+            tradingAccountsService.save(tradingAccounts);
+            String houseId = "";/* 订单生成 */
+            if (StringUtils.isNoneBlank(contractBook.getRoomId())) {
+                houseId = contractBook.getRoomId();
+            } else {
+                houseId = contractBook.getHouseId();
+            }
+            PaymentOrder paymentOrder = new PaymentOrder();
+            paymentOrder.setOrderId(contractBookService.generateOrderId());
+            paymentOrder.setOrderDate(new Date());
+            paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
+            paymentOrder.setTradeId(tradingAccounts.getId());
+            paymentOrder.setOrderAmount(tradingAccounts.getTradeAmount());
+            paymentOrder.setCreateDate(new Date());
+            paymentOrder.setHouseId(houseId);
+            contractBookService.saveOrder(paymentOrder);
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("order_id", paymentOrder.getOrderId());
+            map.put("price", df.format(paymentOrder.getOrderAmount()));
+            return ResponseData.success().data(map);
+        } else {
+            logger.error("signOrder's error!");
+            return ResponseData.failure(RespConstants.ERROR_CODE_500).message(RespConstants.ERROR_MSG_500);
         }
-        return data;
     }
 
     /**
@@ -1294,62 +1248,51 @@ public class AppHouseController extends AppBaseController {
      * 我的合同列表
      */
     @RequestMapping(value = "contract_list")
-    @ResponseBody
-    public ResponseData contractList(@CurrentUserPhone String telPhone, @RequestParam(defaultValue = "4") String
-            type) {
-        ResponseData data = new ResponseData();
-        try {
-            // 0:查询所有可续签的合同列表；1:查询所有可退租的合同列表；2:查询所有可报修的合同列表；
-            // 3：查询我的账单前的所有合同列表；4:查询该登录号名下的所有合同列表
-
-            ContractBook contractBook = new ContractBook();
-            contractBook.setUserPhone(telPhone);
-            List<ContractBook> list = contractBookService.findRentContract(contractBook);
-            List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-            Map<String, Object> map = new HashMap<String, Object>();
-            for (ContractBook tmpContractBook : list) {
-                if (!"4".equals(type) && StringUtils.isBlank(tmpContractBook.getContractBusiStatus())) {// 我的账单
-                    continue;
-                }
-                Map<String, Object> mp = new HashMap<String, Object>();
-                mp.put("contract_id", tmpContractBook.getContractId());
-                mp.put("contract_code", tmpContractBook.getContractCode());
-                String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
-                if (null != path && path.length > 0) {
-                    mp.put("cover", Global.getConfig("img.url") + path[0]);
-                }
-                mp.put("short_desc", tmpContractBook.getShortDesc());
-                mp.put("house_desc", tmpContractBook.getShortLocation());
-                mp.put("rent", tmpContractBook.getRent());
-                String status = "";
-                if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(tmpContractBook.getBookStatus())) {// 暂存
-                    status = "0";// 等待管家确认
-                } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(tmpContractBook.getBookStatus())) {
-                    status = "4";// 管家确认成功请您核实
-                } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(tmpContractBook.getBookStatus())
-                        || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(tmpContractBook.getBookStatus())) {
-                    status = "1";// 在线签约成功等待支付
-                } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tmpContractBook.getBookStatus())) {
-                    status = "2";// 在线签约支付成功
-                }
-                if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(tmpContractBook.getBookStatus())) {
-                    status = "3";// 管家取消在线签约
-                    if (telPhone.equals(tmpContractBook.getUpdateUser())) {
-                        status = "5";// 用户取消在线签约
-                    }
-                }
-                mp.put("end_date", DateUtils.formatDate(tmpContractBook.getEndDate(), "yyyy-MM-dd"));
-                mp.put("status", status);
-                dataList.add(mp);
+    public ResponseData contractList(@CurrentUserPhone String telPhone, @RequestParam(defaultValue = "4") String type) {
+        // 0:查询所有可续签的合同列表；1:查询所有可退租的合同列表；2:查询所有可报修的合同列表；
+        // 3：查询我的账单前的所有合同列表；4:查询该登录号名下的所有合同列表
+        ContractBook contractBook = new ContractBook();
+        contractBook.setUserPhone(telPhone);
+        List<ContractBook> list = contractBookService.findRentContract(contractBook);
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (ContractBook tmpContractBook : list) {
+            if (!"4".equals(type) && StringUtils.isBlank(tmpContractBook.getContractBusiStatus())) {// 我的账单
+                continue;
             }
-            map.put("contracts", dataList);
-            data.setData(map);
-            data.setCode(200);
-        } catch (Exception e) {
-            data.setCode(500);
-            logger.error("contractList error:", e);
+            Map<String, Object> mp = new HashMap<String, Object>();
+            mp.put("contract_id", tmpContractBook.getContractId());
+            mp.put("contract_code", tmpContractBook.getContractCode());
+            String path[] = StringUtils.split(tmpContractBook.getAttachmentPath(), "|");
+            if (null != path && path.length > 0) {
+                mp.put("cover", Global.getConfig("img.url") + path[0]);
+            }
+            mp.put("short_desc", tmpContractBook.getShortDesc());
+            mp.put("house_desc", tmpContractBook.getShortLocation());
+            mp.put("rent", tmpContractBook.getRent());
+            String status = "";
+            if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(tmpContractBook.getBookStatus())) {// 暂存
+                status = "0";// 等待管家确认
+            } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(tmpContractBook.getBookStatus())) {
+                status = "4";// 管家确认成功请您核实
+            } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(tmpContractBook.getBookStatus())
+                    || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(tmpContractBook.getBookStatus())) {
+                status = "1";// 在线签约成功等待支付
+            } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(tmpContractBook.getBookStatus())) {
+                status = "2";// 在线签约支付成功
+            }
+            if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(tmpContractBook.getBookStatus())) {
+                status = "3";// 管家取消在线签约
+                if (telPhone.equals(tmpContractBook.getUpdateUser())) {
+                    status = "5";// 用户取消在线签约
+                }
+            }
+            mp.put("end_date", DateUtils.formatDate(tmpContractBook.getEndDate(), "yyyy-MM-dd"));
+            mp.put("status", status);
+            dataList.add(mp);
         }
-        return data;
+        map.put("contracts", dataList);
+        return ResponseData.success().data(map);
     }
 
     /**
@@ -1359,151 +1302,140 @@ public class AppHouseController extends AppBaseController {
      * @return
      */
     @RequestMapping(value = "contract_info/{contractId}")
-    @ResponseBody
     public ResponseData contractInfo(@PathVariable String contractId) {
-        ResponseData data = new ResponseData();
-        try {
-            RentContract rentContract = this.rentContractService.get(contractId);
-            Map<String, Object> map = new HashMap<String, Object>();
-            String shortDesc = "", attachmentPath = "", houseDesc = "", houseCode = "";
-            Room room = null;
-            House house = null;
-            if (null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
-                room = this.roomService.get(rentContract.getRoom().getId());
-                shortDesc = room.getShortDesc();
-                attachmentPath = room.getAttachmentPath();
-                houseDesc = room.getShortLocation();
-                house = this.houseService.get(rentContract.getHouse().getId());
-                houseCode = house.getHouseCode() + "-" + room.getRoomNo();
-            } else {
-                house = this.houseService.get(rentContract.getHouse().getId());
-                shortDesc = house.getShortDesc();
-                attachmentPath = house.getAttachmentPath();
-                houseDesc = house.getShortLocation();
-                houseCode = house.getHouseCode();
-            }
-            map.put("contract_id", rentContract.getId());
-            map.put("contract_code", rentContract.getContractCode());
-            map.put("short_desc", shortDesc);
-            String path[] = StringUtils.split(attachmentPath, "|");
-            if (null != path && path.length > 0) map.put("cover", Global.getConfig("img.url") + path[0]);
-            map.put("house_desc", houseDesc);
-            map.put("rent", rentContract.getRental());
-            String rentType = "";
-            if ((new Integer(3)).equals(rentContract.getRenMonths()) && (new Integer(1)).equals(rentContract.getDepositMonths())) {
-                rentType = "0";
-            } else if ((new Integer(2)).equals(rentContract.getRenMonths()) && (new Integer(2)).equals(rentContract.getDepositMonths())) {
-                rentType = "1";
-            }
-            map.put("rent_type", rentType);
-            map.put("sign_date", DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd"));
-            map.put("start_date", DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"));
-            map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
-            if (null != rentContract.getRemindTime())
-                map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
-            String status = "";
-            if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(rentContract.getContractStatus())) {
-                status = "0";
-            } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
-                status = "4";
-            } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(rentContract.getContractStatus())
-                    || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(rentContract.getContractStatus())) {
-                status = "1";
-            } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
-                status = "2";
-            }
-            if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(rentContract.getContractStatus())) {
-                status = "3";
-            }
-            map.put("status", status);
-            map.put("house_code", houseCode);
-            String hasTv = "0";
-            if ("1".equals(rentContract.getHasTv())) hasTv = "1";
-            map.put("has_tv", hasTv);// 是否开通有线电视 1:是 0:否
-            double tvFee = 0;
-            if (null != rentContract.getTvFee()) tvFee = rentContract.getTvFee();
-            map.put("tv_fee", tvFee);
-            double netFee = 0;
-            if (null != rentContract.getNetFee()) netFee = rentContract.getNetFee();
-            map.put("net_fee", netFee);
-            double waterFee = 0;
-            if (null != rentContract.getWaterFee()) waterFee = rentContract.getWaterFee();
-            map.put("water_fee", waterFee);
-            // 房租押金差额
-            if (!ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
-                if (!StringUtils.isBlank(rentContract.getContractBusiStatus())) {
-                    if (null != rentContract.getDepositAmount()) {
-                        map.put("re_deposit_amount", rentContract.getDepositAmount());
-                    }
-                    if (null != rentContract.getDepositElectricAmount()) {
-                        map.put("re_we_deposit_amount", rentContract.getDepositElectricAmount());
-                    }
+        RentContract rentContract = this.rentContractService.get(contractId);
+        Map<String, Object> map = new HashMap<String, Object>();
+        String shortDesc = "", attachmentPath = "", houseDesc = "", houseCode = "";
+        Room room = null;
+        House house = null;
+        if (null != rentContract.getRoom() && !StringUtils.isBlank(rentContract.getRoom().getId())) {
+            room = this.roomService.get(rentContract.getRoom().getId());
+            shortDesc = room.getShortDesc();
+            attachmentPath = room.getAttachmentPath();
+            houseDesc = room.getShortLocation();
+            house = this.houseService.get(rentContract.getHouse().getId());
+            houseCode = house.getHouseCode() + "-" + room.getRoomNo();
+        } else {
+            house = this.houseService.get(rentContract.getHouse().getId());
+            shortDesc = house.getShortDesc();
+            attachmentPath = house.getAttachmentPath();
+            houseDesc = house.getShortLocation();
+            houseCode = house.getHouseCode();
+        }
+        map.put("contract_id", rentContract.getId());
+        map.put("contract_code", rentContract.getContractCode());
+        map.put("short_desc", shortDesc);
+        String path[] = StringUtils.split(attachmentPath, "|");
+        if (null != path && path.length > 0) {
+            map.put("cover", Global.getConfig("img.url") + path[0]);
+        }
+        map.put("house_desc", houseDesc);
+        map.put("rent", rentContract.getRental());
+        String rentType = "";
+        if ((new Integer(3)).equals(rentContract.getRenMonths()) && (new Integer(1)).equals(rentContract.getDepositMonths())) {
+            rentType = "0";
+        } else if ((new Integer(2)).equals(rentContract.getRenMonths()) && (new Integer(2)).equals(rentContract.getDepositMonths())) {
+            rentType = "1";
+        }
+        map.put("rent_type", rentType);
+        map.put("sign_date", DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd"));
+        map.put("start_date", DateFormatUtils.format(rentContract.getStartDate(), "yyyy-MM-dd"));
+        map.put("end_date", DateFormatUtils.format(rentContract.getExpiredDate(), "yyyy-MM-dd"));
+        if (null != rentContract.getRemindTime())
+            map.put("remind_date", DateFormatUtils.format(rentContract.getRemindTime(), "yyyy-MM-dd"));
+        String status = "";
+        if (ContractAuditStatusEnum.TEMP_EXIST.getValue().equals(rentContract.getContractStatus())) {
+            status = "0";
+        } else if (ContractAuditStatusEnum.FINISHED_TO_SIGN.getValue().equals(rentContract.getContractStatus())) {
+            status = "4";
+        } else if (ContractAuditStatusEnum.SIGNED_TO_AUDIT_CONTENT.getValue().equals(rentContract.getContractStatus())
+                || ContractAuditStatusEnum.INVOICE_TO_AUDITED.getValue().equals(rentContract.getContractStatus())) {
+            status = "1";
+        } else if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {
+            status = "2";
+        }
+        if (ContractAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue().equals(rentContract.getContractStatus())) {
+            status = "3";
+        }
+        map.put("status", status);
+        map.put("house_code", houseCode);
+        String hasTv = "0";
+        if ("1".equals(rentContract.getHasTv())) hasTv = "1";
+        map.put("has_tv", hasTv);// 是否开通有线电视 1:是 0:否
+        double tvFee = 0;
+        if (null != rentContract.getTvFee()) tvFee = rentContract.getTvFee();
+        map.put("tv_fee", tvFee);
+        double netFee = 0;
+        if (null != rentContract.getNetFee()) netFee = rentContract.getNetFee();
+        map.put("net_fee", netFee);
+        double waterFee = 0;
+        if (null != rentContract.getWaterFee()) waterFee = rentContract.getWaterFee();
+        map.put("water_fee", waterFee);
+        // 房租押金差额
+        if (!ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
+            if (!StringUtils.isBlank(rentContract.getContractBusiStatus())) {
+                if (null != rentContract.getDepositAmount()) {
+                    map.put("re_deposit_amount", rentContract.getDepositAmount());
                 }
-            } else {
-                map.put("deposit_amount", rentContract.getDepositAmount());
-                map.put("we_deposit_amount", rentContract.getDepositElectricAmount());
+                if (null != rentContract.getDepositElectricAmount()) {
+                    map.put("re_we_deposit_amount", rentContract.getDepositElectricAmount());
+                }
             }
-            // 首付房租月数
-            if (null != rentContract.getRenMonths()) {
-                map.put("pre_rent_month", rentContract.getRenMonths());
-            }
-            // 首付押金月数
-            if (null != rentContract.getDepositMonths()) {
-                map.put("pre_deposit_month", rentContract.getDepositMonths());
-            }
-            PaymentOrder paymentOrder = new PaymentOrder();
-            paymentOrder.setHouseId(null != room ? room.getId() : house.getId());
-            paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
-            if (null != paymentOrder) map.put("order_id", paymentOrder.getOrderId());
-            data.setData(map);
-            data.setCode(200);
-        } catch (Exception e) {
-            data.setCode(500);
-            logger.error("contract_info error:", e);
+        } else {
+            map.put("deposit_amount", rentContract.getDepositAmount());
+            map.put("we_deposit_amount", rentContract.getDepositElectricAmount());
         }
-        return data;
+        // 首付房租月数
+        if (null != rentContract.getRenMonths()) {
+            map.put("pre_rent_month", rentContract.getRenMonths());
+        }
+        // 首付押金月数
+        if (null != rentContract.getDepositMonths()) {
+            map.put("pre_deposit_month", rentContract.getDepositMonths());
+        }
+        PaymentOrder paymentOrder = new PaymentOrder();
+        paymentOrder.setHouseId(null != room ? room.getId() : house.getId());
+        paymentOrder = this.contractBookService.findByHouseId(paymentOrder);
+        if (null != paymentOrder) {
+            map.put("order_id", paymentOrder.getOrderId());
+        }
+        return ResponseData.success().data(map);
     }
 
+    @AuthIgnore
     @RequestMapping(value = "notice")
-    @ResponseBody
     public ResponseData notice() {
-        ResponseData data = new ResponseData();
-        try {
-            Map<String, Object> map = new HashMap<String, Object>();
-            StringBuffer html = new StringBuffer();
-            html.append("<div><p>");
-            html.append("<h3><center>租房须知</center></h3>");
-            html.append("&nbsp;&nbsp;1.为了确保居住环境的安全，本公寓实行实名制入住，凡入住前必须提供身份证原件，出租方将对信息进行核实；");
-            html.append("乙方入住该房屋之日起的五日内，需按照当地警署的要求办理外来人口暂住手续；</br>");
-            html.append("&nbsp;&nbsp;2.承租户不得以任何理由拖欠房租，如不及时缴纳房租的，则视为承租户违约，所缴纳房租押金不予退还，出租方有权将该房屋租给他人。</br>");
-            html.append(
-                    "&nbsp;&nbsp;3.合租户在租赁期内须按时交纳水、电、网络、宽带等费用。门禁卡发放是壹张身份证发放壹张卡（每间最多发放两张卡），如遗失补办卡20元/张；门锁若为密码开启方式，请妥善保管好密码，预防泄露造成损失；一楼楼道门禁属于物业管辖，每个房间标配一张门禁卡，如需增加门禁卡可向物业公司购买或委托人才公寓代为购买，每张卡以物业公司售价为准。</br>");
-            html.append("&nbsp;&nbsp;4.整租户水、电、有线等公共事业费按国家标准收取。</br>");
-            html.append(
-                    "&nbsp;&nbsp;5.自房屋出租之日起，房屋内所有设施如损坏由承租户照价赔偿，赔偿费用详见附件二。室内设施包括照明、床、衣柜、空调、床头柜、床垫等家具；门、窗、窗帘、电视等电器；公共区域包括餐桌椅、整体橱柜、脱排油烟机、电磁炉、冰箱、洗衣机、马桶、龙头、淋浴等设备设施；禁止在室内钉钉子、挂画等破坏房内设施及结构的行为。公共区域设备损坏赔偿如未发现责任人，则由所有承租人均摊。入住时人才公寓将房屋保洁干净交付承租人使用，退房时承租人也需保洁干净退还人才公寓，若房屋脏乱退还需收取一次性保洁费200元。</br>");
-            html.append(
-                    "&nbsp;&nbsp;6.请各位承租户自觉爱护居住环境，生活垃圾必须装入垃圾袋内自觉丢入小区物业指定的垃圾桶内，剩菜、剩饭等垃圾不得随意乱丢乱抛到室外；请勿在过道或楼梯间摆放个人物品；不得在房屋内楼梯间和走道等公共区域的墙面上涂写及留下脚印和污渍；不要将纸巾、果壳、卫生巾等杂物丢入马桶内，否则堵塞下水道将由承租户自行解决, 如须甲方派人处理，所需费用（50元/次）由承租户承担。</br>");
-            html.append("&nbsp;&nbsp;7.严禁在天台随意堆物及晾晒衣服，严禁在楼道内、楼道门口违规停放非机动车。若执意乱停车、乱堆杂物，一经发现物业管理处将对您的车辆或物品清理，后果自负。</br>");
-            html.append("&nbsp;&nbsp;8.严禁往楼下扔杂物或抛污水，严重的高空抛物将追究法律责任。</br>");
-            html.append("&nbsp;&nbsp;9.禁止在楼道利用公共设施给电瓶车充电，一经发现，物业管理处将给予处罚。</br>");
-            html.append("&nbsp;&nbsp;10.为了大家的居住环境和健康卫生着想，人才公寓内禁止饲养各种宠物（如狗、猫）。</br>");
-            html.append("&nbsp;&nbsp;11.承租户必须遵守人才公寓关于消防安全的规定，严禁在公寓内私拉电线、网线、不得在房间内使用电磁炉、热得快、电褥等违章电器，禁止在室内做饭。</br>");
-            html.append("&nbsp;&nbsp;12.禁止在室内焚烧杂物，存放易燃、易爆、剧毒等危险品。</br>");
-            html.append("&nbsp;&nbsp;13.出租房内不许吸毒，赌博，打架斗殴，如发现马上拨打110举报。</br>");
-            html.append("&nbsp;&nbsp;14.夜间晚归的承租户不得大声喧哗，吵闹以免影响他人休息。</br>");
-            html.append("&nbsp;&nbsp;15.由于承租户自身原因导致无法进入房间（如忘带门卡、忘办理续卡、忘记密码等）人才公寓8：30至20：00可提供开门服务,超过20：00至次日8:30每次开门需收取50元服务费。</br>");
-            html.append("&nbsp;&nbsp;16.承租户在出门前要注意检查门窗是否锁好，保管好自己的贵重物品，以免丢失。</br>");
-            html.append("&nbsp;&nbsp;17.人才公寓联系方式  地址：创新西路357号  咨询热线：4006-269-069 </br>");
-            html.append("</p></div>");
-            map.put("str_html", html);
-            data.setData(map);
-            data.setCode(200);
-        } catch (Exception e) {
-            data.setCode(500);
-        }
-        return data;
+        Map<String, Object> map = new HashMap<String, Object>();
+        StringBuffer html = new StringBuffer();
+        html.append("<div><p>");
+        html.append("<h3><center>租房须知</center></h3>");
+        html.append("&nbsp;&nbsp;1.为了确保居住环境的安全，本公寓实行实名制入住，凡入住前必须提供身份证原件，出租方将对信息进行核实；");
+        html.append("乙方入住该房屋之日起的五日内，需按照当地警署的要求办理外来人口暂住手续；</br>");
+        html.append("&nbsp;&nbsp;2.承租户不得以任何理由拖欠房租，如不及时缴纳房租的，则视为承租户违约，所缴纳房租押金不予退还，出租方有权将该房屋租给他人。</br>");
+        html.append(
+                "&nbsp;&nbsp;3.合租户在租赁期内须按时交纳水、电、网络、宽带等费用。门禁卡发放是壹张身份证发放壹张卡（每间最多发放两张卡），如遗失补办卡20元/张；门锁若为密码开启方式，请妥善保管好密码，预防泄露造成损失；一楼楼道门禁属于物业管辖，每个房间标配一张门禁卡，如需增加门禁卡可向物业公司购买或委托人才公寓代为购买，每张卡以物业公司售价为准。</br>");
+        html.append("&nbsp;&nbsp;4.整租户水、电、有线等公共事业费按国家标准收取。</br>");
+        html.append(
+                "&nbsp;&nbsp;5.自房屋出租之日起，房屋内所有设施如损坏由承租户照价赔偿，赔偿费用详见附件二。室内设施包括照明、床、衣柜、空调、床头柜、床垫等家具；门、窗、窗帘、电视等电器；公共区域包括餐桌椅、整体橱柜、脱排油烟机、电磁炉、冰箱、洗衣机、马桶、龙头、淋浴等设备设施；禁止在室内钉钉子、挂画等破坏房内设施及结构的行为。公共区域设备损坏赔偿如未发现责任人，则由所有承租人均摊。入住时人才公寓将房屋保洁干净交付承租人使用，退房时承租人也需保洁干净退还人才公寓，若房屋脏乱退还需收取一次性保洁费200元。</br>");
+        html.append(
+                "&nbsp;&nbsp;6.请各位承租户自觉爱护居住环境，生活垃圾必须装入垃圾袋内自觉丢入小区物业指定的垃圾桶内，剩菜、剩饭等垃圾不得随意乱丢乱抛到室外；请勿在过道或楼梯间摆放个人物品；不得在房屋内楼梯间和走道等公共区域的墙面上涂写及留下脚印和污渍；不要将纸巾、果壳、卫生巾等杂物丢入马桶内，否则堵塞下水道将由承租户自行解决, 如须甲方派人处理，所需费用（50元/次）由承租户承担。</br>");
+        html.append("&nbsp;&nbsp;7.严禁在天台随意堆物及晾晒衣服，严禁在楼道内、楼道门口违规停放非机动车。若执意乱停车、乱堆杂物，一经发现物业管理处将对您的车辆或物品清理，后果自负。</br>");
+        html.append("&nbsp;&nbsp;8.严禁往楼下扔杂物或抛污水，严重的高空抛物将追究法律责任。</br>");
+        html.append("&nbsp;&nbsp;9.禁止在楼道利用公共设施给电瓶车充电，一经发现，物业管理处将给予处罚。</br>");
+        html.append("&nbsp;&nbsp;10.为了大家的居住环境和健康卫生着想，人才公寓内禁止饲养各种宠物（如狗、猫）。</br>");
+        html.append("&nbsp;&nbsp;11.承租户必须遵守人才公寓关于消防安全的规定，严禁在公寓内私拉电线、网线、不得在房间内使用电磁炉、热得快、电褥等违章电器，禁止在室内做饭。</br>");
+        html.append("&nbsp;&nbsp;12.禁止在室内焚烧杂物，存放易燃、易爆、剧毒等危险品。</br>");
+        html.append("&nbsp;&nbsp;13.出租房内不许吸毒，赌博，打架斗殴，如发现马上拨打110举报。</br>");
+        html.append("&nbsp;&nbsp;14.夜间晚归的承租户不得大声喧哗，吵闹以免影响他人休息。</br>");
+        html.append("&nbsp;&nbsp;15.由于承租户自身原因导致无法进入房间（如忘带门卡、忘办理续卡、忘记密码等）人才公寓8：30至20：00可提供开门服务,超过20：00至次日8:30每次开门需收取50元服务费。</br>");
+        html.append("&nbsp;&nbsp;16.承租户在出门前要注意检查门窗是否锁好，保管好自己的贵重物品，以免丢失。</br>");
+        html.append("&nbsp;&nbsp;17.人才公寓联系方式  地址：创新西路357号  咨询热线：4006-269-069 </br>");
+        html.append("</p></div>");
+        map.put("str_html", html);
+        return ResponseData.success().data(map);
     }
 
+    @AuthIgnore
     @RequestMapping(value = "alipaynNotify")
     public void alipaynNotify(HttpServletRequest request, HttpServletResponse response) {
         this.logger.info("rms start alipay notify......");
@@ -1574,161 +1506,150 @@ public class AppHouseController extends AppBaseController {
         this.logger.info("rms end alipay notify......");
     }
 
-    @RequestMapping(value = "contract")
-    @ResponseBody
-    public ResponseData contract(HttpServletRequest request, HttpServletResponse response) {
-        ResponseData data = new ResponseData();
-        if (null == request.getParameter("contract_id")) {
-            data.setCode(101);
-            return data;
+    /**
+     * 查询合同说明
+     *
+     * @param contractId
+     * @param appUser
+     * @return
+     */
+    @RequestMapping(value = "contract_desp/{contractId}")
+    public ResponseData contract(@PathVariable String contractId, @CurrentUser AppUser appUser) {
+        RentContract rentContract = this.rentContractService.get(contractId);
+        Map<String, Object> map = new HashMap<String, Object>();
+        String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
+        address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName() + "号楼";
+        address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo() + "室";
+        if (null != rentContract.getRoom() && StringUtils.isNotBlank(rentContract.getRoom().getId())) {
+            Room room = this.roomService.get(rentContract.getRoom().getId());
+            if (null != room) {
+                address += room.getRoomNo() + "部位";
+            }
         }
-        try {
-            String token = (String) request.getHeader("token");
-            AppToken apptoken = new AppToken();
-            apptoken.setToken(token);
-            apptoken = appTokenService.findByToken(apptoken);
-            if (null == apptoken) {
-                data.setCode(401);
-                data.setMsg("请重新登录");
-                return data;
+        StringBuffer html = new StringBuffer();
+        if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
+            html.append("<div><p>");
+            html.append("<h3><center>唐巢人才公寓租赁合同</center></h3>");
+            html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
+            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
+            html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房屋租赁管理办法》的规定，" + "甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，就乙方承租甲方可依法出租的以下房屋，订立本合同。</br>");
+            html.append("&nbsp;&nbsp;一、出租房屋情况及用途</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;1-1房屋地址：<span style='text-decoration:underline;'>" + address + "</span>【以下简称“该房屋”】。具体配置【详见附件三】。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;1-2乙方向甲方承诺，乙方承租该房屋仅作为乙方居住使用。 </br>");
+            html.append("&nbsp;&nbsp;二、租赁期限</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;2-1该房屋的租赁期为<span style='text-decoration:underline;'>"
+                    + df1.format(DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate())) + "</span>个月，" + "自<span style='text-decoration:underline;'>"
+                    + DateUtils.formatDate(rentContract.getStartDate(), "yyyy年MM月dd日") + "</span>起至<span style='text-decoration:underline;'>"
+                    + DateUtils.formatDate(rentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;2-2租赁期满，如乙方需要继续承租该房屋的，则应于租赁期届满前<span style='text-decoration:underline;'> 30 </span>" + "天提出续租的书面要求，经甲乙双方对续租期间的租金等主要条款协商一致后，双方签订续租合同，否则视为乙方放弃续租。</br>");
+            html.append("&nbsp;&nbsp;三、租金、支付方式和限期</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;3-1该房屋的月租金为人民币：<span style='text-decoration:underline;'>" + df.format(rentContract.getRental())
+                    + "</span>元(大写:<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRental()) + "</span>)。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;3-2支付方式：付<span style='text-decoration:underline;'> " + rentContract.getRenMonths() + " </span>押" + "<span style='text-decoration:underline;'> "
+                    + rentContract.getDepositMonths() + " </span>，先付后用。乙方于本合同生效之日向甲方支付首期租金及押金。之后每期租期届满前向甲方支付下一期租金。乙方逾期支付的，按未付款额的日1%支付违约金。</br>");
+            html.append("&nbsp;&nbsp;四、押金和其他费用</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;4-1本房屋租赁押金为<span style='text-decoration:underline;'> " + df1.format(rentContract.getDepositMonths()) + " </span>个月的租金，"
+                    + "即人民币：<span style='text-decoration:underline;'> " + df.format(rentContract.getDepositAmount()) + " </span>元(大写：<span style='text-decoration:underline;'>"
+                    + getChineseNum(rentContract.getDepositAmount()) + "</span>)，押金作为乙方向甲方承诺履行本合同的保证，甲方收取押金后应向乙方开具收款凭证。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;4-2租赁关系终止时，甲方收取乙方该房屋的租赁押金除用以抵充合同约定由乙方承担的费用外，剩余部分无息归还乙方。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;4-3智能电表结算：乙方入住前需自行或委托甲方对房间电表进行不少于人民币伍佰元充值，当电量低于20度时需再次充值，若不及时充值智能电表会自动断电，充值后电量方可恢复。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余费用返还乙方。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;4-4非智能电表结算：乙方入住前需支付人民币伍佰元的水电煤、宽带、有线等使用费押金。水电煤、宽带、有线使用费由甲方先代为乙方缴纳，甲方再按固定周期向乙方进行收缴。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余使用费押金返还乙方。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;4-5该房屋的使用费说明：电费<span style='text-decoration:underline;'>  </span>；" + "水费<span style='text-decoration:underline;'> "
+                    + (null != rentContract.getWaterFee() ? df.format(rentContract.getWaterFee()) : 0) + " </span>；" + "天燃气费<span style='text-decoration:underline;'> "
+                    + (null != rentContract.getWaterFee() ? df.format(rentContract.getWaterFee()) : 0) + " </span>；" + "宽带费<span style='text-decoration:underline;'> "
+                    + (null != rentContract.getNetFee() ? df.format(rentContract.getNetFee()) : 0) + " </span>元/月；" + "有线电视费<span style='text-decoration:underline;'> "
+                    + (null != rentContract.getTvFee() ? df.format(rentContract.getTvFee()) : 0) + " </span>元/月；" + "其他<span style='text-decoration:underline;'>  </span>。</br>");
+            html.append("&nbsp;&nbsp;五、房屋使用要求和维修责任</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;5-1租赁期间，乙方发现该房屋及其附属设施有损坏或故障时，应及时通知甲方修复。甲方应在接到乙方通知后：急修在<span style='text-decoration:underline;'> 1 </span>个工作日内；其它维修在<span style='text-decoration:underline;'> 3 </span>个工作日内进行维修。或有特殊情况，甲乙双方另行协商解决。 </br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;5-2租赁期间，因乙方使用不当或不合理使用，致使该房屋及其附属设施损坏或发生故障的，乙方应负责维修。乙方拒不维修，甲方可代为维修，费用由乙方承担。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;5-3租赁期间，甲方对该房屋及设备设施应进行检查、养护，但应提前<span style='text-decoration:underline;'> 2 </span>日通知乙方。检查养护时，乙方应予以配合。甲方应减少对乙方使用该房屋的影响。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;5-4租赁期间，乙方承诺按照【附件一】《租房须知》中的条款，遵守相关规定，安全、文明租房。如乙方在租房期间发生因违反《租房须知》规定所造成的人员伤亡或安全等问题的，责任由乙方自负。</br>");
+            html.append("&nbsp;&nbsp;六、房屋返还</br>");
+            html.append("&nbsp;&nbsp;&nbsp;&nbsp;6-1除甲方同意乙方续租外，乙方应在本合同的租期届满之日内返还该房屋，未经甲方同意逾期返还房屋的，每逾期一日，乙方需按日租金的<span style='text-decoration:underline;'> 双 </span>倍支付该房屋占用使用费。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;6-2乙方返还该房屋应当符合正常使用后的状态，如该房屋内设施及设备配置的有损坏，乙方应照价赔偿【详见附件二】。返还时，应经甲方验收认可，并相互结清各自应当承担的费用。乙方自行添置的家具等设备设施的，应在乙方返还该房屋之日前自行处置或搬离，如乙方在返还房屋之日仍未搬出该房屋内自行添置的各种家具等设备设施的，所遗留物品甲方视为乙方已经遗弃，甲方有权自行处置，且无须另行支付对价或补偿。如在处置乙方遗弃物件时发生费用的，该费用由乙方另行偿付。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;6-3乙方确认不再续租或在退租前，应积极配合甲方对该房屋招租提供方便。</br>");
+            html.append("&nbsp;&nbsp;七、房屋严禁擅自转租</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;7-1乙方入住六个月以后可以申请接力转让该房间（1月、2月和12月甲方不接受委托转租，办理居住证及社区公共户落户的甲方不接受委托转租），但要同时满足以下条件：</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（一）居住满六个月以上的在原价基础上上涨100元/月；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（二）通过甲方推荐广告渠道再次成功出租该房屋需向甲方支付500元推荐服务费；</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方自行找到接力租客成功出租的需支付100元合同变更手续费，对于乙方自行寻找的客户必须符合甲方的客户选择标准，确保无空置期；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（四）甲方不承诺转租时限，转租期间乙方仍需支付房屋租金。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;7-2不办理转租手续擅自让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。擅自转租或让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。</br>");
+            html.append("&nbsp;&nbsp;八、违约责任及解除本合同的条件</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;8-1甲、乙双方同意，在租赁期内，该房屋占用范围内的土地使用权或房屋被依法提前收回或依法征用的；或被依法列入房屋拆迁许可范围的；或发生不可抗力被损毁、灭失的。本合同终止，双方互不承担责任：</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;8-2甲、乙双方同意，有下列情形之一的均视作根本违约，守约方有权解除本合同。同时，违约方应向守约方支付相当于      个月租金的违约金；如造成守约方损失的，违约方在支付的违约金不足抵付守约方损失的，还应赔偿相应的损失：</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（一）乙方未征得甲方同意改变该房屋用途、该房屋主体结构损坏的；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（二）乙方擅自转租该房屋或与他人交换各自承租的房屋的；</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方逾期不支付租金及水电煤、宽带、有线等使用费累计超过<span style='text-decoration:underline;'> 5 </span>天的；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（四）乙方不遵守该房屋的公寓管理制度或《租房须知》中相关规定的。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;8-3租赁期间，甲方擅自中途提前收回该房屋的，甲方应向乙方赔偿<span style='text-decoration:underline;'>  </span>个月租金的违约金； </br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;8-4租赁期间，乙方擅自中途提前退租的，乙方的房屋押金不予退回。剩余房款由甲方在与乙方所有费用结清后的 15日 内返还乙方；</br>");
+            html.append("&nbsp;&nbsp;九、其它条款</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;9-1本合同未尽事宜，经甲、乙双方协商一致，可订立补充协议。本合同补充协议及附件均为本合同不可分割的一部分。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;9-2甲、乙双方在履行本合同过程中发生争议，应通过协商解决，协商不成的，可向该房屋所在地的人民法院提出诉讼。</br>"
+                    + "&nbsp;&nbsp;&nbsp;&nbsp;9-3本合同连同附件一式<span style='text-decoration:underline;'> 贰 </span>份。甲、乙双方各持一份，经甲乙双方签字或盖章之日起生效，并均具有同等效力。</br>");
+            html.append("&nbsp;&nbsp;十、备注</br></br>");
+            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+            html.append("&nbsp;&nbsp;代理人：</br>");
+            html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
+            html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
+            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br></br>");
+            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
+            html.append("&nbsp;&nbsp;代理人：</br>");
+            html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
+            html.append("&nbsp;&nbsp;联系地址：</br>");
+            html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
+            html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
+            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br>");
+            html.append("</p></div>");
+        } else {// 续签
+            String oldId = rentContract.getContractId();
+            RentContract oldRentContract = null;
+            if (StringUtils.isNoneBlank(oldId)) {
+                oldRentContract = this.rentContractService.get(oldId);
+            } else {
+                oldRentContract = new RentContract();
             }
-            AppUser appUser = new AppUser();
-            appUser.setPhone(apptoken.getPhone());
-            appUser = appUserService.getByPhone(appUser);
-            RentContract rentContract = this.rentContractService.get(request.getParameter("contract_id"));
-            Map<String, Object> map = new HashMap<String, Object>();
-            String address = this.propertyProjectService.get(rentContract.getPropertyProject().getId()).getProjectAddr();
-            address += this.buildingService.get(rentContract.getBuilding().getId()).getBuildingName() + "号楼";
-            address += this.houseService.get(rentContract.getHouse().getId()).getHouseNo() + "室";
-            if (null != rentContract.getRoom() && StringUtils.isNotBlank(rentContract.getRoom().getId())) {
-                Room room = this.roomService.get(rentContract.getRoom().getId());
-                if (null != room) {
-                    address += room.getRoomNo() + "部位";
-                }
-            }
-            StringBuffer html = new StringBuffer();
-            if (ContractSignTypeEnum.NEW_SIGN.getValue().equals(rentContract.getSignType())) {
-                html.append("<div><p>");
-                html.append("<h3><center>唐巢人才公寓租赁合同</center></h3>");
-                html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
-                html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-                html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
-                html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》、《上海市居住房屋租赁管理办法》的规定，" + "甲、乙双方在平等、自愿、公平和诚实信用的基础上，经协商一致，就乙方承租甲方可依法出租的以下房屋，订立本合同。</br>");
-                html.append("&nbsp;&nbsp;一、出租房屋情况及用途</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;1-1房屋地址：<span style='text-decoration:underline;'>" + address + "</span>【以下简称“该房屋”】。具体配置【详见附件三】。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;1-2乙方向甲方承诺，乙方承租该房屋仅作为乙方居住使用。 </br>");
-                html.append("&nbsp;&nbsp;二、租赁期限</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;2-1该房屋的租赁期为<span style='text-decoration:underline;'>"
-                        + df1.format(DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate())) + "</span>个月，" + "自<span style='text-decoration:underline;'>"
-                        + DateUtils.formatDate(rentContract.getStartDate(), "yyyy年MM月dd日") + "</span>起至<span style='text-decoration:underline;'>"
-                        + DateUtils.formatDate(rentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;2-2租赁期满，如乙方需要继续承租该房屋的，则应于租赁期届满前<span style='text-decoration:underline;'> 30 </span>" + "天提出续租的书面要求，经甲乙双方对续租期间的租金等主要条款协商一致后，双方签订续租合同，否则视为乙方放弃续租。</br>");
-                html.append("&nbsp;&nbsp;三、租金、支付方式和限期</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;3-1该房屋的月租金为人民币：<span style='text-decoration:underline;'>" + df.format(rentContract.getRental())
-                        + "</span>元(大写:<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRental()) + "</span>)。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;3-2支付方式：付<span style='text-decoration:underline;'> " + rentContract.getRenMonths() + " </span>押" + "<span style='text-decoration:underline;'> "
-                        + rentContract.getDepositMonths() + " </span>，先付后用。乙方于本合同生效之日向甲方支付首期租金及押金。之后每期租期届满前向甲方支付下一期租金。乙方逾期支付的，按未付款额的日1%支付违约金。</br>");
-                html.append("&nbsp;&nbsp;四、押金和其他费用</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;4-1本房屋租赁押金为<span style='text-decoration:underline;'> " + df1.format(rentContract.getDepositMonths()) + " </span>个月的租金，"
-                        + "即人民币：<span style='text-decoration:underline;'> " + df.format(rentContract.getDepositAmount()) + " </span>元(大写：<span style='text-decoration:underline;'>"
-                        + getChineseNum(rentContract.getDepositAmount()) + "</span>)，押金作为乙方向甲方承诺履行本合同的保证，甲方收取押金后应向乙方开具收款凭证。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;4-2租赁关系终止时，甲方收取乙方该房屋的租赁押金除用以抵充合同约定由乙方承担的费用外，剩余部分无息归还乙方。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;4-3智能电表结算：乙方入住前需自行或委托甲方对房间电表进行不少于人民币伍佰元充值，当电量低于20度时需再次充值，若不及时充值智能电表会自动断电，充值后电量方可恢复。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余费用返还乙方。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;4-4非智能电表结算：乙方入住前需支付人民币伍佰元的水电煤、宽带、有线等使用费押金。水电煤、宽带、有线使用费由甲方先代为乙方缴纳，甲方再按固定周期向乙方进行收缴。乙方合同终止时，甲方在与乙方所有费用结清后的15日内将剩余使用费押金返还乙方。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;4-5该房屋的使用费说明：电费<span style='text-decoration:underline;'>  </span>；" + "水费<span style='text-decoration:underline;'> "
-                        + (null != rentContract.getWaterFee() ? df.format(rentContract.getWaterFee()) : 0) + " </span>；" + "天燃气费<span style='text-decoration:underline;'> "
-                        + (null != rentContract.getWaterFee() ? df.format(rentContract.getWaterFee()) : 0) + " </span>；" + "宽带费<span style='text-decoration:underline;'> "
-                        + (null != rentContract.getNetFee() ? df.format(rentContract.getNetFee()) : 0) + " </span>元/月；" + "有线电视费<span style='text-decoration:underline;'> "
-                        + (null != rentContract.getTvFee() ? df.format(rentContract.getTvFee()) : 0) + " </span>元/月；" + "其他<span style='text-decoration:underline;'>  </span>。</br>");
-                html.append("&nbsp;&nbsp;五、房屋使用要求和维修责任</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;5-1租赁期间，乙方发现该房屋及其附属设施有损坏或故障时，应及时通知甲方修复。甲方应在接到乙方通知后：急修在<span style='text-decoration:underline;'> 1 </span>个工作日内；其它维修在<span style='text-decoration:underline;'> 3 </span>个工作日内进行维修。或有特殊情况，甲乙双方另行协商解决。 </br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;5-2租赁期间，因乙方使用不当或不合理使用，致使该房屋及其附属设施损坏或发生故障的，乙方应负责维修。乙方拒不维修，甲方可代为维修，费用由乙方承担。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;5-3租赁期间，甲方对该房屋及设备设施应进行检查、养护，但应提前<span style='text-decoration:underline;'> 2 </span>日通知乙方。检查养护时，乙方应予以配合。甲方应减少对乙方使用该房屋的影响。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;5-4租赁期间，乙方承诺按照【附件一】《租房须知》中的条款，遵守相关规定，安全、文明租房。如乙方在租房期间发生因违反《租房须知》规定所造成的人员伤亡或安全等问题的，责任由乙方自负。</br>");
-                html.append("&nbsp;&nbsp;六、房屋返还</br>");
-                html.append("&nbsp;&nbsp;&nbsp;&nbsp;6-1除甲方同意乙方续租外，乙方应在本合同的租期届满之日内返还该房屋，未经甲方同意逾期返还房屋的，每逾期一日，乙方需按日租金的<span style='text-decoration:underline;'> 双 </span>倍支付该房屋占用使用费。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;6-2乙方返还该房屋应当符合正常使用后的状态，如该房屋内设施及设备配置的有损坏，乙方应照价赔偿【详见附件二】。返还时，应经甲方验收认可，并相互结清各自应当承担的费用。乙方自行添置的家具等设备设施的，应在乙方返还该房屋之日前自行处置或搬离，如乙方在返还房屋之日仍未搬出该房屋内自行添置的各种家具等设备设施的，所遗留物品甲方视为乙方已经遗弃，甲方有权自行处置，且无须另行支付对价或补偿。如在处置乙方遗弃物件时发生费用的，该费用由乙方另行偿付。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;6-3乙方确认不再续租或在退租前，应积极配合甲方对该房屋招租提供方便。</br>");
-                html.append("&nbsp;&nbsp;七、房屋严禁擅自转租</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;7-1乙方入住六个月以后可以申请接力转让该房间（1月、2月和12月甲方不接受委托转租，办理居住证及社区公共户落户的甲方不接受委托转租），但要同时满足以下条件：</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;（一）居住满六个月以上的在原价基础上上涨100元/月；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（二）通过甲方推荐广告渠道再次成功出租该房屋需向甲方支付500元推荐服务费；</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方自行找到接力租客成功出租的需支付100元合同变更手续费，对于乙方自行寻找的客户必须符合甲方的客户选择标准，确保无空置期；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（四）甲方不承诺转租时限，转租期间乙方仍需支付房屋租金。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;7-2不办理转租手续擅自让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。擅自转租或让承租人以外人入住的合同立即解除，甲方没收全部租赁押金。</br>");
-                html.append("&nbsp;&nbsp;八、违约责任及解除本合同的条件</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;8-1甲、乙双方同意，在租赁期内，该房屋占用范围内的土地使用权或房屋被依法提前收回或依法征用的；或被依法列入房屋拆迁许可范围的；或发生不可抗力被损毁、灭失的。本合同终止，双方互不承担责任：</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;8-2甲、乙双方同意，有下列情形之一的均视作根本违约，守约方有权解除本合同。同时，违约方应向守约方支付相当于      个月租金的违约金；如造成守约方损失的，违约方在支付的违约金不足抵付守约方损失的，还应赔偿相应的损失：</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;（一）乙方未征得甲方同意改变该房屋用途、该房屋主体结构损坏的；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（二）乙方擅自转租该房屋或与他人交换各自承租的房屋的；</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;（三）乙方逾期不支付租金及水电煤、宽带、有线等使用费累计超过<span style='text-decoration:underline;'> 5 </span>天的；</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;（四）乙方不遵守该房屋的公寓管理制度或《租房须知》中相关规定的。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;8-3租赁期间，甲方擅自中途提前收回该房屋的，甲方应向乙方赔偿<span style='text-decoration:underline;'>  </span>个月租金的违约金； </br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;8-4租赁期间，乙方擅自中途提前退租的，乙方的房屋押金不予退回。剩余房款由甲方在与乙方所有费用结清后的 15日 内返还乙方；</br>");
-                html.append("&nbsp;&nbsp;九、其它条款</br>" + "&nbsp;&nbsp;&nbsp;&nbsp;9-1本合同未尽事宜，经甲、乙双方协商一致，可订立补充协议。本合同补充协议及附件均为本合同不可分割的一部分。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;9-2甲、乙双方在履行本合同过程中发生争议，应通过协商解决，协商不成的，可向该房屋所在地的人民法院提出诉讼。</br>"
-                        + "&nbsp;&nbsp;&nbsp;&nbsp;9-3本合同连同附件一式<span style='text-decoration:underline;'> 贰 </span>份。甲、乙双方各持一份，经甲乙双方签字或盖章之日起生效，并均具有同等效力。</br>");
-                html.append("&nbsp;&nbsp;十、备注</br></br>");
-                html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-                html.append("&nbsp;&nbsp;代理人：</br>");
-                html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
-                html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
-                html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br></br>");
-                html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
-                html.append("&nbsp;&nbsp;代理人：</br>");
-                html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
-                html.append("&nbsp;&nbsp;联系地址：</br>");
-                html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
-                html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
-                html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br>");
-                html.append("</p></div>");
-            } else {// 续签
-                String oldId = rentContract.getContractId();
-                RentContract oldRentContract = null;
-                if (StringUtils.isNoneBlank(oldId))
-                    oldRentContract = this.rentContractService.get(oldId);
-                else
-                    oldRentContract = new RentContract();
-                html.append("<div><p>");
-                html.append("<h3><center>唐巢人才公寓续租合同</center></h3>");
-                html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
-                html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-                html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
-                html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》甲乙双方在平等、自愿、公平的基础上经协商一致，" + "同意就原租赁房屋：<span style='text-decoration:underline;'>" + address + "</span>续租事宜达成下列协议并共同遵守：</br>");
-                html.append("&nbsp;&nbsp;一、本续租协议未涉及的内容，仍按原《租赁合同》及《租房须知》执行并保持不变。本续租协议是原《租赁合同》不可分割部分，与原《租赁合同》具有同等法律效力。</br>");
-                html.append("&nbsp;&nbsp;二、该房屋原月租金为人民币<span style='text-decoration:underline;'>" + df.format(oldRentContract.getRental()) + "</span>元，原租期自<span style='text-decoration:underline;'>"
-                        + DateUtils.formatDate(oldRentContract.getStartDate(), "yyyy年MM月dd日") + "</span>至<span style='text-decoration:underline;'>"
-                        + DateUtils.formatDate(oldRentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止，" + "共<span style='text-decoration:underline;'> "
-                        + df1.format(DateUtils.getMonthSpace(oldRentContract.getStartDate(), oldRentContract.getExpiredDate())) + " </span>个月；房屋押金为" + "<span style='text-decoration:underline;'> "
-                        + df.format(oldRentContract.getDepositAmount()) + " </span>元。</br>");
-                html.append("&nbsp;&nbsp;三、续租期限自<span style='text-decoration:underline;'>" + DateUtils.formatDate(rentContract.getStartDate(), "yyyy年MM月dd日")
-                        + "</span>至<span style='text-decoration:underline;'>" + DateUtils.formatDate(rentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止，共<span style='text-decoration:underline;'> "
-                        + df1.format(DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate())) + " </span>个月。" + "续租月租金为<span style='text-decoration:underline;'>"
-                        + df.format(rentContract.getRental()) + "</span>人民币元整（ 大写：<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRental()) + "</span>元整）；"
-                        + "该房屋押金现为人民币<span style='text-decoration:underline;'>" + df.format(rentContract.getDepositAmount()) + "</span>元整(大写：<span style='text-decoration:underline;'>"
-                        + getChineseNum(rentContract.getDepositAmount()) + "</span>元整)，若房屋押金不足乙方需补足。</br>");
-                html.append("&nbsp;&nbsp;四、付款方式为乙方续租后以<span style='text-decoration:underline;'> " + df1.format(rentContract.getRenMonths()) + " </span>个月为一期支付。</br>");
-                html.append("&nbsp;&nbsp;五、签订本续租协议当日，乙方应向甲方交纳房屋租金人民币<span style='text-decoration:underline;'>" + df.format(rentContract.getRenMonths() * rentContract.getRental())
-                        + "</span>元整( 大写：<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRenMonths() * rentContract.getRental()) + "</span>,收据号：)及(其它)费用人民币__元整(大写__元,收据号：__)。</br>");
-                html.append("&nbsp;&nbsp;六、本续租协议履行中发生争议，双方应采取协商办法解决，协商不成，可向当地人民法院起诉。</br>");
-                html.append("&nbsp;&nbsp;七、本续租协议一式贰份，甲方一份，乙方一份，自双方签字之日起生效。</br>");
-                html.append("&nbsp;&nbsp;</br>");
-                html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
-                html.append("&nbsp;&nbsp;代理人：</br>");
-                html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
-                html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
-                html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br></br>");
-                html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
-                html.append("&nbsp;&nbsp;代理人：</br>");
-                html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
-                html.append("&nbsp;&nbsp;联系地址：</br>");
-                html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
-                html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
-                html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br>");
-                html.append("</p></div>");
-            }
-            map.put("str_html", html);
-            data.setData(map);
-            data.setCode(200);
-        } catch (Exception e) {
-            data.setCode(500);
-            logger.error("contract_info error:", e);
+            html.append("<div><p>");
+            html.append("<h3><center>唐巢人才公寓续租合同</center></h3>");
+            html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
+            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br></br>");
+            html.append("&nbsp;&nbsp;根据《中华人民共和国合同法》、《上海市房屋租赁条例》甲乙双方在平等、自愿、公平的基础上经协商一致，" + "同意就原租赁房屋：<span style='text-decoration:underline;'>" + address + "</span>续租事宜达成下列协议并共同遵守：</br>");
+            html.append("&nbsp;&nbsp;一、本续租协议未涉及的内容，仍按原《租赁合同》及《租房须知》执行并保持不变。本续租协议是原《租赁合同》不可分割部分，与原《租赁合同》具有同等法律效力。</br>");
+            html.append("&nbsp;&nbsp;二、该房屋原月租金为人民币<span style='text-decoration:underline;'>" + df.format(oldRentContract.getRental()) + "</span>元，原租期自<span style='text-decoration:underline;'>"
+                    + DateUtils.formatDate(oldRentContract.getStartDate(), "yyyy年MM月dd日") + "</span>至<span style='text-decoration:underline;'>"
+                    + DateUtils.formatDate(oldRentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止，" + "共<span style='text-decoration:underline;'> "
+                    + df1.format(DateUtils.getMonthSpace(oldRentContract.getStartDate(), oldRentContract.getExpiredDate())) + " </span>个月；房屋押金为" + "<span style='text-decoration:underline;'> "
+                    + df.format(oldRentContract.getDepositAmount()) + " </span>元。</br>");
+            html.append("&nbsp;&nbsp;三、续租期限自<span style='text-decoration:underline;'>" + DateUtils.formatDate(rentContract.getStartDate(), "yyyy年MM月dd日")
+                    + "</span>至<span style='text-decoration:underline;'>" + DateUtils.formatDate(rentContract.getExpiredDate(), "yyyy年MM月dd日") + "</span>止，共<span style='text-decoration:underline;'> "
+                    + df1.format(DateUtils.getMonthSpace(rentContract.getStartDate(), rentContract.getExpiredDate())) + " </span>个月。" + "续租月租金为<span style='text-decoration:underline;'>"
+                    + df.format(rentContract.getRental()) + "</span>人民币元整（ 大写：<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRental()) + "</span>元整）；"
+                    + "该房屋押金现为人民币<span style='text-decoration:underline;'>" + df.format(rentContract.getDepositAmount()) + "</span>元整(大写：<span style='text-decoration:underline;'>"
+                    + getChineseNum(rentContract.getDepositAmount()) + "</span>元整)，若房屋押金不足乙方需补足。</br>");
+            html.append("&nbsp;&nbsp;四、付款方式为乙方续租后以<span style='text-decoration:underline;'> " + df1.format(rentContract.getRenMonths()) + " </span>个月为一期支付。</br>");
+            html.append("&nbsp;&nbsp;五、签订本续租协议当日，乙方应向甲方交纳房屋租金人民币<span style='text-decoration:underline;'>" + df.format(rentContract.getRenMonths() * rentContract.getRental())
+                    + "</span>元整( 大写：<span style='text-decoration:underline;'>" + getChineseNum(rentContract.getRenMonths() * rentContract.getRental()) + "</span>,收据号：)及(其它)费用人民币__元整(大写__元,收据号：__)。</br>");
+            html.append("&nbsp;&nbsp;六、本续租协议履行中发生争议，双方应采取协商办法解决，协商不成，可向当地人民法院起诉。</br>");
+            html.append("&nbsp;&nbsp;七、本续租协议一式贰份，甲方一份，乙方一份，自双方签字之日起生效。</br>");
+            html.append("&nbsp;&nbsp;</br>");
+            html.append("&nbsp;&nbsp;出租方(甲方)：上海唐巢投资有限公司</br>");
+            html.append("&nbsp;&nbsp;代理人：</br>");
+            html.append("&nbsp;&nbsp;联系地址：创新西路357号</br>");
+            html.append("&nbsp;&nbsp;联系电话：021-68876662 4006-269-069</br>");
+            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br></br>");
+            html.append("&nbsp;&nbsp;承租方(乙方)：" + appUser.getName() + "</br>");
+            html.append("&nbsp;&nbsp;代理人：</br>");
+            html.append("&nbsp;&nbsp;身份证号码：" + appUser.getIdCardNo() + "</br>");
+            html.append("&nbsp;&nbsp;联系地址：</br>");
+            html.append("&nbsp;&nbsp;联系电话：" + appUser.getPhone() + "</br>");
+            html.append("&nbsp;&nbsp;紧急联系人电话：" + appUser.getPhone() + "</br>");
+            html.append("&nbsp;&nbsp;签约日期：" + DateFormatUtils.format(rentContract.getSignDate(), "yyyy-MM-dd") + "</br>");
+            html.append("</p></div>");
         }
-        return data;
+        map.put("str_html", html);
+        return ResponseData.success().data(map);
     }
 
+
+    /**
+     * @param request
+     * @param response
+     * @return
+     * @TODO 待优化
+     */
     @RequestMapping(value = "contractById")
-    @ResponseBody
     public ResponseData contractById(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("id")) {
@@ -1830,10 +1751,11 @@ public class AppHouseController extends AppBaseController {
             } else {// 续签
                 String oldId = rentContract.getContractId();
                 RentContract oldRentContract = null;
-                if (StringUtils.isNoneBlank(oldId))
+                if (StringUtils.isNoneBlank(oldId)) {
                     oldRentContract = this.rentContractService.get(oldId);
-                else
+                } else {
                     oldRentContract = new RentContract();
+                }
                 html.append("<div><p>");
                 html.append("<h3><center>唐巢人才公寓续租合同</center></h3>");
                 html.append("&nbsp;&nbsp;(合同编号：" + rentContract.getContractCode() + ")</br>");
@@ -1886,7 +1808,6 @@ public class AppHouseController extends AppBaseController {
      * 》》》》》》》》》》》》》》》》》》》》》》支付另外处理》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》
      **/
     @RequestMapping(value = "pay_sign_booked")
-    @ResponseBody
     public ResponseData paysignBooked(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -1915,7 +1836,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "pay_sign_contract")
-    @ResponseBody
     public ResponseData paysignContract(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -1944,7 +1864,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "recharge")
-    @ResponseBody
     public ResponseData recharge(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("contract_id") || null == request.getParameter("fee")) {
@@ -2029,26 +1948,7 @@ public class AppHouseController extends AppBaseController {
 
 
     @RequestMapping(value = "checkin_bill")
-    @ResponseBody
-    public ResponseData checkinBill(HttpServletRequest request, HttpServletResponse response) {
-        ResponseData data = new ResponseData();
-        if (null == request.getParameter("bill_id")) {
-            data.setCode(101);
-            return data;
-        }
-        String token = (String) request.getHeader("token");
-        AppToken apptoken = new AppToken();
-        apptoken.setToken(token);
-        apptoken = appTokenService.findByToken(apptoken);
-        if (null == apptoken) {
-            data.setCode(401);
-            data.setMsg("请重新登录");
-            return data;
-        }
-        AppUser appUser = new AppUser();
-        appUser.setPhone(apptoken.getPhone());
-        appUser = appUserService.getByPhone(appUser);
-        String billIds = request.getParameter("bill_id");
+    public ResponseData checkinBill(String billIds, @CurrentUser AppUser appUser) {
         List<Receipt> receiptList = new ArrayList<Receipt>();
         PaymentTrans paymentTrans = this.paymentTransService.get(billIds.split(",")[0]);
         String[] billIdArr = billIds.split(",");
@@ -2066,14 +1966,8 @@ public class AppHouseController extends AppBaseController {
             }
             orderAmount += tmpPaymentTrans.getTradeAmount();
             if (null != tradingAccounts && TradingAccountsStatusEnum.AUDIT_PASS.getValue().equals(tradingAccounts.getTradeStatus())) {
-                data.setCode(400);
-                break;
+                return ResponseData.failure(RespConstants.ERROR_CODE_101).message("账单已付清");
             }
-        }
-        if (400 == data.getCode()) {
-            // data.setCode(400);
-            data.setMsg("账单已付清");
-            return data;
         }
         TradingAccounts tradingAccounts = new TradingAccounts();
         tradingAccounts.setTransIds(billIds);
@@ -2086,7 +1980,7 @@ public class AppHouseController extends AppBaseController {
         tradingAccounts.setReceiptList(receiptList);
         tradingAccounts.setTradeAmount(orderAmount);
         tradingAccountsService.save(tradingAccounts);
-    /* 订单生成 */
+        /* 订单生成 */
         PaymentOrder paymentOrder = new PaymentOrder();
         paymentOrder.setOrderAmount(orderAmount);
         paymentOrder.setTradeId(tradingAccounts.getId());
@@ -2099,13 +1993,10 @@ public class AppHouseController extends AppBaseController {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("order_id", paymentOrder.getOrderId());
         map.put("price", df.format(paymentOrder.getOrderAmount()));
-        data.setData(map);
-        data.setCode(200);
-        return data;
+        return ResponseData.success().data(map);
     }
 
     @RequestMapping(value = "pay_bill")
-    @ResponseBody
     public ResponseData payBill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("order_id")) {
@@ -2139,7 +2030,6 @@ public class AppHouseController extends AppBaseController {
      * 我的账单列表 @TODO 账单列表不是跟合同走的吧
      */
     @RequestMapping(value = "bill")
-    @ResponseBody
     public ResponseData bill(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         String contractId = request.getParameter("contract_id");
@@ -2327,7 +2217,6 @@ public class AppHouseController extends AppBaseController {
      * @TODO 报修怎么根据合同哦走
      */
     @RequestMapping(value = "repair")
-    @ResponseBody
     public ResponseData repair(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         if (null == request.getParameter("mobile")) {
@@ -2461,7 +2350,6 @@ public class AppHouseController extends AppBaseController {
     }
 
     @RequestMapping(value = "keeper")
-    @ResponseBody
     public ResponseData keeper(HttpServletRequest request, HttpServletResponse response) {
         ResponseData data = new ResponseData();
         try {
@@ -2499,36 +2387,19 @@ public class AppHouseController extends AppBaseController {
     }
 
     /**
-     * @param request
-     * @param response
      * @return
      * @TODO 投诉根据ID
      */
     @RequestMapping(value = "complain")
-    @ResponseBody
-    public ResponseData complain(HttpServletRequest request, HttpServletResponse response) {
-        ResponseData data = new ResponseData();
-        if (null == request.getParameter("mobile") || null == request.getParameter("id")) {
-            data.setCode(101);
-            return data;
-        }
-        try {
-            String mobile = request.getParameter("mobile");
-            AppUser appUser = new AppUser();
-            appUser.setPhone(mobile);
-            appUser = appUserService.getByPhone(appUser);
-            ServiceUserComplain serviceUserComplain = new ServiceUserComplain();
-            serviceUserComplain.setUserId(appUser.getId());
-            User user = this.systemService.getUser(request.getParameter("id"));
-            serviceUserComplain.setServiceUser(user);
-            serviceUserComplain.setContent(request.getParameter("desc"));
-            serviceUserComplainService.save(serviceUserComplain);
-            data.setCode(200);
-            data.setMsg("已提交");
-        } catch (Exception e) {
-            data.setCode(500);
-            logger.error("create complain error:", e);
-        }
-        return data;
+    public ResponseData complain(@CurrentUser AppUser appUser, String remark) {
+
+        ServiceUserComplain serviceUserComplain = new ServiceUserComplain();
+        serviceUserComplain.setUserId(appUser.getId());
+        //TODO 投诉管家，根据用户获取管家
+        User user = this.systemService.getUser("");
+        serviceUserComplain.setServiceUser(user);
+        serviceUserComplain.setContent(remark);
+        serviceUserComplainService.save(serviceUserComplain);
+        return ResponseData.success().message("你的反馈我们正在处理中,请耐心等候");
     }
 }
