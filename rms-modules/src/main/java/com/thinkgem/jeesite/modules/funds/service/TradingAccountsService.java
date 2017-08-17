@@ -167,6 +167,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
       }
       paymentTrans.preUpdate();
       paymentTransDao.update(paymentTrans);
+      tmpPaymentTrade.preUpdate();
       paymentTradeDao.delete(tmpPaymentTrade);
     }
     Receipt receipt = new Receipt();
