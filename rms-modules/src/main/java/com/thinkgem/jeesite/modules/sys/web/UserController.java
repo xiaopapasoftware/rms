@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.utils.excel.ImportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.entity.Office;
 import com.thinkgem.jeesite.modules.entity.Role;
 import com.thinkgem.jeesite.modules.entity.User;
@@ -51,6 +54,7 @@ public class UserController extends BaseController {
 
   @Autowired
   private SystemService systemService;
+
 
   @ModelAttribute
   public User get(@RequestParam(required = false) String id) {
@@ -128,24 +132,23 @@ public class UserController extends BaseController {
     }
     user.setRoleList(roleList);
 
-    // 保存用户区域
+    // 用户区域列表
     List<String> areaList = Lists.newArrayList();
-    String[] areas = user.getAreaId().split(",");
-    for (String r : areas) {
-      if (StringUtils.isNotBlank(r)) {
-        areaList.add(r);
+    String[] areaIds = user.getAreaId().split(",");
+    if (ArrayUtils.isNotEmpty(areaIds)) {
+      List<String> areaIdList = Arrays.asList(areaIds);
+      for (Area a : systemService.findAllArea()) {
+        if (areaIdList.contains(a.getId())) {
+          areaList.add(a.getId());
+        }
       }
     }
     user.setAreaList(areaList);
-
     // 保存用户信息
     systemService.saveUser(user);
-    //清除修改用户的缓存
-    UserUtils.clearCache(user);
     // 清除当前用户缓存
     if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
       UserUtils.clearCache();
-      // UserUtils.getCacheMap().clear();
     }
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存用户'" + user.getLoginName() + "'成功");
     return "redirect:" + adminPath + "/sys/user/list?repage";
