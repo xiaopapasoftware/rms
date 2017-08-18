@@ -154,11 +154,9 @@ public class SystemService extends BaseService implements InitializingBean {
       if (user.getAreaList() != null && user.getAreaList().size() > 0) {
         userDao.insertUserArea(user);
       }
-      // 将当前用户同步到Activiti
-      // saveActivitiUser(user);
+      // saveActivitiUser(user);// 将当前用户同步到Activiti
       UserUtils.clearCache(user);// 清除用户缓存
-      // // 清除权限缓存
-      // systemRealm.clearAllCachedAuthorizationInfo();
+      // systemRealm.clearAllCachedAuthorizationInfo();// 清除权限缓存
     }
   }
 
