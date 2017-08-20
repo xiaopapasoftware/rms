@@ -68,18 +68,19 @@ public class SystemController extends AppBaseController {
         appSmsMessageService.verifyCode(telPhone, code);
 
         //exist?
+        AppUser searchUser = new AppUser();
+        searchUser.setPhone(telPhone);
+        AppUser existUser = appUserService.getByPhone(searchUser);
+        /*如果用户存在则更新*/
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
-        if (appUser != null) {
-            return ResponseData.failure(RespConstants.ERROR_CODE_405).message(RespConstants.ERROR_MSG_405);
-        } else {
-            //create app user
-            appUser = new AppUser();
-            appUser.setPhone(telPhone);
-            appUser.setPassword(PasswordHelper.encryptPassword(password));
-            appUserService.save(appUser);
+        appUser.setPassword(PasswordHelper.encryptPassword(password));
+        if(existUser != null){
+            appUser.setId(existUser.getId());
+        }
+        appUserService.save(appUser);
 
+        if(existUser != null) {
             Message message = new Message();
             message.setContent("欢迎使用唐巢APP");
             message.setReceiver(telPhone);
@@ -88,22 +89,22 @@ public class SystemController extends AppBaseController {
             message.setTitle("注册成功");
             message.setType("LOGIN");
             messageService.save(message);
-            //给用户注册科技侠账号
-                /*try {
-                    String scienerPwd = RandomStrUtil.generateCode(false, 16);
-                    String scienerPwdMd5 = md5(scienerPwd);
-                    Map res = scienerLockService.regUser(telPhone, scienerPwdMd5);
-                    if (res.get("errcode") == null && res.get("username") != null) {//保存生成的用户记录
-                        appUser.setScienerUserName((String) res.get("username"));
-                        appUser.setScienerPassword(scienerPwdMd5);
-                        appUserService.save(appUser);
-                        log.debug("register sciener account success");
-                    }
-                } catch (Exception e) {
-                    log.error("register sciener account error. " + e.getMessage());
-                }*/
-            return appTokenService.tokenMerge(telPhone);
         }
+        //给用户注册科技侠账号
+        /*try {
+            String scienerPwd = RandomStrUtil.generateCode(false, 16);
+            String scienerPwdMd5 = md5(scienerPwd);
+            Map res = scienerLockService.regUser(telPhone, scienerPwdMd5);
+            if (res.get("errcode") == null && res.get("username") != null) {//保存生成的用户记录
+                appUser.setScienerUserName((String) res.get("username"));
+                appUser.setScienerPassword(scienerPwdMd5);
+                appUserService.save(appUser);
+                log.debug("register sciener account success");
+            }
+        } catch (Exception e) {
+            log.error("register sciener account error. " + e.getMessage());
+        }*/
+        return appTokenService.tokenMerge(telPhone);
     }
 
     @AuthIgnore

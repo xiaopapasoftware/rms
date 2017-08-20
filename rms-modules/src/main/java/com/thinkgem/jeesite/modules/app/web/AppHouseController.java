@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
 import com.thinkgem.jeesite.modules.app.entity.*;
+import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
 import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
@@ -40,8 +41,10 @@ import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
+import org.apache.batik.css.engine.StringIntMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,6 +64,8 @@ public class AppHouseController extends AppBaseController {
 
     DecimalFormat df = new DecimalFormat("######0.00");
     DecimalFormat df1 = new DecimalFormat("######0.##");
+
+    private static final int RESERVATE_EXPIRED_DAY = 1;
 
     @Autowired
     private HouseService houseService;
@@ -263,14 +268,18 @@ public class AppHouseController extends AppBaseController {
      */
     @AuthIgnore
     @RequestMapping(value = "booking")
-    public ResponseData booking(String houseId, String telPhone, Date appTime, String code, String userName, String userSex, String remark) {
+    public ResponseData booking(String houseId, String telPhone, String appTime, String code, String userName, String userSex, String remark) {
         appSmsMessageService.verifyCode(telPhone, code);
 
         //create app user
         AppUser appUser = new AppUser();
         appUser.setPhone(telPhone);
-        appUser.setPassword(PasswordHelper.encryptPassword(""));
-        appUserService.save(appUser);
+        AppUser existUser = appUserService.getByPhone(appUser);
+        /*如果用户存在怎不保存*/
+        if(existUser == null) {
+            appUser.setPassword(PasswordHelper.encryptPassword("!p@ssword"));
+            appUserService.save(appUser);
+        }
 
         ContractBook contractBook = new ContractBook();
         contractBook.setUserId(telPhone);
@@ -291,8 +300,8 @@ public class AppHouseController extends AppBaseController {
         contractBook.setUserPhone(telPhone);
         contractBook.setUserGender(userSex);
         contractBook.setRemarks(remark);
-        contractBook.setBookDate(appTime);
-        contractBook.setBookStatus("0");// 管家确认中
+        contractBook.setBookDate(DateUtils.parseDate(appTime));
+        contractBook.setBookStatus(BookStatusEnum.BOOK_APV.value());
         contractBookService.save(contractBook);
         /* 获取房屋房屋管家手机号码 */
         String mobile = Global.getConfig("service.manager.mobile");
@@ -346,7 +355,6 @@ public class AppHouseController extends AppBaseController {
      * @param telPhone
      * @return
      */
-    @AuthIgnore
     @RequestMapping(value = "booking_info/{id}")
     public ResponseData bookingInfo(@PathVariable String id, @CurrentUserPhone String telPhone) {
         ContractBook contractBook = new ContractBook();
@@ -389,7 +397,7 @@ public class AppHouseController extends AppBaseController {
     public ResponseData bookingCancel(@PathVariable String id) {
         ContractBook contractBook = new ContractBook();
         contractBook.setId(id);
-        contractBook.setBookStatus("2");// 用户取消预约
+        contractBook.setBookStatus(BookStatusEnum.BOOK_CANCEL.value());
         contractBookService.updateStatusByHouseId(contractBook);
         return ResponseData.success();
     }
@@ -398,9 +406,12 @@ public class AppHouseController extends AppBaseController {
      * APP在线申请预定
      */
     @RequestMapping(value = "booked／{houseId}")
-    public ResponseData booked(@PathVariable String houseId, @CurrentUser AppUser appUser, Date expiredDate, Date signDate, String remark) {
-        if (null == signDate || null == expiredDate) {
-            throw new ParamsException("签订日期和到期日不能为空");
+    public ResponseData booked(@PathVariable String houseId, @CurrentUser AppUser appUser, String signDate, String remark) {
+        if (null == signDate ) {
+            throw new ParamsException("签订日期");
+        }
+        if(StringUtils.isBlank(appUser.getIdCardPhoto＿front()) || StringUtils.isBlank(appUser.getIdCardPhoto＿back())){
+            return ResponseData.failure(RespConstants.ERROR_CODE_111).message(RespConstants.ERROR_MSG_111);
         }
 
         if (StringUtils.isBlank(appUser.getIdCardNo())) {
@@ -441,14 +452,14 @@ public class AppHouseController extends AppBaseController {
         depositAgreement.setBuilding(building);
         depositAgreement.setHouse(house);
         depositAgreement.setTenantList(appUserToTenant(appUser)); // APP用户转租客
-        depositAgreement.setSignDate(new Date());
-        depositAgreement.setAgreementDate(signDate);
+        depositAgreement.setSignDate(DateUtils.parseDate(signDate));
+        depositAgreement.setAgreementDate(DateUtils.parseDate(signDate));
         depositAgreement.setValidatorFlag(ValidatorFlagEnum.TEMP_SAVE.getValue());
         depositAgreement.setDataSource(DataSourceEnum.FRONT_APP.getValue());
         depositAgreement.setRemarks(remark);
         depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.TEMP_EXIST.getValue());
-        depositAgreement.setStartDate(signDate);
-        depositAgreement.setExpiredDate(expiredDate);
+        depositAgreement.setStartDate(new Date());
+        depositAgreement.setExpiredDate(DateUtils.dateAddDay(new Date(),RESERVATE_EXPIRED_DAY));
         depositAgreement.setDepositCustomerIDFile(generateIdFilePath(appUser));// 租客身份证照片
         int result = depositAgreementService.saveDepositAgreement(depositAgreement);
         ResponseData data = new ResponseData();
@@ -1210,8 +1221,6 @@ public class AppHouseController extends AppBaseController {
      * 累计款项ID列表及金额汇总
      *
      * @param targetPaymentType 需要过滤的款项类型
-     * @param transIds          过滤出来的款项ID，按照,隔开
-     * @param tradeAmount       过滤出来的款项，累计金额
      * @param rentMonthes       需要过滤的款项数量
      * @param receiptList       每笔款项对应生成一笔收据
      * @return Map<String,Object> key=1表示amount，key=2表示transIds

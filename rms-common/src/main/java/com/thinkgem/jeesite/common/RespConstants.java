@@ -29,6 +29,8 @@ public class RespConstants {
     public static final String ERROR_MSG_109 = "当前信息不存在,查询后在操作";
     public static final int ERROR_CODE_110 = 110;
     public static final String ERROR_MSG_110 = "您已预约该房间,不能重复预约";
+    public static final int ERROR_CODE_111 = 111;
+    public static final String ERROR_MSG_111 = "请到个人中心上传身份证信息";
 
 
 
