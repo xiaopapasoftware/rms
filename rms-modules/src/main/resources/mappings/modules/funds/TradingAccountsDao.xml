@@ -212,4 +212,25 @@
 		</where>
 	</update>
 
+	<!--根据合同id查询新签合同的进账项 -->
+	<select id="queryIncomeTradeAccountsByTradeId" resultType="TradingAccounts">
+		SELECT t.*
+		FROM t_trading_accounts
+		AND t.DEL_FLAG = '0'
+		AND t.trade_direction = '1'
+		AND t.trade_type = '3'
+		AND t.trade_status = '1'
+		AND t.trade_id = #{tradeId}
+	</select>
+
+	<!--根据合同id查询新签合同的出账项 -->
+	<select id="queryCostTradeAccountsByTradeId" resultType="TradingAccounts">
+		SELECT t.*
+		FROM t_trading_accounts
+		AND t.DEL_FLAG = '0'
+		AND t.trade_direction = '0'
+		AND t.trade_type IN ('6', '9')
+		AND t.trade_status = '1'
+		AND t.trade_id = #{tradeId}
+	</select>
 </mapper>

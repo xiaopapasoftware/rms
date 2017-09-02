@@ -642,4 +642,24 @@
 		WHERE id = #{id}
 	</update>
 
+	<!--查询指定时间内某房屋的有效合同 -->
+	<select id="queryHousesByHouseIdAndTime" resultType="RentContract">
+		SELECT trc.*
+		FROM t_rent_contract trc
+		AND trc.DEL_FLAG = '0'
+		AND trc.CONTRACT_STATUS = '6'
+		AND trc.CONTRACT_BUSI_STATUS = '0'
+		<if test="startDate != null and startDate != ''">
+			<![CDATA[
+				AND trc.START_DATE >=  #{startDate}
+			 ]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[
+				AND trc.START_DATE <=  #{endDate}
+			 ]]>
+		</if>
+		AND trc.house_id = #{houseId}
+	</select>
+
 </mapper>

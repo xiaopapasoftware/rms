@@ -683,4 +683,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     }
     return result;
   }
+
+  @Transactional(readOnly = true)
+  public List<TradingAccounts> queryIncomeTradeAccountsByTradeId(String tradeId){
+    return tradingAccountsDao.queryIncomeTradeAccountsByTradeId(tradeId);
+  }
+
+  @Transactional(readOnly = true)
+  public List<TradingAccounts> queryCostTradeAccountsByTradeId(String tradeId){
+    return tradingAccountsDao.queryCostTradeAccountsByTradeId(tradeId);
+  }
 }

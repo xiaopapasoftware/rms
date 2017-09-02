@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.service.TreeService;
 import com.thinkgem.jeesite.modules.dao.AreaDao;
 import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,9 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class AreaService extends TreeService<AreaDao, Area> {
+
+	@Autowired
+	private AreaDao areaDao;
 
 	public List<Area> findAll(){
 		return UserUtils.getAreaList();
@@ -37,6 +42,10 @@ public class AreaService extends TreeService<AreaDao, Area> {
 	public void delete(Area area) {
 		super.delete(area);
 		UserUtils.removeCache(UserUtils.CACHE_AREA_LIST);
+	}
+
+	public List<Area> getAreaByParentId(String parentId, String type){
+		return areaDao.getAreaByParentId(parentId, type);
 	}
 	
 }

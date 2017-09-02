@@ -286,4 +286,48 @@
       		</if>
 		</where>
 	</update>
+
+	<!--查询某个合同指定时间内进账款项 -->
+	<select id="queryIncomePaymentByTransIdAndTime" resultType="PaymentTrans">
+		SELECT t.*
+		FROM t_payment_trans t
+		AND t.DEL_FLAG = '0'
+		AND t.trade_type in ('3', '4')
+		AND t.payment_type = '6'
+		AND t.trade_direction = '1'
+		AND t.trans_status = '2'
+		<if test="startDate != null and startDate != ''">
+			<![CDATA[
+				AND t.START_DATE >=  #{startDate}
+			 ]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[
+				AND t.EXPIRED_DATE <=  #{endDate}
+			 ]]>
+		</if>
+		AND t.trans_id = #{transId}
+	</select>
+
+	<!--查询某个合同指定时间内出账款项 -->
+	<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
+		SELECT t.*
+		FROM t_payment_trans t
+		AND t.DEL_FLAG = '0'
+		AND t.trade_type in ('6', '9')
+		AND t.payment_type = '6'
+		AND t.trade_direction = '0'
+		AND t.trans_status = '2'
+		<if test="startDate != null and startDate != ''">
+			<![CDATA[
+				AND t.START_DATE >=  #{startDate}
+			 ]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[
+				AND t.EXPIRED_DATE <=  #{endDate}
+			 ]]>
+		</if>
+		AND t.trans_id = #{transId}
+	</select>
 </mapper>

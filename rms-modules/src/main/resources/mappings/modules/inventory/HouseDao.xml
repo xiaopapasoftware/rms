@@ -264,7 +264,7 @@
 		</choose>
 	</select>
 
-	<select id="findHourseByProPrjAndBuildingAndHouseNo" resultType="House">
+	<select id="findHouseListByProPrjAndBuildingAndHouseNo" resultType="House">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
@@ -400,39 +400,39 @@
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
 	<update id="updateHouseStatus4NewSign">
-		UPDATE  t_house 
+		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
-		WHERE   id = #{id} 
+		WHERE   id = #{id}
 		and     house_status = '1'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
 	<update id="updateHouseStatus4RenewSign">
-		UPDATE  t_house 
+		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
-		WHERE   id = #{id} 
+		WHERE   id = #{id}
 		and     house_status = '4'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
-	
+
 	<update id="updateHouseStatusFromDepositToContract">
-		UPDATE  t_house 
+		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
-		WHERE   id = #{id} 
+		WHERE   id = #{id}
 		and     house_status = '2'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
 	<update id="updateHouseStatus4Deposit">
-		UPDATE  t_house 
+		UPDATE  t_house
 		SET 	house_status = '2',
 			    update_by = #{updateBy.id},
 			    update_date = #{updateDate}
@@ -440,9 +440,9 @@
 		and     house_status = '1'
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
-	
+
 	<select id="queryHousesCountByProjectPropertyId" resultType="int">
-	  	SELECT 	COUNT(*) 
+	  	SELECT 	COUNT(*)
 	  	FROM 	t_house th
 		WHERE 	th.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
 		AND   	th.`DEL_FLAG` = '0'
@@ -451,5 +451,50 @@
 			AND th.create_date <=  #{startDate}
 		  ]]>
 		</if>
+	</select>
+
+	<select id="findHouseListByProjectId" resultType="House">
+		SELECT
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.owner_id AS "owner.id",
+		a.house_no AS "houseNo",
+		a.house_code AS "houseCode",
+		a.house_status AS "houseStatus",
+		a.house_floor AS "houseFloor",
+		a.house_space AS "houseSpace",
+		a.decoration_spance AS "decorationSpance",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay"
+		FROM t_house a
+			a.del_flag = '0'
+			AND a.property_project_id = #{projectId}
+	</select>
+
+	<select id="getHouseById" resultType="PropertyProject">
+		SELECT
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.owner_id AS "owner.id",
+		a.house_no AS "houseNo",
+		a.house_code AS "houseCode",
+		a.house_status AS "houseStatus",
+		a.house_floor AS "houseFloor",
+		a.house_space AS "houseSpace",
+		a.decoration_spance AS "decorationSpance",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.pay_way as "payWay"
+		FROM t_house a
+		where
+		a.del_flag = '0'
+		AND a.id = #{id}
 	</select>
 </mapper>

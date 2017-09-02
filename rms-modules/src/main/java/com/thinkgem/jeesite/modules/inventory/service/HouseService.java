@@ -132,8 +132,16 @@ public class HouseService extends CrudService<HouseDao, House> {
    * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
    */
   @Transactional(readOnly = true)
-  public List<House> findHourseByProPrjAndBuildingAndHouseNo(House house) {
-    return dao.findHourseByProPrjAndBuildingAndHouseNo(house);
+  public List<House> findHouseListByProPrjAndBuildingAndHouseNo(House house) {
+    return dao.findHouseListByProPrjAndBuildingAndHouseNo(house);
+  }
+
+  /**
+   * 根据物业项目ID查询房屋信息
+   */
+  @Transactional(readOnly = true)
+  public List<House> findHouseListByProjectId(String projectId) {
+    return dao.findHouseListByProjectId(projectId);
   }
 
   /**
@@ -401,5 +409,10 @@ public class HouseService extends CrudService<HouseDao, House> {
 
   public int queryHousesCountByProjectPropertyId(String propertyProjectId, Date startDate) {
     return dao.queryHousesCountByProjectPropertyId(propertyProjectId, startDate);
+  }
+
+  @Transactional(readOnly = true)
+  public House getHouseById(String id) {
+    return dao.getHouseById(id);
   }
 }

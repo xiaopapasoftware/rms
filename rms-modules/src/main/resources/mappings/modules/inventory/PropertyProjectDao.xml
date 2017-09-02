@@ -172,4 +172,13 @@
 			AND a.project_addr = #{projectAddr}
 		</where>
 	</select>
+
+	<select id="getPropertyProjectById" resultType="PropertyProject">
+		SELECT
+		a.*
+		FROM t_property_project a
+		where
+		a.del_flag = '0'
+		AND a.id = #{id}
+	</select>
 </mapper>

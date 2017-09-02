@@ -124,5 +124,14 @@
 					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
 					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
 	</update>
-	
+
+	<select id="getAreaByParentId" resultType="Area">
+		SELECT
+		<include refid="areaColumns"/>
+		FROM sys_area a
+		WHERE
+		a.del_flag = '0'
+		AND a.parent_id = #{parentId}
+		AND a.type = #{type}
+	</select>
 </mapper>

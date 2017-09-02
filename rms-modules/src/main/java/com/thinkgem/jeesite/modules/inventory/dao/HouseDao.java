@@ -25,7 +25,12 @@ public interface HouseDao extends CrudDao<House> {
   /**
    * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
    */
-  List<House> findHourseByProPrjAndBuildingAndHouseNo(House house);
+  List<House> findHouseListByProPrjAndBuildingAndHouseNo(House house);
+
+  /**
+   * 根据物业项目ID查询房屋信息
+   */
+  List<House> findHouseListByProjectId(String projectId);
 
   /**
    * 获取当前有效房屋的总数量
@@ -37,6 +42,8 @@ public interface HouseDao extends CrudDao<House> {
   House getFeatureInfo(House house);
 
   House getHouseByHouseId(House house);
+
+  House getHouseById(String id);
 
   /**
    * 新签-整租,更新房屋状态

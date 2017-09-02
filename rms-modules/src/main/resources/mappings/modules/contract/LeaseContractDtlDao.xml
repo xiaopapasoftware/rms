@@ -108,5 +108,22 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="findLeaseContractDtlListByCondition" resultType="com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtlCondition" parameterType="com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtlCondition">
+		SELECT
+		<include refid="leaseContractDtlColumns"/>
+		FROM t_lease_contract_dtl a
+		where
+		a.del_flag = 0
+		<if test="houseId != null and houseId != ''">
+			and a.lease_contract_id = #{leaseContractId};
+		</if>
+		<if test="startDate != null and startDate != ''">
+			and a.start_date &gt;= #{startDate}
+		</if>
+		<if test="endDate != null and endDate != ''">
+			and a.start_date &lt;= #{endDate}
+		</if>
+	</select>
 	
 </mapper>

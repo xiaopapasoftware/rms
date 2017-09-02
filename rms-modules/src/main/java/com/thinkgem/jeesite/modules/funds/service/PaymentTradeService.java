@@ -26,4 +26,15 @@ public class PaymentTradeService extends CrudService<PaymentTradeDao, PaymentTra
     ptr.setTradeIdList(tradingAccountsIds);
     super.delete(ptr);
   }
+
+  /**
+   * 获取合同下指定交易类型的账务交易记录
+   */
+  @Transactional(readOnly = true)
+  public List<PaymentTrade> getTradeListByTradeIds(List<String> tradingAccountsIds) {
+    PaymentTrade ptr = new PaymentTrade();
+    ptr.setDelFlag("0");
+    ptr.setTradeIdList(tradingAccountsIds);
+    return super.findList(ptr);
+  }
 }

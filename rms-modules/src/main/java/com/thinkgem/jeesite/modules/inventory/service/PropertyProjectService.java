@@ -114,4 +114,12 @@ public class PropertyProjectService extends CrudService<PropertyProjectDao, Prop
     public List<PropertyProject> findPropertyProjectByNameAndAddress(PropertyProject propertyProject) {
         return dao.findPropertyProjectByNameAndAddress(propertyProject);
     }
+
+    public PropertyProject getPropertyProjectById(String id){
+        return dao.getPropertyProjectById(id);
+    }
+
+    public List<PropertyProject> getPropertyProjectByAreaId(String areaId){
+        return dao.getPropertyProjectByAreaId(areaId);
+    }
 }

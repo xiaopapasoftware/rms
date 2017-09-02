@@ -45,6 +45,8 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   private ReceiptService receiptService;
   @Autowired
   private AttachmentService attachmentService;
+  @Autowired
+  private PaymentTransDao paymentTransDao;
 
   @Override
   public List<PaymentTrans> findList(PaymentTrans entity) {
@@ -274,4 +276,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     tradingAccountsDao.delete(ta);
   }
 
+  public List<PaymentTrans> queryIncomePaymentByTransIdAndTime(Date startDate, Date endDate, String transId) {
+    return paymentTransDao.queryIncomePaymentByTransIdAndTime(startDate, endDate, transId);
+  }
+
+  public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, String transId) {
+    return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transId);
+  }
 }

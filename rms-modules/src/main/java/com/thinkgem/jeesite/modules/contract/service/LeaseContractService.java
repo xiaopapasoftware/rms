@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.modules.contract.entity.*;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +28,6 @@ import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditHisDao;
 import com.thinkgem.jeesite.modules.contract.dao.LeaseContractDao;
 import com.thinkgem.jeesite.modules.contract.dao.LeaseContractDtlDao;
-import com.thinkgem.jeesite.modules.contract.entity.Audit;
-import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
@@ -365,4 +363,14 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     return leaseContractDao.getTotalValidLeaseContractCounts(new LeaseContract());
   }
 
+  public List<LeaseContract> findLeaseContractListByCondition(LeaseContractCondition condition) {
+    List<LeaseContract> contractList = leaseContractDao.findLeaseContractListByCondition(condition);
+    LeaseContractDtlCondition dtlCondition = new LeaseContractDtlCondition();
+    BeanUtils.copyProperties(condition, dtlCondition);
+    contractList.forEach(contract -> {
+      dtlCondition.setLeaseContractId(contract.getId());
+      contract.setLeaseContractDtlList(leaseContractDtlDao.findLeaseContractDtlListByCondition(dtlCondition));
+    });
+    return contractList;
+  }
 }

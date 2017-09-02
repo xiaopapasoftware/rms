@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 
 /**
@@ -19,4 +20,8 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 public interface PropertyProjectDao extends CrudDao<PropertyProject> {
 
 	List<PropertyProject> findPropertyProjectByNameAndAddress(PropertyProject propertyProject);
+
+	PropertyProject getPropertyProjectById(String id);
+
+	List<PropertyProject> getPropertyProjectByAreaId(String areaId);
 }

@@ -216,7 +216,7 @@ public class HouseController extends BaseController {
     if (!beanValidator(model, house)) {
       return form(house, model);
     }
-    List<House> houses = houseService.findHourseByProPrjAndBuildingAndHouseNo(house);
+    List<House> houses = houseService.findHouseListByProPrjAndBuildingAndHouseNo(house);
     if (!house.getIsNewRecord()) {// 更新
       if (CollectionUtils.isNotEmpty(houses)) {
         house.setId(houses.get(0).getId());
@@ -255,7 +255,7 @@ public class HouseController extends BaseController {
   @ResponseBody
   public String ajaxSave(House house, Model model, RedirectAttributes redirectAttributes) {
     JSONObject jsonObject = new JSONObject();
-    List<House> houses = houseService.findHourseByProPrjAndBuildingAndHouseNo(house);
+    List<House> houses = houseService.findHouseListByProPrjAndBuildingAndHouseNo(house);
     if (CollectionUtils.isNotEmpty(houses)) {
       if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
         List<Building> list = new ArrayList<Building>();
