@@ -1,15 +1,10 @@
 package com.thinkgem.jeesite.modules.profit.impl;
 
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContractCondition;
-import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculate;
-import com.thinkgem.jeesite.modules.profit.GrossProfitCalculateStrategy;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
-import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
