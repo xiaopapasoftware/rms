@@ -24,7 +24,7 @@ public class CenterGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     @Override
-    public List<GrossProfitCondition> getChildIdList(GrossProfitCondition condition) {
+    public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
         return Optional.ofNullable(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.AREA.getValue()))
                 .map(list -> list.stream()
                         .map(house -> {

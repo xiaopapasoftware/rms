@@ -27,7 +27,7 @@ public class ProjectGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     @Override
-    public List<GrossProfitCondition> getChildIdList(GrossProfitCondition condition) {
+    public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
         return Optional.ofNullable(houseService.findHouseListByProjectId(condition.getId()))
                 .map(list -> list.stream()
                         .map(house -> {

@@ -23,17 +23,17 @@ public interface GrossProfitCalculate {
     String getName(GrossProfitCondition condition);
 
     default double calculateCost(GrossProfitCondition condition){
-        return Optional.ofNullable(this.getChildIdList(condition))
+        return Optional.ofNullable(this.getChildConditionList(condition))
                 .map(list -> list.stream().mapToDouble(this::calculateCost).sum())
                 .orElse(0d);
     }
 
     default double calculateIncome(GrossProfitCondition condition){
-        return Optional.ofNullable(this.getChildIdList(condition))
+        return Optional.ofNullable(this.getChildConditionList(condition))
                 .map(list -> list.stream().mapToDouble(this::calculateIncome).sum())
                 .orElse(0d);
     }
 
-    List<GrossProfitCondition> getChildIdList(GrossProfitCondition condition);
+    List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition);
 
 }

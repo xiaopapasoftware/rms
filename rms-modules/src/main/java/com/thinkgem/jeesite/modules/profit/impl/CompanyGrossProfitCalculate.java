@@ -25,7 +25,7 @@ public class CompanyGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     @Override
-    public List<GrossProfitCondition> getChildIdList(GrossProfitCondition condition) {
+    public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
         return Optional.ofNullable(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.COMPANY.getValue()))
                 .map(list -> list.stream()
                         .map(house -> {

@@ -102,7 +102,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     @Override
-    public List<GrossProfitCondition> getChildIdList(GrossProfitCondition condition) {
+    public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
         return null;
     }
 
