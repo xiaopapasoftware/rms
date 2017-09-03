@@ -80,15 +80,16 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     @Override
     public double calculateIncome(GrossProfitCondition condition) {
-        List<RentContract> contractList = rentContractService.queryHousesByHouseIdAndTime(condition.getStartDate(), condition.getEndDate(), condition.getId());
-        List<String> accountIdList = contractList.stream().map(RentContract::getId)
+        List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
+        List<String> accountIdList = contractList.stream().filter(contract -> !(contract.getStartDate().after(condition.getEndDate()) || contract.getExpiredDate().before(condition.getStartDate())))
+                                                            .map(RentContract::getId)
                                                             .map(tradingAccountsService::queryIncomeTradeAccountsByTradeId)
                                                             .flatMap(List::stream)
                                                             .distinct()
                                                             .map(TradingAccounts::getId)
                                                             .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(accountIdList)) {
-            return Optional.ofNullable(paymentTradeService.getTradeListByTradeIds(accountIdList))
+            return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
                     .map( list -> list.stream()
                                     .map(PaymentTrade::getTradeId)
                                     .map(tradeId -> paymentTransService.queryIncomePaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), tradeId))
@@ -107,15 +108,16 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     private double calculateThrowLeaseSum(GrossProfitCondition condition) {
-        List<RentContract> contractList = rentContractService.queryHousesByHouseIdAndTime(condition.getStartDate(), condition.getEndDate(), condition.getId());
-        List<String> accountIdList = contractList.stream().map(RentContract::getId)
-                .map(tradingAccountsService::queryCostTradeAccountsByTradeId)
-                .flatMap(List::stream)
-                .distinct()
-                .map(TradingAccounts::getId)
-                .collect(Collectors.toList());
+        List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
+        List<String> accountIdList = contractList.stream().filter(contract -> !(contract.getStartDate().after(condition.getEndDate()) || contract.getExpiredDate().before(condition.getStartDate())))
+                                                            .map(RentContract::getId)
+                                                            .map(tradingAccountsService::queryCostTradeAccountsByTradeId)
+                                                            .flatMap(List::stream)
+                                                            .distinct()
+                                                            .map(TradingAccounts::getId)
+                                                            .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(accountIdList)) {
-            return Optional.ofNullable(paymentTradeService.getTradeListByTradeIds(accountIdList))
+            return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
                     .map( list -> list.stream()
                             .map(PaymentTrade::getTradeId)
                             .map(tradeId -> paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), tradeId))

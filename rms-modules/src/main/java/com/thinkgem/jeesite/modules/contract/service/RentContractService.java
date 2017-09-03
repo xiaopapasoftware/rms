@@ -446,8 +446,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   /**
    * 查询已出租的有效的单间合同列表
    */
-  public List<RentContract> queryHousesByHouseIdAndTime(Date startDate, Date endDate, String houseId) {
-    return dao.queryHousesByHouseIdAndTime(startDate, endDate, houseId);
+  public List<RentContract> queryHousesByHouseId(String houseId) {
+    return dao.queryHousesByHouseId(houseId);
   }
 
   /**

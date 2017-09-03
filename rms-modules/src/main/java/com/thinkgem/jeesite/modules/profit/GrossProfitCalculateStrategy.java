@@ -1,6 +1,5 @@
 package com.thinkgem.jeesite.modules.profit;
 
-
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;

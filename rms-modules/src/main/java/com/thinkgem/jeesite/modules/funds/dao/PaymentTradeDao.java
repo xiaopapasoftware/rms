@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 
+import java.util.List;
+
 /**
  * 款项账务关联信息DAO接口
  * @author huangsc
@@ -14,5 +16,7 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
  */
 @MyBatisDao
 public interface PaymentTradeDao extends CrudDao<PaymentTrade> {
-	
+
+    List<PaymentTrade> getListByTradeIdList(List<String> tradeIdList);
+
 }

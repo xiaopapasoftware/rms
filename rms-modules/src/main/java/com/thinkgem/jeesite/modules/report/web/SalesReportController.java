@@ -486,36 +486,4 @@ public class SalesReportController extends BaseController {
     return totalPage;
   }
 
-  /**
-   * 毛利率统计报表-查询
-   */
-  @RequestMapping(value = {"grossProfit"})
-  public String grossProfit(GrossProfitReport grossProfitReport, HttpServletRequest request, HttpServletResponse response, Model model) {
-    model.addAttribute("page", getGrossProfitList(grossProfitReport, request, response));
-    return "modules/report/sales/grossProfit";
-  }
-
-  /**
-   * 获得房间数量统计报表的数据
-   */
-  private Page<GrossProfitReport> getGrossProfitList(GrossProfitReport grossProfitReport, HttpServletRequest request, HttpServletResponse response) {
-    Page<GrossProfitReport> totalPage = new Page<GrossProfitReport>(request, response, -1);
-    totalPage.initialize();
-    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
-    for (PropertyProject project : projectList) {
-      if (StringUtils.isNotEmpty(project.getId())) {
-        List<House> houseList = houseService.findHouseListByProjectId(project.getId());
-        List<String> houseIdList = houseList.stream().map(House::getId).collect(Collectors.toList());
-      }
-    }
-//    Collections.sort(totalPage.getList(), Collections.reverseOrder());// 按照放量大小排序
-//    totalPage.getList().addAll(totalHouseRoomReportList);
-    GrossProfitReport report = new GrossProfitReport();
-    report.setName("test");
-    report.setTotalProfit(1000);
-    report.setProfitPercent("12.21");
-    totalPage.getList().add(report);
-    totalPage.setCount(1);
-    return totalPage;
-  }
 }

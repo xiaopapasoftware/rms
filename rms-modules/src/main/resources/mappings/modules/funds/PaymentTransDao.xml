@@ -291,7 +291,7 @@
 	<select id="queryIncomePaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
-		AND t.DEL_FLAG = '0'
+		WHERE t.DEL_FLAG = '0'
 		AND t.trade_type in ('3', '4')
 		AND t.payment_type = '6'
 		AND t.trade_direction = '1'

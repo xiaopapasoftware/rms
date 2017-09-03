@@ -125,4 +125,16 @@
 			      	</if>
 	</update>
 
+	<select id="getListByTradeIdList" resultType="PaymentTrade">
+		SELECT
+		<include refid="paymentTradeColumns" />
+		FROM t_payment_trade a
+		WHERE a.DEL_FLAG = '0'
+		<if test="list != null">
+			and trade_id in
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
 </mapper>

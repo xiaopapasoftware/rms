@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.funds.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,9 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 @Service
 @Transactional(readOnly = true)
 public class PaymentTradeService extends CrudService<PaymentTradeDao, PaymentTrade> {
+
+  @Autowired
+  private PaymentTradeDao paymentTradeDao;
 
   /**
    * 删除合同下指定交易类型的账务交易记录
@@ -36,5 +40,10 @@ public class PaymentTradeService extends CrudService<PaymentTradeDao, PaymentTra
     ptr.setDelFlag("0");
     ptr.setTradeIdList(tradingAccountsIds);
     return super.findList(ptr);
+  }
+
+  @Transactional(readOnly = true)
+  public List<PaymentTrade> getListByTradeIdList(List<String> tradeIdList) {
+    return paymentTradeDao.getListByTradeIdList(tradeIdList);
   }
 }
