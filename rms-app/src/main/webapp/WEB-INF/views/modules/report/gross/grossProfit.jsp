@@ -4,19 +4,9 @@
 <head>
 	<title></title>
 	<meta name="decorator" content="default"/>
-	<script type="text/javascript">
-		function page(n,s){
-			$("#pageNo").val(n);
-			$("#pageSize").val(s);
-			$("#searchForm").submit();
-        	return false;
-        }
-	</script>
 </head>
 <body>
 	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/sales/roomsCount" method="post" class="breadcrumb form-search">
-		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
-		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<sys:message content="${message}" type="${messageType}"/>
 		<ul class="ul-form">
 			<li class="btns"><input id="btnExport" class="btn btn-primary" type="button" value="导出"/></li>
@@ -26,16 +16,24 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>条件项</th>
-				<th>毛利数</th>
+				<th>项目</th>
+				<th>收入</th>
+				<th>支出</th>
+				<th>毛利</th>
 				<th>毛利率</th>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach items="${page.list}" var="report">
+			<%--<c:forEach items="${page.list}" var="report">--%>
 				<tr>
 					<td>
 						${report.name}
+					</td>
+					<td>
+						${report.income}
+					</td>
+					<td>
+						${report.cost}
 					</td>
 					<td>
 						${report.totalProfit}
@@ -44,9 +42,8 @@
 						${report.profitPercent}
 					</td>
 				</tr>
-			</c:forEach>
+			<%--</c:forEach>--%>
 		</tbody>
 	</table>
-	<div class="pagination">${page}</div>
 </body>
 </html>

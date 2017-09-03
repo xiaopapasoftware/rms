@@ -1,7 +1,6 @@
 package com.thinkgem.jeesite.modules.profit.impl;
 
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContractCondition;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
@@ -20,7 +19,6 @@ import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitNumDeposit;
 import com.thinkgem.jeesite.modules.profit.util.DataParser;
 import com.thinkgem.jeesite.modules.profit.util.GrossProfitAssistant;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -131,10 +129,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     }
 
     private double calculateDepositSum(GrossProfitCondition condition) {
-        LeaseContractCondition contractCondition = new LeaseContractCondition();
-        BeanUtils.copyProperties(condition, contractCondition);
-        contractCondition.setHouseId(condition.getId());
-        List<LeaseContract> contractList = contractService.findLeaseContractListByCondition(contractCondition);
+        List<LeaseContract> contractList = contractService.findLeaseContractListByHouseId(condition.getId());
         int startNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getStartDate()), false);
         int endNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getEndDate()), false) - 1;
         //每份房屋只会对应一份租赁合同
@@ -143,14 +138,10 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
             List<LeaseContractDtl> contractDtlList = contract.getLeaseContractDtlList();
             List<GrossProfitNumDeposit> depositList = contractDtlList.stream()
                     .map(dtl -> DataParser.parse(dtl.getStartDate(), dtl.getEndDate(), dtl.getDeposit()))
-                    .filter(numDeposit -> numDeposit.getEnd() < startNum || numDeposit.getStart() > endNum)
+                    .filter(numDeposit -> !(numDeposit.getEnd() < startNum || numDeposit.getStart() > endNum))
                     .sorted(Comparator.comparing(GrossProfitNumDeposit::getStart))
                     .collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(depositList)) {
-                return 0;
-            } else {
-                return calculateDepositList(depositList, startNum, endNum);
-            }
+            return CollectionUtils.isEmpty(depositList) ? 0 : calculateDepositList(depositList, startNum, endNum);
         }
         return 0;
     }
@@ -168,7 +159,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
             sum += (endNum - startNum + 1) * deposit;
         } else if (startNum < start && endNum <= end) {
             sum += (endNum - start + 1) * deposit;
-        } else if (startNum <= end && endNum > end) {
+        } else if (startNum >= start && endNum > end) {
             sum += (end - startNum + 1) * deposit;
         } else if (startNum < start && endNum > end) {
             sum += (numDeposit.getSize()) * deposit;
