@@ -236,15 +236,13 @@
 		WHERE id = #{id}
 	</update>
 
-	<select id="findLeaseContractListByCondition" resultType="LeaseContract" parameterType="com.thinkgem.jeesite.modules.contract.entity.LeaseContractCondition">
+	<select id="getLeaseContractListByHouseId" resultType="LeaseContract">
 		SELECT
 			a.id AS "id",
 			a.property_project_id AS "propertyProject.id",
 			a.building_id AS "building.id",
 			a.house_id AS "house.id",
 			a.remittancer_id AS "remittancer.id",
-			tr.user_name AS "remittancer.userName",
-			tr.bank_account AS "remittancer.bankAccount",
 			a.contract_code AS "contractCode",
 			a.contract_name AS "contractName",
 			a.effective_date AS "effectiveDate",
@@ -263,15 +261,7 @@
 		FROM t_lease_contract a
 		where
 			a.del_flag = 0
-			<if test="houseId != null and houseId != ''">
-				and a.house_id = #{houseId}
-			</if>
-			<if test="startDate != null and startDate != ''">
-				and a.contract_date &gt;= #{contractDate}
-			</if>
-			<if test="endDate != null and endDate != ''">
-				and a.contract_date &lt;= #{endDate}
-			</if>
+			and a.house_id = #{houseId}
 	</select>
 
 </mapper>
