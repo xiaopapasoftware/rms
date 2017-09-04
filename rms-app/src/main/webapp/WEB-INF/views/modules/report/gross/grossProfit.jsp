@@ -24,25 +24,42 @@
 			</tr>
 		</thead>
 		<tbody>
-			<%--<c:forEach items="${page.list}" var="report">--%>
 				<tr>
 					<td>
-						${report.name}
+						${report.parent.name}
 					</td>
 					<td>
-						${report.income}
+						${report.parent.income}
 					</td>
 					<td>
-						${report.cost}
+						${report.parent.cost}
 					</td>
 					<td>
-						${report.totalProfit}
+						${report.parent.totalProfit}
 					</td>
 					<td>
-						${report.profitPercent}
+						${report.parent.profitPercent}
 					</td>
 				</tr>
-			<%--</c:forEach>--%>
+				<c:forEach items="${report.childReportList}" var="child">
+					<tr>
+						<td>
+							${child.name}
+						</td>
+						<td>
+							${child.income}
+						</td>
+						<td>
+							${child.cost}
+						</td>
+						<td>
+							${child.totalProfit}
+						</td>
+						<td>
+							${child.profitPercent}
+						</td>
+					</tr>
+				</c:forEach>
 		</tbody>
 	</table>
 </body>
