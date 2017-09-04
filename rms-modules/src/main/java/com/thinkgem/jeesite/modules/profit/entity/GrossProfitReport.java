@@ -1,9 +1,8 @@
 package com.thinkgem.jeesite.modules.profit.entity;
 
-import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.modules.report.entity.HouseRoomReport;
+import java.io.Serializable;
 
-public class GrossProfitReport extends DataEntity<HouseRoomReport> implements Comparable<GrossProfitReport>{
+public class GrossProfitReport implements Comparable<GrossProfitReport>, Serializable{
 
     private static final long serialVersionUID = 3168884500513682293L;
 
@@ -19,6 +18,18 @@ public class GrossProfitReport extends DataEntity<HouseRoomReport> implements Co
 
     //类型标识  公司、服务中心等
     private String type;
+
+    public GrossProfitReport() {
+    }
+
+    public GrossProfitReport(String name, double totalProfit, String profitPercent, double cost, double income, String type) {
+        this.name = name;
+        this.totalProfit = totalProfit;
+        this.profitPercent = profitPercent;
+        this.cost = cost;
+        this.income = income;
+        this.type = type;
+    }
 
     public String getName() {
         return name;

@@ -2,7 +2,7 @@ package com.thinkgem.jeesite.modules.profit;
 
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
-import com.thinkgem.jeesite.modules.profit.util.GrossProfitAssistant;
+import com.thinkgem.jeesite.modules.profit.util.GrossProfitReportBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,14 +10,11 @@ import java.util.Optional;
 public interface GrossProfitCalculate {
 
     default GrossProfitReport calculateGrossProfit(GrossProfitCondition condition) {
-        GrossProfitReport report = new GrossProfitReport();
-        report.setType(condition.getTypeEnum().getCode());
-        report.setIncome(calculateIncome(condition));
-        report.setCost(calculateCost(condition));
-        report.setTotalProfit(report.getIncome() - report.getCost());
-        report.setProfitPercent(GrossProfitAssistant.getProfitPercent(report.getIncome(), report.getCost()));
-        report.setName(getName(condition));
-        return report;
+        return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum())
+                                             .cost(calculateCost(condition))
+                                             .income(calculateIncome(condition))
+                                             .name(getName(condition))
+                                             .build();
     }
 
     String getName(GrossProfitCondition condition);

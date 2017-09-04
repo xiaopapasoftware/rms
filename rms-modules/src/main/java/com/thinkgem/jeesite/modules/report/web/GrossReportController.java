@@ -35,7 +35,7 @@ public class GrossReportController extends BaseController {
     condition.setId("48b2b667b01b443baed2203c6456e279");
     condition.setStartDate(new Date(2015 - 1900, 5, 25));
     condition.setEndDate(new Date(2015 - 1900, 8, 24));
-    model.addAttribute("report", calculateStrategy.calculateGrossProfit(condition));
+    model.addAttribute("report", calculateStrategy.calculateReportVO(condition));
     return "modules/report/gross/grossProfit";
   }
 }
