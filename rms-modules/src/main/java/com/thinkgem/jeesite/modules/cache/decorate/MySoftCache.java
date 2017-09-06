@@ -17,7 +17,7 @@ public class MySoftCache implements MyCache{
     private int numberOfHardLinks;
 
     public MySoftCache(MyCache delegate) {
-        this(delegate, 256);
+        this(delegate, 64);
     }
 
     public MySoftCache(MyCache delegate, int size) {

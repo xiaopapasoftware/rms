@@ -17,7 +17,7 @@ public class MyWeakCache implements MyCache{
     private int numberOfHardLinks;
 
     public MyWeakCache(MyCache delegate) {
-        this(delegate, 128);
+        this(delegate, 512);
     }
 
     public MyWeakCache(MyCache delegate, int size) {
