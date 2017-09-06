@@ -22,7 +22,7 @@ public class BaseResult {
     protected Object data;
 
     public BaseResult() {
-        this.code = RespEnums.SUCCESS.getCode();
+        this.code = RespEnums.SUCCESS.code();
         this.message = "success";
     }
 
@@ -32,7 +32,7 @@ public class BaseResult {
     }
 
     public BaseResult(Object data) {
-        this.code = RespEnums.SUCCESS.getCode();
+        this.code = RespEnums.SUCCESS.code();
         this.message = "success";
         this.data = data;
     }
@@ -46,11 +46,11 @@ public class BaseResult {
     }
 
     public static BaseResult failure() {
-        return new BaseResult().code(RespEnums.FAILURE.getCode());
+        return new BaseResult().code(RespEnums.FAILURE.code());
     }
 
     public static BaseResult failure(String message) {
-        return new BaseResult().code(RespEnums.FAILURE.getCode()).message(message);
+        return new BaseResult().code(RespEnums.FAILURE.code()).message(message);
     }
 
     public BaseResult message(String message) {
