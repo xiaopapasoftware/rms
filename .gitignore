@@ -43,3 +43,15 @@
 /rms-app/temp
 /rms-app/logs
 /rms-app/src/main/webapp/userfiles
+/rms-base/.settings
+/rms-base/.project
+/rms-base/rms-base-common/.project
+/rms-base/rms-base-common/.settings
+/rms-base/rms-base-common/.classpath
+/rms-base/rms-base-common/target
+/rms-security/.settings
+/rms-security/.project
+/rms-security/rms-security-common/.project
+/rms-security/rms-security-common/.settings
+/rms-security/rms-security-common/target
+/rms-security/rms-security-common/.classpath
