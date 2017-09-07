@@ -22,6 +22,7 @@
         <module>rms-app-task</module>
         <module>rms-security</module>
         <module>rms-base</module>
+        <module>rms-fee</module>
     </modules>
 
 
@@ -89,6 +90,16 @@
     <!-- 依赖项定义 -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>tk.mybatis</groupId>
+                <artifactId>mapper</artifactId>
+                <version>3.4.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.16.16</version>
+            </dependency>
             <!-- SPRING begin -->
             <dependency>
                 <groupId>org.springframework</groupId>
