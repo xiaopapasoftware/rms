@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.cache;
 
+import com.thinkgem.jeesite.modules.cache.decorate.MyScheduledCache;
 import com.thinkgem.jeesite.modules.cache.decorate.MySoftCache;
 import com.thinkgem.jeesite.modules.cache.decorate.MyWeakCache;
 import com.thinkgem.jeesite.modules.cache.impl.MyBaseCache;
@@ -13,23 +14,23 @@ public class MyCacheBuilder {
 
     private Lock lock = new ReentrantLock();
 
-    private volatile Map<String, MyCache> baseCacheMap = new HashMap<>(8);
+    private volatile Map<String, MyCache> scheduledCacheMap = new HashMap<>(8);
 
-    private volatile Map<String, MyCache> softCacheMap = new HashMap<>(8);
+    private volatile Map<String, MyCache> softCacheMap = new HashMap<>(4);
 
     //if you want to use this, be cautious!
     private volatile Map<String, MyCache> weakCacheMap = new HashMap<>(2);
 
-    public MyCache getBaseCache(String id) {
-        if (baseCacheMap.get(id) == null) {
+    public MyCache getScheduledCache(String id) {
+        if (scheduledCacheMap.get(id) == null) {
             lock.lock();
             try {
-                baseCacheMap.computeIfAbsent(id, MyBaseCache::new);
+                scheduledCacheMap.computeIfAbsent(id, i -> new MyScheduledCache(new MyBaseCache(i)));
             } finally {
                 lock.unlock();
             }
         }
-        return baseCacheMap.get(id);
+        return scheduledCacheMap.get(id);
     }
 
     public MyCache getWeakCache(String id) {
