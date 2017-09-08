@@ -30,10 +30,10 @@ public class CompanyGrossProfitCalculate implements GrossProfitCalculate{
     public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
         return Optional.ofNullable(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.COMPANY.getValue()))
                 .map(list -> list.stream()
-                        .map(house -> {
+                        .map(center -> {
                             GrossProfitCondition profitCondition = new GrossProfitCondition();
                             BeanUtils.copyProperties(condition, profitCondition);
-                            profitCondition.setId(house.getId());
+                            profitCondition.setId(center.getId());
                             profitCondition.setTypeEnum(GrossProfitTypeEnum.Center);
                             return profitCondition;
                         }).collect(Collectors.toList())).orElse(null);

@@ -134,4 +134,13 @@
 		AND a.parent_id = #{parentId}
 		AND a.type = #{type}
 	</select>
+
+	<select id="getAreaByType" resultType="Area">
+		SELECT
+		<include refid="areaColumns"/>
+		FROM sys_area a
+		WHERE
+		a.del_flag = '0'
+		AND a.type = #{type}
+	</select>
 </mapper>

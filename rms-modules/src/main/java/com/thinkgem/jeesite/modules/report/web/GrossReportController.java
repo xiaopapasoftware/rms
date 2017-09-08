@@ -3,7 +3,6 @@ package com.thinkgem.jeesite.modules.report.web;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculateStrategy;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
-import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +28,7 @@ public class GrossReportController extends BaseController {
    * 毛利率统计报表-查询
    */
   @RequestMapping(value = "grossProfit")
-  public String grossProfit(GrossProfitReport grossProfitReport, HttpServletRequest request, HttpServletResponse response, Model model) {
+  public String grossProfit(HttpServletRequest request, HttpServletResponse response, Model model) {
     GrossProfitCondition condition = new GrossProfitCondition();
     condition.setTypeEnum(GrossProfitTypeEnum.House);
     condition.setId("48b2b667b01b443baed2203c6456e279");
@@ -38,4 +37,12 @@ public class GrossReportController extends BaseController {
     model.addAttribute("report", calculateStrategy.calculateReportVO(condition));
     return "modules/report/gross/grossProfit";
   }
+
+  @RequestMapping(value = {"listGrossProfit"})
+  public String listGrossProfit(GrossProfitCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
+    model.addAttribute("report", calculateStrategy.calculateReportVO(condition));
+    return "modules/report/gross/grossProfit";
+  }
+
+
 }
