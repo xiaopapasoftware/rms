@@ -4,36 +4,60 @@
 <head>
 	<title></title>
 	<meta name="decorator" content="default"/>
+	<script type="text/javascript">
+		function changeSelect(value,type) {
+            var id = value;
+			var curParentNextAll = $("#"+type).parent().prev().nextAll();
+            var html = "<option value='' selected='selected'>请选择...</option>";
+			curParentNextAll.each(function (index,parent) {   //清空当前选项之后的所有级联select
+				var child = $(this).children(".input-medium");
+				child.empty();
+				child.append(html);
+            });
+            if("" != id) {
+                $.ajaxSetup({ cache: false });
+                $.get("${ctx}/report/gross/getSubOrgList?business=org&id=" + id + "&type="+type, function(data){
+                    for(var i=0;i<data.length;i++) {
+                        html += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+                    }
+                    $("[id="+type+"]").html(html);
+                });
+            } else {
+                $("[id="+type+"]").html(html);
+            }
+        }
+	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/sales/roomsCount" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/gross/listGrossProfit" method="post" class="breadcrumb form-search">
 		<ul class="ul-form">
 			<li><label>公司：</label>
-				<form:select path="propertyProject.id" class="input-medium" onchange="changeProject()">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${listPropertyProject}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
-				</form:select>
+				<select id="company" name="company" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'center')">
+					<option value="">请选择...</option>
+					<c:forEach items="${companyList}" var="company">
+						<option value="${company.id}">${company.name}</option>
+					</c:forEach>
+				</select>
 			</li>
 			<li><label>服务中心：</label>
-				<form:select path="building.id" class="input-medium" onchange="buildingChange()">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${listBuilding}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
-				</form:select>
+				<select id="center" name="center" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'area')">
+					<option value="">请选择...</option>
+				</select>
 			</li>
 			<li><label>区域：</label>
-				<form:select path="house.id" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${listHouse}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
-				</form:select>
+				<select name="area" id="area" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'project')">
+					<option value="">请选择...</option>
+				</select>
 			</li>
 			<li><label>物业项目：</label>
-				<form:input path="roomNo" htmlEscape="false" maxlength="100" class="input-medium"/>
+				<select id="project" name="project" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'house')">
+					<option value="">请选择...</option>
+				</select>
 			</li>
 			<li><label>房屋：</label>
-				<form:select path="roomStatus" class="input-medium">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('room_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
+				<select id="house" name="house" class="input-medium selectDom">
+					<option value="">请选择...</option>
+				</select>
 			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 		</ul>
@@ -49,6 +73,7 @@
 			</tr>
 		</thead>
 		<tbody>
+			<c:if test="${report!=null}">
 				<tr>
 					<td>
 						${report.parent.name}
@@ -66,6 +91,7 @@
 						${report.parent.profitPercent}
 					</td>
 				</tr>
+			</c:if>
 				<c:forEach items="${report.childReportList}" var="child">
 					<tr>
 						<td>

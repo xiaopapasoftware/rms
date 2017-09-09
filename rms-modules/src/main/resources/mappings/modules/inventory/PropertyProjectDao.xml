@@ -181,4 +181,13 @@
 		a.del_flag = '0'
 		AND a.id = #{id}
 	</select>
+
+	<select id="getPropertyProjectByAreaId" resultType="PropertyProject">
+		SELECT
+		a.*
+		FROM t_property_project a
+		where
+		a.del_flag = '0'
+		AND a.area_id = #{areaId}
+	</select>
 </mapper>

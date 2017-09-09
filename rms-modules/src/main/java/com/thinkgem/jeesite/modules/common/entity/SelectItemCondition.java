@@ -2,9 +2,19 @@ package com.thinkgem.jeesite.modules.common.entity;
 
 public class SelectItemCondition {
 
+    private String business;
+
     private String id;
 
     private String type;
+
+    public String getBusiness() {
+        return business;
+    }
+
+    public void setBusiness(String business) {
+        this.business = business;
+    }
 
     public String getId() {
         return id;

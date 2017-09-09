@@ -471,11 +471,12 @@
 		a.short_location as "shortLocation",
 		a.pay_way as "payWay"
 		FROM t_house a
-			a.del_flag = '0'
-			AND a.property_project_id = #{projectId}
+		WHERE
+		a.del_flag = '0'
+		AND a.property_project_id = #{projectId}
 	</select>
 
-	<select id="getHouseById" resultType="PropertyProject">
+	<select id="getHouseById" resultType="House">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",

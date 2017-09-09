@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.dao.AreaDao">
-    
-	<sql id="areaColumns">
+
+	<sql id="nativeAreaColumns">
 		a.id,
 		a.parent_id AS "parent.id",
 		a.parent_ids,
@@ -15,8 +15,12 @@
 		a.create_date,
 		a.update_by AS "updateBy.id",
 		a.update_date,
-		a.del_flag,
-		p.name AS "parent.name"
+		a.del_flag
+	</sql>
+
+	<sql id="areaColumns">
+		<include refid="nativeAreaColumns"/>
+		,p.name AS "parent.name"
 	</sql>
 	
 	<sql id="areaJoins">
@@ -127,7 +131,7 @@
 
 	<select id="getAreaByParentId" resultType="Area">
 		SELECT
-		<include refid="areaColumns"/>
+		<include refid="nativeAreaColumns"/>
 		FROM sys_area a
 		WHERE
 		a.del_flag = '0'
@@ -137,7 +141,7 @@
 
 	<select id="getAreaByType" resultType="Area">
 		SELECT
-		<include refid="areaColumns"/>
+		<include refid="nativeAreaColumns"/>
 		FROM sys_area a
 		WHERE
 		a.del_flag = '0'
