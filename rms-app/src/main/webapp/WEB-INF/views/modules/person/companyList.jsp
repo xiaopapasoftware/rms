@@ -52,7 +52,9 @@
 			<li><label style="width:100px;">开户行账号：</label>
 				<form:input path="bankAccount" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
 			</li>
-			<li class="btns" style="width:100px;"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<shiro:hasPermission name="person:company:view">
+				<li class="btns" style="width:100px;"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

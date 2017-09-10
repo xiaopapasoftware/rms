@@ -59,7 +59,9 @@
 					value="<fmt:formatDate value="${accounting.feeDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:192px;"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<shiro:hasPermission name="contract:accounting:view">
+				 <li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

@@ -106,9 +106,11 @@
 				</form:select>
 			</li>
 			<li class="btns">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
-				<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
-				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+				<shiro:hasPermission name="funds:tradingAccounts:view">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+					<input id="btnExport" class="btn btn-primary" type="button" value="导出"/>
+					<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+				</shiro:hasPermission>
 			</li>
 			<li class="clearfix"></li>
 		</ul>
@@ -164,15 +166,16 @@
 					${tradingAccounts.remarks}
 				</td>
 				<td>
-				<a href="javascript:void(0);" onclick="viewReceipt('${tradingAccounts.id}')">查看收据</a>
 				<shiro:hasPermission name="funds:tradingAccounts:edit">
+					<a href="javascript:void(0);" onclick="viewReceipt('${tradingAccounts.id}')">查看收据</a>
 					<c:if test="${tradingAccounts.tradeStatus=='2'}">
     					<a href="${ctx}/funds/tradingAccounts/edit?id=${tradingAccounts.id}">修改</a>
     				</c:if>
+    				<c:if test="${tradingAccounts.tradeType=='1' || tradingAccounts.tradeType=='3' || tradingAccounts.tradeType=='4' || tradingAccounts.tradeType=='5' || tradingAccounts.tradeType=='6' || tradingAccounts.tradeType=='7' || tradingAccounts.tradeType=='8' || tradingAccounts.tradeType=='9' || tradingAccounts.tradeType == '10' || tradingAccounts.tradeType == '11' || tradingAccounts.tradeType == '12' || tradingAccounts.tradeType == '13' || tradingAccounts.tradeType == '14' || tradingAccounts.tradeType == '15'}">
+						<a href="javascript:void(0);" onclick="viewReceiptAttachmentFiles('${tradingAccounts.id}')">收据凭单</a>
+					</c:if>
 				</shiro:hasPermission>
-				<c:if test="${tradingAccounts.tradeType=='1' || tradingAccounts.tradeType=='3' || tradingAccounts.tradeType=='4' || tradingAccounts.tradeType=='5' || tradingAccounts.tradeType=='6' || tradingAccounts.tradeType=='7' || tradingAccounts.tradeType=='8' || tradingAccounts.tradeType=='9' || tradingAccounts.tradeType == '10' || tradingAccounts.tradeType == '11' || tradingAccounts.tradeType == '12' || tradingAccounts.tradeType == '13' || tradingAccounts.tradeType == '14' || tradingAccounts.tradeType == '15'}">
-					<a href="javascript:void(0);" onclick="viewReceiptAttachmentFiles('${tradingAccounts.id}')">收据凭单</a>
-				</c:if>
+				
 					<!--tradeType 账务交易类型  -->
 					<!--transStatus 定金协议审核状态/出租合同审核状态/承租合同审核状态-->
 					<!--tradeStatus 账务记录审核状态 -->

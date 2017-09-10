@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.List;
@@ -10,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +26,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Neighborhood;
 import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
 
 /**
- * 居委会Controller
+ * 居委会
  */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/neighborhood")
@@ -49,7 +47,7 @@ public class NeighborhoodController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("inventory:neighborhood:view")
+  @RequiresPermissions("inventory:neighborhood:view")
   @RequestMapping(value = {"list", ""})
   public String list(Neighborhood neighborhood, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Neighborhood> page = neighborhoodService.findPage(new Page<Neighborhood>(request, response), neighborhood);
@@ -57,20 +55,21 @@ public class NeighborhoodController extends BaseController {
     return "modules/inventory/neighborhoodList";
   }
 
-  // @RequiresPermissions("inventory:neighborhood:view")
+  @RequiresPermissions("inventory:neighborhood:view")
   @RequestMapping(value = "form")
   public String form(Neighborhood neighborhood, Model model) {
     model.addAttribute("neighborhood", neighborhood);
     return "modules/inventory/neighborhoodForm";
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "add")
   public String add(Neighborhood neighborhood, Model model) {
     model.addAttribute("neighborhood", neighborhood);
     return "modules/inventory/neighborhoodAdd";
   }
 
-  // @RequiresPermissions("inventory:neighborhood:edit")
+  @RequiresPermissions("inventory:neighborhood:edit")
   @RequestMapping(value = "save")
   public String save(Neighborhood neighborhood, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, neighborhood)) {
@@ -96,6 +95,7 @@ public class NeighborhoodController extends BaseController {
     }
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "ajaxSave")
   @ResponseBody
   public String ajaxSave(Neighborhood neighborhood, Model model, RedirectAttributes redirectAttributes) {
@@ -108,11 +108,10 @@ public class NeighborhoodController extends BaseController {
       jsonObject.put("id", neighborhood.getId());
       jsonObject.put("name", neighborhood.getNeighborhoodName());
     }
-
     return jsonObject.toString();
   }
 
-  // @RequiresPermissions("inventory:neighborhood:edit")
+  @RequiresPermissions("inventory:neighborhood:edit")
   @RequestMapping(value = "delete")
   public String delete(Neighborhood neighborhood, RedirectAttributes redirectAttributes) {
     neighborhoodService.delete(neighborhood);

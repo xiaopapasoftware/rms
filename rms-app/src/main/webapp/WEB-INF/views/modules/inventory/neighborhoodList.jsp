@@ -18,9 +18,11 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active">
-			<a href="${ctx}/inventory/neighborhood/">居委会列表</a>
-		</li>
+		<shiro:hasPermission name="inventory:neighborhood:view">
+			<li class="active">
+				<a href="${ctx}/inventory/neighborhood/">居委会列表</a>
+			</li>
+		</shiro:hasPermission>
 		<shiro:hasPermission name="inventory:neighborhood:edit">
 			<li>
 				<a href="${ctx}/inventory/neighborhood/form">居委会添加</a>

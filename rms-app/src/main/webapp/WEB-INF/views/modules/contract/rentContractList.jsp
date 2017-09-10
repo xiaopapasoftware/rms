@@ -254,8 +254,10 @@
 				<form:input path="tenantIdNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:195px;"/>
 			</li>
 			<li class="btns">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
-				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+				<shiro:hasPermission name="contract:rentContract:view">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+					<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
+				</shiro:hasPermission>
 			</li>
 			<li class="clearfix"></li>
 		</ul>
@@ -369,10 +371,10 @@
 				<td>${rentContract.createBy.loginName}</td>
 				<td>${rentContract.updateBy.loginName}</td>			
 				<td>
-					<c:if test="${rentContract.dataSource=='2' && rentContract.contractStatus=='0'}">
-						<a href="${ctx}/contract/rentContract/cancel?objectId=${rentContract.id}" onclick="return confirmx('确认要取消吗?', this.href)">取消</a>
-					</c:if>
 					<shiro:hasPermission name="contract:rentContract:edit">
+						<c:if test="${rentContract.dataSource=='2' && rentContract.contractStatus=='0'}">
+							<a href="${ctx}/contract/rentContract/cancel?objectId=${rentContract.id}" onclick="return confirmx('确认要取消吗?', this.href)">取消</a>
+						</c:if>
 						<c:if test="${rentContract.contractStatus=='3'||rentContract.contractStatus=='0'||rentContract.contractStatus=='1'}">
     						<a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">修改</a>
 						</c:if>

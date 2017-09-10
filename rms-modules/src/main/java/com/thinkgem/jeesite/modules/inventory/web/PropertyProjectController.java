@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.List;
@@ -10,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,12 +31,6 @@ import com.thinkgem.jeesite.modules.inventory.service.ManagementCompanyService;
 import com.thinkgem.jeesite.modules.inventory.service.NeighborhoodService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 
-/**
- * 物业项目Controller
- * 
- * @author huangsc
- * @version 2015-06-03
- */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/propertyProject")
 public class PropertyProjectController extends BaseController {
@@ -67,42 +59,37 @@ public class PropertyProjectController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("inventory:propertyProject:view")
+  @RequiresPermissions("inventory:propertyProject:view")
   @RequestMapping(value = {"list", ""})
   public String list(PropertyProject propertyProject, HttpServletRequest request, HttpServletResponse response, Model model) {
     List<Neighborhood> listNeighborhood = neighborhoodService.findList(new Neighborhood());
     model.addAttribute("listNeighborhood", listNeighborhood);
-
     List<ManagementCompany> listManagementCompany = managementCompanyService.findList(new ManagementCompany());
     model.addAttribute("listManagementCompany", listManagementCompany);
-
     Page<PropertyProject> page = propertyProjectService.findPage(new Page<PropertyProject>(request, response), propertyProject);
-
     model.addAttribute("page", page);
     return "modules/inventory/propertyProjectList";
   }
 
-  // @RequiresPermissions("inventory:propertyProject:view")
+  @RequiresPermissions("inventory:propertyProject:view")
   @RequestMapping(value = "form")
   public String form(PropertyProject propertyProject, Model model) {
-
     model.addAttribute("propertyProject", propertyProject);
     model.addAttribute("listNeighborhood", neighborhoodService.findList(new Neighborhood()));
     model.addAttribute("listManagementCompany", managementCompanyService.findList(new ManagementCompany()));
-
     return "modules/inventory/propertyProjectForm";
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "add")
   public String add(PropertyProject propertyProject, Model model) {
-
     model.addAttribute("propertyProject", propertyProject);
     model.addAttribute("listNeighborhood", neighborhoodService.findList(new Neighborhood()));
     model.addAttribute("listManagementCompany", managementCompanyService.findList(new ManagementCompany()));
-
     return "modules/inventory/propertyProjectAdd";
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "ajaxSave")
   @ResponseBody
   public String ajaxSave(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes) {
@@ -118,7 +105,7 @@ public class PropertyProjectController extends BaseController {
     return jsonObject.toString();
   }
 
-  // @RequiresPermissions("inventory:propertyProject:edit")
+  @RequiresPermissions("inventory:propertyProject:edit")
   @RequestMapping(value = "save")
   public String save(PropertyProject propertyProject, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, propertyProject)) {
@@ -161,7 +148,7 @@ public class PropertyProjectController extends BaseController {
     }
   }
 
-  // @RequiresPermissions("inventory:propertyProject:edit")
+  @RequiresPermissions("inventory:propertyProject:del")
   @RequestMapping(value = "delete")
   public String delete(PropertyProject propertyProject, RedirectAttributes redirectAttributes) {
     propertyProjectService.delete(propertyProject);

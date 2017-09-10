@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -80,12 +81,13 @@ public class ElectricFeeController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("fee:electricFee:view")
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = {""})
   public String listNoQuery(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/fee/electricFeeList";
   }
 
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = {"list"})
   public String listQuery(ElectricFee electricFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<ElectricFee> page = electricFeeService.findPage(new Page<ElectricFee>(request, response), electricFee);
@@ -93,13 +95,14 @@ public class ElectricFeeController extends BaseController {
     return "modules/fee/electricFeeList";
   }
 
-  // @RequiresPermissions("fee:electricFee:view")
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = "form")
   public String form(ElectricFee electricFee, Model model) {
     model.addAttribute("electricFee", electricFee);
     return "modules/fee/electricFeeForm";
   }
 
+  @RequiresPermissions("fee:electricFee:remove")
   @RequestMapping(value = "removeEletricFee")
   public String removeEletricFee(ElectricFee electricFee, Model model, RedirectAttributes redirectAttributes) {
     if (ElectricChargeStatusEnum.PROCESSING.getValue().equals(electricFee.getChargeStatus()) && FeeSettlementStatusEnum.NOT_SETTLED.getValue().equals(electricFee.getSettleStatus())) {
@@ -123,6 +126,7 @@ public class ElectricFeeController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = "viewUseInfo")
   public String viewUseInfo(ElectricFeeUseInfo electricFeeUseInfo, Model model) {
     if (StringUtils.isNotEmpty(electricFeeUseInfo.getContractCode())) {
@@ -170,7 +174,7 @@ public class ElectricFeeController extends BaseController {
     return "modules/fee/electricFeeUseInfo";
   }
 
-  // @RequiresPermissions("fee:electricFee:edit")
+  @RequiresPermissions("fee:electricFee:edit")
   @RequestMapping(value = "save")
   public String save(ElectricFee electricFee, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, electricFee)) {
@@ -193,7 +197,7 @@ public class ElectricFeeController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
-  // @RequiresPermissions("fee:electricFee:edit")
+  @RequiresPermissions("fee:electricFee:edit")
   @RequestMapping(value = "delete")
   public String delete(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
     electricFeeService.delete(electricFee);
@@ -201,6 +205,7 @@ public class ElectricFeeController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
+  @RequiresPermissions("fee:electricFee:retryFail")
   @RequestMapping(value = "retryFail")
   public String retryFail(ElectricFee electricFee, RedirectAttributes redirectAttributes) {
     ElectricFee fee = electricFeeService.get(electricFee.getId());
@@ -239,6 +244,7 @@ public class ElectricFeeController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
   }
 
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = {"postpaidFeeList"})
   public String postpaidFeeList(PostpaidFee postpaidFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<PostpaidFee> page = postpaidFeeService.findPage(new Page<PostpaidFee>(request, response), postpaidFee);
@@ -246,17 +252,20 @@ public class ElectricFeeController extends BaseController {
     return "modules/fee/postpaidFeeList";
   }
 
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = {"initpostpaidFeeList"})
   public String initpostpaidFeeList(PostpaidFee postpaidFee, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/fee/postpaidFeeList";
   }
 
+  @RequiresPermissions("fee:electricFee:view")
   @RequestMapping(value = "postpaidFeeForm")
   public String postpaidFeeForm(PostpaidFee postpaidFee, Model model) {
     model.addAttribute("postpaidFee", postpaidFee);
     return "modules/fee/postpaidFeeForm";
   }
 
+  @RequiresPermissions("fee:postpaidFee:edit")
   @RequestMapping(value = "postpaidFeeSave")
   public String postpaidFeeSave(PostpaidFee postpaidFee, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, postpaidFee)) {

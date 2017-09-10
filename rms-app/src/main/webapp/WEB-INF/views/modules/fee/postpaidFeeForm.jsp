@@ -214,12 +214,12 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="fee:postpaidFee:edit">
-			<c:if test="${postpaidFee.id==''||postpaidFee.id==null}">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
-			</c:if>
-			<c:if test="${postpaidFee.id!=''&& postpaidFee.id!=null && (postpaidFee.payStatus=='1'||postpaidFee.payStatus=='5')}">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
-			</c:if>
+				<c:if test="${postpaidFee.id==''||postpaidFee.id==null}">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</c:if>
+				<c:if test="${postpaidFee.id!=''&& postpaidFee.id!=null && (postpaidFee.payStatus=='1'||postpaidFee.payStatus=='5')}">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</c:if>
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
 		</div>

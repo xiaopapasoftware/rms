@@ -1,11 +1,9 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,10 +23,7 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 
 /**
- * 退租核算Controller
- * 
- * @author huangsc
- * @version 2015-06-11
+ * 退租核算
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/accounting")
@@ -51,7 +46,7 @@ public class AccountingController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("contract:accounting:view")
+  @RequiresPermissions("contract:accounting:view")
   @RequestMapping(value = {"list"})
   public String listQuery(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting);
@@ -59,11 +54,13 @@ public class AccountingController extends BaseController {
     return "modules/contract/accountingList";
   }
 
+  @RequiresPermissions("contract:accounting:view")
   @RequestMapping(value = {""})
   public String listNoQuery(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/contract/accountingList";
   }
 
+  @RequiresPermissions("contract:rentContract:audit")
   @RequestMapping(value = {"listByContract"})
   public String listByContract(Accounting accounting, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Accounting> page = accountingService.findPage(new Page<Accounting>(request, response), accounting);
@@ -71,13 +68,14 @@ public class AccountingController extends BaseController {
     return "modules/contract/accountingViewList";
   }
 
-  // @RequiresPermissions("contract:accounting:view")
+  @RequiresPermissions("contract:accounting:view")
   @RequestMapping(value = "form")
   public String form(Accounting accounting, Model model) {
     model.addAttribute("accounting", accounting);
     return "modules/contract/accountingForm";
   }
 
+  @RequiresPermissions("contract:accounting:adminDelete")
   @RequestMapping(value = "deleteAccountingAndTrans")
   public String deleteAccountingAndTrans(Accounting accounting, Model model, RedirectAttributes redirectAttributes) {
     Accounting ating = accountingService.get(accounting);

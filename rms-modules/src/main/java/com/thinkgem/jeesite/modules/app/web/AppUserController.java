@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.app.web;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,9 +22,6 @@ import com.thinkgem.jeesite.modules.app.service.AppUserService;
 
 /**
  * APP用户Controller
- * 
- * @author mabindong
- * @version 2015-11-24
  */
 @Controller
 @RequestMapping(value = "${adminPath}/app/appUser")

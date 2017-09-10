@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,10 +51,6 @@ import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 
-
-/**
- * @author wangshujin
- */
 @Controller
 @RequestMapping(value = "${adminPath}/funds/tradingAccounts")
 public class TradingAccountsController extends BaseController {
@@ -83,6 +80,7 @@ public class TradingAccountsController extends BaseController {
     return entity;
   }
 
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = {"viewReceiptAttachmentFiles"})
   public String viewReceiptAttachmentFiles(String id, Model model) {
     TradingAccounts entity = tradingAccountsService.get(id);
@@ -94,7 +92,7 @@ public class TradingAccountsController extends BaseController {
     }
   }
 
-  // @RequiresPermissions("funds:tradingAccounts:view")
+  @RequiresPermissions("funds:tradingAccounts:view")
   @RequestMapping(value = {"list"})
   public String listQuery(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<TradingAccounts> page = tradingAccountsService.findPage(new Page<TradingAccounts>(request, response), tradingAccounts);
@@ -102,18 +100,18 @@ public class TradingAccountsController extends BaseController {
     return "modules/funds/tradingAccountsList";
   }
 
+  @RequiresPermissions("funds:tradingAccounts:view")
   @RequestMapping(value = {""})
   public String listNoQuery(TradingAccounts tradingAccounts, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/funds/tradingAccountsList";
   }
 
-  // @RequiresPermissions("funds:tradingAccounts:view")
+  @RequiresPermissions("funds:tradingAccounts:view")
   @RequestMapping(value = "form")
   public String form(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
     String type = tradingAccounts.getTradeType();
     String[] paymentTransIdArray = tradingAccounts.getTransIds().split(",");
     String postpaidFeeId = "";// 后付费交易ID
-
     // 防止同时开多个浏览器，需对传进的款项id做查询判断
     boolean check = true;
     if (ArrayUtils.isNotEmpty(paymentTransIdArray)) {
@@ -135,7 +133,6 @@ public class TradingAccountsController extends BaseController {
       addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "您选择的款项记录已被修改，请刷新页面，重新勾选进行操作！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
-
     // 校验 如果账务交易类型是 后付费付款，则必须后付费款项一次性全部到账
     int postpaidfeeTransCount = 0;// 后付费交易原生包含的款项数
     if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(type)) {
@@ -150,7 +147,6 @@ public class TradingAccountsController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
       }
     }
-
     // 校验指定款项不能跨月到账，涉及到的款项类型有（房租金额6，水费金额14，燃气金额16，电视费18，宽带费20，服务费22）
     if (!checkPaymentTransSignDateValid(paymentTransIdArray, PaymentTransTypeEnum.RENT_AMOUNT.getValue())) {
       addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的房租款项之前的月份有仍未到账的，请依次到账！");
@@ -176,7 +172,6 @@ public class TradingAccountsController extends BaseController {
       addMessage(redirectAttributes, ViewMessageTypeEnum.WARNING, "您选择到账的服务费款项之前的月份有仍未到账的，请依次到账！");
       return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
     }
-
     if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(type)) {
       tradingAccounts.setTradeStatus(TradingAccountsStatusEnum.AUDIT_PASS.getValue());
       tradingAccounts.setTradeDirection(TradeDirectionEnum.OUT.getValue());
@@ -315,7 +310,6 @@ public class TradingAccountsController extends BaseController {
     }
   }
 
-
   @SuppressWarnings("unchecked")
   private boolean checkPaymentTransSignDateValid(String[] paymentTransIdArray, String paymentTransType) {
     String rentContractId = "";
@@ -350,6 +344,7 @@ public class TradingAccountsController extends BaseController {
     return true;
   }
 
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = "edit")
   public String edit(TradingAccounts tradingAccounts, Model model) {
     tradingAccounts = tradingAccountsService.get(tradingAccounts.getId());
@@ -360,6 +355,7 @@ public class TradingAccountsController extends BaseController {
     return "modules/funds/tradingAccountsEdit";
   }
 
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = "revoke")
   public String revoke(String id, RedirectAttributes redirectAttributes) {
     tradingAccountsService.remoke(id);
@@ -367,13 +363,7 @@ public class TradingAccountsController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
   }
 
-  @RequestMapping(value = "findOne")
-  public String findOne(TradingAccounts tradingAccounts, Model model) {
-    tradingAccounts = tradingAccountsService.get(tradingAccounts);
-    model.addAttribute("tradingAccounts", tradingAccounts);
-    return "modules/funds/tradingAccountsEdit";
-  }
-
+  @RequiresPermissions("funds:tradingAccounts:audit")
   @RequestMapping(value = "audit")
   public String audit(AuditHis auditHis, RedirectAttributes redirectAttributes) {
     tradingAccountsService.audit(auditHis);
@@ -381,7 +371,7 @@ public class TradingAccountsController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/funds/tradingAccounts/?repage";
   }
 
-  // @RequiresPermissions("funds:tradingAccounts:edit")
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = "save")
   public String save(TradingAccounts tradingAccounts, Model model, RedirectAttributes redirectAttributes) {
     String id = tradingAccounts.getId();
@@ -432,7 +422,7 @@ public class TradingAccountsController extends BaseController {
   }
 
 
-  // @RequiresPermissions("funds:tradingAccounts:edit")
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = "delete")
   public String delete(TradingAccounts tradingAccounts, RedirectAttributes redirectAttributes) {
     tradingAccountsService.delete(tradingAccounts);

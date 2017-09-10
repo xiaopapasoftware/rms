@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.ArrayList;
@@ -11,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,12 +35,6 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
 
-/**
- * 房屋信息Controller
- * 
- * @author huangsc
- * @version 2015-06-06
- */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/house")
 public class HouseController extends BaseController {
@@ -74,7 +66,7 @@ public class HouseController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("inventory:house:view")
+  @RequiresPermissions("inventory:house:view")
   @RequestMapping(value = {"list"})
   public String listQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<House> page = houseService.findPage(new Page<House>(request, response), house);
@@ -107,7 +99,7 @@ public class HouseController extends BaseController {
     return "modules/inventory/houseList";
   }
 
-  // @RequiresPermissions("inventory:house:view")
+  @RequiresPermissions("inventory:house:view")
   @RequestMapping(value = {""})
   public String listNoQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
     initQueryCondition(model, house);
@@ -129,6 +121,7 @@ public class HouseController extends BaseController {
     }
   }
 
+  @RequiresPermissions("inventory:house:view")
   @RequestMapping(value = {"findList"})
   @ResponseBody
   public List<House> findList(Building building) {
@@ -139,7 +132,7 @@ public class HouseController extends BaseController {
     return list;
   }
 
-  // @RequiresPermissions("inventory:house:view")
+  @RequiresPermissions("inventory:house:view")
   @RequestMapping(value = "form")
   public String form(House house, Model model) {
     if (house.getIsNewRecord()) {
@@ -155,7 +148,6 @@ public class HouseController extends BaseController {
       model.addAttribute("listBuilding", buildingService.findList(bd));
     }
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-
     List<Owner> ownerList = null;
     if (!house.getIsNewRecord()) {// 修改房屋信息
       if (null == house.getOwner() || StringUtils.isEmpty(house.getOwner().getId())) {
@@ -171,6 +163,7 @@ public class HouseController extends BaseController {
     return "modules/inventory/houseForm";
   }
 
+  @RequiresPermissions("inventory:house:edit")
   @RequestMapping(value = "add")
   public String add(House house, Model model) {
     Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
@@ -201,7 +194,7 @@ public class HouseController extends BaseController {
     return "modules/inventory/houseAdd";
   }
 
-  // @RequiresPermissions("inventory:house:edit")
+  @RequiresPermissions("inventory:house:edit")
   @RequestMapping(value = "finishDirect")
   @ResponseBody
   public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
@@ -210,7 +203,7 @@ public class HouseController extends BaseController {
     return "SUCCESS";
   }
 
-  // @RequiresPermissions("inventory:house:edit")
+  @RequiresPermissions("inventory:house:edit")
   @RequestMapping(value = "save")
   public String save(House house, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, house)) {
@@ -248,9 +241,9 @@ public class HouseController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
       }
     }
-
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "ajaxSave")
   @ResponseBody
   public String ajaxSave(House house, Model model, RedirectAttributes redirectAttributes) {
@@ -282,7 +275,7 @@ public class HouseController extends BaseController {
     return jsonObject.toString();
   }
 
-  // @RequiresPermissions("inventory:house:edit")
+  @RequiresPermissions("inventory:house:edit")
   @RequestMapping(value = "delete")
   public String delete(House house, RedirectAttributes redirectAttributes) {
     House queryhouse = houseService.get(house);

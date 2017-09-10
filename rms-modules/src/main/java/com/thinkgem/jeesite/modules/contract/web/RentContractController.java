@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -74,9 +75,6 @@ import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 
-/**
- * @author wangshujin
- */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/rentContract")
 public class RentContractController extends BaseController {
@@ -132,16 +130,14 @@ public class RentContractController extends BaseController {
     return entity;
   }
 
-  /**
-   * 菜单跳转初始化
-   */
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = {""})
   public String initPage(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     initContractSearchConditions(rentContract, model, request, response, false);
     return "modules/contract/rentContractList";
   }
 
-  // @RequiresPermissions("contract:rentContract:view")
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = {"list"})
   public String list(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     initContractSearchConditions(rentContract, model, request, response, true);
@@ -183,6 +179,7 @@ public class RentContractController extends BaseController {
     }
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = {"rentContractDialogList"})
   public String rentContractDialogList(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue());
@@ -190,6 +187,7 @@ public class RentContractController extends BaseController {
     return "modules/contract/rentContractDialog";
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = {"rentContractDialog"})
   public String rentContractDialog(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("rentContract", rentContract);
@@ -197,6 +195,7 @@ public class RentContractController extends BaseController {
     return "modules/contract/rentContractDialog";
   }
 
+  @RequiresPermissions("contract:rentContract:audit")
   @RequestMapping(value = "audit")
   public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     rentContractService.audit(auditHis);
@@ -204,6 +203,7 @@ public class RentContractController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "cancel")
   public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model) {
     auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
@@ -212,7 +212,7 @@ public class RentContractController extends BaseController {
     return list(new RentContract(), request, response, model);
   }
 
-  // @RequiresPermissions("contract:rentContract:view")
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "form")
   public String form(RentContract rentContract, Model model, HttpServletRequest request) {
     if (rentContract.getIsNewRecord()) {
@@ -256,6 +256,7 @@ public class RentContractController extends BaseController {
     return "modules/contract/rentContractForm";
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "ajaxQueryLivedTenants")
   @ResponseBody
   public String ajaxQueryLivedTenants(String rentContractId) {
@@ -270,6 +271,7 @@ public class RentContractController extends BaseController {
     return "";
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "ajaxQueryLeasedTenants")
   @ResponseBody
   public String ajaxQueryLeasedTenants(String rentContractId) {
@@ -308,6 +310,7 @@ public class RentContractController extends BaseController {
   /**
    * 续签
    */
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "renewContract")
   public String renewContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String contractId = rentContract.getId();
@@ -382,7 +385,7 @@ public class RentContractController extends BaseController {
   /**
    * 牵涉到后台合同的新增、修改；以及APP端合同的修改保存
    */
-  // @RequiresPermissions("contract:rentContract:edit")
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "save")
   public String save(RentContract rentContract, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (!beanValidator(model, rentContract) && ValidatorFlagEnum.SAVE.getValue().equals(rentContract.getValidatorFlag())) {
@@ -425,6 +428,7 @@ public class RentContractController extends BaseController {
     }
   }
 
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "saveAdditional")
   public String saveAdditional(AgreementChange agreementChange, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, agreementChange)) {
@@ -440,6 +444,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“正常退租”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "returnContract")
   public String returnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
@@ -456,6 +461,7 @@ public class RentContractController extends BaseController {
   /**
    * 把出租合同业务状态从“正常退租待核算”回滚为 “有效”
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "rollbackToNormal")
   public String rollbackContractToValidFromNormalReturn(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContract = rentContractService.get(rentContract.getId());
@@ -468,6 +474,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“提前退租”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "earlyReturnContract")
   public String earlyReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     String rentContractId = rentContract.getId();
@@ -482,6 +489,7 @@ public class RentContractController extends BaseController {
   /**
    * 把出租合同业务状态从“提前退租待核算”回滚为 “有效”
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "rollbackFromPreturnToNormal")
   public String rollbackContractToValidFromPrereturn(RentContract rentContract, RedirectAttributes redirectAttributes) {
     String rentContractId = rentContract.getId();
@@ -496,6 +504,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“逾期退租”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "lateReturnContract")
   public String lateReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (paymentTransService.checkNotSignedPaymentTrans(rentContract.getId())) {
@@ -512,6 +521,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“特殊退租”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:specialreturn")
   @RequestMapping(value = "specialReturnContract")
   public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
     String returnDate = rentContract.getReturnDate();
@@ -529,9 +539,9 @@ public class RentContractController extends BaseController {
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
     return "modules/contract/rentContractCheck";
-
   }
 
+  @RequiresPermissions("contract:rentContract:change")
   @RequestMapping(value = "changeContract")
   public String changeContract(RentContract rentContract, Model model) {
     AgreementChange agreementChange = new AgreementChange();
@@ -545,6 +555,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“正常退租核算”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "toReturnCheck")
   public String toReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
@@ -563,6 +574,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“提前退租核算”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "toEarlyReturnCheck")
   public String toEarlyReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
@@ -585,6 +597,7 @@ public class RentContractController extends BaseController {
   /**
    * 点击“逾期退租核算”按钮触发的业务
    */
+  @RequiresPermissions("contract:rentContract:return")
   @RequestMapping(value = "toLateReturnCheck")
   public String toLateReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
@@ -627,6 +640,7 @@ public class RentContractController extends BaseController {
   /**
    * 在退租核算页面，点保存按钮
    */
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "returnCheck")
   public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContractService.returnCheck(rentContract, rentContract.getTradeType());
@@ -638,7 +652,7 @@ public class RentContractController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
-  // @RequiresPermissions("contract:rentContract:edit")
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "delete")
   public String delete(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContract.preUpdate();
@@ -649,7 +663,7 @@ public class RentContractController extends BaseController {
 
   /**
    * 应出退租核算项列表
-   *
+   * 
    * @param isPre 是否提前
    */
   private List<Accounting> genOutAccountListBack(RentContract rentContract, String accountingType, boolean isPre) {
@@ -1079,6 +1093,7 @@ public class RentContractController extends BaseController {
   /**
    * 动态修改出租合同的入住人列表
    */
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "changeLiveList")
   public void changeLiveList(HttpServletRequest request, HttpServletResponse response) {
     String rentContractId = request.getParameter("rentContractId");
@@ -1100,6 +1115,7 @@ public class RentContractController extends BaseController {
   /**
    * 动态修改出租合同的承租人列表
    */
+  @RequiresPermissions("contract:rentContract:edit")
   @RequestMapping(value = "changeTenantList")
   public void changeTenantList(HttpServletRequest request, HttpServletResponse response) {
     String rentContractId = request.getParameter("rentContractId");
@@ -1118,12 +1134,14 @@ public class RentContractController extends BaseController {
     }
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "initPublicBasicFeeInfo")
   public String initPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     initContractSearchConditions(rentContract, model, request, response, false);
     return "modules/fee/contractInitFeeMgt";
   }
 
+  @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "queryPublicBasicFeeInfo")
   public String queryPublicBasicFeeInfo(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     initContractSearchConditions(rentContract, model, request, response, true);
@@ -1133,14 +1151,16 @@ public class RentContractController extends BaseController {
   /**
    * 导向修改合同公共基础费用的页面
    */
+  @RequiresPermissions("contract:rentContract:editContractFeeInfo")
   @RequestMapping(value = "basicFeeForm")
   public String basicFeeform(RentContract rentContract, Model model, HttpServletRequest request) {
     return "modules/fee/basicFeeForm";
   }
 
   /**
-   * 导向修改合同公共基础费用的页面
+   * 导向修改合同公共基础费用的页面,保存
    */
+  @RequiresPermissions("contract:rentContract:editContractFeeInfo")
   @RequestMapping(value = "basicFeeSave")
   public String basicFeeSave(RentContract rentContract, Model model, HttpServletRequest request, HttpServletResponse response) {
     rentContractService.save(rentContract);
@@ -1150,6 +1170,7 @@ public class RentContractController extends BaseController {
   /**
    * 出租合同的审核状态为审核通过，同时出租合同业务状态为【退租核算完成到账收据待登记4、退租款项待审核5、退租款项审核拒绝6】的后门撤销
    */
+  @RequiresPermissions("contract:superRentContract:edit")
   @RequestMapping(value = "backCancelRetreat")
   public String backCancelRetreat(RentContract rentContract, RedirectAttributes redirectAttributes) {
     if (ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue().equals(rentContract.getContractStatus())) {

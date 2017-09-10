@@ -12,7 +12,6 @@
 		        }
 		    });
 			
-			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
@@ -39,10 +38,8 @@
 							iframe.contentWindow.$("[id='house.id']").html(text);
 							iframe.contentWindow.$("[id='house.id']").val(json.id);
 							iframe.contentWindow.$("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html(json.name);
-							
 							iframe.contentWindow.$("[id='room.id']").val("").trigger("change");
 							iframe.contentWindow.$("[id='house.id']").val(json.id).trigger("change");
-
 							top.$.jBox.close();
 						}
 					});

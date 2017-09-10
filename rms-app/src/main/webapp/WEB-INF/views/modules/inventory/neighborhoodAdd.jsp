@@ -6,7 +6,6 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
@@ -33,7 +32,6 @@
 							iframe.html(text);
 							iframe.val(json.id);
 							iframe.prev("[id='s2id_neighborhood.id']").find(".select2-chosen").html(json.name);
-							//top.$.jBox.close();
 							window.parent.window.jBox.close();
 						}
 					});

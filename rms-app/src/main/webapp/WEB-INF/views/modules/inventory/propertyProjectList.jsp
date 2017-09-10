@@ -47,7 +47,9 @@
 			<li><label style="width:120px;">物业项目地址：</label>
 				<form:input path="projectAddr" htmlEscape="false" maxlength="300" class="input-medium" style="width:180px;"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<shiro:hasPermission name="inventory:propertyProject:view">
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

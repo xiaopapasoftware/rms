@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.web;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,9 +24,7 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 
 /**
- * 预约看房信息Controller
- * 
- * @author huangsc
+ * 预约看房信息
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/book")
