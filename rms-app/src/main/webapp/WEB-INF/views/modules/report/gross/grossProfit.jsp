@@ -99,7 +99,7 @@
 					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});"  />
 			</li>
 
-			<li><label>截至年月：</label>
+			<li><label>截止年月：</label>
 				<input name="endDate" id="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});" />
 			</li>

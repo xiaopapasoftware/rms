@@ -34,7 +34,7 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
     @Autowired
     private HouseGrossProfitCalculate houseGrossProfitCalculate;
 
-    private volatile Map<String, GrossProfitCalculate> strategyRegistry = new ConcurrentHashMap<>();
+    public volatile static Map<String, GrossProfitCalculate> strategyRegistry = new ConcurrentHashMap<>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -51,6 +51,14 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
 
     public void registerStrategy(String name, GrossProfitCalculate calculate) {
         strategyRegistry.put(name, calculate);
+    }
+
+    public double calculateCost(GrossProfitCondition condition) {
+        return strategyRegistry.get(condition.getTypeEnum().getCode()).calculateCost(condition);
+    }
+
+    public double calculateIncome(GrossProfitCondition condition) {
+        return strategyRegistry.get(condition.getTypeEnum().getCode()).calculateIncome(condition);
     }
 
     public GrossProfitReport calculateGrossProfit(GrossProfitCondition condition) {
