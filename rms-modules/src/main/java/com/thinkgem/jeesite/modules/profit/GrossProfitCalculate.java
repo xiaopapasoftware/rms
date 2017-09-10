@@ -39,13 +39,15 @@ public interface GrossProfitCalculate {
 
     default double calculateCost(GrossProfitCondition condition){
         return Optional.ofNullable(this.getChildConditionList(condition))
-                .map(list -> list.stream().mapToDouble(this::calculateCost).sum())
+                .map(list -> list.stream().mapToDouble(
+                        subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateCost(subCondition)).sum())
                 .orElse(0d);
     }
 
     default double calculateIncome(GrossProfitCondition condition){
         return Optional.ofNullable(this.getChildConditionList(condition))
-                .map(list -> list.stream().mapToDouble(this::calculateIncome).sum())
+                .map(list -> list.stream().mapToDouble(
+                        subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateIncome(subCondition)).sum())
                 .orElse(0d);
     }
 
