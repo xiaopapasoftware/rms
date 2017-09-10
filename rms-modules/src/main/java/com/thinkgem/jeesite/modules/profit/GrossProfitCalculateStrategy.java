@@ -69,7 +69,7 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
         GrossProfitReportVO reportVO = new GrossProfitReportVO();
         List<GrossProfitCondition> childConditionList = getChildConditionList(condition);
         if (!CollectionUtils.isEmpty(childConditionList)) {
-            reportVO.setChildReportList(childConditionList.stream().map(this::calculateGrossProfit).collect(Collectors.toList()));
+            reportVO.setChildReportList(childConditionList.parallelStream().map(this::calculateGrossProfit).collect(Collectors.toList()));
             reportVO.setParent(buildParentByChildList(condition, reportVO.getChildReportList()));
         } else {
             reportVO.setParent(calculateGrossProfit(condition));
