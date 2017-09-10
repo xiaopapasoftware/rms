@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.web;
 
 import java.util.List;
@@ -9,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,10 +26,7 @@ import com.thinkgem.jeesite.modules.person.service.CompanyLinkmanService;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
 
 /**
- * 企业联系人Controller
- * 
- * @author huangsc
- * @version 2015-06-13
+ * 企业联系人
  */
 @Controller
 @RequestMapping(value = "${adminPath}/person/companyLinkman")
@@ -55,7 +50,7 @@ public class CompanyLinkmanController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("person:companyLinkman:view")
+  @RequiresPermissions("person:companyLinkman:view")
   @RequestMapping(value = {"list", ""})
   public String list(CompanyLinkman companyLinkman, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<CompanyLinkman> page = companyLinkmanService.findPage(new Page<CompanyLinkman>(request, response), companyLinkman);
@@ -64,7 +59,7 @@ public class CompanyLinkmanController extends BaseController {
     return "modules/person/companyLinkmanList";
   }
 
-  // @RequiresPermissions("person:companyLinkman:view")
+  @RequiresPermissions("person:companyLinkman:view")
   @RequestMapping(value = "form")
   public String form(CompanyLinkman companyLinkman, Model model) {
     model.addAttribute("companyLinkman", companyLinkman);
@@ -72,7 +67,7 @@ public class CompanyLinkmanController extends BaseController {
     return "modules/person/companyLinkmanForm";
   }
 
-  // @RequiresPermissions("person:companyLinkman:edit")
+  @RequiresPermissions("person:companyLinkman:edit")
   @RequestMapping(value = "save")
   public String save(CompanyLinkman companyLinkman, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, companyLinkman)) {
@@ -100,7 +95,7 @@ public class CompanyLinkmanController extends BaseController {
     }
   }
 
-  // @RequiresPermissions("person:companyLinkman:edit")
+  @RequiresPermissions("person:companyLinkman:edit")
   @RequestMapping(value = "delete")
   public String delete(CompanyLinkman companyLinkman, RedirectAttributes redirectAttributes) {
     companyLinkmanService.delete(companyLinkman);

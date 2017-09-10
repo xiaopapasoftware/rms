@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.ArrayList;
@@ -11,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +29,7 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 
 /**
- * 楼宇Controller
- * 
- * @author huangsc
- * @version 2015-06-03
+ * 楼宇
  */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/building")
@@ -58,7 +53,7 @@ public class BuildingController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("inventory:building:view")
+  @RequiresPermissions("inventory:building:view")
   @RequestMapping(value = {"list"})
   public String listQuery(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Building> page = buildingService.findPage(new Page<Building>(request, response), building);
@@ -67,7 +62,7 @@ public class BuildingController extends BaseController {
     return "modules/inventory/buildingList";
   }
 
-  // @RequiresPermissions("inventory:building:view")
+  @RequiresPermissions("inventory:building:view")
   @RequestMapping(value = {""})
   public String listNoQuery(Building building, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
@@ -85,7 +80,7 @@ public class BuildingController extends BaseController {
     return list;
   }
 
-  // @RequiresPermissions("inventory:building:view")
+  @RequiresPermissions("inventory:building:view")
   @RequestMapping(value = "form")
   public String form(Building building, Model model) {
     model.addAttribute("building", building);
@@ -93,6 +88,7 @@ public class BuildingController extends BaseController {
     return "modules/inventory/buildingForm";
   }
 
+  @RequiresPermissions(" contract:rentContract:edit")
   @RequestMapping(value = "add")
   public String add(Building building, Model model) {
     model.addAttribute("building", building);
@@ -102,7 +98,7 @@ public class BuildingController extends BaseController {
     return "modules/inventory/buildingAdd";
   }
 
-  // @RequiresPermissions("inventory:building:edit")
+  @RequiresPermissions("inventory:building:edit")
   @RequestMapping(value = "save")
   public String save(Building building, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, building)) {
@@ -130,6 +126,7 @@ public class BuildingController extends BaseController {
     }
   }
 
+  @RequiresPermissions(" contract:rentContract:edit")
   @RequestMapping(value = "ajaxSave")
   @ResponseBody
   public String ajaxSave(Building building, Model model, RedirectAttributes redirectAttributes) {
@@ -148,7 +145,7 @@ public class BuildingController extends BaseController {
     return jsonObject.toString();
   }
 
-  // @RequiresPermissions("inventory:building:edit")
+  @RequiresPermissions("inventory:building:edit")
   @RequestMapping(value = "delete")
   public String delete(Building building, RedirectAttributes redirectAttributes) {
     buildingService.delete(building);

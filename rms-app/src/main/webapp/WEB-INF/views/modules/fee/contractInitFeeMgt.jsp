@@ -99,7 +99,9 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/contract/rentContract/initPublicBasicFeeInfo">合同初始事业费管理</a></li>
+		<shiro:hasPermission name="contract:rentContract:view">
+			<li class="active"><a href="${ctx}/contract/rentContract/initPublicBasicFeeInfo">合同初始事业费管理</a></li>
+		</shiro:hasPermission>
 		<li><a href="${ctx}/fee/electricFee/initpostpaidFeeList">后付费查询</a></li>
 		<li><a href="${ctx}/fee/electricFee/postpaidFeeForm">后付费付款</a></li>
 	</ul>
@@ -137,7 +139,9 @@
 					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
+			<shiro:hasPermission name="contract:rentContract:view">
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

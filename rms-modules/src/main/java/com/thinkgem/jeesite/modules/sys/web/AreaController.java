@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.sys.web;
 
 import java.util.List;
@@ -64,19 +61,6 @@ public class AreaController extends BaseController {
       area.setParent(UserUtils.getUser().getOffice().getArea());
     }
     area.setParent(areaService.get(area.getParent().getId()));
-    // // 自动获取排序号
-    // if (StringUtils.isBlank(area.getId())){
-    // int size = 0;
-    // List<Area> list = areaService.findAll();
-    // for (int i=0; i<list.size(); i++){
-    // Area e = list.get(i);
-    // if (e.getParent()!=null && e.getParent().getId()!=null
-    // && e.getParent().getId().equals(area.getParent().getId())){
-    // size++;
-    // }
-    // }
-    // area.setCode(area.getParent().getCode() + StringUtils.leftPad(String.valueOf(size > 0 ? size : 1), 4, "0"));
-    // }
     model.addAttribute("area", area);
     return "modules/sys/areaForm";
   }
@@ -103,16 +87,11 @@ public class AreaController extends BaseController {
       addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "演示模式，不允许操作！");
       return "redirect:" + adminPath + "/sys/area";
     }
-    // if (Area.isRoot(id)){
-    // addMessage(redirectAttributes, "删除区域失败, 不允许删除顶级区域或编号为空");
-    // }else{
     areaService.delete(area);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除区域成功");
-    // }
     return "redirect:" + adminPath + "/sys/area/";
   }
 
-  @RequiresPermissions("user")
   @ResponseBody
   @RequestMapping(value = "treeData")
   public List<Map<String, Object>> treeData(@RequestParam(required = false) String extId, HttpServletResponse response) {

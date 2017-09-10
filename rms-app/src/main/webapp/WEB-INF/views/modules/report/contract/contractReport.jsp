@@ -42,17 +42,18 @@
                 <i class="ace-icon fa fa-chevron-up"></i>
             </a>
         </div>
-        <div class="widget-toolbar">
-            <a href="javascript:void(0);" id="btn-undo" class="white">
-                <i class="ace-icon fa fa-undo"></i> 重置
-            </a>
-        </div>
-        <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-search" class="white btn-search">
-                <i class="ace-icon fa fa-search"></i> 查询
-            </a>
-        </div>
-
+     	<shiro:hasPermission name="rentcontract:report:view">
+	        <div class="widget-toolbar">
+	            <a href="javascript:void(0);" id="btn-undo" class="white">
+	                <i class="ace-icon fa fa-undo"></i> 重置
+	            </a>
+	        </div>
+	        <div class="widget-toolbar no-border">
+	            <a href="javascript:void(0);" id="btn-search" class="white btn-search">
+	                <i class="ace-icon fa fa-search"></i> 查询
+	            </a>
+	        </div>
+	    </shiro:hasPermission>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
@@ -158,9 +159,11 @@
     <div class="widget-header">
         <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>合同列表 (单位:元)</h4>
         <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-export" class="white">
-                <i class="ace-icon fa fa-download"></i> 导出
-            </a>
+        	<shiro:hasPermission name="rentcontract:report:view">
+	            <a href="javascript:void(0);" id="btn-export" class="white">
+	                <i class="ace-icon fa fa-download"></i> 导出
+	            </a>
+            </shiro:hasPermission>
         </div>
     </div>
     <div class="widget-body">

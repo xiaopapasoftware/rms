@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.cms.web;
 
 import java.util.List;
@@ -34,10 +31,7 @@ import com.thinkgem.jeesite.modules.cms.service.SiteService;
 import com.thinkgem.jeesite.modules.cms.utils.TplUtils;
 
 /**
- * 栏目Controller
- * 
- * @author ThinkGem
- * @version 2013-4-21
+ * 栏目
  */
 @Controller
 @RequestMapping(value = "${adminPath}/cms/category")

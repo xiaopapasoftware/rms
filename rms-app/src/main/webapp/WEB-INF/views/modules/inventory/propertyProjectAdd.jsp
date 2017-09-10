@@ -33,11 +33,9 @@
 							iframe.contentWindow.$("[id='propertyProject.id']").html(text);
 							iframe.contentWindow.$("[id='propertyProject.id']").val(json.id);
 							iframe.contentWindow.$("[id='propertyProject.id']").prev("[id='s2id_propertyProject.id']").find(".select2-chosen").html(json.name);
-							
 							iframe.contentWindow.$("[id='building.id']").val("").trigger("change");
 							iframe.contentWindow.$("[id='house.id']").val("").trigger("change");
 							iframe.contentWindow.$("[id='propertyProject.id']").val(json.id).trigger("change");
-							
 							top.$.jBox.close();
 						}
 					});

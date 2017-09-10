@@ -1,5 +1,20 @@
 package com.thinkgem.jeesite.modules.report.web;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.thinkgem.jeesite.common.filter.search.MatchType;
@@ -15,18 +30,6 @@ import com.thinkgem.jeesite.common.utils.excels.utils.ExcelUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author wangganggang
@@ -46,6 +49,7 @@ public class ContractReportController extends BaseController {
     return "modules/report/contract/contractReport";
   }
 
+  @RequiresPermissions("rentcontract:report:view")
   @RequestMapping("query")
   @ResponseBody
   public Object queryContract(HttpServletRequest request) {
@@ -56,6 +60,7 @@ public class ContractReportController extends BaseController {
     return MessageSupport.successDataTableMsg(page, reportEntities);
   }
 
+  @RequiresPermissions("rentcontract:report:view")
   @RequestMapping("export")
   public void exportContract(HttpServletRequest request, HttpServletResponse response) {
     List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();

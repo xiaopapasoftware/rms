@@ -58,8 +58,7 @@
         <div class="controls">
             <form:select path="managementCompany.id" class="input-xlarge required">
                 <form:option value="" label="请选择..."/>
-                <form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id"
-                              htmlEscape="false"/>
+                <form:options items="${listManagementCompany}" itemLabel="companyName" itemValue="id" htmlEscape="false"/>
             </form:select>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>

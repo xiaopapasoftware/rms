@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.web;
 
 import java.util.List;
@@ -9,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,10 +25,7 @@ import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
 
 /**
- * 企业信息Controller
- * 
- * @author huangsc
- * @version 2015-06-13
+ * 企业信息
  */
 @Controller
 @RequestMapping(value = "${adminPath}/person/company")
@@ -51,7 +46,7 @@ public class CompanyController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("person:company:view")
+  @RequiresPermissions("person:company:view")
   @RequestMapping(value = {"list", ""})
   public String list(Company company, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Company> page = companyService.findPage(new Page<Company>(request, response), company);
@@ -59,14 +54,14 @@ public class CompanyController extends BaseController {
     return "modules/person/companyList";
   }
 
-  // @RequiresPermissions("person:company:view")
+  @RequiresPermissions("person:company:view")
   @RequestMapping(value = "form")
   public String form(Company company, Model model) {
     model.addAttribute("company", company);
     return "modules/person/companyForm";
   }
 
-  // @RequiresPermissions("person:company:edit")
+  @RequiresPermissions("person:company:edit")
   @RequestMapping(value = "save")
   public String save(Company company, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, company)) {
@@ -93,10 +88,9 @@ public class CompanyController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/person/company/?repage";
       }
     }
-
   }
 
-  // @RequiresPermissions("person:company:edit")
+  @RequiresPermissions("person:company:edit")
   @RequestMapping(value = "delete")
   public String delete(Company company, RedirectAttributes redirectAttributes) {
     companyService.delete(company);

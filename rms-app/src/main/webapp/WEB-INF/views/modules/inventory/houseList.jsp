@@ -38,9 +38,7 @@
 			$.get("${ctx}/inventory/house/finishDirect?id=" + houseId, function(data){
 				if("SUCCESS" == data){
 					alertx("操作成功！");
-				}/*else if("NEEDDO" == data){
-					alertx("必须先为房屋分配设备！");
-				}*/else{
+				}else{
 					alertx("操作失败！");
 				}
 				$("#searchForm").submit();
@@ -109,10 +107,12 @@
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 				</form:select>
 			</li>
-			<li class="btns">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
-				<li class="clearfix">
-			</li>
+			<shiro:hasPermission name="inventory:house:view">
+				<li class="btns">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
+					<li class="clearfix">
+				</li>
+			</shiro:hasPermission>
 		</ul>
 	</form:form>
 	<sys:message content="${message}" type="${messageType}"/>
