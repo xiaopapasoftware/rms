@@ -12,6 +12,7 @@
                 var endDate = $("#endDate").val();
                 if (startDate == "" || endDate == "") {
                     alert("请选择具体的时间范围");
+                    return false;
 				}
 				$.post("${ctx}/report/gross/listGrossProfit", {
                     company:$("#company").val(),
@@ -22,8 +23,8 @@
                     startDate:startDate,
                     endDate:endDate
 				}, function (data, status) {
-                   if(!data || !data.length) return;
                     $("#viewTbody").html("");
+                   if(!data || !data.length) return;
                    	var html = "";
 					var trs = "";
 					$.each(data,function (index,item) {
