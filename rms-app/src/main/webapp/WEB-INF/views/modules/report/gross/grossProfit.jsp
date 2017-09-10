@@ -5,6 +5,38 @@
 	<title></title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
+
+        $(document).ready(function() {
+        	$("#btnSubmit").click(function () {
+                var startDate = $("#startDate").val();
+                var endDate = $("#endDate").val();
+                if (startDate == "" || endDate == "") {
+                    alert("请选择具体的时间范围");
+				}
+				$.post("${ctx}/report/gross/listGrossProfit", {
+                    company:$("#company").val(),
+                    center:$("#center").val(),
+                    area:$("#area").val(),
+                    project:$("#project").val(),
+					house:$("#house").val(),
+                    startDate:startDate,
+                    endDate:endDate
+				}, function (data, status) {
+                   if(!data || !data.length) return;
+                    $("#viewTbody").html("");
+                   	var html = "";
+					var trs = "";
+					$.each(data,function (index,item) {
+						var tds = "<td>"+item.name+"</td><td>"+item.income+"</td><td>"+item.cost+"</td><td>"+item.totalProfit+"</td><td>"+
+						item.profitPercent+"</td>";
+						trs += "<tr>"+tds+"</tr>";
+					});
+					html +=trs;
+                    $('#viewTbody').append(html);
+                })
+            })
+        });
+		
 		function changeSelect(value,type) {
             var id = value;
 			var curParentNextAll = $("#"+type).parent().prev().nextAll();
@@ -26,6 +58,7 @@
                 $("[id="+type+"]").html(html);
             }
         }
+
 	</script>
 </head>
 <body>
@@ -59,7 +92,18 @@
 					<option value="">请选择...</option>
 				</select>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+
+			<li><label>起始年月：</label>
+				<input name="startDate" id="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});"  />
+			</li>
+
+			<li><label>截至年月：</label>
+				<input name="endDate" id="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});" />
+			</li>
+
+			<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
 		</ul>
 	</form:form>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
@@ -72,45 +116,8 @@
 				<th>毛利率</th>
 			</tr>
 		</thead>
-		<tbody>
-			<c:if test="${report!=null}">
-				<tr>
-					<td>
-						${report.parent.name}
-					</td>
-					<td>
-						${report.parent.income}
-					</td>
-					<td>
-						${report.parent.cost}
-					</td>
-					<td>
-						${report.parent.totalProfit}
-					</td>
-					<td>
-						${report.parent.profitPercent}
-					</td>
-				</tr>
-			</c:if>
-				<c:forEach items="${report.childReportList}" var="child">
-					<tr>
-						<td>
-							${child.name}
-						</td>
-						<td>
-							${child.income}
-						</td>
-						<td>
-							${child.cost}
-						</td>
-						<td>
-							${child.totalProfit}
-						</td>
-						<td>
-							${child.profitPercent}
-						</td>
-					</tr>
-				</c:forEach>
+		<tbody id = "viewTbody">
+
 		</tbody>
 	</table>
 </body>

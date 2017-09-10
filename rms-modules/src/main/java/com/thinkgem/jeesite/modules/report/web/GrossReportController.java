@@ -7,18 +7,21 @@ import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculateStrategy;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
+import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
+import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReportVO;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import com.thinkgem.jeesite.modules.report.entity.GrossProfitFormCondition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,13 +47,20 @@ public class GrossReportController extends BaseController {
   }
 
   @RequestMapping(value = {"listGrossProfit"})
-  public String listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
+  @ResponseBody
+  public List<GrossProfitReport> listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
+    ArrayList<GrossProfitReport> reportList = new ArrayList<>();
     if (!condition.isEmpty()) {
       GrossProfitCondition grossProfitCondition = buildConditionByFormCondition(condition);
-      model.addAttribute("report", calculateStrategy.calculateReportVO(grossProfitCondition));
+      GrossProfitReportVO reportVO = calculateStrategy.calculateReportVO(grossProfitCondition);
+      reportList.add(reportVO.getParent());
+      if (!CollectionUtils.isEmpty(reportVO.getChildReportList())) {
+        reportList.addAll(reportVO.getChildReportList());
+      }
+      return reportList;
+    } else {
+      return null;
     }
-    model.addAttribute("companyList", getCompanyList());
-    return "modules/report/gross/grossProfit";
   }
 
   @RequestMapping(value = {"getSubOrgList"})
@@ -61,8 +71,8 @@ public class GrossReportController extends BaseController {
 
   private GrossProfitCondition buildConditionByFormCondition(GrossProfitFormCondition condition) {
     GrossProfitCondition profitCondition = new GrossProfitCondition();
-    profitCondition.setStartDate(new Date(2015 - 1900, 5, 25));
-    profitCondition.setEndDate(new Date(2015 - 1900, 8, 24));
+    profitCondition.setStartDate(condition.getStart());
+    profitCondition.setEndDate(condition.getEnd());
     if (!StringUtils.isEmpty(condition.getHouse())) {
       profitCondition.setTypeEnum(GrossProfitTypeEnum.House);
       profitCondition.setId(condition.getHouse());
