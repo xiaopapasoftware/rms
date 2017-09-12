@@ -1,10 +1,9 @@
 package com.tangchao.fee.bill.bean;
 
-import com.tangchao.fee.bill.common.FeeBase;
+import com.tangchao.fee.bill.common.FeeBillBase;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author wangganggang
@@ -12,26 +11,26 @@ import javax.persistence.Table;
  */
 @Table(name = "Fee_electricity_bill")
 @Data
-public class FeeElectricityBill extends FeeBase {
+public class FeeElectricityBill extends FeeBillBase {
 
+    /*户号*/
     @Column(name = "house_ele_num")
     private String houseEleNum;
 
+    /*账单日期*/
     @Column(name = "ele_bill_date")
     private String eleBillDate;
 
+    /*账单金额*/
     @Column(name = "ele_bill_amount")
     private String eleBillAmount;
 
-    @Column(name = "ele_degree")
-    private String eleDegree;
-
+    /*峰值数*/
     @Column(name = "ele_peak_degree")
     private String elePeakDegree;
 
+    /*谷值数*/
     @Column(name = "ele_valley_degree")
     private String eleValleyDegree;
 
-    @Column(name = "bill_status")
-    private String billStatus;
 }
