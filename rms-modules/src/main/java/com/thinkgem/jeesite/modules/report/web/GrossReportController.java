@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReportVO;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import com.thinkgem.jeesite.modules.report.entity.GrossProfitFormCondition;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,7 +47,7 @@ public class GrossReportController extends BaseController {
     return "modules/report/gross/grossProfit";
   }
 
-//  @RequiresPermissions("report:gross:view")
+  @RequiresPermissions("report:gross:view")
   @RequestMapping(value = {"listGrossProfit"})
   @ResponseBody
   public List<GrossProfitReport> listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
