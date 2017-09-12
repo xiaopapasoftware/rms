@@ -19,7 +19,7 @@ public class MyScheduledCache implements MyCache{
     }
 
     public MyScheduledCache(MyCache delegate) {
-        this(delegate, 4 * 60 * 60 * 1000L);
+        this(delegate, 8 * 60 * 60 * 1000L);
     }
 
     public MyScheduledCache(MyCache delegate, long time) {

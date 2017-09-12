@@ -65,11 +65,11 @@
 <body>
 	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/gross/listGrossProfit" method="post" class="breadcrumb form-search">
 		<ul class="ul-form">
-			<li><label>公司：</label>
-				<select id="company" name="company" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'center')">
+			<li><label>区县：</label>
+				<select id="county" name="county" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'center')">
 					<option value="">请选择...</option>
-					<c:forEach items="${companyList}" var="company">
-						<option value="${company.id}">${company.name}</option>
+					<c:forEach items="${countyList}" var="county">
+						<option value="${county.id}">${county.name}</option>
 					</c:forEach>
 				</select>
 			</li>
@@ -78,7 +78,7 @@
 					<option value="">请选择...</option>
 				</select>
 			</li>
-			<li><label>区域：</label>
+			<li><label>营运区域：</label>
 				<select name="area" id="area" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'project')">
 					<option value="">请选择...</option>
 				</select>
