@@ -3,6 +3,7 @@
  */
 package com.thinkgem.jeesite.modules.service;
 
+import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.common.service.TreeService;
 import com.thinkgem.jeesite.modules.dao.AreaDao;
 import com.thinkgem.jeesite.modules.entity.Area;
@@ -43,8 +44,8 @@ public class AreaService extends TreeService<AreaDao, Area> {
 		UserUtils.removeCache(UserUtils.CACHE_AREA_LIST);
 	}
 
-	public List<Area> getCompanyList(){
-		return areaDao.getAreaByType("3");
+	public List<Area> getCountyList(){
+		return areaDao.getAreaByType(AreaTypeEnum.COUNTY.getValue());
 	}
 
 	public List<Area> getAreaByParentId(String parentId, String type){

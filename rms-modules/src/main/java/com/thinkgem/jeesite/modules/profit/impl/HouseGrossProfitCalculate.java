@@ -1,7 +1,8 @@
 package com.thinkgem.jeesite.modules.profit.impl;
 
+import com.thinkgem.jeesite.modules.cache.MyCache;
+import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContractDtl;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -53,6 +54,8 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     @Autowired
     private PropertyProjectService propertyProjectService;
+
+    private MyCache depositListCache = MyCacheBuilder.getInstance().getScheduledCache("deposit");
 
     @Override
     public String getName(GrossProfitCondition condition) {
@@ -128,6 +131,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         return 0;
     }
 
+    @SuppressWarnings("unchecked")
     private double calculateDepositSum(GrossProfitCondition condition) {
         List<LeaseContract> contractList = contractService.findLeaseContractListByHouseId(condition.getId());
         int startNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getStartDate()), false);
@@ -135,12 +139,14 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         //每份房屋只会对应一份租赁合同
         if (!CollectionUtils.isEmpty(contractList)) {
             LeaseContract contract = contractList.get(0);
-            List<LeaseContractDtl> contractDtlList = contract.getLeaseContractDtlList();
-            List<GrossProfitNumDeposit> depositList = contractDtlList.stream()
-                    .map(dtl -> DataParser.parse(dtl.getStartDate(), dtl.getEndDate(), dtl.getDeposit()))
-                    .filter(numDeposit -> !(numDeposit.getEnd() < startNum || numDeposit.getStart() > endNum))
-                    .sorted(Comparator.comparing(GrossProfitNumDeposit::getStart))
-                    .collect(Collectors.toList());
+            if (depositListCache.getObject(contract.getId()) == null) {
+                depositListCache.putObject(contract.getId(), contract.getLeaseContractDtlList().stream()
+                        .map(dtl -> DataParser.parse(dtl.getStartDate(), dtl.getEndDate(), dtl.getDeposit()))
+                        .filter(numDeposit -> !(numDeposit.getEnd() < startNum || numDeposit.getStart() > endNum))
+                        .sorted(Comparator.comparing(GrossProfitNumDeposit::getStart))
+                        .collect(Collectors.toList()));
+            }
+            List<GrossProfitNumDeposit> depositList = (List<GrossProfitNumDeposit>)depositListCache.getObject(contract.getId());
             return CollectionUtils.isEmpty(depositList) ? 0 : calculateDepositList(depositList, startNum, endNum);
         }
         return 0;

@@ -2,7 +2,7 @@ package com.thinkgem.jeesite.modules.common.enums;
 
 public interface SelectItemConstants {
 
-    String company = "company";
+    String county = "county";
 
     String center = "center";
 

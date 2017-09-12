@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class GrossProfitFormCondition {
 
-    private String company;
+    private String county;
 
     private String center;
 
@@ -24,12 +24,12 @@ public class GrossProfitFormCondition {
 
     private int endDay = 24;
 
-    public String getCompany() {
-        return company;
+    public String getCounty() {
+        return county;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setCounty(String county) {
+        this.county = county;
     }
 
     public String getCenter() {
@@ -101,7 +101,7 @@ public class GrossProfitFormCondition {
     }
 
     public boolean isAddressEmpty() {
-        return StringUtils.isEmpty(company) && StringUtils.isEmpty(center) && StringUtils.isEmpty(area)
+        return StringUtils.isEmpty(county) && StringUtils.isEmpty(center) && StringUtils.isEmpty(area)
                 && StringUtils.isEmpty(project) && StringUtils.isEmpty(house);
     }
 
