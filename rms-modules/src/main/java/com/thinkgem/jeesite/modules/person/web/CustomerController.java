@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.web;
 
 import java.util.List;
@@ -12,6 +9,7 @@ import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,10 +31,7 @@ import com.thinkgem.jeesite.modules.person.service.CustomerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 
 /**
- * 客户信息Controller
- * 
- * @author huangsc
- * @version 2015-06-06
+ * 客户
  */
 @Controller
 @RequestMapping(value = "${adminPath}/person/customer")
@@ -66,7 +61,7 @@ public class CustomerController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("person:customer:view")
+  @RequiresPermissions("person:customer:view")
   @RequestMapping(value = {"list", ""})
   public String list(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Customer> page = customerService.findPage(new Page<Customer>(request, response), customer);
@@ -75,7 +70,7 @@ public class CustomerController extends BaseController {
     return "modules/person/customerList";
   }
 
-  // @RequiresPermissions("person:customer:view")
+  @RequiresPermissions("person:customer:view")
   @RequestMapping(value = "form")
   public String form(Customer customer, Model model) {
     model.addAttribute("customer", customer);
@@ -83,7 +78,7 @@ public class CustomerController extends BaseController {
     return "modules/person/customerForm";
   }
 
-  // @RequiresPermissions("person:customer:edit")
+  @RequiresPermissions("person:customer:edit")
   @RequestMapping(value = "save")
   public String save(Customer customer, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, customer)) {
@@ -112,7 +107,7 @@ public class CustomerController extends BaseController {
 
   }
 
-  // @RequiresPermissions("person:customer:edit")
+  @RequiresPermissions("person:customer:edit")
   @RequestMapping(value = "delete")
   public String delete(Customer customer, RedirectAttributes redirectAttributes) {
     customerService.delete(customer);
@@ -123,7 +118,7 @@ public class CustomerController extends BaseController {
   /**
    * 由用户转为租客
    */
-  // @RequiresPermissions("person:customer:edit")
+  @RequiresPermissions("person:customer:edit")
   @RequestMapping(value = "convertToTenant")
   public String convertToTenant(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
     Tenant tenant = new Tenant();
@@ -142,7 +137,7 @@ public class CustomerController extends BaseController {
   /**
    * 客户转租客，保存租客信息。
    */
-  // @RequiresPermissions("person:customer:edit")
+  @RequiresPermissions("person:customer:edit")
   @RequestMapping(value = "saveTenant")
   public String saveTenant(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
     List<Tenant> tenants = tenantService.findTenantByIdTypeAndNo(tenant);

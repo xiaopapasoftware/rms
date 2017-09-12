@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +26,7 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 
 /**
- * 预约看房信息
+ * 预约看房
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/book")
@@ -48,6 +50,7 @@ public class ContractBookController extends BaseController {
     return entity;
   }
 
+  @RequiresPermissions("contract:contractBook:view")
   @RequestMapping(value = {"list", ""})
   public String list(ContractBook contractBook, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<ContractBook> page = contractBookService.findPage(new Page<ContractBook>(request, response), contractBook);
@@ -55,12 +58,14 @@ public class ContractBookController extends BaseController {
     return "modules/contract/contractBookList";
   }
 
+  @RequiresPermissions("contract:contractBook:view")
   @RequestMapping(value = "form")
   public String form(ContractBook contractBook, Model model) {
     model.addAttribute("contractBook", contractBook);
     return "modules/contract/contractBookForm";
   }
 
+  @RequiresPermissions("contract:contractBook:edit")
   @RequestMapping(value = "save")
   public String save(ContractBook contractBook, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, contractBook)) {
@@ -72,6 +77,7 @@ public class ContractBookController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 
+  @RequiresPermissions("contract:contractBook:edit")
   @RequestMapping(value = "confirm")
   public String confirm(ContractBook contractBook, RedirectAttributes redirectAttributes) {
     contractBook.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
@@ -89,6 +95,7 @@ public class ContractBookController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 
+  @RequiresPermissions("contract:contractBook:edit")
   @RequestMapping(value = "cancel")
   public String cancel(ContractBook contractBook, RedirectAttributes redirectAttributes) {
     contractBook.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);

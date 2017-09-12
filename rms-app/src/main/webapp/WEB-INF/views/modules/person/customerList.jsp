@@ -49,7 +49,9 @@
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<shiro:hasPermission name="person:customer:view">
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

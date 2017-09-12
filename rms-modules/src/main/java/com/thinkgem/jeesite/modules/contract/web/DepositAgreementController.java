@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,7 +63,7 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 
 /**
- * @author wangshujin
+ * 定金协议
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/depositAgreement")
@@ -104,14 +105,14 @@ public class DepositAgreementController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("contract:depositAgreement:view")
+  @RequiresPermissions("contract:depositAgreement:view")
   @RequestMapping(value = {""})
   public String listNoQuery(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
     initQueryCondition(model, depositAgreement);
     return "modules/contract/depositAgreementList";
   }
 
-  // @RequiresPermissions("contract:depositAgreement:view")
+  @RequiresPermissions("contract:depositAgreement:view")
   @RequestMapping(value = {"list"})
   public String listQuery(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<DepositAgreement> page = depositAgreementService.findPage(new Page<DepositAgreement>(request, response), depositAgreement);
@@ -170,7 +171,7 @@ public class DepositAgreementController extends BaseController {
     }
   }
 
-  // @RequiresPermissions("contract:depositAgreement:view")
+  @RequiresPermissions("contract:depositAgreement:view")
   @RequestMapping(value = "form")
   public String form(DepositAgreement depositAgreement, Model model) {
     model.addAttribute("depositAgreement", depositAgreement);
@@ -192,7 +193,6 @@ public class DepositAgreementController extends BaseController {
       List<Building> buildingList = buildingService.findList(building);
       model.addAttribute("buildingList", buildingList);
     }
-
     if (null != depositAgreement.getBuilding()) {
       House house = new House();
       Building building = new Building();
@@ -200,12 +200,9 @@ public class DepositAgreementController extends BaseController {
       house.setBuilding(building);
       house.setChoose("1");
       List<House> houseList = houseService.findList(house);
-      // if ("0".equals(depositAgreement.getRentMode()) && null !=
-      // depositAgreement.getHouse())
       houseList.add(houseService.get(depositAgreement.getHouse()));
       model.addAttribute("houseList", houseList);
     }
-
     if (null != depositAgreement.getHouse()) {
       Room room = new Room();
       House house = new House();
@@ -222,17 +219,15 @@ public class DepositAgreementController extends BaseController {
       }
       model.addAttribute("roomList", CollectionUtils.isNotEmpty(roomList) ? roomList : Lists.newArrayList());
     }
-
     List<Tenant> tenantList = tenantService.findList(new Tenant());
     model.addAttribute("tenantList", tenantList);
-
     return "modules/contract/depositAgreementForm";
   }
 
   /**
    * 牵涉到后台定金协议的新增、修改；以及APP端合同的修改保存
    */
-  // @RequiresPermissions("contract:depositAgreement:edit")
+  @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "save")
   public String save(DepositAgreement depositAgreement, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, depositAgreement) && ValidatorFlagEnum.SAVE.getValue().equals(depositAgreement.getValidatorFlag())) {
@@ -271,6 +266,7 @@ public class DepositAgreementController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
+  @RequiresPermissions("contract:depositAgreement:audit")
   @RequestMapping(value = "audit")
   public String audit(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     depositAgreementService.audit(auditHis);

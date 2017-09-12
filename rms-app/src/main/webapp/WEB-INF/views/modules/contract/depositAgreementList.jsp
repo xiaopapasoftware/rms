@@ -227,7 +227,9 @@
 				</form:select>
 			</li>
 			<li class="btns"><label style="width:60px;"></label>
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<shiro:hasPermission name="contract:depositAgreement:view">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				</shiro:hasPermission>
 				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
 			</li>
 			<li class="clearfix"></li>
