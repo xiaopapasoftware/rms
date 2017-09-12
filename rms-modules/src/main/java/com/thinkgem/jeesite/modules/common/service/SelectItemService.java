@@ -1,14 +1,5 @@
 package com.thinkgem.jeesite.modules.common.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
@@ -21,6 +12,14 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.service.AreaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SelectItemService {
@@ -56,8 +55,8 @@ public class SelectItemService {
   private List<SelectItem> getOrgSelectListByCondition(SelectItemCondition condition) {
     List<SelectItem> result = new ArrayList<>();
     switch (condition.getType()) {
-      case SelectItemConstants.company:
-        result = convertToItemList(areaService.getCompanyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
+      case SelectItemConstants.county:
+        result = convertToItemList(areaService.getCountyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
       case SelectItemConstants.center:
         result = convertToItemList(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.CENTER.getValue()).stream().collect(Collectors.toMap(Area::getId, Area::getName)));

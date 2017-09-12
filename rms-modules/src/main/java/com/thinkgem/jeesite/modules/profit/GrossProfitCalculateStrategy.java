@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class GrossProfitCalculateStrategy implements InitializingBean{
 
     @Autowired
-    private CompanyGrossProfitCalculate companyGrossProfitCalculate;
+    private CountyGrossProfitCalculate countyGrossProfitCalculate;
 
     @Autowired
     private CenterGrossProfitCalculate centerGrossProfitCalculate;
@@ -38,7 +38,7 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        strategyRegistry.put(GrossProfitTypeEnum.Company.getCode(), companyGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.County.getCode(), countyGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.Center.getCode(), centerGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.Area.getCode(), areaGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.Project.getCode(), projectGrossProfitCalculate);

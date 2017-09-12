@@ -42,10 +42,11 @@ public class GrossReportController extends BaseController {
    */
   @RequestMapping(value = "grossProfit")
   public String grossProfit(HttpServletRequest request, HttpServletResponse response, Model model) {
-    model.addAttribute("companyList", getCompanyList());
+    model.addAttribute("countyList", getCountyList());
     return "modules/report/gross/grossProfit";
   }
 
+//  @RequiresPermissions("report:gross:view")
   @RequestMapping(value = {"listGrossProfit"})
   @ResponseBody
   public List<GrossProfitReport> listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -86,16 +87,16 @@ public class GrossReportController extends BaseController {
       profitCondition.setTypeEnum(GrossProfitTypeEnum.Center);
       profitCondition.setId(condition.getCenter());
     } else {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Company);
-      profitCondition.setId(condition.getCompany());
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.County);
+      profitCondition.setId(condition.getCounty());
     }
     return profitCondition;
   }
 
-  private List<SelectItem> getCompanyList() {
+  private List<SelectItem> getCountyList() {
     SelectItemCondition condition = new SelectItemCondition();
     condition.setBusiness(SelectItemConstants.org);
-    condition.setType(SelectItemConstants.company);
+    condition.setType(SelectItemConstants.county);
     return selectItemService.getSelectListByBusinessCode(condition);
   }
 }

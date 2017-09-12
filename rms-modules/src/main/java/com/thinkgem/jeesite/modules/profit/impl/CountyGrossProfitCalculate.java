@@ -1,23 +1,22 @@
 package com.thinkgem.jeesite.modules.profit.impl;
 
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculate;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import com.thinkgem.jeesite.modules.service.AreaService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
-public class CompanyGrossProfitCalculate implements GrossProfitCalculate {
+public class CountyGrossProfitCalculate implements GrossProfitCalculate {
 
   @Autowired
   private AreaService areaService;
@@ -29,7 +28,7 @@ public class CompanyGrossProfitCalculate implements GrossProfitCalculate {
 
   @Override
   public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
-    return Optional.ofNullable(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.COMPANY.getValue())).map(list -> list.stream().map(center -> {
+    return Optional.ofNullable(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.CENTER.getValue())).map(list -> list.stream().map(center -> {
       GrossProfitCondition profitCondition = new GrossProfitCondition();
       BeanUtils.copyProperties(condition, profitCondition);
       profitCondition.setId(center.getId());
