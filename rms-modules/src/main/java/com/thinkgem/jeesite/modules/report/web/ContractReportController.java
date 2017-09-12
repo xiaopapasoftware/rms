@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.report.web;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +32,7 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.report.service.ContractReportService;
 import com.thinkgem.jeesite.modules.report.service.ReportComponentService;
 
-/**
- * @author wangganggang
- */
+
 @Controller
 @RequestMapping(value = "${adminPath}/report/contract/")
 public class ContractReportController extends BaseController {
@@ -64,7 +63,6 @@ public class ContractReportController extends BaseController {
   @RequestMapping("export")
   public void exportContract(HttpServletRequest request, HttpServletResponse response) {
     List<Sort> sorts = SortBuilder.create().addAsc("trc.id").end();
-    // Page page = PageHelper.startPage(StringUtils.isNull(request.getParameter("pageNum"), 1), StringUtils.isNull(request.getParameter("pageSize"), 15));
     List<Map> reportEntities = contractReportService.queryContract(getFilterParams(request), sorts);
     reportEntities = reportComponentService.fillTenantInfo(reportEntities);
     logger.debug("查询到合同数据为:" + reportEntities.toString());

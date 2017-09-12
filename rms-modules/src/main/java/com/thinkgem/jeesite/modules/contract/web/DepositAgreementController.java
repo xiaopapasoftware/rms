@@ -274,6 +274,7 @@ public class DepositAgreementController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/contract/depositAgreement/?repage";
   }
 
+  @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "cancel")
   public String cancel(AuditHis auditHis, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     auditHis.setAuditStatus(AuditStatusEnum.REFUSE.getValue());
@@ -286,6 +287,7 @@ public class DepositAgreementController extends BaseController {
   /**
    * 定金转违约，各分别生成一笔应出定金，一笔定金违约金，都是已经到账的。 如果有退费再生成退费款项。
    */
+  @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "breakContract")
   public String breakContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     Double refundAmount = depositAgreement.getRefundAmount();// 转违约，可能要退一点费用给客户，这里就是退费的金额
@@ -331,6 +333,7 @@ public class DepositAgreementController extends BaseController {
   /**
    * 撤销定金转违约 可撤销的定金协议状态为：已转违约、 定金转违约到账待登记、定金转违约到账待审核、定金转违约到账审核拒绝 4种
    */
+  @RequiresPermissions("contract:depositAgreement:backDoor")
   @RequestMapping(value = "backDoorRevokeBreak")
   public String backDoorRevokeBreak(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model, RedirectAttributes redirectAttributes) {
     String agreementId = depositAgreement.getId();
@@ -424,6 +427,7 @@ public class DepositAgreementController extends BaseController {
   /**
    * 转合同
    */
+  @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "intoContract")
   public String intoContract(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
     depositAgreement = depositAgreementService.get(depositAgreement.getId());
@@ -482,7 +486,7 @@ public class DepositAgreementController extends BaseController {
     return "modules/contract/rentContractAdd";
   }
 
-  // @RequiresPermissions("contract:depositAgreement:edit")
+  @RequiresPermissions("contract:depositAgreement:edit")
   @RequestMapping(value = "delete")
   public String delete(DepositAgreement depositAgreement, RedirectAttributes redirectAttributes) {
     depositAgreementService.delete(depositAgreement);

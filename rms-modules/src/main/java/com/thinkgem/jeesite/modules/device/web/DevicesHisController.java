@@ -1,11 +1,9 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.device.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +29,7 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
- * 设备变更信息Controller
- * 
- * @author huangsc
- * @version 2015-06-28
+ * 设备变更信息
  */
 @Controller
 @RequestMapping(value = "${adminPath}/device/devicesHis")
@@ -67,13 +62,12 @@ public class DevicesHisController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("device:devicesHis:view")
+  @RequiresPermissions("device:devicesHis:view")
   @RequestMapping(value = {"list", ""})
   public String list(DevicesHis devicesHis, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<DevicesHis> page = devicesHisService.findPage(new Page<DevicesHis>(request, response), devicesHis);
     model.addAttribute("page", page);
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));
-
     if (devicesHis.getPropertyProject() != null && StringUtils.isNotEmpty(devicesHis.getPropertyProject().getId())) {
       PropertyProject pp = new PropertyProject();
       pp.setId(devicesHis.getPropertyProject().getId());
@@ -81,7 +75,6 @@ public class DevicesHisController extends BaseController {
       bd.setPropertyProject(pp);
       model.addAttribute("buildingList", buildingService.findList(bd));
     }
-
     if (devicesHis.getBuilding() != null && StringUtils.isNotEmpty(devicesHis.getBuilding().getId())) {
       Building bd = new Building();
       bd.setId(devicesHis.getBuilding().getId());
@@ -89,7 +82,6 @@ public class DevicesHisController extends BaseController {
       h.setBuilding(bd);
       model.addAttribute("houseList", houseService.findList(h));
     }
-
     if (devicesHis.getHouse() != null && StringUtils.isNotEmpty(devicesHis.getHouse().getId())) {
       House h = new House();
       h.setId(devicesHis.getHouse().getId());
@@ -97,18 +89,17 @@ public class DevicesHisController extends BaseController {
       r.setHouse(h);
       model.addAttribute("roomList", roomService.findList(r));
     }
-
     return "modules/device/devicesHisList";
   }
 
-  // @RequiresPermissions("device:devicesHis:view")
+  @RequiresPermissions("device:devicesHis:view")
   @RequestMapping(value = "form")
   public String form(DevicesHis devicesHis, Model model) {
     model.addAttribute("devicesHis", devicesHis);
     return "modules/device/devicesHisForm";
   }
 
-  // @RequiresPermissions("device:devicesHis:edit")
+  @RequiresPermissions("device:devices:edit")
   @RequestMapping(value = "save")
   public String save(DevicesHis devicesHis, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, devicesHis)) {
@@ -119,7 +110,7 @@ public class DevicesHisController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/device/devicesHis/?repage";
   }
 
-  // @RequiresPermissions("device:devicesHis:edit")
+  @RequiresPermissions("device:devices:edit")
   @RequestMapping(value = "delete")
   public String delete(DevicesHis devicesHis, RedirectAttributes redirectAttributes) {
     devicesHisService.delete(devicesHis);

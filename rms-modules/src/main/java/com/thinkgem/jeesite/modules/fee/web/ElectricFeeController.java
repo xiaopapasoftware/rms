@@ -46,8 +46,6 @@ import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
  * 电费管理
- * 
- * @author wangshujin
  */
 @Controller
 @RequestMapping(value = "${adminPath}/fee/electricFee")

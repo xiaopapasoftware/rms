@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.device.web;
 
 import java.util.Date;
@@ -11,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,10 +27,7 @@ import com.thinkgem.jeesite.modules.device.entity.Devices;
 import com.thinkgem.jeesite.modules.device.service.DevicesService;
 
 /**
- * 设备信息Controller
- * 
- * @author huangsc
- * @version 2015-06-13
+ * 设备信息
  */
 @Controller
 @RequestMapping(value = "${adminPath}/device/devices")
@@ -53,7 +48,7 @@ public class DevicesController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("device:devices:view")
+  @RequiresPermissions("device:devices:view")
   @RequestMapping(value = {"list", ""})
   public String list(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Devices> page = devicesService.findPage(new Page<Devices>(request, response), devices);
@@ -61,6 +56,7 @@ public class DevicesController extends BaseController {
     return "modules/device/devicesList";
   }
 
+  @RequiresPermissions("device:roomDevices:edit")
   @RequestMapping(value = {"deviceDialog"})
   public String deviceDialog(Devices devices, HttpServletRequest request, HttpServletResponse response, Model model) {
     devices.setDeviceStatus("0");
@@ -69,14 +65,14 @@ public class DevicesController extends BaseController {
     return "modules/device/deviceDialog";
   }
 
-  // @RequiresPermissions("device:devices:view")
+  @RequiresPermissions("device:devices:view")
   @RequestMapping(value = "form")
   public String form(Devices devices, Model model) {
     model.addAttribute("devices", devices);
     return "modules/device/devicesForm";
   }
 
-  // @RequiresPermissions("device:devices:edit")
+  @RequiresPermissions("device:devices:edit")
   @RequestMapping(value = "save")
   public String save(Devices devices, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, devices)) {
@@ -104,7 +100,7 @@ public class DevicesController extends BaseController {
     }
   }
 
-  // @RequiresPermissions("device:devices:edit")
+  @RequiresPermissions("device:devices:edit")
   @RequestMapping(value = "delete")
   public String delete(Devices devices, RedirectAttributes redirectAttributes) {
     devicesService.delete(devices);
@@ -124,6 +120,7 @@ public class DevicesController extends BaseController {
     devicesService.updateDevicesStatus(upDevices);
   }
 
+  @RequiresPermissions("device:devices:edit")
   @RequestMapping(value = "updateDevicesChooseFlag")
   @ResponseBody
   public void updateDevicesChooseFlag(String id, String status) {

@@ -104,10 +104,6 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 
-/**
- * @author huangsc
- * @author wangshujin
- */
 @RestController
 @RequestMapping(value = "${apiPath}/house")
 public class AppHouseController extends AppBaseController {

@@ -52,7 +52,9 @@
 			<li><label style="width:100px;">设备分配序号：</label>
 				<form:input path="distrSerlNum" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
 			</li>
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			<shiro:hasPermission name="device:devices:view">
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>

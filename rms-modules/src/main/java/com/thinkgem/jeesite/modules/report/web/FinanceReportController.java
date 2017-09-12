@@ -26,10 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-/**
- * @author wangganggang
- */
+ 
 @Controller
 @RequestMapping(value = "${adminPath}/report/finance/")
 public class FinanceReportController extends BaseController {
@@ -46,8 +43,7 @@ public class FinanceReportController extends BaseController {
     public String redirectPutIndex() {
         return "modules/report/finance/financeOutReport";
     }
-
-
+ 
     @RequestMapping("query")
     @ResponseBody
     public Object queryFinance(HttpServletRequest request) {
