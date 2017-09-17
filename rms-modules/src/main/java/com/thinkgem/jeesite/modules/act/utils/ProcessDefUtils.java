@@ -1,8 +1,5 @@
 package com.thinkgem.jeesite.modules.act.utils;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.delegate.Expression;
 import org.activiti.engine.impl.RepositoryServiceImpl;
@@ -13,7 +10,9 @@ import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
 import org.activiti.engine.impl.task.TaskDefinition;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.log4j.Logger;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * 流程定义相关操作的封装
@@ -37,10 +36,6 @@ public abstract class ProcessDefUtils {
 		FieldUtils.writeField(taskDefinition, "candidateUserIdExpressions", ExpressionUtils.stringToExpressionSet(candidateUserIdExpressions), true);
 		FieldUtils
 				.writeField(taskDefinition, "candidateGroupIdExpressions", ExpressionUtils.stringToExpressionSet(candidateGroupIdExpressions), true);
-
-		Logger.getLogger(ProcessDefUtils.class).info(
-				String.format("granting previledges for [%s, %s, %s] on [%s, %s]", assigneeExpression, candidateGroupIdExpressions,
-						candidateUserIdExpressions, activity.getProcessDefinition().getKey(), activity.getProperty("name")));
 	}
 
 	/**
