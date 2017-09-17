@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.web;
 
 import java.util.List;
@@ -8,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,9 +31,7 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 
 /**
- * 广告管理Controller
- * 
- * @author huangsc
+ * 广告管理
  */
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/ad")
@@ -64,6 +60,7 @@ public class HouseAdController extends BaseController {
     return entity;
   }
 
+  @RequiresPermissions("inventory:ad:view")
   @RequestMapping(value = {"list", ""})
   public String list(HouseAd houseAd, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<HouseAd> page = houseAdService.findPage(new Page<HouseAd>(request, response), houseAd);
@@ -71,10 +68,10 @@ public class HouseAdController extends BaseController {
     return "modules/inventory/houseAdList";
   }
 
+  @RequiresPermissions("inventory:ad:view")
   @RequestMapping(value = "form")
   public String form(HouseAd houseAd, Model model) {
     model.addAttribute("houseAd", houseAd);
-
     model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
     if (null != houseAd.getPropertyProject()) {
       Building building = new Building();
@@ -116,6 +113,7 @@ public class HouseAdController extends BaseController {
     return "modules/inventory/houseAdForm";
   }
 
+  @RequiresPermissions("inventory:ad:edit")
   @RequestMapping(value = "save")
   public String save(HouseAd houseAd, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, houseAd)) {
@@ -126,6 +124,7 @@ public class HouseAdController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/inventory/ad/?repage";
   }
 
+  @RequiresPermissions("inventory:ad:edit")
   @RequestMapping(value = "delete")
   public String delete(HouseAd houseAd, RedirectAttributes redirectAttributes) {
     houseAdService.delete(houseAd);

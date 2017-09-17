@@ -6,7 +6,6 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
 			adTypeChange();
 			$("#inputForm").validate({
 				submitHandler: function(form){

@@ -47,12 +47,13 @@
                 <i class="ace-icon fa fa-undo"></i> 重置
             </a>
         </div>
-        <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-search" class="white btn-search">
-                <i class="ace-icon fa fa-search"></i> 查询
-            </a>
-        </div>
-
+        <shiro:hasPermission name="report:finance:view">
+	        <div class="widget-toolbar no-border">
+	            <a href="javascript:void(0);" id="btn-search" class="white btn-search">
+	                <i class="ace-icon fa fa-search"></i> 查询
+	            </a>
+	        </div>
+        </shiro:hasPermission>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
@@ -106,11 +107,13 @@
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header">
         <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>进账流水列表 (单位:元)</h4>
-        <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-export" class="white">
-                <i class="ace-icon fa fa-download"></i> 导出
-            </a>
-        </div>
+        <shiro:hasPermission name="report:finance:view">
+	        <div class="widget-toolbar no-border">
+	            <a href="javascript:void(0);" id="btn-export" class="white">
+	                <i class="ace-icon fa fa-download"></i> 导出
+	            </a>
+	        </div>
+        </shiro:hasPermission>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">

@@ -18,7 +18,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="#">广告管理列表</a></li>
+		<shiro:hasPermission name="inventory:ad:view"><li class="active"><a href="#">广告管理列表</a></li></shiro:hasPermission>
 		<shiro:hasPermission name="inventory:ad:edit"><li><a href="${ctx}/inventory/ad/form">广告管理添加</a></li></shiro:hasPermission>
 	</ul>
 	<sys:message content="${message}" type="${messageType}"/>

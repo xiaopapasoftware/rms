@@ -27,7 +27,6 @@ public class AppBaseController {
     return ResponseData.failure(e.getCode()).message(e.getMessage());
   }
 
-
   @ExceptionHandler({Exception.class})
   @ResponseBody
   public ResponseData bindException(Exception e) {
