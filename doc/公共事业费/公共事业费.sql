@@ -47,12 +47,12 @@ create table fee_config
    show_name            varchar(200) comment '范围名称',
    config_value         varchar(64) not null default '0' comment '配置的值',
    config_status        int not null default 0 comment '配置状态 0:启用 1停用',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -65,7 +65,7 @@ create table fee_ele_charged_flow
 (
    id                   varchar(64) not null comment '内码',
    business_id          varchar(120) comment '关联业务ID',
-   from_source          int 0: 抄表1: 账单2:固定模式 not null default '0' comment '来源',
+   from_source          int not null default '0' comment '来源 0: 抄表1: 账单2:固定模式',
    order_no             varchar(120) comment '订单号',
    property_id          varchar(64) comment '物业ID',
    house_id             varchar(64) not null comment '房屋ID',
@@ -77,12 +77,12 @@ create table fee_ele_charged_flow
    ele_peak_amount      numeric(8,2) not null default 0 comment '峰金额',
    ele_valley_amount    numeric(8,2) not null default 0 comment '谷金额',
    generate_order       int not null default 0 comment '是否已生成订单 0:是 -1:否 ',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -104,12 +104,12 @@ create table fee_ele_read_flow
    ele_degree           float default 0 comment '电表额度',
    ele_peak_degree      float default 0 comment '峰值数',
    ele_valley_degree    float default 0 comment '谷值数',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -130,12 +130,12 @@ create table fee_electricity_bill
    ele_peak_degree      float not null default 0 comment '峰值数',
    ele_valley_degree    float not null default 0 comment '谷值数',
    bill_status          int not null default 0 comment '状态 0:待提交1:待审核 2:审核通过 3:审核驳回',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -155,12 +155,12 @@ create table fee_gas_bill
    gas_bill_amount      numeric(8,2) not null default 0 comment '账单金额',
    gas_degree           float not null default 0 comment '仪表额度',
    bill_status          int not null default 0 comment '状态 0:待提交1:待审核 2:审核通过 3:审核驳回',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -183,12 +183,12 @@ create table fee_gas_charged_flow
    gas_calculate_date   datetime not null comment '计算时间',
    gas_amount           numeric(8,2) not null default 0 comment '收取金额',
    generate_order       int not null default 0 comment '是否已生成订单 0:是 -1:否 ',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -207,12 +207,12 @@ create table fee_gas_read_flow
    house_gas_num        varchar(60) comment '户号',
    gas_read_date        datetime not null comment '抄表日期',
    gas_degree           float not null default 0 comment '仪表额度',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -235,12 +235,12 @@ create table fee_order
    order_date           datetime not null comment '订单时间',
    amount               numeric(8,2) not null default 0 comment '账单金额',
    order_status         int not null default 0 comment '状态 0:待审核1:待缴费2：已缴3：驳回 ',
-   del_flag             bigint not null default 0,
-   create_user_id       varchar(64),
-   create_time          datetime,
-   update_user_id       varchar(64),
-   update_time          datetime,
-   remark               varchar(200),
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (order_no)
 );
 
@@ -262,12 +262,12 @@ create table fee_order_account
    pay_date             datetime not null comment '支付时间',
    amount               numeric(8,2) not null default 0 comment '账单金额',
    order_status         int not null default 0 comment '状态 0:待审核1:待缴费2：已缴3：驳回 ',
-   del_flag             bigint not null default 0,
-   create_user_id       varchar(64),
-   create_time          datetime,
-   update_user_id       varchar(64),
-   update_time          datetime,
-   remark               varchar(200)
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记'
 );
 
 alter table fee_order_account comment '订单台账';
@@ -286,12 +286,12 @@ create table fee_other_bill
    bill_amount          numeric(8,2) not null default 0 comment '账单金额',
    Bill_type            float not null default 0 comment '仪表额度',
    bill_status          int not null default 0 comment '状态 0:待提交1:待审核 2:审核通过 3:审核驳回',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -311,12 +311,12 @@ create table fee_other_charged_flow
    amount               numeric(8,2) not null default 0 comment '收取金额',
    type                 int not null default 0 comment '账单类型 0:宽带 1:电视 2:其它',
    generate_order       int not null default 0 comment '是否已生成订单 0:是 -1:否 ',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -336,12 +336,12 @@ create table fee_water_bill
    water_bill_amount    numeric(8,2) not null default 0 comment '账单金额',
    water_degree         float not null default 0 comment '水表读数',
    bill_status          int not null default 0 comment '状态 0:待提交1:待审核 2:审核通过 3:审核驳回',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -364,12 +364,12 @@ create table fee_water_charged_flow
    water_calculate_date date not null comment '计算时间',
    water_amount         numeric(8,2) not null default 0 comment '收取金额',
    generate_order       bigint not null default 0 comment '是否已生成订单 0:是 -1:否 ',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -388,12 +388,12 @@ create table fee_water_read_flow
    house_water_num      varchar(60) comment '户号',
    water_read_date      datetime not null comment '抄表日期',
    water_degree         float not null default 0 comment '仪表额度',
-   del_flag             bigint not null default 0 comment '是否删除 0：正常；1：删除',
-   create_user_id       varchar(64) comment '创建人ID',
-   create_time          datetime comment '创建时间',
-   update_user_id       varchar(64) comment '修改人ID',
-   update_time          datetime comment '修改时间',
-   remark               varchar(200) comment '备注',
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (id)
 );
 
@@ -409,12 +409,12 @@ create table process_flow
    handler_date         datetime not null comment '处理时间',
    handler_result       int not null comment '处理结果 0:提交 1:通过 2:驳回',
    description          varchar(200) comment '处理说明',
-   del_flag             bigint not null default 0,
-   create_user_id       varchar(64),
-   create_time          datetime,
-   update_user_id       varchar(64),
-   update_time          datetime,
-   remark               varchar(200),
+   create_by            varchar(64) comment '创建者',
+   create_date          datetime comment '创建时间',
+   update_by            varchar(64) comment '更新者',
+   update_date          timestamp comment '更新时间',
+   remarks              varchar(255) comment '备注信息',
+   del_flag             char(1) default '0' not null comment '删除标记',
    primary key (business_id, sort_no)
 );
 
