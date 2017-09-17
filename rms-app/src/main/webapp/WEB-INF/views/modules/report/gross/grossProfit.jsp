@@ -103,8 +103,9 @@
 				<input name="endDate" id="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});" />
 			</li>
-
-			<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
+			<shiro:hasPermission name="report:gross:view">
+				<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
+			</shiro:hasPermission>
 		</ul>
 	</form:form>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
