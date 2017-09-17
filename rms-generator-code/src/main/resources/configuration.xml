@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<configuration>
+    <classpath>
+        <entry>lib/ojdbc14.jar</entry>
+        <entry>lib/sqljdbc4.jar</entry>
+        <entry>lib/mysql-connector-java-5.1.36-bin.jar</entry>
+        <entry>lib/postgresql-8.2-505.jdbc2.jar</entry>
+    </classpath>
+    <connections>
+        <database name="rms">
+            <driverClass>com.mysql.jdbc.Driver</driverClass>
+            <url>jdbc:mysql://139.196.83.11:3306/temprms</url>
+            <username>test</username>
+            <password>test</password>
+            <schema/>
+        </database>
+
+    </connections>
+    <tagertProject>temp</tagertProject>
+    <basePackage>com.thinkgem.jeesite.modules</basePackage>
+    <moduleName>fee</moduleName>
+    <templates>
+        <template engine="freemarker" name="控制类" selected="true">
+            <templateFile>controller.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.web</targetPath>
+            <targetFileName>${table.className}Controller.java</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+        <template engine="freemarker" name="服务类接口" selected="true">
+            <templateFile>service.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.service</targetPath>
+            <targetFileName>${table.className}Service.java</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+        <template engine="freemarker" name="服务类实现" selected="true">
+            <templateFile>serviceImpl.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.service.impl</targetPath>
+            <targetFileName>${table.className}ServiceImpl.java</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+        <template engine="freemarker" name="实体类" selected="true">
+            <templateFile>model.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.entity</targetPath>
+            <targetFileName>${table.className}.java</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+        <template engine="freemarker" name="Mapping类" selected="true">
+            <templateFile>mapper.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.dao</targetPath>
+            <targetFileName>${table.className}Dao.java</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+        <template engine="freemarker" name="MappingSql类" selected="true">
+            <templateFile>mappersql.ftl</templateFile>
+            <targetPath>${tagertProject}\src\${basePackage}.${moduleName}.mapper</targetPath>
+            <targetFileName>${table.className}Mapper.xml</targetFileName>
+            <encoding>UTF-8</encoding>
+        </template>
+    </templates>
+</configuration>

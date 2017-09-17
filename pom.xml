@@ -23,6 +23,7 @@
         <module>rms-security</module>
         <module>rms-base</module>
         <module>rms-fee</module>
+        <module>rms-generator-code</module>
     </modules>
 
 
@@ -61,6 +62,7 @@
         <poi.version>3.9</poi.version>
         <jxl.version>2.6.12</jxl.version>
         <freemarker.version>2.3.23</freemarker.version>
+        <velocity.version>1.7</velocity.version>
 
         <!-- jdbc driver setting -->
         <mysql.driver.version>5.1.30</mysql.driver.version>
@@ -474,7 +476,11 @@
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
             <!-- email -->
             <!--<dependency> <groupId>javax.mail</groupId> <artifactId>mail</artifactId>
                 <version>1.4.7</version> </dependency> -->
