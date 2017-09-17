@@ -41,6 +41,7 @@ public class GrossReportController extends BaseController {
   /**
    * 毛利率统计报表-查询
    */
+  @RequiresPermissions("report:gross:view")
   @RequestMapping(value = "grossProfit")
   public String grossProfit(HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("countyList", getCountyList());
