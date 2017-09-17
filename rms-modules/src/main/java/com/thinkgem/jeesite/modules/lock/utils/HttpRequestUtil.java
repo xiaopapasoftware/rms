@@ -1,16 +1,17 @@
 package com.thinkgem.jeesite.modules.lock.utils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
-
-import org.apache.log4j.Logger;
 
 public class HttpRequestUtil {
 	//public static final String GET_URL = "http://115.28.141.204:8090/openapi/v1";
@@ -21,7 +22,7 @@ public class HttpRequestUtil {
 
     public static final String POST_URL = "http://115.28.141.204:8090/openapi/v1";
 	
-	private static Logger logger = Logger.getLogger(HttpRequestUtil.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpRequestUtil.class);
 
 	public static String readContentFromGet(String url, String method,  Map<String, Object> paramsMap) throws Exception {
 		logger.debug("=============" + method);

@@ -152,14 +152,6 @@ var ERDF = {
 	log: undefined,
 
 	init: function(callback) {
-		
-		// init logging.
-		//ERDF.log = Log4js.getLogger("oryx");
-		//ERDF.log.setLevel(Log4js.Level.ALL);
-		//ERDF.log.addAppender(new ConsoleAppender(ERDF.log, false));
-
-		//if(ERDF.log.isTraceEnabled())
-		//	ERDF.log.trace("ERDF Parser is initialized.");
 
 		// register callbacks and default schemas.
 		ERDF.callback = callback;
