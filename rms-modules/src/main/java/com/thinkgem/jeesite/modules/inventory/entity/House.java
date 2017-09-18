@@ -57,6 +57,11 @@ public class House extends DataEntity<House> {
   private User serviceUser;// 服务管家
   private String servcieUserName;
 
+  /*电户号*/
+  private String eleNum;
+  /*0:整租1:合租*/
+  private String rentMethod;
+
   public House() {
     super();
   }
@@ -324,5 +329,21 @@ public class House extends DataEntity<House> {
 
   public void setServcieUserName(String servcieUserName) {
     this.servcieUserName = servcieUserName;
+  }
+
+  public String getEleNum() {
+    return eleNum;
+  }
+
+  public void setEleNum(String eleNum) {
+    this.eleNum = eleNum;
+  }
+
+  public String getRentMethod() {
+    return rentMethod;
+  }
+
+  public void setRentMethod(String rentMethod) {
+    this.rentMethod = rentMethod;
   }
 }

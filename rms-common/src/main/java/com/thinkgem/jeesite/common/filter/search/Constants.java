@@ -22,6 +22,6 @@ public class Constants {
     public final static int YES = 0;
     public final static int NO = -1;
 
-    public final static String DEL_FLAG_YES="0";
-    public final static String DEL_FLAG_NO="1";
+    public final static String DEL_FLAG_NO="0";
+    public final static String DEL_FLAG_YES="1";
 }

@@ -13,7 +13,7 @@
     <map sqlType="DECIMAL" javaType="BigDecimal" fullJavaType="java.math.BigDecimal" />
     <map sqlType="DISTINCT" javaType="Object" fullJavaType="java.lang.Object" />
     <map sqlType="DOUBLE" javaType="Double" fullJavaType="java.lang.Double" />
-    <map sqlType="FLOAT" javaType="Double" fullJavaType="java.lang.Double" />
+    <map sqlType="FLOAT" javaType="FLOAT" fullJavaType="java.lang.FLOAT" />
     <map sqlType="INTEGER" javaType="Integer" fullJavaType="java.lang.Integer" />
     <map sqlType="JAVA_OBJECT" javaType="Object" fullJavaType="java.lang.Object" />
     <map sqlType="LONGNVARCHAR" javaType="String" fullJavaType="java.lang.String" />
