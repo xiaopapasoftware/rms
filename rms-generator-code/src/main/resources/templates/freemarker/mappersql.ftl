@@ -64,7 +64,7 @@
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="${basePackage}.${moduleName}.model.${table.className}" useGeneratedKeys="true" keyProperty="<#list table.primaryKeys as column>${column.javaProperty}</#list>">
+    <insert id="insert" parameterType="${basePackage}.${moduleName}.entity.${table.className}" useGeneratedKeys="true" keyProperty="<#list table.primaryKeys as column>${column.javaProperty}</#list>">
         insert into ${table.tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -93,24 +93,18 @@
         where <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </delete>
 
-    <delete id="delete" parameterType="${basePackage}.${moduleName}.model.${table.className}">
+    <delete id="delete" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
         delete from ${table.tableName}
         <include refid="where"/>
     </delete>
     <!-- end delete -->
 
     <!-- update -->
-    <update id="update" parameterType="${basePackage}.${moduleName}.model.${table.className}">
+    <update id="update" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
         update ${table.tableName}
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
-    </update>
-
-    <update id="deleteById" parameterType="<#list table.primaryKeys as key>${key.fullJavaType}</#list>">
-        update ${table.tableName}
-        set del_flag=1
         where <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </update>
 
@@ -131,12 +125,12 @@
             <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.model.${table.className}">
+    <select id="findAllList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
         select <include refid="Base_Column_List"/> from ${table.tableName}
         <include refid="where"/>
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.model.${table.className}">
+    <select id="findList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
         select <include refid="Base_Column_List"/> from ${table.tableName}
         <include refid="where"/>
     </select>

@@ -10,12 +10,12 @@
         <result column="house_ele_num" property="houseEleNum" jdbcType="VARCHAR"/>
         <result column="ele_bill_date" property="eleBillDate" jdbcType="TIMESTAMP"/>
         <result column="ele_bill_amount" property="eleBillAmount" jdbcType="NUMERIC"/>
-        <result column="ele_peak_degree" property="elePeakDegree" jdbcType=""/>
-        <result column="ele_valley_degree" property="eleValleyDegree" jdbcType=""/>
+        <result column="ele_peak_degree" property="elePeakDegree" jdbcType="NUMERIC"/>
+        <result column="ele_valley_degree" property="eleValleyDegree" jdbcType="NUMERIC"/>
         <result column="bill_status" property="billStatus" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
@@ -140,7 +140,7 @@
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.model.FeeElectricityBill" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill" useGeneratedKeys="true" keyProperty="id">
         insert into fee_electricity_bill
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -169,24 +169,18 @@
         where  id = #{id,jdbcType=VARCHAR}  
     </delete>
 
-    <delete id="delete" parameterType="com.thinkgem.jeesite.modules.fee.electricity.model.FeeElectricityBill">
+    <delete id="delete" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         delete from fee_electricity_bill
         <include refid="where"/>
     </delete>
     <!-- end delete -->
 
     <!-- update -->
-    <update id="update" parameterType="com.thinkgem.jeesite.modules.fee.electricity.model.FeeElectricityBill">
+    <update id="update" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         update fee_electricity_bill
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where  id = #{id,jdbcType=VARCHAR}  
-    </update>
-
-    <update id="deleteById" parameterType="java.lang.String">
-        update fee_electricity_bill
-        set del_flag=1
         where  id = #{id,jdbcType=VARCHAR}  
     </update>
 
@@ -214,12 +208,12 @@
         id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.model.FeeElectricityBill">
+    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         select <include refid="Base_Column_List"/> from fee_electricity_bill
         <include refid="where"/>
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.model.FeeElectricityBill">
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         select <include refid="Base_Column_List"/> from fee_electricity_bill
         <include refid="where"/>
     </select>
