@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<#assign updNotNeed = ["createUserId", "createTime","createOprId"]>
+<#assign updNotNeed = ["createBy", "createDate"]>
+<#assign whereNotNeed = ["createBy", "createDate","updateBy","updateDate","remarks"]>
 <mapper namespace="${basePackage}.${moduleName}.dao.${table.className}Dao">
 
     <resultMap id="BaseResultMap"  type="${basePackage}.${moduleName}.entity.${table.className}">
@@ -31,12 +32,16 @@
 
     <sql id="Update_Set_From_Bean">
     <#list table.baseColumns as column>
+        <#if updNotNeed?seq_contains(column.javaProperty)><#else>
         <if test="${column.javaProperty}!=null"> ${column.columnName}=${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}},</if>
+        </#if>
     </#list>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
     <#list table.baseColumns as column>
+        <#if updNotNeed?seq_contains(column.javaProperty)><#else>
         ${column.columnName}=${r'#{item.'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}},
+        </#if>
     </#list>
     </sql>
 
@@ -44,12 +49,14 @@
     <sql id="where">
         <where>
         <#list table.columns as col>
+        <#if whereNotNeed?seq_contains(col.javaProperty)><#else>
         <#if col.javaType== 'java.lang.Integer' ||  col.columnClass == 'java.lang.Double' ||  col.columnClass == 'java.lang.Long' ||col.columnClass == 'java.lang.BigDecimal' >
-         <if test="${col.columnName}!=null">AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
+            <if test="${col.javaProperty}!=null">AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
         <#elseif col.javaProperty = 'delFlag'>
             AND a.${col.columnName} = 0
         <#else>
-            <if test="${col.columnName}!=null and ${col.columnName}!=''"> AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
+            <if test="${col.javaProperty}!=null and ${col.javaProperty}!=''"> AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
+        </#if>
         </#if>
         </#list>
         </where>

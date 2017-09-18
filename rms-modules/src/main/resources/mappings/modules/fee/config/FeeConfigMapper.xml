@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.thinkgem.jeesite.modules.fee.config.dao.FeeConfigDao">
+
+    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="fee_type" property="feeType" jdbcType="NUMERIC"/>
+        <result column="config_type" property="configType" jdbcType="NUMERIC"/>
+        <result column="charge_method" property="chargeMethod" jdbcType="NUMERIC"/>
+        <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
+        <result column="show_name" property="showName" jdbcType="VARCHAR"/>
+        <result column="config_value" property="configValue" jdbcType="VARCHAR"/>
+        <result column="config_status" property="configStatus" jdbcType="NUMERIC"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+         id, fee_type, config_type, charge_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag,
+    </sql>
+
+    <sql id="Insert_Columns">
+        <if test="id!=null"> id,</if>
+        <if test="feeType!=null"> fee_type,</if>
+        <if test="configType!=null"> config_type,</if>
+        <if test="chargeMethod!=null"> charge_method,</if>
+        <if test="businessId!=null"> business_id,</if>
+        <if test="showName!=null"> show_name,</if>
+        <if test="configValue!=null"> config_value,</if>
+        <if test="configStatus!=null"> config_status,</if>
+        <if test="createBy!=null"> create_by,</if>
+        <if test="createDate!=null"> create_date,</if>
+        <if test="updateBy!=null"> update_by,</if>
+        <if test="updateDate!=null"> update_date,</if>
+        <if test="remarks!=null"> remarks,</if>
+        <if test="delFlag!=null"> del_flag,</if>
+    </sql>
+    <sql id="Insert_Values">
+        <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
+        <if test="feeType!=null">#{feeType,jdbcType=NUMERIC},</if>
+        <if test="configType!=null">#{configType,jdbcType=NUMERIC},</if>
+        <if test="chargeMethod!=null">#{chargeMethod,jdbcType=NUMERIC},</if>
+        <if test="businessId!=null">#{businessId,jdbcType=VARCHAR},</if>
+        <if test="showName!=null">#{showName,jdbcType=VARCHAR},</if>
+        <if test="configValue!=null">#{configValue,jdbcType=VARCHAR},</if>
+        <if test="configStatus!=null">#{configStatus,jdbcType=NUMERIC},</if>
+        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
+        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
+    </sql>
+    <sql id="Batch_Insert_Values">
+        #{item.id,jdbcType=VARCHAR},
+        #{item.feeType,jdbcType=NUMERIC},
+        #{item.configType,jdbcType=NUMERIC},
+        #{item.chargeMethod,jdbcType=NUMERIC},
+        #{item.businessId,jdbcType=VARCHAR},
+        #{item.showName,jdbcType=VARCHAR},
+        #{item.configValue,jdbcType=VARCHAR},
+        #{item.configStatus,jdbcType=NUMERIC},
+        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createDate,jdbcType=TIMESTAMP},
+        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateDate,jdbcType=TIMESTAMP},
+        #{item.remarks,jdbcType=VARCHAR},
+        #{item.delFlag,jdbcType=VARCHAR},
+    </sql>
+
+    <sql id="Update_Set_From_Bean">
+        <if test="feeType!=null"> fee_type=#{feeType,jdbcType=NUMERIC},</if>
+        <if test="configType!=null"> config_type=#{configType,jdbcType=NUMERIC},</if>
+        <if test="chargeMethod!=null"> charge_method=#{chargeMethod,jdbcType=NUMERIC},</if>
+        <if test="businessId!=null"> business_id=#{businessId,jdbcType=VARCHAR},</if>
+        <if test="showName!=null"> show_name=#{showName,jdbcType=VARCHAR},</if>
+        <if test="configValue!=null"> config_value=#{configValue,jdbcType=VARCHAR},</if>
+        <if test="configStatus!=null"> config_status=#{configStatus,jdbcType=NUMERIC},</if>
+        <if test="createBy!=null"> create_by=#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createDate!=null"> create_date=#{createDate,jdbcType=TIMESTAMP},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+    </sql>
+    <sql id="BatchUpdate_Set_From_Bean">
+        fee_type=#{item.feeType,jdbcType=NUMERIC},
+        config_type=#{item.configType,jdbcType=NUMERIC},
+        charge_method=#{item.chargeMethod,jdbcType=NUMERIC},
+        business_id=#{item.businessId,jdbcType=VARCHAR},
+        show_name=#{item.showName,jdbcType=VARCHAR},
+        config_value=#{item.configValue,jdbcType=VARCHAR},
+        config_status=#{item.configStatus,jdbcType=NUMERIC},
+        create_by=#{item.createBy,jdbcType=VARCHAR},
+        create_date=#{item.createDate,jdbcType=TIMESTAMP},
+        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_date=#{item.updateDate,jdbcType=TIMESTAMP},
+        remarks=#{item.remarks,jdbcType=VARCHAR},
+        del_flag=#{item.delFlag,jdbcType=VARCHAR},
+    </sql>
+
+    <!--where-->
+    <sql id="where">
+        <where>
+            <if test="id!=null and id!=''"> AND id=#{id}</if>
+            <if test="fee_type!=null and fee_type!=''"> AND fee_type=#{feeType}</if>
+            <if test="config_type!=null and config_type!=''"> AND config_type=#{configType}</if>
+            <if test="charge_method!=null and charge_method!=''"> AND charge_method=#{chargeMethod}</if>
+            <if test="business_id!=null and business_id!=''"> AND business_id=#{businessId}</if>
+            <if test="show_name!=null and show_name!=''"> AND show_name=#{showName}</if>
+            <if test="config_value!=null and config_value!=''"> AND config_value=#{configValue}</if>
+            <if test="config_status!=null and config_status!=''"> AND config_status=#{configStatus}</if>
+            <if test="create_by!=null and create_by!=''"> AND create_by=#{createBy}</if>
+            <if test="create_date!=null and create_date!=''"> AND create_date=#{createDate}</if>
+            <if test="update_by!=null and update_by!=''"> AND update_by=#{updateBy}</if>
+            <if test="update_date!=null and update_date!=''"> AND update_date=#{updateDate}</if>
+            <if test="remarks!=null and remarks!=''"> AND remarks=#{remarks}</if>
+            AND a.del_flag = 0
+        </where>
+    </sql>
+    <!--end where-->
+
+    <!--insert-->
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.config.model.FeeConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into fee_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Insert_Columns"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="Insert_Values"/>
+        </trim>
+    </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into fee_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Base_Column_List"/>
+        </trim>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <include refid="Batch_Insert_Values"/>
+            </trim>
+        </foreach>
+    </insert>
+    <!-- end insert -->
+
+    <!-- delete -->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from fee_config
+        where  id = #{id,jdbcType=VARCHAR}  
+    </delete>
+
+    <delete id="delete" parameterType="com.thinkgem.jeesite.modules.fee.config.model.FeeConfig">
+        delete from fee_config
+        <include refid="where"/>
+    </delete>
+    <!-- end delete -->
+
+    <!-- update -->
+    <update id="update" parameterType="com.thinkgem.jeesite.modules.fee.config.model.FeeConfig">
+        update fee_config
+        <set>
+            <include refid="Update_Set_From_Bean"/>
+        </set>
+        where  id = #{id,jdbcType=VARCHAR}  
+    </update>
+
+    <update id="deleteById" parameterType="java.lang.String">
+        update fee_config
+        set del_flag=1
+        where  id = #{id,jdbcType=VARCHAR}  
+    </update>
+
+    <update id="batchUpdate" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+        update fee_config
+        <include refid="BatchUpdate_Set_From_Bean"/>
+        where
+             id = #{id,jdbcType=VARCHAR}  
+        </foreach>
+    </update>
+    <!-- end update -->
+
+    <!-- select -->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from fee_config
+        where
+             id = #{id,jdbcType=VARCHAR}  
+    </select>
+
+    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.config.model.FeeConfig">
+        select <include refid="Base_Column_List"/> from fee_config
+        <include refid="where"/>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.config.model.FeeConfig">
+        select <include refid="Base_Column_List"/> from fee_config
+        <include refid="where"/>
+    </select>
+    <!-- end select -->
+</mapper>
