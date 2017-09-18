@@ -92,8 +92,8 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         if (!CollectionUtils.isEmpty(accountIdList)) {
             return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
                     .map( list -> list.stream()
-                                    .map(PaymentTrade::getTradeId)
-                                    .map(tradeId -> paymentTransService.queryIncomePaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), tradeId))
+                                    .map(PaymentTrade::getTransId)
+                                    .map(id -> paymentTransService.queryIncomePaymentByIdAndTime(condition.getStartDate(), condition.getEndDate(), id))
                                     .flatMap(List::stream)
                                     .mapToDouble(PaymentTrans::getTradeAmount)
                                     .sum())
@@ -120,8 +120,8 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         if (!CollectionUtils.isEmpty(accountIdList)) {
             return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
                     .map( list -> list.stream()
-                            .map(PaymentTrade::getTradeId)
-                            .map(tradeId -> paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), tradeId))
+                            .map(PaymentTrade::getTransId)
+                            .map(id -> paymentTransService.queryCostPaymentByIdAndTime(condition.getStartDate(), condition.getEndDate(), id))
                             .flatMap(List::stream)
                             .mapToDouble(PaymentTrans::getTradeAmount)
                             .sum())

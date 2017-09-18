@@ -22,10 +22,10 @@ public interface PaymentTransDao extends CrudDao<PaymentTrans> {
   /**
    * 查询某个合同指定时间内进账款项
    */
-  List<PaymentTrans> queryIncomePaymentByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transId") String transId);
+  List<PaymentTrans> queryIncomePaymentByIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("id") String id);
 
   /**
    * 查询某个合同指定时间内出账款项
    */
-  List<PaymentTrans> queryCostPaymentByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transId") String transId);
+  List<PaymentTrans> queryCostPaymentByIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("id") String id);
 }

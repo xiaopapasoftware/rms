@@ -1,16 +1,5 @@
 package com.thinkgem.jeesite.modules.funds.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -28,6 +17,12 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * @author wangshujin
@@ -276,11 +271,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     tradingAccountsDao.delete(ta);
   }
 
-  public List<PaymentTrans> queryIncomePaymentByTransIdAndTime(Date startDate, Date endDate, String transId) {
-    return paymentTransDao.queryIncomePaymentByTransIdAndTime(startDate, endDate, transId);
+  public List<PaymentTrans> queryIncomePaymentByIdAndTime(Date startDate, Date endDate, String id) {
+    return paymentTransDao.queryIncomePaymentByIdAndTime(startDate, endDate, id);
   }
 
-  public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, String transId) {
-    return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transId);
+  public List<PaymentTrans> queryCostPaymentByIdAndTime(Date startDate, Date endDate, String id) {
+    return paymentTransDao.queryCostPaymentByIdAndTime(startDate, endDate, id);
   }
 }

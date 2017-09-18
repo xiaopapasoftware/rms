@@ -288,7 +288,7 @@
 	</update>
 
 	<!--查询某个合同指定时间内进账款项 -->
-	<select id="queryIncomePaymentByTransIdAndTime" resultType="PaymentTrans">
+	<select id="queryIncomePaymentByIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
 		WHERE t.DEL_FLAG = '0'
@@ -303,14 +303,14 @@
 		</if>
 		<if test="endDate != null and endDate != ''">
 			<![CDATA[
-				AND t.EXPIRED_DATE <=  #{endDate}
+				AND t.START_DATE <=  #{endDate}
 			 ]]>
 		</if>
-		AND t.trans_id = #{transId}
+		AND t.id = #{id}
 	</select>
 
 	<!--查询某个合同指定时间内出账款项 -->
-	<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
+	<select id="queryCostPaymentByIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
 		AND t.DEL_FLAG = '0'
@@ -325,9 +325,9 @@
 		</if>
 		<if test="endDate != null and endDate != ''">
 			<![CDATA[
-				AND t.EXPIRED_DATE <=  #{endDate}
+				AND t.START_DATE <=  #{endDate}
 			 ]]>
 		</if>
-		AND t.trans_id = #{transId}
+		AND t.id = #{id}
 	</select>
 </mapper>

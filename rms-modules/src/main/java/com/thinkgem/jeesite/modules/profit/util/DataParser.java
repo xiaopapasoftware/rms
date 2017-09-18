@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.profit.util;
 
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitNumDeposit;
+
 import java.util.Date;
 
 public class DataParser {
@@ -10,11 +11,11 @@ public class DataParser {
 
     private static final int MONTHS = 12;
 
-    //以25为分隔
-    private static final int SPLIT_DAY = 25;
+    //分隔日期
+    private static final int SPLIT_DAY = 26;
 
     public static GrossProfitNumDeposit parse(Date startDate, Date endDate, Double deposit) {
-        //日是否大于等于25标记
+        //月份进位标记
         boolean flag = false;
         int[] start = GrossProfitAssistant.parseDateToYMD(startDate);
         int[] end = GrossProfitAssistant.parseDateToYMD(endDate);

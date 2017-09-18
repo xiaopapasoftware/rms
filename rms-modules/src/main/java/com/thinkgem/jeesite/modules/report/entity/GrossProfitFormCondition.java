@@ -20,9 +20,9 @@ public class GrossProfitFormCondition {
 
     private String endDate;
 
-    private int startDay = 25;
+    private int startDay = 26;
 
-    private int endDay = 24;
+    private int endDay = 25;
 
     public String getCounty() {
         return county;
@@ -112,7 +112,7 @@ public class GrossProfitFormCondition {
     public Date getStart() {
         if (!isDateEmpty()) {
             String[] start = this.startDate.split("-");
-            return new Date(Integer.valueOf(start[0]) - 1900, Integer.valueOf(start[1]), startDay);
+            return new Date(Integer.valueOf(start[0]) - 1900, Integer.valueOf(start[1]) - 1, startDay);
         } else {
             return null;
         }
@@ -121,7 +121,7 @@ public class GrossProfitFormCondition {
     public Date getEnd() {
         if (!isDateEmpty()) {
             String[] end = this.endDate.split("-");
-            return new Date(Integer.valueOf(end[0]) - 1900, Integer.valueOf(end[1]), endDay);
+            return new Date(Integer.valueOf(end[0]) - 1900, Integer.valueOf(end[1]) - 1, endDay);
         } else {
             return null;
         }
