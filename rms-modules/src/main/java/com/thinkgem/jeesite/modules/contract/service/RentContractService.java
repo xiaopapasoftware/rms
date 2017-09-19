@@ -664,7 +664,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         // 燃气费
         Double gasFeeAmt = rentContract.getGasFee();
         if (null != gasFeeAmt && gasFeeAmt > 0) {
-          paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.GAS_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), waterFeeAmt, waterFeeAmt, 0D,
+          paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.GAS_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), gasFeeAmt, gasFeeAmt, 0D,
               PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
         // 电视费

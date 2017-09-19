@@ -502,6 +502,7 @@
 		has_net,
 		net_fee,
 		water_fee,
+		gas_fee,
 		service_fee,
 		ren_months,
 		deposit_months,
