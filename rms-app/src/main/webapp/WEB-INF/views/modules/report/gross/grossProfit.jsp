@@ -19,6 +19,7 @@
                     center:$("#center").val(),
                     area:$("#area").val(),
                     project:$("#project").val(),
+                    building:$("#building").val(),
 					house:$("#house").val(),
                     startDate:startDate,
                     endDate:endDate
@@ -84,7 +85,12 @@
 				</select>
 			</li>
 			<li><label>物业项目：</label>
-				<select id="project" name="project" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'house')">
+				<select id="project" name="project" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'building')">
+					<option value="">请选择...</option>
+				</select>
+			</li>
+			<li><label>楼宇：</label>
+				<select id="building" name="building" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'house')">
 					<option value="">请选择...</option>
 				</select>
 			</li>

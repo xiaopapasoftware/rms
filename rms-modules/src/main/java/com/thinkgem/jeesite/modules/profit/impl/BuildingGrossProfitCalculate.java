@@ -1,8 +1,8 @@
 package com.thinkgem.jeesite.modules.profit.impl;
 
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculate;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
@@ -15,28 +15,28 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class ProjectGrossProfitCalculate implements GrossProfitCalculate{
+public class BuildingGrossProfitCalculate implements GrossProfitCalculate{
 
     @Autowired
     private BuildingService buildingService;
 
     @Autowired
-    private PropertyProjectService propertyProjectService;
+    private HouseService houseService;
 
     @Override
     public String getName(GrossProfitCondition condition) {
-        return Optional.ofNullable(propertyProjectService.getPropertyProjectById(condition.getId())).map(PropertyProject::getProjectName).orElse("");
+        return Optional.ofNullable(buildingService.get(condition.getId())).map(Building::getBuildingName).orElse("");
     }
 
     @Override
     public List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition) {
-        return Optional.ofNullable(buildingService.getBuildingListByProjectId(condition.getId()))
+        return Optional.ofNullable(houseService.findHouseListByBuildingId(condition.getId()))
                 .map(list -> list.stream()
                         .map(house -> {
                             GrossProfitCondition profitCondition = new GrossProfitCondition();
                             BeanUtils.copyProperties(condition, profitCondition);
                             profitCondition.setId(house.getId());
-                            profitCondition.setTypeEnum(GrossProfitTypeEnum.Building);
+                            profitCondition.setTypeEnum(GrossProfitTypeEnum.House);
                             return profitCondition;
                         }).collect(Collectors.toList())).orElse(null);
 

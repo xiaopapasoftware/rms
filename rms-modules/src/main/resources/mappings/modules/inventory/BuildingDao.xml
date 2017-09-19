@@ -139,4 +139,21 @@
 			AND a.building_name = #{buildingName}
 		</where>
 	</select>
+
+	<select id="getBuildingListByProjectId" resultType="Building">
+		SELECT
+		id,
+		t_property_project_main_id,
+		building_name,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		FROM t_building a
+		WHERE
+			a.del_flag = '0'
+			AND a.t_property_project_main_id = #{projectId}
+	</select>
 </mapper>

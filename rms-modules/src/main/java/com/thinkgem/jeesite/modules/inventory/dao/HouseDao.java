@@ -4,14 +4,13 @@
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 房屋信息DAO接口
@@ -30,7 +29,7 @@ public interface HouseDao extends CrudDao<House> {
   /**
    * 根据物业项目ID查询房屋信息
    */
-  List<House> findHouseListByProjectId(String projectId);
+  List<House> findHouseListByBuildingId(String buildingId);
 
   /**
    * 获取当前有效房屋的总数量

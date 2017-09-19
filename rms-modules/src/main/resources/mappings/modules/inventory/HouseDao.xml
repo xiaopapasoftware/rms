@@ -453,7 +453,7 @@
 		</if>
 	</select>
 
-	<select id="findHouseListByProjectId" resultType="House">
+	<select id="findHouseListByBuildingId" resultType="House">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
@@ -473,7 +473,7 @@
 		FROM t_house a
 		WHERE
 		a.del_flag = '0'
-		AND a.property_project_id = #{projectId}
+		AND a.building_id = #{buildingId}
 	</select>
 
 	<select id="getHouseById" resultType="House">

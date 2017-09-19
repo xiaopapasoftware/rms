@@ -3,14 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -23,6 +15,13 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author wangshujin
@@ -140,8 +139,8 @@ public class HouseService extends CrudService<HouseDao, House> {
    * 根据物业项目ID查询房屋信息
    */
   @Transactional(readOnly = true)
-  public List<House> findHouseListByProjectId(String projectId) {
-    return dao.findHouseListByProjectId(projectId);
+  public List<House> findHouseListByBuildingId(String buildingId) {
+    return dao.findHouseListByBuildingId(buildingId);
   }
 
   /**

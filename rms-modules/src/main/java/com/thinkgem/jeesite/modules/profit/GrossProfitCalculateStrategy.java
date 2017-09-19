@@ -32,6 +32,9 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
     private ProjectGrossProfitCalculate projectGrossProfitCalculate;
 
     @Autowired
+    private BuildingGrossProfitCalculate buildingGrossProfitCalculate;
+
+    @Autowired
     private HouseGrossProfitCalculate houseGrossProfitCalculate;
 
     public volatile static Map<String, GrossProfitCalculate> strategyRegistry = new ConcurrentHashMap<>();
@@ -42,6 +45,7 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
         strategyRegistry.put(GrossProfitTypeEnum.Center.getCode(), centerGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.Area.getCode(), areaGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.Project.getCode(), projectGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.Building.getCode(), buildingGrossProfitCalculate);
         strategyRegistry.put(GrossProfitTypeEnum.House.getCode(), houseGrossProfitCalculate);
     }
 
