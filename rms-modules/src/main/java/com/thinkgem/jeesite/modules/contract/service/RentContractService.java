@@ -661,6 +661,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), waterFeeAmt, waterFeeAmt, 0D,
               PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
         }
+        // 燃气费
+        Double gasFeeAmt = rentContract.getGasFee();
+        if (null != gasFeeAmt && gasFeeAmt > 0) {
+          paymentTransService.generateAndSavePaymentTrans(tradeType, PaymentTransTypeEnum.GAS_AMOUNT.getValue(), transObjId, TradeDirectionEnum.IN.getValue(), waterFeeAmt, waterFeeAmt, 0D,
+              PaymentTransStatusEnum.NO_SIGN.getValue(), startD, expiredDate, null);
+        }
         // 电视费
         Double tvFeeAmt = rentContract.getTvFee();
         if ("1".equals(rentContract.getHasTv()) && null != tvFeeAmt && tvFeeAmt > 0) {

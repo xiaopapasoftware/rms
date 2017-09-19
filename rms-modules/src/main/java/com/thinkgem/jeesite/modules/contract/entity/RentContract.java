@@ -52,6 +52,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String hasNet; // 是否开通宽带
   private Double netFee; // 每月宽带费用
   private Double waterFee; // 合租每月水费
+  private Double gasFee; // 每月燃气费
   private Double serviceFee; // 服务费比例
   private Integer renMonths; // 首付房租月数
   private Integer depositMonths; // 房租押金月数
@@ -298,6 +299,14 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setWaterFee(Double waterFee) {
     this.waterFee = waterFee;
+  }
+
+  public Double getGasFee() {
+    return gasFee;
+  }
+
+  public void setGasFee(Double gasFee) {
+    this.gasFee = gasFee;
   }
 
   public Double getServiceFee() {

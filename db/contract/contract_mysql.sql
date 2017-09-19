@@ -134,6 +134,7 @@ create table T_RENT_CONTRACT
    HAS_NET              varchar(64) comment '是否开通宽带',
    NET_FEE              float comment '每月宽带费用',
    WATER_FEE            float comment '合租每月水费',
+   GAS_FEE				float comment '每月燃气费用',
    SERVICE_FEE          float comment '服务费比例',
    REN_MONTHS           int comment '首付房租月数',
    DEPOSIT_MONTHS       int comment '房租押金月数',
