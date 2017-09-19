@@ -14,6 +14,8 @@ public class GrossProfitFormCondition {
 
     private String project;
 
+    private String building;
+
     private String house;
 
     private String startDate;
@@ -54,6 +56,14 @@ public class GrossProfitFormCondition {
 
     public void setProject(String project) {
         this.project = project;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
     }
 
     public String getHouse() {
@@ -102,7 +112,7 @@ public class GrossProfitFormCondition {
 
     public boolean isAddressEmpty() {
         return StringUtils.isEmpty(county) && StringUtils.isEmpty(center) && StringUtils.isEmpty(area)
-                && StringUtils.isEmpty(project) && StringUtils.isEmpty(house);
+                && StringUtils.isEmpty(project) && StringUtils.isEmpty(building) && StringUtils.isEmpty(house);
     }
 
     public boolean isDateEmpty() {

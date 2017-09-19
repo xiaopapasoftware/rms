@@ -7,8 +7,10 @@ import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
 import com.thinkgem.jeesite.modules.entity.Area;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.service.AreaService;
@@ -32,6 +34,9 @@ public class SelectItemService {
 
   @Autowired
   private HouseService houseService;
+
+  @Autowired
+  private BuildingService buildingService;
 
   private MyCache selectCache = MyCacheBuilder.getInstance().getSoftCache("select");
 
@@ -67,8 +72,11 @@ public class SelectItemService {
       case SelectItemConstants.project:
         result = convertToItemList(propertyProjectService.getPropertyProjectByAreaId(condition.getId()).stream().collect(Collectors.toMap(PropertyProject::getId, PropertyProject::getProjectName)));
         break;
+      case SelectItemConstants.building:
+        result = convertToItemList(buildingService.getBuildingListByProjectId(condition.getId()).stream().collect(Collectors.toMap(Building::getId, Building::getBuildingName)));
+        break;
       case SelectItemConstants.house:
-        result = convertToItemList(houseService.findHouseListByProjectId(condition.getId()).stream().collect(Collectors.toMap(House::getId, House::getHouseNo)));
+        result = convertToItemList(houseService.findHouseListByBuildingId(condition.getId()).stream().collect(Collectors.toMap(House::getId, House::getHouseNo)));
         break;
       default:
         result = null;

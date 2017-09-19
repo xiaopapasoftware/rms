@@ -3,14 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
@@ -20,6 +12,13 @@ import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.inventory.dao.BuildingDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 楼宇Service
@@ -110,5 +109,10 @@ public class BuildingService extends CrudService<BuildingDao, Building> {
     @Transactional(readOnly = true)
     public List<Building> findBuildingByBldNameAndProProj(Building building) {
         return dao.findBuildingByBldNameAndProProj(building);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Building> getBuildingListByProjectId(String projectId) {
+        return dao.getBuildingListByProjectId(projectId);
     }
 }

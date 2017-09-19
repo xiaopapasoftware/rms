@@ -10,6 +10,8 @@ public interface SelectItemConstants {
 
     String project = "project";
 
+    String building = "building";
+
     String house = "house";
 
     String org = "org";

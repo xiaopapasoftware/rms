@@ -79,6 +79,9 @@ public class GrossReportController extends BaseController {
     if (!StringUtils.isEmpty(condition.getHouse())) {
       profitCondition.setTypeEnum(GrossProfitTypeEnum.House);
       profitCondition.setId(condition.getHouse());
+    } else if (!StringUtils.isEmpty(condition.getBuilding())) {
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.Building);
+      profitCondition.setId(condition.getBuilding());
     } else if (!StringUtils.isEmpty(condition.getProject())) {
       profitCondition.setTypeEnum(GrossProfitTypeEnum.Project);
       profitCondition.setId(condition.getProject());

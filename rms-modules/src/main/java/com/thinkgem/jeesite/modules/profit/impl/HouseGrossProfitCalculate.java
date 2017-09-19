@@ -59,12 +59,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     @Override
     public String getName(GrossProfitCondition condition) {
-        House house = houseService.getHouseById(condition.getId());
-        String name = "";
-        if (house != null) {
-            name += propertyProjectService.get(house.getPropertyProject().getId()).getProjectName() + house.getHouseNo();
-        }
-        return name;
+        return Optional.ofNullable(houseService.getHouseById(condition.getId())).map(House::getHouseNo).orElse("");
     }
 
     @Override
