@@ -3,7 +3,7 @@
  */
 
 layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
-    var form = layui.form(),
+    var form = layui.form,
         laypage = layui.laypage,
         layer = layui.layer,
         laydate = layui.laydate,
@@ -52,34 +52,45 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                 ContractReportMVC.View.intDate('expiredDateBegin', 'expiredDateEnd');
             },
             intDate: function (_ele1, _ele2) {
-                var start = _ele1 + "_sart", end = _ele2 + "_end";
-                start = {
-                    //min: laydate.now(),
-                    max: '2099-06-16 23:59:59',
-                    istoday: false,
-                    choose: function (datas) {
-                        end.min = datas; //开始日选好后，重置结束日的最小日期
-                        end.start = datas //将结束日的初始值设定为开始日
-                    }
-                };
+                laydate.render({
+                    elem: '#'+_ele1,
+                    eventElem: '#'+_ele1,
+                    trigger: 'click'
+                });
 
-                end = {
-                    //min: laydate.now(),
-                    max: '2099-06-16 23:59:59',
-                    istoday: false,
-                    choose: function (datas) {
-                        start.max = datas; //结束日选好后，重置开始日的最大日期
-                    }
-                };
-
-                document.getElementById(_ele1).onclick = function () {
-                    start.elem = this;
-                    laydate(start);
-                };
-                document.getElementById(_ele2).onclick = function () {
-                    end.elem = this
-                    laydate(end);
-                };
+                laydate.render({
+                    elem: '#'+_ele2,
+                    eventElem: '#'+_ele2,
+                    trigger: 'click'
+                });
+                // var start = _ele1 + "_sart", end = _ele2 + "_end";
+                // start = {
+                //     //min: laydate.now(),
+                //     max: '2099-06-16 23:59:59',
+                //     istoday: false,
+                //     choose: function (datas) {
+                //         end.min = datas; //开始日选好后，重置结束日的最小日期
+                //         end.start = datas //将结束日的初始值设定为开始日
+                //     }
+                // };
+                //
+                // end = {
+                //     //min: laydate.now(),
+                //     max: '2099-06-16 23:59:59',
+                //     istoday: false,
+                //     choose: function (datas) {
+                //         start.max = datas; //结束日选好后，重置开始日的最大日期
+                //     }
+                // };
+                //
+                // document.getElementById(_ele1).onclick = function () {
+                //     start.elem = this;
+                //     laydate(start);
+                // };
+                // document.getElementById(_ele2).onclick = function () {
+                //     end.elem = this
+                //     laydate(end);
+                // };
             },
             bindEvent: function () {
                 $("#btn-export").on("click", ContractReportMVC.Controller.export);
@@ -99,23 +110,6 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                     $("#queryFrom").attr("action", ContractReportMVC.URLs.export.url).attr("method", ContractReportMVC.URLs.export.method).submit();
                     layer.close(index);
                 });
-
-               /* layer.prompt({
-                    formType: 3,
-                    value: ContractReportCommon.exportNum,
-                    title: '导出条数',
-                    area: ['100px', '30px'] //自定义文本域宽高
-                }, function(value, index, elem){
-                    if(isNaN(value)) return;
-                    /!*if(value > ContractReportCommon.exportNum){
-                        layer.alert("导出条数不能大于:" + ContractReportCommon.exportNum);
-                        return;
-                    }*!/
-
-                    var url = ContractReportMVC.URLs.export.url + "?pageSize=" + value;
-                    $("#queryFrom").attr("action", url).attr("method", ContractReportMVC.URLs.export.method).submit();
-                    layer.close(index);
-                });*/
             },
             undo: function () {
                 $("#queryFrom input").val("");
