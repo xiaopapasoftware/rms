@@ -604,6 +604,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">每月燃气费：</label>
+			<div class="controls">
+				<form:input path="gasFee" htmlEscape="false" class="input-xlarge  number"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">服务费比例(%)：</label>
 			<div class="controls">
 				<form:input path="serviceFee" htmlEscape="false" class="input-xlarge  number"/>
