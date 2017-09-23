@@ -271,11 +271,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     tradingAccountsDao.delete(ta);
   }
 
-  public List<PaymentTrans> queryIncomePaymentByIdAndTime(Date startDate, Date endDate, String id) {
-    return paymentTransDao.queryIncomePaymentByIdAndTime(startDate, endDate, id);
+  public List<PaymentTrans> queryIncomePaymentByTransIdAndTime(Date startDate, Date endDate, List<String> transIdList) {
+    return paymentTransDao.queryIncomePaymentByTransIdAndTime(startDate, endDate, transIdList);
   }
 
-  public List<PaymentTrans> queryCostPaymentByIdAndTime(Date startDate, Date endDate, String id) {
-    return paymentTransDao.queryCostPaymentByIdAndTime(startDate, endDate, id);
+  public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, List<String> transIdList) {
+    return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transIdList);
   }
 }

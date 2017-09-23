@@ -6,12 +6,8 @@ import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
-import com.thinkgem.jeesite.modules.funds.service.PaymentTradeService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
-import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculate;
@@ -38,12 +34,6 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     private RentContractService rentContractService;
 
     @Autowired
-    private TradingAccountsService tradingAccountsService;
-
-    @Autowired
-    private PaymentTradeService paymentTradeService;
-
-    @Autowired
     private PaymentTransService paymentTransService;
 
     @Autowired
@@ -64,23 +54,9 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     @Override
     public double calculateIncome(GrossProfitCondition condition) {
         List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
-        List<String> accountIdList = contractList.stream().filter(contract -> !(contract.getStartDate().after(condition.getEndDate()) || contract.getExpiredDate().before(condition.getStartDate())))
-                                                            .map(RentContract::getId)
-                                                            .map(tradingAccountsService::queryIncomeTradeAccountsByTradeId)
-                                                            .flatMap(List::stream)
-                                                            .distinct()
-                                                            .map(TradingAccounts::getId)
-                                                            .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(accountIdList)) {
-            return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
-                    .map( list -> list.stream()
-                                    .map(PaymentTrade::getTransId)
-                                    .map(id -> paymentTransService.queryIncomePaymentByIdAndTime(condition.getStartDate(), condition.getEndDate(), id))
-                                    .flatMap(List::stream)
-                                    .mapToDouble(PaymentTrans::getTradeAmount)
-                                    .sum())
-                    .orElse(0d);
-
+        if (!CollectionUtils.isEmpty(contractList)) {
+            return paymentTransService.queryIncomePaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
+                    .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
         }
         return 0d;
     }
@@ -92,23 +68,9 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     private double calculateThrowLeaseSum(GrossProfitCondition condition) {
         List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
-        List<String> accountIdList = contractList.stream().filter(contract -> !(contract.getStartDate().after(condition.getEndDate()) || contract.getExpiredDate().before(condition.getStartDate())))
-                                                            .map(RentContract::getId)
-                                                            .map(tradingAccountsService::queryCostTradeAccountsByTradeId)
-                                                            .flatMap(List::stream)
-                                                            .distinct()
-                                                            .map(TradingAccounts::getId)
-                                                            .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(accountIdList)) {
-            return Optional.ofNullable(paymentTradeService.getListByTradeIdList(accountIdList))
-                    .map( list -> list.stream()
-                            .map(PaymentTrade::getTransId)
-                            .map(id -> paymentTransService.queryCostPaymentByIdAndTime(condition.getStartDate(), condition.getEndDate(), id))
-                            .flatMap(List::stream)
-                            .mapToDouble(PaymentTrans::getTradeAmount)
-                            .sum())
-                    .orElse(0d);
-
+        if (!CollectionUtils.isEmpty(contractList)) {
+            return paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
+                    .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
         }
         return 0;
     }
