@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.common.service;
 import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
+import com.thinkgem.jeesite.modules.cache.enums.MyCacheConstant;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
@@ -38,7 +39,7 @@ public class SelectItemService {
   @Autowired
   private BuildingService buildingService;
 
-  private MyCache selectCache = MyCacheBuilder.getInstance().getSoftCache("select");
+  private MyCache selectCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SCHEDULED_SELECT);
 
   private String getCacheKey(SelectItemCondition condition) {
     return condition.getBusiness() + condition.getType() + condition.getId();

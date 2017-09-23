@@ -22,6 +22,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Component
@@ -48,7 +50,14 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     @Override
     public double calculateCost(GrossProfitCondition condition) {
-        return this.calculateDepositSum(condition) + this.calculateThrowLeaseSum(condition);
+        CompletableFuture<Double> result = CompletableFuture.supplyAsync(() -> this.calculateDepositSum(condition)).thenCombine(
+                CompletableFuture.supplyAsync(() -> this.calculateThrowLeaseSum(condition)),
+                (depositSum, leaseSum) -> depositSum + leaseSum);
+        try {
+            return result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            return 0;
+        }
     }
 
     @Override
