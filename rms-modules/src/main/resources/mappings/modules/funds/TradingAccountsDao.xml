@@ -218,7 +218,7 @@
 		FROM t_trading_accounts t
 		WHERE t.DEL_FLAG = '0'
 		AND t.trade_direction = '1'
-		AND t.trade_type = '3'
+		AND t.trade_type IN ('3', '4')
 		AND t.trade_status = '1'
 		AND t.trade_id = #{tradeId}
 	</select>

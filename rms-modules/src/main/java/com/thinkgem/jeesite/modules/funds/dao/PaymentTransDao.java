@@ -20,12 +20,16 @@ public interface PaymentTransDao extends CrudDao<PaymentTrans> {
   void rollbackDelete(PaymentTrans p);
 
   /**
-   * 查询某个合同指定时间内进账款项
+   * 查询某个房屋下合同指定时间内进账款项
+   * @param startDate
+   * @param endDate
+   * @param transIdList
+   * @return
    */
-  List<PaymentTrans> queryIncomePaymentByIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("id") String id);
+  List<PaymentTrans> queryIncomePaymentByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transIdList") List<String> transIdList);
 
   /**
-   * 查询某个合同指定时间内出账款项
+   * 查询某个房屋下合同指定时间内出账款项
    */
-  List<PaymentTrans> queryCostPaymentByIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("id") String id);
+  List<PaymentTrans> queryCostPaymentByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transIdList") List<String> transIdList);
 }

@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.profit;
 
 import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
+import com.thinkgem.jeesite.modules.cache.enums.MyCacheConstant;
 import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.util.GrossProfitAssistant;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public interface GrossProfitCalculate {
 
-    MyCache softCache = MyCacheBuilder.getInstance().getSoftCache("name");
+    MyCache softCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SOFT_NAME);
 
     default GrossProfitReport calculateGrossProfit(GrossProfitCondition condition) {
         return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum())

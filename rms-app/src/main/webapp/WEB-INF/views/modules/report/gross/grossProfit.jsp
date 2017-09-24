@@ -117,7 +117,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>项目</th>
+				<th>名称</th>
 				<th>收入</th>
 				<th>支出</th>
 				<th>毛利</th>

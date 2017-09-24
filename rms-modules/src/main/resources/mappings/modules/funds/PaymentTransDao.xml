@@ -287,8 +287,8 @@
 		</where>
 	</update>
 
-	<!--查询某个合同指定时间内进账款项 -->
-	<select id="queryIncomePaymentByIdAndTime" resultType="PaymentTrans">
+	<!--查询某个房屋下合同指定时间内进账款项 -->
+	<select id="queryIncomePaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
 		WHERE t.DEL_FLAG = '0'
@@ -306,14 +306,19 @@
 				AND t.START_DATE <=  #{endDate}
 			 ]]>
 		</if>
-		AND t.id = #{id}
+		<if test="transIdList != null">
+			and t.trans_id in
+			<foreach item="item" index="index" collection="transIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
 	</select>
 
-	<!--查询某个合同指定时间内出账款项 -->
-	<select id="queryCostPaymentByIdAndTime" resultType="PaymentTrans">
+	<!--查询某个房屋下合同指定时间内出账款项 -->
+	<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
-		AND t.DEL_FLAG = '0'
+		WHERE t.DEL_FLAG = '0'
 		AND t.trade_type in ('6', '9')
 		AND t.payment_type = '6'
 		AND t.trade_direction = '0'
@@ -328,6 +333,11 @@
 				AND t.START_DATE <=  #{endDate}
 			 ]]>
 		</if>
-		AND t.id = #{id}
+		<if test="transIdList != null">
+			and t.trans_id in
+			<foreach item="item" index="index" collection="transIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
 	</select>
 </mapper>
