@@ -67,8 +67,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field:'eleBillDate', align:'center',title: '账期', width:80},
                         {field:'batchNo', align:'center',title: '审核批次号',width:100},
                         {field:'elePeakDegree', align:'center',title: '谷值',width:80},
-                        {field:'eleValleyDegree', align:'center',title: '峰值'width:80},
-                        {field:'eleBillAmount', align:'center',title: '金额',edit: 'text',width:100},
+                        {field:'eleValleyDegree', align:'center',title: '峰值',width:80},
+                        {field:'eleBillAmount', align:'center',title: '金额',width:100},
                         {field:'billStatus', align:'center',title: '状态', width:100},
                         {align:'center',title: '操作', toolbar: '#toolBar',width:120}
                     ]],
