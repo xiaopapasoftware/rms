@@ -1,6 +1,3 @@
-/**
- * \ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.funds.entity;
 
 import java.util.Date;
@@ -14,10 +11,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
- * 账务收据Entity
- * 
- * @author huangsc
- * @version 2015-06-11
+ * 账务收据
  */
 public class Receipt extends DataEntity<Receipt> {
 
@@ -34,6 +28,8 @@ public class Receipt extends DataEntity<Receipt> {
   private String tradeTypeDesc;
   private String paymentType;
   private String paymentTypeDesc;
+  private String transBeginDateDesc;// 对应的款项集合的最早的开始时间-描述
+  private String transEndDateDesc;// 对应的款项集合的最晚的结束时间-描述
   private List<String> tradingAccountsIdList; // 用于sql条件
 
   public Receipt() {
@@ -135,6 +131,22 @@ public class Receipt extends DataEntity<Receipt> {
 
   public void setPaymentTypeDesc(String paymentTypeDesc) {
     this.paymentTypeDesc = paymentTypeDesc;
+  }
+
+  public String getTransBeginDateDesc() {
+    return transBeginDateDesc;
+  }
+
+  public void setTransBeginDateDesc(String transBeginDateDesc) {
+    this.transBeginDateDesc = transBeginDateDesc;
+  }
+
+  public String getTransEndDateDesc() {
+    return transEndDateDesc;
+  }
+
+  public void setTransEndDateDesc(String transEndDateDesc) {
+    this.transEndDateDesc = transEndDateDesc;
   }
 
   public String getTradeId() {

@@ -179,7 +179,9 @@
 								<th>款项类型</th>
 								<th>收据金额</th>
 								<th>收据号码</th>
-								<th>交易日期</th>
+								<th>收据日期</th>
+								<th>款项开始日期</th>
+								<th>款项结束日期</th>
 								<th>备注</th>
 								<th width="10">&nbsp;</th>
 							</tr>
@@ -225,6 +227,12 @@
 							<td>
 								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" class="input-medium Wdate required" style="width:100px;"/>
 								<span class="help-inline"><font color="red">*</font> </span>
+							</td>
+							<td>
+								<input id="receiptList{{idx}}_transBeginDateDesc" name="receiptList[{{idx}}].transBeginDateDesc" type="text" readonly="readonly" value="{{row.transBeginDateDesc}}" class="input-small" style="width:100px;"/>
+							</td>
+							<td>
+								<input id="receiptList{{idx}}_transEndDateDesc" name="receiptList[{{idx}}].transEndDateDesc" type="text" readonly="readonly" value="{{row.transEndDateDesc}}" class="input-small" style="width:100px;"/>
 							</td>
 							<td>
 								<input id="receiptList{{idx}}_remarks" name="receiptList[{{idx}}].remarks" type="text" value="{{row.remarks}}" maxlength="255" class="input-small"/>

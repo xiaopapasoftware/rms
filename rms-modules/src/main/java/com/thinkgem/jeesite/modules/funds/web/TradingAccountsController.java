@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
@@ -193,10 +194,8 @@ public class TradingAccountsController extends BaseController {
       String tradeType = "";// 交易类型
       String tradeObjectId = "";// 交易对象ID
       Map<String, Receipt> paymentTypeMap = new HashMap<String, Receipt>();// key为款项类型，value为收据对象
-      String targetReceiptType = "";// 如果交易类型为退租类交易，且最终金额为应收款项且>0时，把应收款项金额最大的款项类型作为最终 收据的款项类型
-      List<Receipt> receiptList = new ArrayList<Receipt>();// 渲染到页面上的收据集合
-
       List<String> containedOutTransList = new ArrayList<String>();// 所有可能包含 出款方向的交易类型集合
+      List<PaymentTrans> inDirectPaymentTrans = new ArrayList<PaymentTrans>();// 退租类交易类型里，所有的收款的款项集合
       containedOutTransList.add(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
       containedOutTransList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
       containedOutTransList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
@@ -226,45 +225,60 @@ public class TradingAccountsController extends BaseController {
             if (paymentTypeMap.containsKey(paymentType)) {
               receipt = paymentTypeMap.get(paymentType);
               receipt.setReceiptAmount(receipt.getReceiptAmount() + paymentTrans.getLastAmount());
+              // 把对应款项最早的日期作为收据开始日期，对应款项最晚的结束日期作为收据的结束日期
+              if (paymentTrans.getStartDate().before(DateUtils.parseDate(receipt.getTransBeginDateDesc()))) {
+                receipt.setTransBeginDateDesc(DateUtils.formatDate(paymentTrans.getStartDate()));
+              }
+              if (paymentTrans.getExpiredDate().after(DateUtils.parseDate(receipt.getTransEndDateDesc()))) {
+                receipt.setTransEndDateDesc(DateUtils.formatDate(paymentTrans.getExpiredDate()));
+              }
             } else {
               receipt = new Receipt();
               receipt.setReceiptAmount(paymentTrans.getLastAmount());
               receipt.setPaymentType(paymentType);
+              receipt.setTransBeginDateDesc(DateUtils.formatDate(paymentTrans.getStartDate()));
+              receipt.setTransEndDateDesc(DateUtils.formatDate(paymentTrans.getExpiredDate()));
             }
             paymentTypeMap.put(paymentType, receipt);
           }
         } else {// 为了防止交易类型为退租类交易，最终金额为应收款项且>0时，把应收款项金额最大的款项类型作为最终 收据的款项类型
           if (returnTransList.contains(tradeType)) {
-            List<PaymentTrans> inDirectPaymentTrans = new ArrayList<PaymentTrans>();
             if (TradeDirectionEnum.IN.getValue().equals(paymentTrans.getTradeDirection())) {
               inDirectPaymentTrans.add(paymentTrans);
-            }
-            if (CollectionUtils.isNotEmpty(inDirectPaymentTrans)) {
-              Collections.sort(inDirectPaymentTrans, new Comparator<PaymentTrans>() {
-                @Override
-                public int compare(PaymentTrans o1, PaymentTrans o2) {
-                  return o1.getLastAmount().compareTo(o2.getLastAmount());
-                }
-              });
-              targetReceiptType = inDirectPaymentTrans.get(inDirectPaymentTrans.size() - 1).getPaymentType();
             }
           }
         }
       }
+      List<Receipt> receiptList = new ArrayList<Receipt>();// 渲染到页面上的收据集合
       if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradeType)) {
         // DONOTHING
-      } else if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)
-          || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
+      } else if (returnTransList.contains(tradeType)) {
         if (amount > 0) {// 退租类交易类型，但是最终款项为应收款
           Receipt receipt = new Receipt();
           receipt.setReceiptAmount(new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+          String targetReceiptType = "";// 如果交易类型为退租类交易，且最终金额为应收款项且>0时，把应收款项金额最大的款项类型作为最终 收据的款项类型
+          Date targetTransBeginDate = null;// 如果交易类型为退租类交易，且最终金额为应收款项且>0时，把应收款项金额最大的款项的 开始日期 作为最终 收据的开始日期
+          Date targetTransEndDate = null;// 如果交易类型为退租类交易，且最终金额为应收款项且>0时，把应收款项金额最大的款项的 结束日期 作为最终 收据的结束日期
+          if (CollectionUtils.isNotEmpty(inDirectPaymentTrans)) {
+            Collections.sort(inDirectPaymentTrans, new Comparator<PaymentTrans>() {
+              @Override
+              public int compare(PaymentTrans o1, PaymentTrans o2) {
+                return o1.getLastAmount().compareTo(o2.getLastAmount());
+              }
+            });
+            PaymentTrans targetPayTrans = inDirectPaymentTrans.get(inDirectPaymentTrans.size() - 1);
+            targetReceiptType = targetPayTrans.getPaymentType();
+            targetTransBeginDate = targetPayTrans.getStartDate();
+            targetTransEndDate = targetPayTrans.getExpiredDate();
+          }
           receipt.setPaymentType(targetReceiptType);
+          receipt.setTransBeginDateDesc(DateUtils.formatDate(targetTransBeginDate));
+          receipt.setTransEndDateDesc(DateUtils.formatDate(targetTransEndDate));
           receiptList.add(receipt);
         }
       } else {
         for (String key : paymentTypeMap.keySet()) {
-          Receipt receipt = paymentTypeMap.get(key);
-          receiptList.add(receipt);
+          receiptList.add(paymentTypeMap.get(key));
         }
       }
       // 获取交易对象名称,设置交易对象名称、交易对象类型

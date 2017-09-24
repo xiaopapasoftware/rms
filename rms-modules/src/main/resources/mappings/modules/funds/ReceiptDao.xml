@@ -7,6 +7,8 @@
 		a.trading_accounts_id AS "tradingAccounts.id",
 		a.receipt_no AS "receiptNo",
 		a.receipt_date AS "receiptDate",
+		a.trans_begin_date_desc AS "transBeginDateDesc",
+		a.trans_end_date_desc AS "transEndDateDesc",
 		a.receipt_amount AS "receiptAmount",
 		a.trade_mode AS "tradeMode",
 		a.create_by AS "createBy.id",
@@ -86,6 +88,12 @@
 					<if test="receiptDate != null and receiptDate != ''">
 						AND a.receipt_date = #{receiptDate}
 					</if>
+					<if test="transBeginDateDesc != null and transBeginDateDesc != ''">
+						AND a.trans_begin_date_desc = #{transBeginDateDesc}
+					</if>
+					<if test="transEndDateDesc != null and transEndDateDesc != ''">
+						AND a.trans_end_date_desc = #{transEndDateDesc}
+					</if>
 					<if test="receiptAmount != null and receiptAmount != ''">
 						AND a.receipt_amount = #{receiptAmount}
 					</if>
@@ -144,6 +152,8 @@
 			trading_accounts_id,
 			receipt_no,
 			receipt_date,
+			trans_begin_date_desc,
+			trans_end_date_desc,
 			receipt_amount,
 			trade_mode,
 			create_by,
@@ -158,6 +168,8 @@
 			#{tradingAccounts.id},
 			#{receiptNo},
 			#{receiptDate},
+			#{transBeginDateDesc},
+			#{transEndDateDesc},
 			#{receiptAmount},
 			#{tradeMode},
 			#{createBy.id},
@@ -175,6 +187,8 @@
 			trading_accounts_id = #{tradingAccounts.id},
 			receipt_no = #{receiptNo},
 			receipt_date = #{receiptDate},
+			trans_begin_date_desc = #{transBeginDateDesc},
+			trans_end_date_desc = #{transEndDateDesc},
 			receipt_amount = #{receiptAmount},
 			trade_mode = #{tradeMode},
 			payment_type = #{paymentType},

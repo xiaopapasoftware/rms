@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.funds.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,7 @@ import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 
 /**
- * 账务收据Controller
- * 
- * @author huangsc
- * @version 2015-06-11
+ * 账务收据
  */
 @Controller
 @RequestMapping(value = "${adminPath}/funds/receipt")
@@ -48,12 +46,13 @@ public class ReceiptController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("funds:receipt:view")
+  @RequiresPermissions("funds:receipt:view")
   @RequestMapping(value = {""})
   public String listNoQuery(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
     return "modules/funds/receiptList";
   }
 
+  @RequiresPermissions("funds:receipt:view")
   @RequestMapping(value = {"list"})
   public String listQuery(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Receipt> page = receiptService.findPage(new Page<Receipt>(request, response), receipt);
@@ -61,8 +60,7 @@ public class ReceiptController extends BaseController {
     return "modules/funds/receiptList";
   }
 
-
-
+  @RequiresPermissions("funds:tradingAccounts:edit")
   @RequestMapping(value = {"viewReceipt"})
   public String viewReceipt(Receipt receipt, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<Receipt> page = receiptService.findPage(new Page<Receipt>(request, response), receipt);
@@ -70,7 +68,7 @@ public class ReceiptController extends BaseController {
     return "modules/funds/viewReceipt";
   }
 
-  // @RequiresPermissions("funds:receipt:view")
+  @RequiresPermissions("funds:receipt:view")
   @RequestMapping(value = "form")
   public String form(Receipt receipt, Model model) {
     receipt.setTradeTypeDesc(DictUtils.getDictLabel(receipt.getTradeType(), "trans_type", ""));
@@ -79,7 +77,7 @@ public class ReceiptController extends BaseController {
     return "modules/funds/receiptForm";
   }
 
-  // @RequiresPermissions("funds:receipt:edit")
+  @RequiresPermissions("funds:receipt:edit")
   @RequestMapping(value = "save")
   public String save(Receipt receipt, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, receipt)) {
@@ -96,7 +94,7 @@ public class ReceiptController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/funds/receipt/?repage";
   }
 
-  // @RequiresPermissions("funds:receipt:edit")
+  @RequiresPermissions("funds:receipt:edit")
   @RequestMapping(value = "delete")
   public String delete(Receipt receipt, RedirectAttributes redirectAttributes) {
     receiptService.delete(receipt);

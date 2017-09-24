@@ -27,6 +27,8 @@
 				<th>账务交易方式</th>
 				<th>收据号码</th>
 				<th>收据日期</th>
+				<th>款项开始日期</th>
+				<th>款项结束日期</th>
 				<th>收据金额</th>
 				<th>备注信息</th>
 			</tr>
@@ -51,6 +53,12 @@
 				</td>
 				<td>
 					<fmt:formatDate value="${receipt.receiptDate}" pattern="yyyy-MM-dd"/>
+				</td>
+				<td>
+					${receipt.transBeginDateDesc}
+				</td>
+				<td>
+					${receipt.transEndDateDesc}
 				</td>
 				<td>
 					${receipt.receiptAmount}
