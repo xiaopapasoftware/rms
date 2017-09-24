@@ -1,8 +1,11 @@
 package com.thinkgem.jeesite.modules.app.entity;
 
+import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.RespConstants;
+import com.thinkgem.jeesite.common.persistence.Page;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class ResponseData implements Serializable {
     /**
@@ -51,6 +54,15 @@ public class ResponseData implements Serializable {
         this.data = data;
         return this;
     }
+
+    public Map page(Page page){
+        Map map = Maps.newHashMap();
+        map.put("code","0");
+        map.put("total",page.getCount());
+        map.put("data",page.getList());
+        return map;
+    }
+
 
     public int getCode() {
         return code;

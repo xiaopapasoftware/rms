@@ -6,7 +6,7 @@ package com.tangchao.fee.bill.enums;
  */
 public enum BillStatusEnum {
 
-    APP(0),APV(1),PASS(3),REHECT(4);
+    APP(0),APV(1),PASS(3),REJECT(4);
 
     private int value;
 
