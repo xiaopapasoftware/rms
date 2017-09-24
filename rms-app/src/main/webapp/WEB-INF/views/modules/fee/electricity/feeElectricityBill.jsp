@@ -13,7 +13,41 @@
 
     <link rel="stylesheet" href="${ctxStatic}/layui/css/layui.css"/>
     <link rel="stylesheet" href="${ctxStatic}/xqsight/widget/font-awesome.css"/>
+    <link rel="stylesheet" href="${ctxStatic}/xqsight/wdtree/tree.css"/>
     <link rel="stylesheet" href="${ctxStatic}/xqsight/widget/widget.css"/>
+
+    <style>
+        .layui-table-cell .layui-form-checkbox {
+            top: 5px !important;
+        }
+        .tangchao .layui-form-item{
+            height: 30px !important;
+        }
+        .tangchao .layui-input, .layui-select, .layui-textarea {
+            height: 30px;
+        }
+        .tangchao .button{
+            border: 1px solid #009688;
+            height: 25px;
+            line-height: 25px;
+            min-width: 50px;
+            padding: 0 10px;
+            font-size: 12px;
+            text-align: center;
+            border-radius: 6px;
+            color: #009688;
+            background-color: #FFFFFF;
+        }
+        .widget-body .layui-input, .layui-select, .layui-textarea {
+            height: 30px;
+        }
+        .widget-body .layui-form-item .layui-input-inline {
+            width: 150px;
+        }
+        .widget-body .layui-form-item .layui-inline {
+            margin-right: 0px;
+        }
+    </style>
 </head>
 
 <body>
@@ -42,46 +76,121 @@
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
                 <div class="layui-inline">
-                    <label class="layui-form-label">缴费年月</label>
-                    <div class="layui-input-inline date" style="width: 100px;">
-                        <input type="text" id="feeDate" name="feeDate" placeholder="yyyy-MM"
+                    <div class="layui-input-inline m-large">
+                        <input type="text" id="feeDate" name="feeDate" lay-verify="required" placeholder="缴费年月" readonly
                                class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-inline">
-                    <label class="layui-form-label">区域选择</label>
-                    <div class="layui-input-inline" style="width: 100px;">
-                        <input type="text" id="areaId" name="areaId" placeholder="区域选择"
+                    <div class="layui-input-inline m-large">
+                        <select id="area" name="area" placeholder="区域">
+                            <option value="">区域</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="project" name="project" placeholder="物业项目">
+                            <option value="">物业项目</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="building" name="building" placeholder="楼宇">
+                            <option value="">楼宇</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="house" name="house" placeholder="房屋">
+                            <option value="">房屋</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="status" name="status" placeholder="审核状态">
+                            <option value="">审核状态</option>
+                            <option value="0">待提交</option>
+                            <option value="1">待审核</option>
+                            <option value="2">审核通过</option>
+                            <option value="3">审核驳回</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="isRecord" name="isRecord" placeholder="是否已录">
+                            <option value="">是否已录</option>
+                            <option value="0">已录</option>
+                            <option value="1">未录</option>
+                        </select>
+                    </div>
+                </div>
+
+                <%--<div class="layui-inline">
+                    <label class="layui-form-label">缴费年月</label>
+                    <div class="layui-input-inline m-large date">
+                        <input type="text" id="feeDate" name="feeDate" lay-verify="required" placeholder="缴费年月" readonly
                                class="layui-input">
                     </div>
                 </div>
+
                 <div class="layui-inline">
-                    <label class="layui-form-label">小区选择</label>
+                    <label class="layui-form-label">区县</label>
                     <div class="layui-input-inline m-large">
-                        <select id="propertyId" name="propertyId" lay-search="" placeholder="小区选择">
+                        <select id="county" name="county" placeholder="区县">
                             <option value="">请选择</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">楼宇选择</label>
+                    <label class="layui-form-label">服务中心</label>
                     <div class="layui-input-inline m-large">
-                        <select id="buildId" name="buildId" lay-search="" placeholder="楼宇选择">
+                        <select id="center" name="center" placeholder="服务中心">
                             <option value="">请选择</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <label class="layui-form-label">房号</label>
+                    <label class="layui-form-label">区域</label>
                     <div class="layui-input-inline m-large">
-                        <input type="text" name="houseNo" placeholder="房号" class="layui-input">
+                        <select id="area" name="area" placeholder="区域">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">物业项目</label>
+                    <div class="layui-input-inline m-large">
+                        <select id="project" name="project" placeholder="物业项目">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">楼宇</label>
+                    <div class="layui-input-inline m-large">
+                        <select id="building" name="building" placeholder="楼宇">
+                            <option value="">请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">房屋</label>
+                    <div class="layui-input-inline m-large">
+                        <select id="house" name="house" placeholder="房屋">
+                            <option value="">请选择</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">审核状态</label>
                     <div class="layui-input-inline m-large">
-                        <select id="status" name="status" lay-search="" placeholder="审核状态">
+                        <select id="status" name="status" placeholder="审核状态">
                             <option value="">请选择</option>
                             <option value="0">待提交</option>
                             <option value="1">待审核</option>
@@ -93,13 +202,13 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">是否已录</label>
                     <div class="layui-input-inline m-large">
-                        <select id="isRecord" name="isRecord" lay-search="" placeholder="是否已录">
+                        <select id="isRecord" name="isRecord" placeholder="是否已录">
                             <option value="">请选择</option>
                             <option value="0">已录</option>
                             <option value="1">未录</option>
                         </select>
                     </div>
-                </div>
+                </div>--%>
             </form>
         </div>
     </div>
@@ -108,122 +217,106 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header">
-        <h4 class="widget-title lighter"><i class="ace-icon fa fa-th"></i>合同列表 (单位:元)</h4>
-        <div class="widget-toolbar no-border">
-            <a href="javascript:void(0);" id="btn-export" class="white">
-                <i class="ace-icon fa fa-download"></i> 导出
+        <div class="widget-toolbar tangchao no-border pull-left">
+            <a href="javascript:void(0);" id="btn-add" class="button">
+                录入
             </a>
+        </div>
+        <div class="widget-toolbar tangchao no-border pull-left">
+            <a href="javascript:void(0);" id="btn-pass" class="button">
+                同意
+            </a>
+        </div>
+        <div class="widget-toolbar tangchao no-border pull-left">
+            <a href="javascript:void(0);" id="btn-reject" class="button">
+                驳回
+            </a>
+        </div>
+        <div class="widget-toolbar tangchao no-border pull-left">
+            <a href="javascript:void(0);" id="btn-commit" class="button">
+                提交审批
+            </a>
+        </div>
+        <div class="widget-toolbar tangchao no-border pull-left">
+            <a href="javascript:void(0);" id="btn-print" class="button">
+                打印
+            </a>
+        </div>
+
+        <div class="widget-toolbar no-border">
+            总额:<span>0.00</span>元
         </div>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-table" lay-even>
-                <colgroup>
-                    <col width="120">
-                    <col width="120">
-                    <col width="120">
-                    <col width="60">
-                    <col width="60">
-                    <col width="60">
-                    <col width="110">
-                    <col width="110">
-                    <col width="110">
-                    <col width="100">
-                    <col width="100">
-                    <col width="100">
-                    <col width="100">
-                    <col width="100">
-                    <col width="120">
-                </colgroup>
-                <thead>
-                <tr>
-                    <th>合同编号</th>
-                    <th>合同名称</th>
-                    <th>装修结构</th>
-                    <th>楼号</th>
-                    <th>房号</th>
-                    <th>室号</th>
-                    <th>签订日期</th>
-                    <th>生效日期</th>
-                    <th>到期日期</th>
-                    <th>付费方式</th>
-                    <th>月租金</th>
-                    <th>押金</th>
-                    <th>水电押金</th>
-                    <th>智表首付金</th>
-                    <th>合同业务状态</th>
-                    <!--<th>承租人</th>
-                    <th>承租人电话</th>
-                    <th>入住人</th>
-                    <th>入住人联系电话</th>
-                    <th>入住人身份证号码</th>
-                    <th>租赁顾问</th>
-                    <th>服务管家</th>
-                    <th>合同来源</th>
-                    <th>公共事业费付费方式</th>
-                    <th>水费(元/每月)</th>
-                    <th>宽带费(元/每月)</th>
-                    <th>有线月租(元/每月)</th>
-                    <th>入住水表数</th>
-                    <th>入住峰电数</th>
-                    <th>入住谷电数</th>
-                    <th>入住总电数</th>
-                    <th>入住分电表数</th>
-                    <th>入住煤总表数</th>
-                    <th>备注</th>-->
-                </tr>
-                </thead>
-                <tbody id="contractContent">
-                </tbody>
+            <table class="layui-hide" id="electricityBillTable" lay-filter="electricityBill">
             </table>
-            <div id="contractPage"></div>
         </div>
     </div>
 </div>
 
+<script type="text/html" id="toolBar">
+    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+</script>
+
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
+<script src="${ctxStatic}/xqsight/wdtree/tree.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
-<script src="${ctxStatic}/modules/report/contractReport.js"></script>
-
-<script id="contractTpl" type="text/html">
-    {{#  layui.each(d.data, function(index, item){ }}
-    <tr>
-        <td>{{ item.contractCode }}</td>
-        <td>{{ item.contractName }}</td>
-        <td>{{ item.houseStyle }}</td>
-        <td>{{ item.buildingName || '' }}</td>
-        <td>{{ item.houseNo || '' }}</td>
-        <td>{{ item.roomNo || '' }}</td>
-        <td>{{ item.signDate || '' }}</td>
-        <td>{{ item.startDate || '' }}</td>
-        <td>{{ item.expiredDate || '' }}</td>
-        <td>{{ item.payType }}</td>
-        <td>{{ item.rental || '' }}</td>
-        <td>{{ item.depositAmount || '' }}</td>
-        <td>{{ item.depositElectricAmount || '' }}</td>
-        <td>{{ item.eleRechargeAmount || '' }}</td>
-        <td>{{ item.contractBusiStatusName || ''}}</td>
-        <!--<td>{{ item.tenantNameLead || '' }}</td>
-        <td>{{ item.cellPhoneLead || '' }}</td>-->
-    </tr>
-    {{#  }); }}
-    {{#  if(d.data.length === 0){ }}
-    无数据
-    {{#  } }}
-</script>
-
-<script id="dictValueTpl" type="text/html">
-    <option value="">合同业务状态</option>
-    {{#  layui.each(d.data, function(index, item){ }}
-    <option value="{{ item.value }}">{{ item.label }}</option>
-    {{#  }); }}
-</script>
-<script id="projectValueTpl" type="text/html">
-    <option value="">物业项目</option>
-    {{#  layui.each(d.data, function(index, item){ }}
-    <option value="{{ item.id }}">{{ item.projectName }}</option>
-    {{#  }); }}
-</script>
+<script src="${ctxStatic}/modules/fee/electricity/feeElectricityBill.js"></script>
 </body>
+
+<div id="addDiv" class="tangchao" hidden >
+    <form class="layui-form" action="">
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label class="layui-form-label">账期年月</label>
+            <div class="layui-input-inline">
+                <input type="text" id="eleBillDate" name="eleBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="houseEleNum" name="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="text" id="houseId" name="houseId" hidden>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="houseAddress" readonly placeholder="地址" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表谷值</label>
+            <div class="layui-input-inline">
+                <input type="text" name="elePeakDegree" required lay-verify="required" placeholder="电表谷值" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表峰值</label>
+            <div class="layui-input-inline">
+                <input type="text" name="eleValleyDegree" required lay-verify="required" placeholder="电表峰值" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表金额</label>
+            <div class="layui-input-inline">
+                <input type="text" name="eleBillAmount" required lay-verify="required" placeholder="电表金额" class="layui-input">
+            </div>
+        </div>
+    </form>
+    <div class="layui-form-item">
+        <div class="layui-input-block tangchao">
+            <button class="button" lay-filter="addEleBill">保存并继续</button>
+            <button type="reset" class="button">统计查看</button>
+        </div>
+    </div>
+</div>
 </html>
