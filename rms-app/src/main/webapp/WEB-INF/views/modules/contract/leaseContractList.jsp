@@ -108,7 +108,7 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li>
+		<shiro:hasPermission name="contract:leaseContract:view"><li class="active"><a href="${ctx}/contract/leaseContract/">承租合同列表</a></li></shiro:hasPermission>
 		<shiro:hasPermission name="contract:leaseContract:edit"><li><a href="${ctx}/contract/leaseContract/form?type=add">承租合同添加</a></li></shiro:hasPermission>
 	</ul>
 	<form:form id="searchForm" modelAttribute="leaseContract" action="${ctx}/contract/leaseContract/list" method="post" class="breadcrumb form-search">
@@ -155,7 +155,9 @@
 				</form:select>
 			</li>
 			<li class="btns">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				<shiro:hasPermission name="contract:leaseContract:view">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+				</shiro:hasPermission>
 				<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
 			</li>
 			<li class="clearfix"></li>
@@ -167,9 +169,6 @@
 			<tr>
 				<th>承租合同编号</th>
 				<th>承租合同名称</th>
-				<!--<th>物业项目</th>
-				<th>楼宇</th>
-				<th>房屋</th>-->
 				<th>汇款人</th>
 				<th>合同生效时间</th>
 				<th>首次打款日期</th>
@@ -182,7 +181,6 @@
 				<th>出租人手机号</th>
 				<th>合同审核状态</th>
 				<th>更新时间</th>
-				<!--<th>备注信息</th>-->
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -195,15 +193,6 @@
 				<td><a title="查看详细" href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">
 					${leaseContract.contractName}
 				</a></td>
-				<!--<td>
-					${leaseContract.projectName}
-				</td>
-				<td>
-					${leaseContract.buildingBame}
-				</td>
-				<td>
-					${leaseContract.houseNo}
-				</td>-->
 				<td>
 					${leaseContract.remittancer.userName}-${leaseContract.remittancer.bankAccount}
 				</td>
@@ -240,9 +229,6 @@
 				<td>
 					<fmt:formatDate value="${leaseContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
-				<!--<td>
-					${leaseContract.remarks}
-				</td>-->
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
 					<c:if test="${leaseContract.contractStatus=='2'}">
@@ -250,14 +236,16 @@
     				</c:if>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
-				<shiro:hasPermission name="contract:leaseContract:audit">
-				<!--<c:if test="${leaseContract.contractStatus=='0'}">
-					<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
-				</c:if>-->
+					<!--<shiro:hasPermission name="contract:leaseContract:audit">
+					<c:if test="${leaseContract.contractStatus=='0'}">
+						<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
+					</c:if>
+					</shiro:hasPermission>-->
+			 	<shiro:hasPermission name="contract:leaseContract:view">
+					<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
+						<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
+					</c:if>
 				</shiro:hasPermission>
-				<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
-					<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>
-				</c:if>
 				</td>
 			</tr>
 		</c:forEach>

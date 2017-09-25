@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.web;
 
 import java.util.List;
@@ -8,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +34,7 @@ import com.thinkgem.jeesite.modules.person.entity.Remittancer;
 import com.thinkgem.jeesite.modules.person.service.RemittancerService;
 
 /**
- * 承租合同Controller
- * 
- * @author huangsc
- * @version 2015-06-06
+ * 承租合同
  */
 @Controller
 @RequestMapping(value = "${adminPath}/contract/leaseContract")
@@ -70,7 +65,7 @@ public class LeaseContractController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("contract:leaseContract:view")
+  @RequiresPermissions("contract:leaseContract:view")
   @RequestMapping(value = {"list"})
   public String listQuery(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     Page<LeaseContract> page = leaseContractService.findPage(new Page<LeaseContract>(request, response), leaseContract);
@@ -79,7 +74,7 @@ public class LeaseContractController extends BaseController {
     return "modules/contract/leaseContractList";
   }
 
-  // @RequiresPermissions("contract:leaseContract:view")
+  @RequiresPermissions("contract:leaseContract:view")
   @RequestMapping(value = {""})
   public String listNoQuery(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
     initQueryCondition(model, leaseContract);
@@ -121,7 +116,7 @@ public class LeaseContractController extends BaseController {
     return "modules/contract/auditHis";
   }
 
-  // @RequiresPermissions("contract:leaseContract:view")
+  @RequiresPermissions("contract:leaseContract:view")
   @RequestMapping(value = "form")
   public String form(LeaseContract leaseContract, Model model) {
     model.addAttribute("leaseContract", leaseContract);
@@ -152,7 +147,7 @@ public class LeaseContractController extends BaseController {
     return "modules/contract/leaseContractForm";
   }
 
-  // @RequiresPermissions("contract:leaseContract:edit")
+  @RequiresPermissions("contract:leaseContract:edit")
   @RequestMapping(value = "save")
   public String save(LeaseContract leaseContract, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, leaseContract)) {
@@ -179,18 +174,16 @@ public class LeaseContractController extends BaseController {
         }
       }
     }
-
     if (leaseContract.getIsNewRecord()) {
       String[] codeArr = leaseContract.getContractCode().split("-");
       leaseContract.setContractCode(codeArr[0] + "-" + (leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
     }
-
     leaseContractService.save(leaseContract);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存承租合同成功");
     return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
   }
 
-  // @RequiresPermissions("contract:leaseContract:edit")
+  @RequiresPermissions("contract:leaseContract:edit")
   @RequestMapping(value = "delete")
   public String delete(LeaseContract leaseContract, RedirectAttributes redirectAttributes) {
     leaseContractService.delete(leaseContract);
