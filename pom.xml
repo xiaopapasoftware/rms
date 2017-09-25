@@ -22,7 +22,6 @@
         <module>rms-app-task</module>
         <module>rms-security</module>
         <module>rms-base</module>
-        <module>rms-fee</module>
         <module>rms-generator-code</module>
     </modules>
 
