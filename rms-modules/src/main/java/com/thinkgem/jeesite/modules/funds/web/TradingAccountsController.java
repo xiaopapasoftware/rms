@@ -194,15 +194,14 @@ public class TradingAccountsController extends BaseController {
       String tradeType = "";// 交易类型
       String tradeObjectId = "";// 交易对象ID
       Map<String, Receipt> paymentTypeMap = new HashMap<String, Receipt>();// key为款项类型，value为收据对象
-      List<String> containedOutTransList = new ArrayList<String>();// 所有可能包含 出款方向的交易类型集合
       List<PaymentTrans> inDirectPaymentTrans = new ArrayList<PaymentTrans>();// 退租类交易类型里，所有的收款的款项集合
+      List<String> containedOutTransList = new ArrayList<String>();// 所有可能包含出款方向的交易类型集合
       containedOutTransList.add(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue());
       containedOutTransList.add(TradeTypeEnum.DEPOSIT_TO_BREAK.getValue());
       containedOutTransList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
       containedOutTransList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
       containedOutTransList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
       containedOutTransList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
-
       List<String> returnTransList = new ArrayList<String>();// 4种退款交易类型
       returnTransList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
       returnTransList.add(TradeTypeEnum.NORMAL_RETURN_RENT.getValue());
