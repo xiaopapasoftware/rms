@@ -12,13 +12,13 @@ import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
+import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,6 +35,9 @@ public class FeeElectricityBillController extends BaseController {
 
     @Autowired
     private SelectItemService selectItemService;
+
+    @Autowired
+    private FeeCommonService feeCommonService;
 
     @Autowired
     private FeeElectricityBillService feeElectricityBillService;
@@ -70,8 +73,15 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "getSubOrgList")
-    public List<SelectItem> getSubOrgList(SelectItemCondition condition) {
-        return selectItemService.getSelectListByBusinessCode(condition);
+    public Object getSubOrgList(SelectItemCondition condition) {
+        List<SelectItem> selectItems = selectItemService.getSelectListByBusinessCode(condition);
+        return ResponseData.success().data(selectItems);
+    }
+
+    @RequestMapping(value = "")
+    public Object getArea(){
+        List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
+        return ResponseData.success().data(selectItems);
     }
 
 

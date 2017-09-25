@@ -41,7 +41,9 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
     public FeeElectricityBillVo getWithProperty(String id,String houseId){
         FeeElectricityBillVo feeElectricityBillVo = this.dao.getWithProperty(id);
         if(Optional.ofNullable(feeElectricityBillVo).isPresent()){
-            House house = feeCommonService.getHouseById(houseId);
+            House queryHouse = new House();
+            queryHouse.setId(houseId);
+            House house = feeCommonService.getHouseById(queryHouse);
             if(Optional.ofNullable(house).isPresent()) {
                 feeElectricityBillVo.setHouseId(house.getHouseId());
                 feeElectricityBillVo.setHouseEleNum(house.getEleNum());
@@ -53,7 +55,9 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Transactional(readOnly = false)
     public void saveFeeElectricityBill(FeeElectricityBill feeElectricityBill){
-        House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
+        House queryHouse = new House();
+        queryHouse.setId(feeElectricityBill.getHouseId());
+        House house = feeCommonService.getHouseById(queryHouse);
         if(Optional.ofNullable(house).isPresent()) {
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }

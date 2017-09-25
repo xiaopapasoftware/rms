@@ -243,7 +243,7 @@
             <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
             <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
             <if test="houseId!=null and houseId!=''"> AND th.id=#{houseId}</if>
-            <if test="status!=null and status!=''"> AND feb.bill_statis=#{status}</if>
+            <if test="status!=null and status!=''"> AND feb.bill_status=#{status}</if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord=0">

@@ -84,28 +84,28 @@
 
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="area" name="area" placeholder="区域">
+                        <select id="area" name="area" lay-filter="area" placeholder="区域" lay-search>
                             <option value="">区域</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="project" name="project" placeholder="物业项目">
+                        <select id="project" name="project" lay-filter="project" placeholder="物业项目" lay-search>
                             <option value="">物业项目</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="building" name="building" placeholder="楼宇">
+                        <select id="building" name="building" lay-filter="building" placeholder="楼宇" lay-search>
                             <option value="">楼宇</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="house" name="house" placeholder="房屋">
+                        <select id="house" name="house" lay-filter="house" placeholder="房屋" lay-search>
                             <option value="">房屋</option>
                         </select>
                     </div>
@@ -131,84 +131,6 @@
                     </div>
                 </div>
 
-                <%--<div class="layui-inline">
-                    <label class="layui-form-label">缴费年月</label>
-                    <div class="layui-input-inline m-large date">
-                        <input type="text" id="feeDate" name="feeDate" lay-verify="required" placeholder="缴费年月" readonly
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-inline">
-                    <label class="layui-form-label">区县</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="county" name="county" placeholder="区县">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">服务中心</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="center" name="center" placeholder="服务中心">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">区域</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="area" name="area" placeholder="区域">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">物业项目</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="project" name="project" placeholder="物业项目">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">楼宇</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="building" name="building" placeholder="楼宇">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">房屋</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="house" name="house" placeholder="房屋">
-                            <option value="">请选择</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">审核状态</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="status" name="status" placeholder="审核状态">
-                            <option value="">请选择</option>
-                            <option value="0">待提交</option>
-                            <option value="1">待审核</option>
-                            <option value="2">审核通过</option>
-                            <option value="3">审核驳回</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="layui-inline">
-                    <label class="layui-form-label">是否已录</label>
-                    <div class="layui-input-inline m-large">
-                        <select id="isRecord" name="isRecord" placeholder="是否已录">
-                            <option value="">请选择</option>
-                            <option value="0">已录</option>
-                            <option value="1">未录</option>
-                        </select>
-                    </div>
-                </div>--%>
             </form>
         </div>
     </div>
@@ -314,8 +236,8 @@
     </form>
     <div class="layui-form-item">
         <div class="layui-input-block tangchao">
-            <button class="button" lay-filter="addEleBill">保存并继续</button>
-            <button type="reset" class="button">统计查看</button>
+            <button class="button" id="btn-save" lay-filter="addEleBill">保存并继续</button>
+            <button type="reset" id="btn-view" class="button">统计查看</button>
         </div>
     </div>
 </div>

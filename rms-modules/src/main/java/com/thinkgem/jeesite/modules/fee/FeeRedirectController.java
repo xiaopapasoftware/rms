@@ -15,9 +15,4 @@ public class FeeRedirectController {
     public String electricityIndex() {
         return "modules/fee/electricity/feeElectricityBill";
     }
-
-    @RequestMapping("electricity/bill/edit")
-    public String electricityEdit() {
-        return "modules/fee/electricity/feeElectricityBillEdit";
-    }
 }

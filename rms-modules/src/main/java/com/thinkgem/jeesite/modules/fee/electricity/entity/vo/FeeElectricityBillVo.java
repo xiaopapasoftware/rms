@@ -21,6 +21,8 @@ public class FeeElectricityBillVo extends FeeElectricityBill {
 
     private String houseNo;
 
+    private String houseId;
+
     private String projectAddress;
 
 }
