@@ -50,7 +50,7 @@ public class FeeElectricityBillController extends BaseController {
 
     @RequestMapping(value = "list")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
-        Page page = new Page(feeCriteriaEntity.getPageSize(), feeCriteriaEntity.getPageNum());
+        Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
         List<FeeElectricityBillVo> feeElectricityBillVos = feeElectricityBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
         page.setList(feeElectricityBillVos);
@@ -78,11 +78,15 @@ public class FeeElectricityBillController extends BaseController {
         return ResponseData.success().data(selectItems);
     }
 
-    @RequestMapping(value = "")
+    @RequestMapping(value = "getArea")
     public Object getArea(){
         List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
         return ResponseData.success().data(selectItems);
     }
 
+    @RequestMapping(value = "getTotalAmount")
+    public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
+        return ResponseData.success().data(feeElectricityBillService.getTotalAmount(feeCriteriaEntity));
+    }
 
 }

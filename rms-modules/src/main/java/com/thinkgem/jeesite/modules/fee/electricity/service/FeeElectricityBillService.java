@@ -38,6 +38,10 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         return this.dao.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
     }
 
+    public Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity){
+        return this.dao.getTotalAmount(feeCriteriaEntity);
+    }
+
     public FeeElectricityBillVo getWithProperty(String id,String houseId){
         FeeElectricityBillVo feeElectricityBillVo = this.dao.getWithProperty(id);
         if(Optional.ofNullable(feeElectricityBillVo).isPresent()){

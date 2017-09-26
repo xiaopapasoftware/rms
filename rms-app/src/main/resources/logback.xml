@@ -24,7 +24,8 @@
         </encoder>
     </appender>
 
-    <logger name="java.sql" level="INFO" additivity="true"/>
+    <logger name="com.thinkgem.jeesite" level="debug"/>
+    <logger name="java.sql" level="debug" additivity="true"/>
 
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>

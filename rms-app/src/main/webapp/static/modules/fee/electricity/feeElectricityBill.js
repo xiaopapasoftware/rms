@@ -10,6 +10,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             feeEleBillMVC.View.bindEvent();
             feeEleBillMVC.Controller.getAreaFun();
             feeEleBillMVC.View.renderTable();
+            feeEleBillMVC.Controller.getTotalAmountFun();
 
             form.on('select(area)', function(data){
                 console.log(data.value); //得到被选中的值
@@ -70,6 +71,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             selectArea: {
                 url: feeEleBillCommon.baseUrl + "/getArea",
                 method: "GET"
+            },
+            getTotalAmount: {
+                url: feeEleBillCommon.baseUrl + "/getTotalAmount",
+                method: "GET"
             }
         },
         View: {
@@ -92,7 +97,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#btn-search").on("click", feeEleBillMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeEleBillMVC.Controller.undoFun);
                 $("#btn-pass").on("click", feeEleBillMVC.Controller.passFun);
-                $("#tn-reject").on("click", feeEleBillMVC.Controller.rejectFun);
+                $("#btn-reject").on("click", feeEleBillMVC.Controller.rejectFun);
                 $("#btn-commit").on("click", feeEleBillMVC.Controller.commitFun);
                 $("#btn-print").on("click", feeEleBillMVC.Controller.printFun);
                 $("#btn-save").on("click", feeEleBillMVC.Controller.saveFun);
@@ -105,7 +110,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     cols: [[
                         {checkbox: true, width: 20, fixed: true},
                         {field: 'areaName', align: 'center', title: '区域', width: 120},
-                        {field: 'buildingName', align: 'center', title: '小区', width: 120},
+                        {field: 'projectName', align: 'center', title: '物业项目', width: 100},
+                        {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', width: 80},
                         {field: 'houseEleNum', align: 'center', title: '户号', width: 100},
                         {field: 'eleBillDate', align: 'center', title: '账期', width: 80},
@@ -170,6 +176,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             }
         },
         Controller: {
+            getWhereFun:function(){
+                var where = {
+                    "feeDate": $("#feeDate").val(),
+                    "areaId": $("#area").val(),
+                    "propertyId": $("#project").val(),
+                    "buildId": $("#building").val(),
+                    "houseId": $("#house").val(),
+                    "status": $("#status").val(),
+                    "isRecord": $("#isRecord").val()
+                };
+                return where;
+            },
             addEleFun: function () {
                 layer.open({
                     title: "电费账单录入",
@@ -183,15 +201,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             queryFun: function () {
                 table.reload('electricityBillTable', {
-                    where: {
-                        "feeDate": $("#feeDate").val(),
-                        "areaId": $("#area").val(),
-                        "propertyId": $("#project").val(),
-                        "buildId": $("#building").val(),
-                        "houseId": $("#house").val(),
-                        "status": $("#status").val(),
-                        "isRecord": $("#isRecord").val()
-                    }
+                    where: feeEleBillMVC.Controller.getWhereFun()
                 });
             },
             undoFun:function(){
@@ -251,6 +261,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         }));
                     });
                     form.render('select');
+                });
+            },
+            getTotalAmountFun : function () {
+                $.getJSON(feeEleBillMVC.URLs.selectArea.url,
+                    feeEleBillMVC.Controller.getWhereFun(),
+                    function (data) {
+                    if(data.status == "200"){
+                        $("#totalAmount").html(data.data);
+                    }
                 });
             }
         }

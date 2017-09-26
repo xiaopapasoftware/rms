@@ -166,7 +166,7 @@
         </div>
 
         <div class="widget-toolbar no-border">
-            总额:<span>0.00</span>元
+            总额:<span id="totalAmount">0.00</span>元
         </div>
     </div>
     <div class="widget-body">
