@@ -18,8 +18,7 @@ import com.thinkgem.jeesite.modules.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,7 +58,7 @@ public class SelectItemService {
   }
 
   private List<SelectItem> getOrgSelectListByCondition(SelectItemCondition condition) {
-    List<SelectItem> result = new ArrayList<>();
+    List<SelectItem> result;
     switch (condition.getType()) {
       case SelectItemConstants.county:
         result = convertToItemList(areaService.getCountyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
@@ -90,6 +89,8 @@ public class SelectItemService {
     if (CollectionUtils.isEmpty(map)) {
       return null;
     }
-    return map.entrySet().stream().map(entry -> new SelectItem(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    List<SelectItem> result = map.entrySet().stream().map(entry -> new SelectItem(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    result.sort(Comparator.comparing(SelectItem::getName));
+    return result;
   }
 }

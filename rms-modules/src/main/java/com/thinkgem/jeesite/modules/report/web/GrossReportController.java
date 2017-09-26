@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -58,6 +59,7 @@ public class GrossReportController extends BaseController {
       GrossProfitReportVO reportVO = calculateStrategy.calculateReportVO(grossProfitCondition);
       reportList.add(reportVO.getParent());
       if (!CollectionUtils.isEmpty(reportVO.getChildReportList())) {
+        reportVO.getChildReportList().sort(Comparator.comparing(GrossProfitReport::getName));
         reportList.addAll(reportVO.getChildReportList());
       }
       return reportList;
