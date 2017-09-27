@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
@@ -13,10 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
- * 承租合同明细Entity
- * 
- * @author huangsc
- * @version 2015-06-14
+ * 承租合同明细
  */
 public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
 
@@ -25,7 +21,6 @@ public class LeaseContractDtl extends DataEntity<LeaseContractDtl> {
   private Date startDate; // 起始时间
   private Date endDate; // 结束时间
   private Double deposit; // 月承租价
-
   @SuppressWarnings("unused")
   private String startDateStr;
   @SuppressWarnings("unused")
