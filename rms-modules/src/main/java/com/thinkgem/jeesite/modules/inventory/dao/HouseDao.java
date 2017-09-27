@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 房屋信息DAO接口
@@ -65,4 +66,6 @@ public interface HouseDao extends CrudDao<House> {
   int updateHouseStatus4Deposit(House house);
 
   int queryHousesCountByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId, @Param("startDate") Date startDate);
+
+  List<Map> getHouseByAccountNumAndType(@Param("accountNum") String accountNum, @Param("type") String type);
 }

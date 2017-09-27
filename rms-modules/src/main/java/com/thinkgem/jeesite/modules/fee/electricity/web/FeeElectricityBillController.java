@@ -89,4 +89,9 @@ public class FeeElectricityBillController extends BaseController {
         return ResponseData.success().data(feeElectricityBillService.getTotalAmount(feeCriteriaEntity));
     }
 
+    @RequestMapping(value = "houseInfo")
+    public Object houseInfo(String accountNum,String type) {
+        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndType(accountNum,type));
+    }
+
 }

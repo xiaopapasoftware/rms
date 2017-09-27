@@ -50,7 +50,7 @@ public class House extends DataEntity<House> {
   private String roomId;
   private String intentMode;// 意向租赁类型
   private String isFeature;// 是否精选房源
-  private Double rental;// 意向租金
+  private Double rental;// 意向租金 0 整套 1 单间
   private String shortDesc;// 描述
   private String shortLocation;// 地址描述
   private String payWay;// 付款方式
@@ -58,9 +58,11 @@ public class House extends DataEntity<House> {
   private String servcieUserName;
 
   /*电户号*/
-  private String eleNum;
-  /*0:整租1:合租*/
-  private String rentMethod;
+  private String eleAccountNum;
+  /*水户号*/
+  private String waterAccountNum;
+  /*煤气户号*/
+  private String gasAccountNum;
 
   public House() {
     super();
@@ -331,19 +333,27 @@ public class House extends DataEntity<House> {
     this.servcieUserName = servcieUserName;
   }
 
-  public String getEleNum() {
-    return eleNum;
+  public String getEleAccountNum() {
+    return eleAccountNum;
   }
 
-  public void setEleNum(String eleNum) {
-    this.eleNum = eleNum;
+  public void setEleAccountNum(String eleAccountNum) {
+    this.eleAccountNum = eleAccountNum;
   }
 
-  public String getRentMethod() {
-    return rentMethod;
+  public String getWaterAccountNum() {
+    return waterAccountNum;
   }
 
-  public void setRentMethod(String rentMethod) {
-    this.rentMethod = rentMethod;
+  public void setWaterAccountNum(String waterAccountNum) {
+    this.waterAccountNum = waterAccountNum;
+  }
+
+  public String getGasAccountNum() {
+    return gasAccountNum;
+  }
+
+  public void setGasAccountNum(String gasAccountNum) {
+    this.gasAccountNum = gasAccountNum;
   }
 }
