@@ -31,7 +31,8 @@
             height: 25px;
             line-height: 25px;
             min-width: 50px;
-            padding: 0 10px;
+            padding: 0px 10px;
+            display: inline-block;
             font-size: 12px;
             text-align: center;
             border-radius: 6px;
@@ -51,7 +52,6 @@
 </head>
 
 <body>
-
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header">
         <h4 class="widget-title lighter">
@@ -136,37 +136,36 @@
     </div>
 </div>
 
-
 <div class="widget-box transparent widget-container-col">
-    <div class="widget-header">
-        <div class="widget-toolbar tangchao no-border pull-left">
+    <div class="widget-header tangchao">
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-add" class="button">
                 录入
             </a>
         </div>
-        <div class="widget-toolbar tangchao no-border pull-left">
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-pass" class="button">
                 同意
             </a>
         </div>
-        <div class="widget-toolbar tangchao no-border pull-left">
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-reject" class="button">
                 驳回
             </a>
         </div>
-        <div class="widget-toolbar tangchao no-border pull-left">
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-commit" class="button">
                 提交审批
             </a>
         </div>
-        <div class="widget-toolbar tangchao no-border pull-left">
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-print" class="button">
                 打印
             </a>
         </div>
 
         <div class="widget-toolbar no-border">
-            总额:<span>0.00</span>元
+            总额:<span id="totalAmount">0.00</span>元
         </div>
     </div>
     <div class="widget-body">
@@ -175,6 +174,62 @@
             </table>
         </div>
     </div>
+</div>
+
+
+<div id="addDiv" class="tangchao" hidden >
+    <form class="layui-form" action="">
+        <div class="layui-form-item" style="margin-top: 15px;">
+            <label class="layui-form-label">账期年月</label>
+            <div class="layui-input-inline">
+                <input type="text" id="eleBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="text" id="houseId" name="houseId" hidden>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
+            <div class="layui-input-inline">
+                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表谷值</label>
+            <div class="layui-input-inline">
+                <input type="number" id="elePeakDegree" required lay-verify="required" placeholder="电表谷值" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表峰值</label>
+            <div class="layui-input-inline">
+                <input type="number" id="eleValleyDegree" required lay-verify="required" placeholder="电表峰值" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">电表金额</label>
+            <div class="layui-input-inline">
+                <input type="number" id="eleBillAmount" required lay-verify="required" placeholder="电表金额" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <a href="javascript:void(0);" id="btn-save" lay-filter="addEleBill" lay-submit class="button">保存并继续</a>
+                <a href="javascript:void(0);" id="btn-view" class="button">
+                    统计查看
+                </a>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script type="text/html" id="toolBar">
@@ -186,59 +241,7 @@
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/wdtree/tree.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
+<script src="${ctxStatic}/jquery-autocomplete/jquery.autocomplete.js"></script>
 <script src="${ctxStatic}/modules/fee/electricity/feeElectricityBill.js"></script>
 </body>
-
-<div id="addDiv" class="tangchao" hidden >
-    <form class="layui-form" action="">
-        <div class="layui-form-item" style="margin-top: 15px;">
-            <label class="layui-form-label">账期年月</label>
-            <div class="layui-input-inline">
-                <input type="text" id="eleBillDate" name="eleBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
-            <div class="layui-input-inline">
-                <input type="text" id="houseEleNum" name="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
-                <input type="text" id="houseId" name="houseId" hidden>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
-            <div class="layui-input-inline">
-                <input type="text" name="houseAddress" readonly placeholder="地址" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表谷值</label>
-            <div class="layui-input-inline">
-                <input type="text" name="elePeakDegree" required lay-verify="required" placeholder="电表谷值" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表峰值</label>
-            <div class="layui-input-inline">
-                <input type="text" name="eleValleyDegree" required lay-verify="required" placeholder="电表峰值" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表金额</label>
-            <div class="layui-input-inline">
-                <input type="text" name="eleBillAmount" required lay-verify="required" placeholder="电表金额" class="layui-input">
-            </div>
-        </div>
-    </form>
-    <div class="layui-form-item">
-        <div class="layui-input-block tangchao">
-            <button class="button" id="btn-save" lay-filter="addEleBill">保存并继续</button>
-            <button type="reset" id="btn-view" class="button">统计查看</button>
-        </div>
-    </div>
-</div>
 </html>

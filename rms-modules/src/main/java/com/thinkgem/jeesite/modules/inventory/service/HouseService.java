@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangshujin
@@ -413,5 +414,15 @@ public class HouseService extends CrudService<HouseDao, House> {
   @Transactional(readOnly = true)
   public House getHouseById(String id) {
     return dao.getHouseById(id);
+  }
+
+  /**
+   * 查询房源根据户号和户号类型
+   * @param accountNum 水电煤户号
+   * @param type 0：电费 1：水费 2 燃气费
+   * @return
+   */
+  public List<Map> getHouseByAccountNumAndType(String accountNum,String type){
+    return dao.getHouseByAccountNumAndType(accountNum,type);
   }
 }

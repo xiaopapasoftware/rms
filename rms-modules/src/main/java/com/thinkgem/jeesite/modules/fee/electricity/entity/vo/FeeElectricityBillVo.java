@@ -13,7 +13,7 @@ public class FeeElectricityBillVo extends FeeElectricityBill {
 
     private String areaName;
 
-    private String propertyName;
+    private String projectName;
 
     private String buildingId;
 
@@ -24,5 +24,7 @@ public class FeeElectricityBillVo extends FeeElectricityBill {
     private String houseId;
 
     private String projectAddress;
+
+    private String billStatusName;
 
 }

@@ -58,7 +58,7 @@ public class ResponseData implements Serializable {
     public Map page(Page page){
         Map map = Maps.newHashMap();
         map.put("code","0");
-        map.put("total",page.getCount());
+        map.put("count",page.getCount());
         map.put("data",page.getList());
         return map;
     }

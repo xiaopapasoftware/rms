@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,10 @@ public class FeeCommonService {
             return houses.get(0);
         }
         return null;
+    }
+
+    public List<Map> getHouseByAccountNumAndType(String accountNum,String type) {
+        return houseService.getHouseByAccountNumAndType(accountNum,type);
     }
 
     public List<SelectItem> getAreaWithAuth() {
