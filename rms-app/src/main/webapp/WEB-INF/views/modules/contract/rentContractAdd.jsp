@@ -330,12 +330,12 @@
 			}
 			$("input[name='remindTime']").val(year + "-" + month + "-" + day);
 		}
-		function changeLiveList(rentContractId){//更改入住人列表
-		    $.post("${ctx}/contract/rentContract/changeLiveList", {'rentContractId':rentContractId, 'liveIds':$.makeArray($("#liveList").val()).join()});
-		}
-		function changeTenantList(rentContractId){//更改承租人列表
-		    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
-		}
+		//function changeLiveList(rentContractId){//更改入住人列表
+		//    $.post("${ctx}/contract/rentContract/changeLiveList", {'rentContractId':rentContractId, 'liveIds':$.makeArray($("#liveList").val()).join()});
+		//}
+		//function changeTenantList(rentContractId){//更改承租人列表
+		//    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
+		//}
 	</script>
 </head>
 <body>
@@ -470,7 +470,8 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true" onchange="changeTenantList('${rentContract.id}');">
+				<!-- onchange="changeTenantList('${rentContract.id}');" -->
+				<form:select path="tenantList" class="input-xlarge required" multiple="true">
 					<c:forEach items="${tenantList}" var="item">
 						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
 					</c:forEach>
@@ -482,8 +483,9 @@
 		<div class="control-group">
 			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true" onchange="changeLiveList('${rentContract.id}');">
-					<c:forEach items="${tenantList}" var="item">
+				<!-- onchange="changeLiveList('${rentContract.id}');" -->
+				<form:select path="liveList" class="input-xlarge required" multiple="true">
+					<c:forEach items="${liveList}" var="item">
 						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
 					</c:forEach>
 				</form:select>

@@ -48,7 +48,6 @@ import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.AccountingService;
-import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
@@ -105,8 +104,8 @@ public class RentContractController extends BaseController {
   private ElectricFeeService electricFeeService;
   @Autowired
   private DepositAgreementService depositAgreementService;
-  @Autowired
-  private ContractTenantService contractTenantService;
+  // @Autowired
+  // private ContractTenantService contractTenantService;
   @Autowired
   private MessageService messageService;// APP消息推送
   @Autowired
@@ -1093,46 +1092,46 @@ public class RentContractController extends BaseController {
   /**
    * 动态修改出租合同的入住人列表
    */
-  @RequiresPermissions("contract:rentContract:edit")
-  @RequestMapping(value = "changeLiveList")
-  public void changeLiveList(HttpServletRequest request, HttpServletResponse response) {
-    String rentContractId = request.getParameter("rentContractId");
-    String liveIds = request.getParameter("liveIds");
-    if (StringUtils.isNotBlank(rentContractId)) {
-      List<Tenant> livedTenants = new ArrayList<Tenant>();
-      if (StringUtils.isNotBlank(liveIds)) {
-        String[] liveIdArray = liveIds.split(",");
-        for (String liveId : liveIdArray) {
-          Tenant t = new Tenant();
-          t.setId(liveId);
-          livedTenants.add(t);
-        }
-      }
-      contractTenantService.updateLiveList(rentContractId, livedTenants);
-    }
-  }
+  // @RequiresPermissions("contract:rentContract:edit")
+  // @RequestMapping(value = "changeLiveList")
+  // public void changeLiveList(HttpServletRequest request, HttpServletResponse response) {
+  // String rentContractId = request.getParameter("rentContractId");
+  // String liveIds = request.getParameter("liveIds");
+  // if (StringUtils.isNotBlank(rentContractId)) {
+  // List<Tenant> livedTenants = new ArrayList<Tenant>();
+  // if (StringUtils.isNotBlank(liveIds)) {
+  // String[] liveIdArray = liveIds.split(",");
+  // for (String liveId : liveIdArray) {
+  // Tenant t = new Tenant();
+  // t.setId(liveId);
+  // livedTenants.add(t);
+  // }
+  // }
+  // contractTenantService.updateLiveList(rentContractId, livedTenants);
+  // }
+  // }
 
   /**
    * 动态修改出租合同的承租人列表
    */
-  @RequiresPermissions("contract:rentContract:edit")
-  @RequestMapping(value = "changeTenantList")
-  public void changeTenantList(HttpServletRequest request, HttpServletResponse response) {
-    String rentContractId = request.getParameter("rentContractId");
-    String tenantIds = request.getParameter("tenantIds");
-    if (StringUtils.isNotBlank(rentContractId)) {
-      List<Tenant> tenants = new ArrayList<Tenant>();
-      if (StringUtils.isNotBlank(tenantIds)) {
-        String[] tenantIdArray = tenantIds.split(",");
-        for (String tenantId : tenantIdArray) {
-          Tenant t = new Tenant();
-          t.setId(tenantId);
-          tenants.add(t);
-        }
-      }
-      contractTenantService.updateTenantList(rentContractId, tenants);
-    }
-  }
+  // @RequiresPermissions("contract:rentContract:edit")
+  // @RequestMapping(value = "changeTenantList")
+  // public void changeTenantList(HttpServletRequest request, HttpServletResponse response) {
+  // String rentContractId = request.getParameter("rentContractId");
+  // String tenantIds = request.getParameter("tenantIds");
+  // if (StringUtils.isNotBlank(rentContractId)) {
+  // List<Tenant> tenants = new ArrayList<Tenant>();
+  // if (StringUtils.isNotBlank(tenantIds)) {
+  // String[] tenantIdArray = tenantIds.split(",");
+  // for (String tenantId : tenantIdArray) {
+  // Tenant t = new Tenant();
+  // t.setId(tenantId);
+  // tenants.add(t);
+  // }
+  // }
+  // contractTenantService.updateTenantList(rentContractId, tenants);
+  // }
+  // }
 
   @RequiresPermissions("contract:rentContract:view")
   @RequestMapping(value = "initPublicBasicFeeInfo")

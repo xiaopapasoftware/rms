@@ -496,12 +496,12 @@
 		function viewCheckInfo(id) {
 			top.$.jBox.open("iframe:${ctx}/contract/accounting/listByContract?rentContractId="+id,'核算信息',850,500,{buttons:{'关闭':true}});
 		}
-		function changeLiveList(rentContractId){//更改入住人列表
-		    $.post("${ctx}/contract/rentContract/changeLiveList", {'rentContractId':rentContractId, 'liveIds':$.makeArray($("#liveList").val()).join()});
-		}
-		function changeTenantList(rentContractId){//更改承租人列表
-		    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
-		}
+		//function changeLiveList(rentContractId){//更改入住人列表
+		//    $.post("${ctx}/contract/rentContract/changeLiveList", {'rentContractId':rentContractId, 'liveIds':$.makeArray($("#liveList").val()).join()});
+		//}
+		//function changeTenantList(rentContractId){//更改承租人列表
+		//    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
+		//}
 	</script>
 </head>
 <body>
@@ -634,7 +634,8 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required tanants" multiple="true" onchange="changeTenantList('${rentContract.id}');">
+				 <!--onchange="changeTenantList('${rentContract.id}');"-->
+				<form:select path="tenantList" class="input-xlarge required tanants" multiple="true">
 					<option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -644,7 +645,8 @@
 		<div class="control-group">
 			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required tanants" multiple="true" onchange="changeLiveList('${rentContract.id}');">
+				 <!--onchange="changeLiveList('${rentContract.id}');"-->
+				<form:select path="liveList" class="input-xlarge required tanants" multiple="true">
 				    <option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
