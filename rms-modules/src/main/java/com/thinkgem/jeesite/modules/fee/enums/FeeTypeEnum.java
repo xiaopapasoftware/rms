@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.fee;
+package com.thinkgem.jeesite.modules.fee.enums;
 
 /**
  * @author wangganggang

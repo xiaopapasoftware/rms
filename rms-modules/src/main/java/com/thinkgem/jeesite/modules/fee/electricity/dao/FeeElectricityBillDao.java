@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>

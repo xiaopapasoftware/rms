@@ -152,6 +152,11 @@
             </a>
         </div>
         <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-commit" class="button">
+                提交审批
+            </a>
+        </div>
+        <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-pass" class="button">
                 同意
             </a>
@@ -159,11 +164,6 @@
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-reject" class="button">
                 驳回
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-commit" class="button">
-                提交审批
             </a>
         </div>
         <div class="widget-toolbar no-border pull-left">

@@ -5,24 +5,27 @@
 package com.thinkgem.jeesite.modules.fee.electricity.web;
 
 
+import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
-import com.thinkgem.jeesite.modules.fee.FeeTypeEnum;
+import com.thinkgem.jeesite.modules.fee.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
+import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
+import com.thinkgem.jeesite.modules.fee.enums.FeeTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>电费账单表 controller</p>
@@ -33,7 +36,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/fee/electricity/bill")
-public class FeeElectricityBillController extends BaseController {
+public class FeeElectricityBillController extends FeeBaseController {
 
     @Autowired
     private SelectItemService selectItemService;
@@ -46,6 +49,12 @@ public class FeeElectricityBillController extends BaseController {
 
     @RequestMapping(value = "save")
     public Object save(FeeElectricityBill feeElectricityBill) {
+        if (Optional.ofNullable(feeElectricityBill.getId()).isPresent()){
+            FeeElectricityBill existFeeEleBill = feeElectricityBillService.get(feeElectricityBill.getId());
+            if(existFeeEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()){
+                return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能修改");
+            }
+        }
         feeElectricityBillService.saveFeeElectricityBill(feeElectricityBill);
         return ResponseData.success().data(feeElectricityBill.getId());
     }
@@ -61,18 +70,22 @@ public class FeeElectricityBillController extends BaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeElectricityBill feeElectricityBill = new FeeElectricityBill();
+        FeeElectricityBill feeElectricityBill = feeElectricityBillService.get(id);
+        if(feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()){
+            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能删除");
+        }
         feeElectricityBill.setId(id);
         feeElectricityBill.setDelFlag(Constants.DEL_FLAG_YES);
         feeElectricityBillService.save(feeElectricityBill);
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "get")
-    public Object get(String id, String houseId) {
-        FeeElectricityBillVo feeElectricityBillVo = feeElectricityBillService.getWithProperty(id, houseId);
-        return ResponseData.success().data(feeElectricityBillVo);
+    @RequestMapping(value = "audit")
+    public Object audit(String status,String ...id){
+        feeElectricityBillService.feeElectricityBillAudit(status,id);
+        return ResponseData.success();
     }
+
 
     @RequestMapping(value = "getSubOrgList")
     public Object getSubOrgList(SelectItemCondition condition) {

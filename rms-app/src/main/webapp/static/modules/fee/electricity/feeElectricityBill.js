@@ -23,7 +23,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#building").append('<option value="">楼宇</option>');
 
                 $("#house option").remove();
-                $("#house").append('<option value="">房屋</option>');
+                $("#house").append('<option value="">账单</option>');
                 form.render('select');
             });
             form.on('select(project)', function (data) {
@@ -33,7 +33,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#building").append('<option value="">楼宇</option>');
 
                 $("#house option").remove();
-                $("#house").append('<option value="">房屋</option>');
+                $("#house").append('<option value="">账单</option>');
 
                 form.render('select');
             });
@@ -41,7 +41,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeEleBillMVC.Controller.selectItemFun("house", "house", data.value);
 
                 $("#house option").remove();
-                $("#house").append('<option value="">房屋</option>');
+                $("#house").append('<option value="">账单</option>');
 
                 form.render('select');
             });
@@ -110,10 +110,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             save: {
                 url: feeEleBillCommon.baseUrl + "/save",
-                method: "GET"
+                method: "POST"
             },
             delete: {
                 url: feeEleBillCommon.baseUrl + "/delete",
+                method: "GET"
+            },
+            audit: {
+                url: feeEleBillCommon.baseUrl + "/audit",
                 method: "GET"
             },
             selectItem: {
@@ -163,6 +167,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 table.render({
                     elem: '#electricityBillTable',
                     url: feeEleBillMVC.URLs.query.url,
+                    limits: [20, 30, 60, 90, 150, 300],
+                    limit: 20,
                     cols: [[
                         {checkbox: true, width: 20, fixed: true},
                         {field: 'areaName', align: 'center', title: '区域', width: 140},
@@ -171,7 +177,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
                         {field: 'houseEleNum', align: 'center', title: '户号', width: 140},
                         {field: 'eleBillDate', align: 'center', title: '账期', width: 100},
-                        {field: 'batchNo', align: 'center', title: '审核批次号', width: 120},
+                        {field: 'batchNo', align: 'center', title: '审核批次号', width: 240},
                         {
                             field: 'elePeakDegree', align: 'right', title: '谷值', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.elePeakDegree) }}</div>'
@@ -210,6 +216,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'edit') { //编辑
+                        if(data.billStatus != null && data.billStatus != "0" && data.billStatus != "3"){
+                            layer.msg("当前账单已提交,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
+                            return;
+                        }
                         $("#houseEleNum").val(data.houseEleNum);
                         $("#houseAddress").val(data.projectAddress + data.buildingName + "号" + data.houseNo + "室");
                         $("#houseId").val(data.houseId);
@@ -219,7 +229,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         feeEleBillMVC.Controller.addEleFun();
                     } else if (layEvent === 'del') { //删除
                         if (data.id == null) {
-                            layer.msg("当前房屋没有录入,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
+                            layer.msg("当前账单没有录入,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
+                            return;
+                        }
+                        if(data.billStatus != null && data.billStatus != "0" &&data.billStatus != "3"){
+                            layer.msg("当前账单已提交,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
                         layer.confirm('确认删除吗?', {offset: '100px', icon: 3, title: '提示'}, function (index) {
@@ -267,7 +281,13 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             undoFun: function () {
-
+                $("#area").val("");
+                $("#project").val("");
+                $("#building").val("");
+                $("#house").val("");
+                $("#status").val("");
+                $("#isRecord").val("");
+                form.render("select");
             },
             passFun: function () {
                 var selectRows = table.checkStatus('electricityBillTable');
@@ -275,7 +295,22 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
                 }
-                console.log(selectRows);
+                feeEleBillMVC.Controller.auditFun("2");
+            },
+            auditFun: function (status) {
+                var selectRows = table.checkStatus('electricityBillTable');
+                var data = "status="+status;
+                $.each(selectRows.data, function (index, object) {
+                    data += "&id=" + object.id;
+                });
+                $.post(feeEleBillMVC.URLs.audit.url, data, function (data) {
+                    if (data.code == "200") {
+                        feeEleBillMVC.Controller.queryFun();
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             rejectFun: function () {
                 var selectRows = table.checkStatus('electricityBillTable');
@@ -283,7 +318,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
                 }
-                console.log(selectRows);
+                feeEleBillMVC.Controller.auditFun("3");
             },
             commitFun: function () {
                 var selectRows = table.checkStatus('electricityBillTable');
@@ -291,7 +326,25 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
                 }
-                console.log(selectRows);
+
+                var flag = true;
+                $.each(selectRows.data, function (index, obj) {
+                    if (obj.elePeakDegree == null || obj.elePeakDegree == 0
+                        || obj.eleValleyDegree == null || obj.eleValleyDegree == 0
+                        || obj.eleBillAmount == null || obj.eleBillAmount == 0) {
+                        layer.msg("户号[" + obj.houseEleNum + "]没有录入完,不能提交", {icon: 5, offset: 100, time: 5000, shift: 6});
+                        flag = false;
+                        return false;
+                    }
+                    if (obj.billStatus != "1" && obj.billStatus != "3") {
+                        layer.msg("户号[" + obj.houseEleNum + "]已经提交,不能重复提交", {icon: 5, offset: 100, time: 5000, shift: 6});
+                        flag = false;
+                        return false;
+                    }
+                });
+                if(flag){
+                    feeEleBillMVC.Controller.auditFun("1");
+                }
             },
             printFun: function () {
             },

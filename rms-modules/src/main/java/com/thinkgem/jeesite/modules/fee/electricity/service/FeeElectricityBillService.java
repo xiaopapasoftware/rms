@@ -4,14 +4,18 @@
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
+import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseRentMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +24,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * <p>
  * 电费账单表实现类 service
- * </p>
- * <p>
  * Table: fee_electricity_bill - 电费账单表
- * </p>
  *
  * @author generator code
  * @since 2017-09-18 08:24:24
@@ -33,6 +33,8 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao, FeeElectricityBill> {
+
+    private Logger logger = LoggerFactory.getLogger(FeeElectricityBillService.class);
 
     @Autowired
     private FeeCommonService feeCommonService;
@@ -81,6 +83,47 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         // TODO 判断房屋是否整组，如果整组生成抄表流水记录
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
 
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void feeElectricityBillAudit(String status, String... ids) {
+        String batchNo = new IdGenerator().nextId();
+        for (String id : ids) {
+            FeeElectricityBill feeElectricityBill = dao.get(id);
+            if (Optional.ofNullable(feeElectricityBill).isPresent()) {
+                switch (status) {
+                    case "1":
+                        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeElectricityBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                            logger.error("户号{}当前状态为{},不能提交", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可提交");
+                        }
+                        break;
+                    case "2":
+                        if (feeElectricityBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}当前状态为{},不能同意", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可同意");
+                        }
+                        break;
+                    case "3":
+                        if (feeElectricityBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}当前状态为{},不能驳回", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可驳回");
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不在处理状态");
+                }
+                FeeElectricityBill updFeeEleBill = new FeeElectricityBill();
+                if(!Optional.ofNullable(feeElectricityBill.getBatchNo()).isPresent()){
+                    updFeeEleBill.setBatchNo(batchNo);
+                }
+                updFeeEleBill.setBillStatus(Integer.valueOf(status));
+                updFeeEleBill.setId(feeElectricityBill.getId());
+                this.save(updFeeEleBill);
+                //TODO 记录审核日志
+
+            }
         }
     }
 }
