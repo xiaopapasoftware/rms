@@ -32,10 +32,11 @@
         <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
         <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
         <result column="bill_status_name" property="billStatusName" jdbcType="VARCHAR"/>
+        <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, batch_no, property_id, house_id, house_ele_num, ele_bill_date, ele_bill_amount, ele_peak_degree, ele_valley_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag,
+         id, batch_no, property_id, house_id, house_ele_num, ele_bill_date, ele_bill_amount, ele_peak_degree, ele_valley_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -64,12 +65,12 @@
         <if test="houseEleNum!=null">#{houseEleNum,jdbcType=VARCHAR},</if>
         <if test="eleBillDate!=null">#{eleBillDate,jdbcType=TIMESTAMP},</if>
         <if test="eleBillAmount!=null">#{eleBillAmount,jdbcType=NUMERIC},</if>
-        <if test="elePeakDegree!=null">#{elePeakDegree,jdbcType=},</if>
-        <if test="eleValleyDegree!=null">#{eleValleyDegree,jdbcType=},</if>
+        <if test="elePeakDegree!=null">#{elePeakDegree,jdbcType=NUMERIC},</if>
+        <if test="eleValleyDegree!=null">#{eleValleyDegree,jdbcType=NUMERIC},</if>
         <if test="billStatus!=null">#{billStatus,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
@@ -82,12 +83,12 @@
         #{item.houseEleNum,jdbcType=VARCHAR},
         #{item.eleBillDate,jdbcType=TIMESTAMP},
         #{item.eleBillAmount,jdbcType=NUMERIC},
-        #{item.elePeakDegree,jdbcType=},
-        #{item.eleValleyDegree,jdbcType=},
+        #{item.elePeakDegree,jdbcType=NUMERIC},
+        #{item.eleValleyDegree,jdbcType=NUMERIC},
         #{item.billStatus,jdbcType=NUMERIC},
-        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createBy.id,jdbcType=VARCHAR},
         #{item.createDate,jdbcType=TIMESTAMP},
-        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateBy.id,jdbcType=VARCHAR},
         #{item.updateDate,jdbcType=TIMESTAMP},
         #{item.remarks,jdbcType=VARCHAR},
         #{item.delFlag,jdbcType=VARCHAR},
@@ -100,10 +101,10 @@
         <if test="houseEleNum!=null"> house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
         <if test="eleBillDate!=null"> ele_bill_date=#{eleBillDate,jdbcType=TIMESTAMP},</if>
         <if test="eleBillAmount!=null"> ele_bill_amount=#{eleBillAmount,jdbcType=NUMERIC},</if>
-        <if test="elePeakDegree!=null"> ele_peak_degree=#{elePeakDegree,jdbcType=},</if>
-        <if test="eleValleyDegree!=null"> ele_valley_degree=#{eleValleyDegree,jdbcType=},</if>
+        <if test="elePeakDegree!=null"> ele_peak_degree=#{elePeakDegree,jdbcType=NUMERIC},</if>
+        <if test="eleValleyDegree!=null"> ele_valley_degree=#{eleValleyDegree,jdbcType=NUMERIC},</if>
         <if test="billStatus!=null"> bill_status=#{billStatus,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
@@ -115,10 +116,10 @@
         house_ele_num=#{item.houseEleNum,jdbcType=VARCHAR},
         ele_bill_date=#{item.eleBillDate,jdbcType=TIMESTAMP},
         ele_bill_amount=#{item.eleBillAmount,jdbcType=NUMERIC},
-        ele_peak_degree=#{item.elePeakDegree,jdbcType=},
-        ele_valley_degree=#{item.eleValleyDegree,jdbcType=},
+        ele_peak_degree=#{item.elePeakDegree,jdbcType=NUMERIC},
+        ele_valley_degree=#{item.eleValleyDegree,jdbcType=NUMERIC},
         bill_status=#{item.billStatus,jdbcType=NUMERIC},
-        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
         del_flag=#{item.delFlag,jdbcType=VARCHAR},
@@ -137,7 +138,7 @@
             <if test="elePeakDegree!=null and elePeakDegree!=''"> AND ele_peak_degree=#{elePeakDegree}</if>
             <if test="eleValleyDegree!=null and eleValleyDegree!=''"> AND ele_valley_degree=#{eleValleyDegree}</if>
             <if test="billStatus!=null and billStatus!=''"> AND bill_status=#{billStatus}</if>
-            AND a.del_flag = 0
+            AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
@@ -232,30 +233,32 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_electricity_bill feb on feb.house_id=th.ID and feb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=DATE_FORMAT(#{feeDate},'%Y-%m')
+            AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
     </select>
     <select id="getAllHouseFeeWithAreaAndBuildAndProperty"
             parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
             resultMap="HouseFeeWithAreaAndBuildAndPropertyMap">
-        select
-        sa.name area_name,tpp.AREA_ID,
-        th.HOUSE_NO,th.id house_id,
-        tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,
-        th.BUILDING_ID,tb.BUILDING_NAME,
-        feb.id,feb.batch_no,feb.ele_bill_date,feb.ele_bill_amount,
-        feb.ele_peak_degree,feb.ele_valley_degree,feb.bill_status,
-        case feb.bill_status when '0' then '待提交' when '1' then '待审核'  when '2' then '审核通过'  when '3' then '审核驳回' else '' end bill_status_name
-        from t_house th
-        left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
-        left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
-        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
-        left join fee_electricity_bill feb on feb.house_id=th.ID and feb.del_flag=0
+            select
+            sa.name area_name,tpp.AREA_ID,
+            th.HOUSE_NO,th.id house_id,th.ele_account_num house_ele_num,
+            tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
+            th.BUILDING_ID,tb.BUILDING_NAME,
+            feb.id,feb.batch_no,feb.ele_bill_date,feb.ele_bill_amount,
+            feb.ele_peak_degree,feb.ele_valley_degree,feb.bill_status,
+            case feb.bill_status when '0' then '待提交' when '1' then '待审核'  when '2' then '审核通过'  when '3' then '审核驳回' else '' end bill_status_name
+            from t_house th
+            left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
+            left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+            left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+            left join fee_electricity_bill feb on feb.house_id=th.ID and feb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=DATE_FORMAT(#{feeDate},'%Y-%m')
+            AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
+
+        ORDER BY feb.create_date DESC
     </select>
     <!-- end select -->
     <sql id="commonWhere">

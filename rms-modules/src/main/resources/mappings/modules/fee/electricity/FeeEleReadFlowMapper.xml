@@ -23,7 +23,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, business_id, from_source, property_id, house_id, room_id, house_ele_num, ele_read_date, ele_degree, ele_peak_degree, ele_valley_degree, create_by, create_date, update_by, update_date, remarks, del_flag,
+         id, business_id, from_source, property_id, house_id, room_id, house_ele_num, ele_read_date, ele_degree, ele_peak_degree, ele_valley_degree, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -135,7 +135,7 @@
             <if test="eleDegree!=null and eleDegree!=''"> AND ele_degree=#{eleDegree}</if>
             <if test="elePeakDegree!=null and elePeakDegree!=''"> AND ele_peak_degree=#{elePeakDegree}</if>
             <if test="eleValleyDegree!=null and eleValleyDegree!=''"> AND ele_valley_degree=#{eleValleyDegree}</if>
-            AND a.del_flag = 0
+            AND del_flag = 0
         </where>
     </sql>
     <!--end where-->

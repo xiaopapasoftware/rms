@@ -48,6 +48,14 @@
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
+
+
+        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+        .autocomplete-selected { background: #F0F0F0; }
+        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+        .autocomplete-group { padding: 2px 5px; }
+        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
     </style>
 </head>
 
@@ -178,7 +186,7 @@
 
 
 <div id="addDiv" class="tangchao" hidden >
-    <form class="layui-form" action="">
+    <form class="layui-form" id="addFeeEleBillForm" action="">
         <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">账期年月</label>
             <div class="layui-input-inline">
@@ -187,17 +195,17 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
             <div class="layui-input-inline">
-                <input type="text" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
-                <input type="text" id="houseId" name="houseId" hidden>
+                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
+            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
             <div class="layui-input-inline">
-                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
+                <input type="number" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="text" id="houseId" name="houseId" hidden>
             </div>
         </div>
 
@@ -235,6 +243,10 @@
 <script type="text/html" id="toolBar">
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+</script>
+
+<script type="text/html" id="numberHandle">
+    {{ layui.laytpl.NumberFormat(d.eleValleyDegree) }}
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>

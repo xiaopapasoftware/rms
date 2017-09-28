@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
+import com.thinkgem.jeesite.modules.fee.FeeTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
@@ -26,8 +27,9 @@ import java.util.List;
 /**
  * <p>电费账单表 controller</p>
  * <p>Table: fee_electricity_bill - 电费账单表</p>
- * @since 2017-09-18 08:24:24
+ *
  * @author generator code
+ * @since 2017-09-18 08:24:24
  */
 @RestController
 @RequestMapping("/fee/electricity/bill")
@@ -67,8 +69,8 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "get")
-    public Object get(String id,String houseId) {
-        FeeElectricityBillVo feeElectricityBillVo = feeElectricityBillService.getWithProperty(id,houseId);
+    public Object get(String id, String houseId) {
+        FeeElectricityBillVo feeElectricityBillVo = feeElectricityBillService.getWithProperty(id, houseId);
         return ResponseData.success().data(feeElectricityBillVo);
     }
 
@@ -79,7 +81,7 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "getArea")
-    public Object getArea(){
+    public Object getArea() {
         List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
         return ResponseData.success().data(selectItems);
     }
@@ -90,8 +92,8 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum,String type) {
-        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndType(accountNum,type));
+    public Object houseInfo(String accountNum) {
+        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndType(accountNum, String.valueOf(FeeTypeEnum.ELECTRICITY.getValue())));
     }
 
 }

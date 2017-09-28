@@ -26,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, ele_calculate_date, ele_amount, ele_peak_amount, ele_valley_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag,
+         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, ele_calculate_date, ele_amount, ele_peak_amount, ele_valley_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -156,7 +156,7 @@
             <if test="elePeakAmount!=null and elePeakAmount!=''"> AND ele_peak_amount=#{elePeakAmount}</if>
             <if test="eleValleyAmount!=null and eleValleyAmount!=''"> AND ele_valley_amount=#{eleValleyAmount}</if>
             <if test="generateOrder!=null and generateOrder!=''"> AND generate_order=#{generateOrder}</if>
-            AND a.del_flag = 0
+            AND del_flag = 0
         </where>
     </sql>
     <!--end where-->

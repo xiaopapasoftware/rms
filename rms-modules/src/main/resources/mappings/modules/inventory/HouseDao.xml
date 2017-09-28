@@ -500,10 +500,14 @@
 	</select>
 
 	<select id="getHouseByAccountNumAndType" resultType="java.util.Map">
-		select th.ID,th.ele_account_num,th.water_account_num,th.gas_account_num,tpp.PROJECT_ADDR
-		from T_HOUSE th
-		LEFT JOIN  t_property_project tpp on th.PROPERTY_PROJECT_ID = tpp.ID
+		SELECT th.id,th.ele_account_num eleAccountNum,th.water_account_num waterAccountNum,
+		th.gas_account_num gasAccountNum,
+		concat(tpp.PROJECT_ADDR,tb.BUILDING_NAME,'号',th.HOUSE_NO,'室') projectAddr
+		FROM T_HOUSE th
+		LEFT JOIN t_building tb ON th.BUILDING_ID=tb.ID AND tb.del_flag=0
+		LEFT JOIN t_property_project tpp ON th.PROPERTY_PROJECT_ID = tpp.ID  AND tpp.del_flag=0
 		<where>
+			th.del_flag=0
 			<choose>
 				<when test="type=0">
 					AND th.ele_account_num LIKE '%${accountNum}%'
