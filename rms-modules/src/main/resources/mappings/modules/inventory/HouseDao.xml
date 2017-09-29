@@ -509,16 +509,17 @@
 		<where>
 			th.del_flag=0
 			<choose>
-				<when test="type=0">
+				<when test="queryType==0">
 					AND th.ele_account_num LIKE '%${accountNum}%'
 				</when>
-				<when test="type=1">
+				<when test="queryType==1">
 					AND th.water_account_num LIKE '%${accountNum}%'
 				</when>
-				<when test="type=2">
+				<when test="queryType==2">
 					  AND th.gas_account_num LIKE '%${accountNum}%'
 				</when>
 				<otherwise>
+					AND 1=2
 				</otherwise>
 			</choose>
 		</where>

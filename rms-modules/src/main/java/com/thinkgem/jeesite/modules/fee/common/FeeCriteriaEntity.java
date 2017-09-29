@@ -28,4 +28,6 @@ public class FeeCriteriaEntity extends DataEntity<FeeCriteriaEntity> {
 
     /*0:已录 1:未录*/
     private String isRecord;
+
+    private String houseNum;
 }

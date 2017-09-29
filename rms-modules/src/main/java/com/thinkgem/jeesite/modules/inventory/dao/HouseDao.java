@@ -67,5 +67,5 @@ public interface HouseDao extends CrudDao<House> {
 
   int queryHousesCountByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId, @Param("startDate") Date startDate);
 
-  List<Map> getHouseByAccountNumAndType(@Param("accountNum") String accountNum, @Param("type") String type);
+  List<Map> getHouseByAccountNumAndType(@Param("accountNum") String accountNum, @Param("queryType") String type);
 }

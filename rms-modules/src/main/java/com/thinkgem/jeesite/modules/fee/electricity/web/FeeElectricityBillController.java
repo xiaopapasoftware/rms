@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * <p>电费账单表 controller</p>
@@ -49,12 +48,6 @@ public class FeeElectricityBillController extends FeeBaseController {
 
     @RequestMapping(value = "save")
     public Object save(FeeElectricityBill feeElectricityBill) {
-        if (Optional.ofNullable(feeElectricityBill.getId()).isPresent()){
-            FeeElectricityBill existFeeEleBill = feeElectricityBillService.get(feeElectricityBill.getId());
-            if(existFeeEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()){
-                return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能修改");
-            }
-        }
         feeElectricityBillService.saveFeeElectricityBill(feeElectricityBill);
         return ResponseData.success().data(feeElectricityBill.getId());
     }

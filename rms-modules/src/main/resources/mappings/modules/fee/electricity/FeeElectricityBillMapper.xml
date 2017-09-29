@@ -268,6 +268,7 @@
             <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
             <if test="houseId!=null and houseId!=''"> AND th.id=#{houseId}</if>
             <if test="status!=null and status!=''"> AND feb.bill_status=#{status}</if>
+            <if test="houseNum!=null and houseNum!=''">AND th.ele_account_num LIKE '%#{houseNum}%'</if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord=0">

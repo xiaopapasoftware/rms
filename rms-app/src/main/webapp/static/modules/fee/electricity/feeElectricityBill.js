@@ -67,6 +67,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 serviceUrl: feeEleBillMVC.URLs.getHouseInfo.url,
                 dataType: 'json',
                 paramName: "accountNum",
+                noCache:true,
                 zIndex: 999999999,
                 width: "350px",
                 onHint: function () {
@@ -173,11 +174,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {checkbox: true, width: 20, fixed: true},
                         {field: 'areaName', align: 'center', title: '区域', width: 140},
                         {field: 'projectName', align: 'center', title: '物业项目', width: 140},
+                        {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
                         {field: 'houseEleNum', align: 'center', title: '户号', width: 140},
                         {field: 'eleBillDate', align: 'center', title: '账期', width: 100},
-                        {field: 'batchNo', align: 'center', title: '审核批次号', width: 240},
+                       /* {field: 'batchNo', align: 'center', title: '审核批次号', width: 140},*/
                         {
                             field: 'elePeakDegree', align: 'right', title: '谷值', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.elePeakDegree) }}</div>'
@@ -254,6 +256,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             getWhereFun: function () {
                 var where = {
                     "feeDate": $("#feeDate").val(),
+                    "houseNum":$("#houseNum").val(),
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
@@ -336,7 +339,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         flag = false;
                         return false;
                     }
-                    if (obj.billStatus != "1" && obj.billStatus != "3") {
+                    if (obj.billStatus != "0" && obj.billStatus != "3") {
                         layer.msg("户号[" + obj.houseEleNum + "]已经提交,不能重复提交", {icon: 5, offset: 100, time: 5000, shift: 6});
                         flag = false;
                         return false;

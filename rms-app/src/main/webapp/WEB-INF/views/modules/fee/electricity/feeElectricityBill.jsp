@@ -85,7 +85,14 @@
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <input type="text" id="feeDate" name="feeDate" lay-verify="required" placeholder="缴费年月" readonly
+                        <input type="text" id="feeDate" name="feeDate" placeholder="缴费年月" readonly
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <input type="text" id="houseNum" name="houseNum" placeholder="户号"
                                class="layui-input">
                     </div>
                 </div>
@@ -241,8 +248,13 @@
 </div>
 
 <script type="text/html" id="toolBar">
+    {{# var status=d.billStatus }}
+    {{# if (status==null || status=='0' || status=='3'){ }}
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    {{# } else{ }}
+
+    {{# } }}
 </script>
 
 <script type="text/html" id="numberHandle">

@@ -4,7 +4,6 @@
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
@@ -14,6 +13,7 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBill
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseRentMethod;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +76,12 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         query.setHouseEleNum(feeElectricityBill.getHouseEleNum());
         List<FeeElectricityBill> feeElectricityBills = this.findList(query);
         if (Optional.ofNullable(feeElectricityBills).isPresent() && feeElectricityBills.size() > 0) {
-            feeElectricityBill.setId(feeElectricityBills.get(0).getId());
+            FeeElectricityBill existEleBill = feeElectricityBills.get(0);
+            feeElectricityBill.setId(existEleBill.getId());
+            if (existEleBill.getBillStatus() != null && (existEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                    || existEleBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue())) {
+                throw new IllegalArgumentException("当前账单已经提交不能修改");
+            }
         }
         this.save(feeElectricityBill);
 
@@ -88,7 +93,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Transactional(readOnly = false)
     public void feeElectricityBillAudit(String status, String... ids) {
-        String batchNo = new IdGenerator().nextId();
+        String batchNo  = DateFormatUtils.format(System.currentTimeMillis() , "yyyyMMddHHMMssSSS");
         for (String id : ids) {
             FeeElectricityBill feeElectricityBill = dao.get(id);
             if (Optional.ofNullable(feeElectricityBill).isPresent()) {
@@ -115,7 +120,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                         throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不在处理状态");
                 }
                 FeeElectricityBill updFeeEleBill = new FeeElectricityBill();
-                if(!Optional.ofNullable(feeElectricityBill.getBatchNo()).isPresent()){
+                if (StringUtils.isBlank(feeElectricityBill.getBatchNo())) {
                     updFeeEleBill.setBatchNo(batchNo);
                 }
                 updFeeEleBill.setBillStatus(Integer.valueOf(status));
