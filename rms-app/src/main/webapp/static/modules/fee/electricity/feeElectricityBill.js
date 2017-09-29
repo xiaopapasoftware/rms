@@ -67,7 +67,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 serviceUrl: feeEleBillMVC.URLs.getHouseInfo.url,
                 dataType: 'json',
                 paramName: "accountNum",
-                noCache:true,
                 zIndex: 999999999,
                 width: "350px",
                 onHint: function () {
