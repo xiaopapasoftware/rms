@@ -5,10 +5,14 @@
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleReadFlowDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
 * <p>抄电表流水实现类 service</p>
@@ -20,4 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEleReadFlow> {
 
+    public List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity){
+        return dao.getFeeEleReadFlowWithAllInfo(feeCriteriaEntity);
+    }
 }

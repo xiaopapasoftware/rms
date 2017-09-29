@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>电费账单录入</title>
+    <title>电费抄表流水</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
@@ -47,14 +47,6 @@
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
-
-
-        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
-        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
-        .autocomplete-selected { background: #F0F0F0; }
-        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
-        .autocomplete-group { padding: 2px 5px; }
-        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
     </style>
 </head>
 
@@ -84,20 +76,6 @@
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <input type="text" id="feeDate" name="feeDate" placeholder="缴费年月" readonly
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
-                        <input type="text" id="houseNum" name="houseNum" placeholder="户号"
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
                         <select id="area" name="area" lay-filter="area" placeholder="区域" lay-search>
                             <option value="">区域</option>
                         </select>
@@ -125,26 +103,11 @@
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
-                        <select id="status" name="status" placeholder="审核状态">
-                            <option value="">审核状态</option>
-                            <option value="0">待提交</option>
-                            <option value="1">待审核</option>
-                            <option value="2">审核通过</option>
-                            <option value="3">审核驳回</option>
-                        </select>
+                    <div class="layui-input-inline m-large" style="width: 200px;">
+                        <input type="text" id="eleReadDate" name="eleReadDate" placeholder="抄表日期" readonly
+                               class="layui-input">
                     </div>
                 </div>
-                <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
-                        <select id="isRecord" name="isRecord" placeholder="是否已录">
-                            <option value="">是否已录</option>
-                            <option value="0">已录</option>
-                            <option value="1">未录</option>
-                        </select>
-                    </div>
-                </div>
-
             </form>
         </div>
     </div>
@@ -157,34 +120,10 @@
                 录入
             </a>
         </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-commit" class="button">
-                提交审批
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-pass" class="button">
-                同意
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-reject" class="button">
-                驳回
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-print" class="button">
-                打印
-            </a>
-        </div>
-
-        <div class="widget-toolbar no-border">
-            总额:<span id="totalAmount">0.00</span>元
-        </div>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="electricityBillTable" lay-filter="electricityBill">
+            <table class="layui-hide" id="eleReadFlowTable" lay-filter="eleReadFlow">
             </table>
         </div>
     </div>
@@ -247,19 +186,13 @@
 </div>
 
 <script type="text/html" id="toolBar">
-    {{# var status=d.billStatus }}
-    {{# if (status==null || status=='0' || status=='3'){ }}
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
-    {{# } else{ }}
-
-    {{# } }}
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
-<script src="${ctxStatic}/jquery-autocomplete/jquery.autocomplete.js"></script>
-<script src="${ctxStatic}/modules/fee/electricity/feeElectricityBill.js"></script>
+<script src="${ctxStatic}/modules/fee/electricity/feeEleReadFlow.js"></script>
 </body>
 </html>

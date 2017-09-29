@@ -32,7 +32,6 @@
         <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
         <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
         <result column="bill_status_name" property="billStatusName" jdbcType="VARCHAR"/>
-        <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">

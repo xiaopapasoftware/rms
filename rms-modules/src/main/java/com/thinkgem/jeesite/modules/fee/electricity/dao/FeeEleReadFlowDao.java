@@ -7,7 +7,11 @@ package com.thinkgem.jeesite.modules.fee.electricity.dao;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 
+import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
+
+import java.util.List;
 
 /**
  * <p>抄电表流水实现类service</p>
@@ -17,4 +21,8 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 */
 @MyBatisDao
 public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow>{
+
+    List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
+
+
 }

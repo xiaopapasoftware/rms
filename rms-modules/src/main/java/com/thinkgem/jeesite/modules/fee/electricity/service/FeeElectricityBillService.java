@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
@@ -38,6 +39,9 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Autowired
     private FeeCommonService feeCommonService;
+
+    @Autowired
+    private FeeEleReadFlowService feeEleReadFlowService;
 
     public List<FeeElectricityBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity) {
         areaScopeFilter(feeCriteriaEntity, "dsf", "tpp.area_id=sua.area_id");
@@ -83,11 +87,20 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                 throw new IllegalArgumentException("当前账单已经提交不能修改");
             }
         }
+        feeElectricityBill.setPropertyId(house.getPropertyProject().getId());
         this.save(feeElectricityBill);
 
-        // TODO 判断房屋是否整组，如果整组生成抄表流水记录
+        // 判断房屋是否整组，如果整组生成抄表流水记录
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
-
+            FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
+            feeEleReadFlow.setHouseEleNum(feeElectricityBill.getHouseEleNum());
+            feeEleReadFlow.setHouseId(feeElectricityBill.getHouseId());
+            feeEleReadFlow.setFromSource(1);
+            feeEleReadFlow.setBusinessId(feeElectricityBill.getId());
+            feeEleReadFlow.setPropertyId(feeElectricityBill.getPropertyId());
+            feeEleReadFlow.setElePeakDegree(feeEleReadFlow.getElePeakDegree());
+            feeEleReadFlow.setEleValleyDegree(feeEleReadFlow.getEleValleyDegree());
+            feeEleReadFlowService.save(feeEleReadFlow);
         }
     }
 
@@ -127,7 +140,6 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                 updFeeEleBill.setId(feeElectricityBill.getId());
                 this.save(updFeeEleBill);
                 //TODO 记录审核日志
-
             }
         }
     }

@@ -6,16 +6,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
     var addEleBillIndex;
 
-    var feeEleBill = {
+    var feeEleReadFlow = {
         init: function () {
-            feeEleBillMVC.View.initDate();
-            feeEleBillMVC.View.bindEvent();
-            feeEleBillMVC.Controller.getAreaFun();
-            feeEleBillMVC.View.renderTable();
-            feeEleBillMVC.Controller.getTotalAmountFun();
+            feeEleReadFlowMVC.View.initDate();
+            feeEleReadFlowMVC.View.bindEvent();
+            feeEleReadFlowMVC.Controller.getAreaFun();
+            feeEleReadFlowMVC.View.renderTable();
 
             form.on('select(area)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("project", "project", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("project", "project", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -27,7 +26,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(project)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("building", "building", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("building", "building", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -38,7 +37,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(building)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("house", "house", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("house", "house", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
@@ -46,7 +45,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('submit(addEleBill)', function () {
-                feeEleBillMVC.Controller.saveFun();
+                feeEleReadFlowMVC.Controller.saveFun();
             });
 
             layui.laytpl.NumberFormat = function (value) {
@@ -62,123 +61,69 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return (value).toLocaleString('zh-Hans-CN', {style: 'currency', currency: 'CNY'});
             };
-
-            $('#houseEleNum').autocomplete({
-                serviceUrl: feeEleBillMVC.URLs.getHouseInfo.url,
-                dataType: 'json',
-                paramName: "accountNum",
-                zIndex: 999999999,
-                width: "350px",
-                onHint: function () {
-                    $("#houseId").val("");
-                    $("#houseAddress").val("");
-                },
-                transformResult: function (response) {
-                    var result = {};
-                    result.suggestions = [];
-                    if (response.code == "200") {
-                        $.each(response.data, function (index, obj) {
-                            result.suggestions.push({
-                                "data": obj.eleAccountNum,
-                                "value": obj.projectAddr + "(" + obj.eleAccountNum + ")",
-                                "id": obj.id,
-                                "address": obj.projectAddr
-                            });
-                        });
-                    }
-                    return result;
-                },
-                onSelect: function (data) {
-                    $("#elePeakDegree").focus();
-                    $("#houseEleNum").val(data.data);
-                    $("#houseId").val(data.id);
-                    $("#houseAddress").val(data.address);
-                }
-            });
         }
     };
 
-    var feeEleBillCommon = {
-        baseUrl: ctx + "/fee/electricity/bill"
+    var feeEleReadFlowCommon = {
+        baseUrl: ctx + "/fee/ele/read/flow"
     };
 
-    var feeEleBillMVC = {
+    var feeEleReadFlowMVC = {
         URLs: {
             query: {
-                url: feeEleBillCommon.baseUrl + "/list",
+                url: feeEleReadFlowCommon.baseUrl + "/list",
                 method: "GET"
             },
             save: {
-                url: feeEleBillCommon.baseUrl + "/save",
+                url: feeEleReadFlowCommon.baseUrl + "/save",
                 method: "POST"
             },
             delete: {
-                url: feeEleBillCommon.baseUrl + "/delete",
-                method: "GET"
-            },
-            audit: {
-                url: feeEleBillCommon.baseUrl + "/audit",
+                url: feeEleReadFlowCommon.baseUrl + "/delete",
                 method: "GET"
             },
             selectItem: {
-                url: feeEleBillCommon.baseUrl + "/getSubOrgList",
+                url: feeEleReadFlowCommon.baseUrl + "/getSubOrgList",
                 method: "GET"
             },
             selectArea: {
-                url: feeEleBillCommon.baseUrl + "/getArea",
-                method: "GET"
-            },
-            getTotalAmount: {
-                url: feeEleBillCommon.baseUrl + "/getTotalAmount",
-                method: "GET"
-            },
-            getHouseInfo: {
-                url: feeEleBillCommon.baseUrl + "/houseInfo",
+                url: feeEleReadFlowCommon.baseUrl + "/getArea",
                 method: "GET"
             }
         },
         View: {
             initDate: function () {
                 laydate.render({
-                    elem: '#feeDate',
-                    type: 'month',
-                    btns: ['confirm'],
-                    value: new Date()
-                });
-                laydate.render({
-                    elem: '#eleBillDate',
-                    type: 'month',
-                    btns: ['confirm'],
-                    value: new Date()
+                    elem: '#eleReadDate',
+                    type: 'date',
+                    range: '~',
+                    format:'yyyy-MM-dd'
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeEleBillMVC.Controller.addEleFun);
-                $("#btn-search").on("click", feeEleBillMVC.Controller.queryFun);
-                $("#btn-undo").on("click", feeEleBillMVC.Controller.undoFun);
-                $("#btn-pass").on("click", feeEleBillMVC.Controller.passFun);
-                $("#btn-reject").on("click", feeEleBillMVC.Controller.rejectFun);
-                $("#btn-commit").on("click", feeEleBillMVC.Controller.commitFun);
-                $("#btn-print").on("click", feeEleBillMVC.Controller.printFun);
-                //$("#btn-save").on("click", feeEleBillMVC.Controller.saveFun);
-                $("#btn-view").on("click", feeEleBillMVC.Controller.viewFun);
+                $("#btn-add").on("click", feeEleReadFlowMVC.Controller.addEleFun);
+                $("#btn-search").on("click", feeEleReadFlowMVC.Controller.queryFun);
+                $("#btn-undo").on("click", feeEleReadFlowMVC.Controller.undoFun);
             },
             renderTable: function () {
                 table.render({
-                    elem: '#electricityBillTable',
-                    url: feeEleBillMVC.URLs.query.url,
+                    elem: '#eleReadFlowTable',
+                    url: feeEleReadFlowMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
                     cols: [[
-                        {checkbox: true, width: 20, fixed: true},
                         {field: 'areaName', align: 'center', title: '区域', width: 140},
                         {field: 'projectName', align: 'center', title: '物业项目', width: 140},
                         {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
-                        {field: 'houseEleNum', align: 'center', title: '户号', width: 140},
-                        {field: 'eleBillDate', align: 'center', title: '账期', width: 100},
-                       /* {field: 'batchNo', align: 'center', title: '审核批次号', width: 140},*/
+                        {field: 'roomNo', align: 'center', title: '房号', width: 80},
+                        {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
+                        {field: 'eleReadDate', align: 'center', title: '抄表日期',sort: true, width: 100},
+                        {
+                            field: 'eleDegree', align: 'right', title: '抄表数', width: 120,
+                            templet: '<div>{{ layui.laytpl.NumberFormat(d.eleDegree) }}</div>'
+                        },
                         {
                             field: 'elePeakDegree', align: 'right', title: '谷值', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.elePeakDegree) }}</div>'
@@ -187,21 +132,16 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             field: 'eleValleyDegree', align: 'right', title: '峰值', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.eleValleyDegree) }}</div>'
                         },
-                        {
-                            field: 'eleBillAmount', align: 'right', title: '金额', width: 120,
-                            templet: '<div>{{ layui.laytpl.amountFormat(d.eleBillAmount) }}</div>'
-                        },
-                        {field: 'billStatusName', align: 'center', title: '状态', width: 100},
                         {align: 'center', title: '操作', toolbar: '#toolBar', width: 120}
                     ]],
-                    id: 'electricityBillTable',
+                    id: 'eleReadFlowTable',
                     page: true,
                     request: {
                         pageName: 'pageNum',
                         limitName: 'pageSize'
                     },
                     where: {
-                        "feeDate": ($("#feeDate").val() == "" || $("#feeDate").val() == null) ? (new Date().getFullYear() + "-" + (new Date().getMonth() < 9 ? "0" + (new Date().getMonth() + 1) : new Date().getMonth() + 1)) : $("#feeDate").val()
+                        "feeDate": ""
                     },
                     done: function (res, curr, count) {
                         //如果是异步请求数据方式，res即为你接口返回的信息。
@@ -213,7 +153,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     }
                 });
 
-                table.on('tool(electricityBill)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                table.on('tool(eleReadFlow)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'edit') { //编辑
@@ -227,7 +167,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         $("#elePeakDegree").val(data.elePeakDegree);
                         $("#eleValleyDegree").val(data.eleValleyDegree);
                         $("#eleBillAmount").val(data.eleBillAmount)
-                        feeEleBillMVC.Controller.addEleFun();
+                        feeEleReadFlowMVC.Controller.addEleFun();
                     } else if (layEvent === 'del') { //删除
                         if (data.id == null) {
                             layer.msg("当前账单没有录入,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -238,9 +178,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             return;
                         }
                         layer.confirm('确认删除吗?', {offset: '100px', icon: 3, title: '提示'}, function (index) {
-                            $.post(feeEleBillMVC.URLs.delete.url, {id: data.id}, function (data) {
+                            $.post(feeEleReadFlowMVC.URLs.delete.url, {id: data.id}, function (data) {
                                 if (data.code == "200") {
-                                    feeEleBillMVC.Controller.queryFun();
+                                    feeEleReadFlowMVC.Controller.queryFun();
                                 } else {
                                     layer.msg('删除成功', {icon: 5, offset: 100, time: 1000, shift: 6});
                                 }
@@ -254,14 +194,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "feeDate": $("#feeDate").val(),
-                    "houseNum":$("#houseNum").val(),
+                    "startTime": $("#eleReadDate").val().split("~")[0],
+                    "endTime": $("#eleReadDate").val().split("~")[1],
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
-                    "houseId": $("#house").val(),
-                    "status": $("#status").val(),
-                    "isRecord": $("#isRecord").val()
+                    "houseId": $("#house").val()
                 };
                 return where;
             },
@@ -278,8 +216,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#houseEleNum").focus();
             },
             queryFun: function () {
-                table.reload('electricityBillTable', {
-                    where: feeEleBillMVC.Controller.getWhereFun()
+                table.reload('eleReadFlowTable', {
+                    where: feeEleReadFlowMVC.Controller.getWhereFun()
                 });
             },
             undoFun: function () {
@@ -287,68 +225,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#project").val("");
                 $("#building").val("");
                 $("#house").val("");
-                $("#status").val("");
-                $("#isRecord").val("");
+                $("#eleReadDate").val("");
                 form.render("select");
-            },
-            passFun: function () {
-                var selectRows = table.checkStatus('electricityBillTable');
-                if (selectRows.data.length == 0) {
-                    layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
-                    return;
-                }
-                feeEleBillMVC.Controller.auditFun("2");
-            },
-            auditFun: function (status) {
-                var selectRows = table.checkStatus('electricityBillTable');
-                var data = "status="+status;
-                $.each(selectRows.data, function (index, object) {
-                    data += "&id=" + object.id;
-                });
-                $.post(feeEleBillMVC.URLs.audit.url, data, function (data) {
-                    if (data.code == "200") {
-                        feeEleBillMVC.Controller.queryFun();
-                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
-                    } else {
-                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
-                    }
-                });
-            },
-            rejectFun: function () {
-                var selectRows = table.checkStatus('electricityBillTable');
-                if (selectRows.data.length == 0) {
-                    layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
-                    return;
-                }
-                feeEleBillMVC.Controller.auditFun("3");
-            },
-            commitFun: function () {
-                var selectRows = table.checkStatus('electricityBillTable');
-                if (selectRows.data.length == 0) {
-                    layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
-                    return;
-                }
-
-                var flag = true;
-                $.each(selectRows.data, function (index, obj) {
-                    if (obj.elePeakDegree == null || obj.elePeakDegree == 0
-                        || obj.eleValleyDegree == null || obj.eleValleyDegree == 0
-                        || obj.eleBillAmount == null || obj.eleBillAmount == 0) {
-                        layer.msg("户号[" + obj.houseEleNum + "]没有录入完,不能提交", {icon: 5, offset: 100, time: 5000, shift: 6});
-                        flag = false;
-                        return false;
-                    }
-                    if (obj.billStatus != "0" && obj.billStatus != "3") {
-                        layer.msg("户号[" + obj.houseEleNum + "]已经提交,不能重复提交", {icon: 5, offset: 100, time: 5000, shift: 6});
-                        flag = false;
-                        return false;
-                    }
-                });
-                if(flag){
-                    feeEleBillMVC.Controller.auditFun("1");
-                }
-            },
-            printFun: function () {
             },
             saveFun: function () {
                 var data = {
@@ -359,9 +237,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     "eleValleyDegree": $("#eleValleyDegree").val(),
                     "eleBillAmount": $("#eleBillAmount").val()
                 };
-                $.post(feeEleBillMVC.URLs.save.url, data, function (data) {
+                $.post(feeEleReadFlowMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
-                        feeEleBillMVC.Controller.cleanValue();
+                        feeEleReadFlowMVC.Controller.cleanValue();
                         $("#houseEleNum").focus();
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -370,8 +248,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             viewFun: function () {
                 layer.close(addEleBillIndex);
-                feeEleBillMVC.Controller.queryFun();
-                feeEleBillMVC.Controller.cleanValue();
+                feeEleReadFlowMVC.Controller.queryFun();
+                feeEleReadFlowMVC.Controller.cleanValue();
             },
             cleanValue: function () {
                 $("#houseEleNum").val("");
@@ -382,7 +260,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#eleBillAmount").val("")
             },
             getAreaFun: function () {
-                $.getJSON(feeEleBillMVC.URLs.selectArea.url, "", function (data) {
+                $.getJSON(feeEleReadFlowMVC.URLs.selectArea.url, "", function (data) {
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
                             value: object.id,
@@ -393,7 +271,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             selectItemFun: function (id, type, value) {
-                $.getJSON(feeEleBillMVC.URLs.selectItem.url, {
+                $.getJSON(feeEleReadFlowMVC.URLs.selectItem.url, {
                     "business": "org",
                     "type": type,
                     "id": value
@@ -410,19 +288,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     });
                     form.render('select');
                 });
-            },
-            getTotalAmountFun: function () {
-                $.getJSON(feeEleBillMVC.URLs.getTotalAmount.url,
-                    feeEleBillMVC.Controller.getWhereFun(),
-                    function (data) {
-                        if (data.code == "200") {
-                            $("#totalAmount").html(layui.laytpl.amountFormat(data.data));
-                        }
-                    });
             }
         }
     };
-    feeEleBill.init();
+    feeEleReadFlow.init();
 });
 
 
