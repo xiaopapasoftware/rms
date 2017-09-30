@@ -10,7 +10,12 @@ public enum FeeTypeEnum {
      * 3：宽带 4：电视 5:房租
      * 6:房租押金 7:定金 8:违约金
      */
-    ELECTRICITY(0, "电费"), WATER(1, "水费"), GAS(2, "燃气费"), NETWORK(3, "宽带"), WATCH_TV(4, "电视"), HOUSE_RENT(5, "房租");
+    ELECTRICITY(0, "电费"),
+    WATER(1, "水费"),
+    GAS(2, "燃气费"),
+    NETWORK(3, "宽带"),
+    WATCH_TV(4, "电视"),
+    HOUSE_RENT(5, "房租");
 
     private int value;
     private String name;

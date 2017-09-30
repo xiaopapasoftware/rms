@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -44,8 +45,10 @@ public class FeeEleReadFlowController extends FeeBaseController {
     private FeeEleReadFlowService feeEleReadFlowService;
 
     @RequestMapping(value = "save")
-    public Object save(FeeEleReadFlow feeEleReadFlow) {
-        feeEleReadFlowService.save(feeEleReadFlow);
+    public Object save(FeeEleReadFlow feeEleReadFlow, HttpServletRequest request){
+        String[] roomIds =request.getParameterValues("roomIds");
+        String[] eleDegrees =request.getParameterValues("eleDegrees");
+        feeEleReadFlowService.feeEleReadFlowSave(feeEleReadFlow,roomIds,eleDegrees);
         return ResponseData.success();
     }
 
@@ -77,5 +80,15 @@ public class FeeEleReadFlowController extends FeeBaseController {
     public Object getArea() {
         List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
         return ResponseData.success().data(selectItems);
+    }
+
+    @RequestMapping(value = "houseInfo")
+    public Object houseInfo(String accountNum) {
+        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "3"));
+    }
+
+    @RequestMapping(value = "roomInfo")
+    public Object roomInfo(String houseId) {
+        return ResponseData.success().data(feeCommonService.getRoomByHouseId(houseId));
     }
 }

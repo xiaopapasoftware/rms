@@ -19,13 +19,16 @@
         .layui-table-cell .layui-form-checkbox {
             top: 5px !important;
         }
-        .tangchao .layui-form-item{
+
+        .tangchao .layui-form-item {
             height: 30px !important;
         }
+
         .tangchao .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-        .tangchao .button{
+
+        .tangchao .button {
             border: 1px solid #009688;
             height: 25px;
             line-height: 25px;
@@ -38,14 +41,47 @@
             color: #009688;
             background-color: #FFFFFF;
         }
+
         .widget-body .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
+
         .widget-body .layui-form-item .layui-input-inline {
             width: 150px;
         }
+
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
+        }
+
+        .autocomplete-suggestions {
+            border: 1px solid #999;
+            background: #FFF;
+            overflow: auto;
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong {
+            font-weight: normal;
+            color: #3399FF;
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
         }
     </style>
 </head>
@@ -104,7 +140,7 @@
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="eleReadDate" name="eleReadDate" placeholder="抄表日期" readonly
+                        <input type="text" id="eleReadDates" name="eleReadDate" placeholder="抄表日期" readonly
                                class="layui-input">
                     </div>
                 </div>
@@ -130,48 +166,77 @@
 </div>
 
 
-<div id="addDiv" class="tangchao" hidden >
+<div id="addDiv" class="tangchao" hidden>
     <form class="layui-form" id="addFeeEleBillForm" action="">
         <div class="layui-form-item" style="margin-top: 15px;">
-            <label class="layui-form-label">账期年月</label>
+            <label class="layui-form-label">抄表日期</label>
             <div class="layui-input-inline">
-                <input type="text" id="eleBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
+                <input type="text" id="eleReadDate" required lay-verify="required" readonly placeholder="抄表日期"
+                       class="layui-input">
+            </div>
+        </div>
+        <div id="houseSelect">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">区域项目</label>
+                    <div class="layui-input-inline" style="width: 110px;">
+                        <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
+                            <option value="">区域</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 90px;">
+                        <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
+                            <option value="">物业项目</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">楼宇房屋</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
+                            <option value="">楼宇</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
+                            <option value="">房屋</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="separateRentShowDiv" hidden>
+        </div>
+
+        <div id="wholeRentShowDiv" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电表谷值</label>
+                <div class="layui-input-inline">
+                    <input type="number" id="elePeakDegree" placeholder="电表谷值"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">电表峰值</label>
+                <div class="layui-input-inline">
+                    <input type="number" id="eleValleyDegree" placeholder="电表峰值"
+                           class="layui-input">
+                </div>
             </div>
         </div>
 
-        <div class="layui-form-item">
-            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
-            <div class="layui-input-inline">
-                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
-            <div class="layui-input-inline">
-                <input type="number" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
-                <input type="text" id="houseId" name="houseId" hidden>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表谷值</label>
-            <div class="layui-input-inline">
-                <input type="number" id="elePeakDegree" required lay-verify="required" placeholder="电表谷值" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表峰值</label>
-            <div class="layui-input-inline">
-                <input type="number" id="eleValleyDegree" required lay-verify="required" placeholder="电表峰值" class="layui-input">
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">电表金额</label>
-            <div class="layui-input-inline">
-                <input type="number" id="eleBillAmount" required lay-verify="required" placeholder="电表金额" class="layui-input">
+        <div id="editShowDiv" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label" id="roomNo">A</label>
+                <input type="text" id="roomId" name="roomId" hidden>
+                <div class="layui-input-inline">
+                    <input type="number" id="eleDegree" placeholder="电表度数"
+                           class="layui-input">
+                </div>
             </div>
         </div>
         <div class="layui-form-item">
@@ -193,6 +258,7 @@
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
+<script src="${ctxStatic}/jquery-autocomplete/jquery.autocomplete.js"></script>
 <script src="${ctxStatic}/modules/fee/electricity/feeEleReadFlow.js"></script>
 </body>
 </html>

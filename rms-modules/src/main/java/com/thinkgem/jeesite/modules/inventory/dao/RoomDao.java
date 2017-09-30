@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.inventory.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +48,6 @@ public interface RoomDao extends CrudDao<Room> {
    * 查询某个小区下面已经出租掉的所有的房间数量
    */
   int queryRoomsCountByProjectPropertyId(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
+
+  List<Map> getRoomByHouseId(String houseId);
 }

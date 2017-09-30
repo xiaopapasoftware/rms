@@ -55,9 +55,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
     public FeeElectricityBillVo getWithProperty(String id, String houseId) {
         FeeElectricityBillVo feeElectricityBillVo = this.dao.getWithProperty(id);
         if (Optional.ofNullable(feeElectricityBillVo).isPresent()) {
-            House queryHouse = new House();
-            queryHouse.setId(houseId);
-            House house = feeCommonService.getHouseById(queryHouse);
+            House house = feeCommonService.getHouseById(houseId);
             if (Optional.ofNullable(house).isPresent()) {
                 feeElectricityBillVo.setHouseId(house.getHouseId());
                 feeElectricityBillVo.setHouseEleNum(house.getEleAccountNum());
@@ -69,21 +67,22 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Transactional(readOnly = false)
     public void saveFeeElectricityBill(FeeElectricityBill feeElectricityBill) {
-        House queryHouse = new House();
-        queryHouse.setId(feeElectricityBill.getHouseId());
-        House house = feeCommonService.getHouseById(queryHouse);
+        House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
+            logger.error("当前房屋[id={}]不存在,请确认", feeElectricityBill.getHouseEleNum());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
         FeeElectricityBill query = new FeeElectricityBill();
         query.setEleBillDate(feeElectricityBill.getEleBillDate());
         query.setHouseEleNum(feeElectricityBill.getHouseEleNum());
         List<FeeElectricityBill> feeElectricityBills = this.findList(query);
-        if (Optional.ofNullable(feeElectricityBills).isPresent() && feeElectricityBills.size() > 0) {
+        if (Optional.ofNullable(feeElectricityBills).isPresent()
+                && feeElectricityBills.size() > 0) {
             FeeElectricityBill existEleBill = feeElectricityBills.get(0);
             feeElectricityBill.setId(existEleBill.getId());
-            if (existEleBill.getBillStatus() != null && (existEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
-                    || existEleBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue())) {
+            if (existEleBill.getBillStatus() != null && existEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                    && existEleBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                logger.error("当前账单已经提交不能修改");
                 throw new IllegalArgumentException("当前账单已经提交不能修改");
             }
         }
@@ -92,6 +91,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
         // 判断房屋是否整组，如果整组生成抄表流水记录
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+            logger.info("生成抄表流水");
             FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
             feeEleReadFlow.setHouseEleNum(feeElectricityBill.getHouseEleNum());
             feeEleReadFlow.setHouseId(feeElectricityBill.getHouseId());
@@ -101,12 +101,13 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             feeEleReadFlow.setElePeakDegree(feeEleReadFlow.getElePeakDegree());
             feeEleReadFlow.setEleValleyDegree(feeEleReadFlow.getEleValleyDegree());
             feeEleReadFlowService.save(feeEleReadFlow);
+            //
         }
     }
 
     @Transactional(readOnly = false)
     public void feeElectricityBillAudit(String status, String... ids) {
-        String batchNo  = DateFormatUtils.format(System.currentTimeMillis() , "yyyyMMddHHMMssSSS");
+        String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
         for (String id : ids) {
             FeeElectricityBill feeElectricityBill = dao.get(id);
             if (Optional.ofNullable(feeElectricityBill).isPresent()) {

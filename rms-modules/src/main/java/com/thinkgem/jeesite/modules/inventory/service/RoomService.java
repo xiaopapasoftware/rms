@@ -5,6 +5,7 @@ package com.thinkgem.jeesite.modules.inventory.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -204,4 +205,9 @@ public class RoomService extends CrudService<RoomDao, Room> {
   public int queryRoomsCountByProjectPropertyId(Date startDate, String propertyProjectId) {
     return dao.queryRoomsCountByProjectPropertyId(startDate, propertyProjectId);
   }
+
+  public List<Map> getRoomByHouseId(String houseId){
+    return dao.getRoomByHouseId(houseId);
+  }
+
 }

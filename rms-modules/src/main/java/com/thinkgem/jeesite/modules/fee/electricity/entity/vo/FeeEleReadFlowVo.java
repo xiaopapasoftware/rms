@@ -22,6 +22,8 @@ public class FeeEleReadFlowVo extends FeeEleReadFlow {
 
     private String houseNo;
 
+    private String roomNo;
+
     private String projectAddress;
 
     private String intentMode;

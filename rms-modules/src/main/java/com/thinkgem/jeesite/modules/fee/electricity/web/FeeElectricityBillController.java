@@ -19,7 +19,6 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
-import com.thinkgem.jeesite.modules.fee.enums.FeeTypeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,7 +63,7 @@ public class FeeElectricityBillController extends FeeBaseController {
     @RequestMapping(value = "delete")
     public Object delete(String id) {
         FeeElectricityBill feeElectricityBill = feeElectricityBillService.get(id);
-        if(feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()){
+        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
             return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能删除");
         }
         feeElectricityBill.setId(id);
@@ -74,8 +73,8 @@ public class FeeElectricityBillController extends FeeBaseController {
     }
 
     @RequestMapping(value = "audit")
-    public Object audit(String status,String ...id){
-        feeElectricityBillService.feeElectricityBillAudit(status,id);
+    public Object audit(String status, String... id) {
+        feeElectricityBillService.feeElectricityBillAudit(status, id);
         return ResponseData.success();
     }
 
@@ -99,7 +98,6 @@ public class FeeElectricityBillController extends FeeBaseController {
 
     @RequestMapping(value = "houseInfo")
     public Object houseInfo(String accountNum) {
-        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndType(accountNum, String.valueOf(FeeTypeEnum.ELECTRICITY.getValue())));
+        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "0"));
     }
-
 }
