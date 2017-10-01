@@ -324,6 +324,9 @@
             } else {
                 styles.top += height;
             }
+            if($(window).width() < (parseInt(styles.left) + parseInt(that.options.width))){
+                styles.left = $(window).width()- parseInt(that.options.width);
+            }
 
             // If container is not positioned to body,
             // correct its position using offset parent offset

@@ -418,11 +418,11 @@ public class HouseService extends CrudService<HouseDao, House> {
 
   /**
    * 查询房源根据户号和户号类型
-   * @param accountNum 水电煤户号
-   * @param type 0：电费 1：水费 2 燃气费
+   * @param queryWhere 水电煤户号  地址
+   * @param type 0：电费 1：水费 2 燃气费 3 地址
    * @return
    */
-  public List<Map> getHouseByAccountNumAndType(String accountNum,String type){
-    return dao.getHouseByAccountNumAndType(accountNum,type);
+  public List<Map> getHouseByQueryWhereAndType(String queryWhere,String type){
+    return dao.getHouseByQueryWhereAndType(queryWhere,type);
   }
 }

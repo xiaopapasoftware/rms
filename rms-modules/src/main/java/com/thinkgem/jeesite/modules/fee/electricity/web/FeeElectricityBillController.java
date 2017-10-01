@@ -5,18 +5,20 @@
 package com.thinkgem.jeesite.modules.fee.electricity.web;
 
 
+import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
+import com.thinkgem.jeesite.modules.fee.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
+import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,12 +28,13 @@ import java.util.List;
 /**
  * <p>电费账单表 controller</p>
  * <p>Table: fee_electricity_bill - 电费账单表</p>
- * @since 2017-09-18 08:24:24
+ *
  * @author generator code
+ * @since 2017-09-18 08:24:24
  */
 @RestController
 @RequestMapping("/fee/electricity/bill")
-public class FeeElectricityBillController extends BaseController {
+public class FeeElectricityBillController extends FeeBaseController {
 
     @Autowired
     private SelectItemService selectItemService;
@@ -59,18 +62,22 @@ public class FeeElectricityBillController extends BaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeElectricityBill feeElectricityBill = new FeeElectricityBill();
+        FeeElectricityBill feeElectricityBill = feeElectricityBillService.get(id);
+        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能删除");
+        }
         feeElectricityBill.setId(id);
         feeElectricityBill.setDelFlag(Constants.DEL_FLAG_YES);
         feeElectricityBillService.save(feeElectricityBill);
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "get")
-    public Object get(String id,String houseId) {
-        FeeElectricityBillVo feeElectricityBillVo = feeElectricityBillService.getWithProperty(id,houseId);
-        return ResponseData.success().data(feeElectricityBillVo);
+    @RequestMapping(value = "audit")
+    public Object audit(String status, String... id) {
+        feeElectricityBillService.feeElectricityBillAudit(status, id);
+        return ResponseData.success();
     }
+
 
     @RequestMapping(value = "getSubOrgList")
     public Object getSubOrgList(SelectItemCondition condition) {
@@ -79,7 +86,7 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "getArea")
-    public Object getArea(){
+    public Object getArea() {
         List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
         return ResponseData.success().data(selectItems);
     }
@@ -90,8 +97,7 @@ public class FeeElectricityBillController extends BaseController {
     }
 
     @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum,String type) {
-        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndType(accountNum,type));
+    public Object houseInfo(String accountNum) {
+        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "0"));
     }
-
 }

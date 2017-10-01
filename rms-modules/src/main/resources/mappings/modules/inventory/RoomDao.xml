@@ -165,6 +165,10 @@
 		</choose>
 	</select>
 
+	<select id="getRoomByHouseId" resultType="java.util.Map">
+		select id,room_no roomNo FROM t_room where HOUSE_ID=#{houseId} ORDER BY room_no ASC
+	</select>
+
 	<insert id="insert">
 		INSERT INTO t_room(
 		id,

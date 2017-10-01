@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;
 
@@ -28,6 +29,7 @@ public class FeeElectricityBill extends DataEntity<FeeElectricityBill>{
     /** house_ele_num - 户号 */
     private String houseEleNum;
     /** ele_bill_date - 账单日期 */
+    @JsonFormat(pattern = "yyyy-MM",timezone="GMT+8")
     private Date eleBillDate;
     /** ele_bill_amount - 账单金额 */
     private BigDecimal eleBillAmount;

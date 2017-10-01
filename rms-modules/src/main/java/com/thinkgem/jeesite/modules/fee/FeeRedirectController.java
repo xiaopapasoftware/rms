@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class FeeRedirectController {
 
     @RequestMapping("electricity/bill/index")
-    public String electricityIndex() {
+    public String electricityBillIndex() {
         return "modules/fee/electricity/feeElectricityBill";
+    }
+
+    @RequestMapping("electricity/read/index")
+    public String eleReadFlowIndex() {
+        return "modules/fee/electricity/feeEleReadFlow";
     }
 }

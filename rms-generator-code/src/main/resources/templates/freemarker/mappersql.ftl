@@ -53,7 +53,7 @@
         <#if col.javaType== 'java.lang.Integer' ||  col.columnClass == 'java.lang.Double' ||  col.columnClass == 'java.lang.Long' ||col.columnClass == 'java.lang.BigDecimal' >
             <if test="${col.javaProperty}!=null">AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
         <#elseif col.javaProperty = 'delFlag'>
-            AND a.${col.columnName} = 0
+            AND ${col.columnName} = 0
         <#else>
             <if test="${col.javaProperty}!=null and ${col.javaProperty}!=''"> AND ${col.columnName}=${"#"}{${col.javaProperty}}</if>
         </#if>

@@ -11,15 +11,12 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
+import org.apache.ibatis.annotations.Param;
 
 /**
- * <p>
  * 电费账单表实现类service
- * </p>
- * <p>
  * Table: fee_electricity_bill - 电费账单表
- * </p>
- * 
+ *
  * @since 2017-09-18 08:24:24
  * @author generator code
  */

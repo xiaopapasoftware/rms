@@ -3,6 +3,8 @@ package com.thinkgem.jeesite.modules.fee.common;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @date 2017年09月18日 下午8:39
  */
@@ -28,4 +30,10 @@ public class FeeCriteriaEntity extends DataEntity<FeeCriteriaEntity> {
 
     /*0:已录 1:未录*/
     private String isRecord;
+
+    private String houseNum;
+
+    private Date startTime;
+
+    private Date endTime;
 }
