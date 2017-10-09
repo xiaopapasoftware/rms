@@ -652,7 +652,7 @@
 		FROM t_rent_contract trc
 		WHERE trc.DEL_FLAG = '0'
 		AND trc.CONTRACT_STATUS = '6'
-		AND trc.CONTRACT_BUSI_STATUS in ('0', '8', '14')
+		AND trc.CONTRACT_BUSI_STATUS in ('0', '8', '14', '7', '9', '16')
 		AND trc.house_id = #{houseId}
 	</select>
 

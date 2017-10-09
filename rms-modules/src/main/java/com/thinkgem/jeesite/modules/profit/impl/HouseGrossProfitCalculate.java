@@ -22,8 +22,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Component
@@ -50,14 +48,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
 
     @Override
     public double calculateCost(GrossProfitCondition condition) {
-        CompletableFuture<Double> result = CompletableFuture.supplyAsync(() -> this.calculateDepositSum(condition)).thenCombine(
-                CompletableFuture.supplyAsync(() -> this.calculateThrowLeaseSum(condition)),
-                (depositSum, leaseSum) -> depositSum + leaseSum);
-        try {
-            return result.get();
-        } catch (InterruptedException | ExecutionException e) {
-            return 0;
-        }
+        return this.calculateDepositSum(condition);
     }
 
     @Override
@@ -75,14 +66,14 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         return null;
     }
 
-    private double calculateThrowLeaseSum(GrossProfitCondition condition) {
-        List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
-        if (!CollectionUtils.isEmpty(contractList)) {
-            return paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
-                    .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
-        }
-        return 0;
-    }
+//    private double calculateThrowLeaseSum(GrossProfitCondition condition) {
+//        List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
+//        if (!CollectionUtils.isEmpty(contractList)) {
+//            return paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
+//                    .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
+//        }
+//        return 0;
+//    }
 
     @SuppressWarnings("unchecked")
     private double calculateDepositSum(GrossProfitCondition condition) {
