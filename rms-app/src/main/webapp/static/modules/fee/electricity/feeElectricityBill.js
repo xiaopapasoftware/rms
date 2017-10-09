@@ -221,6 +221,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             layer.msg("当前账单已提交,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
+                        $("#eleBillDate").val(data.eleBillDate);
                         $("#houseEleNum").val(data.houseEleNum);
                         $("#houseAddress").val(data.projectAddress + data.buildingName + "号" + data.houseNo + "室");
                         $("#houseId").val(data.houseId);
@@ -254,7 +255,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "feeDate": $("#feeDate").val(),
+                    "feeDate": ($("#feeDate").val() == "" || $("#feeDate").val() == null) ? (new Date().getFullYear() + "-" + (new Date().getMonth() < 9 ? "0" + (new Date().getMonth() + 1) : new Date().getMonth() + 1)) : $("#feeDate").val(),
                     "houseNum":$("#houseNum").val(),
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),

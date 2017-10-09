@@ -5,7 +5,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         laydate = layui.laydate;
 
     var addEleReadIndex;
-    var operType,operId,intentMode;
+    var operType, operId, intentMode;
 
     var feeEleReadFlow = {
         init: function () {
@@ -93,7 +93,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return (value).toLocaleString();
             };
-            layui.laytpl.dateFormat = function (value){
+            layui.laytpl.roomNoFormat = function (value) {
+                if (value == null) {
+                    value = "";
+                }else if (value == 0) {
+                    value = "总表";
+                }
+                return value;
+            };
+            layui.laytpl.dateFormat = function (value) {
                 //json日期格式转换为正常格式
                 var date = new Date(value);
                 var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
@@ -175,19 +183,20 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     elem: '#eleReadDates',
                     type: 'date',
                     range: '~',
-                    format:'yyyy-MM-dd'
+                    format: 'yyyy-MM-dd'
                 });
                 laydate.render({
                     elem: '#eleReadDate',
                     type: 'date',
-                    format:'yyyy-MM-dd',
-                    value:new Date()
+                    format: 'yyyy-MM-dd',
+                    value: new Date()
                 });
             },
             bindEvent: function () {
                 $("#btn-add").on("click", feeEleReadFlowMVC.Controller.addEleFun);
                 $("#btn-search").on("click", feeEleReadFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeEleReadFlowMVC.Controller.undoFun);
+                $("#btn-view").on("click", feeEleReadFlowMVC.Controller.viewFun);
             },
             renderTable: function () {
                 table.render({
@@ -201,7 +210,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
-                        {field: 'roomNo', align: 'center', title: '房号', width: 80},
+                        {
+                            field: 'roomNo', align: 'center', title: '房号', width: 80,
+                            templet: '<div>{{ layui.laytpl.roomNoFormat(d.roomNo) }}</div>'
+                        },
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
                         {
                             field: 'eleReadDate', align: 'right', title: '抄表日期', width: 120,
@@ -233,29 +245,35 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'edit') { //编辑
-                        if(data.fromSource != null && data.fromSource == "1"){
+                        console.log(data);
+                        if (data.fromSource != null && data.fromSource == "1") {
                             layer.msg("当前记录为账单录入生成,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
                         $("#houseId").val(data.houseId);
-                        operType="edit";
+                        operType = "edit";
                         $("#elePeakDegree").val(data.elePeakDegree);
                         $("#eleValleyDegree").val(data.eleValleyDegree);
                         $("#eleDegree").val(data.eleDegree);
                         $("#eleDegree").val(data.eleDegree);
-                        $("#eleReadDate").val(data.eleReadDate);
-                        if(data.intentMode == "0"){
+                        laydate.render({
+                            elem: '#eleReadDate',
+                            type: 'date',
+                            format: 'yyyy-MM-dd',
+                            value: new Date(data.eleReadDate)
+                        });
+                        if (data.intentMode == "0") {
                             $("#editShowDiv").hide();
                             $("#separateRentShowDiv").hide();
                             $("#wholeRentShowDiv").show()
-                        }else{
+                        } else {
                             $("#editShowDiv").show();
                             $("#separateRentShowDiv").hide();
                             $("#wholeRentShowDiv").hide()
                         }
                         feeEleReadFlowMVC.Controller.addEleFun();
                     } else if (layEvent === 'del') { //删除
-                        if(data.fromSource != null && data.fromSource == "1"){
+                        if (data.fromSource != null && data.fromSource == "1") {
                             layer.msg("当前记录为账单录入生成,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
@@ -306,26 +324,26 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#project").val("");
                 $("#building").val("");
                 $("#house").val("");
-                $("#eleReadDate").val("");
+                $("#eleReadDates").val("");
                 form.render("select");
             },
             saveFun: function () {
-                var data="eleReadDate=" + $("#eleReadDate").val();
-                if($("#separateRentShowDiv").is(":visible")){
+                var data = "eleReadDate=" + $("#eleReadDate").val();
+                if ($("#separateRentShowDiv").is(":visible")) {
                     data += "&houseId=" + $("#houseId").val();
-                    $.each($("#addDiv input[name='roomIds']"),function(index,obj){
+                    $.each($("#addDiv input[name='roomIds']"), function (index, obj) {
                         data += "&roomIds=" + obj.value;
                     });
-                    $.each($("#addDiv input[name='eleDegrees']"),function(index,obj){
+                    $.each($("#addDiv input[name='eleDegrees']"), function (index, obj) {
                         data += "&eleDegrees=" + obj.value;
                     });
                 }
-                if($("#wholeRentShowDiv").is(":visible")){
+                if ($("#wholeRentShowDiv").is(":visible")) {
                     data += "&houseId=" + $("#houseId").val();
                     data += "&elePeakDegree=" + $("#elePeakDegree").val();
                     data += "&eleValleyDegree=" + $("#eleValleyDegree").val();
                 }
-                if($("#editShowDiv").is(":visible")){
+                if ($("#editShowDiv").is(":visible")) {
                     data += "&houseId=" + $("#houseId").val();
                     data += "&roomId=" + $("#roomId").val();
                     data += "&eleDegree=" + $("#eleDegree").val();
@@ -333,9 +351,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $.post(feeEleReadFlowMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
                         $("#separateRentShowDiv").html("");
-                        if(operType=="edit"){
+                        if (operType == "edit") {
                             layer.close(addEleReadIndex);
-                        }else{
+                        } else {
                             $("#houseId").val("");
                             $("#elePeakDegree").val("");
                             $("#eleValleyDegree").val("");
@@ -353,22 +371,29 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeEleReadFlowMVC.Controller.cleanValue();
             },
             cleanValue: function () {
+                $("#eleReadDate").val("");
+                $("#areaId").val("");
+                $("#projectId").val("");
+                $("#buildingId").val("");
                 $("#houseId").val("");
                 $("#elePeakDegree").val("");
                 $("#eleValleyDegree").val("");
                 $("#eleDegree").val("");
+                $("#roomId").val("");
+                $("#roomNo").html("");
+                form.render('select');
             },
-            renderRoom: function(value){
-                $.post(feeEleReadFlowMVC.URLs.getRoomInfo.url, {"houseId":value}, function (data) {
+            renderRoom: function (value) {
+                $.post(feeEleReadFlowMVC.URLs.getRoomInfo.url, {"houseId": value}, function (data) {
                     if (data.code == "200") {
-                        if(data.data.length == 0){
+                        if (data.data.length == 0) {
                             $("#editShowDiv").hide();
                             $("#separateRentShowDiv").hide();
                             $("#wholeRentShowDiv").show()
-                        }else{
+                        } else {
                             $("#separateRentShowDiv").html("");
-                            var separateRentHtml="";
-                            $.each(data.data,function(index,obj){
+                            var separateRentHtml = "";
+                            $.each(data.data, function (index, obj) {
                                 separateRentHtml += '<div class="layui-form-item">';
                                 separateRentHtml += '<label class="layui-form-label">';
                                 separateRentHtml += obj.roomNo + '</label>';
@@ -378,6 +403,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                                 separateRentHtml += ' placeholder="' + obj.roomNo + '电表度数" class="layui-input">';
                                 separateRentHtml += '</div></div>';
                             });
+
+                            separateRentHtml += '<div class="layui-form-item">';
+                            separateRentHtml += '<label class="layui-form-label">总表</label>';
+                            separateRentHtml += '<input name="roomIds" value="0" hidden /> <div class="layui-input-inline">';
+                            separateRentHtml += '<input type="number" name="eleDegrees" required lay-verify="required"';
+                            separateRentHtml += ' placeholder="总表电表度数" class="layui-input">';
+                            separateRentHtml += '</div></div>';
+
                             $("#separateRentShowDiv").html(separateRentHtml);
                             $("#editShowDiv").hide();
                             $("#separateRentShowDiv").show();

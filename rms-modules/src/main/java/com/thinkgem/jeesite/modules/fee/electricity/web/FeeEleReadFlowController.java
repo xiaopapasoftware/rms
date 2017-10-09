@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>抄电表流水 controller</p>
@@ -45,10 +46,10 @@ public class FeeEleReadFlowController extends FeeBaseController {
     private FeeEleReadFlowService feeEleReadFlowService;
 
     @RequestMapping(value = "save")
-    public Object save(FeeEleReadFlow feeEleReadFlow, HttpServletRequest request){
-        String[] roomIds =request.getParameterValues("roomIds");
-        String[] eleDegrees =request.getParameterValues("eleDegrees");
-        feeEleReadFlowService.feeEleReadFlowSave(feeEleReadFlow,roomIds,eleDegrees);
+    public Object save(FeeEleReadFlow feeEleReadFlow, HttpServletRequest request) {
+        String[] roomIds = request.getParameterValues("roomIds");
+        String[] eleDegrees = request.getParameterValues("eleDegrees");
+        feeEleReadFlowService.feeEleReadFlowSave(feeEleReadFlow, roomIds, eleDegrees);
         return ResponseData.success();
     }
 
@@ -63,10 +64,20 @@ public class FeeEleReadFlowController extends FeeBaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
-        feeEleReadFlow.setId(id);
-        feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeEleReadFlowService.save(feeEleReadFlow);
+        FeeEleReadFlow existEleReadFlow = feeEleReadFlowService.get(id);
+        if (Optional.ofNullable(existEleReadFlow).isPresent()) {
+            if(existEleReadFlow.getFromSource() == 1){
+                logger.error("电抄表[id={}]为账单录入,不能删除", id);
+                throw new IllegalArgumentException("当前信息为账单生成,不能删除");
+            }
+            FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
+            feeEleReadFlow.setId(id);
+            feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
+            feeEleReadFlowService.save(feeEleReadFlow);
+        } else {
+            logger.error("电抄表[id={}]不存在,不能删除", id);
+            throw new IllegalArgumentException("当前信息不存在,不能删除");
+        }
         return ResponseData.success();
     }
 
