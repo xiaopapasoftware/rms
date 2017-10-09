@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleReadFlowDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import org.slf4j.Logger;
@@ -92,6 +93,30 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                 save(feeEleReadFlow);
             }
         }
+    }
+
+    @Transactional(readOnly = false)
+    public void saveFeeEleReadFlowByFeeEleBill(FeeElectricityBill feeElectricityBill){
+        FeeEleReadFlow saveReadFlow = new FeeEleReadFlow();
+        saveReadFlow.setElePeakDegree(feeElectricityBill.getElePeakDegree());
+        saveReadFlow.setEleValleyDegree(feeElectricityBill.getEleValleyDegree());
+        saveReadFlow.setEleReadDate(feeElectricityBill.getEleBillDate());
+        saveReadFlow.setPropertyId(feeElectricityBill.getPropertyId());
+        saveReadFlow.setHouseId(feeElectricityBill.getHouseId());
+        saveReadFlow.setHouseEleNum(feeElectricityBill.getHouseEleNum());
+        saveReadFlow.setBusinessId(feeElectricityBill.getId());
+        saveReadFlow.setFromSource(1);
+
+        FeeEleReadFlow query = new FeeEleReadFlow();
+        query.setEleReadDate(feeElectricityBill.getEleBillDate());
+        query.setHouseId(feeElectricityBill.getHouseId());
+        List<FeeEleReadFlow> feeEleReadFlows = this.findList(query);
+        if (Optional.ofNullable(feeEleReadFlows).isPresent()
+                && feeEleReadFlows.size() > 0) {
+            FeeEleReadFlow existEleRead = feeEleReadFlows.get(0);
+            saveReadFlow.setId(existEleRead.getId());
+        }
+        save(saveReadFlow);
     }
 
     public List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity) {

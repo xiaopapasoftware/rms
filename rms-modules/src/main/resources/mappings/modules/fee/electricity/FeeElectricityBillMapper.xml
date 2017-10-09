@@ -214,11 +214,13 @@
     <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         select <include refid="Base_Column_List"/> from fee_electricity_bill
         <include refid="where"/>
+        ORDER  BY create_date DESC
     </select>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         select <include refid="Base_Column_List"/> from fee_electricity_bill
         <include refid="where"/>
+        ORDER  BY create_date DESC
     </select>
 
     <select id="getTotalAmount"
@@ -256,7 +258,6 @@
             AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
-
         ORDER BY feb.create_date DESC
     </select>
     <!-- end select -->

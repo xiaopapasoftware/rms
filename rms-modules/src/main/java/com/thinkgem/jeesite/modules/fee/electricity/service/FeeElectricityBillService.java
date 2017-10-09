@@ -92,16 +92,9 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         // 判断房屋是否整组，如果整组生成抄表流水记录
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
             logger.info("生成抄表流水");
-            FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
-            feeEleReadFlow.setHouseEleNum(feeElectricityBill.getHouseEleNum());
-            feeEleReadFlow.setHouseId(feeElectricityBill.getHouseId());
-            feeEleReadFlow.setFromSource(1);
-            feeEleReadFlow.setBusinessId(feeElectricityBill.getId());
-            feeEleReadFlow.setPropertyId(feeElectricityBill.getPropertyId());
-            feeEleReadFlow.setElePeakDegree(feeEleReadFlow.getElePeakDegree());
-            feeEleReadFlow.setEleValleyDegree(feeEleReadFlow.getEleValleyDegree());
-            feeEleReadFlowService.save(feeEleReadFlow);
-            //
+            feeEleReadFlowService.saveFeeEleReadFlowByFeeEleBill(feeElectricityBill);
+            //TODO 生成收款流水
+
         }
     }
 
