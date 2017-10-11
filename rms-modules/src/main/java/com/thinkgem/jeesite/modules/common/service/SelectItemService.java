@@ -18,6 +18,8 @@ import com.thinkgem.jeesite.modules.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,11 @@ public class SelectItemService {
   @Autowired
   private BuildingService buildingService;
 
+  private static final SelectItem countyItem = new SelectItem(SelectItemConstants.county, SelectItemConstants.countyStr);
+  private static final SelectItem centerItem = new SelectItem(SelectItemConstants.center, SelectItemConstants.centerStr);
+  private static final SelectItem areaItem = new SelectItem(SelectItemConstants.area, SelectItemConstants.areaStr);
+  private static final SelectItem projectItem = new SelectItem(SelectItemConstants.project, SelectItemConstants.projectStr);
+
   private MyCache selectCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SCHEDULED_SELECT);
 
   private String getCacheKey(SelectItemCondition condition) {
@@ -52,9 +59,33 @@ public class SelectItemService {
     switch (condition.getBusiness()) {
       case SelectItemConstants.org:
         return getOrgSelectListByCondition(condition);
+      case SelectItemConstants.category:
+        return getCategorySelectListByCondition(condition);
       default:
         return null;
     }
+  }
+
+  private List<SelectItem> getCategorySelectListByCondition(SelectItemCondition condition) {
+    List<SelectItem> result;
+    switch (condition.getType()) {
+      case SelectItemConstants.county:
+        result = convertToItemList(areaService.getCountyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
+        break;
+      case SelectItemConstants.center:
+        result = convertToItemList(areaService.getCenterList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
+        break;
+      case SelectItemConstants.area:
+        result = convertToItemList(areaService.getAreaList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
+        break;
+      case SelectItemConstants.project:
+        result = convertToItemList(propertyProjectService.getPropertyProjectList().stream().collect(Collectors.toMap(PropertyProject::getId, PropertyProject::getProjectName)));
+        break;
+      default:
+        result = null;
+    }
+    selectCache.putObject(getCacheKey(condition), result);
+    return result;
   }
 
   private List<SelectItem> getOrgSelectListByCondition(SelectItemCondition condition) {
@@ -92,5 +123,9 @@ public class SelectItemService {
     List<SelectItem> result = map.entrySet().stream().map(entry -> new SelectItem(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     result.sort(Comparator.comparing(SelectItem::getName));
     return result;
+  }
+
+  public static List<SelectItem> getCommonReportCompareItem() {
+    return Arrays.asList(countyItem, centerItem, areaItem, projectItem);
   }
 }

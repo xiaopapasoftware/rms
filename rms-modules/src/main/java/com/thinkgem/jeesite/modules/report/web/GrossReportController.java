@@ -106,4 +106,15 @@ public class GrossReportController extends BaseController {
     condition.setType(SelectItemConstants.county);
     return selectItemService.getSelectListByBusinessCode(condition);
   }
+
+  /**
+   * 毛利率统计报表-查询
+   */
+  @RequiresPermissions("report:gross:view")
+  @RequestMapping(value = "grossProfitCompare")
+  public String grossProfitCompare(HttpServletRequest request, HttpServletResponse response, Model model) {
+    model.addAttribute("categoryList", SelectItemService.getCommonReportCompareItem());
+    return "modules/report/gross/grossProfitCompare";
+  }
+
 }

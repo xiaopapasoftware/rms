@@ -48,6 +48,14 @@ public class AreaService extends TreeService<AreaDao, Area> {
 		return areaDao.getAreaByType(AreaTypeEnum.COUNTY.getValue());
 	}
 
+	public List<Area> getCenterList(){
+		return areaDao.getAreaByType(AreaTypeEnum.CENTER.getValue());
+	}
+
+	public List<Area> getAreaList(){
+		return areaDao.getAreaByType(AreaTypeEnum.AREA.getValue());
+	}
+
 	public List<Area> getAreaByParentId(String parentId, String type){
 		return areaDao.getAreaByParentId(parentId, type);
 	}
