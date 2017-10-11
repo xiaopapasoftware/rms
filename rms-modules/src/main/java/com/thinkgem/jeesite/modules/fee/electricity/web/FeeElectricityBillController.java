@@ -5,8 +5,6 @@
 package com.thinkgem.jeesite.modules.fee.electricity.web;
 
 
-import com.thinkgem.jeesite.common.RespConstants;
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
@@ -18,7 +16,6 @@ import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
-import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,13 +59,7 @@ public class FeeElectricityBillController extends FeeBaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeElectricityBill feeElectricityBill = feeElectricityBillService.get(id);
-        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
-            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("该账单已提交,不能删除");
-        }
-        feeElectricityBill.setId(id);
-        feeElectricityBill.setDelFlag(Constants.DEL_FLAG_YES);
-        feeElectricityBillService.save(feeElectricityBill);
+        feeElectricityBillService.deleteFeeElectricityBill(id);
         return ResponseData.success();
     }
 

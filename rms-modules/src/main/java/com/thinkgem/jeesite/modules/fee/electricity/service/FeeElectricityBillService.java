@@ -3,15 +3,16 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
+import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao;
-import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
+import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseRentMethod;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -42,6 +43,9 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Autowired
     private FeeEleReadFlowService feeEleReadFlowService;
+
+    @Autowired
+    private FeeEleChargedFlowService feeEleChargedFlowService;
 
     public List<FeeElectricityBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity) {
         areaScopeFilter(feeCriteriaEntity, "dsf", "tpp.area_id=sua.area_id");
@@ -93,7 +97,27 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
             logger.info("生成抄表流水");
             feeEleReadFlowService.saveFeeEleReadFlowByFeeEleBill(feeElectricityBill);
-            //TODO 生成收款流水
+            logger.info("生成收款流水");
+            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleBill(feeElectricityBill);
+        }
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteFeeElectricityBill(String id) {
+        FeeElectricityBill feeElectricityBill = this.get(id);
+        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+            throw new IllegalArgumentException("该账单已提交,不能删除");
+        }
+        feeElectricityBill.setId(id);
+        feeElectricityBill.setDelFlag(Constants.DEL_FLAG_YES);
+        this.save(feeElectricityBill);
+        //如果是整租，删除相应生成的记录
+        House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
+        if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+            logger.info("删除抄表流水");
+            feeEleReadFlowService.deleteFeeEleReadFlowByFeeEleBill(feeElectricityBill.getId());
+            logger.info("删除收款流水");
+            feeEleChargedFlowService.deleteFeeEleChargedFlowByFeeEleBill(feeElectricityBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
 
         }
     }

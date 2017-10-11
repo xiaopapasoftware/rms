@@ -64,20 +64,7 @@ public class FeeEleReadFlowController extends FeeBaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeEleReadFlow existEleReadFlow = feeEleReadFlowService.get(id);
-        if (Optional.ofNullable(existEleReadFlow).isPresent()) {
-            if(existEleReadFlow.getFromSource() == 1){
-                logger.error("电抄表[id={}]为账单录入,不能删除", id);
-                throw new IllegalArgumentException("当前信息为账单生成,不能删除");
-            }
-            FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
-            feeEleReadFlow.setId(id);
-            feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
-            feeEleReadFlowService.save(feeEleReadFlow);
-        } else {
-            logger.error("电抄表[id={}]不存在,不能删除", id);
-            throw new IllegalArgumentException("当前信息不存在,不能删除");
-        }
+        feeEleReadFlowService.deleteFeeEleReadFlow(id);
         return ResponseData.success();
     }
 

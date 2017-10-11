@@ -223,6 +223,14 @@
              id = #{id,jdbcType=VARCHAR}  
     </select>
 
+    <select id="getFeeEleChargedFlowByBusinessIdAndFromSource" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from fee_ele_charged_flow
+        where
+        del_flag=0 and from_source=#{fromSource,jdbcType=NUMERIC}
+        business_id = #{businessId,jdbcType=VARCHAR}
+    </select>
+
+
     <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow">
         select <include refid="Base_Column_List"/> from fee_ele_charged_flow
         <include refid="where"/>

@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,5 +25,5 @@ public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow>{
 
     List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
 
-
+    FeeEleReadFlowVo getFeeEleReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
 }
