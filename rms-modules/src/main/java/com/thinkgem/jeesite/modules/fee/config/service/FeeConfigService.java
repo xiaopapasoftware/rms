@@ -7,8 +7,11 @@ package com.thinkgem.jeesite.modules.fee.config.service;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.fee.config.dao.FeeConfigDao;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
+import com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
 * <p>费用配置项实现类 service</p>
@@ -20,4 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FeeConfigService extends CrudService<FeeConfigDao, FeeConfig> {
 
+    public List<FeeConfigVo> getFeeConfigList(FeeConfig feeConfig){
+
+        return null;
+    }
 }

@@ -19,6 +19,12 @@
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="FullResultMap" type="com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo" extends="BaseResultMap">
+        <result column="feeTypeName" property="feeTypeName" jdbcType="VARCHAR"/>
+        <result column="configTypeName" property="configTypeName" jdbcType="VARCHAR"/>
+        <result column="charge_method_name" property="chargeMethodName" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
          id, fee_type, config_type, charge_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag,
     </sql>
@@ -184,6 +190,32 @@
         select <include refid="Base_Column_List"/> from fee_config
         where
              id = #{id,jdbcType=VARCHAR}  
+    </select>
+
+    <select id="getFeeConfigList" resultMap="FullResultMap" parameterType="com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig">
+        SELECT
+        CASE fc.config_type
+        WHEN 0 THEN '默认' WHEN 1 THEN sa.name WHEN 2 THEN sa.name WHEN 3 THEN sa.name
+        WHEN 4 THEN sa.name WHEN 5 THEN sa.name WHEN 6 THEN sa.name WHEN 7 THEN tpp.project_name
+        WHEN 8 THEN CONCAT(tbtpp.project_name , tb.building_name)
+        WHEN 9 THEN CONCAT(tbtpp.project_name , tb.building_name,'号',th.house_no,'室')
+        WHEN 10 THEN CONCAT(tbtpp.project_name , tb.building_name,'号',th.house_no,'室',tr.room_no) end config_type_name,
+        fc.* FROM fee_config fc
+        LEFT JOIN  sys_area sa ON sa.id = fc.business_id and sa.type=1 and sa.del_flag=0
+        LEFT JOIN t_property_project tpp ON tpp.id = fc.business_id and tpp.del_flag=0
+
+        LEFT JOIN t_building tb ON tb.id = fc.business_id and tb.del_flag=0
+        LEFT JOIN t_property_project tbtpp ON tbtpp.id = tb.T_PROPERTY_PROJECT_MAIN_ID and tpp.del_flag=0
+
+
+        LEFT JOIN t_house th ON th.id = fc.business_id and th.del_flag=0
+        LEFT JOIN t_building thtb ON thtb.id = th.BUILDING_ID and thtb.del_flag=0
+        LEFT JOIN t_property_project thtpp ON thtpp.id = th.PROPERTY_PROJECT_ID and tpp.del_flag=0
+
+        LEFT JOIN t_room tr ON tr.id = fc.business_id and tr.del_flag=0
+        LEFT JOIN t_house trth ON trth.id = tr.HOUSE_ID and th.del_flag=0
+        LEFT JOIN t_building trtb ON trtb.id = trth.BUILDING_ID and thtb.del_flag=0
+        LEFT JOIN t_property_project trtpp ON trtpp.id = trth.PROPERTY_PROJECT_ID and tpp.del_flag=0
     </select>
 
     <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig">

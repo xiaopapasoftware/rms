@@ -8,6 +8,9 @@ import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
+import com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo;
+
+import java.util.List;
 
 /**
  * <p>费用配置项实现类service</p>
@@ -17,4 +20,6 @@ import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 */
 @MyBatisDao
 public interface FeeConfigDao extends CrudDao<FeeConfig>{
+
+    List<FeeConfigVo> getFeeConfigList(FeeConfig feeConfig);
 }

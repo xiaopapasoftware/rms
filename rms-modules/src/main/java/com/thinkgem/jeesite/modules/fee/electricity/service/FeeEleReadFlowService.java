@@ -131,7 +131,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     public void deleteFeeEleReadFlow(String id){
         FeeEleReadFlow existEleReadFlow = get(id);
         if (Optional.ofNullable(existEleReadFlow).isPresent()) {
-            if(existEleReadFlow.getFromSource() == 1){
+            if(existEleReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()){
                 logger.error("电抄表[id={}]为账单录入,不能删除", id);
                 throw new IllegalArgumentException("当前信息为账单生成,不能删除");
             }
@@ -139,7 +139,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleReadFlow.setId(id);
             feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeEleReadFlow);
-            //T
+            //TODO 删除相应的收费流水记录
+
         } else {
             logger.error("电抄表[id={}]不存在,不能删除", id);
             throw new IllegalArgumentException("当前信息不存在,不能删除");
