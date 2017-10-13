@@ -53,6 +53,14 @@ public class RoomService extends CrudService<RoomDao, Room> {
     return super.findPage(page, entity);
   }
 
+  /**
+   * 根据房屋ID查询房间信息
+   */
+  @Transactional(readOnly = true)
+  public List<Room> findRoomListByHouseId(String houseId) {
+    return dao.findRoomListByHouseId(houseId);
+  }
+
   @Transactional(readOnly = false)
   public void saveRoom(Room room) {
     if (room.getIsNewRecord()) {// 新增

@@ -24,7 +24,6 @@ import java.util.List;
 public class FeeConfigService extends CrudService<FeeConfigDao, FeeConfig> {
 
     public List<FeeConfigVo> getFeeConfigList(FeeConfig feeConfig){
-
-        return null;
+        return dao.getFeeConfigList(feeConfig);
     }
 }

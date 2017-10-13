@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "${adminPath}/fee/")
 public class FeeRedirectController {
 
+    @RequestMapping("config/index")
+    public String feeConfigIndex() {
+        return "modules/fee/config/feeConfig";
+    }
+
     @RequestMapping("electricity/bill/index")
     public String electricityBillIndex() {
         return "modules/fee/electricity/feeElectricityBill";

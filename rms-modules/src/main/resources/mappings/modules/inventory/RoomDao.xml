@@ -286,4 +286,14 @@
 		AND 		room_status = '1'  
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
+
+	<select id="findRoomListByHouseId" resultType="Room">
+		SELECT
+		a.id AS "id",
+		a.room_no AS "roomNo"
+		FROM t_room a
+		WHERE
+		a.del_flag = '0'
+		AND a.house_id = #{houseId}
+	</select>
 </mapper>

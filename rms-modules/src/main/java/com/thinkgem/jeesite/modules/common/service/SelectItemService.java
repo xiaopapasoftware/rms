@@ -11,9 +11,11 @@ import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,9 @@ public class SelectItemService {
 
   @Autowired
   private HouseService houseService;
+
+  @Autowired
+  private RoomService roomService;
 
   @Autowired
   private BuildingService buildingService;
@@ -108,6 +113,9 @@ public class SelectItemService {
         break;
       case SelectItemConstants.house:
         result = convertToItemList(houseService.findHouseListByBuildingId(condition.getId()).stream().collect(Collectors.toMap(House::getId, House::getHouseNo)));
+        break;
+      case SelectItemConstants.room:
+        result = convertToItemList(roomService.findRoomListByHouseId(condition.getId()).stream().collect(Collectors.toMap(Room::getId, Room::getRoomNo)));
         break;
       default:
         result = null;

@@ -22,6 +22,8 @@ public interface SelectItemConstants {
 
     String house = "house";
 
+    String room = "room";
+
     String org = "org";
 
     String category = "category";

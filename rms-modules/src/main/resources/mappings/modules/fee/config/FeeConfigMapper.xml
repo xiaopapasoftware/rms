@@ -20,8 +20,8 @@
     </resultMap>
 
     <resultMap id="FullResultMap" type="com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo" extends="BaseResultMap">
-        <result column="feeTypeName" property="feeTypeName" jdbcType="VARCHAR"/>
-        <result column="configTypeName" property="configTypeName" jdbcType="VARCHAR"/>
+        <result column="fee_type_name" property="feeTypeName" jdbcType="VARCHAR"/>
+        <result column="config_type_name" property="configTypeName" jdbcType="VARCHAR"/>
         <result column="charge_method_name" property="chargeMethodName" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -216,6 +216,11 @@
         LEFT JOIN t_house trth ON trth.id = tr.HOUSE_ID and th.del_flag=0
         LEFT JOIN t_building trtb ON trtb.id = trth.BUILDING_ID and thtb.del_flag=0
         LEFT JOIN t_property_project trtpp ON trtpp.id = trth.PROPERTY_PROJECT_ID and tpp.del_flag=0
+        <where>
+            fc.del_flag=0
+            <if test="feeType!=null and feeType!=''"> AND fc.fee_type=#{feeType}</if>
+            <if test="configType!=null and configType!=''"> AND fc.config_type=#{configType}</if>
+        </where>
     </select>
 
     <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig">

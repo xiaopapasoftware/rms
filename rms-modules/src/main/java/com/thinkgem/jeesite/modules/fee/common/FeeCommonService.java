@@ -54,4 +54,11 @@ public class FeeCommonService {
         List<Area> areas = areaService.getAreaWithAuth(queryArea);
         return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
     }
+
+    public List<SelectItem> getAreaWithAuthByType(String type) {
+        Area queryArea = new Area();
+        queryArea.setType(type);
+        List<Area> areas = areaService.getAreaWithAuth(queryArea);
+        return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
+    }
 }
