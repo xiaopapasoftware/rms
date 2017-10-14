@@ -36,7 +36,7 @@ public class BuildingGrossProfitCalculate implements GrossProfitCalculate{
                             GrossProfitCondition profitCondition = new GrossProfitCondition();
                             BeanUtils.copyProperties(condition, profitCondition);
                             profitCondition.setId(house.getId());
-                            profitCondition.setTypeEnum(GrossProfitTypeEnum.House);
+                            profitCondition.setTypeEnum(GrossProfitTypeEnum.HOUSE);
                             return profitCondition;
                         }).collect(Collectors.toList())).orElse(null);
 

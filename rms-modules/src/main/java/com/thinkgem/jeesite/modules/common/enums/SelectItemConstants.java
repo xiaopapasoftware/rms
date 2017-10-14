@@ -2,30 +2,30 @@ package com.thinkgem.jeesite.modules.common.enums;
 
 public interface SelectItemConstants {
 
-    String county = "county";
+    String COUNTY = "COUNTY";
 
-    String countyStr = "区县";
+    String COUNTY_Str = "区县";
 
-    String center = "center";
+    String CENTER = "CENTER";
 
-    String centerStr = "服务中心";
+    String CENTER_STR = "服务中心";
 
-    String area = "area";
+    String AREA = "AREA";
 
-    String areaStr = "营运区域";
+    String AREA_STR = "营运区域";
 
-    String project = "project";
+    String PROJECT = "PROJECT";
 
-    String projectStr = "物业项目";
+    String PROJECT_STR = "物业项目";
 
-    String building = "building";
+    String BUILDING = "BUILDING";
 
-    String house = "house";
+    String HOUSE = "HOUSE";
 
-    String room = "room";
+    String ROOM = "ROOM";
 
-    String org = "org";
+    String ORG = "ORG";
 
-    String category = "category";
+    String CATEGORY = "CATEGORY";
 
 }

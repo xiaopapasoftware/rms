@@ -32,7 +32,7 @@ public class CountyGrossProfitCalculate implements GrossProfitCalculate {
       GrossProfitCondition profitCondition = new GrossProfitCondition();
       BeanUtils.copyProperties(condition, profitCondition);
       profitCondition.setId(center.getId());
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Center);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.CENTER);
       return profitCondition;
     }).collect(Collectors.toList())).orElse(null);
   }

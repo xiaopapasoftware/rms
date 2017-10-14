@@ -45,10 +45,10 @@ public class SelectItemService {
   @Autowired
   private BuildingService buildingService;
 
-  private static final SelectItem countyItem = new SelectItem(SelectItemConstants.county, SelectItemConstants.countyStr);
-  private static final SelectItem centerItem = new SelectItem(SelectItemConstants.center, SelectItemConstants.centerStr);
-  private static final SelectItem areaItem = new SelectItem(SelectItemConstants.area, SelectItemConstants.areaStr);
-  private static final SelectItem projectItem = new SelectItem(SelectItemConstants.project, SelectItemConstants.projectStr);
+  private static final SelectItem countyItem = new SelectItem(SelectItemConstants.COUNTY, SelectItemConstants.COUNTY_Str);
+  private static final SelectItem centerItem = new SelectItem(SelectItemConstants.CENTER, SelectItemConstants.CENTER_STR);
+  private static final SelectItem areaItem = new SelectItem(SelectItemConstants.AREA, SelectItemConstants.AREA_STR);
+  private static final SelectItem projectItem = new SelectItem(SelectItemConstants.PROJECT, SelectItemConstants.PROJECT_STR);
 
   private MyCache selectCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SCHEDULED_SELECT);
 
@@ -62,9 +62,9 @@ public class SelectItemService {
       return (List<SelectItem>) selectCache.getObject(getCacheKey(condition));
     }
     switch (condition.getBusiness()) {
-      case SelectItemConstants.org:
+      case SelectItemConstants.ORG:
         return getOrgSelectListByCondition(condition);
-      case SelectItemConstants.category:
+      case SelectItemConstants.CATEGORY:
         return getCategorySelectListByCondition(condition);
       default:
         return null;
@@ -74,16 +74,16 @@ public class SelectItemService {
   private List<SelectItem> getCategorySelectListByCondition(SelectItemCondition condition) {
     List<SelectItem> result;
     switch (condition.getType()) {
-      case SelectItemConstants.county:
+      case SelectItemConstants.COUNTY:
         result = convertToItemList(areaService.getCountyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.center:
+      case SelectItemConstants.CENTER:
         result = convertToItemList(areaService.getCenterList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.area:
+      case SelectItemConstants.AREA:
         result = convertToItemList(areaService.getAreaList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.project:
+      case SelectItemConstants.PROJECT:
         result = convertToItemList(propertyProjectService.getPropertyProjectList().stream().collect(Collectors.toMap(PropertyProject::getId, PropertyProject::getProjectName)));
         break;
       default:
@@ -96,25 +96,25 @@ public class SelectItemService {
   private List<SelectItem> getOrgSelectListByCondition(SelectItemCondition condition) {
     List<SelectItem> result;
     switch (condition.getType()) {
-      case SelectItemConstants.county:
+      case SelectItemConstants.COUNTY:
         result = convertToItemList(areaService.getCountyList().stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.center:
+      case SelectItemConstants.CENTER:
         result = convertToItemList(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.CENTER.getValue()).stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.area:
+      case SelectItemConstants.AREA:
         result = convertToItemList(areaService.getAreaByParentId(condition.getId(), AreaTypeEnum.AREA.getValue()).stream().collect(Collectors.toMap(Area::getId, Area::getName)));
         break;
-      case SelectItemConstants.project:
+      case SelectItemConstants.PROJECT:
         result = convertToItemList(propertyProjectService.getPropertyProjectByAreaId(condition.getId()).stream().collect(Collectors.toMap(PropertyProject::getId, PropertyProject::getProjectName)));
         break;
-      case SelectItemConstants.building:
+      case SelectItemConstants.BUILDING:
         result = convertToItemList(buildingService.getBuildingListByProjectId(condition.getId()).stream().collect(Collectors.toMap(Building::getId, Building::getBuildingName)));
         break;
-      case SelectItemConstants.house:
+      case SelectItemConstants.HOUSE:
         result = convertToItemList(houseService.findHouseListByBuildingId(condition.getId()).stream().collect(Collectors.toMap(House::getId, House::getHouseNo)));
         break;
-      case SelectItemConstants.room:
+      case SelectItemConstants.ROOM:
         result = convertToItemList(roomService.findRoomListByHouseId(condition.getId()).stream().collect(Collectors.toMap(Room::getId, Room::getRoomNo)));
         break;
       default:

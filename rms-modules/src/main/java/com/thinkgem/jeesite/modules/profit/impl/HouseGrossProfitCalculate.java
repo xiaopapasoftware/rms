@@ -66,15 +66,6 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         return null;
     }
 
-//    private double calculateThrowLeaseSum(GrossProfitCondition condition) {
-//        List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
-//        if (!CollectionUtils.isEmpty(contractList)) {
-//            return paymentTransService.queryCostPaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
-//                    .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
-//        }
-//        return 0;
-//    }
-
     @SuppressWarnings("unchecked")
     private double calculateDepositSum(GrossProfitCondition condition) {
         List<LeaseContract> contractList = contractService.findLeaseContractListByHouseId(condition.getId());

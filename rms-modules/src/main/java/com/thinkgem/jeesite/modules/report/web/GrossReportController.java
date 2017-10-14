@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.profit.condition.GrossProfitCondition;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReportVO;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
+import com.thinkgem.jeesite.modules.report.entity.GrossProfitCompareCondition;
 import com.thinkgem.jeesite.modules.report.entity.GrossProfitFormCondition;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author xiao
@@ -49,23 +51,11 @@ public class GrossReportController extends BaseController {
     return "modules/report/gross/grossProfit";
   }
 
-  @RequiresPermissions("report:gross:view")
-  @RequestMapping(value = {"listGrossProfit"})
-  @ResponseBody
-  public List<GrossProfitReport> listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
-    ArrayList<GrossProfitReport> reportList = new ArrayList<>();
-    if (!condition.isEmpty()) {
-      GrossProfitCondition grossProfitCondition = buildConditionByFormCondition(condition);
-      GrossProfitReportVO reportVO = calculateStrategy.calculateReportVO(grossProfitCondition);
-      reportList.add(reportVO.getParent());
-      if (!CollectionUtils.isEmpty(reportVO.getChildReportList())) {
-        reportVO.getChildReportList().sort(Comparator.comparing(GrossProfitReport::getName));
-        reportList.addAll(reportVO.getChildReportList());
-      }
-      return reportList;
-    } else {
-      return null;
-    }
+  private List<SelectItem> getCountyList() {
+    SelectItemCondition condition = new SelectItemCondition();
+    condition.setBusiness(SelectItemConstants.ORG);
+    condition.setType(SelectItemConstants.COUNTY);
+    return selectItemService.getSelectListByBusinessCode(condition);
   }
 
   @RequestMapping(value = {"getSubOrgList"})
@@ -74,47 +64,75 @@ public class GrossReportController extends BaseController {
     return selectItemService.getSelectListByBusinessCode(condition);
   }
 
+  @RequiresPermissions("report:gross:view")
+  @RequestMapping(value = {"listGrossProfit"})
+  @ResponseBody
+  public List<GrossProfitReport> listGrossProfit(GrossProfitFormCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
+    return condition.isEmpty() ? null : buildReportListByReportVO(calculateStrategy.calculateReportVO(buildConditionByFormCondition(condition)));
+  }
+
   private GrossProfitCondition buildConditionByFormCondition(GrossProfitFormCondition condition) {
     GrossProfitCondition profitCondition = new GrossProfitCondition();
     profitCondition.setStartDate(condition.getStart());
     profitCondition.setEndDate(condition.getEnd());
     if (!StringUtils.isEmpty(condition.getHouse())) {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.House);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.HOUSE);
       profitCondition.setId(condition.getHouse());
     } else if (!StringUtils.isEmpty(condition.getBuilding())) {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Building);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.BUILDING);
       profitCondition.setId(condition.getBuilding());
     } else if (!StringUtils.isEmpty(condition.getProject())) {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Project);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.PROJECT);
       profitCondition.setId(condition.getProject());
     } else if (!StringUtils.isEmpty(condition.getArea())) {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Area);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.AREA);
       profitCondition.setId(condition.getArea());
     } else if (!StringUtils.isEmpty(condition.getCenter())) {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.Center);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.CENTER);
       profitCondition.setId(condition.getCenter());
     } else {
-      profitCondition.setTypeEnum(GrossProfitTypeEnum.County);
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.COUNTY);
       profitCondition.setId(condition.getCounty());
     }
     return profitCondition;
   }
 
-  private List<SelectItem> getCountyList() {
-    SelectItemCondition condition = new SelectItemCondition();
-    condition.setBusiness(SelectItemConstants.org);
-    condition.setType(SelectItemConstants.county);
-    return selectItemService.getSelectListByBusinessCode(condition);
-  }
-
   /**
-   * 毛利率统计报表-查询
+   * 毛利率统计报表对比查询
    */
   @RequiresPermissions("report:gross:view")
   @RequestMapping(value = "grossProfitCompare")
   public String grossProfitCompare(HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("categoryList", SelectItemService.getCommonReportCompareItem());
     return "modules/report/gross/grossProfitCompare";
+  }
+
+  @RequestMapping(value = {"listGrossProfitCompare"})
+  @ResponseBody
+  public List<GrossProfitReport> listGrossProfitCompare(GrossProfitCompareCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
+//    condition.setConditionList(Collections.singletonList(new ReportCompareCondition("PROJECT", "d05a2e840cb74797a84a406d01d0e0de")));
+    return condition.isEmpty() ? null : buildReportListByReportVO(calculateStrategy.calculateReportCompareVO(buildConditionByCompareCondition(condition)));
+  }
+
+  private List<GrossProfitCondition> buildConditionByCompareCondition(GrossProfitCompareCondition condition) {
+    return condition.getConditionList().stream().map(compareCondition -> {
+      GrossProfitCondition profitCondition = new GrossProfitCondition();
+      profitCondition.setId(compareCondition.getId());
+      profitCondition.setTypeEnum(GrossProfitTypeEnum.valueOf(compareCondition.getType()));
+      profitCondition.setStartDate(condition.getStart());
+      profitCondition.setEndDate(condition.getEnd());
+      return profitCondition;
+    }).collect(Collectors.toList());
+  }
+
+  private List<GrossProfitReport> buildReportListByReportVO(GrossProfitReportVO reportVO) {
+    List<GrossProfitReport> reportList = new ArrayList<>();
+    reportList.add(reportVO.getParent());
+    if (!CollectionUtils.isEmpty(reportVO.getChildReportList())) {
+      reportVO.getChildReportList().sort(Comparator.comparing(GrossProfitReport::getName));
+      reportList.addAll(reportVO.getChildReportList());
+    }
+    return reportList;
   }
 
 }

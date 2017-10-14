@@ -14,13 +14,9 @@
                     alert("请选择具体的时间范围");
                     return false;
 				}
-				$.post("${ctx}/report/gross/listGrossProfit", {
-                    company:$("#company").val(),
-                    center:$("#center").val(),
-                    area:$("#area").val(),
-                    project:$("#project").val(),
-                    building:$("#building").val(),
-					house:$("#house").val(),
+				$.post("${ctx}/report/gross/listGrossProfitCompare", {
+                    type:$("#type").val(),
+                    id:$("#id").val(),
                     startDate:startDate,
                     endDate:endDate
 				}, function (data, status) {
@@ -39,26 +35,21 @@
             })
         });
 		
-		function changeSelect(value,type) {
-            var id = value;
-			var curParentNextAll = $("#"+type).parent().prev().nextAll();
+		function changeSelect(type) {
+			var curParentNextAll = $("#type").parent().prev().nextAll();
             var html = "<option value='' selected='selected'>请选择...</option>";
 			curParentNextAll.each(function (index,parent) {   //清空当前选项之后的所有级联select
 				var child = $(this).children(".input-medium");
 				child.empty();
 				child.append(html);
             });
-            if("" != id) {
-                $.ajaxSetup({ cache: false });
-                $.get("${ctx}/report/gross/getSubOrgList?business=org&id=" + id + "&type="+type, function(data){
-                    for(var i=0;i<data.length;i++) {
-                        html += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
-                    }
-                    $("[id="+type+"]").html(html);
-                });
-            } else {
-                $("[id="+type+"]").html(html);
-            }
+			$.ajaxSetup({ cache: false });
+			$.get("${ctx}/report/gross/getSubOrgList?business=CATEGORY&type="+type, function(data){
+				for(var i=0;i<data.length;i++) {
+					html += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+				}
+				$("[id=id]").html(html);
+			});
         }
 
 	</script>
@@ -67,15 +58,15 @@
 	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/gross/listGrossProfit" method="post" class="breadcrumb form-search">
 		<ul class="ul-form">
 			<li><label>类别：</label>
-				<select id="category" name="category" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'center')">
+				<select id="type" name="type" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value)">
 					<option value="">请选择...</option>
 					<c:forEach items="${categoryList}" var="category">
 						<option value="${category.id}">${category.name}</option>
 					</c:forEach>
 				</select>
 			</li>
-			<li><label>服务中心：</label>
-				<select id="center" name="center" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'area')">
+			<li><label>明细：</label>
+				<select id="id" name="id" class="input-medium selectDom">
 					<option value="">请选择...</option>
 				</select>
 			</li>

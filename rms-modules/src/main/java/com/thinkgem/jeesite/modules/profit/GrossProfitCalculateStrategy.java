@@ -41,12 +41,12 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        strategyRegistry.put(GrossProfitTypeEnum.County.getCode(), countyGrossProfitCalculate);
-        strategyRegistry.put(GrossProfitTypeEnum.Center.getCode(), centerGrossProfitCalculate);
-        strategyRegistry.put(GrossProfitTypeEnum.Area.getCode(), areaGrossProfitCalculate);
-        strategyRegistry.put(GrossProfitTypeEnum.Project.getCode(), projectGrossProfitCalculate);
-        strategyRegistry.put(GrossProfitTypeEnum.Building.getCode(), buildingGrossProfitCalculate);
-        strategyRegistry.put(GrossProfitTypeEnum.House.getCode(), houseGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.COUNTY.getCode(), countyGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.CENTER.getCode(), centerGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.AREA.getCode(), areaGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.PROJECT.getCode(), projectGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.BUILDING.getCode(), buildingGrossProfitCalculate);
+        strategyRegistry.put(GrossProfitTypeEnum.HOUSE.getCode(), houseGrossProfitCalculate);
     }
 
     public void registerStrategyIfAbsent(String name, GrossProfitCalculate calculate) {
@@ -95,5 +95,27 @@ public class GrossProfitCalculateStrategy implements InitializingBean{
                                              .income(childReportList.stream().mapToDouble(GrossProfitReport::getIncome).sum())
                                              .name(getName(condition))
                                              .build();
+    }
+
+    private GrossProfitReport buildSumByChildList(GrossProfitCondition condition, List<GrossProfitReport> childReportList) {
+        return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum())
+                .cost(childReportList.stream().mapToDouble(GrossProfitReport::getCost).sum())
+                .income(childReportList.stream().mapToDouble(GrossProfitReport::getIncome).sum())
+                .name(getName(condition))
+                .build();
+    }
+
+    public GrossProfitReportVO calculateReportCompareVO(List<GrossProfitCondition> conditionList) {
+        GrossProfitReportVO reportVO = new GrossProfitReportVO();
+        if (!CollectionUtils.isEmpty(conditionList)) {
+            List<GrossProfitReport> childReportList = conditionList.parallelStream().map(this::calculateGrossProfit).collect(Collectors.toList());
+            reportVO.setChildReportList(childReportList);
+            reportVO.setParent(new GrossProfitReportBuilder().typeEnum(GrossProfitTypeEnum.SUM)
+                    .cost(childReportList.stream().mapToDouble(GrossProfitReport::getCost).sum())
+                    .income(childReportList.stream().mapToDouble(GrossProfitReport::getIncome).sum())
+                    .name("合计")
+                    .build());
+        }
+        return reportVO;
     }
 }

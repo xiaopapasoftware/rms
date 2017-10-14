@@ -36,7 +36,7 @@ public class AreaGrossProfitCalculate implements GrossProfitCalculate{
                             GrossProfitCondition profitCondition = new GrossProfitCondition();
                             BeanUtils.copyProperties(condition, profitCondition);
                             profitCondition.setId(project.getId());
-                            profitCondition.setTypeEnum(GrossProfitTypeEnum.Project);
+                            profitCondition.setTypeEnum(GrossProfitTypeEnum.PROJECT);
                             return profitCondition;
                         }).collect(Collectors.toList())).orElse(null);
     }

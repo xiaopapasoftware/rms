@@ -2,7 +2,7 @@ package com.thinkgem.jeesite.modules.profit.enums;
 
 public enum GrossProfitTypeEnum {
 
-    County("County", "区县"),Center("Center", "服务中心"),Area("Area", "区域"),Project("Project", "物业项目"),Building("Building", "楼宇"),House("House", "房屋");
+    COUNTY("COUNTY", "区县"),CENTER("CENTER", "服务中心"),AREA("AREA", "区域"),PROJECT("PROJECT", "物业项目"),BUILDING("BUILDING", "楼宇"),HOUSE("HOUSE", "房屋"),SUM("SUM", "合计");
 
     private String code;
 
