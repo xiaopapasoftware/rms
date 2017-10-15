@@ -45,7 +45,7 @@ public class FeeConfigController extends BaseController {
 
     @RequestMapping(value = "save")
     public Object save(FeeConfig feeConfig) {
-        feeConfigService.save(feeConfig);
+        feeConfigService.saveFeeConfig(feeConfig);
         return ResponseData.success();
     }
 

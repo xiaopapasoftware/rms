@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -22,6 +23,20 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class FeeConfigService extends CrudService<FeeConfigDao, FeeConfig> {
+
+    @Transactional(readOnly = false)
+    public void saveFeeConfig(FeeConfig feeConfig){
+        FeeConfig queryConfig = new FeeConfig();
+        queryConfig.setBusinessId(feeConfig.getBusinessId());
+        queryConfig.setConfigType(feeConfig.getConfigType());
+        queryConfig.setFeeType(feeConfig.getFeeType());
+        List<FeeConfig> feeConfigs = dao.findList(queryConfig);
+        if(!CollectionUtils.isEmpty(feeConfigs)){
+            FeeConfig existConfig = feeConfigs.get(0);
+            feeConfig.setId(existConfig.getId());
+        }
+        this.save(feeConfig);
+    }
 
     public List<FeeConfigVo> getFeeConfigList(FeeConfig feeConfig){
         return dao.getFeeConfigList(feeConfig);

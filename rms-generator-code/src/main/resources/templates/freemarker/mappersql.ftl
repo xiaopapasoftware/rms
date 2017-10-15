@@ -11,7 +11,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        <#list table.columns as column> ${column.columnName},</#list>
+        <#list table.columns as column> ${column.columnName}<#if column_has_next>,</#if></#list>
     </sql>
 
     <sql id="Insert_Columns">

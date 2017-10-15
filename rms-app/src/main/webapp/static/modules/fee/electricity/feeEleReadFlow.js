@@ -281,8 +281,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             $.post(feeEleReadFlowMVC.URLs.delete.url, {id: data.id}, function (data) {
                                 if (data.code == "200") {
                                     feeEleReadFlowMVC.Controller.queryFun();
+                                    layer.msg('删除成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                                 } else {
-                                    layer.msg('删除成功', {icon: 5, offset: 100, time: 1000, shift: 6});
+                                    layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
                                 }
                             });
                             layer.close(index);
@@ -360,6 +361,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             $("#eleDegree").val("");
                             form.render('select');
                         }
+                        layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
                     }
