@@ -110,7 +110,7 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required" multiple="true">
+				<form:select path="tenantList" style="width:450px;" class="input-xlarge required" multiple="true">
 					<c:forEach items="${tenantList}" var="item">
 						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
 					</c:forEach>
@@ -122,7 +122,7 @@
 		<div class="control-group">
 			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required" multiple="true">
+				<form:select path="liveList" style="width:450px;" class="input-xlarge required" multiple="true">
 					<c:forEach items="${tenantList}" var="item">
 						<form:option value="${item.id}">${item.cellPhone}-${item.tenantName}</form:option>
 					</c:forEach>

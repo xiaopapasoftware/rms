@@ -126,7 +126,7 @@
 		<div class="control-group">
 			<label class="control-label">承租人：</label>
 			<div class="controls">
-				<form:select path="tenantList" class="input-xlarge required tanants" multiple="true" onchange="changeTenantList('${rentContract.id}');">
+				<form:select path="tenantList" style="width:450px;" class="input-xlarge required tanants" multiple="true" onchange="changeTenantList('${rentContract.id}');">
 					<option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
@@ -136,7 +136,7 @@
 		<div class="control-group">
 			<label class="control-label">入住人：</label>
 			<div class="controls">
-				<form:select path="liveList" class="input-xlarge required tanants" multiple="true" onchange="changeLiveList('${rentContract.id}');">
+				<form:select path="liveList" style="width:450px;" class="input-xlarge required tanants" multiple="true" onchange="changeLiveList('${rentContract.id}');">
 				    <option></option>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
