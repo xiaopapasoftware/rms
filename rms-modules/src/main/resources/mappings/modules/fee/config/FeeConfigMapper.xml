@@ -26,7 +26,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, fee_type, config_type, charge_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag,
+         id, fee_type, config_type, charge_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -54,9 +54,9 @@
         <if test="showName!=null">#{showName,jdbcType=VARCHAR},</if>
         <if test="configValue!=null">#{configValue,jdbcType=VARCHAR},</if>
         <if test="configStatus!=null">#{configStatus,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
@@ -70,9 +70,9 @@
         #{item.showName,jdbcType=VARCHAR},
         #{item.configValue,jdbcType=VARCHAR},
         #{item.configStatus,jdbcType=NUMERIC},
-        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createBy.id,jdbcType=VARCHAR},
         #{item.createDate,jdbcType=TIMESTAMP},
-        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateBy.id,jdbcType=VARCHAR},
         #{item.updateDate,jdbcType=TIMESTAMP},
         #{item.remarks,jdbcType=VARCHAR},
         #{item.delFlag,jdbcType=VARCHAR},
@@ -86,9 +86,9 @@
         <if test="showName!=null"> show_name=#{showName,jdbcType=VARCHAR},</if>
         <if test="configValue!=null"> config_value=#{configValue,jdbcType=VARCHAR},</if>
         <if test="configStatus!=null"> config_status=#{configStatus,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null"> create_by=#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null"> create_by=#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null"> create_date=#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
@@ -101,9 +101,9 @@
         show_name=#{item.showName,jdbcType=VARCHAR},
         config_value=#{item.configValue,jdbcType=VARCHAR},
         config_status=#{item.configStatus,jdbcType=NUMERIC},
-        create_by=#{item.createBy,jdbcType=VARCHAR},
+        create_by=#{item.createBy.id,jdbcType=VARCHAR},
         create_date=#{item.createDate,jdbcType=TIMESTAMP},
-        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
         del_flag=#{item.delFlag,jdbcType=VARCHAR},
@@ -113,19 +113,13 @@
     <sql id="where">
         <where>
             <if test="id!=null and id!=''"> AND id=#{id}</if>
-            <if test="fee_type!=null and fee_type!=''"> AND fee_type=#{feeType}</if>
-            <if test="config_type!=null and config_type!=''"> AND config_type=#{configType}</if>
-            <if test="charge_method!=null and charge_method!=''"> AND charge_method=#{chargeMethod}</if>
-            <if test="business_id!=null and business_id!=''"> AND business_id=#{businessId}</if>
-            <if test="show_name!=null and show_name!=''"> AND show_name=#{showName}</if>
-            <if test="config_value!=null and config_value!=''"> AND config_value=#{configValue}</if>
-            <if test="config_status!=null and config_status!=''"> AND config_status=#{configStatus}</if>
-            <if test="create_by!=null and create_by!=''"> AND create_by=#{createBy}</if>
-            <if test="create_date!=null and create_date!=''"> AND create_date=#{createDate}</if>
-            <if test="update_by!=null and update_by!=''"> AND update_by=#{updateBy}</if>
-            <if test="update_date!=null and update_date!=''"> AND update_date=#{updateDate}</if>
-            <if test="remarks!=null and remarks!=''"> AND remarks=#{remarks}</if>
-            AND a.del_flag = 0
+            <if test="feeType!=null"> AND fee_type=#{feeType}</if>
+            <if test="configType!=null"> AND config_type=#{configType}</if>
+            <if test="chargeMethod!=null"> AND charge_method=#{chargeMethod}</if>
+            <if test="businessId!=null and businessId!=''"> AND business_id=#{businessId}</if>
+            <if test="configValue!=null and configValue!=''"> AND config_value=#{configValue}</if>
+            <if test="configStatus!=null and configStatus!=''"> AND config_status=#{configStatus}</if>
+            AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
@@ -196,26 +190,26 @@
         SELECT
         CASE fc.config_type
         WHEN 0 THEN '默认' WHEN 1 THEN sa.name WHEN 2 THEN sa.name WHEN 3 THEN sa.name
-        WHEN 4 THEN sa.name WHEN 5 THEN sa.name WHEN 6 THEN sa.name WHEN 7 THEN tpp.project_name
-        WHEN 8 THEN CONCAT(tbtpp.project_name , tb.building_name)
-        WHEN 9 THEN CONCAT(tbtpp.project_name , tb.building_name,'号',th.house_no,'室')
-        WHEN 10 THEN CONCAT(tbtpp.project_name , tb.building_name,'号',th.house_no,'室',tr.room_no) end config_type_name,
+        WHEN 4 THEN sa.name WHEN 5 THEN sa.name WHEN 6 THEN sa.name
+        WHEN 7 THEN tpp.project_name
+        WHEN 8 THEN CONCAT(tbtpp.project_name , tb.building_name,'号')
+        WHEN 9 THEN CONCAT(thtpp.project_name , thtb.building_name,'号',th.house_no,'室')
+        WHEN 10 THEN CONCAT(trtpp.project_name , trtb.building_name,'号',trth.house_no,'室',tr.room_no,'房') end config_type_name,
         fc.* FROM fee_config fc
-        LEFT JOIN  sys_area sa ON sa.id = fc.business_id and sa.type=1 and sa.del_flag=0
+        LEFT JOIN  sys_area sa ON sa.id = fc.business_id and sa.del_flag=0
         LEFT JOIN t_property_project tpp ON tpp.id = fc.business_id and tpp.del_flag=0
 
         LEFT JOIN t_building tb ON tb.id = fc.business_id and tb.del_flag=0
-        LEFT JOIN t_property_project tbtpp ON tbtpp.id = tb.T_PROPERTY_PROJECT_MAIN_ID and tpp.del_flag=0
-
+        LEFT JOIN t_property_project tbtpp ON tbtpp.id = tb.T_PROPERTY_PROJECT_MAIN_ID and tbtpp.del_flag=0
 
         LEFT JOIN t_house th ON th.id = fc.business_id and th.del_flag=0
         LEFT JOIN t_building thtb ON thtb.id = th.BUILDING_ID and thtb.del_flag=0
-        LEFT JOIN t_property_project thtpp ON thtpp.id = th.PROPERTY_PROJECT_ID and tpp.del_flag=0
+        LEFT JOIN t_property_project thtpp ON thtpp.id = th.PROPERTY_PROJECT_ID and thtpp.del_flag=0
 
         LEFT JOIN t_room tr ON tr.id = fc.business_id and tr.del_flag=0
-        LEFT JOIN t_house trth ON trth.id = tr.HOUSE_ID and th.del_flag=0
-        LEFT JOIN t_building trtb ON trtb.id = trth.BUILDING_ID and thtb.del_flag=0
-        LEFT JOIN t_property_project trtpp ON trtpp.id = trth.PROPERTY_PROJECT_ID and tpp.del_flag=0
+        LEFT JOIN t_house trth ON trth.id = tr.HOUSE_ID and trth.del_flag=0
+        LEFT JOIN t_building trtb ON trtb.id = trth.BUILDING_ID and trtb.del_flag=0
+        LEFT JOIN t_property_project trtpp ON trtpp.id = trth.PROPERTY_PROJECT_ID and trtpp.del_flag=0
         <where>
             fc.del_flag=0
             <if test="feeType!=null and feeType!=''"> AND fc.fee_type=#{feeType}</if>

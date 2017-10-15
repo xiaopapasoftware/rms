@@ -130,6 +130,7 @@
 
 <div id="addDiv" class="tangchao" hidden >
     <form class="layui-form" id="addFeeEleBillForm" action="">
+        <input type="hidden" id="id"/>
         <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">费用类型</label>
             <div class="layui-input-inline">
@@ -178,7 +179,6 @@
             <div class="layui-form-item" id="areaDiv">
                 <label class="layui-form-label">关联范围</label>
                 <div class="layui-input-inline">
-                    <input type="hidden" id="areaId">
                     <select id="area" name="area" lay-filter="area" placeholder="区域" lay-search>
                         <option value="">区域</option>
                     </select>
@@ -188,7 +188,6 @@
             <div class="layui-form-item" hidden id="projectDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <input type="hidden" id="projectId">
                     <select id="project" name="project" lay-filter="project" placeholder="小区" lay-search>
                         <option value="">小区</option>
                     </select>
@@ -198,7 +197,6 @@
             <div class="layui-form-item" hidden id="buildingDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <input type="hidden" id="buildingId">
                     <select id="building" name="building" lay-filter="building" placeholder="楼宇" lay-search>
                         <option value="">楼宇</option>
                     </select>
@@ -208,7 +206,6 @@
             <div class="layui-form-item" hidden id="houseDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <input type="hidden" id="houseId">
                     <select id="house" name="house" lay-filter="house" placeholder="房屋" lay-search>
                         <option value="">房屋</option>
                     </select>
@@ -243,12 +240,13 @@
 </div>
 
 <script type="text/html" id="toolBar">
-    {{# var status=d.billStatus }}
-    {{# if (status==null || status=='0' || status=='3'){ }}
-    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
-    {{# } else{ }}
+    {{# var status=d.configStatus }}
+    {{# if (status=='0'){ }}
+    <a class="layui-btn layui-btn-mini" lay-event="stop">停用</a>
+    {{# }else{ }}
+    <a class="layui-btn layui-btn-mini" lay-event="start">启用</a>
     {{# } }}
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>

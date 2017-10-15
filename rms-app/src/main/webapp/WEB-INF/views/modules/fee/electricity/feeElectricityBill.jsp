@@ -250,8 +250,6 @@
     {{# if (status==null || status=='0' || status=='3'){ }}
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
-    {{# } else{ }}
-
     {{# } }}
 </script>
 

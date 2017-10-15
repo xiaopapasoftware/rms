@@ -27,8 +27,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#room").append('<option value="">房间</option>');
                 form.render('select');
             });
+
             form.on('select(project)', function (data) {
-                $("#projectId").val(data.value);
                 feeConfigMVC.Controller.selectItemFun("building", "building", data.value);
 
                 $("#building option").remove();
@@ -42,8 +42,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
                 form.render('select');
             });
+
             form.on('select(building)', function (data) {
-                $("#buildingId").val(data.value);
                 feeConfigMVC.Controller.selectItemFun("house", "house", data.value);
 
                 $("#house option").remove();
@@ -56,17 +56,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(house)', function (data) {
-                $("#houseId").val(data.value);
                 feeConfigMVC.Controller.selectItemFun("room", "room", data.value);
 
                 $("#room option").remove();
                 $("#room").append('<option value="">房间</option>');
 
                 form.render('select');
-            });
-
-            form.on('select(room)', function (data) {
-                $("#roomId").val(data.value);
             });
 
             form.on('submit(addFeeConfig)', function () {
@@ -78,25 +73,38 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(configType)', function (data) {
-                console.log(data);
-                if(data.value > 0){
+                $("#project option").remove();
+                $("#project").append('<option value="">物业项目</option>');
+
+                $("#building option").remove();
+                $("#building").append('<option value="">楼宇</option>');
+
+                $("#house option").remove();
+                $("#house").append('<option value="">房屋</option>');
+
+                $("#room option").remove();
+                $("#room").append('<option value="">房间</option>');
+                form.render('select');
+
+                var value = data.value;
+                if(value > 0){
                     $("#businessDiv").show();
-                    if(data.value==7){
+                    if(value==7){
                         $("#projectDiv").show();
                         $("#buildingDiv").hide();
                         $("#houseDiv").hide();
                         $("#roomDiv").hide();
-                    }else if(data.value==8){
+                    }else if(value==8){
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").hide();
                         $("#roomDiv").hide();
-                    }else if(data.value==9){
+                    }else if(value==9){
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").show();
                         $("#roomDiv").hide();
-                    }else if(data.value==10){
+                    }else if(value==10){
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").show();
@@ -110,7 +118,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }else{
                     $("#businessDiv").hide();
                 }
-                feeConfigMVC.Controller.getAreaFun(data.value);
+                if(value > 6){
+                    value = 6;
+                }
+                feeConfigMVC.Controller.getAreaFun(value);
             });
 
             layui.laytpl.feeTypeFormat = function (value) {
@@ -152,7 +163,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 } else if (value == 8) {
                     value = "楼宇";
                 } else if (value == 9) {
-                    value = "房号";
+                    value = "房屋";
                 } else if (value == 10) {
                     value = "房间";
                 }
@@ -172,7 +183,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 if (value == 0) {
                     value = "启用";
                 } else if (value == 1) {
-                    value = "1停用";
+                    value = "停用";
                 }
                 return value;
             };
@@ -205,13 +216,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 url: feeConfigCommon.baseUrl + "/getArea",
                 method: "GET"
             },
-            getTotalAmount: {
-                url: feeConfigCommon.baseUrl + "/getTotalAmount",
-                method: "GET"
-            },
-            getHouseInfo: {
-                url: feeConfigCommon.baseUrl + "/houseInfo",
-                method: "GET"
+            changeConfigStatus: {
+                url: feeConfigCommon.baseUrl + "/changeConfigStatus",
+                method: "POST"
             }
         },
         View: {
@@ -282,22 +289,32 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 table.on('tool(feeConfig)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
-                    if (layEvent === 'edit') { //编辑
-                        $("#eleBillDate").val(data.eleBillDate);
-                        $("#houseEleNum").val(data.houseEleNum);
-                        $("#houseAddress").val(data.projectAddress + data.buildingName + "号" + data.houseNo + "室");
-                        $("#houseId").val(data.houseId);
-                        $("#elePeakDegree").val(data.elePeakDegree);
-                        $("#eleValleyDegree").val(data.eleValleyDegree);
-                        $("#eleBillAmount").val(data.eleBillAmount)
-                        feeConfigMVC.Controller.addFeeConfigFun();
+                    if (layEvent === 'stop') { //编辑
+                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {id: data.id,configStatus:"1"}, function (data) {
+                            if (data.code == "200") {
+                                feeConfigMVC.Controller.queryFun();
+                                layer.msg('操作成功', {icon: 1, offset: 100, time: 1000, shift: 6});
+                            } else {
+                                layer.msg('操作失败', {icon: 5, offset: 100, time: 1000, shift: 6});
+                            }
+                        });
+                    }else if (layEvent === 'start') { //编辑
+                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {id: data.id,configStatus:"0"}, function (data) {
+                            if (data.code == "200") {
+                                feeConfigMVC.Controller.queryFun();
+                                layer.msg('操作成功', {icon: 1, offset: 100, time: 1000, shift: 6});
+                            } else {
+                                layer.msg('操作失败', {icon: 5, offset: 100, time: 1000, shift: 6});
+                            }
+                        });
                     } else if (layEvent === 'del') { //删除
                         layer.confirm('确认删除吗?', {offset: '100px', icon: 3, title: '提示'}, function (index) {
                             $.post(feeConfigMVC.URLs.delete.url, {id: data.id}, function (data) {
                                 if (data.code == "200") {
                                     feeConfigMVC.Controller.queryFun();
+                                    layer.msg('删除成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                                 } else {
-                                    layer.msg('删除成功', {icon: 5, offset: 100, time: 1000, shift: 6});
+                                    layer.msg('删除失败', {icon: 5, offset: 100, time: 1000, shift: 6});
                                 }
                             });
                             layer.close(index);
@@ -336,17 +353,35 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render("select");
             },
             saveFun: function () {
+                var configType = $("#configType").val();
+                var businessId = 0;
+                if(configType == 0){
+                    businessId = 0;
+                }else if(configType < 7){
+                    businessId = $("#area").val();
+                }else if(configType == 7){
+                    businessId = $("#project").val();
+                }else if(configType == 8){
+                    businessId = $("#building").val();
+                }else if(configType == 9){
+                    businessId = $("#house").val();
+                }else if(configType == 10){
+                    businessId = $("#room").val();
+                }
+
                 var data = {
+                    "id":$("#id").val(),
                     "feeType": $("#feeType").val(),
-                    "configType": $("#configType").val(),
+                    "configType": configType,
                     "chargeMethod": $("#chargeMethod").val(),
-                    "configValue": $("#configValue").val()
+                    "configValue": $("#configValue").val(),
+                    "businessId":businessId
                 };
-                console.log(data);
-                return;
                 $.post(feeConfigMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
+                        layer.close(addFeeConfigIndex);
                         feeConfigMVC.Controller.queryFun();
+                        layer.msg("保存成功", {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
                     }
@@ -359,10 +394,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#feeType").val("");
                 $("#configType").val("");
                 $("#configValue").val("");
+                form.render("select");
             },
             getAreaFun: function (type) {
                 $.getJSON(feeConfigMVC.URLs.selectArea.url, {"type":type}, function (data) {
                     $("#area option").remove();
+                    $('#area').append($('<option>', {
+                        value: "",
+                        text: "请选择"
+                    }));
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
                             value: object.id,
@@ -390,15 +430,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     });
                     form.render('select');
                 });
-            },
-            getTotalAmountFun: function () {
-                $.getJSON(feeConfigMVC.URLs.getTotalAmount.url,
-                    feeConfigMVC.Controller.getWhereFun(),
-                    function (data) {
-                        if (data.code == "200") {
-                            $("#totalAmount").html(layui.laytpl.amountFormat(data.data));
-                        }
-                    });
             }
         }
     };
