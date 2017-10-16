@@ -31,6 +31,9 @@ public class FeeCriteriaEntity extends DataEntity<FeeCriteriaEntity> {
     /*0:已录 1:未录*/
     private String isRecord;
 
+    /** generate_order - 是否已生成订单 0:是 -1:否 */
+    private Integer generateOrder;
+
     private String houseNum;
 
     private Date startTime;

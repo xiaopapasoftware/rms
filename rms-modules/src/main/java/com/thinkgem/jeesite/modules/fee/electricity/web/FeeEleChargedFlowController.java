@@ -9,13 +9,15 @@ import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
+import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFeeVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeEleChargedFlowService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>电费收取流水 controller</p>
@@ -37,9 +39,11 @@ public class FeeEleChargedFlowController extends BaseController {
       }
 
      @RequestMapping(value = "list")
-     public Object list(FeeEleChargedFlow feeEleChargedFlow,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeEleChargedFlow> page = feeEleChargedFlowService.findPage(new Page(pageSize, pageNo), feeEleChargedFlow);
-         return ResponseData.success().data(page);
+     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+         Page page = new Page(feeCriteriaEntity.getPageNum(),feeCriteriaEntity.getPageSize());
+         List<FeeEleChargedFeeVo> feeEleChargedFeeVos = feeEleChargedFlowService.getFeeEleChargedFee(feeCriteriaEntity);
+         page.setList(feeEleChargedFeeVos);
+         return ResponseData.success().page(page);
      }
 
     @RequestMapping(value = "delete")

@@ -15,7 +15,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             feeEleReadFlowMVC.View.renderTable();
 
             form.on('select(area)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("project", "project", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -27,7 +27,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(project)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("building", "building", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("building", "BUILDING", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -38,7 +38,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(building)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("house", "house", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("house", "HOUSE", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
@@ -50,7 +50,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(areaId)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("projectId", "project", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.value);
                 $("#projectId option").remove();
                 $("#projectId").append('<option value="">物业项目</option>');
 
@@ -64,7 +64,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(projectId)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("buildingId", "building", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.value);
 
                 $("#buildingId option").remove();
                 $("#buildingId").append('<option value="">楼宇</option>');
@@ -75,7 +75,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(buildingId)', function (data) {
-                feeEleReadFlowMVC.Controller.selectItemFun("houseId", "house", data.value);
+                feeEleReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.value);
 
                 $("#houseId option").remove();
                 $("#houseId").append('<option value="">房屋</option>');
@@ -256,6 +256,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         $("#eleValleyDegree").val(data.eleValleyDegree);
                         $("#eleDegree").val(data.eleDegree);
                         $("#eleDegree").val(data.eleDegree);
+
                         laydate.render({
                             elem: '#eleReadDate',
                             type: 'date',
@@ -443,7 +444,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             selectItemFun: function (id, type, value) {
                 $.getJSON(feeEleReadFlowMVC.URLs.selectItem.url, {
-                    "business": "org",
+                    "business": "ORG",
                     "type": type,
                     "id": value
                 }, function (data) {

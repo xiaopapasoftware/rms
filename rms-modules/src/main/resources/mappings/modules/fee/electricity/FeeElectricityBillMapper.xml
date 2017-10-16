@@ -271,11 +271,11 @@
             <if test="houseNum!=null and houseNum!=''">AND th.ele_account_num LIKE '%#{houseNum}%'</if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
-                <if test="isRecord=0">
+                <if test="isRecord==0">
                     feb.id is not null
                 </if>
                 <!-- 未录 -->
-                <if test="isRecord=1">
+                <if test="isRecord==1">
                     feb.id is null
                 </if>
             </if>

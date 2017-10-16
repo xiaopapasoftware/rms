@@ -7,13 +7,21 @@ package com.thinkgem.jeesite.modules.fee.electricity.service;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
+import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
+import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFeeVo;
 import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,6 +33,9 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, FeeEleChargedFlow> {
+
+    @Autowired
+    private FeeConfigService feeConfigService;
 
     @Transactional(readOnly = false)
     public void saveFeeEleChargedFlowByFeeEleBill(FeeElectricityBill feeElectricityBill){
@@ -47,6 +58,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
+    public void saveFeeEleChargedFlowByFeeEleReadFlow(List<FeeEleReadFlow> feeEleReadFlows){
+        Map<String,FeeConfig> feeConfigMap = feeConfigService.getFeeConfig();
+
+    }
+
+    @Transactional(readOnly = false)
     public void deleteFeeEleChargedFlowByFeeEleBill(String feeEleBillId,int fromSource){
         FeeEleChargedFlow existEleChargedFlow = this.dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleBillId,fromSource);
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
@@ -55,5 +72,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         save(feeEleChargedFlow);
     }
 
+    public List<FeeEleChargedFeeVo> getFeeEleChargedFee(FeeCriteriaEntity feeCriteriaEntity){
+        return null;
+    }
 
 }
