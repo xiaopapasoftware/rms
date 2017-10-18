@@ -25,4 +25,9 @@ public class FeeRedirectController {
     public String eleReadFlowIndex() {
         return "modules/fee/electricity/feeEleReadFlow";
     }
+
+    @RequestMapping("electricity/charge/index")
+    public String eleChargeFlowIndex() {
+        return "modules/fee/electricity/feeEleChargeFlow";
+    }
 }

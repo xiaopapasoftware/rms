@@ -14,7 +14,7 @@ public class FeeEleChargedFlowVo extends FeeEleChargedFlow{
 
     private String areaName;
 
-    private String propertyName;
+    private String projectName;
 
     private String buildingName;
 
@@ -26,4 +26,5 @@ public class FeeEleChargedFlowVo extends FeeEleChargedFlow{
 
     private String projectAddress;
 
+    private String intentModeName;
 }

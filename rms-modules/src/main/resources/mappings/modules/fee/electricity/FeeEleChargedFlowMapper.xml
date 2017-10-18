@@ -28,13 +28,14 @@
     <resultMap id="FullResultMap" type="com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo" extends="BaseResultMap">
         <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
         <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
-        <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
         <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
         <result column="building_id" property="buildingId" jdbcType="VARCHAR"/>
         <result column="building_name" property="buildingName" jdbcType="VARCHAR"/>
         <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
         <result column="room_no" property="roomNo" jdbcType="VARCHAR"/>
         <result column="intent_mode" property="intentMode" jdbcType="NUMERIC"/>
+        <result column="intent_mode_name" property="intentModeName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -78,9 +79,9 @@
         <if test="elePeakAmount!=null">#{elePeakAmount,jdbcType=NUMERIC},</if>
         <if test="eleValleyAmount!=null">#{eleValleyAmount,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null">#{generateOrder,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
@@ -100,9 +101,9 @@
         #{item.elePeakAmount,jdbcType=NUMERIC},
         #{item.eleValleyAmount,jdbcType=NUMERIC},
         #{item.generateOrder,jdbcType=NUMERIC},
-        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createBy.id,jdbcType=VARCHAR},
         #{item.createDate,jdbcType=TIMESTAMP},
-        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateBy.id,jdbcType=VARCHAR},
         #{item.updateDate,jdbcType=TIMESTAMP},
         #{item.remarks,jdbcType=VARCHAR},
         #{item.delFlag,jdbcType=VARCHAR},
@@ -122,9 +123,9 @@
         <if test="elePeakAmount!=null"> ele_peak_amount=#{elePeakAmount,jdbcType=NUMERIC},</if>
         <if test="eleValleyAmount!=null"> ele_valley_amount=#{eleValleyAmount,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null"> generate_order=#{generateOrder,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null"> create_by=#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null"> create_by=#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null"> create_date=#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
@@ -143,9 +144,9 @@
         ele_peak_amount=#{item.elePeakAmount,jdbcType=NUMERIC},
         ele_valley_amount=#{item.eleValleyAmount,jdbcType=NUMERIC},
         generate_order=#{item.generateOrder,jdbcType=NUMERIC},
-        create_by=#{item.createBy,jdbcType=VARCHAR},
+        create_by=#{item.createBy.id,jdbcType=VARCHAR},
         create_date=#{item.createDate,jdbcType=TIMESTAMP},
-        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
         del_flag=#{item.delFlag,jdbcType=VARCHAR},
@@ -239,7 +240,7 @@
         select <include refid="Base_Column_List"/> from fee_ele_charged_flow
         where
         del_flag=0 and from_source=#{fromSource,jdbcType=NUMERIC}
-        business_id = #{businessId,jdbcType=VARCHAR}
+        and business_id = #{businessId,jdbcType=VARCHAR}
     </select>
 
 
@@ -256,14 +257,16 @@
     <select id="getFeeEleChargedFlow" resultMap="FullResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity">
         select
-          tr.room_no,th.house_code,th.house_no,th.intent_mode, tpp.project_name,tpp.project_addr,
-          sa.id area_id,sa.name area_name, temp.*
+          tr.room_no,th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
+          tpp.project_addr,sa.id area_id,sa.name area_name,
+          case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
         from fee_ele_charged_flow temp
         LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
         left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.id and tb.DEL_FLAG=0
         left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
-        where fecf.del_flag=0
+        where temp.del_flag=0
         <include refid="commonWhere"/>
     </select>
 

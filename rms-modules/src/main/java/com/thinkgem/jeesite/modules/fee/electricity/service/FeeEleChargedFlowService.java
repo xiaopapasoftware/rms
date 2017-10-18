@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.fee.electricity.service;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
@@ -62,9 +63,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         saveChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         saveChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
         saveChargedFlow.setFromSource(FeeFromSourceEnum.ACCOUNT_BILL.getValue());
+        saveChargedFlow.setEleCalculateDate(new Date());
 
         FeeEleChargedFlow existEleChargedFlow = this.dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeElectricityBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
         if (Optional.ofNullable(existEleChargedFlow).isPresent()) {
+            if(existEleChargedFlow.getGenerateOrder() == GenerateOrderEnum.YES.getValue()){
+                throw new IllegalArgumentException("该房屋已经生成订单,不可修改");
+            }
             saveChargedFlow.setId(existEleChargedFlow.getId());
         }
         save(saveChargedFlow);
@@ -120,7 +125,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         String rangeId;
         if (house.getIntentMode() == RentModelTypeEnum.WHOLE_RENT.getValue()) {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-            rangeId = dao.getRangeIdByHouseId(house.getHouseId());
+            rangeId = dao.getRangeIdByHouseId(house.getId());
             FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
             FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
             double peakAmount = (feeEleReadFlow.getElePeakDegree() - lastReadFlow.getElePeakDegree()) * Float.valueOf(peakFeeConfig.getConfigValue());
@@ -130,7 +135,11 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             feeEleChargedFlow.setEleAmount(new BigDecimal(peakAmount).add(new BigDecimal(valleyAmount)));
         } else {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            rangeId = dao.getRangeIdByRoomId(feeEleReadFlow.getRoomId());
+            if(StringUtils.isBlank(feeEleReadFlow.getRoomId()) ||StringUtils.equals(feeEleReadFlow.getRoomId(),"0")){
+                rangeId = dao.getRangeIdByHouseId(house.getId());
+            }else{
+                rangeId = dao.getRangeIdByRoomId(feeEleReadFlow.getRoomId());
+            }
             FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
             double amount = (feeEleReadFlow.getEleDegree() - lastReadFlow.getEleDegree()) * Float.valueOf(feeConfig.getConfigValue());
             feeEleChargedFlow.setEleAmount(new BigDecimal(amount));

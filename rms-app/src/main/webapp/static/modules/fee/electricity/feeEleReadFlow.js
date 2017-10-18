@@ -108,37 +108,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
                 return date.getFullYear() + "-" + month + "-" + day;
             };
-
-            $('#houseAddress').autocomplete({
-                serviceUrl: feeEleReadFlowMVC.URLs.getHouseInfo.url,
-                dataType: 'json',
-                paramName: "accountNum",
-                zIndex: 999999999,
-                width: "350px",
-                onHint: function () {
-                    $("#houseId").val("");
-                    $("#houseEleNum").val("");
-                },
-                transformResult: function (response) {
-                    var result = {};
-                    result.suggestions = [];
-                    if (response.code == "200") {
-                        $.each(response.data, function (index, obj) {
-                            result.suggestions.push({
-                                "eleAccountNum": obj.eleAccountNum,
-                                "value": obj.projectAddr,
-                                "id": obj.id
-                            });
-                        });
-                    }
-                    return result;
-                },
-                onSelect: function (data) {
-                    $("#houseEleNum").val(data.eleAccountNum);
-                    $("#houseId").val(data.id);
-                    $("#houseAddress").val(data.value);
-                }
-            });
         }
     };
 

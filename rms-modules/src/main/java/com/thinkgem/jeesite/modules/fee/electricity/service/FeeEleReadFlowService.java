@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -40,6 +41,9 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     @Autowired
     private FeeCommonService feeCommonService;
 
+    @Autowired
+    private FeeEleChargedFlowService feeEleChargedFlowService;
+
     @Transactional(readOnly = false)
     public void feeEleReadFlowSave(FeeEleReadFlow feeEleReadFlow, String[] roomId, String[] eleDegree) {
         House house = feeCommonService.getHouseById(feeEleReadFlow.getHouseId());
@@ -66,7 +70,12 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleReadFlow.setPropertyId(house.getPropertyProject().getId());
             feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
             save(feeEleReadFlow);
+            //save fee charge save
+            List<FeeEleReadFlow> feeEleReadFlowList = Lists.newArrayList();
+            feeEleReadFlowList.add(feeEleReadFlow);
+            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlowList);
         } else {
+            List<FeeEleReadFlow> feeEleReadFlowList = Lists.newArrayList();
             if (StringUtils.isBlank(feeEleReadFlow.getRoomId())) {
                 for (int i = 0; i < roomId.length; i++) {
                     FeeEleReadFlow query = new FeeEleReadFlow();
@@ -83,6 +92,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                     feeEleReadFlow.setEleDegree(Float.valueOf(eleDegree[i]));
                     feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
                     save(feeEleReadFlow);
+
+                    feeEleReadFlowList.add(feeEleReadFlow);
                 }
             } else {
                 FeeEleReadFlow query = new FeeEleReadFlow();
@@ -96,7 +107,11 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                 feeEleReadFlow.setEleDegree(feeEleReadFlow.getEleDegree());
                 feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
                 save(feeEleReadFlow);
+
+                feeEleReadFlowList.add(feeEleReadFlow);
             }
+            //save fee charge save
+            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlowList);
         }
     }
 

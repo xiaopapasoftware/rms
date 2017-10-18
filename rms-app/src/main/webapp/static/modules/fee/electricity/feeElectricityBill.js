@@ -15,7 +15,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             feeEleBillMVC.Controller.getTotalAmountFun();
 
             form.on('select(area)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("project", "project", data.value);
+                feeEleBillMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -27,7 +27,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(project)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("building", "building", data.value);
+                feeEleBillMVC.Controller.selectItemFun("building", "BUILDING", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -38,7 +38,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(building)', function (data) {
-                feeEleBillMVC.Controller.selectItemFun("house", "house", data.value);
+                feeEleBillMVC.Controller.selectItemFun("house", "HOUSE", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
@@ -277,7 +277,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     area: ['350px', '380px'],
                     content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
                 });
-                $("#houseEleNum").focus();
+                // $("#houseEleNum").focus();
             },
             queryFun: function () {
                 table.reload('electricityBillTable', {
@@ -397,7 +397,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             selectItemFun: function (id, type, value) {
                 $.getJSON(feeEleBillMVC.URLs.selectItem.url, {
-                    "business": "org",
+                    "business": "ORG",
                     "type": type,
                     "id": value
                 }, function (data) {

@@ -83,7 +83,7 @@ public class FeeCommonService {
             feeConfig = feeConfigMap.get(key);
         }
 
-        if (Optional.of(feeConfig).isPresent()) {
+        if (!Optional.of(feeConfig).isPresent()) {
             logger.error("{}没有找到费用配置项", feeTypeEnum.getName());
             throw new IllegalArgumentException(feeTypeEnum.getName() + "没有找到费用配置");
         }
