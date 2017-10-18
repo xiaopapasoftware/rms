@@ -4,7 +4,6 @@
  */
 package com.thinkgem.jeesite.modules.fee.config.service;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.fee.config.dao.FeeConfigDao;
@@ -48,7 +47,7 @@ public class FeeConfigService extends CrudService<FeeConfigDao, FeeConfig> {
     public Map<String,FeeConfig> getFeeConfig(){
         List<FeeConfig> feeConfigs = dao.findList(new FeeConfig());
         return Maps.uniqueIndex(feeConfigs,
-                feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType() + "_" + feeConfig.getChargeMethod());
+                feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType());
     }
 
 }

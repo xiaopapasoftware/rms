@@ -5,15 +5,20 @@ import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.entity.Area;
+import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
+import com.thinkgem.jeesite.modules.fee.enums.FeeTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +27,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class FeeCommonService {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private HouseService houseService;
@@ -61,4 +68,26 @@ public class FeeCommonService {
         List<Area> areas = areaService.getAreaWithAuth(queryArea);
         return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
     }
+
+    public FeeConfig getFeeConfig(Map<String, FeeConfig> feeConfigMap, String rangeId, FeeTypeEnum feeTypeEnum) {
+        FeeConfig feeConfig = null;
+        for (String id : rangeId.split(",")) {
+            String key = id + "_" + feeTypeEnum.getValue();
+            feeConfig = feeConfigMap.get(key);
+            if (Optional.ofNullable(feeConfig).isPresent()) {
+                break;
+            }
+        }
+        if (!Optional.ofNullable(feeConfig).isPresent()) {
+            String key = 0 + "_" + FeeTypeEnum.ELE_VALLEY_UNIT.getValue();
+            feeConfig = feeConfigMap.get(key);
+        }
+
+        if (Optional.of(feeConfig).isPresent()) {
+            logger.error("{}没有找到费用配置项", feeTypeEnum.getName());
+            throw new IllegalArgumentException(feeTypeEnum.getName() + "没有找到费用配置");
+        }
+        return feeConfig;
+    }
+
 }

@@ -6,16 +6,15 @@ package com.thinkgem.jeesite.modules.fee.enums;
  */
 public enum FeeTypeEnum {
     /**
-     * 0：电费 1：水费 2 燃气费
-     * 3：宽带 4：电视 5:房租
-     * 6:房租押金 7:定金 8:违约金
+     * 0：电费单价 1:电费谷单价 2:电费峰单价 3:宽带单价 4:有线电视费单价 5:水费单价 6：燃气费单价
      */
-    ELECTRICITY(0, "电费"),
-    WATER(1, "水费"),
-    GAS(2, "燃气费"),
-    NETWORK(3, "宽带"),
-    WATCH_TV(4, "电视"),
-    HOUSE_RENT(5, "房租");
+    ELECTRICITY_UNIT(0, "电费单价"),
+    ELE_VALLEY_UNIT(1, "电费谷单价"),
+    ELE_PEAK_UNIT(2, "电费峰单价"),
+    NET_UNIT(3, "宽带单价"),
+    TV_UNIT(4, "有线电视费单价"),
+    WATER_UNIT(5, "水费单价"),
+    GAS_UNIT(6, "燃气费单价");
 
     private int value;
     private String name;

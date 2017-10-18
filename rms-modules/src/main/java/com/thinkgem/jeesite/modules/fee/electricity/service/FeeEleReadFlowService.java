@@ -150,4 +150,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     public List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity) {
         return dao.getFeeEleReadFlowWithAllInfo(feeCriteriaEntity);
     }
+
+    public FeeEleReadFlow getLastReadFlow(FeeEleReadFlow feeEleReadFlow){
+        return dao.getLastReadFlow(feeEleReadFlow);
+    }
 }

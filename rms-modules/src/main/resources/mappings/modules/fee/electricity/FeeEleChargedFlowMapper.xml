@@ -25,6 +25,18 @@
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="FullResultMap" type="com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo" extends="BaseResultMap">
+        <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
+        <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
+        <result column="building_id" property="buildingId" jdbcType="VARCHAR"/>
+        <result column="building_name" property="buildingName" jdbcType="VARCHAR"/>
+        <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
+        <result column="room_no" property="roomNo" jdbcType="VARCHAR"/>
+        <result column="intent_mode" property="intentMode" jdbcType="NUMERIC"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
          id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, ele_calculate_date, ele_amount, ele_peak_amount, ele_valley_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
@@ -240,5 +252,52 @@
         select <include refid="Base_Column_List"/> from fee_ele_charged_flow
         <include refid="where"/>
     </select>
+
+    <select id="getFeeEleChargedFlow" resultMap="FullResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity">
+        select
+          tr.room_no,th.house_code,th.house_no,th.intent_mode, tpp.project_name,tpp.project_addr,
+          sa.id area_id,sa.name area_name, temp.*
+        from fee_ele_charged_flow temp
+        LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
+        left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0
+        left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        where fecf.del_flag=0
+        <include refid="commonWhere"/>
+    </select>
+
+    <select id="getRangeIdByRoomId" resultType="java.lang.String">
+        SELECT concat_ws(',',tr.id,th.id,tb.id,tpp.id,sa.id,sa.parent_id)
+        from t_room tr
+        left JOIN t_house th on tr.house_id = th.id and th.DEL_FLAG=0
+        left JOIN t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join t_property_project tpp on tb.T_PROPERTY_PROJECT_MAIN_ID=tpp.ID and tpp.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        where tr.del_flag=0 and tr.id=#{roomId}
+    </select>
+
+    <select id="getRangeIdByHouseId" resultType="java.lang.String">
+        SELECT concat_ws(',',th.id,tb.id,tpp.id,sa.id,sa.parent_id) from t_house th
+        left JOIN t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join t_property_project tpp on tb.T_PROPERTY_PROJECT_MAIN_ID=tpp.ID and tpp.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        where th.del_flag=0 and th.id=#{houseId}
+    </select>
     <!-- end select -->
+
+    <sql id="commonWhere">
+        <where>
+            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
+            <if test="startTime!=null and startTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+            </if>
+        </where>
+    </sql>
 </mapper>

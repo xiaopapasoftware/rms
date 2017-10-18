@@ -6,8 +6,12 @@ package com.thinkgem.jeesite.modules.fee.electricity.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>电费收取流水实现类service</p>
@@ -19,4 +23,10 @@ import org.apache.ibatis.annotations.Param;
 public interface FeeEleChargedFlowDao extends CrudDao<FeeEleChargedFlow>{
 
     FeeEleChargedFlow getFeeEleChargedFlowByBusinessIdAndFromSource(@Param("businessId") String businessId,@Param("fromSource")int fromSource);
+
+    List<FeeEleChargedFlowVo> getFeeEleChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
+
+    String getRangeIdByRoomId(@Param("roomId") String roomId);
+
+    String getRangeIdByHouseId(@Param("houseId") String houseId);
 }

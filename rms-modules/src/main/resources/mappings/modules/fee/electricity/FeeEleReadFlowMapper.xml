@@ -228,6 +228,15 @@
         ORDER BY create_date DESC
     </select>
 
+    <select id="getLastReadFlow" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        where del_flag = 0
+        <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
+        <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
+        ORDER BY create_date DESC
+        limit 1,1;
+    </select>
+
     <select id="getFeeEleReadFlowWithAllInfo"
             parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
             resultMap="FeeEleReadFlowWithAllInfo">

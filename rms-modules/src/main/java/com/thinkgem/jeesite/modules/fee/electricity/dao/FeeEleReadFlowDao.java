@@ -26,4 +26,6 @@ public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow>{
     List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
 
     FeeEleReadFlowVo getFeeEleReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
+
+    FeeEleReadFlow getLastReadFlow(FeeEleReadFlow feeEleReadFlow);
 }
