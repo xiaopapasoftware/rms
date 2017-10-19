@@ -223,6 +223,17 @@
         ORDER  BY create_date DESC
     </select>
 
+    <select id="getLastEleBill" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
+        select <include refid="Base_Column_List"/> from fee_electricity_bill
+        where del_flag=0
+        and house_id=#{houseId,jdbcType=VARCHAR}
+        <if test="id!=null and id!=''">
+            AND id=#{id,jdbcType=VARCHAR}
+        </if>
+        ORDER  BY ele_bill_date DESC
+        limit 1,1;
+    </select>
+
     <select id="getTotalAmount"
             parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
             resultType="java.lang.Double">

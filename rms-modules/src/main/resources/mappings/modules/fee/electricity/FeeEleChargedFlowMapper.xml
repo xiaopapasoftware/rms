@@ -257,7 +257,8 @@
     <select id="getFeeEleChargedFlow" resultMap="FullResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity">
         select
-          tr.room_no,th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
+          case temp.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,
+          th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
           tpp.project_addr,sa.id area_id,sa.name area_name,
           case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
         from fee_ele_charged_flow temp
@@ -268,6 +269,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0
         <include refid="commonWhere"/>
+        order by ele_calculate_date DESC
     </select>
 
     <select id="getRangeIdByRoomId" resultType="java.lang.String">

@@ -58,6 +58,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         saveChargedFlow.setCreateDate(feeElectricityBill.getEleBillDate());
         saveChargedFlow.setPropertyId(feeElectricityBill.getPropertyId());
         saveChargedFlow.setHouseId(feeElectricityBill.getHouseId());
+        saveChargedFlow.setRoomId("0");
         saveChargedFlow.setHouseEleNum(feeElectricityBill.getHouseEleNum());
         saveChargedFlow.setBusinessId(feeElectricityBill.getId());
         saveChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
@@ -67,7 +68,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
         FeeEleChargedFlow existEleChargedFlow = this.dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeElectricityBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
         if (Optional.ofNullable(existEleChargedFlow).isPresent()) {
-            if(existEleChargedFlow.getGenerateOrder() == GenerateOrderEnum.YES.getValue()){
+            if (existEleChargedFlow.getGenerateOrder() == GenerateOrderEnum.YES.getValue()) {
                 throw new IllegalArgumentException("该房屋已经生成订单,不可修改");
             }
             saveChargedFlow.setId(existEleChargedFlow.getId());
@@ -76,19 +77,17 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
-    public void saveFeeEleChargedFlowByFeeEleReadFlow(List<FeeEleReadFlow> feeEleReadFlows) {
-        for (FeeEleReadFlow feeEleReadFlow : feeEleReadFlows) {
-            FeeEleChargedFlow feeEleChargedFlow = readFlow2ChargedFlow(feeEleReadFlow);
-            FeeEleChargedFlow existChargeFlow = dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleReadFlow.getId(),FeeFromSourceEnum.READ_METER.getValue());
-            if(Optional.ofNullable(existChargeFlow).isPresent()){
-                feeEleChargedFlow.setId(existChargeFlow.getId());
-            }
-            save(feeEleChargedFlow);
+    public void saveFeeEleChargedFlowByFeeEleReadFlow(FeeEleReadFlow feeEleReadFlow) {
+        FeeEleChargedFlow feeEleChargedFlow = readFlow2ChargedFlow(feeEleReadFlow);
+        FeeEleChargedFlow existChargeFlow = dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
+        if (Optional.ofNullable(existChargeFlow).isPresent()) {
+            feeEleChargedFlow.setId(existChargeFlow.getId());
         }
+        save(feeEleChargedFlow);
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeEleChargedFlowByFeeEleBill(String feeEleBillId, int fromSource) {
+    public void deleteFeeEleChargedFlowByBusinessIdAndFromSource(String feeEleBillId, int fromSource) {
         FeeEleChargedFlow existEleChargedFlow = this.dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleBillId, fromSource);
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
         feeEleChargedFlow.setId(existEleChargedFlow.getId());
@@ -135,12 +134,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             feeEleChargedFlow.setEleAmount(new BigDecimal(peakAmount).add(new BigDecimal(valleyAmount)));
         } else {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            if(StringUtils.isBlank(feeEleReadFlow.getRoomId()) ||StringUtils.equals(feeEleReadFlow.getRoomId(),"0")){
+            if (StringUtils.isBlank(feeEleReadFlow.getRoomId()) || StringUtils.equals(feeEleReadFlow.getRoomId(), "0")) {
                 rangeId = dao.getRangeIdByHouseId(house.getId());
-            }else{
+            } else {
                 rangeId = dao.getRangeIdByRoomId(feeEleReadFlow.getRoomId());
             }
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELECTRICITY_UNIT);
             double amount = (feeEleReadFlow.getEleDegree() - lastReadFlow.getEleDegree()) * Float.valueOf(feeConfig.getConfigValue());
             feeEleChargedFlow.setEleAmount(new BigDecimal(amount));
         }

@@ -185,7 +185,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         },
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
                         {
-                            field: 'eleReadDate', align: 'right', title: '抄表日期', width: 120,
+                            field: 'eleReadDate', align: 'center', title: '抄表日期', width: 120,
                             templet: '<div>{{ layui.laytpl.dateFormat(d.eleReadDate) }}</div>'
                         },
                         {

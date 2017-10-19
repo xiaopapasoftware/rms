@@ -283,6 +283,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 table.reload('electricityBillTable', {
                     where: feeEleBillMVC.Controller.getWhereFun()
                 });
+                feeEleBillMVC.Controller.getTotalAmountFun();
             },
             undoFun: function () {
                 $("#area").val("");

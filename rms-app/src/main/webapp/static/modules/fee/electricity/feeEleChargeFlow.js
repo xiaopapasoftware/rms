@@ -192,7 +192,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
             },
             queryFun: function () {
-                table.reload('eleReadFlowTable', {
+                table.reload('eleChargeFlowTable', {
                     where: feeEleChargeFlowMVC.Controller.getWhereFun()
                 });
             },

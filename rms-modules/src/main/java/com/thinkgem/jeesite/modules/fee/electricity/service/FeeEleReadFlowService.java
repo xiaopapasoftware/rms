@@ -4,10 +4,10 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleReadFlowDao;
@@ -52,7 +52,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        if (StringUtils.equals(house.getIntentMode(), "0")) {
+        if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             FeeEleReadFlow query = new FeeEleReadFlow();
             query.setEleReadDate(feeEleReadFlow.getEleReadDate());
             query.setHouseId(feeEleReadFlow.getHouseId());
@@ -61,39 +61,50 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                     && feeEleReadFlows.size() > 0) {
                 FeeEleReadFlow existEleRead = feeEleReadFlows.get(0);
                 feeEleReadFlow.setId(existEleRead.getId());
-                if (existEleRead.getFromSource() == 1) {
+                if (existEleRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
                     logger.error("当前抄表数是账单生成,不可修改");
                     throw new IllegalArgumentException("当前抄表数是账单生成不可修改");
                 }
             }
+
             feeEleReadFlow.setHouseEleNum(house.getEleAccountNum());
             feeEleReadFlow.setPropertyId(house.getPropertyProject().getId());
             feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
+
+            judgeLastRead(feeEleReadFlow);
+
             save(feeEleReadFlow);
             //save fee charge save
-            List<FeeEleReadFlow> feeEleReadFlowList = Lists.newArrayList();
-            feeEleReadFlowList.add(feeEleReadFlow);
-            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlowList);
+            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
         } else {
-            List<FeeEleReadFlow> feeEleReadFlowList = Lists.newArrayList();
             if (StringUtils.isBlank(feeEleReadFlow.getRoomId())) {
                 for (int i = 0; i < roomId.length; i++) {
+                    FeeEleReadFlow saveFeeEleReadFlow = new FeeEleReadFlow();
+
                     FeeEleReadFlow query = new FeeEleReadFlow();
                     query.setEleReadDate(feeEleReadFlow.getEleReadDate());
                     query.setRoomId(roomId[i]);
                     List<FeeEleReadFlow> feeEleReadFlows = this.findList(query);
                     if (Optional.ofNullable(feeEleReadFlows).isPresent()
                             && feeEleReadFlows.size() > 0) {
-                        feeEleReadFlow.setId(feeEleReadFlows.get(0).getId());
+                        saveFeeEleReadFlow.setId(feeEleReadFlows.get(0).getId());
                     }
-                    feeEleReadFlow.setHouseEleNum(house.getEleAccountNum());
-                    feeEleReadFlow.setRoomId(roomId[i]);
-                    feeEleReadFlow.setPropertyId(house.getPropertyProject().getId());
-                    feeEleReadFlow.setEleDegree(Float.valueOf(eleDegree[i]));
-                    feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
-                    save(feeEleReadFlow);
 
-                    feeEleReadFlowList.add(feeEleReadFlow);
+                    saveFeeEleReadFlow.setEleValleyDegree(feeEleReadFlow.getEleValleyDegree());
+                    saveFeeEleReadFlow.setElePeakDegree(feeEleReadFlow.getElePeakDegree());
+                    saveFeeEleReadFlow.setEleReadDate(feeEleReadFlow.getEleReadDate());
+                    saveFeeEleReadFlow.setHouseId(feeEleReadFlow.getHouseId());
+                    saveFeeEleReadFlow.setHouseEleNum(house.getEleAccountNum());
+                    saveFeeEleReadFlow.setRoomId(roomId[i]);
+                    saveFeeEleReadFlow.setPropertyId(house.getPropertyProject().getId());
+                    saveFeeEleReadFlow.setEleDegree(Float.valueOf(eleDegree[i]));
+                    saveFeeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
+
+                    judgeLastRead(saveFeeEleReadFlow);
+
+                    save(saveFeeEleReadFlow);
+                    //save fee charge
+                    feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(saveFeeEleReadFlow);
                 }
             } else {
                 FeeEleReadFlow query = new FeeEleReadFlow();
@@ -106,12 +117,39 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                 }
                 feeEleReadFlow.setEleDegree(feeEleReadFlow.getEleDegree());
                 feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
+
+                judgeLastRead(feeEleReadFlow);
+
                 save(feeEleReadFlow);
 
-                feeEleReadFlowList.add(feeEleReadFlow);
+                //save fee charge
+                feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
             }
-            //save fee charge save
-            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlowList);
+        }
+    }
+
+    private void judgeLastRead(FeeEleReadFlow feeEleReadFlow){
+        FeeEleReadFlow lastRead = dao.getLastReadFlow(feeEleReadFlow);
+        if(Optional.ofNullable(lastRead).isPresent()){
+            if(feeEleReadFlow.getElePeakDegree() != null && lastRead.getElePeakDegree() > feeEleReadFlow.getElePeakDegree()){
+                logger.error("当前峰值数不能小于上次峰值数");
+                throw new IllegalArgumentException("当前峰值数不能小于上次峰值数");
+            }
+
+            if(feeEleReadFlow.getEleValleyDegree() != null && lastRead.getEleValleyDegree() > feeEleReadFlow.getEleValleyDegree()){
+                logger.error("当前谷值数不能小于上次谷值数");
+                throw new IllegalArgumentException("当前谷值数不能小于上次谷值数");
+            }
+
+            if(feeEleReadFlow.getEleDegree() != null && lastRead.getEleDegree() > feeEleReadFlow.getEleDegree()){
+                logger.error("当前电表度数不能小于上次电表度数");
+                throw new IllegalArgumentException("当前电表度数不能小于上次电表度数");
+            }
+
+            if(lastRead.getEleReadDate().compareTo(feeEleReadFlow.getEleReadDate()) > 0){
+                logger.error("下次抄表数已经生成不能修改");
+                throw new IllegalArgumentException("下次抄表数已经生成不能修改");
+            }
         }
     }
 
@@ -154,8 +192,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleReadFlow.setId(id);
             feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeEleReadFlow);
-            //TODO 删除相应的收费流水记录
-
+            //删除相应的收费流水记录
+            feeEleChargedFlowService.deleteFeeEleChargedFlowByBusinessIdAndFromSource(id,FeeFromSourceEnum.READ_METER.getValue());
         } else {
             logger.error("电抄表[id={}]不存在,不能删除", id);
             throw new IllegalArgumentException("当前信息不存在,不能删除");

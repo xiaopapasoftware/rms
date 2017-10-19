@@ -76,6 +76,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             logger.error("当前房屋[id={}]不存在,请确认", feeElectricityBill.getHouseEleNum());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
+
         FeeElectricityBill query = new FeeElectricityBill();
         query.setEleBillDate(feeElectricityBill.getEleBillDate());
         query.setHouseEleNum(feeElectricityBill.getHouseEleNum());
@@ -90,6 +91,25 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                 throw new IllegalArgumentException("当前账单已经提交不能修改");
             }
         }
+
+        FeeElectricityBill lastBill = dao.getLastEleBill(feeElectricityBill);
+        if(Optional.ofNullable(lastBill).isPresent()){
+            if(lastBill.getElePeakDegree() > feeElectricityBill.getElePeakDegree()){
+                logger.error("当前账单峰值数不能小于上次峰值数");
+                throw new IllegalArgumentException("当前账单峰值数不能小于上次峰值数");
+            }
+
+            if(lastBill.getEleValleyDegree() > feeElectricityBill.getEleValleyDegree()){
+                logger.error("当前账单谷值数不能小于上次谷值数");
+                throw new IllegalArgumentException("当前账单谷值数不能小于上次谷值数");
+            }
+
+            if(lastBill.getEleBillDate().compareTo(feeElectricityBill.getEleBillDate()) > 0){
+                logger.error("下月账单已经生成不能修改");
+                throw new IllegalArgumentException("下月账单已经生成不能修改");
+            }
+        }
+
         feeElectricityBill.setPropertyId(house.getPropertyProject().getId());
         this.save(feeElectricityBill);
 
@@ -108,6 +128,15 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
+
+        FeeElectricityBill lastBill = dao.getLastEleBill(feeElectricityBill);
+        if(Optional.ofNullable(lastBill).isPresent()){
+            if(lastBill.getEleBillDate().compareTo(feeElectricityBill.getEleBillDate()) > 0){
+                logger.error("下月账单已经生成不能删除");
+                throw new IllegalArgumentException("下月账单已经生成不能删除");
+            }
+        }
+
         feeElectricityBill.setId(id);
         feeElectricityBill.setDelFlag(Constants.DEL_FLAG_YES);
         this.save(feeElectricityBill);
@@ -117,8 +146,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             logger.info("删除抄表流水");
             feeEleReadFlowService.deleteFeeEleReadFlowByFeeEleBill(feeElectricityBill.getId());
             logger.info("删除收款流水");
-            feeEleChargedFlowService.deleteFeeEleChargedFlowByFeeEleBill(feeElectricityBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
-
+            feeEleChargedFlowService.deleteFeeEleChargedFlowByBusinessIdAndFromSource(feeElectricityBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
         }
     }
 

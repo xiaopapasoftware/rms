@@ -45,7 +45,9 @@ public class FeeConfigService extends CrudService<FeeConfigDao, FeeConfig> {
     }
 
     public Map<String,FeeConfig> getFeeConfig(){
-        List<FeeConfig> feeConfigs = dao.findList(new FeeConfig());
+        FeeConfig queryConfig = new FeeConfig();
+        queryConfig.setConfigStatus(0);
+        List<FeeConfig> feeConfigs = dao.findList(queryConfig);
         return Maps.uniqueIndex(feeConfigs,
                 feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType());
     }

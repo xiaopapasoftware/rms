@@ -27,5 +27,7 @@ public interface FeeElectricityBillDao extends CrudDao<FeeElectricityBill> {
 
   FeeElectricityBillVo getWithProperty(String id);
 
+  FeeElectricityBill getLastEleBill(FeeElectricityBill feeElectricityBill);
+
   Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }
