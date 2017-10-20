@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.thinkgem.jeesite.modules.fee.water.dao.FeeWaterChargedFlowDao">
+
+    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
+        <result column="from_source" property="fromSource" jdbcType="NUMERIC"/>
+        <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="property_id" property="propertyId" jdbcType="VARCHAR"/>
+        <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
+        <result column="room_id" property="roomId" jdbcType="VARCHAR"/>
+        <result column="rent_type" property="rentType" jdbcType="NUMERIC"/>
+        <result column="house_ele_num" property="houseEleNum" jdbcType="VARCHAR"/>
+        <result column="water_calculate_date" property="waterCalculateDate" jdbcType="TIMESTAMP"/>
+        <result column="water_amount" property="waterAmount" jdbcType="NUMERIC"/>
+        <result column="generate_order" property="generateOrder" jdbcType="NUMERIC"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, water_calculate_date, water_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
+    </sql>
+
+    <sql id="Insert_Columns">
+        <if test="id!=null"> id,</if>
+        <if test="businessId!=null"> business_id,</if>
+        <if test="fromSource!=null"> from_source,</if>
+        <if test="orderNo!=null"> order_no,</if>
+        <if test="propertyId!=null"> property_id,</if>
+        <if test="houseId!=null"> house_id,</if>
+        <if test="roomId!=null"> room_id,</if>
+        <if test="rentType!=null"> rent_type,</if>
+        <if test="houseEleNum!=null"> house_ele_num,</if>
+        <if test="waterCalculateDate!=null"> water_calculate_date,</if>
+        <if test="waterAmount!=null"> water_amount,</if>
+        <if test="generateOrder!=null"> generate_order,</if>
+        <if test="createBy!=null"> create_by,</if>
+        <if test="createDate!=null"> create_date,</if>
+        <if test="updateBy!=null"> update_by,</if>
+        <if test="updateDate!=null"> update_date,</if>
+        <if test="remarks!=null"> remarks,</if>
+        <if test="delFlag!=null"> del_flag,</if>
+    </sql>
+    <sql id="Insert_Values">
+        <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
+        <if test="businessId!=null">#{businessId,jdbcType=VARCHAR},</if>
+        <if test="fromSource!=null">#{fromSource,jdbcType=NUMERIC},</if>
+        <if test="orderNo!=null">#{orderNo,jdbcType=VARCHAR},</if>
+        <if test="propertyId!=null">#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null">#{houseId,jdbcType=VARCHAR},</if>
+        <if test="roomId!=null">#{roomId,jdbcType=VARCHAR},</if>
+        <if test="rentType!=null">#{rentType,jdbcType=NUMERIC},</if>
+        <if test="houseEleNum!=null">#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="waterCalculateDate!=null">#{waterCalculateDate,jdbcType=TIMESTAMP},</if>
+        <if test="waterAmount!=null">#{waterAmount,jdbcType=NUMERIC},</if>
+        <if test="generateOrder!=null">#{generateOrder,jdbcType=NUMERIC},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
+        <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
+    </sql>
+    <sql id="Batch_Insert_Values">
+        #{item.id,jdbcType=VARCHAR},
+        #{item.businessId,jdbcType=VARCHAR},
+        #{item.fromSource,jdbcType=NUMERIC},
+        #{item.orderNo,jdbcType=VARCHAR},
+        #{item.propertyId,jdbcType=VARCHAR},
+        #{item.houseId,jdbcType=VARCHAR},
+        #{item.roomId,jdbcType=VARCHAR},
+        #{item.rentType,jdbcType=NUMERIC},
+        #{item.houseEleNum,jdbcType=VARCHAR},
+        #{item.waterCalculateDate,jdbcType=TIMESTAMP},
+        #{item.waterAmount,jdbcType=NUMERIC},
+        #{item.generateOrder,jdbcType=NUMERIC},
+        #{item.createBy.id,jdbcType=VARCHAR},
+        #{item.createDate,jdbcType=TIMESTAMP},
+        #{item.updateBy.id,jdbcType=VARCHAR},
+        #{item.updateDate,jdbcType=TIMESTAMP},
+        #{item.remarks,jdbcType=VARCHAR},
+        #{item.delFlag,jdbcType=VARCHAR},
+    </sql>
+
+    <sql id="Update_Set_From_Bean">
+        <if test="businessId!=null"> business_id=#{businessId,jdbcType=VARCHAR},</if>
+        <if test="fromSource!=null"> from_source=#{fromSource,jdbcType=NUMERIC},</if>
+        <if test="orderNo!=null"> order_no=#{orderNo,jdbcType=VARCHAR},</if>
+        <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
+        <if test="roomId!=null"> room_id=#{roomId,jdbcType=VARCHAR},</if>
+        <if test="rentType!=null"> rent_type=#{rentType,jdbcType=NUMERIC},</if>
+        <if test="houseEleNum!=null"> house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="waterCalculateDate!=null"> water_calculate_date=#{waterCalculateDate,jdbcType=TIMESTAMP},</if>
+        <if test="waterAmount!=null"> water_amount=#{waterAmount,jdbcType=NUMERIC},</if>
+        <if test="generateOrder!=null"> generate_order=#{generateOrder,jdbcType=NUMERIC},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+    </sql>
+    <sql id="BatchUpdate_Set_From_Bean">
+        business_id=#{item.businessId,jdbcType=VARCHAR},
+        from_source=#{item.fromSource,jdbcType=NUMERIC},
+        order_no=#{item.orderNo,jdbcType=VARCHAR},
+        property_id=#{item.propertyId,jdbcType=VARCHAR},
+        house_id=#{item.houseId,jdbcType=VARCHAR},
+        room_id=#{item.roomId,jdbcType=VARCHAR},
+        rent_type=#{item.rentType,jdbcType=NUMERIC},
+        house_ele_num=#{item.houseEleNum,jdbcType=VARCHAR},
+        water_calculate_date=#{item.waterCalculateDate,jdbcType=TIMESTAMP},
+        water_amount=#{item.waterAmount,jdbcType=NUMERIC},
+        generate_order=#{item.generateOrder,jdbcType=NUMERIC},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
+        update_date=#{item.updateDate,jdbcType=TIMESTAMP},
+        remarks=#{item.remarks,jdbcType=VARCHAR},
+        del_flag=#{item.delFlag,jdbcType=VARCHAR},
+    </sql>
+
+    <!--where-->
+    <sql id="where">
+        <where>
+            <if test="id!=null and id!=''"> AND id=#{id}</if>
+            <if test="businessId!=null and businessId!=''"> AND business_id=#{businessId}</if>
+            <if test="fromSource!=null and fromSource!=''"> AND from_source=#{fromSource}</if>
+            <if test="orderNo!=null and orderNo!=''"> AND order_no=#{orderNo}</if>
+            <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
+            <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
+            <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
+            <if test="rentType!=null and rentType!=''"> AND rent_type=#{rentType}</if>
+            <if test="houseEleNum!=null and houseEleNum!=''"> AND house_ele_num=#{houseEleNum}</if>
+            <if test="waterCalculateDate!=null and waterCalculateDate!=''"> AND water_calculate_date=#{waterCalculateDate}</if>
+            <if test="waterAmount!=null and waterAmount!=''"> AND water_amount=#{waterAmount}</if>
+            <if test="generateOrder!=null and generateOrder!=''"> AND generate_order=#{generateOrder}</if>
+            AND del_flag = 0
+        </where>
+    </sql>
+    <!--end where-->
+
+    <!--insert-->
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow" useGeneratedKeys="true" keyProperty="id">
+        insert into fee_water_charged_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Insert_Columns"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="Insert_Values"/>
+        </trim>
+    </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into fee_water_charged_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="Base_Column_List"/>
+        </trim>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <include refid="Batch_Insert_Values"/>
+            </trim>
+        </foreach>
+    </insert>
+    <!-- end insert -->
+
+    <!-- delete -->
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from fee_water_charged_flow
+        where  id = #{id,jdbcType=VARCHAR}  
+    </delete>
+
+    <delete id="delete" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow">
+        delete from fee_water_charged_flow
+        <include refid="where"/>
+    </delete>
+    <!-- end delete -->
+
+    <!-- update -->
+    <update id="update" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow">
+        update fee_water_charged_flow
+        <set>
+            <include refid="Update_Set_From_Bean"/>
+        </set>
+        where  id = #{id,jdbcType=VARCHAR}  
+    </update>
+
+    <update id="batchUpdate" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+        update fee_water_charged_flow
+        <include refid="BatchUpdate_Set_From_Bean"/>
+        where
+             id = #{id,jdbcType=VARCHAR}  
+        </foreach>
+    </update>
+    <!-- end update -->
+
+    <!-- select -->
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from fee_water_charged_flow
+        where
+             id = #{id,jdbcType=VARCHAR}  
+    </select>
+
+    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow">
+        select <include refid="Base_Column_List"/> from fee_water_charged_flow
+        <include refid="where"/>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow">
+        select <include refid="Base_Column_List"/> from fee_water_charged_flow
+        <include refid="where"/>
+    </select>
+    <!-- end select -->
+</mapper>
