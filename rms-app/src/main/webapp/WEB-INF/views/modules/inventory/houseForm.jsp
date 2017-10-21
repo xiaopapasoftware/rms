@@ -196,6 +196,24 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">电户号：</label>
+			<div class="controls">
+				<form:input path="eleAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">水户号：</label>
+			<div class="controls">
+				<form:input path="waterAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">煤气户号：</label>
+			<div class="controls">
+				<form:input path="gasAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">产权证号：</label>
 			<div class="controls">
 				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-xlarge"/>
@@ -233,24 +251,6 @@
 			<div class="controls">
 				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">电户号：</label>
-			<div class="controls">
-				<form:input path="eleAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">水户号：</label>
-			<div class="controls">
-				<form:input path="waterAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">煤气户号：</label>
-			<div class="controls">
-				<form:input path="gasAccountNum" htmlEscape="false" maxlength="100" class="input-xlarge"/>
 			</div>
 		</div>
 		<div class="control-group">
