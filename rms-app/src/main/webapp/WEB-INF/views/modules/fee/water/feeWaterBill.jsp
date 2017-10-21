@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>煤气抄表流水</title>
+    <title>水账单录入</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
@@ -19,16 +19,13 @@
         .layui-table-cell .layui-form-checkbox {
             top: 5px !important;
         }
-
-        .tangchao .layui-form-item {
+        .tangchao .layui-form-item{
             height: 30px !important;
         }
-
         .tangchao .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-
-        .tangchao .button {
+        .tangchao .button{
             border: 1px solid #009688;
             height: 25px;
             line-height: 25px;
@@ -41,18 +38,22 @@
             color: #009688;
             background-color: #FFFFFF;
         }
-
         .widget-body .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-
         .widget-body .layui-form-item .layui-input-inline {
             width: 150px;
         }
-
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
+
+        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+        .autocomplete-selected { background: #F0F0F0; }
+        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+        .autocomplete-group { padding: 2px 5px; }
+        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
     </style>
 </head>
 
@@ -82,6 +83,20 @@
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
+                        <input type="text" id="feeDate" name="feeDate" placeholder="缴费年月" readonly
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <input type="text" id="houseNum" name="houseNum" placeholder="户号"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
                         <select id="area" name="area" lay-filter="area" placeholder="区域" lay-search>
                             <option value="">区域</option>
                         </select>
@@ -109,11 +124,26 @@
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="gasReadDates" name="gasReadDate" placeholder="抄表日期" readonly
-                               class="layui-input">
+                    <div class="layui-input-inline m-large">
+                        <select id="status" name="status" placeholder="审核状态">
+                            <option value="">审核状态</option>
+                            <option value="0">待提交</option>
+                            <option value="1">待审核</option>
+                            <option value="2">审核通过</option>
+                            <option value="3">审核驳回</option>
+                        </select>
                     </div>
                 </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="isRecord" name="isRecord" placeholder="是否已录">
+                            <option value="">是否已录</option>
+                            <option value="0">已录</option>
+                            <option value="1">未录</option>
+                        </select>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>
@@ -126,68 +156,80 @@
                 录入
             </a>
         </div>
+        <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-commit" class="button">
+                提交审批
+            </a>
+        </div>
+        <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-pass" class="button">
+                同意
+            </a>
+        </div>
+        <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-reject" class="button">
+                驳回
+            </a>
+        </div>
+        <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-print" class="button">
+                打印
+            </a>
+        </div>
+
+        <div class="widget-toolbar no-border">
+            总额:<span id="totalAmount">0.00</span>元
+        </div>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="gasReadFlowTable" lay-filter="gasReadFlow">
+            <table class="layui-hide" id="waterBillTable" lay-filter="waterBill">
             </table>
         </div>
     </div>
 </div>
 
 
-<div id="addDiv" class="tangchao" hidden>
-    <form class="layui-form" id="addFeeGasBillForm" action="">
+<div id="addDiv" class="tangchao" hidden >
+    <form class="layui-form" id="addFeeEleBillForm" action="">
         <div class="layui-form-item" style="margin-top: 15px;">
-            <label class="layui-form-label">抄表日期</label>
+            <label class="layui-form-label">账期年月</label>
             <div class="layui-input-inline">
-                <input type="text" id="gasReadDate" required lay-verify="required" readonly placeholder="抄表日期"
-                       class="layui-input">
+                <input type="text" id="waterBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">区域项目</label>
-                <div class="layui-input-inline" style="width: 110px;">
-                    <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
-                        <option value="">区域</option>
-                    </select>
-                </div>
-                <div class="layui-input-inline" style="width: 90px;">
-                    <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
-                        <option value="">物业项目</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">楼宇房屋</label>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
-                        <option value="">楼宇</option>
-                    </select>
-                </div>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
-                        <option value="">房屋</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">燃气抄表数</label>
+            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
             <div class="layui-input-inline">
-                <input type="number" id="gasDegree" placeholder="抄表数"
-                       class="layui-input">
+                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+            <div class="layui-input-inline">
+                <input type="number" id="houseWaterNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="text" id="houseId" name="houseId" hidden>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">账单度数</label>
+            <div class="layui-input-inline">
+                <input type="number" id="waterDegree" required lay-verify="required" placeholder="账单度数" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">账单金额</label>
+            <div class="layui-input-inline">
+                <input type="number" id="waterBillAmount" required lay-verify="required" placeholder="账单金额" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <a href="javascript:void(0);" id="btn-save" lay-filter="addGasBill" lay-submit class="button">保存并继续</a>
+                <a href="javascript:void(0);" id="btn-save" lay-filter="addWaterBill" lay-submit class="button">保存并继续</a>
                 <a href="javascript:void(0);" id="btn-view" class="button">
                     统计查看
                 </a>
@@ -197,13 +239,17 @@
 </div>
 
 <script type="text/html" id="toolBar">
+    {{# var status=d.billStatus }}
+    {{# if (status==null || status=='0' || status=='3'){ }}
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    {{# } }}
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
-<script src="${ctxStatic}/modules/fee/gas/feeGasReadFlow.js"></script>
+<script src="${ctxStatic}/jquery-autocomplete/jquery.autocomplete.js"></script>
+<script src="${ctxStatic}/modules/fee/water/feeWaterBill.js"></script>
 </body>
 </html>

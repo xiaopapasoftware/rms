@@ -4,15 +4,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         layer = layui.layer,
         laydate = layui.laydate;
 
-    var feeEleChargeFlow = {
+    var feeWaterChargeFlow = {
         init: function () {
-            feeEleChargeFlowMVC.View.initDate();
-            feeEleChargeFlowMVC.View.bindEvent();
-            feeEleChargeFlowMVC.Controller.getAreaFun();
-            feeEleChargeFlowMVC.View.renderTable();
+            feeWaterChargeFlowMVC.View.initDate();
+            feeWaterChargeFlowMVC.View.bindEvent();
+            feeWaterChargeFlowMVC.Controller.getAreaFun();
+            feeWaterChargeFlowMVC.View.renderTable();
 
             form.on('select(area)', function (data) {
-                feeEleChargeFlowMVC.Controller.selectItemFun("project", "PROJECT", data.value);
+                feeWaterChargeFlowMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -24,7 +24,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(project)', function (data) {
-                feeEleChargeFlowMVC.Controller.selectItemFun("building", "BUILDING", data.value);
+                feeWaterChargeFlowMVC.Controller.selectItemFun("building", "BUILDING", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -35,15 +35,15 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(building)', function (data) {
-                feeEleChargeFlowMVC.Controller.selectItemFun("house", "HOUSE", data.value);
+                feeWaterChargeFlowMVC.Controller.selectItemFun("house", "HOUSE", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
 
                 form.render('select');
             });
-            form.on('submit(addEleBill)', function () {
-                feeEleChargeFlowMVC.Controller.saveFun();
+            form.on('submit(addWaterBill)', function () {
+                feeWaterChargeFlowMVC.Controller.saveFun();
             });
 
             layui.laytpl.NumberFormat = function (value) {
@@ -73,59 +73,59 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         }
     };
 
-    var feeEleChargeFlowCommon = {
-        baseUrl: ctx + "/fee/ele/charged/flow"
+    var feeWaterChargeFlowCommon = {
+        baseUrl: ctx + "/fee/water/charged/flow"
     };
 
-    var feeEleChargeFlowMVC = {
+    var feeWaterChargeFlowMVC = {
         URLs: {
             query: {
-                url: feeEleChargeFlowCommon.baseUrl + "/list",
+                url: feeWaterChargeFlowCommon.baseUrl + "/list",
                 method: "GET"
             },
             save: {
-                url: feeEleChargeFlowCommon.baseUrl + "/save",
+                url: feeWaterChargeFlowCommon.baseUrl + "/save",
                 method: "POST"
             },
             delete: {
-                url: feeEleChargeFlowCommon.baseUrl + "/delete",
+                url: feeWaterChargeFlowCommon.baseUrl + "/delete",
                 method: "GET"
             },
             selectItem: {
-                url: feeEleChargeFlowCommon.baseUrl + "/getSubOrgList",
+                url: feeWaterChargeFlowCommon.baseUrl + "/getSubOrgList",
                 method: "GET"
             },
             selectArea: {
-                url: feeEleChargeFlowCommon.baseUrl + "/getArea",
+                url: feeWaterChargeFlowCommon.baseUrl + "/getArea",
                 method: "GET"
             },
             getHouseInfo: {
-                url: feeEleChargeFlowCommon.baseUrl + "/houseInfo",
+                url: feeWaterChargeFlowCommon.baseUrl + "/houseInfo",
                 method: "GET"
             },
             getRoomInfo: {
-                url: feeEleChargeFlowCommon.baseUrl + "/roomInfo",
+                url: feeWaterChargeFlowCommon.baseUrl + "/roomInfo",
                 method: "GET"
             }
         },
         View: {
             initDate: function () {
                 laydate.render({
-                    elem: '#eleReadDates',
+                    elem: '#waterReadDates',
                     type: 'date',
                     range: '~',
                     format: 'yyyy-MM-dd'
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeEleChargeFlowMVC.Controller.addEleFun);
-                $("#btn-search").on("click", feeEleChargeFlowMVC.Controller.queryFun);
-                $("#btn-undo").on("click", feeEleChargeFlowMVC.Controller.undoFun);
+                $("#btn-add").on("click", feeWaterChargeFlowMVC.Controller.addWaterFun);
+                $("#btn-search").on("click", feeWaterChargeFlowMVC.Controller.queryFun);
+                $("#btn-undo").on("click", feeWaterChargeFlowMVC.Controller.undoFun);
             },
             renderTable: function () {
                 table.render({
-                    elem: '#eleChargeFlowTable',
-                    url: feeEleChargeFlowMVC.URLs.query.url,
+                    elem: '#waterChargeFlowTable',
+                    url: feeWaterChargeFlowMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
                     cols: [[
@@ -138,26 +138,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             templet: '<div>{{ layui.laytpl.roomNoFormat(d.roomNo) }}</div>'
                         },
                         {field: 'orderNo', align: 'center', title: '订单号', width: 120},
-                        {field: 'eleCalculateDate', align: 'center', title: '计算日期', width: 120},
+                        {field: 'waterCalculateDate', align: 'center', title: '计算日期', width: 120},
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
                         {
-                            field: 'elePeakAmount', align: 'right', title: '峰金额（元）', width: 120,
-                            templet: '<div>{{ layui.laytpl.NumberFormat(d.elePeakAmount) }}</div>'
-                        },
-                        {
-                            field: 'eleValleyAmount', align: 'right', title: '谷金额（元）', width: 120,
-                            templet: '<div>{{ layui.laytpl.NumberFormat(d.eleValleyAmount) }}</div>'
-                        },
-                        {
-                            field: 'eleAmount', align: 'right', title: '金额（元）', width: 120,
-                            templet: '<div>{{ layui.laytpl.NumberFormat(d.eleAmount) }}</div>'
+                            field: 'waterAmount', align: 'right', title: '金额（元）', width: 120,
+                            templet: '<div>{{ layui.laytpl.NumberFormat(d.waterAmount) }}</div>'
                         },
                         {
                             field: 'generateOrder', align: 'center', title: '是否生成账单', width: 120,
                             templet: '<div>{{ layui.laytpl.generateOrderFormat(d.generateOrder) }}</div>'
                         }
                     ]],
-                    id: 'eleChargeFlowTable',
+                    id: 'waterChargeFlowTable',
                     page: true,
                     request: {
                         pageName: 'pageNum',
@@ -169,8 +161,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "startTime": $("#eleReadDates").val().split("~")[0],
-                    "endTime": $("#eleReadDates").val().split("~")[1],
+                    "startTime": $("#waterReadDates").val().split("~")[0],
+                    "endTime": $("#waterReadDates").val().split("~")[1],
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
@@ -178,12 +170,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 };
                 return where;
             },
-            addEleFun: function () {
+            addWaterFun: function () {
 
             },
             queryFun: function () {
-                table.reload('eleChargeFlowTable', {
-                    where: feeEleChargeFlowMVC.Controller.getWhereFun()
+                table.reload('waterChargeFlowTable', {
+                    where: feeWaterChargeFlowMVC.Controller.getWhereFun()
                 });
             },
             undoFun: function () {
@@ -191,11 +183,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#project").val("");
                 $("#building").val("");
                 $("#house").val("");
-                $("#eleReadDates").val("");
+                $("#waterReadDates").val("");
                 form.render("select");
             },
             getAreaFun: function () {
-                $.getJSON(feeEleChargeFlowMVC.URLs.selectArea.url, "", function (data) {
+                $.getJSON(feeWaterChargeFlowMVC.URLs.selectArea.url, "", function (data) {
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
                             value: object.id,
@@ -213,7 +205,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             selectItemFun: function (id, type, value) {
-                $.getJSON(feeEleChargeFlowMVC.URLs.selectItem.url, {
+                $.getJSON(feeWaterChargeFlowMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
                     "id": value
@@ -233,7 +225,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             }
         }
     };
-    feeEleChargeFlow.init();
+    feeWaterChargeFlow.init();
 });
 
 

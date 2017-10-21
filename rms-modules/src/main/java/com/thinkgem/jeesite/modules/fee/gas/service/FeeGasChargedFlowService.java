@@ -106,6 +106,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         feeGasChargedFlow.setPropertyId(feeGasReadFlow.getPropertyId());
         feeGasChargedFlow.setHouseId(feeGasReadFlow.getHouseId());
+        feeGasChargedFlow.setRoomId("0");
 
         FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {

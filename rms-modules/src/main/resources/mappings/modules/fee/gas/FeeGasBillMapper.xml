@@ -7,7 +7,7 @@
         <result column="batch_no" property="batchNo" jdbcType="VARCHAR"/>
         <result column="property_id" property="propertyId" jdbcType="VARCHAR"/>
         <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
-        <result column="house_water_num" property="houseWaterNum" jdbcType="VARCHAR"/>
+        <result column="house_gas_num" property="houseGasNum" jdbcType="VARCHAR"/>
         <result column="gas_bill_date" property="gasBillDate" jdbcType="TIMESTAMP"/>
         <result column="gas_bill_amount" property="gasBillAmount" jdbcType="NUMERIC"/>
         <result column="gas_degree" property="gasDegree" jdbcType="NUMERIC"/>
@@ -34,7 +34,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, batch_no, property_id, house_id, house_water_num, gas_bill_date, gas_bill_amount, gas_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, batch_no, property_id, house_id, house_gas_num, gas_bill_date, gas_bill_amount, gas_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -42,7 +42,7 @@
         <if test="batchNo!=null"> batch_no,</if>
         <if test="propertyId!=null"> property_id,</if>
         <if test="houseId!=null"> house_id,</if>
-        <if test="houseWaterNum!=null"> house_water_num,</if>
+        <if test="houseGasNum!=null"> house_gas_num,</if>
         <if test="gasBillDate!=null"> gas_bill_date,</if>
         <if test="gasBillAmount!=null"> gas_bill_amount,</if>
         <if test="gasDegree!=null"> gas_degree,</if>
@@ -59,7 +59,7 @@
         <if test="batchNo!=null">#{batchNo,jdbcType=VARCHAR},</if>
         <if test="propertyId!=null">#{propertyId,jdbcType=VARCHAR},</if>
         <if test="houseId!=null">#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseWaterNum!=null">#{houseWaterNum,jdbcType=VARCHAR},</if>
+        <if test="houseGasNum!=null">#{houseGasNum,jdbcType=VARCHAR},</if>
         <if test="gasBillDate!=null">#{gasBillDate,jdbcType=TIMESTAMP},</if>
         <if test="gasBillAmount!=null">#{gasBillAmount,jdbcType=NUMERIC},</if>
         <if test="gasDegree!=null">#{gasDegree,jdbcType=NUMERIC},</if>
@@ -76,7 +76,7 @@
         #{item.batchNo,jdbcType=VARCHAR},
         #{item.propertyId,jdbcType=VARCHAR},
         #{item.houseId,jdbcType=VARCHAR},
-        #{item.houseWaterNum,jdbcType=VARCHAR},
+        #{item.houseGasNum,jdbcType=VARCHAR},
         #{item.gasBillDate,jdbcType=TIMESTAMP},
         #{item.gasBillAmount,jdbcType=NUMERIC},
         #{item.gasDegree,jdbcType=NUMERIC},
@@ -93,7 +93,7 @@
         <if test="batchNo!=null"> batch_no=#{batchNo,jdbcType=VARCHAR},</if>
         <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
         <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseWaterNum!=null"> house_water_num=#{houseWaterNum,jdbcType=VARCHAR},</if>
+        <if test="houseGasNum!=null"> house_gas_num=#{houseGasNum,jdbcType=VARCHAR},</if>
         <if test="gasBillDate!=null"> gas_bill_date=#{gasBillDate,jdbcType=TIMESTAMP},</if>
         <if test="gasBillAmount!=null"> gas_bill_amount=#{gasBillAmount,jdbcType=NUMERIC},</if>
         <if test="gasDegree!=null"> gas_degree=#{gasDegree,jdbcType=NUMERIC},</if>
@@ -107,7 +107,7 @@
         batch_no=#{item.batchNo,jdbcType=VARCHAR},
         property_id=#{item.propertyId,jdbcType=VARCHAR},
         house_id=#{item.houseId,jdbcType=VARCHAR},
-        house_water_num=#{item.houseWaterNum,jdbcType=VARCHAR},
+        house_gas_num=#{item.houseGasNum,jdbcType=VARCHAR},
         gas_bill_date=#{item.gasBillDate,jdbcType=TIMESTAMP},
         gas_bill_amount=#{item.gasBillAmount,jdbcType=NUMERIC},
         gas_degree=#{item.gasDegree,jdbcType=NUMERIC},
@@ -125,7 +125,7 @@
             <if test="batchNo!=null and batchNo!=''"> AND batch_no=#{batchNo}</if>
             <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
             <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="houseWaterNum!=null and houseWaterNum!=''"> AND house_water_num=#{houseWaterNum}</if>
+            <if test="houseGasNum!=null and houseGasNum!=''"> AND house_gas_num=#{houseGasNum}</if>
             <if test="gasBillDate!=null and gasBillDate!=''"> AND gas_bill_date=#{gasBillDate}</if>
             <if test="gasBillAmount!=null and gasBillAmount!=''"> AND gas_bill_amount=#{gasBillAmount}</if>
             <if test="gasDegree!=null and gasDegree!=''"> AND gas_degree=#{gasDegree}</if>
@@ -207,14 +207,14 @@
         <include refid="where"/>
     </select>
 
-    <select id="getLastEleBill" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select <include refid="Base_Column_List"/> from fee_electricity_bill
+    <select id="getLastGasBill" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill">
+        select <include refid="Base_Column_List"/> from fee_gas_bill
         where del_flag=0
         and house_id=#{houseId,jdbcType=VARCHAR}
         <if test="id!=null and id!=''">
             AND id=#{id,jdbcType=VARCHAR}
         </if>
-        ORDER  BY ele_bill_date DESC
+        ORDER  BY gas_bill_date DESC
         limit 1,1;
     </select>
 
@@ -229,7 +229,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(fgb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
     </select>
@@ -238,7 +238,7 @@
             resultMap="HouseFeeWithAreaAndBuildAndPropertyMap">
         select
         sa.name area_name,tpp.AREA_ID,
-        th.HOUSE_NO,th.id house_id,th.ele_account_num house_ele_num,
+        th.HOUSE_NO,th.id house_id,th.gas_account_num house_gas_num,
         tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
         th.BUILDING_ID,tb.BUILDING_NAME,
         fgb.id,fgb.batch_no,fgb.gas_bill_date,fgb.gas_bill_amount,
@@ -250,7 +250,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(fgb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
         ORDER BY fgb.create_date DESC
@@ -267,11 +267,11 @@
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord==0">
-                    fgb.id is not null
+                    and fgb.id is not null
                 </if>
                 <!-- 未录 -->
                 <if test="isRecord==1">
-                    fgb.id is null
+                    and fgb.id is null
                 </if>
             </if>
             <!-- 数据范围过滤 -->

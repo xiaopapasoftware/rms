@@ -33,7 +33,7 @@ public class FeeWaterReadFlowController extends FeeBaseController {
 
       @RequestMapping(value = "save")
       public Object save(FeeWaterReadFlow feeWaterReadFlow) {
-          feeWaterReadFlowService.save(feeWaterReadFlow);
+          feeWaterReadFlowService.saveFeeWaterReadFlow(feeWaterReadFlow);
           return ResponseData.success();
       }
 

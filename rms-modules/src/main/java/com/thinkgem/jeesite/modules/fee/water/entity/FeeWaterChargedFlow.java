@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.water.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;
 
@@ -40,6 +41,7 @@ public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow>{
     /** house_water_num - 户号 */
     private String houseWaterNum;
     /** water_calculate_date - 计算时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date waterCalculateDate;
     /** water_amount - 收取金额 */
     private BigDecimal waterAmount;

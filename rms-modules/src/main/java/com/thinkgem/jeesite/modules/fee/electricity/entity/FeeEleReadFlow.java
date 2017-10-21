@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 import java.util.Date;
@@ -29,6 +30,7 @@ public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow>{
     /** house_ele_num - 户号 */
     private String houseEleNum;
     /** ele_read_date - 抄表日期 */
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date eleReadDate;
     /** ele_degree - 电表额度 */
     private Float eleDegree;

@@ -107,7 +107,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         feeWaterChargedFlow.setPropertyId(feeWaterReadFlow.getPropertyId());
         feeWaterChargedFlow.setHouseId(feeWaterReadFlow.getHouseId());
-
+        feeWaterChargedFlow.setRoomId("0");
         FeeWaterReadFlow lastReadFlow = feeWaterReadFlowService.getLastReadFlow(feeWaterReadFlow);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             lastReadFlow = new FeeWaterReadFlow();
@@ -118,7 +118,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         House house = feeCommonService.getHouseById(feeWaterReadFlow.getHouseId());
         String rangeId = feeCommonService.getRangeIdByHouseId(house.getId());
         feeWaterChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.GAS_UNIT);
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.WATER_UNIT);
         double amount = (feeWaterReadFlow.getWaterDegree() - lastReadFlow.getWaterDegree()) * Float.valueOf(feeConfig.getConfigValue());
         feeWaterChargedFlow.setWaterAmount(new BigDecimal(amount));
         return feeWaterChargedFlow;

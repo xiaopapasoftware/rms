@@ -84,7 +84,7 @@ public class FeeCommonService {
             }
         }
         if (!Optional.ofNullable(feeConfig).isPresent()) {
-            String key = 0 + "_" + FeeTypeEnum.ELE_VALLEY_UNIT.getValue();
+            String key = 0 + "_" + feeTypeEnum.getValue();
             feeConfig = feeConfigMap.get(key);
         }
 
