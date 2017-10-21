@@ -50,10 +50,7 @@ public class FeeGasBillController extends FeeBaseController {
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeGasBill feeGasBill = new FeeGasBill();
-        feeGasBill.setId(id);
-        feeGasBill.setDelFlag(Constants.DEL_FLAG_NO);
-        feeGasBillService.save(feeGasBill);
+        feeGasBillService.deleteFeeGasBill(id);
         return ResponseData.success();
     }
 
@@ -61,6 +58,11 @@ public class FeeGasBillController extends FeeBaseController {
     public Object audit(String status, String... id) {
         feeGasBillService.feeGasBillAudit(status, id);
         return ResponseData.success();
+    }
+
+    @RequestMapping(value = "getTotalAmount")
+    public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
+        return ResponseData.success().data(feeGasBillService.getTotalAmount(feeCriteriaEntity));
     }
 
 }

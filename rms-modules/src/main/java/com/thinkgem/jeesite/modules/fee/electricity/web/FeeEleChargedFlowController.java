@@ -14,6 +14,7 @@ import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeEleChargedFlowService;
@@ -32,13 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/fee/ele/charged/flow")
-public class FeeEleChargedFlowController extends BaseController {
-
-    @Autowired
-    private SelectItemService selectItemService;
-
-    @Autowired
-    private FeeCommonService feeCommonService;
+public class FeeEleChargedFlowController extends FeeBaseController {
 
     @Autowired
     private FeeEleChargedFlowService feeEleChargedFlowService;
@@ -64,18 +59,6 @@ public class FeeEleChargedFlowController extends BaseController {
         feeEleChargedFlow.setDelFlag(Constants.DEL_FLAG_NO);
         feeEleChargedFlowService.save(feeEleChargedFlow);
         return ResponseData.success();
-    }
-
-    @RequestMapping(value = "getSubOrgList")
-    public Object getSubOrgList(SelectItemCondition condition) {
-        List<SelectItem> selectItems = selectItemService.getSelectListByBusinessCode(condition);
-        return ResponseData.success().data(selectItems);
-    }
-
-    @RequestMapping(value = "getArea")
-    public Object getArea() {
-        List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
-        return ResponseData.success().data(selectItems);
     }
 
     @RequestMapping(value = "get")

@@ -37,12 +37,12 @@ public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow>{
     private String roomId;
     /** rent_type - 出租类型 0：整租 1：合租 */
     private Integer rentType;
-    /** house_ele_num - 户号 */
-    private String houseEleNum;
+    /** house_water_num - 户号 */
+    private String houseWaterNum;
     /** water_calculate_date - 计算时间 */
     private Date waterCalculateDate;
     /** water_amount - 收取金额 */
     private BigDecimal waterAmount;
     /** generate_order - 是否已生成订单 0:是 -1:否 */
-    private Long generateOrder;
+    private Integer generateOrder;
 }

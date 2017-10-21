@@ -30,4 +30,36 @@ public class FeeRedirectController {
     public String eleChargeFlowIndex() {
         return "modules/fee/electricity/feeEleChargeFlow";
     }
+
+
+    @RequestMapping("gas/bill/index")
+    public String gasBillIndex() {
+        return "modules/fee/gas/feeGasBill";
+    }
+
+    @RequestMapping("gas/read/index")
+    public String gasReadFlowIndex() {
+        return "modules/fee/gas/feeGasReadFlow";
+    }
+
+    @RequestMapping("gas/charge/index")
+    public String gasChargeFlowIndex() {
+        return "modules/fee/gas/feeGasChargeFlow";
+    }
+
+
+    @RequestMapping("water/bill/index")
+    public String waterBillIndex() {
+        return "modules/fee/water/feeWaterBill";
+    }
+
+    @RequestMapping("water/read/index")
+    public String waterReadFlowIndex() {
+        return "modules/fee/water/feeWaterReadFlow";
+    }
+
+    @RequestMapping("water/charge/index")
+    public String waterChargeFlowIndex() {
+        return "modules/fee/water/feeWaterChargeFlow";
+    }
 }

@@ -224,7 +224,7 @@
 
     <select id="getFeeWaterReadFlowWithAllInfo"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
-            resultMap="FeeEleReadFlowWithAllInfo">
+            resultMap="FeeGasReadFlowWithAllInfo">
         select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME from
         (select
         fwrf.id,fwrf.house_id,fwrf.water_degree,fwrf.water_read_date,fwrf.property_id,
