@@ -177,6 +177,15 @@
 			<if test="houseStatus != null and houseStatus != ''">
 				AND a.house_status = #{houseStatus}
 			</if>
+			<if test="eleAccountNum != null and eleAccountNum != ''">
+				AND a.ele_account_num = #{eleAccountNum}
+			</if>
+			<if test="waterAccountNum != null and waterAccountNum != ''">
+				AND a.water_account_num = #{waterAccountNum}
+			</if>
+			<if test="gasAccountNum != null and gasAccountNum != ''">
+				AND a.gas_account_num = #{gasAccountNum}
+			</if>
 			<if test="choose != null and choose != ''">
 				and a.house_status not in('0','2','4')
 			</if>
@@ -253,10 +262,8 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
-
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -278,6 +285,9 @@
 		a.house_status AS "houseStatus",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
+		a.ele_account_num AS "eleAccountNum",
+		a.water_account_num AS "waterAccountNum",
+		a.gas_account_num AS "gasAccountNum",
 		a.decoration_spance AS "decorationSpance",
 		a.is_feature as "isFeature",
 		a.rental as "rental",
@@ -318,6 +328,9 @@
 		DECORA_STRUC_ROOM_NUM,
 		DECORA_STRUC_CUSSPAC_NUM,
 		DECORA_STRUC_WASHRO_NUM,
+		ele_account_num,
+		water_account_num,
+		gas_account_num,
 		house_status,
 		create_by,
 		create_date,
@@ -348,6 +361,9 @@
 		#{decoraStrucRoomNum},
 		#{decoraStrucCusspacNum},
 		#{decoraStrucWashroNum},
+		#{eleAccountNum},
+		#{waterAccountNum},
+		#{gasAccountNum},
 		#{houseStatus},
 		#{createBy.id},
 		#{createDate},
@@ -382,6 +398,9 @@
 		DECORA_STRUC_ROOM_NUM= #{decoraStrucRoomNum},
 		DECORA_STRUC_CUSSPAC_NUM= #{decoraStrucCusspacNum},
 		DECORA_STRUC_WASHRO_NUM= #{decoraStrucWashroNum},
+		ele_account_num= #{eleAccountNum},
+		water_account_num= #{waterAccountNum},
+		gas_account_num= #{gasAccountNum},
 		<if test="houseStatus != null and houseStatus != ''">
 			house_status = #{houseStatus},
 		</if>
@@ -470,6 +489,9 @@
 		a.decoration_spance AS "decorationSpance",
 		a.is_feature as "isFeature",
 		a.rental as "rental",
+		a.ele_account_num as "eleAccountNum",
+		a.water_account_num as "waterAccountNum",
+		a.gas_account_num as "gasAccountNum",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
 		a.pay_way as "payWay"
@@ -495,7 +517,10 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay"
+		a.pay_way as "payWay",
+		a.ele_account_num as "eleAccountNum",
+		a.water_account_num as "waterAccountNum",
+		a.gas_account_num as "gasAccountNum"
 		FROM t_house a
 		where
 		a.del_flag = '0'
