@@ -15,13 +15,29 @@
         <result column="water_calculate_date" property="waterCalculateDate" jdbcType="TIMESTAMP"/>
         <result column="water_amount" property="waterAmount" jdbcType="NUMERIC"/>
         <result column="generate_order" property="generateOrder" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
+
+    <resultMap id="FullResultMap"
+               type="com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterChargedFlowVo"
+               extends="BaseResultMap">
+        <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+        <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
+        <result column="building_id" property="buildingId" jdbcType="VARCHAR"/>
+        <result column="building_name" property="buildingName" jdbcType="VARCHAR"/>
+        <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
+        <result column="room_no" property="roomNo" jdbcType="VARCHAR"/>
+        <result column="intent_mode" property="intentMode" jdbcType="NUMERIC"/>
+        <result column="intent_mode_name" property="intentModeName" jdbcType="VARCHAR"/>
+    </resultMap>
+
 
     <sql id="Base_Column_List">
          id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, water_calculate_date, water_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
@@ -214,5 +230,45 @@
         select <include refid="Base_Column_List"/> from fee_water_charged_flow
         <include refid="where"/>
     </select>
+
+    <select id="getFeeWaterChargedFlowByBusinessIdAndFromSource" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from fee_water_charged_flow
+        where
+        del_flag=0 and from_source=#{fromSource,jdbcType=NUMERIC}
+        and business_id = #{businessId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getFeeWaterChargedFlow" resultMap="FullResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity">
+        select
+        case temp.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,
+        th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
+        tpp.project_addr,sa.id area_id,sa.name area_name,
+        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
+        from fee_water_charged_flow temp
+        LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
+        left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.id and tb.DEL_FLAG=0
+        left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        where temp.del_flag=0
+        <include refid="commonWhere"/>
+        order by ele_calculate_date DESC
+    </select>
+
+    <sql id="commonWhere">
+        <where>
+            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
+            <if test="startTime!=null and startTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+            </if>
+        </where>
+    </sql>
     <!-- end select -->
 </mapper>

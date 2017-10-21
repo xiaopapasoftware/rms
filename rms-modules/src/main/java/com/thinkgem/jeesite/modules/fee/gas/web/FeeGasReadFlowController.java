@@ -5,16 +5,18 @@
 package com.thinkgem.jeesite.modules.fee.gas.web;
 
 
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
+import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.gas.service.FeeGasReadFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>抄燃气表流水 controller</p>
@@ -31,29 +33,22 @@ public class FeeGasReadFlowController extends FeeBaseController {
 
       @RequestMapping(value = "save")
       public Object save(FeeGasReadFlow feeGasReadFlow) {
-          feeGasReadFlowService.save(feeGasReadFlow);
+          feeGasReadFlowService.saveFeeGasReadFlow(feeGasReadFlow);
           return ResponseData.success();
       }
 
      @RequestMapping(value = "list")
-     public Object list(FeeGasReadFlow feeGasReadFlow,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeGasReadFlow> page = feeGasReadFlowService.findPage(new Page(pageSize, pageNo), feeGasReadFlow);
-         return ResponseData.success().data(page);
+     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+         feeCriteriaEntity.setPage(page);
+         List<FeeGasReadFlowVo> feeGasReadFlowVos = feeGasReadFlowService.getFeeGasReadFlowWithAllInfo(feeCriteriaEntity);
+         page.setList(feeGasReadFlowVos);
+         return ResponseData.success().page(page);
      }
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeGasReadFlow feeGasReadFlow = new FeeGasReadFlow();
-        feeGasReadFlow.setId(id);
-        feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeGasReadFlowService.save(feeGasReadFlow);
+        feeGasReadFlowService.deleteFeeGasReadFlow(id);
         return ResponseData.success();
     }
-
-   @RequestMapping(value = "get")
-   public Object get(String id) {
-        FeeGasReadFlow feeGasReadFlow = feeGasReadFlowService.get(id);
-        return ResponseData.success().data(feeGasReadFlow);
-   }
-
 }
