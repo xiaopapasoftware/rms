@@ -725,9 +725,18 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     for (Accounting accounting : accountList) {
       if (accounting != null && accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
         String paymentTransId = "";
-        if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {// 特殊退租不生成款项
+        // 特殊退租不生成款项
+        if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
           paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, accounting.getFeeType(), rentContract.getId(), feeDirection, accounting.getFeeAmount(), accounting.getFeeAmount(),
               0D, PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), rentContract.getExpiredDate(), null);
+          // 如果是提前退租，把应退房租金额分摊到明细表
+          if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
+            Date feeDate = accounting.getFeeDate();
+            Date contractExpiredDate = rentContract.getExpiredDate();
+            if(contractExpiredDate.after(feeDate)){
+               //TODO
+            }
+          }
         }
         saveAccounting(paymentTransId, tradeType, accounting, rentContract, feeDirection);
       }
