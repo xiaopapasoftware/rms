@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.fee.common;
+package com.thinkgem.jeesite.modules.fee.common.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;

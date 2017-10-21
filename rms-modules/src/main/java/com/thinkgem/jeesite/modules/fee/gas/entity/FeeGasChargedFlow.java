@@ -37,8 +37,8 @@ public class FeeGasChargedFlow extends DataEntity<FeeGasChargedFlow>{
     private String roomId;
     /** rent_type - 出租类型 0：整租 1：合租 */
     private Integer rentType;
-    /** house_ele_num - 户号 */
-    private String houseEleNum;
+    /** house_gas_num - 户号 */
+    private String houseGasNum;
     /** gas_calculate_date - 计算时间 */
     private Date gasCalculateDate;
     /** gas_amount - 收取金额 */

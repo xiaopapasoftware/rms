@@ -8,7 +8,7 @@ package com.thinkgem.jeesite.modules.fee.water.web;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow;
 import com.thinkgem.jeesite.modules.fee.water.service.FeeWaterChargedFlowService;
 import org.springframework.beans.factory.annotation.Autowired;

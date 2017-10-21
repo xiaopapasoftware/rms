@@ -1,4 +1,4 @@
-package com.thinkgem.jeesite.modules.fee;
+package com.thinkgem.jeesite.modules.fee.common.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

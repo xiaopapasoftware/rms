@@ -7,12 +7,8 @@ package com.thinkgem.jeesite.modules.fee.electricity.web;
 
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.common.entity.SelectItem;
-import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
-import com.thinkgem.jeesite.modules.common.service.SelectItemService;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
-import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
-import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
@@ -32,12 +28,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/fee/electricity/bill")
 public class FeeElectricityBillController extends FeeBaseController {
-
-    @Autowired
-    private SelectItemService selectItemService;
-
-    @Autowired
-    private FeeCommonService feeCommonService;
 
     @Autowired
     private FeeElectricityBillService feeElectricityBillService;
@@ -70,25 +60,9 @@ public class FeeElectricityBillController extends FeeBaseController {
     }
 
 
-    @RequestMapping(value = "getSubOrgList")
-    public Object getSubOrgList(SelectItemCondition condition) {
-        List<SelectItem> selectItems = selectItemService.getSelectListByBusinessCode(condition);
-        return ResponseData.success().data(selectItems);
-    }
-
-    @RequestMapping(value = "getArea")
-    public Object getArea() {
-        List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
-        return ResponseData.success().data(selectItems);
-    }
-
     @RequestMapping(value = "getTotalAmount")
     public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
         return ResponseData.success().data(feeElectricityBillService.getTotalAmount(feeCriteriaEntity));
     }
 
-    @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum) {
-        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "0"));
-    }
 }

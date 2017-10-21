@@ -8,8 +8,8 @@ import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
-import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleChargedFlowDao;
@@ -124,7 +124,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         String rangeId;
         if (house.getIntentMode() == RentModelTypeEnum.WHOLE_RENT.getValue()) {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-            rangeId = dao.getRangeIdByHouseId(house.getId());
+            rangeId = feeCommonService.getRangeIdByHouseId(house.getId());
             FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
             FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELE_VALLEY_UNIT);
             double peakAmount = (feeEleReadFlow.getElePeakDegree() - lastReadFlow.getElePeakDegree()) * Float.valueOf(peakFeeConfig.getConfigValue());
@@ -135,9 +135,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         } else {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
             if (StringUtils.isBlank(feeEleReadFlow.getRoomId()) || StringUtils.equals(feeEleReadFlow.getRoomId(), "0")) {
-                rangeId = dao.getRangeIdByHouseId(house.getId());
+                rangeId = feeCommonService.getRangeIdByHouseId(house.getId());
             } else {
-                rangeId = dao.getRangeIdByRoomId(feeEleReadFlow.getRoomId());
+                rangeId = feeCommonService.getRangeIdByRoomId(feeEleReadFlow.getRoomId());
             }
             FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.ELECTRICITY_UNIT);
             double amount = (feeEleReadFlow.getEleDegree() - lastReadFlow.getEleDegree()) * Float.valueOf(feeConfig.getConfigValue());

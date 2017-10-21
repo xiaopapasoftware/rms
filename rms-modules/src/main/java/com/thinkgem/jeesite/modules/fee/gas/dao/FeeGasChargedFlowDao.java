@@ -6,8 +6,12 @@ package com.thinkgem.jeesite.modules.fee.gas.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
+import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>煤气收取流水实现类service</p>
@@ -17,4 +21,8 @@ import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
 */
 @MyBatisDao
 public interface FeeGasChargedFlowDao extends CrudDao<FeeGasChargedFlow>{
+
+    FeeGasChargedFlow getFeeGasChargedFlowByBusinessIdAndFromSource(@Param("businessId") String businessId, @Param("fromSource")int fromSource);
+
+    List<FeeGasChargedFlowVo> getFeeGasChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 }

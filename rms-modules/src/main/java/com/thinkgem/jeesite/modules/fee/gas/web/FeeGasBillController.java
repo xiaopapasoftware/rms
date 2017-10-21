@@ -8,38 +8,45 @@ package com.thinkgem.jeesite.modules.fee.gas.web;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
+import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasBillVo;
 import com.thinkgem.jeesite.modules.fee.gas.service.FeeGasBillService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>燃气账单表 controller</p>
  * <p>Table: fee_gas_bill - 燃气账单表</p>
- * @since 2017-10-20 06:26:27
+ *
  * @author generator code
+ * @since 2017-10-20 06:26:27
  */
 @RestController
 @RequestMapping("/fee/gas/bill")
 public class FeeGasBillController extends FeeBaseController {
 
-      @Autowired
-      private FeeGasBillService feeGasBillService;
+    @Autowired
+    private FeeGasBillService feeGasBillService;
 
-      @RequestMapping(value = "save")
-      public Object save(FeeGasBill feeGasBill) {
-          feeGasBillService.save(feeGasBill);
-          return ResponseData.success();
-      }
+    @RequestMapping(value = "save")
+    public Object save(FeeGasBill feeGasBill) {
+        feeGasBillService.saveFeeGasBill(feeGasBill);
+        return ResponseData.success();
+    }
 
-     @RequestMapping(value = "list")
-     public Object list(FeeGasBill feeGasBill,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeGasBill> page = feeGasBillService.findPage(new Page(pageSize, pageNo), feeGasBill);
-         return ResponseData.success().data(page);
-     }
+    @RequestMapping(value = "list")
+    public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+        Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+        feeCriteriaEntity.setPage(page);
+        List<FeeGasBillVo> feeGasBillVos = feeGasBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
+        page.setList(feeGasBillVos);
+        return ResponseData.success().page(page);
+    }
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
@@ -50,10 +57,10 @@ public class FeeGasBillController extends FeeBaseController {
         return ResponseData.success();
     }
 
-   @RequestMapping(value = "get")
-   public Object get(String id) {
-        FeeGasBill feeGasBill = feeGasBillService.get(id);
-        return ResponseData.success().data(feeGasBill);
-   }
+    @RequestMapping(value = "audit")
+    public Object audit(String status, String... id) {
+        feeGasBillService.feeGasBillAudit(status, id);
+        return ResponseData.success();
+    }
 
 }

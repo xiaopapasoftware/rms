@@ -6,8 +6,12 @@ package com.thinkgem.jeesite.modules.fee.gas.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
+import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasReadFlowVo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>抄燃气表流水实现类service</p>
@@ -17,4 +21,9 @@ import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 */
 @MyBatisDao
 public interface FeeGasReadFlowDao extends CrudDao<FeeGasReadFlow>{
+    List<FeeGasReadFlowVo> getFeeGasReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
+
+    FeeGasReadFlow getFeeGasReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
+
+    FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow);
 }
