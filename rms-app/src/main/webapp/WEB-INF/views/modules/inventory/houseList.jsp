@@ -90,6 +90,18 @@
 				<form:input path="houseNo" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
+				<label>电户号：</label> 
+				<form:input path="eleAccountNum" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>水户号：</label> 
+				<form:input path="waterAccountNum" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>煤气户号：</label> 
+				<form:input path="gasAccountNum" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
 				<label>产证证号：</label> 
 				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
@@ -133,6 +145,9 @@
 				<th>原始结构</th>
 				<th>装修结构</th>
 				<th>产权证号</th>
+				<th>电户号</th>
+				<th>水户号</th>
+				<th>煤气户号</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -157,6 +172,9 @@
 					<td>${house.oriStrucRoomNum}房${house.oriStrucCusspacNum}厅${house.oriStrucWashroNum}卫</td>
 					<td>${house.decoraStrucRoomNum}房${house.decoraStrucCusspacNum}厅${house.decoraStrucWashroNum}卫</td>
 					<td>${house.certificateNo}</td>
+					<td>${house.eleAccountNum}</td>
+					<td>${house.waterAccountNum}</td>
+					<td>${house.gasAccountNum}</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>
