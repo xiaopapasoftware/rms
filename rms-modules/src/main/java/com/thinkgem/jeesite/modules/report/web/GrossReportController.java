@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.report.web;
 
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.util.JsonUtil;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
@@ -12,6 +13,7 @@ import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReportVO;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 import com.thinkgem.jeesite.modules.report.entity.GrossProfitCompareCondition;
 import com.thinkgem.jeesite.modules.report.entity.GrossProfitFormCondition;
+import com.thinkgem.jeesite.modules.report.entity.ReportCompareCondition;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -110,12 +112,17 @@ public class GrossReportController extends BaseController {
   @RequestMapping(value = {"listGrossProfitCompare"})
   @ResponseBody
   public List<GrossProfitReport> listGrossProfitCompare(GrossProfitCompareCondition condition, HttpServletRequest request, HttpServletResponse response, Model model) {
-//    condition.setConditionList(Collections.singletonList(new ReportCompareCondition("PROJECT", "d05a2e840cb74797a84a406d01d0e0de")));
+    try {
+      List<ReportCompareCondition> conditionList = JsonUtil.jsonToCollection(request.getParameter("compareData"), List.class, ReportCompareCondition.class);
+      condition.setConditionList(conditionList);
+    } catch (Exception e) {
+      logger.error("listGrossProfitCompare error ", e);
+    }
     return condition.isEmpty() ? null : buildReportListByReportVO(calculateStrategy.calculateReportCompareVO(buildConditionByCompareCondition(condition)));
   }
 
   private List<GrossProfitCondition> buildConditionByCompareCondition(GrossProfitCompareCondition condition) {
-    return condition.getConditionList().stream().map(compareCondition -> {
+    return condition.getConditionList().stream().filter(i -> !(StringUtils.isEmpty(i.getId())||StringUtils.isEmpty(i.getType()))).map(compareCondition -> {
       GrossProfitCondition profitCondition = new GrossProfitCondition();
       profitCondition.setId(compareCondition.getId());
       profitCondition.setTypeEnum(GrossProfitTypeEnum.valueOf(compareCondition.getType()));

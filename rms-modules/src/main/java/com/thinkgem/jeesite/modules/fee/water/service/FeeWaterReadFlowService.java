@@ -72,10 +72,9 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         judgeLastRead(feeWaterReadFlow);
 
         save(feeWaterReadFlow);
+        
         //save fee charge save
-        if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
-            feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
-        }
+        feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
     }
 
     private void judgeLastRead(FeeWaterReadFlow feeWaterReadFlow){

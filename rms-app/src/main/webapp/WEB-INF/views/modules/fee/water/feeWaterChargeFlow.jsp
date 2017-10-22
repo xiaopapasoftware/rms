@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>煤气费收费流水</title>
+    <title>水费收费流水</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
@@ -111,7 +111,7 @@
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="gasReadDates" name="gasReadDates" placeholder="抄表日期" readonly
+                        <input type="text" id="waterReadDates" name="waterReadDates" placeholder="抄表日期" readonly
                                class="layui-input">
                     </div>
                 </div>
@@ -130,7 +130,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="gasChargeFlowTable" lay-filter="gasChargeFlowT">
+            <table class="layui-hide" id="waterChargeFlowTable" lay-filter="waterChargeFlowT">
             </table>
         </div>
     </div>
@@ -139,6 +139,6 @@
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
-<script src="${ctxStatic}/modules/fee/gas/feeGasChargeFlow.js"></script>
+<script src="${ctxStatic}/modules/fee/water/feeWaterChargeFlow.js"></script>
 </body>
 </html>

@@ -283,11 +283,11 @@
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord==0">
-                    feb.id is not null
+                    and feb.id is not null
                 </if>
                 <!-- 未录 -->
                 <if test="isRecord==1">
-                    feb.id is null
+                    and feb.id is null
                 </if>
             </if>
             <!-- 数据范围过滤 -->

@@ -11,7 +11,7 @@
         <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
         <result column="room_id" property="roomId" jdbcType="VARCHAR"/>
         <result column="rent_type" property="rentType" jdbcType="NUMERIC"/>
-        <result column="house_ele_num" property="houseEleNum" jdbcType="VARCHAR"/>
+        <result column="house_water_num" property="houseWaterNum" jdbcType="VARCHAR"/>
         <result column="water_calculate_date" property="waterCalculateDate" jdbcType="TIMESTAMP"/>
         <result column="water_amount" property="waterAmount" jdbcType="NUMERIC"/>
         <result column="generate_order" property="generateOrder" jdbcType="NUMERIC"/>
@@ -40,7 +40,7 @@
 
 
     <sql id="Base_Column_List">
-         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, water_calculate_date, water_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_water_num, water_calculate_date, water_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -52,7 +52,7 @@
         <if test="houseId!=null"> house_id,</if>
         <if test="roomId!=null"> room_id,</if>
         <if test="rentType!=null"> rent_type,</if>
-        <if test="houseEleNum!=null"> house_ele_num,</if>
+        <if test="houseWaterNum!=null"> house_water_num,</if>
         <if test="waterCalculateDate!=null"> water_calculate_date,</if>
         <if test="waterAmount!=null"> water_amount,</if>
         <if test="generateOrder!=null"> generate_order,</if>
@@ -72,7 +72,7 @@
         <if test="houseId!=null">#{houseId,jdbcType=VARCHAR},</if>
         <if test="roomId!=null">#{roomId,jdbcType=VARCHAR},</if>
         <if test="rentType!=null">#{rentType,jdbcType=NUMERIC},</if>
-        <if test="houseEleNum!=null">#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="houseWaterNum!=null">#{houseWaterNum,jdbcType=VARCHAR},</if>
         <if test="waterCalculateDate!=null">#{waterCalculateDate,jdbcType=TIMESTAMP},</if>
         <if test="waterAmount!=null">#{waterAmount,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null">#{generateOrder,jdbcType=NUMERIC},</if>
@@ -92,7 +92,7 @@
         #{item.houseId,jdbcType=VARCHAR},
         #{item.roomId,jdbcType=VARCHAR},
         #{item.rentType,jdbcType=NUMERIC},
-        #{item.houseEleNum,jdbcType=VARCHAR},
+        #{item.houseWaterNum,jdbcType=VARCHAR},
         #{item.waterCalculateDate,jdbcType=TIMESTAMP},
         #{item.waterAmount,jdbcType=NUMERIC},
         #{item.generateOrder,jdbcType=NUMERIC},
@@ -112,7 +112,7 @@
         <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
         <if test="roomId!=null"> room_id=#{roomId,jdbcType=VARCHAR},</if>
         <if test="rentType!=null"> rent_type=#{rentType,jdbcType=NUMERIC},</if>
-        <if test="houseEleNum!=null"> house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="houseWaterNum!=null"> house_water_num=#{houseWaterNum,jdbcType=VARCHAR},</if>
         <if test="waterCalculateDate!=null"> water_calculate_date=#{waterCalculateDate,jdbcType=TIMESTAMP},</if>
         <if test="waterAmount!=null"> water_amount=#{waterAmount,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null"> generate_order=#{generateOrder,jdbcType=NUMERIC},</if>
@@ -129,7 +129,7 @@
         house_id=#{item.houseId,jdbcType=VARCHAR},
         room_id=#{item.roomId,jdbcType=VARCHAR},
         rent_type=#{item.rentType,jdbcType=NUMERIC},
-        house_ele_num=#{item.houseEleNum,jdbcType=VARCHAR},
+        house_water_num=#{item.houseWaterNum,jdbcType=VARCHAR},
         water_calculate_date=#{item.waterCalculateDate,jdbcType=TIMESTAMP},
         water_amount=#{item.waterAmount,jdbcType=NUMERIC},
         generate_order=#{item.generateOrder,jdbcType=NUMERIC},
@@ -150,7 +150,7 @@
             <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
             <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
             <if test="rentType!=null and rentType!=''"> AND rent_type=#{rentType}</if>
-            <if test="houseEleNum!=null and houseEleNum!=''"> AND house_ele_num=#{houseEleNum}</if>
+            <if test="houseWaterNum!=null and houseWaterNum!=''"> AND house_water_num=#{houseWaterNum}</if>
             <if test="waterCalculateDate!=null and waterCalculateDate!=''"> AND water_calculate_date=#{waterCalculateDate}</if>
             <if test="waterAmount!=null and waterAmount!=''"> AND water_amount=#{waterAmount}</if>
             <if test="generateOrder!=null and generateOrder!=''"> AND generate_order=#{generateOrder}</if>
@@ -253,7 +253,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0
         <include refid="commonWhere"/>
-        order by ele_calculate_date DESC
+        order by water_calculate_date DESC
     </select>
 
     <sql id="commonWhere">
@@ -263,10 +263,10 @@
             <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
             <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
             <if test="startTime!=null and startTime!=''">
-                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.water_calculate_date,'%Y-%m-%d') ]]>
             </if>
             <if test="endTime!=null and endTime!=''">
-                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(temp.ele_calculate_date,'%Y-%m-%d') ]]>
+                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(temp.water_calculate_date,'%Y-%m-%d') ]]>
             </if>
         </where>
     </sql>

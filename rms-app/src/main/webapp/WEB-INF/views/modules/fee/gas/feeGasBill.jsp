@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>煤气账单账单录入</title>
+    <title>煤气账单录入</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
@@ -183,7 +183,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="gasBillTable" lay-filter="electricityBill">
+            <table class="layui-hide" id="gasBillTable" lay-filter="gasBill">
             </table>
         </div>
     </div>
@@ -209,7 +209,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
             <div class="layui-input-inline">
-                <input type="number" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="number" id="houseGasNum" required lay-verify="required" placeholder="户号" class="layui-input">
                 <input type="text" id="houseId" name="houseId" hidden>
             </div>
         </div>
@@ -229,7 +229,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <a href="javascript:void(0);" id="btn-save" lay-filter="addEleBill" lay-submit class="button">保存并继续</a>
+                <a href="javascript:void(0);" id="btn-save" lay-filter="addGasBill" lay-submit class="button">保存并继续</a>
                 <a href="javascript:void(0);" id="btn-view" class="button">
                     统计查看
                 </a>

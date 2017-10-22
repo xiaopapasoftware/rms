@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.modules.fee.common.dao.FeeCommonDao;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.enums.FeeTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
@@ -48,12 +49,12 @@ public class FeeCommonService {
         return houseService.get(houseId);
     }
 
-    public List<Map> getRoomByHouseId(String houseId){
+    public List<Room> getRoomByHouseId(String houseId){
         House house = houseService.get(houseId);
         if(StringUtils.equals(house.getIntentMode(),"0")){
             return Lists.newArrayList();
         }
-        return roomService.getRoomByHouseId(houseId);
+        return roomService.findRoomListByHouseId(houseId);
     }
 
     public List<Map> getHouseByQueryWhereAndType(String queryWhere,String type) {
@@ -84,7 +85,7 @@ public class FeeCommonService {
             }
         }
         if (!Optional.ofNullable(feeConfig).isPresent()) {
-            String key = 0 + "_" + FeeTypeEnum.ELE_VALLEY_UNIT.getValue();
+            String key = 0 + "_" + feeTypeEnum.getValue();
             feeConfig = feeConfigMap.get(key);
         }
 

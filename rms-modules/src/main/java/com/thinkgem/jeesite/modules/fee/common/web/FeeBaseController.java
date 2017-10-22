@@ -39,8 +39,8 @@ public class FeeBaseController extends BaseController {
     }
 
     @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum) {
-        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "0"));
+    public Object houseInfo(String accountNum,String type) {
+        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, type));
     }
 
     @RequestMapping(value = "roomInfo")
