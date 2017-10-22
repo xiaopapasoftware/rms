@@ -20,6 +20,7 @@ import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +64,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         saveChargedFlow.setFromSource(FeeFromSourceEnum.ACCOUNT_BILL.getValue());
         saveChargedFlow.setGasCalculateDate(new Date());
 
-        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
+        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue(),null);
         if (Optional.ofNullable(existGasChargedFlow).isPresent()) {
             if (existGasChargedFlow.getGenerateOrder() == GenerateOrderEnum.YES.getValue()) {
                 throw new IllegalArgumentException("该房屋已经生成订单,不可修改");
@@ -75,17 +76,37 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     @Transactional(readOnly = false)
     public void saveFeeGasChargedFlowByFeeGasReadFlow(FeeGasReadFlow feeGasReadFlow) {
-        FeeGasChargedFlow feeGasChargedFlow = readFlow2ChargedFlow(feeGasReadFlow);
-        FeeGasChargedFlow existChargeFlow = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
-        if (Optional.ofNullable(existChargeFlow).isPresent()) {
-            feeGasChargedFlow.setId(existChargeFlow.getId());
+        double chargeFee = calculateCharge(feeGasReadFlow);
+        List<Room> rooms = feeCommonService.getRoomByHouseId(feeGasReadFlow.getHouseId());
+        if(Optional.ofNullable(rooms).isPresent() && rooms.size() > 0){
+            for(Room room : rooms){
+                FeeGasChargedFlow saveFeeGasChargeFlow = readFlow2ChargedFlow(feeGasReadFlow);
+                saveFeeGasChargeFlow.setRoomId(room.getId());
+                saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
+                saveFeeGasChargeFlow.setGasAmount(new BigDecimal(chargeFee).divide(new BigDecimal(rooms.size())));
+                FeeGasChargedFlow existChargeFlow = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue(),room.getId());
+                if (Optional.ofNullable(existChargeFlow).isPresent()) {
+                    saveFeeGasChargeFlow.setId(existChargeFlow.getId());
+
+                }
+                save(saveFeeGasChargeFlow);
+            }
+        }else{
+            FeeGasChargedFlow saveFeeGasChargeFlow = readFlow2ChargedFlow(feeGasReadFlow);
+            saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
+            FeeGasChargedFlow existChargeFlow = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue(),null);
+            if (Optional.ofNullable(existChargeFlow).isPresent()) {
+                saveFeeGasChargeFlow.setId(existChargeFlow.getId());
+
+            }
+            saveFeeGasChargeFlow.setGasAmount(new BigDecimal(chargeFee));
+            save(saveFeeGasChargeFlow);
         }
-        save(feeGasChargedFlow);
     }
 
     @Transactional(readOnly = false)
     public void deleteFeeGasChargedFlowByBusinessIdAndFromSource(String feeGasBillId, int fromSource) {
-        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBillId, fromSource);
+        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBillId, fromSource,null);
         FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
         feeGasChargedFlow.setId(existGasChargedFlow.getId());
         feeGasChargedFlow.setDelFlag(Constants.DEL_FLAG_YES);
@@ -96,6 +117,20 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         return dao.getFeeGasChargedFlow(feeCriteriaEntity);
     }
 
+    private double calculateCharge(FeeGasReadFlow feeGasReadFlow){
+        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow);
+        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            lastReadFlow = new FeeGasReadFlow();
+            lastReadFlow.setGasDegree(0F);
+        }
+
+        Map<String, FeeConfig> feeConfigMap = feeConfigService.getFeeConfig();
+        House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
+        String rangeId = feeCommonService.getRangeIdByHouseId(house.getId());
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.GAS_UNIT);
+        double amount = (feeGasReadFlow.getGasDegree() - lastReadFlow.getGasDegree()) * Float.valueOf(feeConfig.getConfigValue());
+        return amount;
+    }
 
     private FeeGasChargedFlow readFlow2ChargedFlow(FeeGasReadFlow feeGasReadFlow) {
         FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
@@ -107,20 +142,6 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         feeGasChargedFlow.setPropertyId(feeGasReadFlow.getPropertyId());
         feeGasChargedFlow.setHouseId(feeGasReadFlow.getHouseId());
         feeGasChargedFlow.setRoomId("0");
-
-        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow);
-        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            lastReadFlow = new FeeGasReadFlow();
-            lastReadFlow.setGasDegree(0F);
-        }
-
-        Map<String, FeeConfig> feeConfigMap = feeConfigService.getFeeConfig();
-        House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
-        String rangeId = feeCommonService.getRangeIdByHouseId(house.getId());
-        feeGasChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(feeConfigMap, rangeId, FeeTypeEnum.GAS_UNIT);
-        double amount = (feeGasReadFlow.getGasDegree() - lastReadFlow.getGasDegree()) * Float.valueOf(feeConfig.getConfigValue());
-        feeGasChargedFlow.setGasAmount(new BigDecimal(amount));
         return feeGasChargedFlow;
     }
 }
