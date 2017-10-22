@@ -29,8 +29,8 @@
                 var startDate = $("#startDate").val();
                 var endDate = $("#endDate").val();
                 var compareData = [];
-                $('#conditions .type').each(function (index) {
-                    var detail = $('.detail'+index);
+                $('#conditions .type').each(function () {
+                    var detail = $(this).parent().next().children('.detail');
 					compareData.push({type:$(this).val(),id:detail.val()})
                 });
 
@@ -75,6 +75,12 @@
                 $(_this).parent().next().children('.detail').html(html);
             });
         }
+        function onDelete(_this) {
+            $(_this).parent().parent().remove();
+        }
+
+
+
 
 	</script>
 </head>
@@ -94,6 +100,9 @@
 				<select id="id" name="id" class="input-medium selectDom detail">
 					<option value="">请选择...</option>
 				</select>
+			</li>
+			<li style = "margin-left: 20px">
+				<input  class="btn btn-primary delete" type="button"  value="删除" style = "margin-right:20px;" onclick="onDelete(this)" />
 			</li>
 		</ul>
 	</div>
