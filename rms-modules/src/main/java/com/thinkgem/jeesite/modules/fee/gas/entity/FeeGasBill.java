@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.gas.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;
 
@@ -29,9 +30,10 @@ public class FeeGasBill extends DataEntity<FeeGasBill>{
     private String propertyId;
     /** house_id - 房屋ID */
     private String houseId;
-    /** house_water_num - 户号 */
-    private String houseWaterNum;
+    /** house_gas_num - 户号 */
+    private String houseGasNum;
     /** gas_bill_date - 账单日期 */
+    @JsonFormat(pattern = "yyyy-MM",timezone="GMT+8")
     private Date gasBillDate;
     /** gas_bill_amount - 账单金额 */
     private BigDecimal gasBillAmount;

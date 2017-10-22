@@ -1,4 +1,5 @@
 /* Drop Tables */
+drop table if exists sys_user_area;
 drop table if exists T_NEIGHBORHOOD;
 drop table if exists T_MANAGEMENT_COMPANY;
 drop table if exists T_PROPERTY_PROJECT;
@@ -10,11 +11,18 @@ drop table if exists t_room_devices;
 drop table if exists T_DEVICES_HIS;
 drop table if exists T_HOUSE_OWNER;
 
+CREATE TABLE `sys_user_area` (
+  `area_id` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '区域编号',
+  `user_id` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '用户编号',
+  PRIMARY KEY (`area_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='区域-菜用户';
+
 /* Create Tables */
 create table T_NEIGHBORHOOD
 (
    ID                   varchar(64) NOT NULL,
    NEIGHBORHOOD_NAME    varchar(100) comment '居委会名称',
+   AREA_ID 				VARCHAR(64)  COMMENT '区域id',
    NEIGHBORHOOD_ADDR    VARCHAR(100) comment '居委会地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
@@ -28,8 +36,9 @@ create table T_NEIGHBORHOOD
 create table T_MANAGEMENT_COMPANY
 (
    ID                   varchar(64) NOT NULL,
-   COMPANY_NAME    varchar(100) comment '物业公司名称',
-   COMPANY_ADDR    VARCHAR(100) comment '物业公司地址',
+   COMPANY_NAME   		varchar(100) comment '物业公司名称',
+   AREA_ID 				VARCHAR(64)  COMMENT '区域id',
+   COMPANY_ADDR    		VARCHAR(100) comment '物业公司地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',
@@ -44,6 +53,7 @@ create table T_PROPERTY_PROJECT
    ID                   varchar(64) NOT NULL,
    T_NEIGHBORHOOD_MAIN_ID      varchar(64) comment '居委会',
    T_MANAGEMENT_COMPANY_MAIN_ID varchar(64) comment '物业公司',
+   AREA_ID 				VARCHAR(64)  COMMENT '区域id',
    PROJECT_NAME    varchar(100) comment '物业项目名称',
    PROJECT_SIMPLE_NAME    varchar(100) comment '物业项目拼音首字母',
    PROJECT_ADDR    VARCHAR(100) comment '物业项目地址',
@@ -88,6 +98,9 @@ create table T_HOUSE
    DECORA_STRUC_CUSSPAC_NUM    int comment 		'装修房屋结构厅数',
    DECORA_STRUC_WASHRO_NUM     int comment		'装修房屋结构卫数',
    CERTIFICATE_NO			varchar(64) comment '房屋产权证号',
+   ele_account_num			VARCHAR(64) comment '电户号',
+   water_account_num		VARCHAR(64) comment '水户号',
+   gas_account_num			VARCHAR(64) comment '煤气户号',
    intent_mode 				varchar(64) comment '意向租赁类型';
    HOUSE_STATUS         varchar(100) comment '房屋状态',
    service_user 		varchar(64) comment '服务管家',

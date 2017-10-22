@@ -5,16 +5,18 @@
 package com.thinkgem.jeesite.modules.fee.water.web;
 
 
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow;
+import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.water.service.FeeWaterReadFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>抄水表流水 controller</p>
@@ -31,29 +33,23 @@ public class FeeWaterReadFlowController extends FeeBaseController {
 
       @RequestMapping(value = "save")
       public Object save(FeeWaterReadFlow feeWaterReadFlow) {
-          feeWaterReadFlowService.save(feeWaterReadFlow);
+          feeWaterReadFlowService.saveFeeWaterReadFlow(feeWaterReadFlow);
           return ResponseData.success();
       }
 
      @RequestMapping(value = "list")
-     public Object list(FeeWaterReadFlow feeWaterReadFlow,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeWaterReadFlow> page = feeWaterReadFlowService.findPage(new Page(pageSize, pageNo), feeWaterReadFlow);
-         return ResponseData.success().data(page);
+     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+         feeCriteriaEntity.setPage(page);
+         List<FeeWaterReadFlowVo> feeWaterReadFlowVos = feeWaterReadFlowService.getFeeWaterReadFlowWithAllInfo(feeCriteriaEntity);
+         page.setList(feeWaterReadFlowVos);
+         return ResponseData.success().page(page);
      }
 
     @RequestMapping(value = "delete")
     public Object delete(String id) {
-        FeeWaterReadFlow feeWaterReadFlow = new FeeWaterReadFlow();
-        feeWaterReadFlow.setId(id);
-        feeWaterReadFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeWaterReadFlowService.save(feeWaterReadFlow);
+        feeWaterReadFlowService.deleteFeeWaterReadFlow(id);
         return ResponseData.success();
     }
-
-   @RequestMapping(value = "get")
-   public Object get(String id) {
-        FeeWaterReadFlow feeWaterReadFlow = feeWaterReadFlowService.get(id);
-        return ResponseData.success().data(feeWaterReadFlow);
-   }
 
 }

@@ -101,13 +101,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return value;
             };
-            layui.laytpl.dateFormat = function (value) {
-                //json日期格式转换为正常格式
-                var date = new Date(value);
-                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
-                var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-                return date.getFullYear() + "-" + month + "-" + day;
-            };
         }
     };
 
@@ -154,12 +147,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     range: '~',
                     format: 'yyyy-MM-dd'
                 });
-                laydate.render({
-                    elem: '#eleReadDate',
-                    type: 'date',
-                    format: 'yyyy-MM-dd',
-                    value: new Date()
-                });
             },
             bindEvent: function () {
                 $("#btn-add").on("click", feeEleReadFlowMVC.Controller.addEleFun);
@@ -184,10 +171,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             templet: '<div>{{ layui.laytpl.roomNoFormat(d.roomNo) }}</div>'
                         },
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
-                        {
-                            field: 'eleReadDate', align: 'center', title: '抄表日期', width: 120,
-                            templet: '<div>{{ layui.laytpl.dateFormat(d.eleReadDate) }}</div>'
-                        },
+                        {field: 'eleReadDate', align: 'center', title: '抄表日期', width: 120},
                         {
                             field: 'eleDegree', align: 'right', title: '抄表数', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.eleDegree) }}</div>'
@@ -275,6 +259,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             addEleFun: function () {
+                laydate.render({
+                    elem: '#eleReadDate',
+                    type: 'date',
+                    format: 'yyyy-MM-dd',
+                    value: new Date()
+                });
                 addEleReadIndex = layer.open({
                     title: "电费账单录入",
                     type: 1,

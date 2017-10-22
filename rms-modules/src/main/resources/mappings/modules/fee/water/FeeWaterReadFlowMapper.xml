@@ -11,12 +11,25 @@
         <result column="house_water_num" property="houseWaterNum" jdbcType="VARCHAR"/>
         <result column="water_read_date" property="waterReadDate" jdbcType="TIMESTAMP"/>
         <result column="water_degree" property="waterDegree" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="FeeGasReadFlowWithAllInfo"
+               type="com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterReadFlowVo"
+               extends="BaseResultMap">
+        <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
+        <result column="building_id" property="buildingId" jdbcType="VARCHAR"/>
+        <result column="building_name" property="buildingName" jdbcType="VARCHAR"/>
+        <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
+        <result column="intent_mode" property="intentMode" jdbcType="NUMERIC"/>
+        <result column="intent_mode_name" property="intentModeName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -186,5 +199,65 @@
         select <include refid="Base_Column_List"/> from fee_water_read_flow
         <include refid="where"/>
     </select>
+
+    <select id="getFeeWaterReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        where
+        del_flag=0 and from_source=1
+        and business_id = #{feeWaterBillId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getLastReadFlow" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
+        select <include refid="Base_Column_List"/> from fee_water_read_flow
+        where del_flag = 0
+        AND house_id=#{houseId,jdbcType=VARCHAR}
+        <if test="id!=null and id!=''">
+            AND id != #{id,jdbcType=VARCHAR}
+        </if>
+        ORDER BY water_read_date DESC
+        limit 1,1;
+    </select>
+
+    <select id="getFeeWaterReadFlowWithAllInfo"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
+            resultMap="FeeGasReadFlowWithAllInfo">
+        select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME from
+        (select
+        fwrf.id,fwrf.house_id,fwrf.water_degree,fwrf.water_read_date,fwrf.property_id,
+        th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,fwrf.from_source,fwrf.create_date,
+        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
+        from fee_water_read_flow fwrf
+        left join t_house th on fwrf.house_id=th.ID and th.DEL_FLAG=0
+        where fwrf.del_flag=0
+        union
+        select
+        fwrf.id,fwrf.house_id,fwrf.water_degree,fwrf.water_read_date,fwrf.property_id,
+        th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,fwrf.from_source,fwrf.create_date,
+        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
+        from fee_water_read_flow fwrf
+        left join t_house th on fwrf.house_id=th.ID and th.DEL_FLAG=0
+        where fwrf.del_flag=0
+        )temp
+        left join t_property_project tpp on temp.property_id=tpp.ID and tpp.DEL_FLAG=0
+        left join t_building tb on temp.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        <include refid="commonWhere"/>
+        ORDER BY temp.water_read_date DESC
+    </select>
+
+    <sql id="commonWhere">
+        <where>
+            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
+            <if test="startTime!=null and startTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.water_read_date,'%Y-%m-%d') ]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(temp.water_read_date,'%Y-%m-%d') ]]>
+            </if>
+        </where>
+    </sql>
     <!-- end select -->
 </mapper>

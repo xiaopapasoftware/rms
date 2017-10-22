@@ -64,7 +64,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             };
 
             $('#houseEleNum').autocomplete({
-                serviceUrl: feeEleBillMVC.URLs.getHouseInfo.url,
+                serviceUrl: feeEleBillMVC.URLs.getHouseInfo.url +"?type=0",
                 dataType: 'json',
                 paramName: "accountNum",
                 zIndex: 999999999,

@@ -10,9 +10,9 @@ import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
-import com.thinkgem.jeesite.modules.fee.common.FeeCommonService;
-import com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeEleReadFlowService;
@@ -33,12 +33,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/fee/ele/read/flow")
 public class FeeEleReadFlowController extends FeeBaseController {
-
-    @Autowired
-    private SelectItemService selectItemService;
-
-    @Autowired
-    private FeeCommonService feeCommonService;
 
     @Autowired
     private FeeEleReadFlowService feeEleReadFlowService;
@@ -66,25 +60,4 @@ public class FeeEleReadFlowController extends FeeBaseController {
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "getSubOrgList")
-    public Object getSubOrgList(SelectItemCondition condition) {
-        List<SelectItem> selectItems = selectItemService.getSelectListByBusinessCode(condition);
-        return ResponseData.success().data(selectItems);
-    }
-
-    @RequestMapping(value = "getArea")
-    public Object getArea() {
-        List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
-        return ResponseData.success().data(selectItems);
-    }
-
-    @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum) {
-        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, "3"));
-    }
-
-    @RequestMapping(value = "roomInfo")
-    public Object roomInfo(String houseId) {
-        return ResponseData.success().data(feeCommonService.getRoomByHouseId(houseId));
-    }
 }

@@ -679,6 +679,12 @@ public class RentContractController extends BaseController {
     } else {// 如果是新签合同则直接退水电费押金
       eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
     }
+    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+      eaccounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+      eaccounting.setFeeDateStr(rentContract.getReturnDate());
+    } else {
+      eaccounting.setFeeDate(new Date());
+    }
     outAccountings.add(eaccounting);
     // 房租押金
     Accounting accounting = new Accounting();
@@ -691,8 +697,15 @@ public class RentContractController extends BaseController {
       accounting.setFeeAmount(rentContract.getDepositAmount());
     }
     accounting.setFeeType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
+    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
+      accounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
+      accounting.setFeeDateStr(rentContract.getReturnDate());
+    } else {
+      accounting.setFeeDate(new Date());
+    }
     outAccountings.add(accounting);
-    if (isPre || "1".equals(rentContract.getIsSpecial())) {// 提前退租或许特殊退租，需计算应退房租金额
+    // 提前退租或特殊退租，需计算应退房租金额
+    if (isPre || "1".equals(rentContract.getIsSpecial())) {
       Accounting preBackRentalAcc = new Accounting();
       preBackRentalAcc.setRentContract(rentContract);
       preBackRentalAcc.setAccountingType(accountingType);
@@ -950,6 +963,7 @@ public class RentContractController extends BaseController {
       } else {// 如果是新签合同则直接退水电费押金
         earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
       }
+      earlyDepositAcc.setFeeDate(new Date());
       inAccountings.add(earlyDepositAcc);
     }
 
@@ -965,6 +979,7 @@ public class RentContractController extends BaseController {
       double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
       double tental = (dates < 0 ? 0 : dates) * dailyRental;
       lateAcc.setFeeAmount(new BigDecimal(tental).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+      lateAcc.setFeeDate(new Date());
       inAccountings.add(lateAcc);
     }
 

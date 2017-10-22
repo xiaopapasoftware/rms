@@ -70,13 +70,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return value;
             };
-            layui.laytpl.dateFormat = function (value) {
-                //json日期格式转换为正常格式
-                var date = new Date(value);
-                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
-                var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-                return date.getFullYear() + "-" + month + "-" + day;
-            };
         }
     };
 
@@ -145,10 +138,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             templet: '<div>{{ layui.laytpl.roomNoFormat(d.roomNo) }}</div>'
                         },
                         {field: 'orderNo', align: 'center', title: '订单号', width: 120},
-                        {
-                            field: 'eleCalculateDate', align: 'center', title: '计算日期', width: 120,
-                            templet: '<div>{{ layui.laytpl.dateFormat(d.eleCalculateDate) }}</div>'
-                        },
+                        {field: 'eleCalculateDate', align: 'center', title: '计算日期', width: 120},
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
                         {
                             field: 'elePeakAmount', align: 'right', title: '峰金额（元）', width: 120,
@@ -203,45 +193,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#house").val("");
                 $("#eleReadDates").val("");
                 form.render("select");
-            },
-            saveFun: function () {
-                var data = "eleReadDate=" + $("#eleReadDate").val();
-                if ($("#separateRentShowDiv").is(":visible")) {
-                    data += "&houseId=" + $("#houseId").val();
-                    $.each($("#addDiv input[name='roomIds']"), function (index, obj) {
-                        data += "&roomIds=" + obj.value;
-                    });
-                    $.each($("#addDiv input[name='eleDegrees']"), function (index, obj) {
-                        data += "&eleDegrees=" + obj.value;
-                    });
-                }
-                if ($("#wholeRentShowDiv").is(":visible")) {
-                    data += "&houseId=" + $("#houseId").val();
-                    data += "&elePeakDegree=" + $("#elePeakDegree").val();
-                    data += "&eleValleyDegree=" + $("#eleValleyDegree").val();
-                }
-                if ($("#editShowDiv").is(":visible")) {
-                    data += "&houseId=" + $("#houseId").val();
-                    data += "&roomId=" + $("#roomId").val();
-                    data += "&eleDegree=" + $("#eleDegree").val();
-                }
-                $.post(feeEleChargeFlowMVC.URLs.save.url, data, function (data) {
-                    if (data.code == "200") {
-                        $("#separateRentShowDiv").html("");
-                        if (operType == "edit") {
-                            layer.close(addEleReadIndex);
-                        } else {
-                            $("#houseId").val("");
-                            $("#elePeakDegree").val("");
-                            $("#eleValleyDegree").val("");
-                            $("#eleDegree").val("");
-                            form.render('select');
-                        }
-                        layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
-                    } else {
-                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
-                    }
-                });
             },
             getAreaFun: function () {
                 $.getJSON(feeEleChargeFlowMVC.URLs.selectArea.url, "", function (data) {

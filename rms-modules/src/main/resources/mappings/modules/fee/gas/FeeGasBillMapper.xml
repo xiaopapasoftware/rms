@@ -7,21 +7,34 @@
         <result column="batch_no" property="batchNo" jdbcType="VARCHAR"/>
         <result column="property_id" property="propertyId" jdbcType="VARCHAR"/>
         <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
-        <result column="house_water_num" property="houseWaterNum" jdbcType="VARCHAR"/>
+        <result column="house_gas_num" property="houseGasNum" jdbcType="VARCHAR"/>
         <result column="gas_bill_date" property="gasBillDate" jdbcType="TIMESTAMP"/>
         <result column="gas_bill_amount" property="gasBillAmount" jdbcType="NUMERIC"/>
         <result column="gas_degree" property="gasDegree" jdbcType="NUMERIC"/>
         <result column="bill_status" property="billStatus" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <resultMap id="HouseFeeWithAreaAndBuildAndPropertyMap"
+               type="com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasBillVo"
+               extends="BaseResultMap">
+        <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
+        <result column="building_id" property="buildingId" jdbcType="VARCHAR"/>
+        <result column="building_name" property="buildingName" jdbcType="VARCHAR"/>
+        <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
+        <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
+        <result column="bill_status_name" property="billStatusName" jdbcType="VARCHAR"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
-         id, batch_no, property_id, house_id, house_water_num, gas_bill_date, gas_bill_amount, gas_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, batch_no, property_id, house_id, house_gas_num, gas_bill_date, gas_bill_amount, gas_degree, bill_status, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -29,7 +42,7 @@
         <if test="batchNo!=null"> batch_no,</if>
         <if test="propertyId!=null"> property_id,</if>
         <if test="houseId!=null"> house_id,</if>
-        <if test="houseWaterNum!=null"> house_water_num,</if>
+        <if test="houseGasNum!=null"> house_gas_num,</if>
         <if test="gasBillDate!=null"> gas_bill_date,</if>
         <if test="gasBillAmount!=null"> gas_bill_amount,</if>
         <if test="gasDegree!=null"> gas_degree,</if>
@@ -46,7 +59,7 @@
         <if test="batchNo!=null">#{batchNo,jdbcType=VARCHAR},</if>
         <if test="propertyId!=null">#{propertyId,jdbcType=VARCHAR},</if>
         <if test="houseId!=null">#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseWaterNum!=null">#{houseWaterNum,jdbcType=VARCHAR},</if>
+        <if test="houseGasNum!=null">#{houseGasNum,jdbcType=VARCHAR},</if>
         <if test="gasBillDate!=null">#{gasBillDate,jdbcType=TIMESTAMP},</if>
         <if test="gasBillAmount!=null">#{gasBillAmount,jdbcType=NUMERIC},</if>
         <if test="gasDegree!=null">#{gasDegree,jdbcType=NUMERIC},</if>
@@ -63,7 +76,7 @@
         #{item.batchNo,jdbcType=VARCHAR},
         #{item.propertyId,jdbcType=VARCHAR},
         #{item.houseId,jdbcType=VARCHAR},
-        #{item.houseWaterNum,jdbcType=VARCHAR},
+        #{item.houseGasNum,jdbcType=VARCHAR},
         #{item.gasBillDate,jdbcType=TIMESTAMP},
         #{item.gasBillAmount,jdbcType=NUMERIC},
         #{item.gasDegree,jdbcType=NUMERIC},
@@ -80,7 +93,7 @@
         <if test="batchNo!=null"> batch_no=#{batchNo,jdbcType=VARCHAR},</if>
         <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
         <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseWaterNum!=null"> house_water_num=#{houseWaterNum,jdbcType=VARCHAR},</if>
+        <if test="houseGasNum!=null"> house_gas_num=#{houseGasNum,jdbcType=VARCHAR},</if>
         <if test="gasBillDate!=null"> gas_bill_date=#{gasBillDate,jdbcType=TIMESTAMP},</if>
         <if test="gasBillAmount!=null"> gas_bill_amount=#{gasBillAmount,jdbcType=NUMERIC},</if>
         <if test="gasDegree!=null"> gas_degree=#{gasDegree,jdbcType=NUMERIC},</if>
@@ -94,7 +107,7 @@
         batch_no=#{item.batchNo,jdbcType=VARCHAR},
         property_id=#{item.propertyId,jdbcType=VARCHAR},
         house_id=#{item.houseId,jdbcType=VARCHAR},
-        house_water_num=#{item.houseWaterNum,jdbcType=VARCHAR},
+        house_gas_num=#{item.houseGasNum,jdbcType=VARCHAR},
         gas_bill_date=#{item.gasBillDate,jdbcType=TIMESTAMP},
         gas_bill_amount=#{item.gasBillAmount,jdbcType=NUMERIC},
         gas_degree=#{item.gasDegree,jdbcType=NUMERIC},
@@ -112,7 +125,7 @@
             <if test="batchNo!=null and batchNo!=''"> AND batch_no=#{batchNo}</if>
             <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
             <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="houseWaterNum!=null and houseWaterNum!=''"> AND house_water_num=#{houseWaterNum}</if>
+            <if test="houseGasNum!=null and houseGasNum!=''"> AND house_gas_num=#{houseGasNum}</if>
             <if test="gasBillDate!=null and gasBillDate!=''"> AND gas_bill_date=#{gasBillDate}</if>
             <if test="gasBillAmount!=null and gasBillAmount!=''"> AND gas_bill_amount=#{gasBillAmount}</if>
             <if test="gasDegree!=null and gasDegree!=''"> AND gas_degree=#{gasDegree}</if>
@@ -193,5 +206,77 @@
         select <include refid="Base_Column_List"/> from fee_gas_bill
         <include refid="where"/>
     </select>
+
+    <select id="getLastGasBill" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill">
+        select <include refid="Base_Column_List"/> from fee_gas_bill
+        where del_flag=0
+        and house_id=#{houseId,jdbcType=VARCHAR}
+        <if test="id!=null and id!=''">
+            AND id=#{id,jdbcType=VARCHAR}
+        </if>
+        ORDER  BY gas_bill_date DESC
+        limit 1,1;
+    </select>
+
+    <select id="getTotalAmount"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
+            resultType="java.lang.Double">
+        select
+        sum(IFNULL(fgb.gas_bill_amount,0))
+        from t_house th
+        left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
+        <if test="feeDate!=null and feeDate!=''">
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+        </if>
+        <include refid="commonWhere"/>
+    </select>
+    <select id="getAllHouseFeeWithAreaAndBuildAndProperty"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
+            resultMap="HouseFeeWithAreaAndBuildAndPropertyMap">
+        select
+        sa.name area_name,tpp.AREA_ID,
+        th.HOUSE_NO,th.id house_id,th.gas_account_num house_gas_num,
+        tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
+        th.BUILDING_ID,tb.BUILDING_NAME,
+        fgb.id,fgb.batch_no,fgb.gas_bill_date,fgb.gas_bill_amount,
+        fgb.gas_degree,fgb.bill_status,
+        case fgb.bill_status when '0' then '待提交' when '1' then '待审核'  when '2' then '审核通过'  when '3' then '审核驳回' else '' end bill_status_name
+        from t_house th
+        left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
+        <if test="feeDate!=null and feeDate!=''">
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+        </if>
+        <include refid="commonWhere"/>
+        ORDER BY fgb.create_date DESC
+    </select>
+    <!-- end select -->
+    <sql id="commonWhere">
+        <where>
+            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''"> AND th.id=#{houseId}</if>
+            <if test="status!=null and status!=''"> AND fgb.bill_status=#{status}</if>
+            <if test="houseNum!=null and houseNum!=''">AND th.gas_account_num LIKE '%#{houseNum}%'</if>
+            <if test="isRecord!=null and isRecord!=''">
+                <!-- 已录 -->
+                <if test="isRecord==0">
+                    and fgb.id is not null
+                </if>
+                <!-- 未录 -->
+                <if test="isRecord==1">
+                    and fgb.id is null
+                </if>
+            </if>
+            <!-- 数据范围过滤 -->
+            ${sqlMap.dsf}
+        </where>
+    </sql>
     <!-- end select -->
 </mapper>

@@ -235,7 +235,7 @@
     </select>
 
     <select id="getTotalAmount"
-            parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultType="java.lang.Double">
         select
           sum(IFNULL(feb.ele_bill_amount,0))
@@ -250,7 +250,7 @@
         <include refid="commonWhere"/>
     </select>
     <select id="getAllHouseFeeWithAreaAndBuildAndProperty"
-            parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultMap="HouseFeeWithAreaAndBuildAndPropertyMap">
             select
             sa.name area_name,tpp.AREA_ID,
@@ -283,11 +283,11 @@
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord==0">
-                    feb.id is not null
+                    and feb.id is not null
                 </if>
                 <!-- 未录 -->
                 <if test="isRecord==1">
-                    feb.id is null
+                    and feb.id is null
                 </if>
             </if>
             <!-- 数据范围过滤 -->

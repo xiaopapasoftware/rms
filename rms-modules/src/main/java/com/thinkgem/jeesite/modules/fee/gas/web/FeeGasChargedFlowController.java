@@ -8,13 +8,16 @@ package com.thinkgem.jeesite.modules.fee.gas.web;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
+import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.gas.service.FeeGasChargedFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>煤气收取流水 controller</p>
@@ -36,9 +39,11 @@ public class FeeGasChargedFlowController extends FeeBaseController {
       }
 
      @RequestMapping(value = "list")
-     public Object list(FeeGasChargedFlow feeGasChargedFlow,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeGasChargedFlow> page = feeGasChargedFlowService.findPage(new Page(pageSize, pageNo), feeGasChargedFlow);
-         return ResponseData.success().data(page);
+     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+         List<FeeGasChargedFlowVo> feeGasChargedFeeVos = feeGasChargedFlowService.getFeeGasChargedFee(feeCriteriaEntity);
+         page.setList(feeGasChargedFeeVos);
+         return ResponseData.success().page(page);
      }
 
     @RequestMapping(value = "delete")

@@ -59,6 +59,22 @@ alter table t_payment_trans add index idx_start_date(start_date);
 alter table t_payment_trans add index idx_complex_pt(del_flag,payment_type,start_date);
 alter table t_payment_trans add index idx_del_flag(del_flag);
 
+create table T_PAYMENTTRANS_DTL
+(
+   ID                   varchar(64) NOT NULL,
+   TRANS_ID      		varchar(64) comment '款项交易ID',
+   START_DATE           date comment '开始时间',
+   EXPIRED_DATE         date comment '结束时间',
+   AMOUNT         		float comment '所属金额',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '款项交易分时明细';
+
 create table T_PAYMENT_TRADE
 (
    ID                   varchar(64) NOT NULL,

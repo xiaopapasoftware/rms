@@ -14,10 +14,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
 /**
- * 退租核算Entity
- * 
- * @author huangsc
- * @version 2015-06-11
+ * 退租核算
  */
 public class Accounting extends DataEntity<Accounting> {
 

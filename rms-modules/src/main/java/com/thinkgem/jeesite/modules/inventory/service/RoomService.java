@@ -214,8 +214,4 @@ public class RoomService extends CrudService<RoomDao, Room> {
     return dao.queryRoomsCountByProjectPropertyId(startDate, propertyProjectId);
   }
 
-  public List<Map> getRoomByHouseId(String houseId){
-    return dao.getRoomByHouseId(houseId);
-  }
-
 }

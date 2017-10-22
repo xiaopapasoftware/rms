@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
@@ -56,12 +55,11 @@ public class House extends DataEntity<House> {
   private String payWay;// 付款方式
   private User serviceUser;// 服务管家
   private String servcieUserName;
-
-  /*电户号*/
+  /* 电户号 */
   private String eleAccountNum;
-  /*水户号*/
+  /* 水户号 */
   private String waterAccountNum;
-  /*煤气户号*/
+  /* 煤气户号 */
   private String gasAccountNum;
 
   public House() {

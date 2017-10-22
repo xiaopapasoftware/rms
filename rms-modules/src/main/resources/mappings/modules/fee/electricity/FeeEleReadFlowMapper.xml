@@ -21,6 +21,7 @@
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
+
     <resultMap id="FeeEleReadFlowWithAllInfo" type="com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo" extends="BaseResultMap">
         <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
         <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
@@ -32,6 +33,7 @@
         <result column="intent_mode" property="intentMode" jdbcType="NUMERIC"/>
         <result column="intent_mode_name" property="intentModeName" jdbcType="VARCHAR"/>
     </resultMap>
+
     <sql id="Base_Column_List">
          id, business_id, from_source, property_id, house_id, room_id, house_ele_num, ele_read_date, ele_degree, ele_peak_degree, ele_valley_degree, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
@@ -208,14 +210,6 @@
              id = #{id,jdbcType=VARCHAR}  
     </select>
 
-    <select id="getFeeEleReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
-        where
-        del_flag=0 and from_source=1
-        and business_id = #{feeEleBillId,jdbcType=VARCHAR}
-    </select>
-
-
     <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
         select <include refid="Base_Column_List"/> from fee_ele_read_flow
         <include refid="where"/>
@@ -226,6 +220,13 @@
         select <include refid="Base_Column_List"/> from fee_ele_read_flow
         <include refid="where"/>
         ORDER BY create_date DESC
+    </select>
+
+    <select id="getFeeEleReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        where
+        del_flag=0 and from_source=1
+        and business_id = #{feeEleBillId,jdbcType=VARCHAR}
     </select>
 
     <select id="getLastReadFlow" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
@@ -243,7 +244,7 @@
     </select>
 
     <select id="getFeeEleReadFlowWithAllInfo"
-            parameterType="com.thinkgem.jeesite.modules.fee.common.FeeCriteriaEntity"
+            parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultMap="FeeEleReadFlowWithAllInfo">
         select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME from
         (select
@@ -271,7 +272,6 @@
         <include refid="commonWhere"/>
         ORDER BY temp.ele_read_date DESC
     </select>
-    <!-- end select -->
 
     <!-- end select -->
     <sql id="commonWhere">

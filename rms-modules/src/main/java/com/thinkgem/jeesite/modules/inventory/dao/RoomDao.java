@@ -53,5 +53,4 @@ public interface RoomDao extends CrudDao<Room> {
    */
   int queryRoomsCountByProjectPropertyId(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
 
-  List<Map> getRoomByHouseId(String houseId);
 }
