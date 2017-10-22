@@ -4,6 +4,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
@@ -277,5 +278,14 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
 
   public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, List<String> transIdList) {
     return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transIdList);
+  }
+
+  /**
+   * 获取合同下所有房租款项里已经到账的款项中，最大的结束日期
+   */
+  public Date analysisMaxIncomedTransDate(RentContract rentContract) {
+    List<PaymentTrans> ptList = getPaymentTransByTypeAndStatus(PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentContract.getId(), PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+    Collections.sort(ptList);
+    return ptList.get(ptList.size() - 1).getExpiredDate();
   }
 }

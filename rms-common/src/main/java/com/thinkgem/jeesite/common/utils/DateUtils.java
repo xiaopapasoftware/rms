@@ -162,10 +162,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
   /**
    * 获取两个日期之间的天数
-   * 
-   * @param before
-   * @param after
-   * @return
    */
   public static double getDistanceOfTwoDate(Date before, Date after) {
     long beforeTime = before.getTime();
@@ -175,10 +171,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
   /**
    * 获取n个月之后的日期
-   * 
-   * @param date
-   * @param addMonth
-   * @return
    */
   public static Date dateAddMonth(Date date, int addMonth) {
     GregorianCalendar gc = new GregorianCalendar();
@@ -189,10 +181,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
   /**
    * 获取n天之后的日期
-   * 
-   * @param date
-   * @param addMonth
-   * @return
    */
   public static Date dateAddDay(Date date, int day) {
     GregorianCalendar gc = new GregorianCalendar();
@@ -223,10 +211,6 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
   /**
    * 获取n个月之后的日期，要扣除1天。
-   * 
-   * @param date
-   * @param addMonth
-   * @return
    */
   public static Date dateAddMonth2(Date date, int addMonth) {
     GregorianCalendar gc = new GregorianCalendar();
@@ -253,5 +237,20 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
       count = -1;
     }
     return count;
+  }
+
+  /**
+   * 校验两个日期的年月日是否完全一致
+   */
+  public static boolean checkYearMonthDaySame(Date d1, Date d2) {
+    Calendar ca1 = Calendar.getInstance();
+    ca1.setTime(d1);
+    Calendar ca2 = Calendar.getInstance();
+    ca2.setTime(d2);
+    if (ca1.get(Calendar.YEAR) == ca2.get(Calendar.YEAR) && ca1.get(Calendar.MONTH) == ca2.get(Calendar.MONTH) && ca1.get(Calendar.DAY_OF_MONTH) == ca2.get(Calendar.DAY_OF_MONTH)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,7 @@ import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.PaymenttransDtlService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
@@ -87,6 +89,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   private DepositAgreementService depositAgreementService;
   @Autowired
   private PaymentTransService paymentTransService;
+  @Autowired
+  private PaymenttransDtlService paymenttransDtlService;
   @Autowired
   private AuditHisService auditHisService;
   @Autowired
@@ -734,23 +738,25 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
             Date feeDate = accounting.getFeeDate();
             Date contractBeginDate = rentContract.getStartDate();
-            Date contractExpiredDate = rentContract.getExpiredDate();
-            if (feeDate.after(contractBeginDate) && contractExpiredDate.after(feeDate)) {
+            Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
+            if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
               List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
               Date curDate = contractBeginDate;
-              while (curDate.before(contractExpiredDate)) {
+              while (curDate.before(paidExpiredDate)) {
                 Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
-                if (feeDate.after(curEndDate)) {// DONOTHING
+                if (feeDate.after(curEndDate)) {// DONOTHING, feeDate=curEndDate也ok 或者 feeDate=curDate
                 }
                 if (feeDate.after(curDate) && feeDate.before(curEndDate)) {
                   PaymenttransDtl pdl = new PaymenttransDtl();
                   pdl.setTransId(paymentTransId);
-//                  pdl.setAmount(amount);
+                  double dailyFee = rentContract.getRental() * 12 / 365;// 平摊到每天的费用金额
+                  double dates = DateUtils.getDistanceOfTwoDate(feeDate, curEndDate);// 应退天数
+                  pdl.setAmount(new BigDecimal(dates * dailyFee).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
                   pdl.setStartDate(feeDate);
                   pdl.setExpiredDate(curEndDate);
                   paymenttransDtls.add(pdl);
                 }
-                if (curDate.after(feeDate)) {
+                if (curDate.after(feeDate) || DateUtils.checkYearMonthDaySame(curDate, feeDate)) {
                   PaymenttransDtl pdl = new PaymenttransDtl();
                   pdl.setTransId(paymentTransId);
                   pdl.setAmount(rentContract.getRental());
@@ -760,7 +766,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 }
                 curDate = DateUtils.dateAddMonth(curDate, 1);
               }
-
+              if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
+                for (PaymenttransDtl pd : paymenttransDtls) {
+                  paymenttransDtlService.save(pd);
+                }
+              }
             }
           }
         }
