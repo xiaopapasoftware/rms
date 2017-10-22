@@ -49,6 +49,7 @@ import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
@@ -732,9 +733,34 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           // 如果是提前退租，把应退房租金额分摊到明细表
           if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
             Date feeDate = accounting.getFeeDate();
+            Date contractBeginDate = rentContract.getStartDate();
             Date contractExpiredDate = rentContract.getExpiredDate();
-            if(contractExpiredDate.after(feeDate)){
-               //TODO
+            if (feeDate.after(contractBeginDate) && contractExpiredDate.after(feeDate)) {
+              List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
+              Date curDate = contractBeginDate;
+              while (curDate.before(contractExpiredDate)) {
+                Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
+                if (feeDate.after(curEndDate)) {// DONOTHING
+                }
+                if (feeDate.after(curDate) && feeDate.before(curEndDate)) {
+                  PaymenttransDtl pdl = new PaymenttransDtl();
+                  pdl.setTransId(paymentTransId);
+//                  pdl.setAmount(amount);
+                  pdl.setStartDate(feeDate);
+                  pdl.setExpiredDate(curEndDate);
+                  paymenttransDtls.add(pdl);
+                }
+                if (curDate.after(feeDate)) {
+                  PaymenttransDtl pdl = new PaymenttransDtl();
+                  pdl.setTransId(paymentTransId);
+                  pdl.setAmount(rentContract.getRental());
+                  pdl.setStartDate(curDate);
+                  pdl.setExpiredDate(curEndDate);
+                  paymenttransDtls.add(pdl);
+                }
+                curDate = DateUtils.dateAddMonth(curDate, 1);
+              }
+
             }
           }
         }
