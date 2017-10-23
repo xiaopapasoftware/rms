@@ -96,7 +96,6 @@ public class FeeCommonService {
         return feeConfig;
     }
 
-
     public String getRangeIdByRoomId(String roomId){
         return feeCommonDao.getRangeIdByRoomId(roomId);
     }
