@@ -216,7 +216,7 @@
             AND id != #{id,jdbcType=VARCHAR}
         </if>
         ORDER BY gas_read_date DESC
-        limit 1,1;
+        limit 0,1;
     </select>
 
     <select id="getFeeGasReadFlowWithAllInfo"

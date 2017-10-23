@@ -231,7 +231,7 @@
             AND id=#{id,jdbcType=VARCHAR}
         </if>
         ORDER  BY ele_bill_date DESC
-        limit 1,1;
+        limit 0,1;
     </select>
 
     <select id="getTotalAmount"
