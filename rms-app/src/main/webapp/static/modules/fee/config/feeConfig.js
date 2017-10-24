@@ -13,7 +13,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
             form.on('select(area)', function (data) {
                 $("#areaId").val(data.value);
-                feeConfigMVC.Controller.selectItemFun("project", "project", data.value);
+                feeConfigMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -29,7 +29,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(project)', function (data) {
-                feeConfigMVC.Controller.selectItemFun("building", "building", data.value);
+                feeConfigMVC.Controller.selectItemFun("building", "BUILDING", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -44,7 +44,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(building)', function (data) {
-                feeConfigMVC.Controller.selectItemFun("house", "house", data.value);
+                feeConfigMVC.Controller.selectItemFun("house", "HOUSE", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
@@ -56,7 +56,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             });
 
             form.on('select(house)', function (data) {
-                feeConfigMVC.Controller.selectItemFun("room", "room", data.value);
+                feeConfigMVC.Controller.selectItemFun("room", "ROOM", data.value);
 
                 $("#room option").remove();
                 $("#room").append('<option value="">房间</option>');
@@ -414,7 +414,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             selectItemFun: function (id, type, value) {
                 $.getJSON(feeConfigMVC.URLs.selectItem.url, {
-                    "business": "org",
+                    "business": "ORG",
                     "type": type,
                     "id": value
                 }, function (data) {
