@@ -65,6 +65,7 @@ create table T_PAYMENTTRANS_DTL
    TRANS_ID      		varchar(64) comment '款项交易ID',
    START_DATE           date comment '开始时间',
    EXPIRED_DATE         date comment '结束时间',
+   ACT_DATE         	date comment '费用日期',
    AMOUNT         		float comment '所属金额',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',

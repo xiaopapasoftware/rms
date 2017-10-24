@@ -18,6 +18,7 @@ public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
   private String transId; // 款项交易ID
   private Date startDate; // 开始时间
   private Date expiredDate; // 结束时间
+  private Date actDate;
   private Double amount; // 所属金额
 
   public PaymenttransDtl() {
@@ -53,6 +54,15 @@ public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
 
   public void setExpiredDate(Date expiredDate) {
     this.expiredDate = expiredDate;
+  }
+
+  @JsonFormat(pattern = "yyyy-MM-dd")
+  public Date getActDate() {
+    return actDate;
+  }
+
+  public void setActDate(Date actDate) {
+    this.actDate = actDate;
   }
 
   public Double getAmount() {

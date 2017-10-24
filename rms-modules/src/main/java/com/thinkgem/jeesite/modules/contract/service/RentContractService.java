@@ -747,7 +747,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
                 if (feeDate.after(curEndDate)) {// DONOTHING, feeDate=curEndDate也ok 或者 feeDate=curDate
                 }
-                if (feeDate.after(curDate) && feeDate.before(curEndDate)) {
+                if (DateUtils.checkYearMonthDaySame(feeDate, curDate) || DateUtils.checkYearMonthDaySame(feeDate, curEndDate) || (feeDate.after(curDate) && feeDate.before(curEndDate))) {
                   PaymenttransDtl pdl = new PaymenttransDtl();
                   pdl.setTransId(paymentTransId);
                   if (accounting.getFeeAmount() > rentContract.getRental()) {
@@ -758,12 +758,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                   }
                   pdl.setStartDate(feeDate);
                   pdl.setExpiredDate(curEndDate);
+                  pdl.setActDate(feeDate);
                   paymenttransDtls.add(pdl);
                 }
-                if (curDate.after(feeDate) || DateUtils.checkYearMonthDaySame(curDate, feeDate)) {
+                if (curDate.after(feeDate)) {
                   PaymenttransDtl pdl = new PaymenttransDtl();
                   pdl.setTransId(paymentTransId);
                   pdl.setAmount(rentContract.getRental());
+                  pdl.setActDate(feeDate);
                   pdl.setStartDate(curDate);
                   pdl.setExpiredDate(curEndDate);
                   paymenttransDtls.add(pdl);
