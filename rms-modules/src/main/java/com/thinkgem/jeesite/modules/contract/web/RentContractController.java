@@ -683,7 +683,9 @@ public class RentContractController extends BaseController {
       eaccounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       eaccounting.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      eaccounting.setFeeDate(new Date());
+      Date nowDate = new Date();
+      eaccounting.setFeeDate(nowDate);
+      eaccounting.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     outAccountings.add(eaccounting);
     // 房租押金
@@ -701,7 +703,9 @@ public class RentContractController extends BaseController {
       accounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       accounting.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      accounting.setFeeDate(new Date());
+      Date nowDate = new Date();
+      eaccounting.setFeeDate(nowDate);
+      eaccounting.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     outAccountings.add(accounting);
     // 提前退租或特殊退租，需计算应退房租金额
@@ -716,7 +720,9 @@ public class RentContractController extends BaseController {
         preBackRentalAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
         preBackRentalAcc.setFeeDateStr(rentContract.getReturnDate());
       } else {
-        preBackRentalAcc.setFeeDate(new Date());
+        Date nowDate = new Date();
+        preBackRentalAcc.setFeeDate(nowDate);
+        preBackRentalAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
       }
       outAccountings.add(preBackRentalAcc);
     }
@@ -747,7 +753,9 @@ public class RentContractController extends BaseController {
           elctrBackAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
           elctrBackAcc.setFeeDateStr(rentContract.getReturnDate());
         } else {
-          elctrBackAcc.setFeeDate(new Date());
+          Date nowDate = new Date();
+          elctrBackAcc.setFeeDate(nowDate);
+          elctrBackAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
         }
         outAccountings.add(elctrBackAcc);
       }
@@ -766,7 +774,9 @@ public class RentContractController extends BaseController {
           waterAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
           waterAcc.setFeeDateStr(rentContract.getReturnDate());
         } else {
-          waterAcc.setFeeDate(new Date());
+          Date nowDate = new Date();
+          waterAcc.setFeeDate(nowDate);
+          waterAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
         }
         outAccountings.add(waterAcc);
       }
@@ -782,7 +792,9 @@ public class RentContractController extends BaseController {
           tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
           tvAcc.setFeeDateStr(rentContract.getReturnDate());
         } else {
-          tvAcc.setFeeDate(new Date());
+          Date nowDate = new Date();
+          tvAcc.setFeeDate(nowDate);
+          tvAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
         }
         outAccountings.add(tvAcc);
       }
@@ -798,7 +810,9 @@ public class RentContractController extends BaseController {
           netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
           netAcc.setFeeDateStr(rentContract.getReturnDate());
         } else {
-          netAcc.setFeeDate(new Date());
+          Date nowDate = new Date();
+          netAcc.setFeeDate(nowDate);
+          netAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
         }
         outAccountings.add(netAcc);
       }
@@ -813,7 +827,9 @@ public class RentContractController extends BaseController {
           servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
           servAcc.setFeeDateStr(rentContract.getReturnDate());
         } else {
-          servAcc.setFeeDate(new Date());
+          Date nowDate = new Date();
+          servAcc.setFeeDate(nowDate);
+          servAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
         }
         servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), rentContract.getServiceFee()));
         outAccountings.add(servAcc);
@@ -963,7 +979,9 @@ public class RentContractController extends BaseController {
       } else {// 如果是新签合同则直接退水电费押金
         earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
       }
-      earlyDepositAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      earlyDepositAcc.setFeeDate(nowDate);
+      earlyDepositAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
       inAccountings.add(earlyDepositAcc);
     }
 
@@ -979,7 +997,9 @@ public class RentContractController extends BaseController {
       double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
       double tental = (dates < 0 ? 0 : dates) * dailyRental;
       lateAcc.setFeeAmount(new BigDecimal(tental).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
-      lateAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      lateAcc.setFeeDate(nowDate);
+      lateAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
       inAccountings.add(lateAcc);
     }
 
@@ -994,7 +1014,9 @@ public class RentContractController extends BaseController {
       pay4BrokeAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       pay4BrokeAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      pay4BrokeAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      pay4BrokeAcc.setFeeDate(nowDate);
+      pay4BrokeAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(pay4BrokeAcc);
 
@@ -1009,7 +1031,9 @@ public class RentContractController extends BaseController {
       backSuppAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       backSuppAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      backSuppAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      backSuppAcc.setFeeDate(nowDate);
+      backSuppAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(backSuppAcc);
 
@@ -1024,7 +1048,9 @@ public class RentContractController extends BaseController {
       elSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       elSelAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      elSelAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      elSelAcc.setFeeDate(nowDate);
+      elSelAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(elSelAcc);
 
@@ -1039,7 +1065,9 @@ public class RentContractController extends BaseController {
       elCommAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       elCommAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      elCommAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      elCommAcc.setFeeDate(nowDate);
+      elCommAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(elCommAcc);
 
@@ -1054,7 +1082,9 @@ public class RentContractController extends BaseController {
       waterSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       waterSelAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      waterSelAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      waterSelAcc.setFeeDate(nowDate);
+      waterSelAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(waterSelAcc);
 
@@ -1069,7 +1099,9 @@ public class RentContractController extends BaseController {
       tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       tvAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      tvAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      tvAcc.setFeeDate(nowDate);
+      tvAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(tvAcc);
 
@@ -1084,7 +1116,9 @@ public class RentContractController extends BaseController {
       netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       netAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      netAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      netAcc.setFeeDate(nowDate);
+      netAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(netAcc);
 
@@ -1099,7 +1133,9 @@ public class RentContractController extends BaseController {
       servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
       servAcc.setFeeDateStr(rentContract.getReturnDate());
     } else {
-      servAcc.setFeeDate(new Date());
+      Date nowDate = new Date();
+      servAcc.setFeeDate(nowDate);
+      servAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
     }
     inAccountings.add(servAcc);
     return inAccountings;

@@ -735,8 +735,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
           paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, accounting.getFeeType(), rentContract.getId(), feeDirection, accounting.getFeeAmount(), accounting.getFeeAmount(),
               0D, PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), rentContract.getExpiredDate(), null);
           // 如果是提前退租，把应退房租金额分摊到明细表
-          if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType)) {
-            Date feeDate = accounting.getFeeDate();
+          if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) && TradeDirectionEnum.OUT.getValue().equals(accounting.getFeeDirection())
+              && PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue().equals(accounting.getFeeType())) {
+            Date feeDate = DateUtils.parseDate(accounting.getFeeDateStr());
             Date contractBeginDate = rentContract.getStartDate();
             Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
             if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
@@ -749,9 +750,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 if (feeDate.after(curDate) && feeDate.before(curEndDate)) {
                   PaymenttransDtl pdl = new PaymenttransDtl();
                   pdl.setTransId(paymentTransId);
-                  double dailyFee = rentContract.getRental() * 12 / 365;// 平摊到每天的费用金额
-                  double dates = DateUtils.getDistanceOfTwoDate(feeDate, curEndDate);// 应退天数
-                  pdl.setAmount(new BigDecimal(dates * dailyFee).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                  if (accounting.getFeeAmount() > rentContract.getRental()) {
+                    BigDecimal[] numbers = new BigDecimal(accounting.getFeeAmount()).divideAndRemainder(new BigDecimal(rentContract.getRental()));
+                    pdl.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
+                  } else {
+                    pdl.setAmount(accounting.getFeeAmount());
+                  }
                   pdl.setStartDate(feeDate);
                   pdl.setExpiredDate(curEndDate);
                   paymenttransDtls.add(pdl);
