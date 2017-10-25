@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 import com.thinkgem.jeesite.modules.funds.entity.Receipt;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
 import org.apache.commons.collections.CollectionUtils;
@@ -43,6 +44,8 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
   private AttachmentService attachmentService;
   @Autowired
   private PaymentTransDao paymentTransDao;
+  @Autowired
+  private PaymenttransDtlService paymenttransDtlService;
 
   @Override
   public List<PaymentTrans> findList(PaymentTrans entity) {
@@ -83,8 +86,16 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   @Transactional(readOnly = false)
   public void deletePaymentTransAndTradingAcctouns(String objectID) {
-    PaymentTrans delPaymentTrans = new PaymentTrans(); // 删除款项记录
+    PaymentTrans delPaymentTrans = new PaymentTrans();
     delPaymentTrans.setTransId(objectID);
+    List<PaymentTrans> paymentTransList = paymentTransDao.findList(delPaymentTrans);
+    List<String> paymentTransIdList = new ArrayList<String>();
+    for (PaymentTrans p : paymentTransList) {
+      paymentTransIdList.add(p.getId());
+    }
+    PaymenttransDtl ptd = new PaymenttransDtl();
+    ptd.setTransIdList(paymentTransIdList);
+    paymenttransDtlService.delete(ptd);
     delPaymentTrans.preUpdate();
     dao.delete(delPaymentTrans);
     TradingAccounts tradingAccounts = new TradingAccounts();
@@ -246,6 +257,14 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     pts.setTransId(objectId);
     pts.setTradeTypeList(tradeTypeList);
     pts.setPaymentTypeList(paymentTypeList);
+    List<PaymentTrans> ptsList = super.findList(pts);
+    List<String> ptidList = new ArrayList<String>();
+    for (PaymentTrans tempPt : ptsList) {
+      ptidList.add(tempPt.getId());
+    }
+    PaymenttransDtl ptd = new PaymenttransDtl();
+    ptd.setTransIdList(ptidList);
+    paymenttransDtlService.delete(ptd);
     super.delete(pts);
   }
 

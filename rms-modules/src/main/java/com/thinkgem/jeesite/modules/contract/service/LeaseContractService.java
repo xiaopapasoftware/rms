@@ -361,9 +361,7 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
   public List<LeaseContract> findLeaseContractListByHouseId(String houseId) {
     List<LeaseContract> contractList = leaseContractDao.getLeaseContractListByHouseId(houseId);
     if (CollectionUtils.isNotEmpty(contractList)) {
-      contractList.forEach(
-              contract -> contract.setLeaseContractDtlList(leaseContractDtlDao.getLeaseContractDtlListByContractId(contract.getId()))
-      );
+      contractList.forEach(contract -> contract.setLeaseContractDtlList(leaseContractDtlDao.getLeaseContractDtlListByContractId(contract.getId())));
     }
     return contractList;
   }

@@ -108,9 +108,26 @@
 	</update>
 	
 	<update id="delete">
-		UPDATE t_paymenttrans_dtl SET 
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		UPDATE t_paymenttrans_dtl 
+		SET 	del_flag = #{DEL_FLAG_DELETE},
+				update_by = #{updateBy.id},
+				update_date = #{updateDate}
+		<where>
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="transId != null and transId != ''">
+				and trans_id = #{transId}
+			</if>
+			<if test="transIdList != null">
+			    and trans_id in 
+		         <foreach item="item" index="index" collection="transIdList" open="(" separator="," close=")">  
+		             #{item}
+		         </foreach>  
+      		</if>
+			
+			
+		</where>
 	</update>
 	
 </mapper>

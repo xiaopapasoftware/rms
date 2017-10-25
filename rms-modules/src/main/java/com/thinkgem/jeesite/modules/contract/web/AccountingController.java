@@ -20,7 +20,9 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.PaymenttransDtlService;
 
 /**
  * 退租核算
@@ -33,6 +35,8 @@ public class AccountingController extends BaseController {
   private PaymentTransService paymentTransService;
   @Autowired
   private AccountingService accountingService;
+  @Autowired
+  private PaymenttransDtlService paymenttransDtlService;
 
   @ModelAttribute
   public Accounting get(@RequestParam(required = false) String id) {
@@ -83,6 +87,9 @@ public class AccountingController extends BaseController {
       PaymentTrans pt = new PaymentTrans();
       pt.setId(ating.getPaymentTransId());
       paymentTransService.delete(pt);
+      PaymenttransDtl ptd = new PaymenttransDtl();
+      ptd.setTransId(ating.getPaymentTransId());
+      paymenttransDtlService.delete(ptd);
       accountingService.delete(ating);
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除退租核算记录及其款项成功！");
     } else {

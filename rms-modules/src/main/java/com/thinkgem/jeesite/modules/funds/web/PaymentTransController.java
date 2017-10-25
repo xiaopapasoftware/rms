@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +31,6 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 
 /**
  * 款项交易Controller
- * 
- * @author huangsc
- * @version 2015-06-11
  */
 @Controller
 @RequestMapping(value = "${adminPath}/funds/paymentTrans")
@@ -53,7 +51,7 @@ public class PaymentTransController extends BaseController {
     return entity;
   }
 
-  // @RequiresPermissions("funds:paymentTrans:view")
+  @RequiresPermissions("funds:paymentTrans:view")
   @SuppressWarnings({"rawtypes", "unchecked"})
   @RequestMapping(value = {"list"})
   public String listQuery(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -69,14 +67,14 @@ public class PaymentTransController extends BaseController {
     return "modules/funds/paymentTransList";
   }
 
-  // @RequiresPermissions("funds:paymentTrans:view")
+  @RequiresPermissions("funds:paymentTrans:view")
   @RequestMapping(value = "form")
   public String form(PaymentTrans paymentTrans, Model model) {
     model.addAttribute("paymentTrans", paymentTrans);
     return "modules/funds/paymentTransForm";
   }
 
-  // @RequiresPermissions("funds:paymentTrans:edit")
+  @RequiresPermissions("funds:paymentTrans:edit")
   @RequestMapping(value = "save")
   public String save(PaymentTrans paymentTrans, Model model, RedirectAttributes redirectAttributes) {
     if (!beanValidator(model, paymentTrans)) {
@@ -87,7 +85,7 @@ public class PaymentTransController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
   }
 
-  // @RequiresPermissions("funds:paymentTrans:edit")
+  @RequiresPermissions("funds:paymentTrans:edit")
   @RequestMapping(value = "delete")
   public String delete(PaymentTrans paymentTrans, RedirectAttributes redirectAttributes) {
     paymentTransService.delete(paymentTrans);
@@ -98,6 +96,7 @@ public class PaymentTransController extends BaseController {
   /**
    * 导出款项数据
    */
+  @RequiresPermissions("funds:paymentTrans:view")
   @RequestMapping(value = "exportPaymentTrans", method = RequestMethod.POST)
   public String exportPaymentTrans(PaymentTrans paymentTrans, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes, Model model) {
     try {

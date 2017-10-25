@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.funds.entity;
 
 import org.hibernate.validator.constraints.Length;
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -20,6 +22,7 @@ public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
   private Date expiredDate; // 结束时间
   private Date actDate;
   private Double amount; // 所属金额
+  private List<String> transIdList;
 
   public PaymenttransDtl() {
     super();
@@ -71,6 +74,14 @@ public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
 
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+
+  public List<String> getTransIdList() {
+    return transIdList;
+  }
+
+  public void setTransIdList(List<String> transIdList) {
+    this.transIdList = transIdList;
   }
 
 }
