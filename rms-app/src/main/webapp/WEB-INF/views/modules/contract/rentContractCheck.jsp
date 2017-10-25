@@ -308,7 +308,12 @@
 		<div class="control-group">
 			<label class="control-label">备注：</label>
 			<div class="controls">
-				提前应退房租=已缴房租总额-月租金*12/365*总入住天数=${totalFee}-${rental}*12/365*${dates}
+			  <c:if test="${rentContract.tradeType=='6' || rentContract.tradeType=='9'}">
+				 应退房租=已缴房租总额-(月租金*12/365)*总入住天数=${totalFee}-(${rental}*12/365)*${dates}		  
+			  </c:if>
+			  <c:if test="${rentContract.tradeType=='8'}">
+				逾补房租=(月租金*12/365)*逾补天数=(${rental}*12/365)*${dates}		  
+			  </c:if>
 			</div>
 		</div>
 		<div class="control-group">

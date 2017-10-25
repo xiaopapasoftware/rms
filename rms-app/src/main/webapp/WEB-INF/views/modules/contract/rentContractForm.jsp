@@ -272,7 +272,6 @@
 		
 		function buildingChange() {
 			var building = $("[id='building.id']").val();
-			
 			var html = "<option value='' selected='selected'>请选择...</option>";
 			if("" != building) {
 				$.ajaxSetup({ cache: false });

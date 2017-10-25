@@ -144,6 +144,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
               tmpAccounting.setPaymentTransId(paymentTransId);
               tmpAccounting.preUpdate();
               accountingService.save(tmpAccounting);
+              if (TradeDirectionEnum.OUT.getValue().equals(tmpAccounting.getFeeDirection()) && PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue().equals(feeType)) {
+                shareRetirementAmt(tmpAccounting.getFeeDate(), tmpAccounting.getFeeAmount(), rentContract, paymentTransId);
+              }
             }
           }
         }
@@ -230,7 +233,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     rentContract.setReturnRemark(returnRemark);
     super.save(rentContract);
     accountingService.delRentContractAccountings(rentContract);// 删除核算记录
-    // 特殊退租暂时不生成款项
+    // 特殊退租暂时不生成款项，在审核退租内容时再生成款项数据
     generatePaymentTransAndAccounts(accountList, rentContract, tradeType, TradeDirectionEnum.IN.getValue());
     generatePaymentTransAndAccounts(outAccountList, rentContract, tradeType, TradeDirectionEnum.OUT.getValue());
   }
@@ -716,71 +719,119 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     accounting.setFeeDirection(tradeDirection);
     accounting.setUser(UserUtils.getUser());
     accounting.setPaymentTransId(paymentTransId);
-    if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
-      accounting.setFeeDate(new Date());
-    } else {
-      if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
-        accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
-      }
+    if (StringUtils.isNotEmpty(accounting.getFeeDateStr())) {
+      accounting.setFeeDate(DateUtils.parseDate(accounting.getFeeDateStr()));
     }
     accountingService.save(accounting);
   }
 
   private void generatePaymentTransAndAccounts(List<Accounting> accountList, RentContract rentContract, String tradeType, String feeDirection) {
     for (Accounting accounting : accountList) {
-      if (accounting != null && accounting.getFeeAmount() != null && accounting.getFeeAmount() > 0) {
+      Double feeAmt = accounting.getFeeAmount();
+      if (accounting != null && feeAmt != null && feeAmt > 0) {
+        String feeType = accounting.getFeeType();
         String paymentTransId = "";
         // 特殊退租不生成款项
         if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
-          paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, accounting.getFeeType(), rentContract.getId(), feeDirection, accounting.getFeeAmount(), accounting.getFeeAmount(),
-              0D, PaymentTransStatusEnum.NO_SIGN.getValue(), rentContract.getStartDate(), rentContract.getExpiredDate(), null);
-          // 如果是提前退租，把应退房租金额分摊到明细表
+          paymentTransId = paymentTransService.generateAndSavePaymentTrans(tradeType, feeType, rentContract.getId(), feeDirection, feeAmt, feeAmt, 0D, PaymentTransStatusEnum.NO_SIGN.getValue(),
+              rentContract.getStartDate(), rentContract.getExpiredDate(), null);
+          // 如果是提前退租，把应退房租金额分摊到明细表,便于毛利报表的统计
           if (TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) && TradeDirectionEnum.OUT.getValue().equals(accounting.getFeeDirection())
-              && PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue().equals(accounting.getFeeType())) {
-            Date feeDate = DateUtils.parseDate(accounting.getFeeDateStr());
-            Date contractBeginDate = rentContract.getStartDate();
-            Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
-            if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
-              List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
-              Date curDate = contractBeginDate;
-              while (curDate.before(paidExpiredDate)) {
-                Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
-                if (feeDate.after(curEndDate)) {// DONOTHING, feeDate=curEndDate也ok 或者 feeDate=curDate
-                }
-                if (DateUtils.checkYearMonthDaySame(feeDate, curDate) || DateUtils.checkYearMonthDaySame(feeDate, curEndDate) || (feeDate.after(curDate) && feeDate.before(curEndDate))) {
-                  PaymenttransDtl pdl = new PaymenttransDtl();
-                  pdl.setTransId(paymentTransId);
-                  if (accounting.getFeeAmount() > rentContract.getRental()) {
-                    BigDecimal[] numbers = new BigDecimal(accounting.getFeeAmount()).divideAndRemainder(new BigDecimal(rentContract.getRental()));
-                    pdl.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
-                  } else {
-                    pdl.setAmount(accounting.getFeeAmount());
-                  }
-                  pdl.setStartDate(feeDate);
-                  pdl.setExpiredDate(curEndDate);
-                  pdl.setActDate(feeDate);
-                  paymenttransDtls.add(pdl);
-                }
-                if (curDate.after(feeDate)) {
-                  PaymenttransDtl pdl = new PaymenttransDtl();
-                  pdl.setTransId(paymentTransId);
-                  pdl.setAmount(rentContract.getRental());
-                  pdl.setActDate(feeDate);
-                  pdl.setStartDate(curDate);
-                  pdl.setExpiredDate(curEndDate);
-                  paymenttransDtls.add(pdl);
-                }
-                curDate = DateUtils.dateAddMonth(curDate, 1);
-              }
-              if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
-                for (PaymenttransDtl pd : paymenttransDtls) {
-                  paymenttransDtlService.save(pd);
-                }
-              }
-            }
+              && PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue().equals(feeType)) {
+            shareRetirementAmt(DateUtils.parseDate(accounting.getFeeDateStr()), feeAmt, rentContract, paymentTransId);
+          }
+          // 如果是逾期退租，把逾赔房租金额分摊到明细表，便于毛利报表统计
+          if (TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType) && TradeDirectionEnum.IN.getValue().equals(accounting.getFeeDirection())
+              && PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue().equals(feeType)) {
+            shareOverdueAmt(DateUtils.parseDate(accounting.getFeeDateStr()), feeAmt, rentContract, paymentTransId);
           }
         }
         saveAccounting(paymentTransId, tradeType, accounting, rentContract, feeDirection);
+      }
+    }
+  }
+
+  /**
+   * 逾期退租，把预期的房租金额分摊到各个时间段内
+   */
+  private void shareOverdueAmt(Date feeDate, Double feeAmount, RentContract rentContract, String paymentTransId) {
+    Date expiredDate = rentContract.getExpiredDate();
+    if (feeDate.after(expiredDate)) {
+      List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
+      Date curDateBegin = DateUtils.dateAddDay(expiredDate, 1);
+      Date curDateEnd = DateUtils.dateAddMonth2(curDateBegin, 1);
+      while (curDateEnd.before(feeDate)) {
+        PaymenttransDtl pdl = new PaymenttransDtl();
+        pdl.setTransId(paymentTransId);
+        pdl.setAmount(rentContract.getRental());
+        pdl.setActDate(feeDate);
+        pdl.setStartDate(curDateBegin);
+        pdl.setExpiredDate(curDateEnd);
+        paymenttransDtls.add(pdl);
+        curDateBegin = DateUtils.dateAddDay(curDateEnd, 1);
+        curDateEnd = DateUtils.dateAddMonth2(curDateBegin, 1);
+      }
+      PaymenttransDtl lastPDL = new PaymenttransDtl();
+      lastPDL.setTransId(paymentTransId);
+      if (feeAmount > rentContract.getRental()) {
+        BigDecimal[] numbers = new BigDecimal(feeAmount).divideAndRemainder(new BigDecimal(rentContract.getRental()));
+        lastPDL.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
+      } else {
+        lastPDL.setAmount(feeAmount);
+      }
+      lastPDL.setActDate(feeDate);
+      lastPDL.setStartDate(curDateBegin);
+      lastPDL.setExpiredDate(feeDate);
+      paymenttransDtls.add(lastPDL);
+      if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
+        for (PaymenttransDtl pd : paymenttransDtls) {
+          paymenttransDtlService.save(pd);
+        }
+      }
+    }
+  }
+
+
+  /**
+   * 提前退租/特殊退租，把应退房租总金额按照租房合同周期分摊到各个时间段内
+   */
+  private void shareRetirementAmt(Date feeDate, Double feeAmount, RentContract rentContract, String paymentTransId) {
+    Date contractBeginDate = rentContract.getStartDate();
+    Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
+    if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
+      List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
+      Date curDate = contractBeginDate;
+      while (curDate.before(paidExpiredDate)) {
+        Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
+        if (DateUtils.checkYearMonthDaySame(feeDate, curDate) || DateUtils.checkYearMonthDaySame(feeDate, curEndDate) || (feeDate.after(curDate) && feeDate.before(curEndDate))) {
+          PaymenttransDtl pdl = new PaymenttransDtl();
+          pdl.setTransId(paymentTransId);
+          if (feeAmount > rentContract.getRental()) {
+            BigDecimal[] numbers = new BigDecimal(feeAmount).divideAndRemainder(new BigDecimal(rentContract.getRental()));
+            pdl.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
+          } else {
+            pdl.setAmount(feeAmount);
+          }
+          pdl.setStartDate(feeDate);
+          pdl.setExpiredDate(curEndDate);
+          pdl.setActDate(feeDate);
+          paymenttransDtls.add(pdl);
+        }
+        if (curDate.after(feeDate)) {
+          PaymenttransDtl pdl = new PaymenttransDtl();
+          pdl.setTransId(paymentTransId);
+          pdl.setAmount(rentContract.getRental());
+          pdl.setActDate(feeDate);
+          pdl.setStartDate(curDate);
+          pdl.setExpiredDate(curEndDate);
+          paymenttransDtls.add(pdl);
+        }
+        curDate = DateUtils.dateAddMonth(curDate, 1);
+      }
+      if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
+        for (PaymenttransDtl pd : paymenttransDtls) {
+          paymenttransDtlService.save(pd);
+        }
       }
     }
   }

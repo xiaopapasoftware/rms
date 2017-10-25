@@ -532,6 +532,9 @@ public class RentContractController extends BaseController {
     rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
     List<Accounting> outAccountList = genOutAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false);// 应出核算项列表
     List<Accounting> inAccountList = genInAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false, false);// 应收核算项列表
+    model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), DateUtils.parseDate(rentContract.getReturnDate())));// 已住天数
+    model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue()));
+    model.addAttribute("rental", rentContract.getRental());
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
     model.addAttribute("accountList", inAccountList);
@@ -581,7 +584,7 @@ public class RentContractController extends BaseController {
     List<Accounting> outAccountList = genOutAccountListBack(rentContract, "0", true);// 应出核算项列表
     List<Accounting> inAccountList = genInAccountListBack(rentContract, "0", true, false);// 应收核算项列表
     model.addAttribute("returnRental", "1");// 显示计算公式的标识
-    model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, "6"));// 已缴纳房租总金额
+    model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue()));// 已缴纳房租总金额
     model.addAttribute("rental", rentContract.getRental());
     model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), new Date()));// 已住天数
     model.addAttribute("accountList", inAccountList);
@@ -603,6 +606,8 @@ public class RentContractController extends BaseController {
     rentContract = rentContractService.get(rentContract.getId());
     List<Accounting> outAccountList = genOutAccountListBack(rentContract, "2", false);// 应出核算项列表
     List<Accounting> inAccountList = genInAccountListBack(rentContract, "2", false, true);// 应收核算项列表
+    model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date()) - 1);// 已住天数
+    model.addAttribute("rental", rentContract.getRental());
     model.addAttribute("outAccountList", outAccountList);
     model.addAttribute("outAccountSize", outAccountList.size());
     model.addAttribute("accountList", inAccountList);
@@ -914,7 +919,7 @@ public class RentContractController extends BaseController {
     List<PaymentTrans> rentalPaymentTrans = genPaymentTrades(rentContract);
     if (CollectionUtils.isNotEmpty(rentalPaymentTrans)) {
       for (PaymentTrans pt : rentalPaymentTrans) {
-        if (pt.getTradeAmount() != null && paymentType.equals(pt.getPaymentType())) {// 款项类型为“房租金额”
+        if (pt.getTradeAmount() != null && paymentType.equals(pt.getPaymentType())) {
           // 对于某些定金转合同 并且 定金金额不足一个月房租的情况，此处应除去房租里定金转的部分 ，因为后续会单独把定金金额加上。
           if (pt.getTransferDepositAmount() != null && pt.getTransferDepositAmount() > 0) {
             totalAmount = totalAmount + (pt.getTradeAmount() - pt.getTransferDepositAmount());
@@ -925,7 +930,7 @@ public class RentContractController extends BaseController {
       }
     }
     // 特殊的，当合同为定金转过来的时候，用户已经支付的定金金额需要额外补充计算
-    if ("6".equals(paymentType)) {// 应退房租
+    if (PaymentTransTypeEnum.RENT_AMOUNT.getValue().equals(paymentType)) {// 应退房租
       if (!StringUtils.isBlank(rentContract.getAgreementId())) {
         DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
         if (depositAgreement.getDepositAmount() > 0d) {
@@ -992,7 +997,9 @@ public class RentContractController extends BaseController {
       lateAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
       lateAcc.setFeeType(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
       Date endDate = new Date();
-      if ("1".equals(rentContract.getIsSpecial())) endDate = DateUtils.parseDate(rentContract.getReturnDate());
+      if ("1".equals(rentContract.getIsSpecial())) {
+        endDate = DateUtils.parseDate(rentContract.getReturnDate());
+      }
       double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate) - 1;// 逾期天数
       double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
       double tental = (dates < 0 ? 0 : dates) * dailyRental;
