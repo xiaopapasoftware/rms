@@ -93,9 +93,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     for (PaymentTrans p : paymentTransList) {
       paymentTransIdList.add(p.getId());
     }
-    PaymenttransDtl ptd = new PaymenttransDtl();
-    ptd.setTransIdList(paymentTransIdList);
-    paymenttransDtlService.delete(ptd);
+    if (CollectionUtils.isNotEmpty(paymentTransIdList)) {
+      PaymenttransDtl ptd = new PaymenttransDtl();
+      ptd.setTransIdList(paymentTransIdList);
+      paymenttransDtlService.delete(ptd);
+    }
     delPaymentTrans.preUpdate();
     dao.delete(delPaymentTrans);
     TradingAccounts tradingAccounts = new TradingAccounts();
@@ -262,9 +264,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     for (PaymentTrans tempPt : ptsList) {
       ptidList.add(tempPt.getId());
     }
-    PaymenttransDtl ptd = new PaymenttransDtl();
-    ptd.setTransIdList(ptidList);
-    paymenttransDtlService.delete(ptd);
+    if (CollectionUtils.isNotEmpty(ptidList)) {
+      PaymenttransDtl ptd = new PaymenttransDtl();
+      ptd.setTransIdList(ptidList);
+      paymenttransDtlService.delete(ptd);
+    }
     super.delete(pts);
   }
 
