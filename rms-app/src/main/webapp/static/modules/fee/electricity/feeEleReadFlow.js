@@ -203,12 +203,23 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             layer.msg("当前记录为账单录入生成,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
+                        feeEleReadFlowMVC.Controller.selectItemFun("project", "PROJECT", data.areaId);
+                        feeEleReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId);
+                        feeEleReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId);
+
                         $("#houseId").val(data.houseId);
                         operType = "edit";
                         $("#elePeakDegree").val(data.elePeakDegree);
                         $("#eleValleyDegree").val(data.eleValleyDegree);
                         $("#eleDegree").val(data.eleDegree);
                         $("#eleDegree").val(data.eleDegree);
+
+                        $("#areaId").val(data.areaId);
+                        $("#projectId").val(data.propertyId);
+                        $("#buildingId").val(data.buildingId);
+                        $("#houseId").val(data.houseId);
+                        $("#roomId").val(data.roomId);
+                        $("#roomNo").html(layui.laytpl.roomNoFormat(data.roomNo));
 
                         laydate.render({
                             elem: '#eleReadDate',
@@ -259,12 +270,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             addEleFun: function () {
-                laydate.render({
-                    elem: '#eleReadDate',
-                    type: 'date',
-                    format: 'yyyy-MM-dd',
-                    value: new Date()
-                });
+                if(operType != 'edit'){
+                    laydate.render({
+                        elem: '#eleReadDate',
+                        type: 'date',
+                        format: 'yyyy-MM-dd',
+                        value: new Date()
+                    });
+                }
                 addEleReadIndex = layer.open({
                     title: "电费账单录入",
                     type: 1,
@@ -385,6 +398,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             getAreaFun: function () {
                 $.getJSON(feeEleReadFlowMVC.URLs.selectArea.url, "", function (data) {
+
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
                             value: object.id,

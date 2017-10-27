@@ -250,7 +250,7 @@
         (select
             ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
             th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
-            case ferf.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,
+            case ferf.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,ferf.room_id,
             case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
         from fee_ele_read_flow ferf
         left join t_room tr on ferf.room_id=tr.ID and tr.DEL_FLAG=0
@@ -260,7 +260,7 @@
         select
             ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
             th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
-            '0' ROOM_NO,
+            '0' ROOM_NO,'0' room_id,
             case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
         from fee_ele_read_flow ferf
         left join t_house th on ferf.house_id=th.ID and th.DEL_FLAG=0
