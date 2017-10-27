@@ -46,4 +46,9 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
     accounting.setRentContract(rentContract);
     super.delete(accounting);
   }
+
+  @Transactional(readOnly = false)
+  public void updatePaymentTransId(Accounting accounting) {
+    dao.updatePaymentTransId(accounting);
+  }
 }

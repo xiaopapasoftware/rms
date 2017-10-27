@@ -62,11 +62,13 @@ alter table t_payment_trans add index idx_del_flag(del_flag);
 create table T_PAYMENTTRANS_DTL
 (
    ID                   varchar(64) NOT NULL,
+   rent_contract_id		VARCHAR (64) NOT NULL '出租合同ID',
    TRANS_ID      		varchar(64) comment '款项交易ID',
    START_DATE           date comment '开始时间',
    EXPIRED_DATE         date comment '结束时间',
    ACT_DATE         	date comment '费用日期',
    AMOUNT         		float comment '所属金额',
+   direction 			VARCHAR(8) '资金借贷方向',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

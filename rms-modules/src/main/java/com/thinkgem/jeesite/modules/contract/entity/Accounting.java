@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.contract.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -23,6 +24,7 @@ public class Accounting extends DataEntity<Accounting> {
   private String rentContractName;// 出租合同名称
   private String rentContractCode;// 出租合同编号
   private String accountingType; // 核算类型
+  private List<String> accountingTypeList; // 核算类型列表，仅用于SQL查询数据使用
   private String feeDirection; // 核算费用方向
   private String feeType; // 核算费用类别
   private Double feeAmount; // 核算金额
@@ -66,6 +68,14 @@ public class Accounting extends DataEntity<Accounting> {
 
   public void setAccountingType(String accountingType) {
     this.accountingType = accountingType;
+  }
+
+  public List<String> getAccountingTypeList() {
+    return accountingTypeList;
+  }
+
+  public void setAccountingTypeList(List<String> accountingTypeList) {
+    this.accountingTypeList = accountingTypeList;
   }
 
   @Length(min = 1, max = 64, message = "核算费用方向长度必须介于 1 和 64 之间")

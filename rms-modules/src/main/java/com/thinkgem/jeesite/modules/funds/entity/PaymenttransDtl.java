@@ -17,6 +17,8 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
 
   private static final long serialVersionUID = 1L;
+  private String rentContractId;
+  private String direction;
   private String transId; // 款项交易ID
   private Date startDate; // 开始时间
   private Date expiredDate; // 结束时间
@@ -30,6 +32,22 @@ public class PaymenttransDtl extends DataEntity<PaymenttransDtl> {
 
   public PaymenttransDtl(String id) {
     super(id);
+  }
+
+  public String getRentContractId() {
+    return rentContractId;
+  }
+
+  public void setRentContractId(String rentContractId) {
+    this.rentContractId = rentContractId;
+  }
+
+  public String getDirection() {
+    return direction;
+  }
+
+  public void setDirection(String direction) {
+    this.direction = direction;
   }
 
   @Length(min = 0, max = 64, message = "款项交易ID长度必须介于 0 和 64 之间")

@@ -256,6 +256,9 @@
 			<li class="btns">
 				<shiro:hasPermission name="contract:rentContract:view">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+					<shiro:hasPermission name="contract:superRentContract:edit">
+					   <a href="${ctx}/contract/rentContract/testProcess">TestProcess</a>
+					</shiro:hasPermission>
 					<input type="button" class="btn btn-primary" value="重置" onclick="resetForm()"/>
 				</shiro:hasPermission>
 			</li>

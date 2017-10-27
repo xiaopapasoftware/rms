@@ -1273,4 +1273,104 @@ public class RentContractController extends BaseController {
       }
     }
   }
+
+  @RequestMapping(value = "testProcess")
+  public void testProcess() {
+    // 提前退租、特殊退租
+    RentContract refundrc = new RentContract();
+    List<String> refundStatusList = new ArrayList<>();
+    refundStatusList.add(ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue());
+    refundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue());
+    refundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
+    refundStatusList.add(ContractBusiStatusEnum.EARLY_RETURN.getValue());
+    refundStatusList.add(ContractBusiStatusEnum.SPECIAL_RETURN.getValue());
+    refundrc.setContractBusiStatusList(refundStatusList);
+    List<RentContract> refundrcList = rentContractService.findList(refundrc);
+    for (RentContract rc : refundrcList) {
+      String paymentTransId = "";
+      PaymentTrans pt = new PaymentTrans();
+      pt.setTransId(rc.getId());
+      pt.setPaymentType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
+      pt.setTradeDirection(TradeDirectionEnum.OUT.getValue());
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
+      tradeTypeList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
+      pt.setTradeTypeList(tradeTypeList);
+      List<PaymentTrans> pts = paymentTransService.findList(pt);
+      if (CollectionUtils.isNotEmpty(pts)) {
+        paymentTransId = pts.get(0).getId();
+        Date feeDate = null;
+        Double feeAmt = 0d;
+        Accounting accounting = new Accounting();
+        accounting.setRentContractId(rc.getId());
+        accounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
+        accounting.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
+        List<String> accountingList = new ArrayList<String>();
+        accountingList.add(AccountingTypeEnum.ADVANCE_RETURN_ACCOUNT.getValue());
+        accountingList.add(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());
+        accounting.setAccountingTypeList(accountingList);
+        List<Accounting> ats = accountingService.findList(accounting);
+        if (CollectionUtils.isNotEmpty(ats)) {
+          feeDate = ats.get(0).getFeeDate();
+          feeAmt = ats.get(0).getFeeAmount();
+          if (StringUtils.isEmpty(ats.get(0).getPaymentTransId())) {
+            Accounting accounting2 = new Accounting();
+            accounting2.setId(ats.get(0).getId());
+            accounting2.setPaymentTransId(paymentTransId);
+            accountingService.updatePaymentTransId(accounting2);
+          }
+          if (feeDate != null && feeAmt > 0d) {
+            rentContractService.shareRetirementAmt(feeDate, feeAmt, rc, paymentTransId, TradeDirectionEnum.OUT.getValue());
+          }
+        }
+      }
+    }
+
+    // 逾期退租
+    RentContract supplyrc = new RentContract();
+    List<String> supplyStatusList = new ArrayList<>();
+    supplyStatusList.add(ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue());
+    supplyStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue());
+    supplyStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
+    supplyStatusList.add(ContractBusiStatusEnum.LATE_RETURN.getValue());
+    supplyrc.setContractBusiStatusList(supplyStatusList);
+    List<RentContract> supplyrcList = rentContractService.findList(supplyrc);
+    for (RentContract rc : supplyrcList) {
+      String paymentTransId = "";
+      PaymentTrans pt = new PaymentTrans();
+      pt.setTransId(rc.getId());
+      pt.setPaymentType(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
+      pt.setTradeDirection(TradeDirectionEnum.IN.getValue());
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.OVERDUE_RETURN_RENT.getValue());
+      pt.setTradeTypeList(tradeTypeList);
+      List<PaymentTrans> pts = paymentTransService.findList(pt);
+      if (CollectionUtils.isNotEmpty(pts)) {
+        paymentTransId = pts.get(0).getId();
+        Date feeDate = null;
+        Double feeAmt = 0d;
+        Accounting accounting = new Accounting();
+        accounting.setRentContractId(rc.getId());
+        accounting.setFeeDirection(TradeDirectionEnum.IN.getValue());
+        accounting.setFeeType(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
+        List<String> accountingList = new ArrayList<String>();
+        accountingList.add(AccountingTypeEnum.LATE_RETURN_ACCOUNT.getValue());
+        accounting.setAccountingTypeList(accountingList);
+        List<Accounting> ats = accountingService.findList(accounting);
+        if (CollectionUtils.isNotEmpty(ats)) {
+          feeDate = ats.get(0).getFeeDate();
+          feeAmt = ats.get(0).getFeeAmount();
+          if (StringUtils.isEmpty(ats.get(0).getPaymentTransId())) {
+            Accounting accounting2 = new Accounting();
+            accounting2.setId(ats.get(0).getId());
+            accounting2.setPaymentTransId(paymentTransId);
+            accountingService.updatePaymentTransId(accounting2);
+          }
+          if (feeDate != null && feeAmt > 0d) {
+            rentContractService.shareOverdueAmt(feeDate, feeAmt, rc, paymentTransId, TradeDirectionEnum.IN.getValue());
+          }
+        }
+      }
+    }
+  }
 }

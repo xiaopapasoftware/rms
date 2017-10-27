@@ -54,6 +54,12 @@
 			<if test="accountingType != null and accountingType != ''">
 				AND a.accounting_type = #{accountingType}
 			</if>
+		 	<if test="accountingTypeList != null and accountingTypeList != ''">
+				and a.accounting_type in
+				<foreach item="item" index="index" collection="accountingTypeList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
 			<if test="feeDirection != null and feeDirection != ''">
 				AND a.fee_direction = #{feeDirection}
 			</if>
@@ -156,6 +162,14 @@
 				 update_by = #{updateBy.id},
 				 update_date = #{updateDate},
 				 remarks = #{remarks}
+		WHERE 	 id = #{id}
+	</update>
+	
+	<update id="updatePaymentTransId">
+		UPDATE 	 t_accounting
+		SET		 update_by = #{updateBy.id},
+				 update_date = #{updateDate},
+				 payment_trans_id = #{paymentTransId}
 		WHERE 	 id = #{id}
 	</update>
 	

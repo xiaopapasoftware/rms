@@ -99,6 +99,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
+  private List<String> contractBusiStatusList;// 用于查询合同列表的状态集合，仅用于特定业务场景合同查询
 
   public RentContract() {
     super();
@@ -678,6 +679,14 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setUpdateUser(String updateUser) {
     this.updateUser = updateUser;
+  }
+
+  public List<String> getContractBusiStatusList() {
+    return contractBusiStatusList;
+  }
+
+  public void setContractBusiStatusList(List<String> contractBusiStatusList) {
+    this.contractBusiStatusList = contractBusiStatusList;
   }
 
 }

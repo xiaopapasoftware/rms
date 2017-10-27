@@ -165,6 +165,12 @@
 			<if test="contractBusiStatus != null and contractBusiStatus != ''">
 				AND a.contract_busi_status = #{contractBusiStatus}
 			</if>
+			<if test="contractBusiStatusList != null">
+			    and a.contract_busi_status in 
+		         <foreach item="item" index="index" collection="contractBusiStatusList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
 			<if test="contractId != null and contractId != ''">
 				AND a.contract_id = #{contractId}
 			</if>
@@ -238,6 +244,12 @@
 			<if test="contractBusiStatus != null and contractBusiStatus != ''">
 				AND a.contract_busi_status = #{contractBusiStatus}
 			</if>
+			<if test="contractBusiStatusList != null">
+			    and a.contract_busi_status in 
+		         <foreach item="item" index="index" collection="contractBusiStatusList" open="(" separator="," close=")">  
+		             #{item}  
+		         </foreach>  
+      		</if>
 			<if test="contractId != null and contractId != ''">
 				AND a.contract_id = #{contractId}
 			</if>
