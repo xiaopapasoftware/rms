@@ -705,6 +705,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.getByHouseId(rentContract);
   }
 
+  @Transactional(readOnly = false)
   private void saveAccounting(String paymentTransId, String tradeType, Accounting accounting, RentContract rentContract, String tradeDirection) {
     accounting.setRentContract(rentContract);
     if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType)) {
@@ -725,6 +726,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     accountingService.save(accounting);
   }
 
+  @Transactional(readOnly = false)
   private void generatePaymentTransAndAccounts(List<Accounting> accountList, RentContract rentContract, String tradeType, String feeDirection) {
     for (Accounting accounting : accountList) {
       Double feeAmt = accounting.getFeeAmount();
@@ -754,6 +756,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   /**
    * 逾期退租，把预期的房租金额分摊到各个时间段内
    */
+  @Transactional(readOnly = false)
   public void shareOverdueAmt(Date feeDate, Double feeAmount, RentContract rentContract, String paymentTransId, String direction) {
     Date expiredDate = rentContract.getExpiredDate();
     if (feeDate.after(expiredDate)) {
@@ -799,6 +802,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   /**
    * 提前退租/特殊退租，把应退房租总金额按照租房合同周期分摊到各个时间段内
    */
+  @Transactional(readOnly = false)
   public void shareRetirementAmt(Date feeDate, Double feeAmount, RentContract rentContract, String paymentTransId, String direction) {
     Date contractBeginDate = rentContract.getStartDate();
     Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
