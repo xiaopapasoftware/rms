@@ -308,7 +308,10 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
    */
   public Date analysisMaxIncomedTransDate(RentContract rentContract) {
     List<PaymentTrans> ptList = getPaymentTransByTypeAndStatus(PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentContract.getId(), PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-    Collections.sort(ptList);
-    return ptList.get(ptList.size() - 1).getExpiredDate();
+    if (CollectionUtils.isNotEmpty(ptList)) {
+      Collections.sort(ptList);
+      return ptList.get(ptList.size() - 1).getExpiredDate();
+    }
+    return null;
   }
 }

@@ -806,43 +806,45 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   public void shareRetirementAmt(Date feeDate, Double feeAmount, RentContract rentContract, String paymentTransId, String direction) {
     Date contractBeginDate = rentContract.getStartDate();
     Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
-    if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
-      List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
-      Date curDate = contractBeginDate;
-      while (curDate.before(paidExpiredDate)) {
-        Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
-        if (DateUtils.checkYearMonthDaySame(feeDate, curDate) || DateUtils.checkYearMonthDaySame(feeDate, curEndDate) || (feeDate.after(curDate) && feeDate.before(curEndDate))) {
-          PaymenttransDtl pdl = new PaymenttransDtl();
-          pdl.setTransId(paymentTransId);
-          if (feeAmount > rentContract.getRental()) {
-            BigDecimal[] numbers = new BigDecimal(feeAmount).divideAndRemainder(new BigDecimal(rentContract.getRental()));
-            pdl.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
-          } else {
-            pdl.setAmount(feeAmount);
+    if (paidExpiredDate != null) {
+      if (feeDate.after(contractBeginDate) && paidExpiredDate.after(feeDate)) {
+        List<PaymenttransDtl> paymenttransDtls = new ArrayList<PaymenttransDtl>();
+        Date curDate = contractBeginDate;
+        while (curDate.before(paidExpiredDate)) {
+          Date curEndDate = DateUtils.dateAddMonth2(curDate, 1);
+          if (DateUtils.checkYearMonthDaySame(feeDate, curDate) || DateUtils.checkYearMonthDaySame(feeDate, curEndDate) || (feeDate.after(curDate) && feeDate.before(curEndDate))) {
+            PaymenttransDtl pdl = new PaymenttransDtl();
+            pdl.setTransId(paymentTransId);
+            if (feeAmount > rentContract.getRental()) {
+              BigDecimal[] numbers = new BigDecimal(feeAmount).divideAndRemainder(new BigDecimal(rentContract.getRental()));
+              pdl.setAmount(numbers[1].setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());// 取余数
+            } else {
+              pdl.setAmount(feeAmount);
+            }
+            pdl.setStartDate(feeDate);
+            pdl.setExpiredDate(curEndDate);
+            pdl.setActDate(feeDate);
+            pdl.setRentContractId(rentContract.getId());
+            pdl.setDirection(direction);
+            paymenttransDtls.add(pdl);
           }
-          pdl.setStartDate(feeDate);
-          pdl.setExpiredDate(curEndDate);
-          pdl.setActDate(feeDate);
-          pdl.setRentContractId(rentContract.getId());
-          pdl.setDirection(direction);
-          paymenttransDtls.add(pdl);
+          if (curDate.after(feeDate)) {
+            PaymenttransDtl pdl = new PaymenttransDtl();
+            pdl.setTransId(paymentTransId);
+            pdl.setAmount(rentContract.getRental());
+            pdl.setActDate(feeDate);
+            pdl.setStartDate(curDate);
+            pdl.setExpiredDate(curEndDate);
+            pdl.setRentContractId(rentContract.getId());
+            pdl.setDirection(direction);
+            paymenttransDtls.add(pdl);
+          }
+          curDate = DateUtils.dateAddMonth(curDate, 1);
         }
-        if (curDate.after(feeDate)) {
-          PaymenttransDtl pdl = new PaymenttransDtl();
-          pdl.setTransId(paymentTransId);
-          pdl.setAmount(rentContract.getRental());
-          pdl.setActDate(feeDate);
-          pdl.setStartDate(curDate);
-          pdl.setExpiredDate(curEndDate);
-          pdl.setRentContractId(rentContract.getId());
-          pdl.setDirection(direction);
-          paymenttransDtls.add(pdl);
-        }
-        curDate = DateUtils.dateAddMonth(curDate, 1);
-      }
-      if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
-        for (PaymenttransDtl pd : paymenttransDtls) {
-          paymenttransDtlService.save(pd);
+        if (CollectionUtils.isNotEmpty(paymenttransDtls)) {
+          for (PaymenttransDtl pd : paymenttransDtls) {
+            paymenttransDtlService.save(pd);
+          }
         }
       }
     }
