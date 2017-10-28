@@ -137,5 +137,30 @@
 			
 		</where>
 	</update>
+
+	<select id="queryPaymenttransDtlListByContractIdList" resultType="PaymenttransDtl">
+		SELECT
+		<include refid="paymenttransDtlColumns"/>
+		FROM t_paymenttrans_dtl a
+		<where>
+			a.del_flag = "0"
+			<if test="startDate != null and startDate != ''">
+				<![CDATA[
+				AND a.START_DATE >=  #{startDate}
+			 ]]>
+			</if>
+			<if test="endDate != null and endDate != ''">
+				<![CDATA[
+				AND a.START_DATE <=  #{endDate}
+			 ]]>
+			</if>
+			<if test="contractIdList != null">
+				and a.rent_contract_id in
+				<foreach item="item" index="index" collection="contractIdList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
 	
 </mapper>

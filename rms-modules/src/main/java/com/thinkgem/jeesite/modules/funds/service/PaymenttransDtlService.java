@@ -3,15 +3,16 @@
  */
 package com.thinkgem.jeesite.modules.funds.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymenttransDtlDao;
 import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * fundsService
@@ -22,6 +23,9 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 @Service
 @Transactional(readOnly = true)
 public class PaymenttransDtlService extends CrudService<PaymenttransDtlDao, PaymenttransDtl> {
+
+  @Autowired
+  private PaymenttransDtlDao paymenttransDtlDao;
 
   public PaymenttransDtl get(String id) {
     return super.get(id);
@@ -43,6 +47,10 @@ public class PaymenttransDtlService extends CrudService<PaymenttransDtlDao, Paym
   @Transactional(readOnly = false)
   public void delete(PaymenttransDtl paymenttransDtl) {
     super.delete(paymenttransDtl);
+  }
+
+  public List<PaymenttransDtl> queryPaymenttransDtlListByContractIdList(Date startDate, Date endDate, List<String> contractIdList) {
+    return paymenttransDtlDao.queryPaymenttransDtlListByContractIdList(startDate, endDate, contractIdList);
   }
 
 }

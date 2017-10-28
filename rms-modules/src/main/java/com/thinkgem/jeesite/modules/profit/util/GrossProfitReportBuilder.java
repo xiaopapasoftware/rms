@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.profit.util;
 import com.thinkgem.jeesite.modules.profit.entity.GrossProfitReport;
 import com.thinkgem.jeesite.modules.profit.enums.GrossProfitTypeEnum;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class GrossProfitReportBuilder {
@@ -36,17 +37,17 @@ public class GrossProfitReportBuilder {
     }
 
     public GrossProfitReport build() {
-        return new GrossProfitReport(name, income - cost, getProfitPercent(income, cost), cost, income, typeEnum.getCode());
+        return new GrossProfitReport(name, BigDecimal.valueOf(income).subtract(BigDecimal.valueOf(cost)).doubleValue(), getProfitPercent(income, cost), cost, income, typeEnum.getCode());
     }
 
     private String getProfitPercent(double income, double cost) {
         DecimalFormat decimalFormat = new DecimalFormat(".00");
-        if ((income - cost) == 0d) {
+        if (BigDecimal.valueOf(income).subtract(BigDecimal.valueOf(cost)).doubleValue() == 0d) {
             return "0";
         } else if (income == 0d) {
             return "-100";
         } else {
-            return decimalFormat.format((income - cost) * 100 / income);
+            return decimalFormat.format(BigDecimal.valueOf(income).subtract(BigDecimal.valueOf(cost)).doubleValue() * 100 / income);
         }
     }
 }

@@ -7,7 +7,9 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
+import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.funds.service.PaymenttransDtlService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.profit.GrossProfitCalculate;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,9 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     @Autowired
     private HouseService houseService;
 
+    @Autowired
+    private PaymenttransDtlService paymenttransDtlService;
+
     private MyCache depositListCache = MyCacheBuilder.getInstance().getScheduledCache("deposit");
 
     @Override
@@ -55,8 +61,19 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     public double calculateIncome(GrossProfitCondition condition) {
         List<RentContract> contractList = rentContractService.queryHousesByHouseId(condition.getId());
         if (!CollectionUtils.isEmpty(contractList)) {
-            return paymentTransService.queryIncomePaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractList.stream().map(RentContract::getId).collect(Collectors.toList()))
+            List<String> contractIdList = contractList.stream().map(RentContract::getId).collect(Collectors.toList());
+            double income = paymentTransService.queryIncomePaymentByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractIdList)
                     .stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
+            List<PaymenttransDtl> dtlList = paymenttransDtlService.queryPaymenttransDtlListByContractIdList(condition.getStartDate(), condition.getEndDate(), contractIdList);
+            BigDecimal result = BigDecimal.valueOf(income);
+            for (PaymenttransDtl paymenttransDtl : dtlList) {
+                if ("0".equals(paymenttransDtl.getDirection())) {
+                    result = result.subtract(BigDecimal.valueOf(paymenttransDtl.getAmount()));
+                } else {
+                    result = result.add(BigDecimal.valueOf(paymenttransDtl.getAmount()));
+                }
+            }
+            return result.doubleValue();
         }
         return 0d;
     }
