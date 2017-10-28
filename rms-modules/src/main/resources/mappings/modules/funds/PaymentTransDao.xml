@@ -81,6 +81,12 @@
 			<if test="paymentType != null and paymentType != ''">
 				AND a.payment_type = #{paymentType}
 			</if>
+			<if test="paymentTypeList != null">
+			    and a.payment_type in 
+		         <foreach item="item" index="index" collection="paymentTypeList" open="(" separator="," close=")">  
+		             #{item}
+		         </foreach>  
+      		</if>
 			<if test="transId != null and transId != ''">
 				AND a.trans_id = #{transId}
 			</if>
