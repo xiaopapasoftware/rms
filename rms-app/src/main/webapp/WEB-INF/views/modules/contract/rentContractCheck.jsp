@@ -131,7 +131,7 @@
 								<td><select id="accountList${status.index}_feeType"
 									name="accountList[${status.index}].feeType" class="required"
 									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'fee_type', '')}</option>
+										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
 								</select> <span class="help-inline"><font color="red">*</font> </span></td>
 								<td><input id="accountList${status.index}_feeAmount"
 									name="accountList[${status.index}].feeAmount" type="text"
@@ -162,7 +162,7 @@
 							<td>
 								<select id="accountList{{idx}}_feeType" name="accountList[{{idx}}].feeType" class="required">
 									<option value="">请选择</option>
-									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+									<c:forEach items="${fns:getDictList('payment_type')}" var="item">
 										<option value="${item.value}">${item.label}</option>
 									</c:forEach>
 								</select>
@@ -215,7 +215,7 @@
 								<td><select id="outAccountList${status.index}_feeType"
 									name="outAccountList[${status.index}].feeType" class="required"
 									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'fee_type', '')}</option>
+										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
 								</select> <span class="help-inline"><font color="red">*</font> </span></td>
 								<td><input id="outAccountList${status.index}_feeAmount"
 									name="outAccountList[${status.index}].feeAmount" type="text"
@@ -245,7 +245,7 @@
 							<td>
 								<select id="outAccountList{{idx}}_feeType" name="outAccountList[{{idx}}].feeType" class="required">
 									<option value="">请选择</option>
-									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+									<c:forEach items="${fns:getDictList('payment_type')}" var="item">
 										<option value="${item.value}">${item.label}</option>
 									</c:forEach>
 								</select>

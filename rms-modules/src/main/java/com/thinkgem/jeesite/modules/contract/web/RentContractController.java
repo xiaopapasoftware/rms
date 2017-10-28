@@ -622,24 +622,19 @@ public class RentContractController extends BaseController {
    * 计算各种退款的应退或应收的总金额
    */
   private String calculateTatalRefundAmt(List<Accounting> outAccountList, List<Accounting> inAccountList) {
-    double totalOutAmt = 0;// 应出总金额
-    if (CollectionUtils.isNotEmpty(outAccountList)) {
-      for (Accounting outAcct : outAccountList) {
-        if (TradeDirectionEnum.OUT.getValue().equals(outAcct.getFeeDirection())) {
-          totalOutAmt += outAcct.getFeeAmount();
-        }
+    double totalOutAmt = calculateTatalAmt(outAccountList); // 应出总金额
+    double totalInAmt = calculateTatalAmt(inAccountList);// 应收总金额
+    return new BigDecimal(totalInAmt - totalOutAmt).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+  }
+
+  private double calculateTatalAmt(List<Accounting> accountList) {
+    double totalAmt = 0;
+    if (CollectionUtils.isNotEmpty(accountList)) {
+      for (Accounting outAcct : accountList) {
+        totalAmt += outAcct.getFeeAmount();
       }
     }
-    double totalInAmt = 0;// 应收总金额
-    if (CollectionUtils.isNotEmpty(inAccountList)) {
-      for (Accounting intAccount : inAccountList) {
-        if (TradeDirectionEnum.IN.getValue().equals(intAccount.getFeeDirection())) {
-          totalInAmt += intAccount.getFeeAmount();
-        }
-      }
-    }
-    double refundAmount = totalInAmt - totalOutAmt;
-    return new BigDecimal(refundAmount).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+    return totalAmt;
   }
 
   /**

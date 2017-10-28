@@ -44,7 +44,7 @@
 					${fns:getDictLabel(accounting.feeDirection, 'fee_dirction', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(accounting.feeType, 'fee_type', '')}
+					${fns:getDictLabel(accounting.feeType, 'payment_type', '')}
 				</td>
 				<td>
 					${accounting.feeAmount}

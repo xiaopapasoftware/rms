@@ -30,7 +30,7 @@ public enum PaymentTransTypeEnum {
   DEPOSIT_REFUND_FEE("26"),
 
   /**
-   * 水电费押金（收）
+   * 水电费押金
    */
   WATER_ELECT_DEPOSIT("2"),
 
@@ -40,7 +40,7 @@ public enum PaymentTransTypeEnum {
   SUPPLY_WATER_ELECT_DEPOSIT("3"),
 
   /**
-   * 房租押金（收）
+   * 房租押金
    */
   RENT_DEPOSIT("4"),
 
