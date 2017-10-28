@@ -81,7 +81,6 @@ public class RentContract extends DataEntity<RentContract> {
   private List<Accounting> accountList = new ArrayList<Accounting>();
   private List<Accounting> outAccountList = new ArrayList<Accounting>();
   private String tradeType;
-  private String isSpecial;
   private String name;
   private String tenantName;// 租客姓名,用于查询条件
   private String tenantMobileNo;// 租客手机号,用于查询条件
@@ -95,7 +94,7 @@ public class RentContract extends DataEntity<RentContract> {
   private String rentContractOtherFile;// 出租合同其他附件
   private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
   private String oriEndDate;// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
-  private String returnDate;// 用户输入的退租日期
+  private String returnDate;// 用户输入的特殊退租的指定的退租日期
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
@@ -537,14 +536,6 @@ public class RentContract extends DataEntity<RentContract> {
     this.tradeType = tradeType;
   }
 
-  public String getIsSpecial() {
-    return isSpecial;
-  }
-
-  public void setIsSpecial(String isSpecial) {
-    this.isSpecial = isSpecial;
-  }
-
   public String getName() {
     return name;
   }
@@ -641,20 +632,20 @@ public class RentContract extends DataEntity<RentContract> {
     this.depositAgreementAmount = depositAgreementAmount;
   }
 
-  public String getOriEndDate() {
-    return oriEndDate;
-  }
-
-  public void setOriEndDate(String oriEndDate) {
-    this.oriEndDate = oriEndDate;
-  }
-
   public String getReturnDate() {
     return returnDate;
   }
 
   public void setReturnDate(String returnDate) {
     this.returnDate = returnDate;
+  }
+
+  public String getOriEndDate() {
+    return oriEndDate;
+  }
+
+  public void setOriEndDate(String oriEndDate) {
+    this.oriEndDate = oriEndDate;
   }
 
   public String getReturnRemark() {

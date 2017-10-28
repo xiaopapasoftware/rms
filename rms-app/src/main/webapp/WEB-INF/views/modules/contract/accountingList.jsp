@@ -47,7 +47,7 @@
 			<li><label style="width:120px;">核算费用类别：</label>
 				<form:select path="feeType" class="input-medium" style="width:210px;">
 					<form:option value="" label="全部"/>
-					<form:options items="${fns:getDictList('fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
 			<li><label style="width:120px;">核算人：</label>
@@ -97,7 +97,7 @@
 					${fns:getDictLabel(accounting.feeDirection, 'fee_dirction', '')}
 				</td>
 				<td>
-					${fns:getDictLabel(accounting.feeType, 'fee_type', '')}
+					${fns:getDictLabel(accounting.feeType, 'payment_type', '')}
 				</td>
 				<td>
 					${accounting.feeAmount}

@@ -106,8 +106,8 @@
 		class="form-horizontal">
 		<form:hidden path="id" />
 		<form:hidden path="tradeType" />
-		<form:hidden path="isSpecial" />
-		<div class="control-group">
+		<form:hidden path="returnDate" />
+ 		<div class="control-group">
 			<label class="control-label">应收费用：</label>
 			<div class="controls">
 				<table id="contentTable"
@@ -131,7 +131,7 @@
 								<td><select id="accountList${status.index}_feeType"
 									name="accountList[${status.index}].feeType" class="required"
 									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'fee_type', '')}</option>
+										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
 								</select> <span class="help-inline"><font color="red">*</font> </span></td>
 								<td><input id="accountList${status.index}_feeAmount"
 									name="accountList[${status.index}].feeAmount" type="text"
@@ -139,14 +139,6 @@
 									class="input-small required number"
 									onblur="calculateTotalAmt()" /> <span class="help-inline"><font
 										color="red">*</font> </span></td>
-								<td class="hide"><input
-									id="accountList${status.index}_feeDirection"
-									name="accountList[${status.index}].feeDirection" type="text"
-									value="${outItem.feeDirection}" maxlength="255" type="hidden"</td>
-								<td class="hide"><input
-									id="accountList${status.index}_feeDateStr"
-									name="accountList[${status.index}].feeDateStr" type="text"
-									value="${outItem.feeDateStr}" maxlength="255" type="hidden"</td>
 								<td class="text-center" width="10">
 									<span class="close" onclick="delRow(this, '#accountList${status.index}')" title="删除">&times;</span>
 								</td>
@@ -170,7 +162,7 @@
 							<td>
 								<select id="accountList{{idx}}_feeType" name="accountList[{{idx}}].feeType" class="required">
 									<option value="">请选择</option>
-									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+									<c:forEach items="${fns:getDictList('payment_type')}" var="item">
 										<option value="${item.value}">${item.label}</option>
 									</c:forEach>
 								</select>
@@ -179,12 +171,6 @@
 							<td>
 								<input id="accountList{{idx}}_feeAmount" name="accountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" maxlength="255" onblur="calculateTotalAmt()" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td class="hide">
-								<input id="accountList{{idx}}_feeDirection" name="accountList[{{idx}}].feeDirection" type="hidden" value="${outItem.feeDirection}" maxlength="255"/>
-							</td>
-							<td class="hide">
-								<input id="accountList{{idx}}_feeDateStr" name="accountList[{{idx}}].feeDateStr" type="hidden" value="${outItem.feeDateStr}" maxlength="255"/>
 							</td>
 							<td class="text-center" width="10">
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#accountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
@@ -229,21 +215,13 @@
 								<td><select id="outAccountList${status.index}_feeType"
 									name="outAccountList[${status.index}].feeType" class="required"
 									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'fee_type', '')}</option>
+										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
 								</select> <span class="help-inline"><font color="red">*</font> </span></td>
 								<td><input id="outAccountList${status.index}_feeAmount"
 									name="outAccountList[${status.index}].feeAmount" type="text"
 									value="${outItem.feeAmount}" maxlength="255"
 									class="input-small required number" onblur="calculateTotalAmt()"/> <span
 									class="help-inline"><font color="red">*</font> </span></td>
-								<td class="hide"><input
-									id="outAccountList${status.index}_feeDirection"
-									name="outAccountList[${status.index}].feeDirection" type="hidden"
-									value="${outItem.feeDirection}" /></td>
-								<td class="hide"><input
-									id="outAccountList${status.index}_feeDateStr"
-									name="outAccountList[${status.index}].feeDateStr" type="hidden"
-									value="${outItem.feeDateStr}" /></td>
 								<td class="text-center" width="10"><span class="close"
 									onclick="delRow(this, '#outAccountList${status.index}')"
 									title="删除">&times;</span></td>
@@ -267,7 +245,7 @@
 							<td>
 								<select id="outAccountList{{idx}}_feeType" name="outAccountList[{{idx}}].feeType" class="required">
 									<option value="">请选择</option>
-									<c:forEach items="${fns:getDictList('fee_type')}" var="item">
+									<c:forEach items="${fns:getDictList('payment_type')}" var="item">
 										<option value="${item.value}">${item.label}</option>
 									</c:forEach>
 								</select>
@@ -276,12 +254,6 @@
 							<td>
 								<input id="outAccountList{{idx}}_feeAmount" name="outAccountList[{{idx}}].feeAmount" type="text" value="{{row.feeAmount}}" onblur="calculateTotalAmt()" maxlength="255" class="input-small required number"/>
 								<span class="help-inline"><font color="red">*</font> </span>
-							</td>
-							<td class="hide">
-								<input id="outAccountList{{idx}}_feeDateStr" name="outAccountList[{{idx}}].feeDateStr" type="hidden" value="{{row.feeDateStr}}"/>
-							</td>
-							<td class="hide">
-								<input id="outAccountList{{idx}}_feeDirection" name="outAccountList[{{idx}}].feeDirection" type="hidden" value="{{row.feeDirection}}"/>
 							</td>
 							<td class="text-center" width="10">
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#outAccountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}

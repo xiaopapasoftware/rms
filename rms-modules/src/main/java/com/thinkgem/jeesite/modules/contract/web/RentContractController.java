@@ -44,6 +44,7 @@ import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
@@ -524,14 +525,13 @@ public class RentContractController extends BaseController {
   @RequiresPermissions("contract:rentContract:specialreturn")
   @RequestMapping(value = "specialReturnContract")
   public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-    String returnDate = rentContract.getReturnDate();
+    String returnDate = rentContract.getReturnDate();// 用户指定的特殊退租的退租日期
     String contractId = rentContract.getId();
     rentContract = rentContractService.get(contractId);
-    rentContract.setIsSpecial("1");
     rentContract.setReturnDate(returnDate);
     rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
-    List<Accounting> outAccountList = genOutAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false);// 应出核算项列表
-    List<Accounting> inAccountList = genInAccountListBack(rentContract, AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue(), false, false);// 应收核算项列表
+    List<Accounting> outAccountList = genOutAccountListBack(rentContract, false);// 应出核算项列表
+    List<Accounting> inAccountList = genInAccountListBack(rentContract, false, false);// 应收核算项列表
     model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), DateUtils.parseDate(rentContract.getReturnDate())));// 已住天数
     model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue()));
     model.addAttribute("rental", rentContract.getRental());
@@ -562,8 +562,8 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "toReturnCheck")
   public String toReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
-    List<Accounting> outAccountList = genOutAccountListBack(rentContract, "1", false);// 应出核算项列表
-    List<Accounting> inAccountList = genInAccountListBack(rentContract, "1", false, false);// 应收核算项列表
+    List<Accounting> outAccountList = genOutAccountListBack(rentContract, false);// 应出核算项列表
+    List<Accounting> inAccountList = genInAccountListBack(rentContract, false, false);// 应收核算项列表
     model.addAttribute("accountList", inAccountList);
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("outAccountList", outAccountList);
@@ -581,8 +581,8 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "toEarlyReturnCheck")
   public String toEarlyReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
-    List<Accounting> outAccountList = genOutAccountListBack(rentContract, "0", true);// 应出核算项列表
-    List<Accounting> inAccountList = genInAccountListBack(rentContract, "0", true, false);// 应收核算项列表
+    List<Accounting> outAccountList = genOutAccountListBack(rentContract, true);// 应出核算项列表
+    List<Accounting> inAccountList = genInAccountListBack(rentContract, true, false);// 应收核算项列表
     model.addAttribute("returnRental", "1");// 显示计算公式的标识
     model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue()));// 已缴纳房租总金额
     model.addAttribute("rental", rentContract.getRental());
@@ -604,8 +604,8 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "toLateReturnCheck")
   public String toLateReturnCheck(RentContract rentContract, Model model) {
     rentContract = rentContractService.get(rentContract.getId());
-    List<Accounting> outAccountList = genOutAccountListBack(rentContract, "2", false);// 应出核算项列表
-    List<Accounting> inAccountList = genInAccountListBack(rentContract, "2", false, true);// 应收核算项列表
+    List<Accounting> outAccountList = genOutAccountListBack(rentContract, false);// 应出核算项列表
+    List<Accounting> inAccountList = genInAccountListBack(rentContract, false, true);// 应收核算项列表
     model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date()) - 1);// 已住天数
     model.addAttribute("rental", rentContract.getRental());
     model.addAttribute("outAccountList", outAccountList);
@@ -622,24 +622,19 @@ public class RentContractController extends BaseController {
    * 计算各种退款的应退或应收的总金额
    */
   private String calculateTatalRefundAmt(List<Accounting> outAccountList, List<Accounting> inAccountList) {
-    double totalOutAmt = 0;// 应出总金额
-    if (CollectionUtils.isNotEmpty(outAccountList)) {
-      for (Accounting outAcct : outAccountList) {
-        if (TradeDirectionEnum.OUT.getValue().equals(outAcct.getFeeDirection())) {
-          totalOutAmt += outAcct.getFeeAmount();
-        }
+    double totalOutAmt = calculateTatalAmt(outAccountList); // 应出总金额
+    double totalInAmt = calculateTatalAmt(inAccountList);// 应收总金额
+    return new BigDecimal(totalInAmt - totalOutAmt).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+  }
+
+  private double calculateTatalAmt(List<Accounting> accountList) {
+    double totalAmt = 0;
+    if (CollectionUtils.isNotEmpty(accountList)) {
+      for (Accounting outAcct : accountList) {
+        totalAmt += outAcct.getFeeAmount();
       }
     }
-    double totalInAmt = 0;// 应收总金额
-    if (CollectionUtils.isNotEmpty(inAccountList)) {
-      for (Accounting intAccount : inAccountList) {
-        if (TradeDirectionEnum.IN.getValue().equals(intAccount.getFeeDirection())) {
-          totalInAmt += intAccount.getFeeAmount();
-        }
-      }
-    }
-    double refundAmount = totalInAmt - totalOutAmt;
-    return new BigDecimal(refundAmount).setScale(1, BigDecimal.ROUND_HALF_UP).toString();
+    return totalAmt;
   }
 
   /**
@@ -649,7 +644,7 @@ public class RentContractController extends BaseController {
   @RequestMapping(value = "returnCheck")
   public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
     rentContractService.returnCheck(rentContract, rentContract.getTradeType());
-    if (!StringUtils.isBlank(rentContract.getIsSpecial())) {
+    if (StringUtils.isNotEmpty(rentContract.getReturnDate())) {
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "特殊退租成功！");
     } else {
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "退租核算成功！");
@@ -668,78 +663,41 @@ public class RentContractController extends BaseController {
 
   /**
    * 应出退租核算项列表
-   * 
-   * @param isPre 是否提前
    */
-  private List<Accounting> genOutAccountListBack(RentContract rentContract, String accountingType, boolean isPre) {
+  private List<Accounting> genOutAccountListBack(RentContract rentContract, boolean isPre) {
     List<Accounting> outAccountings = new ArrayList<Accounting>();
-    // 水电费押金
+    // 应退水电费押金
     Accounting eaccounting = new Accounting();
-    eaccounting.setRentContract(rentContract);
-    eaccounting.setAccountingType(accountingType);
-    eaccounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
     eaccounting.setFeeType(PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue());
     if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
       eaccounting.setFeeAmount(calculateContinueContractAmount(rentContract, "2"));
     } else {// 如果是新签合同则直接退水电费押金
       eaccounting.setFeeAmount(rentContract.getDepositElectricAmount());
     }
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      eaccounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      eaccounting.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      eaccounting.setFeeDate(nowDate);
-      eaccounting.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     outAccountings.add(eaccounting);
-    // 房租押金
+    // 应退房租押金
     Accounting accounting = new Accounting();
-    accounting.setRentContract(rentContract);
-    accounting.setAccountingType(accountingType);
-    accounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
+    accounting.setFeeType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
     if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的房租押金+房租押金差额,需做递归处理
       accounting.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
     } else {// 如果是新签合同则直接退房租押金
       accounting.setFeeAmount(rentContract.getDepositAmount());
     }
-    accounting.setFeeType(PaymentTransTypeEnum.RENT_DEPOSIT.getValue());
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      accounting.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      accounting.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      eaccounting.setFeeDate(nowDate);
-      eaccounting.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     outAccountings.add(accounting);
-    // 提前退租或特殊退租，需计算应退房租金额
-    if (isPre || "1".equals(rentContract.getIsSpecial())) {
+    // 应退房租(提前退租或特殊退租)
+    Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
+    String returnDate = rentContract.getReturnDate();// 如果是特殊退租，用户指定的退租日期
+    if (isPre || (StringUtils.isNotEmpty(returnDate) && paidExpiredDate.after(DateUtils.parseDate(returnDate)))) {
       Accounting preBackRentalAcc = new Accounting();
-      preBackRentalAcc.setRentContract(rentContract);
-      preBackRentalAcc.setAccountingType(accountingType);
-      preBackRentalAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
       preBackRentalAcc.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
       preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentContract.getRental()));
-      if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-        preBackRentalAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-        preBackRentalAcc.setFeeDateStr(rentContract.getReturnDate());
-      } else {
-        Date nowDate = new Date();
-        preBackRentalAcc.setFeeDate(nowDate);
-        preBackRentalAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-      }
       outAccountings.add(preBackRentalAcc);
     }
-    // 预充---应退 智能电表剩余电费
-    // 整租不装智能电表，只有合租会装智能电表
-    if ("1".equals(rentContract.getRentMode())) {
+    // 应退智能电表剩余电费，整租不装智能电表，只有合租会装智能电表
+    if (RentModelTypeEnum.JOINT_RENT.getValue().equals(rentContract.getRentMode())) {
       Room room = roomService.get(rentContract.getRoom());
       if (room != null && StringUtils.isNotEmpty(room.getMeterNo())) {// 合租且电表号不为空
         Accounting elctrBackAcc = new Accounting();
-        elctrBackAcc.setRentContract(rentContract);
-        elctrBackAcc.setAccountingType(accountingType);
-        elctrBackAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
         elctrBackAcc.setFeeType(PaymentTransTypeEnum.ELECT_SURPLUS_AMOUNT.getValue());
         Map<Integer, String> resultMap = electricFeeService.getMeterFee(rentContract.getId(), DateUtils.firstDateOfCurrentMonth(), DateUtils.lastDateOfCurrentMonth());
         Double feeAmount = 0D;
@@ -754,88 +712,42 @@ public class RentContractController extends BaseController {
           }
         }
         elctrBackAcc.setFeeAmount(feeAmount);
-        if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-          elctrBackAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-          elctrBackAcc.setFeeDateStr(rentContract.getReturnDate());
-        } else {
-          Date nowDate = new Date();
-          elctrBackAcc.setFeeDate(nowDate);
-          elctrBackAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-        }
         outAccountings.add(elctrBackAcc);
       }
     }
-    // 预付费
     if ("0".equals(rentContract.getChargeType())) {
       // 预付 ---应退 水费剩余金额
       if (rentContract.getWaterFee() != null && rentContract.getWaterFee() > 0) {
         Accounting waterAcc = new Accounting();
-        waterAcc.setRentContract(rentContract);
-        waterAcc.setAccountingType(accountingType);
-        waterAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
         waterAcc.setFeeType(PaymentTransTypeEnum.WATER_SURPLUS_AMOUNT.getValue());
         waterAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.WATER_AMOUNT.getValue(), rentContract.getWaterFee()));
-        if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-          waterAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-          waterAcc.setFeeDateStr(rentContract.getReturnDate());
-        } else {
-          Date nowDate = new Date();
-          waterAcc.setFeeDate(nowDate);
-          waterAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-        }
         outAccountings.add(waterAcc);
+      }
+      // 预付 ---应退 燃气费
+      if (rentContract.getGasFee() != null && rentContract.getGasFee() > 0) {
+        Accounting gasAcc = new Accounting();
+        gasAcc.setFeeType(PaymentTransTypeEnum.GAS_REFUND_AMOUNT.getValue());
+        gasAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.GAS_AMOUNT.getValue(), rentContract.getGasFee()));
+        outAccountings.add(gasAcc);
       }
       // 预付 ---应退 电视费
       if ("1".equals(rentContract.getHasTv()) && null != rentContract.getTvFee() && rentContract.getTvFee() > 0) {
         Accounting tvAcc = new Accounting();
-        tvAcc.setRentContract(rentContract);
-        tvAcc.setAccountingType(accountingType);
-        tvAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
         tvAcc.setFeeType(PaymentTransTypeEnum.TV_SURPLUS_AMOUNT.getValue());
         tvAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.TV_AMOUNT.getValue(), rentContract.getTvFee()));
-        if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-          tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-          tvAcc.setFeeDateStr(rentContract.getReturnDate());
-        } else {
-          Date nowDate = new Date();
-          tvAcc.setFeeDate(nowDate);
-          tvAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-        }
         outAccountings.add(tvAcc);
       }
-      // 预付 ---应退 宽带费
+      // 应退宽带费
       if ("1".equals(rentContract.getHasNet()) && null != rentContract.getNetFee() && rentContract.getNetFee() > 0) {
         Accounting netAcc = new Accounting();
-        netAcc.setRentContract(rentContract);
-        netAcc.setAccountingType(accountingType);
-        netAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
         netAcc.setFeeType(PaymentTransTypeEnum.NET_SURPLUS_AMOUNT.getValue());
         netAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.NET_AMOUNT.getValue(), rentContract.getNetFee()));
-        if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-          netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-          netAcc.setFeeDateStr(rentContract.getReturnDate());
-        } else {
-          Date nowDate = new Date();
-          netAcc.setFeeDate(nowDate);
-          netAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-        }
         outAccountings.add(netAcc);
       }
-      // 预付 ---应退 服务费
+      // 应退服务费
       if (null != rentContract.getServiceFee() && rentContract.getServiceFee() > 0) {
         Accounting servAcc = new Accounting();
-        servAcc.setRentContract(rentContract);
-        servAcc.setAccountingType(accountingType);
-        servAcc.setFeeDirection(TradeDirectionEnum.OUT.getValue());
         servAcc.setFeeType(PaymentTransTypeEnum.SERVICE_SURPLUS_AMOUNT.getValue());
-        if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-          servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-          servAcc.setFeeDateStr(rentContract.getReturnDate());
-        } else {
-          Date nowDate = new Date();
-          servAcc.setFeeDate(nowDate);
-          servAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-        }
         servAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.SERVICE_AMOUNT.getValue(), rentContract.getServiceFee()));
         outAccountings.add(servAcc);
       }
@@ -950,7 +862,7 @@ public class RentContractController extends BaseController {
   private Double commonCalculateBackAmount(RentContract rentContract, String paymentType, double monthFeeAmount) {
     Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
     Date endDate = new Date();
-    if ("1".equals(rentContract.getIsSpecial())) {// 特殊退租时
+    if (StringUtils.isNotEmpty(rentContract.getReturnDate())) {// 特殊退租时
       endDate = DateUtils.parseDate(rentContract.getReturnDate());
     }
     double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数
@@ -970,180 +882,74 @@ public class RentContractController extends BaseController {
    * @param isPre 是否提前退租
    * @param isLate 是否逾期退租
    */
-  private List<Accounting> genInAccountListBack(RentContract rentContract, String accountingType, boolean isPre, boolean isLate) {
+  private List<Accounting> genInAccountListBack(RentContract rentContract, boolean isPre, boolean isLate) {
     List<Accounting> inAccountings = new ArrayList<Accounting>();
-
     if (isPre) {// 应收---早退违约金
       Accounting earlyDepositAcc = new Accounting();
-      earlyDepositAcc.setRentContract(rentContract);
-      earlyDepositAcc.setAccountingType(accountingType);
-      earlyDepositAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
       earlyDepositAcc.setFeeType(PaymentTransTypeEnum.LEAVE_EARLY_DEPOSIT.getValue());
       if (ContractSignTypeEnum.RENEW_SIGN.getValue().equals(rentContract.getSignType())) {// 如果是续签合同，需要退被续签合同的水电费押金+水电费押金差额,需做递归处理
         earlyDepositAcc.setFeeAmount(calculateContinueContractAmount(rentContract, "4"));
       } else {// 如果是新签合同则直接退水电费押金
         earlyDepositAcc.setFeeAmount(rentContract.getDepositAmount());
       }
-      Date nowDate = new Date();
-      earlyDepositAcc.setFeeDate(nowDate);
-      earlyDepositAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
       inAccountings.add(earlyDepositAcc);
     }
-
     if (isLate) {// 应收---逾赔房租
       Accounting lateAcc = new Accounting();
-      lateAcc.setRentContract(rentContract);
-      lateAcc.setAccountingType(accountingType);
-      lateAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
       lateAcc.setFeeType(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
-      Date endDate = new Date();
-      if ("1".equals(rentContract.getIsSpecial())) {
-        endDate = DateUtils.parseDate(rentContract.getReturnDate());
-      }
-      double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), endDate) - 1;// 逾期天数
+      double dates = DateUtils.getDistanceOfTwoDate(rentContract.getExpiredDate(), new Date()) - 1;// 逾期天数
       double dailyRental = rentContract.getRental() * 12 / 365;// 每天房租租金
       double tental = (dates < 0 ? 0 : dates) * dailyRental;
       lateAcc.setFeeAmount(new BigDecimal(tental).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
-      Date nowDate = new Date();
-      lateAcc.setFeeDate(nowDate);
-      lateAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
       inAccountings.add(lateAcc);
     }
 
     // 应收---损坏赔偿金
     Accounting pay4BrokeAcc = new Accounting();
-    pay4BrokeAcc.setRentContract(rentContract);
-    pay4BrokeAcc.setAccountingType(accountingType);
-    pay4BrokeAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     pay4BrokeAcc.setFeeType(PaymentTransTypeEnum.DAMAGE_COMPENSATE.getValue());
     pay4BrokeAcc.setFeeAmount(0D);
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      pay4BrokeAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      pay4BrokeAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      pay4BrokeAcc.setFeeDate(nowDate);
-      pay4BrokeAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(pay4BrokeAcc);
 
     // 应收---退租补偿税金
     Accounting backSuppAcc = new Accounting();
-    backSuppAcc.setRentContract(rentContract);
-    backSuppAcc.setAccountingType(accountingType);
-    backSuppAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     backSuppAcc.setFeeType(PaymentTransTypeEnum.RETURN_SUPPLY_TAX.getValue());
     backSuppAcc.setFeeAmount(0D);
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      backSuppAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      backSuppAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      backSuppAcc.setFeeDate(nowDate);
-      backSuppAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(backSuppAcc);
 
     // 应收---电费自用金额
     Accounting elSelAcc = new Accounting();
-    elSelAcc.setRentContract(rentContract);
-    elSelAcc.setAccountingType(accountingType);
-    elSelAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     elSelAcc.setFeeType(PaymentTransTypeEnum.ELECT_SELF_AMOUNT.getValue());
     elSelAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      elSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      elSelAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      elSelAcc.setFeeDate(nowDate);
-      elSelAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(elSelAcc);
 
     // 应收---电费分摊金额
     Accounting elCommAcc = new Accounting();
-    elCommAcc.setRentContract(rentContract);
-    elCommAcc.setAccountingType(accountingType);
-    elCommAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());// 1 : 应收
     elCommAcc.setFeeType(PaymentTransTypeEnum.ELECT_SHARE_AMOUNT.getValue());
     elCommAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      elCommAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      elCommAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      elCommAcc.setFeeDate(nowDate);
-      elCommAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(elCommAcc);
 
     // 应收---水费金额
     Accounting waterSelAcc = new Accounting();
-    waterSelAcc.setRentContract(rentContract);
-    waterSelAcc.setAccountingType(accountingType);
-    waterSelAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     waterSelAcc.setFeeType(PaymentTransTypeEnum.WATER_AMOUNT.getValue());
     waterSelAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      waterSelAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      waterSelAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      waterSelAcc.setFeeDate(nowDate);
-      waterSelAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(waterSelAcc);
 
     // 应收---有线电视费
     Accounting tvAcc = new Accounting();
-    tvAcc.setRentContract(rentContract);
-    tvAcc.setAccountingType(accountingType);
-    tvAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     tvAcc.setFeeType(PaymentTransTypeEnum.TV_AMOUNT.getValue());
     tvAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      tvAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      tvAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      tvAcc.setFeeDate(nowDate);
-      tvAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(tvAcc);
 
     // 应收---宽带费
     Accounting netAcc = new Accounting();
-    netAcc.setRentContract(rentContract);
-    netAcc.setAccountingType(accountingType);
-    netAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     netAcc.setFeeType(PaymentTransTypeEnum.NET_AMOUNT.getValue());
     netAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      netAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      netAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      netAcc.setFeeDate(nowDate);
-      netAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(netAcc);
 
     // 应收---服务费
     Accounting servAcc = new Accounting();
-    servAcc.setRentContract(rentContract);
-    servAcc.setAccountingType(accountingType);
-    servAcc.setFeeDirection(TradeDirectionEnum.IN.getValue());
     servAcc.setFeeType(PaymentTransTypeEnum.SERVICE_AMOUNT.getValue());
     servAcc.setFeeAmount(0D);// 人工计算
-    if ("1".equals(rentContract.getIsSpecial())) {// 如果是特殊退租，把人为设定的退租日期作为核算记录的核算时间
-      servAcc.setFeeDate(DateUtils.parseDate(rentContract.getReturnDate()));
-      servAcc.setFeeDateStr(rentContract.getReturnDate());
-    } else {
-      Date nowDate = new Date();
-      servAcc.setFeeDate(nowDate);
-      servAcc.setFeeDateStr(DateUtils.formatDate(nowDate));
-    }
     inAccountings.add(servAcc);
     return inAccountings;
   }
@@ -1283,7 +1089,6 @@ public class RentContractController extends BaseController {
     refundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue());
     refundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
     refundStatusList.add(ContractBusiStatusEnum.EARLY_RETURN.getValue());
-    refundStatusList.add(ContractBusiStatusEnum.SPECIAL_RETURN.getValue());
     refundrc.setContractBusiStatusList(refundStatusList);
     List<RentContract> refundrcList = rentContractService.findList(refundrc);
     for (RentContract rc : refundrcList) {
@@ -1294,7 +1099,6 @@ public class RentContractController extends BaseController {
       pt.setTradeDirection(TradeDirectionEnum.OUT.getValue());
       List<String> tradeTypeList = new ArrayList<String>();
       tradeTypeList.add(TradeTypeEnum.ADVANCE_RETURN_RENT.getValue());
-      tradeTypeList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
       pt.setTradeTypeList(tradeTypeList);
       List<PaymentTrans> pts = paymentTransService.findList(pt);
       if (CollectionUtils.isNotEmpty(pts)) {
@@ -1307,7 +1111,6 @@ public class RentContractController extends BaseController {
         accounting.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
         List<String> accountingList = new ArrayList<String>();
         accountingList.add(AccountingTypeEnum.ADVANCE_RETURN_ACCOUNT.getValue());
-        accountingList.add(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());
         accounting.setAccountingTypeList(accountingList);
         List<Accounting> ats = accountingService.findList(accounting);
         if (CollectionUtils.isNotEmpty(ats)) {
@@ -1321,6 +1124,82 @@ public class RentContractController extends BaseController {
           }
           if (feeDate != null && feeAmt > 0d) {
             rentContractService.shareRetirementAmt(feeDate, feeAmt, rc, paymentTransId, TradeDirectionEnum.OUT.getValue());
+          }
+        }
+      }
+    }
+
+    // 特殊退
+    RentContract srefundrc = new RentContract();
+    List<String> srefundStatusList = new ArrayList<>();
+    srefundStatusList.add(ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue());
+    srefundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_TO_AUDIT.getValue());
+    srefundStatusList.add(ContractBusiStatusEnum.RETURN_TRANS_AUDIT_REFUSE.getValue());
+    srefundStatusList.add(ContractBusiStatusEnum.SPECIAL_RETURN.getValue());
+    srefundrc.setContractBusiStatusList(srefundStatusList);
+    List<RentContract> srefundrcList = rentContractService.findList(srefundrc);
+    for (RentContract rc : srefundrcList) {
+      String paymentTransId = "";
+      PaymentTrans pt = new PaymentTrans();
+      pt.setTransId(rc.getId());
+      List<String> paymentTypeList = new ArrayList<String>();
+      paymentTypeList.add(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
+      paymentTypeList.add(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
+      pt.setPaymentTypeList(paymentTypeList);
+      List<String> tradeTypeList = new ArrayList<String>();
+      tradeTypeList.add(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
+      pt.setTradeTypeList(tradeTypeList);
+      List<PaymentTrans> pts = paymentTransService.findList(pt);
+      if (CollectionUtils.isNotEmpty(pts)) {
+        paymentTransId = pts.get(0).getId();
+        if (PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue().equals(pts.get(0).getPaymentType())) {
+          Date feeDate = null;
+          Double feeAmt = 0d;
+          Accounting accounting = new Accounting();
+          accounting.setRentContractId(rc.getId());
+          accounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
+          accounting.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
+          List<String> accountingList = new ArrayList<String>();
+          accountingList.add(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());
+          accounting.setAccountingTypeList(accountingList);
+          List<Accounting> ats = accountingService.findList(accounting);
+          if (CollectionUtils.isNotEmpty(ats)) {
+            feeDate = ats.get(0).getFeeDate();
+            feeAmt = ats.get(0).getFeeAmount();
+            if (StringUtils.isEmpty(ats.get(0).getPaymentTransId())) {
+              Accounting accounting2 = new Accounting();
+              accounting2.setId(ats.get(0).getId());
+              accounting2.setPaymentTransId(paymentTransId);
+              accountingService.updatePaymentTransId(accounting2);
+            }
+            if (feeDate != null && feeAmt > 0d) {
+              rentContractService.shareRetirementAmt(feeDate, feeAmt, rc, paymentTransId, TradeDirectionEnum.OUT.getValue());
+            }
+          }
+        }
+        if (PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue().equals(pts.get(0).getPaymentType())) {
+          Date feeDate = null;
+          Double feeAmt = 0d;
+          Accounting accounting = new Accounting();
+          accounting.setRentContractId(rc.getId());
+          accounting.setFeeDirection(TradeDirectionEnum.IN.getValue());
+          accounting.setFeeType(PaymentTransTypeEnum.OVERDUE_RENT_AMOUNT.getValue());
+          List<String> accountingList = new ArrayList<String>();
+          accountingList.add(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());
+          accounting.setAccountingTypeList(accountingList);
+          List<Accounting> ats = accountingService.findList(accounting);
+          if (CollectionUtils.isNotEmpty(ats)) {
+            feeDate = ats.get(0).getFeeDate();
+            feeAmt = ats.get(0).getFeeAmount();
+            if (StringUtils.isEmpty(ats.get(0).getPaymentTransId())) {
+              Accounting accounting2 = new Accounting();
+              accounting2.setId(ats.get(0).getId());
+              accounting2.setPaymentTransId(paymentTransId);
+              accountingService.updatePaymentTransId(accounting2);
+            }
+            if (feeDate != null && feeAmt > 0d) {
+              rentContractService.shareOverdueAmt(feeDate, paymentTransService.analysisMaxIncomedTransDate(rc), feeAmt, rc, paymentTransId, TradeDirectionEnum.IN.getValue());
+            }
           }
         }
       }
@@ -1367,7 +1246,7 @@ public class RentContractController extends BaseController {
             accountingService.updatePaymentTransId(accounting2);
           }
           if (feeDate != null && feeAmt > 0d) {
-            rentContractService.shareOverdueAmt(feeDate, feeAmt, rc, paymentTransId, TradeDirectionEnum.IN.getValue());
+            rentContractService.shareOverdueAmt(feeDate, rc.getExpiredDate(), feeAmt, rc, paymentTransId, TradeDirectionEnum.IN.getValue());
           }
         }
       }

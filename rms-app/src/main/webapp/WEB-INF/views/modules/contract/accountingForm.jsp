@@ -49,7 +49,7 @@
 			<div class="controls">
 				<form:select path="feeType" class="input-xlarge required" readonly="true">
 					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					<form:options items="${fns:getDictList('payment_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
