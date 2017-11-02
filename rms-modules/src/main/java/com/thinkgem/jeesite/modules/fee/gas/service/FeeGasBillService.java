@@ -112,8 +112,8 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
             logger.info("生成抄表流水");
             feeGasReadFlowService.saveFeeGasReadFlowByFeeGasBill(feeGasBill);
-            logger.info("生成收款流水");
-            feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasBill(feeGasBill);
+            //logger.info("生成收款流水");
+            //feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasBill(feeGasBill);
         }
     }
 

@@ -74,6 +74,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             judgeLastRead(feeEleReadFlow);
 
             save(feeEleReadFlow);
+
+            logger.info("生成收款流水");
             //save fee charge save
             feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
         } else {
@@ -103,6 +105,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                     judgeLastRead(saveFeeEleReadFlow);
 
                     save(saveFeeEleReadFlow);
+
+                    logger.info("生成收款流水");
                     //save fee charge
                     feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(saveFeeEleReadFlow);
                 }
@@ -122,6 +126,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
 
                 save(feeEleReadFlow);
 
+                logger.info("生成收款流水");
                 //save fee charge
                 feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
             }
@@ -168,7 +173,13 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
         if (Optional.ofNullable(existReadFlow).isPresent()) {
             saveReadFlow.setId(existReadFlow.getId());
         }
+        judgeLastRead(saveReadFlow);
+
         save(saveReadFlow);
+
+        logger.info("生成收款流水");
+        //save fee charge
+        feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(saveReadFlow);
     }
 
     @Transactional(readOnly = false)

@@ -73,6 +73,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
 
         save(feeGasReadFlow);
 
+        logger.info("生成收款流水");
         //save fee charge save
         feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(feeGasReadFlow);
     }
@@ -107,7 +108,11 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         if (Optional.ofNullable(existReadFlow).isPresent()) {
             saveReadFlow.setId(existReadFlow.getId());
         }
-        save(saveReadFlow);
+        judgeLastRead(saveReadFlow);
+
+        logger.info("生成收款流水");
+        //save fee charge save
+        feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(saveReadFlow);
     }
 
     @Transactional(readOnly = false)

@@ -118,7 +118,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             logger.info("生成抄表流水");
             feeEleReadFlowService.saveFeeEleReadFlowByFeeEleBill(feeElectricityBill);
             logger.info("生成收款流水");
-            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleBill(feeElectricityBill);
+            //feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleBill(feeElectricityBill);
         }
     }
 

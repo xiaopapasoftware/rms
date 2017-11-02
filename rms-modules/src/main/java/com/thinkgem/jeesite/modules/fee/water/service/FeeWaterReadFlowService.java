@@ -72,7 +72,8 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         judgeLastRead(feeWaterReadFlow);
 
         save(feeWaterReadFlow);
-        
+
+        logger.info("生成收款流水");
         //save fee charge save
         feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
     }
@@ -107,7 +108,14 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         if (Optional.ofNullable(existReadFlow).isPresent()) {
             saveReadFlow.setId(existReadFlow.getId());
         }
+
+        judgeLastRead(saveReadFlow);
+
         save(saveReadFlow);
+
+        logger.info("生成收款流水");
+        //save fee charge save
+        feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(saveReadFlow);
     }
 
     @Transactional(readOnly = false)

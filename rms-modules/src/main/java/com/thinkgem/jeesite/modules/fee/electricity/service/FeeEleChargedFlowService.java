@@ -73,6 +73,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
             saveChargedFlow.setId(existEleChargedFlow.getId());
         }
+
         save(saveChargedFlow);
     }
 
