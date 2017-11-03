@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao">
 
-    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
+    <resultMap id="BaseResultMap" type="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
         <result column="id" property="id" jdbcType="VARCHAR"/>
         <result column="batch_no" property="batchNo" jdbcType="VARCHAR"/>
         <result column="property_id" property="propertyId" jdbcType="VARCHAR"/>
@@ -39,22 +39,22 @@
     </sql>
 
     <sql id="Insert_Columns">
-        <if test="id!=null"> id,</if>
-        <if test="batchNo!=null"> batch_no,</if>
-        <if test="propertyId!=null"> property_id,</if>
-        <if test="houseId!=null"> house_id,</if>
-        <if test="houseEleNum!=null"> house_ele_num,</if>
-        <if test="eleBillDate!=null"> ele_bill_date,</if>
-        <if test="eleBillAmount!=null"> ele_bill_amount,</if>
-        <if test="elePeakDegree!=null"> ele_peak_degree,</if>
-        <if test="eleValleyDegree!=null"> ele_valley_degree,</if>
-        <if test="billStatus!=null"> bill_status,</if>
-        <if test="createBy!=null"> create_by,</if>
-        <if test="createDate!=null"> create_date,</if>
-        <if test="updateBy!=null"> update_by,</if>
-        <if test="updateDate!=null"> update_date,</if>
-        <if test="remarks!=null"> remarks,</if>
-        <if test="delFlag!=null"> del_flag,</if>
+        <if test="id!=null">id,</if>
+        <if test="batchNo!=null">batch_no,</if>
+        <if test="propertyId!=null">property_id,</if>
+        <if test="houseId!=null">house_id,</if>
+        <if test="houseEleNum!=null">house_ele_num,</if>
+        <if test="eleBillDate!=null">ele_bill_date,</if>
+        <if test="eleBillAmount!=null">ele_bill_amount,</if>
+        <if test="elePeakDegree!=null">ele_peak_degree,</if>
+        <if test="eleValleyDegree!=null">ele_valley_degree,</if>
+        <if test="billStatus!=null">bill_status,</if>
+        <if test="createBy!=null">create_by,</if>
+        <if test="createDate!=null">create_date,</if>
+        <if test="updateBy!=null">update_by,</if>
+        <if test="updateDate!=null">update_date,</if>
+        <if test="remarks!=null">remarks,</if>
+        <if test="delFlag!=null">del_flag,</if>
     </sql>
     <sql id="Insert_Values">
         <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
@@ -94,19 +94,19 @@
     </sql>
 
     <sql id="Update_Set_From_Bean">
-        <if test="batchNo!=null"> batch_no=#{batchNo,jdbcType=VARCHAR},</if>
-        <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
-        <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseEleNum!=null"> house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
-        <if test="eleBillDate!=null"> ele_bill_date=#{eleBillDate,jdbcType=TIMESTAMP},</if>
-        <if test="eleBillAmount!=null"> ele_bill_amount=#{eleBillAmount,jdbcType=NUMERIC},</if>
-        <if test="elePeakDegree!=null"> ele_peak_degree=#{elePeakDegree,jdbcType=NUMERIC},</if>
-        <if test="eleValleyDegree!=null"> ele_valley_degree=#{eleValleyDegree,jdbcType=NUMERIC},</if>
-        <if test="billStatus!=null"> bill_status=#{billStatus,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
-        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
-        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
-        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+        <if test="batchNo!=null">batch_no=#{batchNo,jdbcType=VARCHAR},</if>
+        <if test="propertyId!=null">property_id=#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null">house_id=#{houseId,jdbcType=VARCHAR},</if>
+        <if test="houseEleNum!=null">house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="eleBillDate!=null">ele_bill_date=#{eleBillDate,jdbcType=TIMESTAMP},</if>
+        <if test="eleBillAmount!=null">ele_bill_amount=#{eleBillAmount,jdbcType=NUMERIC},</if>
+        <if test="elePeakDegree!=null">ele_peak_degree=#{elePeakDegree,jdbcType=NUMERIC},</if>
+        <if test="eleValleyDegree!=null">ele_valley_degree=#{eleValleyDegree,jdbcType=NUMERIC},</if>
+        <if test="billStatus!=null">bill_status=#{billStatus,jdbcType=NUMERIC},</if>
+        <if test="updateBy!=null">update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
         batch_no=#{item.batchNo,jdbcType=VARCHAR},
@@ -127,23 +127,24 @@
     <!--where-->
     <sql id="where">
         <where>
-            <if test="id!=null and id!=''"> AND id=#{id}</if>
-            <if test="batchNo!=null and batchNo!=''"> AND batch_no=#{batchNo}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
-            <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="houseEleNum!=null and houseEleNum!=''"> AND house_ele_num=#{houseEleNum}</if>
-            <if test="eleBillDate!=null and eleBillDate!=''"> AND ele_bill_date=#{eleBillDate}</if>
-            <if test="eleBillAmount!=null and eleBillAmount!=''"> AND ele_bill_amount=#{eleBillAmount}</if>
-            <if test="elePeakDegree!=null and elePeakDegree!=''"> AND ele_peak_degree=#{elePeakDegree}</if>
-            <if test="eleValleyDegree!=null and eleValleyDegree!=''"> AND ele_valley_degree=#{eleValleyDegree}</if>
-            <if test="billStatus!=null and billStatus!=''"> AND bill_status=#{billStatus}</if>
+            <if test="id!=null and id!=''">AND id=#{id}</if>
+            <if test="batchNo!=null and batchNo!=''">AND batch_no=#{batchNo}</if>
+            <if test="propertyId!=null and propertyId!=''">AND property_id=#{propertyId}</if>
+            <if test="houseId!=null and houseId!=''">AND house_id=#{houseId}</if>
+            <if test="houseEleNum!=null and houseEleNum!=''">AND house_ele_num=#{houseEleNum}</if>
+            <if test="eleBillDate!=null and eleBillDate!=''">AND ele_bill_date=#{eleBillDate}</if>
+            <if test="eleBillAmount!=null and eleBillAmount!=''">AND ele_bill_amount=#{eleBillAmount}</if>
+            <if test="elePeakDegree!=null and elePeakDegree!=''">AND ele_peak_degree=#{elePeakDegree}</if>
+            <if test="eleValleyDegree!=null and eleValleyDegree!=''">AND ele_valley_degree=#{eleValleyDegree}</if>
+            <if test="billStatus!=null and billStatus!=''">AND bill_status=#{billStatus}</if>
             AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill"
+            useGeneratedKeys="true" keyProperty="id">
         insert into fee_electricity_bill
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -184,53 +185,56 @@
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where  id = #{id,jdbcType=VARCHAR}  
+        where id = #{id,jdbcType=VARCHAR}
     </update>
 
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-        update fee_electricity_bill
-        <include refid="BatchUpdate_Set_From_Bean"/>
-        where
-             id = #{id,jdbcType=VARCHAR}  
+            update fee_electricity_bill
+            <include refid="BatchUpdate_Set_From_Bean"/>
+            where id = #{id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
 
     <!-- select -->
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_electricity_bill
-        where
-             id = #{id,jdbcType=VARCHAR}  
-    </select>
-
-    <select id="getWithProperty" resultMap="HouseFeeWithAreaAndBuildAndPropertyMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/>,tpp.PROJECT_ADDR from fee_electricity_bill
-        left join t_property_project tpp on tpp.id = property_id
+        select
+        <include refid="Base_Column_List"/>
+        from fee_electricity_bill
         where
         id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select <include refid="Base_Column_List"/> from fee_electricity_bill
+    <select id="findAllList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_electricity_bill
         <include refid="where"/>
-        ORDER  BY create_date DESC
+        ORDER BY create_date DESC
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select <include refid="Base_Column_List"/> from fee_electricity_bill
+    <select id="findList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_electricity_bill
         <include refid="where"/>
-        ORDER  BY create_date DESC
+        ORDER BY create_date DESC
     </select>
 
-    <select id="getLastEleBill" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select <include refid="Base_Column_List"/> from fee_electricity_bill
+    <select id="getLastEleBill" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_electricity_bill
         where del_flag=0
         and house_id=#{houseId,jdbcType=VARCHAR}
         <if test="id!=null and id!=''">
             AND id=#{id,jdbcType=VARCHAR}
         </if>
-        ORDER  BY ele_bill_date DESC
+        ORDER BY ele_bill_date DESC
         limit 0,1;
     </select>
 
@@ -238,7 +242,7 @@
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultType="java.lang.Double">
         select
-          sum(IFNULL(feb.ele_bill_amount,0))
+        sum(IFNULL(feb.ele_bill_amount,0))
         from t_house th
         left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
         left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
@@ -252,19 +256,20 @@
     <select id="getAllHouseFeeWithAreaAndBuildAndProperty"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultMap="HouseFeeWithAreaAndBuildAndPropertyMap">
-            select
-            sa.name area_name,tpp.AREA_ID,
-            th.HOUSE_NO,th.id house_id,th.ele_account_num house_ele_num,
-            tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
-            th.BUILDING_ID,tb.BUILDING_NAME,
-            feb.id,feb.batch_no,feb.ele_bill_date,feb.ele_bill_amount,
-            feb.ele_peak_degree,feb.ele_valley_degree,feb.bill_status,
-            case feb.bill_status when '0' then '待提交' when '1' then '待审核'  when '2' then '审核通过'  when '3' then '审核驳回' else '' end bill_status_name
-            from t_house th
-            left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
-            left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
-            left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
-            left join fee_electricity_bill feb on feb.house_id=th.ID and feb.del_flag=0
+        select
+        sa.name area_name,tpp.AREA_ID,
+        th.HOUSE_NO,th.id house_id,th.ele_account_num house_ele_num,
+        tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
+        th.BUILDING_ID,tb.BUILDING_NAME,
+        feb.id,feb.batch_no,feb.ele_bill_date,feb.ele_bill_amount,
+        feb.ele_peak_degree,feb.ele_valley_degree,feb.bill_status,
+        case feb.bill_status when '0' then '待提交' when '1' then '待审核' when '2' then '审核通过' when '3' then '审核驳回' else ''
+        end bill_status_name
+        from t_house th
+        left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        left join fee_electricity_bill feb on feb.house_id=th.ID and feb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
             AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
@@ -274,11 +279,11 @@
     <!-- end select -->
     <sql id="commonWhere">
         <where>
-            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
-            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
-            <if test="houseId!=null and houseId!=''"> AND th.id=#{houseId}</if>
-            <if test="status!=null and status!=''"> AND feb.bill_status=#{status}</if>
+            <if test="areaId!=null and areaId!=''">AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''">AND th.id=#{houseId}</if>
+            <if test="status!=null and status!=''">AND feb.bill_status=#{status}</if>
             <if test="houseNum!=null and houseNum!=''">AND th.ele_account_num LIKE '%#{houseNum}%'</if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->

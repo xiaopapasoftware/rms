@@ -22,7 +22,7 @@ import java.util.List;
 @MyBatisDao
 public interface FeeWaterChargedFlowDao extends CrudDao<FeeWaterChargedFlow>{
 
-    List<FeeWaterChargedFlow> getFeeWaterChargedFlowByBusinessIdAndFromSourceAndRoom(@Param("businessId") String businessId, @Param("fromSource")int fromSource,@Param("roomId")String roomId);
+    FeeWaterChargedFlow getFeeWaterChargedFlowByBusinessIdAndFromSourceAndRoom(@Param("businessId") String businessId, @Param("fromSource")int fromSource,@Param("roomId")String roomId);
 
     List<FeeWaterChargedFlowVo> getFeeWaterChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 

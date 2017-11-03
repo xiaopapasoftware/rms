@@ -73,9 +73,11 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
 
         save(feeGasReadFlow);
 
-        logger.info("生成收款流水");
-        //save fee charge save
-        feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(feeGasReadFlow);
+        if(StringUtils.equals(house.getIntentMode(),RentModelTypeEnum.WHOLE_RENT.getValue())){
+            logger.info("生成收款流水");
+            //save fee charge save
+            feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(feeGasReadFlow);
+        }
     }
 
     private void judgeLastRead(FeeGasReadFlow feeGasReadFlow){
@@ -108,11 +110,10 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         if (Optional.ofNullable(existReadFlow).isPresent()) {
             saveReadFlow.setId(existReadFlow.getId());
         }
+
         judgeLastRead(saveReadFlow);
 
-        logger.info("生成收款流水");
-        //save fee charge save
-        feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(saveReadFlow);
+        save(saveReadFlow);
     }
 
     @Transactional(readOnly = false)

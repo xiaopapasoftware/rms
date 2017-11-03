@@ -112,8 +112,8 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
         if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
             logger.info("生成抄表流水");
             feeWaterReadFlowService.saveFeeWaterReadFlowByFeeWaterBill(feeWaterBill);
-            //logger.info("生成收款流水");
-            //feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterBill(feeWaterBill);
+            logger.info("生成收款流水");
+            feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterBill(feeWaterBill);
         }
     }
 

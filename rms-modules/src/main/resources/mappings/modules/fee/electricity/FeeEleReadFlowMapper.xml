@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleReadFlowDao">
 
-    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+    <resultMap id="BaseResultMap" type="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
         <result column="id" property="id" jdbcType="VARCHAR"/>
         <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
         <result column="from_source" property="fromSource" jdbcType="NUMERIC"/>
@@ -22,7 +22,8 @@
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <resultMap id="FeeEleReadFlowWithAllInfo" type="com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo" extends="BaseResultMap">
+    <resultMap id="FeeEleReadFlowWithAllInfo"
+               type="com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo" extends="BaseResultMap">
         <result column="area_id" property="areaId" jdbcType="VARCHAR"/>
         <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
         <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
@@ -39,23 +40,23 @@
     </sql>
 
     <sql id="Insert_Columns">
-        <if test="id!=null"> id,</if>
-        <if test="businessId!=null"> business_id,</if>
-        <if test="fromSource!=null"> from_source,</if>
-        <if test="propertyId!=null"> property_id,</if>
-        <if test="houseId!=null"> house_id,</if>
-        <if test="roomId!=null"> room_id,</if>
-        <if test="houseEleNum!=null"> house_ele_num,</if>
-        <if test="eleReadDate!=null"> ele_read_date,</if>
-        <if test="eleDegree!=null"> ele_degree,</if>
-        <if test="elePeakDegree!=null"> ele_peak_degree,</if>
-        <if test="eleValleyDegree!=null"> ele_valley_degree,</if>
-        <if test="createBy!=null"> create_by,</if>
-        <if test="createDate!=null"> create_date,</if>
-        <if test="updateBy!=null"> update_by,</if>
-        <if test="updateDate!=null"> update_date,</if>
-        <if test="remarks!=null"> remarks,</if>
-        <if test="delFlag!=null"> del_flag,</if>
+        <if test="id!=null">id,</if>
+        <if test="businessId!=null">business_id,</if>
+        <if test="fromSource!=null">from_source,</if>
+        <if test="propertyId!=null">property_id,</if>
+        <if test="houseId!=null">house_id,</if>
+        <if test="roomId!=null">room_id,</if>
+        <if test="houseEleNum!=null">house_ele_num,</if>
+        <if test="eleReadDate!=null">ele_read_date,</if>
+        <if test="eleDegree!=null">ele_degree,</if>
+        <if test="elePeakDegree!=null">ele_peak_degree,</if>
+        <if test="eleValleyDegree!=null">ele_valley_degree,</if>
+        <if test="createBy!=null">create_by,</if>
+        <if test="createDate!=null">create_date,</if>
+        <if test="updateBy!=null">update_by,</if>
+        <if test="updateDate!=null">update_date,</if>
+        <if test="remarks!=null">remarks,</if>
+        <if test="delFlag!=null">del_flag,</if>
     </sql>
     <sql id="Insert_Values">
         <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
@@ -97,20 +98,20 @@
     </sql>
 
     <sql id="Update_Set_From_Bean">
-        <if test="businessId!=null"> business_id=#{businessId,jdbcType=VARCHAR},</if>
-        <if test="fromSource!=null"> from_source=#{fromSource,jdbcType=NUMERIC},</if>
-        <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
-        <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="roomId!=null"> room_id=#{roomId,jdbcType=VARCHAR},</if>
-        <if test="houseEleNum!=null"> house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
-        <if test="eleReadDate!=null"> ele_read_date=#{eleReadDate,jdbcType=TIMESTAMP},</if>
-        <if test="eleDegree!=null"> ele_degree=#{eleDegree,jdbcType=NUMERIC},</if>
-        <if test="elePeakDegree!=null"> ele_peak_degree=#{elePeakDegree,jdbcType=NUMERIC},</if>
-        <if test="eleValleyDegree!=null"> ele_valley_degree=#{eleValleyDegree,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
-        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
-        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
-        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+        <if test="businessId!=null">business_id=#{businessId,jdbcType=VARCHAR},</if>
+        <if test="fromSource!=null">from_source=#{fromSource,jdbcType=NUMERIC},</if>
+        <if test="propertyId!=null">property_id=#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null">house_id=#{houseId,jdbcType=VARCHAR},</if>
+        <if test="roomId!=null">room_id=#{roomId,jdbcType=VARCHAR},</if>
+        <if test="houseEleNum!=null">house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
+        <if test="eleReadDate!=null">ele_read_date=#{eleReadDate,jdbcType=TIMESTAMP},</if>
+        <if test="eleDegree!=null">ele_degree=#{eleDegree,jdbcType=NUMERIC},</if>
+        <if test="elePeakDegree!=null">ele_peak_degree=#{elePeakDegree,jdbcType=NUMERIC},</if>
+        <if test="eleValleyDegree!=null">ele_valley_degree=#{eleValleyDegree,jdbcType=NUMERIC},</if>
+        <if test="updateBy!=null">update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
         business_id=#{item.businessId,jdbcType=VARCHAR},
@@ -132,24 +133,25 @@
     <!--where-->
     <sql id="where">
         <where>
-            <if test="id!=null and id!=''"> AND id=#{id}</if>
-            <if test="businessId!=null and businessId!=''"> AND business_id=#{businessId}</if>
-            <if test="fromSource!=null and fromSource!=''"> AND from_source=#{fromSource}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
-            <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
-            <if test="houseEleNum!=null and houseEleNum!=''"> AND house_ele_num=#{houseEleNum}</if>
-            <if test="eleReadDate!=null and eleReadDate!=''"> AND ele_read_date=#{eleReadDate}</if>
-            <if test="eleDegree!=null and eleDegree!=''"> AND ele_degree=#{eleDegree}</if>
-            <if test="elePeakDegree!=null and elePeakDegree!=''"> AND ele_peak_degree=#{elePeakDegree}</if>
-            <if test="eleValleyDegree!=null and eleValleyDegree!=''"> AND ele_valley_degree=#{eleValleyDegree}</if>
+            <if test="id!=null and id!=''">AND id=#{id}</if>
+            <if test="businessId!=null and businessId!=''">AND business_id=#{businessId}</if>
+            <if test="fromSource!=null and fromSource!=''">AND from_source=#{fromSource}</if>
+            <if test="propertyId!=null and propertyId!=''">AND property_id=#{propertyId}</if>
+            <if test="houseId!=null and houseId!=''">AND house_id=#{houseId}</if>
+            <if test="roomId!=null and roomId!=''">AND room_id=#{roomId}</if>
+            <if test="houseEleNum!=null and houseEleNum!=''">AND house_ele_num=#{houseEleNum}</if>
+            <if test="eleReadDate!=null and eleReadDate!=''">AND ele_read_date=#{eleReadDate}</if>
+            <if test="eleDegree!=null and eleDegree!=''">AND ele_degree=#{eleDegree}</if>
+            <if test="elePeakDegree!=null and elePeakDegree!=''">AND ele_peak_degree=#{elePeakDegree}</if>
+            <if test="eleValleyDegree!=null and eleValleyDegree!=''">AND ele_valley_degree=#{eleValleyDegree}</if>
             AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow"
+            useGeneratedKeys="true" keyProperty="id">
         insert into fee_ele_read_flow
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -190,47 +192,60 @@
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where  id = #{id,jdbcType=VARCHAR}  
+        where id = #{id,jdbcType=VARCHAR}
     </update>
 
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-        update fee_ele_read_flow
-        <include refid="BatchUpdate_Set_From_Bean"/>
-        where
-             id = #{id,jdbcType=VARCHAR}  
+            update fee_ele_read_flow
+            <include refid="BatchUpdate_Set_From_Bean"/>
+            where
+            id = #{id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
 
     <!-- select -->
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         where
-             id = #{id,jdbcType=VARCHAR}  
+        id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+    <select id="findAllList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         <include refid="where"/>
         ORDER BY create_date DESC
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+    <select id="findList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         <include refid="where"/>
         ORDER BY create_date DESC
     </select>
 
     <select id="getFeeEleReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         where
         del_flag=0 and from_source=1
         and business_id = #{feeEleBillId,jdbcType=VARCHAR}
     </select>
 
-    <select id="getLastReadFlow" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+    <select id="getLastReadFlow" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         where del_flag = 0
         AND house_id=#{houseId,jdbcType=VARCHAR}
         <if test="roomId!=null and roomId!=''">
@@ -246,22 +261,23 @@
     <select id="getFeeEleReadFlowWithAllInfo"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultMap="FeeEleReadFlowWithAllInfo">
-        select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME from
+        select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME
+        from
         (select
-            ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
-            th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
-            case ferf.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,ferf.room_id,
-            case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
+        ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
+        th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
+        case ferf.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,ferf.room_id,
+        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
         from fee_ele_read_flow ferf
         left join t_room tr on ferf.room_id=tr.ID and tr.DEL_FLAG=0
         left join t_house th on ferf.house_id=th.ID and th.DEL_FLAG=0
         where ferf.room_id is not null AND ferf.del_flag=0
         union
         select
-            ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
-            th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
-            '0' ROOM_NO,'0' room_id,
-            case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
+        ferf.id,ferf.house_id,ferf.ele_degree,ferf.ele_peak_degree,ferf.ele_read_date,ferf.ele_valley_degree,ferf.property_id,
+        th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,ferf.from_source,ferf.create_date,
+        '0' ROOM_NO,'0' room_id,
+        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name
         from fee_ele_read_flow ferf
         left join t_house th on ferf.house_id=th.ID and th.DEL_FLAG=0
         where ferf.room_id is null AND ferf.del_flag=0
@@ -276,10 +292,10 @@
     <!-- end select -->
     <sql id="commonWhere">
         <where>
-            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
-            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
-            <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
+            <if test="areaId!=null and areaId!=''">AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''">AND temp.house_id=#{houseId}</if>
             <if test="startTime!=null and startTime!=''">
                 <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.ele_read_date,'%Y-%m-%d') ]]>
             </if>

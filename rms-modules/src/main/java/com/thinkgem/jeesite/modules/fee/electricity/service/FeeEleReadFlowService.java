@@ -133,25 +133,25 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
         }
     }
 
-    private void judgeLastRead(FeeEleReadFlow feeEleReadFlow){
+    private void judgeLastRead(FeeEleReadFlow feeEleReadFlow) {
         FeeEleReadFlow lastRead = dao.getLastReadFlow(feeEleReadFlow);
-        if(Optional.ofNullable(lastRead).isPresent()){
-            if(feeEleReadFlow.getElePeakDegree() != null && lastRead.getElePeakDegree() > feeEleReadFlow.getElePeakDegree()){
+        if (Optional.ofNullable(lastRead).isPresent()) {
+            if (feeEleReadFlow.getElePeakDegree() != null && lastRead.getElePeakDegree() > feeEleReadFlow.getElePeakDegree()) {
                 logger.error("当前峰值数不能小于上次峰值数");
                 throw new IllegalArgumentException("当前峰值数不能小于上次峰值数");
             }
 
-            if(feeEleReadFlow.getEleValleyDegree() != null && lastRead.getEleValleyDegree() > feeEleReadFlow.getEleValleyDegree()){
+            if (feeEleReadFlow.getEleValleyDegree() != null && lastRead.getEleValleyDegree() > feeEleReadFlow.getEleValleyDegree()) {
                 logger.error("当前谷值数不能小于上次谷值数");
                 throw new IllegalArgumentException("当前谷值数不能小于上次谷值数");
             }
 
-            if(feeEleReadFlow.getEleDegree() != null && lastRead.getEleDegree() > feeEleReadFlow.getEleDegree()){
+            if (feeEleReadFlow.getEleDegree() != null && lastRead.getEleDegree() > feeEleReadFlow.getEleDegree()) {
                 logger.error("当前电表度数不能小于上次电表度数");
                 throw new IllegalArgumentException("当前电表度数不能小于上次电表度数");
             }
 
-            if(lastRead.getEleReadDate().compareTo(feeEleReadFlow.getEleReadDate()) > 0){
+            if (lastRead.getEleReadDate().compareTo(feeEleReadFlow.getEleReadDate()) > 0) {
                 logger.error("下次抄表数已经生成不能修改");
                 throw new IllegalArgumentException("下次抄表数已经生成不能修改");
             }
@@ -159,7 +159,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     }
 
     @Transactional(readOnly = false)
-    public void saveFeeEleReadFlowByFeeEleBill(FeeElectricityBill feeElectricityBill){
+    public void saveFeeEleReadFlowByFeeEleBill(FeeElectricityBill feeElectricityBill) {
         FeeEleReadFlow saveReadFlow = new FeeEleReadFlow();
         saveReadFlow.setElePeakDegree(feeElectricityBill.getElePeakDegree());
         saveReadFlow.setEleValleyDegree(feeElectricityBill.getEleValleyDegree());
@@ -183,7 +183,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeEleReadFlowByFeeEleBill(String feeEleBillId){
+    public void deleteFeeEleReadFlowByFeeEleBill(String feeEleBillId) {
         FeeEleReadFlow existReadFlow = dao.getFeeEleReadFlowByFeeBillId(feeEleBillId);
         FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
         feeEleReadFlow.setId(existReadFlow.getId());
@@ -192,10 +192,10 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeEleReadFlow(String id){
+    public void deleteFeeEleReadFlow(String id) {
         FeeEleReadFlow existEleReadFlow = get(id);
         if (Optional.ofNullable(existEleReadFlow).isPresent()) {
-            if(existEleReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()){
+            if (existEleReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
                 logger.error("电抄表[id={}]为账单录入,不能删除", id);
                 throw new IllegalArgumentException("当前信息为账单生成,不能删除");
             }
@@ -203,8 +203,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleReadFlow.setId(id);
             feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeEleReadFlow);
-            //删除相应的收费流水记录
-            feeEleChargedFlowService.deleteFeeEleChargedFlowByBusinessIdAndFromSource(id,FeeFromSourceEnum.READ_METER.getValue());
+            /*删除相应的收费流水记录*/
+            feeEleChargedFlowService.deleteFeeEleChargedFlowByBusinessIdAndFromSource(id, FeeFromSourceEnum.READ_METER.getValue());
         } else {
             logger.error("电抄表[id={}]不存在,不能删除", id);
             throw new IllegalArgumentException("当前信息不存在,不能删除");
@@ -215,7 +215,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
         return dao.getFeeEleReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeEleReadFlow getLastReadFlow(FeeEleReadFlow feeEleReadFlow){
+    public FeeEleReadFlow getLastReadFlow(FeeEleReadFlow feeEleReadFlow) {
         return dao.getLastReadFlow(feeEleReadFlow);
     }
 }

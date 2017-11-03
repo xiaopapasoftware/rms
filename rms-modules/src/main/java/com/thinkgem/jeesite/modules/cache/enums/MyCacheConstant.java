@@ -8,4 +8,6 @@ public interface MyCacheConstant {
 
     String SOFT_NAME = "name";
 
+    String FEE_CACHE = "fee";
+
 }

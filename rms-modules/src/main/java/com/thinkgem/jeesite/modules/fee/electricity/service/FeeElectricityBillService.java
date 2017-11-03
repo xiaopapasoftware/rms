@@ -56,19 +56,6 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         return this.dao.getTotalAmount(feeCriteriaEntity);
     }
 
-    public FeeElectricityBillVo getWithProperty(String id, String houseId) {
-        FeeElectricityBillVo feeElectricityBillVo = this.dao.getWithProperty(id);
-        if (Optional.ofNullable(feeElectricityBillVo).isPresent()) {
-            House house = feeCommonService.getHouseById(houseId);
-            if (Optional.ofNullable(house).isPresent()) {
-                feeElectricityBillVo.setHouseId(house.getHouseId());
-                feeElectricityBillVo.setHouseEleNum(house.getEleAccountNum());
-                feeElectricityBillVo.setProjectAddress(house.getProjectAddr());
-            }
-        }
-        return feeElectricityBillVo;
-    }
-
     @Transactional(readOnly = false)
     public void saveFeeElectricityBill(FeeElectricityBill feeElectricityBill) {
         House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
@@ -118,7 +105,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             logger.info("生成抄表流水");
             feeEleReadFlowService.saveFeeEleReadFlowByFeeEleBill(feeElectricityBill);
             logger.info("生成收款流水");
-            //feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleBill(feeElectricityBill);
+            feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleBill(feeElectricityBill);
         }
     }
 

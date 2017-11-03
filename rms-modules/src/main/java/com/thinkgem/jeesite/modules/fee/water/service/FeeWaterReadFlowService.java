@@ -47,7 +47,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     public void saveFeeWaterReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
         House house = feeCommonService.getHouseById(feeWaterReadFlow.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeWaterReadFlow.getHouseWaterNum());
+            logger.error("当前房屋[id={}]不存在,请确认", feeWaterReadFlow.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -73,9 +73,11 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
 
         save(feeWaterReadFlow);
 
-        logger.info("生成收款流水");
-        //save fee charge save
-        feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
+        if(StringUtils.equals(house.getIntentMode(),RentModelTypeEnum.WHOLE_RENT.getValue())){
+            logger.info("生成收款流水");
+            //save fee charge save
+            feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
+        }
     }
 
     private void judgeLastRead(FeeWaterReadFlow feeWaterReadFlow){
@@ -112,10 +114,6 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         judgeLastRead(saveReadFlow);
 
         save(saveReadFlow);
-
-        logger.info("生成收款流水");
-        //save fee charge save
-        feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(saveReadFlow);
     }
 
     @Transactional(readOnly = false)
