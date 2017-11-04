@@ -87,7 +87,7 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
     private double calculateDepositSum(GrossProfitCondition condition) {
         List<LeaseContract> contractList = contractService.findLeaseContractListByHouseId(condition.getId());
         int startNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getStartDate()), false);
-        int endNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getEndDate()), false) - 1;
+        int endNum = DataParser.calculateNum(GrossProfitAssistant.parseDateToYMD(condition.getEndDate()), false);
         //每份房屋只会对应一份租赁合同
         if (!CollectionUtils.isEmpty(contractList)) {
             LeaseContract contract = contractList.get(0);
@@ -115,11 +115,11 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate{
         int end = numDeposit.getEnd();
         double deposit = numDeposit.getDeposit();
         if (startNum >= start && endNum <= end) {
-            sum += (endNum - startNum + 1) * deposit;
+            sum += (endNum - startNum) * deposit;
         } else if (startNum < start && endNum <= end) {
             sum += (endNum - start + 1) * deposit;
         } else if (startNum >= start && endNum > end) {
-            sum += (end - startNum + 1) * deposit;
+            sum += (end - startNum) * deposit;
         } else if (startNum < start && endNum > end) {
             sum += (numDeposit.getSize()) * deposit;
         }
