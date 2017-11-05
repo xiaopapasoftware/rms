@@ -28,12 +28,13 @@ import java.util.Optional;
 /**
  * <p>抄水表流水实现类 service</p>
  * <p>Table: fee_water_read_flow - 抄水表流水</p>
- * @since 2017-10-20 06:26:14
+ *
  * @author generator code
+ * @since 2017-10-20 06:26:14
  */
 @Service
 @Transactional(readOnly = true)
-public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, FeeWaterReadFlow>{
+public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, FeeWaterReadFlow> {
 
     private Logger logger = LoggerFactory.getLogger(FeeWaterReadFlowService.class);
 
@@ -47,7 +48,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     public void saveFeeWaterReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
         House house = feeCommonService.getHouseById(feeWaterReadFlow.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeWaterReadFlow.getHouseId());
+            logger.error("当前房屋[houseId={}]不存在,请确认", feeWaterReadFlow.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -73,23 +74,21 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
 
         save(feeWaterReadFlow);
 
-        if(StringUtils.equals(house.getIntentMode(),RentModelTypeEnum.WHOLE_RENT.getValue())){
-            logger.info("生成收款流水");
-            //save fee charge save
-            feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
-        }
+        logger.info("生成收款流水");
+        //save fee charge save
+        feeWaterChargedFlowService.saveFeeWaterChargedFlowByFeeWaterReadFlow(feeWaterReadFlow);
     }
 
-    private void judgeLastRead(FeeWaterReadFlow feeWaterReadFlow){
+    private void judgeLastRead(FeeWaterReadFlow feeWaterReadFlow) {
         FeeWaterReadFlow lastRead = dao.getLastReadFlow(feeWaterReadFlow);
-        if(Optional.ofNullable(lastRead).isPresent()){
+        if (Optional.ofNullable(lastRead).isPresent()) {
 
-            if(feeWaterReadFlow.getWaterDegree() != null && lastRead.getWaterDegree() > feeWaterReadFlow.getWaterDegree()){
+            if (feeWaterReadFlow.getWaterDegree() != null && lastRead.getWaterDegree() > feeWaterReadFlow.getWaterDegree()) {
                 logger.error("当前电表度数不能小于上次电表度数");
                 throw new IllegalArgumentException("当前电表度数不能小于上次电表度数");
             }
 
-            if(lastRead.getWaterReadDate().compareTo(feeWaterReadFlow.getWaterReadDate()) > 0){
+            if (lastRead.getWaterReadDate().compareTo(feeWaterReadFlow.getWaterReadDate()) > 0) {
                 logger.error("下次抄表数已经生成不能修改");
                 throw new IllegalArgumentException("下次抄表数已经生成不能修改");
             }
@@ -97,7 +96,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     }
 
     @Transactional(readOnly = false)
-    public void saveFeeWaterReadFlowByFeeWaterBill(FeeWaterBill feeWaterBill){
+    public void saveFeeWaterReadFlowByFeeWaterBill(FeeWaterBill feeWaterBill) {
         FeeWaterReadFlow saveReadFlow = new FeeWaterReadFlow();
         saveReadFlow.setWaterDegree(feeWaterBill.getWaterDegree());
         saveReadFlow.setWaterReadDate(feeWaterBill.getWaterBillDate());
@@ -117,7 +116,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeWaterReadFlowByFeeWaterBill(String feeWaterBillId){
+    public void deleteFeeWaterReadFlowByFeeWaterBill(String feeWaterBillId) {
         FeeWaterReadFlow existReadFlow = dao.getFeeWaterReadFlowByFeeBillId(feeWaterBillId);
         FeeWaterReadFlow feeWaterReadFlow = new FeeWaterReadFlow();
         feeWaterReadFlow.setId(existReadFlow.getId());
@@ -126,11 +125,11 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeWaterReadFlow(String id){
+    public void deleteFeeWaterReadFlow(String id) {
         FeeWaterReadFlow existWaterReadFlow = get(id);
         if (Optional.ofNullable(existWaterReadFlow).isPresent()) {
-            if(existWaterReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()){
-                logger.error("电抄表[id={}]为账单录入,不能删除", id);
+            if (existWaterReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
+                logger.error("该抄表[id={}]为账单录入,不能删除", id);
                 throw new IllegalArgumentException("当前信息为账单生成,不能删除");
             }
             FeeWaterReadFlow feeWaterReadFlow = new FeeWaterReadFlow();
@@ -138,9 +137,9 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
             feeWaterReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeWaterReadFlow);
             //删除相应的收费流水记录
-            feeWaterChargedFlowService.deleteFeeWaterChargedFlowByBusinessIdAndFromSource(id,FeeFromSourceEnum.READ_METER.getValue());
+            feeWaterChargedFlowService.deleteFeeWaterChargedFlowByBusinessIdAndFromSource(id, FeeFromSourceEnum.READ_METER.getValue());
         } else {
-            logger.error("电抄表[id={}]不存在,不能删除", id);
+            logger.error("该抄表[id={}]不存在,不能删除", id);
             throw new IllegalArgumentException("当前信息不存在,不能删除");
         }
     }
@@ -149,7 +148,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         return dao.getFeeWaterReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeWaterReadFlow getLastReadFlow(FeeWaterReadFlow feeWaterReadFlow){
+    public FeeWaterReadFlow getLastReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
         return dao.getLastReadFlow(feeWaterReadFlow);
     }
 }

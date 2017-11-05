@@ -19,7 +19,7 @@ import java.util.Date;
  * @author wangganggang
  */
 @Data
-public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow>{
+public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow> implements Cloneable{
 
 	/** 主键 */
     private String id;
@@ -49,4 +49,11 @@ public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow>{
     private BigDecimal waterAmount;
     /** generate_order - 是否已生成订单 0:是 -1:否 */
     private Integer generateOrder;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        FeeWaterChargedFlow feeWaterChargedFlow;
+        feeWaterChargedFlow = (FeeWaterChargedFlow) super.clone();
+        return feeWaterChargedFlow;
+    }
 }

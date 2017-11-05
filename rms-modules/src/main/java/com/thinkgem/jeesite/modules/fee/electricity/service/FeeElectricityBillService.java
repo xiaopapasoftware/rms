@@ -60,7 +60,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
     public void saveFeeElectricityBill(FeeElectricityBill feeElectricityBill) {
         House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeElectricityBill.getHouseEleNum());
+            logger.error("当前房屋[houseId={}]不存在,请确认", feeElectricityBill.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -146,24 +146,24 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                 switch (status) {
                     case "1":
                         if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeElectricityBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("户号{}当前状态为{},不能提交", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可提交");
+                            logger.error("户号{}账单当前状态为{},不能提交", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]账单不可提交");
                         }
                         break;
                     case "2":
                         if (feeElectricityBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能同意", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可同意");
+                            logger.error("户号{}账单当前状态为{},不能同意", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]账单不可同意");
                         }
                         break;
                     case "3":
                         if (feeElectricityBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能驳回", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不可驳回");
+                            logger.error("户号{}账单当前状态为{},不能驳回", feeElectricityBill.getHouseEleNum(), FeeBillStatusEnum.fromValue(feeElectricityBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]账单不可驳回");
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]不在处理状态");
+                        throw new IllegalArgumentException("户号[" + feeElectricityBill.getHouseEleNum() + "]账单不在处理状态");
                 }
                 FeeElectricityBill updFeeEleBill = new FeeElectricityBill();
                 if (StringUtils.isBlank(feeElectricityBill.getBatchNo())) {

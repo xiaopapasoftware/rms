@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.fee.electricity.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -15,7 +16,8 @@ import java.util.Date;
  * <p>抄电表流水</p>
  * @since 2017-09-18 08:24:39
  */
-public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow>{
+@Data
+public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow> implements Cloneable{
 
     /** business_id - 关联业务ID */
     private String businessId;
@@ -39,64 +41,10 @@ public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow>{
     /** ele_valley_degree - 谷值数 */
     private Float eleValleyDegree;
 
-    public String getBusinessId(){
-        return this.businessId;
-    }
-    public void setBusinessId(String businessId){
-        this.businessId = businessId;
-    }
-    public Integer getFromSource(){
-        return this.fromSource;
-    }
-    public void setFromSource(Integer fromSource){
-        this.fromSource = fromSource;
-    }
-    public String getPropertyId(){
-        return this.propertyId;
-    }
-    public void setPropertyId(String propertyId){
-        this.propertyId = propertyId;
-    }
-    public String getHouseId(){
-        return this.houseId;
-    }
-    public void setHouseId(String houseId){
-        this.houseId = houseId;
-    }
-    public String getRoomId(){
-        return this.roomId;
-    }
-    public void setRoomId(String roomId){
-        this.roomId = roomId;
-    }
-    public String getHouseEleNum(){
-        return this.houseEleNum;
-    }
-    public void setHouseEleNum(String houseEleNum){
-        this.houseEleNum = houseEleNum;
-    }
-    public Date getEleReadDate(){
-        return this.eleReadDate;
-    }
-    public void setEleReadDate(Date eleReadDate){
-        this.eleReadDate = eleReadDate;
-    }
-    public Float getEleDegree(){
-        return this.eleDegree;
-    }
-    public void setEleDegree(Float eleDegree){
-        this.eleDegree = eleDegree;
-    }
-    public Float getElePeakDegree(){
-        return this.elePeakDegree;
-    }
-    public void setElePeakDegree(Float elePeakDegree){
-        this.elePeakDegree = elePeakDegree;
-    }
-    public Float getEleValleyDegree(){
-        return this.eleValleyDegree;
-    }
-    public void setEleValleyDegree(Float eleValleyDegree){
-        this.eleValleyDegree = eleValleyDegree;
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        FeeEleReadFlow feeEleReadFlow;
+        feeEleReadFlow = (FeeEleReadFlow) super.clone();
+        return feeEleReadFlow;
     }
 }

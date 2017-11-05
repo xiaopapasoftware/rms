@@ -28,8 +28,9 @@ import java.util.Optional;
 /**
  * <p>抄燃气表流水实现类 service</p>
  * <p>Table: fee_gas_read_flow - 抄燃气表流水</p>
- * @since 2017-10-20 06:26:38
+ *
  * @author generator code
+ * @since 2017-10-20 06:26:38
  */
 @Service
 @Transactional(readOnly = true)
@@ -73,23 +74,21 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
 
         save(feeGasReadFlow);
 
-        if(StringUtils.equals(house.getIntentMode(),RentModelTypeEnum.WHOLE_RENT.getValue())){
-            logger.info("生成收款流水");
-            //save fee charge save
-            feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(feeGasReadFlow);
-        }
+        logger.info("生成收款流水");
+        //save fee charge save
+        feeGasChargedFlowService.saveFeeGasChargedFlowByFeeGasReadFlow(feeGasReadFlow);
     }
 
-    private void judgeLastRead(FeeGasReadFlow feeGasReadFlow){
+    private void judgeLastRead(FeeGasReadFlow feeGasReadFlow) {
         FeeGasReadFlow lastRead = dao.getLastReadFlow(feeGasReadFlow);
-        if(Optional.ofNullable(lastRead).isPresent()){
+        if (Optional.ofNullable(lastRead).isPresent()) {
 
-            if(feeGasReadFlow.getGasDegree() != null && lastRead.getGasDegree() > feeGasReadFlow.getGasDegree()){
+            if (feeGasReadFlow.getGasDegree() != null && lastRead.getGasDegree() > feeGasReadFlow.getGasDegree()) {
                 logger.error("当前电表度数不能小于上次电表度数");
                 throw new IllegalArgumentException("当前电表度数不能小于上次电表度数");
             }
 
-            if(lastRead.getGasReadDate().compareTo(feeGasReadFlow.getGasReadDate()) > 0){
+            if (lastRead.getGasReadDate().compareTo(feeGasReadFlow.getGasReadDate()) > 0) {
                 logger.error("下次抄表数已经生成不能修改");
                 throw new IllegalArgumentException("下次抄表数已经生成不能修改");
             }
@@ -97,7 +96,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     @Transactional(readOnly = false)
-    public void saveFeeGasReadFlowByFeeGasBill(FeeGasBill feeGasBill){
+    public void saveFeeGasReadFlowByFeeGasBill(FeeGasBill feeGasBill) {
         FeeGasReadFlow saveReadFlow = new FeeGasReadFlow();
         saveReadFlow.setGasDegree(feeGasBill.getGasDegree());
         saveReadFlow.setGasReadDate(feeGasBill.getGasBillDate());
@@ -117,7 +116,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeGasReadFlowByFeeGasBill(String feeGasBillId){
+    public void deleteFeeGasReadFlowByFeeGasBill(String feeGasBillId) {
         FeeGasReadFlow existReadFlow = dao.getFeeGasReadFlowByFeeBillId(feeGasBillId);
         FeeGasReadFlow feeGasReadFlow = new FeeGasReadFlow();
         feeGasReadFlow.setId(existReadFlow.getId());
@@ -126,11 +125,11 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     @Transactional(readOnly = false)
-    public void deleteFeeGasReadFlow(String id){
+    public void deleteFeeGasReadFlow(String id) {
         FeeGasReadFlow existGasReadFlow = get(id);
         if (Optional.ofNullable(existGasReadFlow).isPresent()) {
-            if(existGasReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()){
-                logger.error("电抄表[id={}]为账单录入,不能删除", id);
+            if (existGasReadFlow.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
+                logger.error("该抄表[id={}]为账单录入,不能删除", id);
                 throw new IllegalArgumentException("当前信息为账单生成,不能删除");
             }
             FeeGasReadFlow feeGasReadFlow = new FeeGasReadFlow();
@@ -138,9 +137,9 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
             feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeGasReadFlow);
             //删除相应的收费流水记录
-            feeGasChargedFlowService.deleteFeeGasChargedFlowByBusinessIdAndFromSource(id,FeeFromSourceEnum.READ_METER.getValue());
+            feeGasChargedFlowService.deleteFeeGasChargedFlowByBusinessIdAndFromSource(id, FeeFromSourceEnum.READ_METER.getValue());
         } else {
-            logger.error("电抄表[id={}]不存在,不能删除", id);
+            logger.error("该抄表[id={}]不存在,不能删除", id);
             throw new IllegalArgumentException("当前信息不存在,不能删除");
         }
     }
@@ -149,7 +148,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         return dao.getFeeGasReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow){
+    public FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow) {
         return dao.getLastReadFlow(feeGasReadFlow);
     }
 }

@@ -56,24 +56,11 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
         return this.dao.getTotalAmount(feeCriteriaEntity);
     }
 
-    public FeeWaterBillVo getWithProperty(String id, String houseId) {
-        FeeWaterBillVo feeWaterBillVo = this.dao.getWithProperty(id);
-        if (Optional.ofNullable(feeWaterBillVo).isPresent()) {
-            House house = feeCommonService.getHouseById(houseId);
-            if (Optional.ofNullable(house).isPresent()) {
-                feeWaterBillVo.setHouseId(house.getHouseId());
-                feeWaterBillVo.setHouseWaterNum(house.getWaterAccountNum());
-                feeWaterBillVo.setProjectAddress(house.getProjectAddr());
-            }
-        }
-        return feeWaterBillVo;
-    }
-
     @Transactional(readOnly = false)
     public void saveFeeWaterBill(FeeWaterBill feeWaterBill) {
         House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeWaterBill.getHouseWaterNum());
+            logger.error("当前房屋[houseId={}]不存在,请确认", feeWaterBill.getHouseWaterNum());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -121,6 +108,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
     public void deleteFeeWaterBill(String id) {
         FeeWaterBill feeWaterBill = this.get(id);
         if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+            logger.error("该账单[id={}]已提交,不能删除",id);
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
@@ -135,6 +123,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
         feeWaterBill.setId(id);
         feeWaterBill.setDelFlag(Constants.DEL_FLAG_YES);
         this.save(feeWaterBill);
+
         //如果是整租，删除相应生成的记录
         House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
         if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
@@ -154,24 +143,24 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
                 switch (status) {
                     case "1":
                         if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeWaterBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("户号{}当前状态为{},不能提交", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]不可提交");
+                            logger.error("户号{}账单当前状态为{},不能提交", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可提交");
                         }
                         break;
                     case "2":
                         if (feeWaterBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能同意", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]不可同意");
+                            logger.error("户号{}账单当前状态为{},不能同意", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可同意");
                         }
                         break;
                     case "3":
                         if (feeWaterBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能驳回", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]不可驳回");
+                            logger.error("户号{}账单当前状态为{},不能驳回", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可驳回");
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]不在处理状态");
+                        throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不在处理状态");
                 }
                 FeeWaterBill updFeeWaterBill = new FeeWaterBill();
                 if (StringUtils.isBlank(feeWaterBill.getBatchNo())) {

@@ -11,6 +11,7 @@
         <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
         <result column="room_id" property="roomId" jdbcType="VARCHAR"/>
         <result column="rent_type" property="rentType" jdbcType="NUMERIC"/>
+        <result column="payer" property="payer" jdbcType="NUMERIC"/>
         <result column="house_ele_num" property="houseEleNum" jdbcType="VARCHAR"/>
         <result column="ele_calculate_date" property="eleCalculateDate" jdbcType="TIMESTAMP"/>
         <result column="ele_amount" property="eleAmount" jdbcType="NUMERIC"/>
@@ -40,7 +41,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type, house_ele_num, ele_calculate_date, ele_amount, ele_peak_amount, ele_valley_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, business_id, from_source, order_no, property_id, house_id, room_id, rent_type,payer, house_ele_num, ele_calculate_date, ele_amount, ele_peak_amount, ele_valley_amount, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -52,6 +53,7 @@
         <if test="houseId!=null">house_id,</if>
         <if test="roomId!=null">room_id,</if>
         <if test="rentType!=null">rent_type,</if>
+        <if test="payer!=null">payer,</if>
         <if test="houseEleNum!=null">house_ele_num,</if>
         <if test="eleCalculateDate!=null">ele_calculate_date,</if>
         <if test="eleAmount!=null">ele_amount,</if>
@@ -74,6 +76,7 @@
         <if test="houseId!=null">#{houseId,jdbcType=VARCHAR},</if>
         <if test="roomId!=null">#{roomId,jdbcType=VARCHAR},</if>
         <if test="rentType!=null">#{rentType,jdbcType=NUMERIC},</if>
+        <if test="payer!=null">#{payer,jdbcType=NUMERIC},</if>
         <if test="houseEleNum!=null">#{houseEleNum,jdbcType=VARCHAR},</if>
         <if test="eleCalculateDate!=null">#{eleCalculateDate,jdbcType=TIMESTAMP},</if>
         <if test="eleAmount!=null">#{eleAmount,jdbcType=NUMERIC},</if>
@@ -96,6 +99,7 @@
         #{item.houseId,jdbcType=VARCHAR},
         #{item.roomId,jdbcType=VARCHAR},
         #{item.rentType,jdbcType=NUMERIC},
+        #{item.payer,jdbcType=NUMERIC},
         #{item.houseEleNum,jdbcType=VARCHAR},
         #{item.eleCalculateDate,jdbcType=TIMESTAMP},
         #{item.eleAmount,jdbcType=NUMERIC},
@@ -118,6 +122,7 @@
         <if test="houseId!=null">house_id=#{houseId,jdbcType=VARCHAR},</if>
         <if test="roomId!=null">room_id=#{roomId,jdbcType=VARCHAR},</if>
         <if test="rentType!=null">rent_type=#{rentType,jdbcType=NUMERIC},</if>
+        <if test="payer!=null">payer=#{payer,jdbcType=NUMERIC},</if>
         <if test="houseEleNum!=null">house_ele_num=#{houseEleNum,jdbcType=VARCHAR},</if>
         <if test="eleCalculateDate!=null">ele_calculate_date=#{eleCalculateDate,jdbcType=TIMESTAMP},</if>
         <if test="eleAmount!=null">ele_amount=#{eleAmount,jdbcType=NUMERIC},</if>
@@ -139,6 +144,7 @@
         house_id=#{item.houseId,jdbcType=VARCHAR},
         room_id=#{item.roomId,jdbcType=VARCHAR},
         rent_type=#{item.rentType,jdbcType=NUMERIC},
+        payer=#{item.payer,jdbcType=NUMERIC},
         house_ele_num=#{item.houseEleNum,jdbcType=VARCHAR},
         ele_calculate_date=#{item.eleCalculateDate,jdbcType=TIMESTAMP},
         ele_amount=#{item.eleAmount,jdbcType=NUMERIC},
@@ -164,6 +170,7 @@
             <if test="houseId!=null and houseId!=''">AND house_id=#{houseId}</if>
             <if test="roomId!=null and roomId!=''">AND room_id=#{roomId}</if>
             <if test="rentType!=null and rentType!=''">AND rent_type=#{rentType}</if>
+            <if test="payer!=null and payer!=''">AND payer=#{payer}</if>
             <if test="houseEleNum!=null and houseEleNum!=''">AND house_ele_num=#{houseEleNum}</if>
             <if test="eleCalculateDate!=null and eleCalculateDate!=''">AND ele_calculate_date=#{eleCalculateDate}</if>
             <if test="eleAmount!=null and eleAmount!=''">AND ele_amount=#{eleAmount}</if>

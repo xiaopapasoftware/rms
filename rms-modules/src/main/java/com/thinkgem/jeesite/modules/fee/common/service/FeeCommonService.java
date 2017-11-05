@@ -13,7 +13,6 @@ import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.fee.common.dao.FeeCommonDao;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
-import com.thinkgem.jeesite.modules.fee.enums.ChargeMethodEnum;
 import com.thinkgem.jeesite.modules.fee.enums.FeeTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
@@ -92,9 +91,9 @@ public class FeeCommonService {
         return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
     }
 
-    public FeeConfig getFeeConfig(FeeTypeEnum feeTypeEnum, String houseId, String roomId, ChargeMethodEnum chargeMethodEnum) {
-        if (feeCache.getObject(getCacheKey(feeTypeEnum, houseId, roomId, chargeMethodEnum)) != null) {
-            return (FeeConfig) feeCache.getObject(getCacheKey(feeTypeEnum, houseId, roomId, chargeMethodEnum));
+    public FeeConfig getFeeConfig(FeeTypeEnum feeTypeEnum, String houseId, String roomId) {
+        if (feeCache.getObject(getCacheKey(feeTypeEnum, houseId, roomId)) != null) {
+            return (FeeConfig) feeCache.getObject(getCacheKey(feeTypeEnum, houseId, roomId));
         }
 
         Map<String, FeeConfig> feeConfigMap = getFeeConfig();
@@ -109,7 +108,7 @@ public class FeeCommonService {
         for (String id : rangeId.split(",")) {
             String key = id + "_" + feeTypeEnum.getValue();
             FeeConfig feeConfig = feeConfigMap.get(key);
-            if (Optional.ofNullable(feeConfig).isPresent() && feeConfig.getChargeMethod() == chargeMethodEnum.getValue()) {
+            if (Optional.ofNullable(feeConfig).isPresent()) {
                 retFeeConfig = feeConfig;
                 break;
             }
@@ -119,7 +118,7 @@ public class FeeCommonService {
         if (!Optional.ofNullable(retFeeConfig).isPresent()) {
             String key = 0 + "_" + feeTypeEnum.getValue();
             FeeConfig feeConfig = feeConfigMap.get(key);
-            if (Optional.ofNullable(feeConfig).isPresent() && feeConfig.getChargeMethod() == chargeMethodEnum.getValue()) {
+            if (Optional.ofNullable(feeConfig).isPresent()) {
                 retFeeConfig = feeConfig;
             }
         }
@@ -130,45 +129,23 @@ public class FeeCommonService {
         }
 
         /*加入到缓存*/
-        feeCache.putObject(getCacheKey(feeTypeEnum, houseId, roomId, chargeMethodEnum), retFeeConfig);
+        feeCache.putObject(getCacheKey(feeTypeEnum, houseId, roomId), retFeeConfig);
 
         return retFeeConfig;
     }
 
-    private String getCacheKey(FeeTypeEnum feeTypeEnum, String houseId, String roomId, ChargeMethodEnum chargeMethodEnum) {
+    private String getCacheKey(FeeTypeEnum feeTypeEnum, String houseId, String roomId) {
         if (!Optional.ofNullable(houseId).isPresent()) {
             logger.error("查询费用配置房屋ID不能为空");
             throw new IllegalArgumentException("查询费用配置房屋ID不能为空");
         }
 
         if (Optional.ofNullable(roomId).isPresent() && !StringUtils.equals(roomId, "0")) {
-            return Joiner.on("_").join(roomId, houseId, feeTypeEnum.getValue(), chargeMethodEnum.getValue());
+            return Joiner.on("_").join(roomId, houseId, feeTypeEnum.getValue());
         }
-        return Joiner.on("_").join(houseId, feeTypeEnum.getValue(), chargeMethodEnum.getValue());
+        return Joiner.on("_").join(houseId, feeTypeEnum.getValue());
     }
 
-    public FeeConfig getFeeConfig(Map<String, FeeConfig> feeConfigMap1, String rangeId, FeeTypeEnum feeTypeEnum) {
-        Map<String, FeeConfig> feeConfigMap = getFeeConfig();
-
-        FeeConfig feeConfig = null;
-        for (String id : rangeId.split(",")) {
-            String key = id + "_" + feeTypeEnum.getValue();
-            feeConfig = feeConfigMap.get(key);
-            if (Optional.ofNullable(feeConfig).isPresent()) {
-                break;
-            }
-        }
-        if (!Optional.ofNullable(feeConfig).isPresent()) {
-            String key = 0 + "_" + feeTypeEnum.getValue();
-            feeConfig = feeConfigMap.get(key);
-        }
-
-        if (!Optional.of(feeConfig).isPresent()) {
-            logger.error("{}没有找到费用配置项", feeTypeEnum.getName());
-            throw new IllegalArgumentException(feeTypeEnum.getName() + "没有找到费用配置");
-        }
-        return feeConfig;
-    }
 
     public String getRangeIdByRoomId(String roomId) {
         return feeCommonDao.getRangeIdByRoomId(roomId);

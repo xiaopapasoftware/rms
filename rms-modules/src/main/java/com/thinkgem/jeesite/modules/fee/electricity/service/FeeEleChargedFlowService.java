@@ -83,7 +83,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     public void saveFeeEleChargedFlowByFeeEleBill(FeeElectricityBill feeEleBill) {
         House house = feeCommonService.getHouseById(feeEleBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[电户号={}]不存在,请确认", house.getEleAccountNum());
+            logger.error("当前房屋[id={}]不存在,请确认", house.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -104,14 +104,18 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         queryFeeEleReadFlow.setId(feeEleBill.getId());
         FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(queryFeeEleReadFlow);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            logger.error("当前房屋[电户号={}]没有初始化电表数据", feeEleBill.getHouseEleNum());
+            logger.error("当前房屋[houseId={}]没有初始化电表数据", feeEleBill.getHouseId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
         }
 
         /*计算金额*/
-        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null, ChargeMethodEnum.ACCOUNT_MODEL);
-        FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null, ChargeMethodEnum.ACCOUNT_MODEL);
+        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
+        FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
 
+        if(peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+            logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeEleBill.getHouseId());
+            throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
+        }
         double peakAmount = (feeEleBill.getElePeakDegree() - lastReadFlow.getElePeakDegree()) * Float.valueOf(peakFeeConfig.getConfigValue());
         double valleyAmount = (feeEleBill.getEleValleyDegree() - lastReadFlow.getEleValleyDegree()) * Float.valueOf(valleyFeeConfig.getConfigValue());
         saveChargedFlow.setElePeakAmount(new BigDecimal(peakAmount));
@@ -158,24 +162,25 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     public FeeEleChargedFlow calculateCharge(FeeEleReadFlow feeEleReadFlow, FeeEleChargedFlow feeEleChargedFlow) {
         House house = feeCommonService.getHouseById(feeEleChargedFlow.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[电户号={}]不存在,请确认", house.getEleAccountNum());
+            logger.error("当前房屋[houseId={}]不存在,请确认", house.getId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeEleReadFlow queryFeeEleReadFlow = new FeeEleReadFlow();
-        queryFeeEleReadFlow.setHouseId(feeEleChargedFlow.getHouseId());
-        queryFeeEleReadFlow.setRoomId(feeEleChargedFlow.getRoomId());
-        queryFeeEleReadFlow.setId(feeEleChargedFlow.getId());
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(queryFeeEleReadFlow);
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            logger.error("当前房屋[电户号={}]没有初始化电表数据", house.getEleAccountNum());
+            logger.error("当前房屋[houseId={}]没有初始化电表数据", house.getId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
         }
 
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-            FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId(), ChargeMethodEnum.ACCOUNT_MODEL);
-            FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId(), ChargeMethodEnum.ACCOUNT_MODEL);
+            FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+            FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+
+            if(peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+                logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
+                throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
+            }
 
             double peakAmount = (feeEleReadFlow.getElePeakDegree() - lastReadFlow.getElePeakDegree()) * Float.valueOf(peakFeeConfig.getConfigValue());
             double valleyAmount = (feeEleReadFlow.getEleValleyDegree() - lastReadFlow.getEleValleyDegree()) * Float.valueOf(valleyFeeConfig.getConfigValue());
@@ -191,12 +196,19 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
         } else {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELECTRICITY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId(), ChargeMethodEnum.ACCOUNT_MODEL);
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELECTRICITY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+
+            if(feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+                logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
+                throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
+            }
+
             double amount = (feeEleReadFlow.getEleDegree() - lastReadFlow.getEleDegree()) * Float.valueOf(feeConfig.getConfigValue());
             /*公共区域*/
             if (StringUtils.isNotBlank(feeEleChargedFlow.getRoomId()) && StringUtils.equals(feeEleChargedFlow.getRoomId(), "0")) {
                 List<Room> rooms = feeCommonService.getRoomByHouseId(house.getId());
 
+                /*正在出租的房间数*/
                 Long rentRoomSize = rooms.stream().filter(room -> StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())).count();
 
                 if (StringUtils.equals(house.getHouseStatus(), HouseStatusEnum.PART_RENT.getValue())

@@ -26,8 +26,6 @@ public interface FeeGasBillDao extends CrudDao<FeeGasBill>{
 
     List<FeeGasBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity);
 
-    FeeGasBillVo getWithProperty(String id);
-
     FeeGasBill getLastGasBill(FeeGasBill feeGasBill);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);

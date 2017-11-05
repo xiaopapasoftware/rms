@@ -29,12 +29,13 @@ import java.util.Optional;
 /**
  * <p>燃气账单表实现类 service</p>
  * <p>Table: fee_gas_bill - 燃气账单表</p>
- * @since 2017-10-20 06:26:27
+ *
  * @author generator code
+ * @since 2017-10-20 06:26:27
  */
 @Service
 @Transactional(readOnly = true)
-public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
+public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
 
     private Logger logger = LoggerFactory.getLogger(FeeGasBillService.class);
 
@@ -56,24 +57,11 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
         return this.dao.getTotalAmount(feeCriteriaEntity);
     }
 
-    public FeeGasBillVo getWithProperty(String id, String houseId) {
-        FeeGasBillVo feeGasBillVo = this.dao.getWithProperty(id);
-        if (Optional.ofNullable(feeGasBillVo).isPresent()) {
-            House house = feeCommonService.getHouseById(houseId);
-            if (Optional.ofNullable(house).isPresent()) {
-                feeGasBillVo.setHouseId(house.getHouseId());
-                feeGasBillVo.setHouseGasNum(house.getGasAccountNum());
-                feeGasBillVo.setProjectAddress(house.getProjectAddr());
-            }
-        }
-        return feeGasBillVo;
-    }
-
     @Transactional(readOnly = false)
     public void saveFeeGasBill(FeeGasBill feeGasBill) {
         House house = feeCommonService.getHouseById(feeGasBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeGasBill.getHouseGasNum());
+            logger.error("当前房屋[id={}]不存在,请确认", feeGasBill.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
@@ -93,13 +81,13 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
         }
 
         FeeGasBill lastBill = dao.getLastGasBill(feeGasBill);
-        if(Optional.ofNullable(lastBill).isPresent()){
-            if(lastBill.getGasDegree() > feeGasBill.getGasDegree()){
+        if (Optional.ofNullable(lastBill).isPresent()) {
+            if (lastBill.getGasDegree() > feeGasBill.getGasDegree()) {
                 logger.error("当前账单抄表数不能小于上次抄表数");
                 throw new IllegalArgumentException("当前账单峰值数不能小于上次峰值数");
             }
 
-            if(lastBill.getGasBillDate().compareTo(feeGasBill.getGasBillDate()) > 0){
+            if (lastBill.getGasBillDate().compareTo(feeGasBill.getGasBillDate()) > 0) {
                 logger.error("下月账单已经生成不能修改");
                 throw new IllegalArgumentException("下月账单已经生成不能修改");
             }
@@ -121,12 +109,13 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
     public void deleteFeeGasBill(String id) {
         FeeGasBill feeGasBill = this.get(id);
         if (feeGasBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+            logger.error("该账单[id={}]已提交,不能删除", id);
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
         FeeGasBill lastBill = dao.getLastGasBill(feeGasBill);
-        if(Optional.ofNullable(lastBill).isPresent()){
-            if(lastBill.getGasBillDate().compareTo(feeGasBill.getGasBillDate()) > 0){
+        if (Optional.ofNullable(lastBill).isPresent()) {
+            if (lastBill.getGasBillDate().compareTo(feeGasBill.getGasBillDate()) > 0) {
                 logger.error("下月账单已经生成不能删除");
                 throw new IllegalArgumentException("下月账单已经生成不能删除");
             }
@@ -154,24 +143,24 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill>{
                 switch (status) {
                     case "1":
                         if (feeGasBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeGasBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("户号{}当前状态为{},不能提交", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]不可提交");
+                            logger.error("户号{}账单当前状态为{},不能提交", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可提交");
                         }
                         break;
                     case "2":
                         if (feeGasBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能同意", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]不可同意");
+                            logger.error("户号{}账单当前状态为{},不能同意", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可同意");
                         }
                         break;
                     case "3":
                         if (feeGasBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}当前状态为{},不能驳回", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]不可驳回");
+                            logger.error("户号{}账单当前状态为{},不能驳回", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可驳回");
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]不在处理状态");
+                        throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不在处理状态");
                 }
                 FeeGasBill updFeeGasBill = new FeeGasBill();
                 if (StringUtils.isBlank(feeGasBill.getBatchNo())) {

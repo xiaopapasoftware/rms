@@ -23,8 +23,6 @@ public interface FeeWaterBillDao extends CrudDao<FeeWaterBill>{
 
     List<FeeWaterBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity);
 
-    FeeWaterBillVo getWithProperty(String id);
-
     FeeWaterBill getLastWaterBill(FeeWaterBill feeWaterBill);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
