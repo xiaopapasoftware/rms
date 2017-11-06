@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.thinkgem.jeesite.modules.fee.order.dao.FeeOrderAccountDao">
 
-    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
+    <resultMap id="BaseResultMap" type="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
         <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
         <result column="property_id" property="propertyId" jdbcType="VARCHAR"/>
         <result column="house_id" property="houseId" jdbcType="VARCHAR"/>
@@ -11,9 +11,9 @@
         <result column="pay_date" property="payDate" jdbcType="TIMESTAMP"/>
         <result column="amount" property="amount" jdbcType="NUMERIC"/>
         <result column="order_status" property="orderStatus" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
@@ -24,20 +24,20 @@
     </sql>
 
     <sql id="Insert_Columns">
-        <if test="orderNo!=null"> order_no,</if>
-        <if test="propertyId!=null"> property_id,</if>
-        <if test="houseId!=null"> house_id,</if>
-        <if test="roomId!=null"> room_id,</if>
-        <if test="orderType!=null"> order_type,</if>
-        <if test="payDate!=null"> pay_date,</if>
-        <if test="amount!=null"> amount,</if>
-        <if test="orderStatus!=null"> order_status,</if>
-        <if test="createBy!=null"> create_by,</if>
-        <if test="createDate!=null"> create_date,</if>
-        <if test="updateBy!=null"> update_by,</if>
-        <if test="updateDate!=null"> update_date,</if>
-        <if test="remarks!=null"> remarks,</if>
-        <if test="delFlag!=null"> del_flag,</if>
+        <if test="orderNo!=null">order_no,</if>
+        <if test="propertyId!=null">property_id,</if>
+        <if test="houseId!=null">house_id,</if>
+        <if test="roomId!=null">room_id,</if>
+        <if test="orderType!=null">order_type,</if>
+        <if test="payDate!=null">pay_date,</if>
+        <if test="amount!=null">amount,</if>
+        <if test="orderStatus!=null">order_status,</if>
+        <if test="createBy!=null">create_by,</if>
+        <if test="createDate!=null">create_date,</if>
+        <if test="updateBy!=null">update_by,</if>
+        <if test="updateDate!=null">update_date,</if>
+        <if test="remarks!=null">remarks,</if>
+        <if test="delFlag!=null">del_flag,</if>
     </sql>
     <sql id="Insert_Values">
         <if test="orderNo!=null">#{orderNo,jdbcType=VARCHAR},</if>
@@ -48,9 +48,9 @@
         <if test="payDate!=null">#{payDate,jdbcType=TIMESTAMP},</if>
         <if test="amount!=null">#{amount,jdbcType=NUMERIC},</if>
         <if test="orderStatus!=null">#{orderStatus,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
@@ -64,27 +64,27 @@
         #{item.payDate,jdbcType=TIMESTAMP},
         #{item.amount,jdbcType=NUMERIC},
         #{item.orderStatus,jdbcType=NUMERIC},
-        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createBy.id,jdbcType=VARCHAR},
         #{item.createDate,jdbcType=TIMESTAMP},
-        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateBy.id,jdbcType=VARCHAR},
         #{item.updateDate,jdbcType=TIMESTAMP},
         #{item.remarks,jdbcType=VARCHAR},
         #{item.delFlag,jdbcType=VARCHAR},
     </sql>
 
     <sql id="Update_Set_From_Bean">
-        <if test="orderNo!=null"> order_no=#{orderNo,jdbcType=VARCHAR},</if>
-        <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
-        <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="roomId!=null"> room_id=#{roomId,jdbcType=VARCHAR},</if>
-        <if test="orderType!=null"> order_type=#{orderType,jdbcType=NUMERIC},</if>
-        <if test="payDate!=null"> pay_date=#{payDate,jdbcType=TIMESTAMP},</if>
-        <if test="amount!=null"> amount=#{amount,jdbcType=NUMERIC},</if>
-        <if test="orderStatus!=null"> order_status=#{orderStatus,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
-        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
-        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
-        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+        <if test="orderNo!=null">order_no=#{orderNo,jdbcType=VARCHAR},</if>
+        <if test="propertyId!=null">property_id=#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null">house_id=#{houseId,jdbcType=VARCHAR},</if>
+        <if test="roomId!=null">room_id=#{roomId,jdbcType=VARCHAR},</if>
+        <if test="orderType!=null">order_type=#{orderType,jdbcType=NUMERIC},</if>
+        <if test="payDate!=null">pay_date=#{payDate,jdbcType=TIMESTAMP},</if>
+        <if test="amount!=null">amount=#{amount,jdbcType=NUMERIC},</if>
+        <if test="orderStatus!=null">order_status=#{orderStatus,jdbcType=NUMERIC},</if>
+        <if test="updateBy!=null">update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
         order_no=#{item.orderNo,jdbcType=VARCHAR},
@@ -95,7 +95,7 @@
         pay_date=#{item.payDate,jdbcType=TIMESTAMP},
         amount=#{item.amount,jdbcType=NUMERIC},
         order_status=#{item.orderStatus,jdbcType=NUMERIC},
-        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
         del_flag=#{item.delFlag,jdbcType=VARCHAR},
@@ -104,21 +104,22 @@
     <!--where-->
     <sql id="where">
         <where>
-            <if test="orderNo!=null and orderNo!=''"> AND order_no=#{orderNo}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
-            <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
-            <if test="orderType!=null and orderType!=''"> AND order_type=#{orderType}</if>
-            <if test="payDate!=null and payDate!=''"> AND pay_date=#{payDate}</if>
-            <if test="amount!=null and amount!=''"> AND amount=#{amount}</if>
-            <if test="orderStatus!=null and orderStatus!=''"> AND order_status=#{orderStatus}</if>
+            <if test="orderNo!=null and orderNo!=''">AND order_no=#{orderNo}</if>
+            <if test="propertyId!=null and propertyId!=''">AND property_id=#{propertyId}</if>
+            <if test="houseId!=null and houseId!=''">AND house_id=#{houseId}</if>
+            <if test="roomId!=null and roomId!=''">AND room_id=#{roomId}</if>
+            <if test="orderType!=null and orderType!=''">AND order_type=#{orderType}</if>
+            <if test="payDate!=null and payDate!=''">AND pay_date=#{payDate}</if>
+            <if test="amount!=null and amount!=''">AND amount=#{amount}</if>
+            <if test="orderStatus!=null and orderStatus!=''">AND order_status=#{orderStatus}</if>
             AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount" useGeneratedKeys="true" keyProperty="">
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount"
+            useGeneratedKeys="true" keyProperty="">
         insert into fee_order_account
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -142,9 +143,9 @@
     <!-- end insert -->
 
     <!-- delete -->
-    <delete id="deleteById" parameterType="">
+    <delete id="deleteById" parameterType="java.lang.String">
         delete from fee_order_account
-        where 
+        id = #{id,jdbcType=VARCHAR}
     </delete>
 
     <delete id="delete" parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
@@ -159,33 +160,41 @@
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where 
+        where
     </update>
 
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-        update fee_order_account
-        <include refid="BatchUpdate_Set_From_Bean"/>
-        where
-            
+            update fee_order_account
+            <include refid="BatchUpdate_Set_From_Bean"/>
+            where
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
 
     <!-- select -->
-    <select id="get" resultMap="BaseResultMap" parameterType="">
-        select <include refid="Base_Column_List"/> from fee_order_account
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_order_account
         where
-            
+        id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
-        select <include refid="Base_Column_List"/> from fee_order_account
+    <select id="findAllList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_order_account
         <include refid="where"/>
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
-        select <include refid="Base_Column_List"/> from fee_order_account
+    <select id="findList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_order_account
         <include refid="where"/>
     </select>
     <!-- end select -->

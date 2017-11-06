@@ -235,10 +235,7 @@ create table fee_order
    property_id          varchar(64) comment '物业ID',
    house_id             varchar(64) not null comment '房屋ID',
    room_id              varchar(64) comment '房号',
-   order_type           int not null default 0 comment '费用类型 0：电费 1：水费 2 燃气费
-            3：宽带 4：电视 5:房租
-            6:房租押金 7:定金 8:违约金
-            ',
+   order_type           int not null default 0 comment '费用类型 0：电费 1：水费 2 燃气费3：宽带 4：电视 5:房租6:房租押金 7:定金 8:违约金',
    order_date           datetime not null comment '订单时间',
    amount               numeric(19,2) not null default 0 comment '账单金额',
    order_status         int not null default 0 comment '状态 0:待审核1:待缴费2：已缴3：驳回 ',
@@ -262,10 +259,7 @@ create table fee_order_account
    property_id          varchar(64) comment '物业ID',
    house_id             varchar(64) not null comment '房屋ID',
    room_id              varchar(64) comment '房号',
-   order_type           int not null default 0 comment '费用类型 0：电费 1：水费 2 燃气费
-            3：宽带 4：电视 5:房租
-            6:房租押金 7:定金 8:违约金
-            ',
+   order_type           int not null default 0 comment '费用类型 0：电费 1：水费 2 燃气费 3：宽带 4：电视 5:房租 6:房租押金 7:定金 8:违约金',
    pay_date             datetime not null comment '支付时间',
    amount               numeric(19,2) not null default 0 comment '账单金额',
    order_status         int not null default 0 comment '状态 0:待审核1:待缴费2：已缴3：驳回 ',
@@ -274,7 +268,8 @@ create table fee_order_account
    update_by            varchar(64) comment '更新者',
    update_date          timestamp comment '更新时间',
    remarks              varchar(255) comment '备注信息',
-   del_flag             char(1) default '0' not null comment '删除标记'
+   del_flag             char(1) default '0' not null comment '删除标记',
+   primary key (order_no)
 );
 
 alter table fee_order_account comment '订单台账';
