@@ -33,6 +33,8 @@ public class FeeOrder extends DataEntity<FeeOrder>{
     private String roomId;
     /** order_type - 费用类型 0：电费 1：水费 2 燃气费  3：宽带 4：电视 5:房租 6:房租押金 7:定金 8:违约金 */
     private Integer orderType;
+    /** payer - 支付者 0：租客 1：公司*/
+    private Integer payer;
     /** order_date - 订单时间 */
     private Date orderDate;
     /** amount - 账单金额 */

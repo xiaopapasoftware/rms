@@ -258,32 +258,40 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                 });
                 feeOrders.add(feeOrder);
             } else {
-                /*每个房间一天只有一条抄表记录,按日期分组*/
+                /*按房间分组*/
                 Map<String, List<FeeEleChargedFlow>> chargedFlowMap = v.stream()
-                        .collect(Collectors.groupingBy(f -> DateUtils.formatDate(f.getEleCalculateDate())));
+                        .collect(Collectors.groupingBy(FeeEleChargedFlow::getRoomId));
+                /*公摊记录*/
+                List<FeeEleChargedFlow> commonAreaEleCharge = chargedFlowMap.get("0");
 
-                chargedFlowMap.forEach((String key,List<FeeEleChargedFlow> value)->{
-                    FeeEleChargedFlow commonCharged = value.stream().filter(f -> StringUtils.equals(f.getRoomId(), "0")).findFirst().get();
-                    if (Optional.ofNullable(commonCharged).isPresent()) {
-                        value.stream().forEach(f -> {
-                            f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                            if (!StringUtils.equals(commonCharged.getId(), f.getId())) {
-                                String orderNo = new IdGenerator().nextId();
-                                f.setOrderNo(orderNo);
-
-                                FeeOrder feeOrder = eleChargedFlowToFeeOrder(judgeCharged);
-                                feeOrder.setOrderNo(orderNo);
-                                feeOrder.setAmount(f.getEleAmount());
-
-                            } else {
-                                /*设置公摊的orderNo为000000*/
-                                f.setOrderNo("000000");
-                            }
-
+                chargedFlowMap.forEach((String key,List<FeeEleChargedFlow> value) ->{
+                    if(StringUtils.equals(key,"0")){
+                        value.stream().forEach(f ->{
+                            /*设置公摊的orderNo为000000*/
+                            f.setOrderNo("000000");
                             updEleCharges.add(f);
                         });
                     }else{
-                        logger.error("当前房屋[houseId={}]没有公摊记录存在,请确认", commonCharged.getHouseId());
+                        String orderNo = new IdGenerator().nextId();
+                        FeeOrder feeOrder = eleChargedFlowToFeeOrder(value.get(0));
+                        feeOrder.setOrderNo(orderNo);
+                        value.stream().forEach(f ->{
+                            f.setOrderNo(orderNo);
+                            f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                            updEleCharges.add(f);
+
+                            feeOrder.setAmount(feeOrder.getAmount().add(f.getEleAmount()));
+
+                            /*如果是租客支付,支付金额添加公摊数*/
+                            if(f.getPayer() == PayerEnum.RENT_USER.getValue()) {
+                                commonAreaEleCharge.forEach(c -> {
+                                    if (StringUtils.equals(DateUtils.formatDate(f.getEleCalculateDate()), DateUtils.formatDate(c.getEleCalculateDate()))) {
+                                        feeOrder.setAmount(feeOrder.getAmount().add(c.getEleAmount()));
+                                    }
+                                });
+                            }
+                        });
+                        feeOrders.add(feeOrder);
                     }
                 });
             }
@@ -293,6 +301,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
     private FeeOrder eleChargedFlowToFeeOrder(FeeEleChargedFlow feeEleChargedFlow) {
         FeeOrder feeOrder = new FeeOrder();
+        feeOrder.setPayer(feeEleChargedFlow.getPayer());
         feeOrder.setHouseId(feeEleChargedFlow.getHouseId());
         feeOrder.setOrderDate(new Date());
         feeOrder.setOrderStatus(OrderStatusEnum.COMMIT.getValue());
