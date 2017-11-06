@@ -4,20 +4,23 @@
  */
 package com.thinkgem.jeesite.modules.fee.electricity.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
-import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeEleChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.enums.*;
+import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
@@ -29,7 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>电费收取流水实现类 service</p>
@@ -41,9 +46,6 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, FeeEleChargedFlow> {
-
-    @Autowired
-    private FeeConfigService feeConfigService;
 
     @Autowired
     private FeeCommonService feeCommonService;
@@ -112,7 +114,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
         FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
 
-        if(peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+        if (peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeEleBill.getHouseId());
             throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
         }
@@ -177,7 +179,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
             FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
 
-            if(peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+            if (peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
                 throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
             }
@@ -198,7 +200,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
             FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELECTRICITY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
 
-            if(feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()){
+            if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
                 throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
             }
@@ -232,4 +234,71 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         return feeEleChargedFlow;
     }
 
+    public void generatorOrder() {
+        FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
+        feeEleChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
+        List<FeeEleChargedFlow> feeEleChargedFlows = this.findList(feeEleChargedFlow);
+        Map<String, List<FeeEleChargedFlow>> feeEleChargedMap = feeEleChargedFlows.stream()
+                .collect(Collectors.groupingBy(FeeEleChargedFlow::getHouseId));
+
+        List<FeeEleChargedFlow> updEleCharges = Lists.newArrayList();
+        List<FeeOrder> feeOrders = Lists.newArrayList();
+
+        feeEleChargedMap.forEach((String k, List<FeeEleChargedFlow> v) -> {
+            FeeEleChargedFlow judgeCharged = v.get(0);
+            if (StringUtils.equals("" + judgeCharged.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
+                String orderNo = new IdGenerator().nextId();
+                FeeOrder feeOrder = eleChargedFlowToFeeOrder(judgeCharged);
+                feeOrder.setOrderNo(orderNo);
+                v.stream().forEach(f -> {
+                    f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                    f.setOrderNo(orderNo);
+                    updEleCharges.add(f);
+                    feeOrder.setAmount(feeOrder.getAmount().add(f.getEleValleyAmount()).add(f.getElePeakAmount()));
+                });
+                feeOrders.add(feeOrder);
+            } else {
+                /*每个房间一天只有一条抄表记录,按日期分组*/
+                Map<String, List<FeeEleChargedFlow>> chargedFlowMap = v.stream()
+                        .collect(Collectors.groupingBy(f -> DateUtils.formatDate(f.getEleCalculateDate())));
+
+                chargedFlowMap.forEach((String key,List<FeeEleChargedFlow> value)->{
+                    FeeEleChargedFlow commonCharged = value.stream().filter(f -> StringUtils.equals(f.getRoomId(), "0")).findFirst().get();
+                    if (Optional.ofNullable(commonCharged).isPresent()) {
+                        value.stream().forEach(f -> {
+                            f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                            if (!StringUtils.equals(commonCharged.getId(), f.getId())) {
+                                String orderNo = new IdGenerator().nextId();
+                                f.setOrderNo(orderNo);
+
+                                FeeOrder feeOrder = eleChargedFlowToFeeOrder(judgeCharged);
+                                feeOrder.setOrderNo(orderNo);
+                                feeOrder.setAmount(f.getEleAmount());
+
+                            } else {
+                                /*设置公摊的orderNo为000000*/
+                                f.setOrderNo("000000");
+                            }
+
+                            updEleCharges.add(f);
+                        });
+                    }else{
+                        logger.error("当前房屋[houseId={}]没有公摊记录存在,请确认", commonCharged.getHouseId());
+                    }
+                });
+            }
+        });
+
+    }
+
+    private FeeOrder eleChargedFlowToFeeOrder(FeeEleChargedFlow feeEleChargedFlow) {
+        FeeOrder feeOrder = new FeeOrder();
+        feeOrder.setHouseId(feeEleChargedFlow.getHouseId());
+        feeOrder.setOrderDate(new Date());
+        feeOrder.setOrderStatus(OrderStatusEnum.COMMIT.getValue());
+        feeOrder.setPropertyId(feeEleChargedFlow.getPropertyId());
+        feeOrder.setOrderType(OrderTypeEnum.ELECTRICITY.getValue());
+        feeOrder.setRoomId(feeEleChargedFlow.getRoomId());
+        return feeOrder;
+    }
 }

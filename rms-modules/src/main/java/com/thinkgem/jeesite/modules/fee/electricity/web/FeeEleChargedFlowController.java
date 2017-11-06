@@ -67,4 +67,9 @@ public class FeeEleChargedFlowController extends FeeBaseController {
         return ResponseData.success().data(feeEleChargedFlow);
     }
 
+    @RequestMapping(value = "generatorOrder")
+    public Object generatorOrder(){
+        feeEleChargedFlowService.generatorOrder();
+        return ResponseData.success();
+    }
 }

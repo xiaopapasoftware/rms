@@ -18,7 +18,7 @@ import java.util.Date;
  * @since 2017-09-18 08:24:32
  */
 @Data
-public class FeeEleChargedFlow extends DataEntity<FeeEleChargedFlow>{
+public class FeeEleChargedFlow extends DataEntity<FeeEleChargedFlow> implements Cloneable{
 
     /** business_id - 关联业务ID */
     private String businessId;
@@ -49,4 +49,16 @@ public class FeeEleChargedFlow extends DataEntity<FeeEleChargedFlow>{
     private BigDecimal eleValleyAmount;
     /** generate_order - 是否已生成订单 0:是 -1:否 */
     private Integer generateOrder;
+
+    @Override
+    public FeeEleChargedFlow clone(){
+        FeeEleChargedFlow feeEleChargedFlow;
+        try {
+            feeEleChargedFlow = (FeeEleChargedFlow)super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("服务异常请检查");
+        }
+        return feeEleChargedFlow;
+    }
 }

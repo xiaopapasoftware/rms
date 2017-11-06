@@ -33,6 +33,8 @@ public interface RoomDao extends CrudDao<Room> {
    * 根据房屋ID查询房间信息
    */
   List<Room> findRoomListByHouseId(@Param("houseId") String houseId);
+
+  List<Room> getJoinRentAllRoom();
   /**
    * 更新房间状态
    */

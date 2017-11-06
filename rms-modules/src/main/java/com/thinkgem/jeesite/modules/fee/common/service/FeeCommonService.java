@@ -73,6 +73,10 @@ public class FeeCommonService {
         return roomService.findRoomListByHouseId(houseId);
     }
 
+    public List<Room> getJoinRentAllRoom(){
+        return roomService.getJoinRentAllRoom();
+    }
+
     public List<Map> getHouseByQueryWhereAndType(String queryWhere, String type) {
         return houseService.getHouseByQueryWhereAndType(queryWhere, type);
     }
@@ -145,7 +149,6 @@ public class FeeCommonService {
         }
         return Joiner.on("_").join(houseId, feeTypeEnum.getValue());
     }
-
 
     public String getRangeIdByRoomId(String roomId) {
         return feeCommonDao.getRangeIdByRoomId(roomId);

@@ -51,7 +51,7 @@ public class FeeGasChargedFlow extends DataEntity<FeeGasChargedFlow> implements 
     private Integer generateOrder;
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public FeeGasChargedFlow clone() throws CloneNotSupportedException {
         FeeGasChargedFlow feeGasChargedFlow;
         feeGasChargedFlow = (FeeGasChargedFlow) super.clone();
         return feeGasChargedFlow;

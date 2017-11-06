@@ -165,6 +165,15 @@
 		</choose>
 	</select>
 
+	<select id="getJoinRentAllRoom" resultType="Room">
+		select tr.id,tr.ROOM_NO,tr.ROOM_STATUS,
+		th.ID house.id,th.HOUSE_NO house.houseNo,th.HOUSE_CODE house.houseCode,
+		th.intent_mode house.intentMode from t_room tr
+		left join t_house th on th.id=tr.HOUSE_ID
+		where tr.DEL_FLAG=0 and th.DEL_FLAG=0
+		and th.intent_mode=1 and tr.ROOM_STATUS=3
+	</select>
+
 	<insert id="insert">
 		INSERT INTO t_room(
 		id,

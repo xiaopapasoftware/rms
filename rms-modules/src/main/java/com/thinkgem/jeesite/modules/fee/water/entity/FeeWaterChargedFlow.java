@@ -51,7 +51,7 @@ public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow> impleme
     private Integer generateOrder;
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public FeeWaterChargedFlow clone() throws CloneNotSupportedException {
         FeeWaterChargedFlow feeWaterChargedFlow;
         feeWaterChargedFlow = (FeeWaterChargedFlow) super.clone();
         return feeWaterChargedFlow;
