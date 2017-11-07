@@ -12,7 +12,9 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasBillVo;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +28,9 @@ public interface FeeGasBillDao extends CrudDao<FeeGasBill>{
 
     List<FeeGasBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity);
 
-    FeeGasBill getLastGasBill(FeeGasBill feeGasBill);
+    FeeGasBill getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
+
+    FeeGasBill getCurrentBillByDateAndHouseNum(@Param("eleBillDate") Date eleBillDate, @Param("houseGasNum") String houseGasNum);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }

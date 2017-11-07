@@ -26,4 +26,5 @@ public interface FeeWaterChargedFlowDao extends CrudDao<FeeWaterChargedFlow>{
 
     List<FeeWaterChargedFlowVo> getFeeWaterChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 
+    void batchInsert(List<FeeWaterChargedFlow> feeWaterChargedFlows);
 }

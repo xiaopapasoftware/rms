@@ -199,51 +199,59 @@
 
     <!-- select -->
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from fee_electricity_bill
-        where
+        FROM fee_electricity_bill
+        WHERE
         id = #{id,jdbcType=VARCHAR}
     </select>
 
     <select id="findAllList" resultMap="BaseResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from fee_electricity_bill
+        FROM fee_electricity_bill
         <include refid="where"/>
         ORDER BY create_date DESC
     </select>
 
     <select id="findList" resultMap="BaseResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from fee_electricity_bill
+        FROM fee_electricity_bill
         <include refid="where"/>
         ORDER BY create_date DESC
     </select>
 
-    <select id="getLastEleBill" resultMap="BaseResultMap"
-            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill">
-        select
+    <select id="getLastRecord" resultMap="BaseResultMap">
+        SELECT
         <include refid="Base_Column_List"/>
-        from fee_electricity_bill
-        where del_flag=0
-        and house_id=#{houseId,jdbcType=VARCHAR}
+        FROM fee_electricity_bill
+        WHERE del_flag=0
         <if test="id!=null and id!=''">
-            AND id=#{id,jdbcType=VARCHAR}
+            AND id!=#{id,jdbcType=VARCHAR}
         </if>
+        AND house_id=#{houseId,jdbcType=VARCHAR}
         ORDER BY ele_bill_date DESC
         limit 0,1;
+    </select>
+
+    <select id="getCurrentBillByDateAndHouseNum" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM fee_electricity_bill
+        WHERE del_flag=0
+        AND DATE_FORMAT(ele_bill_date,'%Y-%m')=DATE_FORMAT(#{eleBillDate,jdbcType=TIMESTAMP},'%Y-%m')
+        AND house_ele_num=#{houseEleNum,jdbcType=VARCHAR}
     </select>
 
     <select id="getTotalAmount"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultType="java.lang.Double">
-        select
+        SELECT
         sum(IFNULL(feb.ele_bill_amount,0))
-        from t_house th
+        FROM t_house th
         left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
         left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0

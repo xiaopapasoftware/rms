@@ -26,4 +26,5 @@ public interface FeeEleChargedFlowDao extends CrudDao<FeeEleChargedFlow>{
 
     List<FeeEleChargedFlowVo> getFeeEleChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 
+    void batchUpdate(List<FeeEleChargedFlow> feeEleChargedFlows);
 }

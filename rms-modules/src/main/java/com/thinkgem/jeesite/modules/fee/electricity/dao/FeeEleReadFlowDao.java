@@ -11,20 +11,24 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * <p>抄电表流水实现类service</p>
  * <p>Table: fee_ele_read_flow - 抄电表流水</p>
- * @since 2017-09-18 08:24:39
+ *
  * @author generator code
-*/
+ * @since 2017-09-18 08:24:39
+ */
 @MyBatisDao
-public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow>{
+public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow> {
 
     List<FeeEleReadFlowVo> getFeeEleReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
 
     FeeEleReadFlow getFeeEleReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
 
-    FeeEleReadFlow getLastReadFlow(FeeEleReadFlow feeEleReadFlow);
+    FeeEleReadFlow getCurrentReadByDateAndHouseIdAndRoomId(@Param("eleReadDate") Date eleReadDate, @Param("houseId") String houseId, @Param("roomId") String roomId);
+
+    FeeEleReadFlow getLastRecord(@Param("id") String id, @Param("houseId") String houseId, @Param("roomId") String roomId);
 }

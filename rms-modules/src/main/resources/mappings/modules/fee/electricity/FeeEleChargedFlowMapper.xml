@@ -151,8 +151,6 @@
         ele_peak_amount=#{item.elePeakAmount,jdbcType=NUMERIC},
         ele_valley_amount=#{item.eleValleyAmount,jdbcType=NUMERIC},
         generate_order=#{item.generateOrder,jdbcType=NUMERIC},
-        create_by=#{item.createBy.id,jdbcType=VARCHAR},
-        create_date=#{item.createDate,jdbcType=TIMESTAMP},
         update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
@@ -233,7 +231,7 @@
             update fee_ele_charged_flow
             <include refid="BatchUpdate_Set_From_Bean"/>
             where
-            id = #{id,jdbcType=VARCHAR}
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->

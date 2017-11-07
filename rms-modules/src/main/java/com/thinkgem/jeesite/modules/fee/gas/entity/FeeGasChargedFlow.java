@@ -51,9 +51,14 @@ public class FeeGasChargedFlow extends DataEntity<FeeGasChargedFlow> implements 
     private Integer generateOrder;
 
     @Override
-    public FeeGasChargedFlow clone() throws CloneNotSupportedException {
+    public FeeGasChargedFlow clone(){
         FeeGasChargedFlow feeGasChargedFlow;
-        feeGasChargedFlow = (FeeGasChargedFlow) super.clone();
+        try {
+            feeGasChargedFlow = (FeeGasChargedFlow) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("服务异常请检查");
+        }
         return feeGasChargedFlow;
     }
 }

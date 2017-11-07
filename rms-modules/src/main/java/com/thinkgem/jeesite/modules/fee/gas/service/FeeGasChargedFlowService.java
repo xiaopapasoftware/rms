@@ -4,33 +4,37 @@
  */
 package com.thinkgem.jeesite.modules.fee.gas.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
 import com.thinkgem.jeesite.modules.fee.enums.*;
 import com.thinkgem.jeesite.modules.fee.gas.dao.FeeGasChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
+import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>煤气收取流水实现类 service</p>
@@ -156,9 +160,9 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             for (Room room : rooms) {
                 try {
                     FeeGasChargedFlow feeGasChargedFlow = (FeeGasChargedFlow) saveFeeGasChargeFlow.clone();
-                    if(StringUtils.equals(room.getRoomStatus(),RoomStatusEnum.RENTED.getValue())){
+                    if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
                         saveFeeGasChargeFlow.setPayer(PayerEnum.RENT_USER.getValue());
-                    }else{
+                    } else {
                         saveFeeGasChargeFlow.setPayer(PayerEnum.COMPANY.getValue());
                     }
                     save(feeGasChargedFlow);
@@ -193,5 +197,98 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     public List<FeeGasChargedFlowVo> getFeeGasChargedFee(FeeCriteriaEntity feeCriteriaEntity) {
         return dao.getFeeGasChargedFlow(feeCriteriaEntity);
+    }
+
+    public void generatorFlow() {
+        /**
+         * 1.去上次生成的记录，如果没有按本月一号开始计算
+         * 2.本次记录的日期减上次生成的日期的天数，如果是同一天怎更新
+         * 3.计算金额 = 配置金额/30*天数
+         */
+        List<FeeGasChargedFlow> feeGasChargedFlows = Lists.newArrayList();
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        rooms.forEach(r -> {
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.GAS_UNIT, r.getHouse().getId(), r.getId());
+            if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
+                feeGasChargedFlow.setFromSource(FeeFromSourceEnum.SYSTEM_FIX_SET.getValue());
+                feeGasChargedFlow.setGasAmount(new BigDecimal(feeConfig.getConfigValue()));
+                feeGasChargedFlow.setGasCalculateDate(new Date());
+                feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
+                feeGasChargedFlow.setHouseId(r.getHouse().getId());
+                feeGasChargedFlow.setRoomId(r.getId());
+                feeGasChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
+                feeGasChargedFlow.setHouseGasNum(r.getHouse().getGasAccountNum());
+                feeGasChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
+                feeGasChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
+                feeGasChargedFlow.preInsert();
+                feeGasChargedFlows.add(feeGasChargedFlow);
+            }
+        });
+        dao.batchInsert(feeGasChargedFlows);
+        logger.info("总共生成{}条收费流水记录", feeGasChargedFlows.size());
+    }
+
+    public void generatorOrder() {
+        FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
+        feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
+        List<FeeGasChargedFlow> feeGasChargedFlows = this.findList(feeGasChargedFlow);
+
+        /*按房屋分组*/
+        Map<String,List<FeeGasChargedFlow>> feeGasChargedMap = feeGasChargedFlows.stream()
+                .collect(Collectors.groupingBy(FeeGasChargedFlow::getHouseId));
+
+        List<FeeGasChargedFlow> updEleCharges = Lists.newArrayList();
+        List<FeeOrder> feeOrders = Lists.newArrayList();
+
+        feeGasChargedMap.forEach((String k,List<FeeGasChargedFlow> v) ->{
+            FeeGasChargedFlow judgeCharge = v.get(0);
+            if(StringUtils.equals("" + judgeCharge.getRentType(),RentModelTypeEnum.WHOLE_RENT.getValue())){
+                String batchNo = new IdGenerator().nextId();
+                FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(judgeCharge);
+                feeOrder.setBatchNo(batchNo);
+                v.stream().forEach(f -> {
+                    f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                    f.setOrderNo(batchNo);
+                    updEleCharges.add(f);
+
+                    feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
+                });
+                feeOrders.add(feeOrder);
+            }else{
+                 /*按房间分组*/
+                Map<String, List<FeeGasChargedFlow>> chargedFlowMap = v.stream()
+                        .collect(Collectors.groupingBy(FeeGasChargedFlow::getRoomId));
+
+                /*计算每个房间的收费情况*/
+                chargedFlowMap.forEach((String key,List<FeeGasChargedFlow> value) ->{
+                    String batchNo = new IdGenerator().nextId();
+                    FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(value.get(0));
+                    feeOrder.setBatchNo(batchNo);
+                    value.stream().forEach(f -> {
+                        f.setOrderNo(batchNo);
+                        f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                        updEleCharges.add(f);
+
+                        feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
+                    });
+                    feeOrders.add(feeOrder);
+                });
+            }
+        });
+        /*更新收费流水表*/
+    }
+
+    private FeeOrder feeGasChargedFlowToFeeOrder(FeeGasChargedFlow feeGasChargedFlow){
+        FeeOrder feeOrder = new FeeOrder();
+        feeOrder.setPayer(feeGasChargedFlow.getPayer());
+        feeOrder.setHouseId(feeGasChargedFlow.getHouseId());
+        feeOrder.setOrderDate(new Date());
+        feeOrder.setOrderStatus(OrderStatusEnum.COMMIT.getValue());
+        feeOrder.setPropertyId(feeGasChargedFlow.getPropertyId());
+        feeOrder.setOrderType(OrderTypeEnum.GAS.getValue());
+        feeOrder.setRoomId(feeGasChargedFlow.getRoomId());
+        feeOrder.preInsert();
+        return feeOrder;
     }
 }

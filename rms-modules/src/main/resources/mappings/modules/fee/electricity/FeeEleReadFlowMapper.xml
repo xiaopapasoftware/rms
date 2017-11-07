@@ -200,7 +200,7 @@
             update fee_ele_read_flow
             <include refid="BatchUpdate_Set_From_Bean"/>
             where
-            id = #{id,jdbcType=VARCHAR}
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -241,21 +241,32 @@
         and business_id = #{feeEleBillId,jdbcType=VARCHAR}
     </select>
 
-    <select id="getLastReadFlow" resultMap="BaseResultMap"
-            parameterType="com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow">
+    <select id="getLastRecord" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from fee_ele_read_flow
         where del_flag = 0
+        <if test="id!=null and id!=''">
+            AND id != #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="roomId!=null and roomId!=''">
+            AND room_id=#{roomId,jdbcType=VARCHAR}
+        </if>
+        AND house_id=#{houseId,jdbcType=VARCHAR}
+        ORDER BY ele_read_date DESC
+        limit 0,1;
+    </select>
+
+    <select id="getCurrentReadByDateAndHouseIdAndRoomId"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
+        where del_flag = 0
+        AND DATE_FORMAT(ele_read_date,'%Y-%m-%d')= DATE_FORMAT(#{eleReadDate,jdbcType=TIMESTAMP},'%Y-%m-%d')
         AND house_id=#{houseId,jdbcType=VARCHAR}
         <if test="roomId!=null and roomId!=''">
             AND room_id=#{roomId,jdbcType=VARCHAR}
         </if>
-        <if test="id!=null and id!=''">
-            AND id != #{id,jdbcType=VARCHAR}
-        </if>
-        ORDER BY ele_read_date DESC
-        limit 0,1;
     </select>
 
     <select id="getFeeEleReadFlowWithAllInfo"

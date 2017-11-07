@@ -167,8 +167,13 @@
 
 	<select id="getJoinRentAllRoom" resultType="Room">
 		select tr.id,tr.ROOM_NO,tr.ROOM_STATUS,
-		th.ID house.id,th.HOUSE_NO house.houseNo,th.HOUSE_CODE house.houseCode,
-		th.intent_mode house.intentMode from t_room tr
+		th.ID house.id,th.HOUSE_NO house.houseNo,
+		th.HOUSE_CODE house.houseCode,
+		th.intent_mode house.intentMode ,
+		th.property_project_id house.propertyProject.id,
+		th.gasAccountNum house.gasAccountNum,
+		th.waterAccountNum house.waterAccountNum
+		from t_room tr
 		left join t_house th on th.id=tr.HOUSE_ID
 		where tr.DEL_FLAG=0 and th.DEL_FLAG=0
 		and th.intent_mode=1 and tr.ROOM_STATUS=3

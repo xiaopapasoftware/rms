@@ -73,6 +73,7 @@ public class FeeCommonService {
         return roomService.findRoomListByHouseId(houseId);
     }
 
+    /*获取所有合作的房间，只包括已出租的*/
     public List<Room> getJoinRentAllRoom(){
         return roomService.getJoinRentAllRoom();
     }

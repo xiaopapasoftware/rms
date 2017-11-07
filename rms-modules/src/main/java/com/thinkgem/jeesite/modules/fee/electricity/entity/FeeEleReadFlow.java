@@ -42,9 +42,14 @@ public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow> implements Clonea
     private Float eleValleyDegree;
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public FeeEleReadFlow clone(){
         FeeEleReadFlow feeEleReadFlow;
-        feeEleReadFlow = (FeeEleReadFlow) super.clone();
+        try {
+            feeEleReadFlow = (FeeEleReadFlow) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("服务异常请检查");
+        }
         return feeEleReadFlow;
     }
 }

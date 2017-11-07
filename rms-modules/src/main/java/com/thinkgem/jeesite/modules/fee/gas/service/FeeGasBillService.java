@@ -65,22 +65,17 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeGasBill query = new FeeGasBill();
-        query.setGasBillDate(feeGasBill.getGasBillDate());
-        query.setHouseGasNum(feeGasBill.getHouseGasNum());
-        List<FeeGasBill> feeGasBills = this.findList(query);
-        if (Optional.ofNullable(feeGasBills).isPresent()
-                && feeGasBills.size() > 0) {
-            FeeGasBill existGasBill = feeGasBills.get(0);
-            feeGasBill.setId(existGasBill.getId());
-            if (existGasBill.getBillStatus() != null && existGasBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
-                    && existGasBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+        FeeGasBill existBill = dao.getCurrentBillByDateAndHouseNum(feeGasBill.getGasBillDate(),feeGasBill.getHouseGasNum());
+        if (Optional.ofNullable(existBill).isPresent()) {
+            feeGasBill.setId(existBill.getId());
+            if (existBill.getBillStatus() != null && existBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                    && existBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
                 logger.error("当前账单已经提交不能修改");
                 throw new IllegalArgumentException("当前账单已经提交不能修改");
             }
         }
 
-        FeeGasBill lastBill = dao.getLastGasBill(feeGasBill);
+        FeeGasBill lastBill = dao.getLastRecord(feeGasBill.getId(),feeGasBill.getHouseId());
         if (Optional.ofNullable(lastBill).isPresent()) {
             if (lastBill.getGasDegree() > feeGasBill.getGasDegree()) {
                 logger.error("当前账单抄表数不能小于上次抄表数");
@@ -113,7 +108,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
-        FeeGasBill lastBill = dao.getLastGasBill(feeGasBill);
+        FeeGasBill lastBill = dao.getLastRecord(feeGasBill.getId(),feeGasBill.getHouseId());
         if (Optional.ofNullable(lastBill).isPresent()) {
             if (lastBill.getGasBillDate().compareTo(feeGasBill.getGasBillDate()) > 0) {
                 logger.error("下月账单已经生成不能删除");

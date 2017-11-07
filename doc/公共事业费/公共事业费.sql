@@ -230,11 +230,13 @@ alter table fee_gas_read_flow comment '抄燃气表流水';
 /*==============================================================*/
 create table fee_order
 (
+   id                   varchar(64) not null comment '内码',
    order_no             varchar(120) not null comment '订单号',
-   batch_no             varchar(120) comment '审核编号',
+   batch_no             varchar(120) comment '来源编号',
    property_id          varchar(64) comment '物业ID',
    house_id             varchar(64) not null comment '房屋ID',
    room_id              varchar(64) comment '房号',
+   payer                int not null default 0 comment '支付者 0：租客 1：公司',
    order_type           int not null default 0 comment '费用类型 0：电费 1：水费 2 燃气费3：宽带 4：电视 5:房租6:房租押金 7:定金 8:违约金',
    order_date           datetime not null comment '订单时间',
    amount               numeric(19,2) not null default 0 comment '账单金额',
@@ -245,7 +247,7 @@ create table fee_order
    update_date          timestamp comment '更新时间',
    remarks              varchar(255) comment '备注信息',
    del_flag             char(1) default '0' not null comment '删除标记',
-   primary key (order_no)
+   primary key (id)
 );
 
 alter table fee_order comment '订单';
@@ -255,6 +257,7 @@ alter table fee_order comment '订单';
 /*==============================================================*/
 create table fee_order_account
 (
+   id                   varchar(64) not null comment '内码',
    order_no             varchar(120) not null comment '订单号',
    property_id          varchar(64) comment '物业ID',
    house_id             varchar(64) not null comment '房屋ID',
@@ -269,7 +272,7 @@ create table fee_order_account
    update_date          timestamp comment '更新时间',
    remarks              varchar(255) comment '备注信息',
    del_flag             char(1) default '0' not null comment '删除标记',
-   primary key (order_no)
+   primary key (id)
 );
 
 alter table fee_order_account comment '订单台账';

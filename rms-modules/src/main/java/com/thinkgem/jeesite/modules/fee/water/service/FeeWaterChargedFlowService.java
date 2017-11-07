@@ -4,15 +4,17 @@
  */
 package com.thinkgem.jeesite.modules.fee.water.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.enums.*;
-import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
+import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.fee.water.dao.FeeWaterChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterBill;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow;
@@ -29,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>水收取流水实现类 service</p>
@@ -164,6 +168,100 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     public List<FeeWaterChargedFlowVo> getFeeWaterChargedFee(FeeCriteriaEntity feeCriteriaEntity) {
         return dao.getFeeWaterChargedFlow(feeCriteriaEntity);
+    }
+
+    public void generatorFlow() {
+        /**
+         * 1.去上次生成的记录，如果没有按本月一号开始计算
+         * 2.本次记录的日期减上次生成的日期的天数，如果是同一天怎更新
+         * 3.计算金额 = 配置金额/30*天数
+         */
+        List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        rooms.forEach(r -> {
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.WATER_UNIT, r.getHouse().getId(), r.getId());
+            if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
+                feeWaterChargedFlow.setFromSource(FeeFromSourceEnum.SYSTEM_FIX_SET.getValue());
+                feeWaterChargedFlow.setWaterAmount(new BigDecimal(feeConfig.getConfigValue()));
+                feeWaterChargedFlow.setWaterCalculateDate(new Date());
+                feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
+                feeWaterChargedFlow.setHouseId(r.getHouse().getId());
+                feeWaterChargedFlow.setRoomId(r.getId());
+                feeWaterChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
+                feeWaterChargedFlow.setHouseWaterNum(r.getHouse().getGasAccountNum());
+                feeWaterChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
+                feeWaterChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
+                feeWaterChargedFlow.preInsert();
+                feeWaterChargedFlows.add(feeWaterChargedFlow);
+            }
+        });
+        dao.batchInsert(feeWaterChargedFlows);
+        logger.info("总共生成{}条收费流水记录", feeWaterChargedFlows.size());
+    }
+
+    public void generatorOrder() {
+        FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
+        feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
+        List<FeeWaterChargedFlow> feeWaterChargedFlows = this.findList(feeWaterChargedFlow);
+
+        /*按房屋分组*/
+        Map<String, List<FeeWaterChargedFlow>> feeWaterChargedMap = feeWaterChargedFlows.stream()
+                .collect(Collectors.groupingBy(FeeWaterChargedFlow::getHouseId));
+
+        List<FeeWaterChargedFlow> updEleCharges = Lists.newArrayList();
+        List<FeeOrder> feeOrders = Lists.newArrayList();
+
+        feeWaterChargedMap.forEach((String k, List<FeeWaterChargedFlow> v) -> {
+            FeeWaterChargedFlow judgeCharge = v.get(0);
+            if (StringUtils.equals("" + judgeCharge.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
+                String batchNo = new IdGenerator().nextId();
+                FeeOrder feeOrder = feeWaterChargedFlowToFeeOrder(judgeCharge);
+                feeOrder.setBatchNo(batchNo);
+                v.stream().forEach(f -> {
+                    f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                    f.setOrderNo(batchNo);
+                    updEleCharges.add(f);
+
+                    feeOrder.setAmount(feeOrder.getAmount().add(f.getWaterAmount()));
+                });
+                feeOrders.add(feeOrder);
+            } else {
+                 /*按房间分组*/
+                Map<String, List<FeeWaterChargedFlow>> chargedFlowMap = v.stream()
+                        .collect(Collectors.groupingBy(FeeWaterChargedFlow::getRoomId));
+
+                /*计算每个房间的收费情况*/
+                chargedFlowMap.forEach((String key, List<FeeWaterChargedFlow> value) -> {
+                    String batchNo = new IdGenerator().nextId();
+                    FeeOrder feeOrder = feeWaterChargedFlowToFeeOrder(value.get(0));
+                    feeOrder.setBatchNo(batchNo);
+                    value.stream().forEach(f -> {
+                        f.setOrderNo(batchNo);
+                        f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                        updEleCharges.add(f);
+
+                        feeOrder.setAmount(feeOrder.getAmount().add(f.getWaterAmount()));
+                    });
+                    feeOrders.add(feeOrder);
+                });
+            }
+        });
+        /*更新收费流水表*/
+
+    }
+
+    private FeeOrder feeWaterChargedFlowToFeeOrder(FeeWaterChargedFlow feeWaterChargedFlow) {
+        FeeOrder feeOrder = new FeeOrder();
+        feeOrder.setPayer(feeWaterChargedFlow.getPayer());
+        feeOrder.setHouseId(feeWaterChargedFlow.getHouseId());
+        feeOrder.setOrderDate(new Date());
+        feeOrder.setOrderStatus(OrderStatusEnum.COMMIT.getValue());
+        feeOrder.setPropertyId(feeWaterChargedFlow.getPropertyId());
+        feeOrder.setOrderType(OrderTypeEnum.WATER.getValue());
+        feeOrder.setRoomId(feeWaterChargedFlow.getRoomId());
+        feeOrder.preInsert();
+        return feeOrder;
     }
 
     private FeeWaterChargedFlow readFlowToChargedFlow(FeeWaterReadFlow feeWaterReadFlow) {

@@ -6,8 +6,8 @@ package com.thinkgem.jeesite.modules.fee.electricity.service;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
@@ -64,22 +64,17 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeElectricityBill query = new FeeElectricityBill();
-        query.setEleBillDate(feeElectricityBill.getEleBillDate());
-        query.setHouseEleNum(feeElectricityBill.getHouseEleNum());
-        List<FeeElectricityBill> feeElectricityBills = this.findList(query);
-        if (Optional.ofNullable(feeElectricityBills).isPresent()
-                && feeElectricityBills.size() > 0) {
-            FeeElectricityBill existEleBill = feeElectricityBills.get(0);
-            feeElectricityBill.setId(existEleBill.getId());
-            if (existEleBill.getBillStatus() != null && existEleBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
-                    && existEleBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+        FeeElectricityBill existBill = dao.getCurrentBillByDateAndHouseNum(feeElectricityBill.getEleBillDate(),feeElectricityBill.getHouseEleNum());
+        if (Optional.ofNullable(existBill).isPresent()) {
+            feeElectricityBill.setId(existBill.getId());
+            if (existBill.getBillStatus() != null && existBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                    && existBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
                 logger.error("当前账单已经提交不能修改");
                 throw new IllegalArgumentException("当前账单已经提交不能修改");
             }
         }
 
-        FeeElectricityBill lastBill = dao.getLastEleBill(feeElectricityBill);
+        FeeElectricityBill lastBill = dao.getLastRecord(feeElectricityBill.getId(),feeElectricityBill.getHouseId());
         if(Optional.ofNullable(lastBill).isPresent()){
             if(lastBill.getElePeakDegree() > feeElectricityBill.getElePeakDegree()){
                 logger.error("当前账单峰值数不能小于上次峰值数");
@@ -116,7 +111,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
-        FeeElectricityBill lastBill = dao.getLastEleBill(feeElectricityBill);
+        FeeElectricityBill lastBill = dao.getLastRecord(feeElectricityBill.getId(),feeElectricityBill.getHouseId());
         if(Optional.ofNullable(lastBill).isPresent()){
             if(lastBill.getEleBillDate().compareTo(feeElectricityBill.getEleBillDate()) > 0){
                 logger.error("下月账单已经生成不能删除");

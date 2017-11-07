@@ -52,13 +52,8 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeGasReadFlow query = new FeeGasReadFlow();
-        query.setGasReadDate(feeGasReadFlow.getGasReadDate());
-        query.setHouseId(feeGasReadFlow.getHouseId());
-        List<FeeGasReadFlow> feeGasReadFlows = this.findList(query);
-        if (Optional.ofNullable(feeGasReadFlows).isPresent()
-                && feeGasReadFlows.size() > 0) {
-            FeeGasReadFlow existGasRead = feeGasReadFlows.get(0);
+        FeeGasReadFlow existGasRead = dao.getCurrentReadByDateAndHouseId(feeGasReadFlow.getGasReadDate(), feeGasReadFlow.getHouseId());
+        if (Optional.ofNullable(existGasRead).isPresent()) {
             feeGasReadFlow.setId(existGasRead.getId());
             if (existGasRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
                 logger.error("当前抄表数是账单生成,不可修改");
@@ -80,7 +75,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     private void judgeLastRead(FeeGasReadFlow feeGasReadFlow) {
-        FeeGasReadFlow lastRead = dao.getLastReadFlow(feeGasReadFlow);
+        FeeGasReadFlow lastRead = dao.getLastRecord(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
         if (Optional.ofNullable(lastRead).isPresent()) {
 
             if (feeGasReadFlow.getGasDegree() != null && lastRead.getGasDegree() > feeGasReadFlow.getGasDegree()) {
@@ -149,6 +144,6 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     public FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow) {
-        return dao.getLastReadFlow(feeGasReadFlow);
+        return dao.getLastRecord(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
     }
 }
