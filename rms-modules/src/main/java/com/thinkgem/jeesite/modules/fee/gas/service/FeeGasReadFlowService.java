@@ -6,10 +6,9 @@ package com.thinkgem.jeesite.modules.fee.gas.service;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
 import com.thinkgem.jeesite.modules.fee.gas.dao.FeeGasReadFlowDao;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,7 +143,11 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         return dao.getFeeGasReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow) {
-        return dao.getLastRecord(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
+    public FeeGasReadFlow getLastReadFlow(String id, String houseId) {
+        return dao.getLastRecord(id, houseId);
+    }
+
+    public FeeGasReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId){
+        return dao.getCurrentReadByDateAndHouseId(gasReadDate, houseId);
     }
 }

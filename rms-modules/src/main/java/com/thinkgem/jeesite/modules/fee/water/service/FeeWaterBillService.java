@@ -7,6 +7,7 @@ package com.thinkgem.jeesite.modules.fee.water.service;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
@@ -15,7 +16,6 @@ import com.thinkgem.jeesite.modules.fee.water.dao.FeeWaterBillDao;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterBill;
 import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterBillVo;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.enums.HouseRentMethod;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
             }
         }
 
-        FeeWaterBill lastBill = dao.getLastWaterBill(feeWaterBill);
+        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(),feeWaterBill.getHouseId());
         if(Optional.ofNullable(lastBill).isPresent()){
             if(lastBill.getWaterDegree() > feeWaterBill.getWaterDegree()){
                 logger.error("当前账单抄表数不能小于上次抄表数");
@@ -96,7 +96,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
         this.save(feeWaterBill);
 
         // 判断房屋是否整组，如果整组生成抄表流水记录
-        if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+        if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("生成抄表流水");
             feeWaterReadFlowService.saveFeeWaterReadFlowByFeeWaterBill(feeWaterBill);
             logger.info("生成收款流水");
@@ -112,7 +112,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
-        FeeWaterBill lastBill = dao.getLastWaterBill(feeWaterBill);
+        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(),feeWaterBill.getHouseId());
         if(Optional.ofNullable(lastBill).isPresent()){
             if(lastBill.getWaterBillDate().compareTo(feeWaterBill.getWaterBillDate()) > 0){
                 logger.error("下月账单已经生成不能删除");
@@ -126,7 +126,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
 
         //如果是整租，删除相应生成的记录
         House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
-        if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+        if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("删除抄表流水");
             feeWaterReadFlowService.deleteFeeWaterReadFlowByFeeWaterBill(feeWaterBill.getId());
             logger.info("删除收款流水");

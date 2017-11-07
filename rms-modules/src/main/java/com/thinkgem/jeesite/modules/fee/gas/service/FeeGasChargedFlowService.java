@@ -13,7 +13,6 @@ import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
-import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
 import com.thinkgem.jeesite.modules.fee.enums.*;
 import com.thinkgem.jeesite.modules.fee.gas.dao.FeeGasChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
@@ -85,7 +84,6 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     @Transactional(readOnly = false)
     public void saveFeeGasChargedFlowByFeeGasBill(FeeGasBill feeGasBill) {
         FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.GAS_UNIT, feeGasBill.getHouseId(), null);
-
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.info("房屋[houseId={}]为固定模式,不生成收费流水", feeGasBill.getHouseId());
             throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
@@ -101,10 +99,12 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             saveChargedFlow.setId(existGasChargedFlow.getId());
         }
 
-        FeeGasReadFlow queryFeeGasReadFlow = new FeeGasReadFlow();
-        queryFeeGasReadFlow.setHouseId(feeGasBill.getHouseId());
-        queryFeeGasReadFlow.setId(feeGasBill.getId());
-        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(queryFeeGasReadFlow);
+        String id = null;
+        FeeGasReadFlow existRead = feeGasReadFlowService.getCurrentReadByDateAndHouseId(feeGasBill.getGasBillDate(), feeGasBill.getHouseId());
+        if (Optional.ofNullable(existRead).isPresent()) {
+            id = existRead.getId();
+        }
+        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(id, feeGasBill.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeGasBill.getHouseId());
             throw new IllegalArgumentException("当前房屋没有初始化燃气表数据");
@@ -132,6 +132,13 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             return;
         }
 
+        /*查询出当前之外的上一条数据*/
+        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
+        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            logger.error("当前房屋[户号={}]没有初始化电表数据", feeGasReadFlow.getHouseGasNum());
+            throw new IllegalArgumentException("当前房屋没有初始化电表数据");
+        }
+
         FeeGasChargedFlow saveFeeGasChargeFlow = feeGasReadToFeeGasCharged(feeGasReadFlow);
 
         saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
@@ -139,12 +146,6 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         if (Optional.ofNullable(existChargeFlow).isPresent()) {
             saveFeeGasChargeFlow.setId(existChargeFlow.getId());
 
-        }
-
-        FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow);
-        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            logger.error("当前房屋[户号={}]没有初始化电表数据", feeGasReadFlow.getHouseGasNum());
-            throw new IllegalArgumentException("当前房屋没有初始化电表数据");
         }
 
         House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
@@ -158,19 +159,14 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             amount = amount.divide(new BigDecimal(rentRoomSize));
             saveFeeGasChargeFlow.setGasAmount(amount);
             for (Room room : rooms) {
-                try {
-                    FeeGasChargedFlow feeGasChargedFlow = (FeeGasChargedFlow) saveFeeGasChargeFlow.clone();
-                    if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
-                        saveFeeGasChargeFlow.setPayer(PayerEnum.RENT_USER.getValue());
-                    } else {
-                        saveFeeGasChargeFlow.setPayer(PayerEnum.COMPANY.getValue());
-                    }
-                    save(feeGasChargedFlow);
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                    logger.error("生成租客收费异常");
-                    throw new IllegalArgumentException("生成租客收费异常");
+                FeeGasChargedFlow feeGasChargedFlow = saveFeeGasChargeFlow.clone();
+                feeGasChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
+                if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
+                    saveFeeGasChargeFlow.setPayer(PayerEnum.RENT_USER.getValue());
+                } else {
+                    saveFeeGasChargeFlow.setPayer(PayerEnum.COMPANY.getValue());
                 }
+                save(feeGasChargedFlow);
             }
         } else {
             saveFeeGasChargeFlow.setGasAmount(amount);
@@ -235,15 +231,15 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         List<FeeGasChargedFlow> feeGasChargedFlows = this.findList(feeGasChargedFlow);
 
         /*按房屋分组*/
-        Map<String,List<FeeGasChargedFlow>> feeGasChargedMap = feeGasChargedFlows.stream()
+        Map<String, List<FeeGasChargedFlow>> feeGasChargedMap = feeGasChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeGasChargedFlow::getHouseId));
 
         List<FeeGasChargedFlow> updEleCharges = Lists.newArrayList();
         List<FeeOrder> feeOrders = Lists.newArrayList();
 
-        feeGasChargedMap.forEach((String k,List<FeeGasChargedFlow> v) ->{
+        feeGasChargedMap.forEach((String k, List<FeeGasChargedFlow> v) -> {
             FeeGasChargedFlow judgeCharge = v.get(0);
-            if(StringUtils.equals("" + judgeCharge.getRentType(),RentModelTypeEnum.WHOLE_RENT.getValue())){
+            if (StringUtils.equals("" + judgeCharge.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
                 String batchNo = new IdGenerator().nextId();
                 FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(judgeCharge);
                 feeOrder.setBatchNo(batchNo);
@@ -255,13 +251,13 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
                 });
                 feeOrders.add(feeOrder);
-            }else{
+            } else {
                  /*按房间分组*/
                 Map<String, List<FeeGasChargedFlow>> chargedFlowMap = v.stream()
                         .collect(Collectors.groupingBy(FeeGasChargedFlow::getRoomId));
 
                 /*计算每个房间的收费情况*/
-                chargedFlowMap.forEach((String key,List<FeeGasChargedFlow> value) ->{
+                chargedFlowMap.forEach((String key, List<FeeGasChargedFlow> value) -> {
                     String batchNo = new IdGenerator().nextId();
                     FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(value.get(0));
                     feeOrder.setBatchNo(batchNo);
@@ -279,7 +275,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         /*更新收费流水表*/
     }
 
-    private FeeOrder feeGasChargedFlowToFeeOrder(FeeGasChargedFlow feeGasChargedFlow){
+    private FeeOrder feeGasChargedFlowToFeeOrder(FeeGasChargedFlow feeGasChargedFlow) {
         FeeOrder feeOrder = new FeeOrder();
         feeOrder.setPayer(feeGasChargedFlow.getPayer());
         feeOrder.setHouseId(feeGasChargedFlow.getHouseId());

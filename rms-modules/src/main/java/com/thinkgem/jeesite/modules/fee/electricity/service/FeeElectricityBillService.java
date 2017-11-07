@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.fee.electricity.service;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.electricity.dao.FeeElectricityBillDao;
@@ -14,7 +15,6 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBill
 import com.thinkgem.jeesite.modules.fee.enums.FeeBillStatusEnum;
 import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.enums.HouseRentMethod;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +96,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         this.save(feeElectricityBill);
 
         // 判断房屋是否整组，如果整组生成抄表流水记录
-        if (StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+        if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("生成抄表流水");
             feeEleReadFlowService.saveFeeEleReadFlowByFeeEleBill(feeElectricityBill);
             logger.info("生成收款流水");
@@ -124,7 +124,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         this.save(feeElectricityBill);
         //如果是整租，删除相应生成的记录
         House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
-        if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), HouseRentMethod.FULL_RENT.value())) {
+        if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("删除抄表流水");
             feeEleReadFlowService.deleteFeeEleReadFlowByFeeEleBill(feeElectricityBill.getId());
             logger.info("删除收款流水");
