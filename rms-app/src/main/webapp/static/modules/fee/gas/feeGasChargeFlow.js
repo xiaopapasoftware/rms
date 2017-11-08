@@ -83,12 +83,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 url: feeGasChargeFlowCommon.baseUrl + "/list",
                 method: "GET"
             },
-            save: {
-                url: feeGasChargeFlowCommon.baseUrl + "/save",
+            generateFlow: {
+                url: feeGasChargeFlowCommon.baseUrl + "/generateFlow",
                 method: "POST"
             },
-            delete: {
-                url: feeGasChargeFlowCommon.baseUrl + "/delete",
+            generateOrder: {
+                url: feeGasChargeFlowCommon.baseUrl + "/generateOrder",
                 method: "GET"
             },
             selectItem: {
@@ -118,7 +118,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeGasChargeFlowMVC.Controller.addGasFun);
+                $("#btn-generateFlow").on("click", feeGasChargeFlowMVC.Controller.generateFlowFun);
+                $("#btn-generateOrder").on("click", feeGasChargeFlowMVC.Controller.generateOrderFun);
                 $("#btn-search").on("click", feeGasChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeGasChargeFlowMVC.Controller.undoFun);
             },
@@ -170,8 +171,23 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 };
                 return where;
             },
-            addGasFun: function () {
-
+            generateFlowFun: function () {
+                $.getJSON(feeGasChargeFlowMVC.URLs.generateFlow.url, "", function (data) {
+                    if (data.code == "200") {
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
+            },
+            generateOrderFun: function () {
+                $.getJSON(feeGasChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
+                    if (data.code == "200") {
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             queryFun: function () {
                 table.reload('gasChargeFlowTable', {

@@ -62,14 +62,14 @@ public class FeeGasChargedFlowController extends FeeBaseController {
         return ResponseData.success().data(feeGasChargedFlow);
     }
 
-    @RequestMapping(value = "generatorFlow")
-    public Object generatorFlow() {
+    @RequestMapping(value = "generateFlow")
+    public Object generateFlow() {
         feeGasChargedFlowService.generatorFlow();
         return ResponseData.success();
     }
 
-    @RequestMapping(value = "generatorOrder")
-    public Object generatorOrder() {
+    @RequestMapping(value = "generateOrder")
+    public Object generaterOrder() {
         feeGasChargedFlowService.generatorOrder();
         return ResponseData.success();
     }

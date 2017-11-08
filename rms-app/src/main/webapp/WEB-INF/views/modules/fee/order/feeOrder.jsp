@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <meta charset="utf-8"/>
-    <title>水费收费流水</title>
+    <title>应收账单列表</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 
@@ -53,7 +53,6 @@
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
-
     </style>
 </head>
 
@@ -110,9 +109,25 @@
                     </div>
                 </div>
                 <div class="layui-inline">
-                    <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="waterReadDates" name="waterReadDates" placeholder="抄表日期" readonly
-                               class="layui-input">
+                    <div class="layui-input-inline m-large">
+                        <select id="orderType" name="house" lay-filter="orderType" placeholder="费用类型">
+                            <option value="">不限</option>
+                            <option value="1">电费</option>
+                            <option value="2">水费</option>
+                            <option value="3">燃气费</option>
+                            <option value="4">宽带</option>
+                            <option value="5">电视</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="orderStatus" name="house" lay-filter="orderStatus" placeholder="订单状态">
+                            <option value="">不限</option>
+                            <option value="1">待缴费</option>
+                            <option value="2">已缴</option>
+                            <option value="3">收回</option>
+                        </select>
                     </div>
                 </div>
             </form>
@@ -123,19 +138,19 @@
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
         <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-generateFlow" class="button">
-                生成账单流水
+            <a href="javascript:void(0);" id="btn-payed" class="button">
+                已收
             </a>
         </div>
         <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-generateOrder" class="button">
-                生成应收账单
+            <a href="javascript:void(0);" id="btn-repay" class="button">
+                回收账单
             </a>
         </div>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="waterChargeFlowTable" lay-filter="waterChargeFlowT">
+            <table class="layui-hide" id="feeOrderTable" lay-filter="feeOrder">
             </table>
         </div>
     </div>
@@ -144,6 +159,6 @@
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>
 <script src="${ctxStatic}/layui/layui.js"></script>
 <script src="${ctxStatic}/xqsight/widget/widgets.js"></script>
-<script src="${ctxStatic}/modules/fee/water/feeWaterChargeFlow.js"></script>
+<script src="${ctxStatic}/modules/fee/order/feeOrder.js"></script>
 </body>
 </html>

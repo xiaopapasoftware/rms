@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasChargedFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
@@ -52,6 +53,9 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     @Autowired
     private FeeGasReadFlowService feeGasReadFlowService;
+
+    @Autowired
+    private FeeOrderService feeOrderService;
 
     private FeeGasChargedFlow feeGasBillToFeeGasCharged(FeeGasBill feeGasBill) {
         FeeGasChargedFlow saveChargedFlow = new FeeGasChargedFlow();
@@ -259,12 +263,12 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         feeGasChargedMap.forEach((String k, List<FeeGasChargedFlow> v) -> {
             FeeGasChargedFlow judgeCharge = v.get(0);
             if (StringUtils.equals("" + judgeCharge.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
-                String batchNo = new IdGenerator().nextId();
+                String orderNo = new IdGenerator().nextId();
                 FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(judgeCharge);
-                feeOrder.setBatchNo(batchNo);
+                feeOrder.setOrderNo(orderNo);
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                    f.setOrderNo(batchNo);
+                    f.setOrderNo(orderNo);
                     updGasCharges.add(f);
 
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
@@ -277,11 +281,11 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
                 /*计算每个房间的收费情况*/
                 chargedFlowMap.forEach((String key, List<FeeGasChargedFlow> value) -> {
-                    String batchNo = new IdGenerator().nextId();
+                    String orderNo = new IdGenerator().nextId();
                     FeeOrder feeOrder = feeGasChargedFlowToFeeOrder(value.get(0));
-                    feeOrder.setBatchNo(batchNo);
+                    feeOrder.setOrderNo(orderNo);
                     value.stream().forEach(f -> {
-                        f.setOrderNo(batchNo);
+                        f.setOrderNo(orderNo);
                         f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                         updGasCharges.add(f);
 
@@ -294,7 +298,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         /*更新收费流水表*/
         dao.batchUpdate(updGasCharges);
         logger.info("生成订单记录");
-
+        feeOrderService.batchInsert(feeOrders);
     }
 
     private FeeOrder feeGasChargedFlowToFeeOrder(FeeGasChargedFlow feeGasChargedFlow) {

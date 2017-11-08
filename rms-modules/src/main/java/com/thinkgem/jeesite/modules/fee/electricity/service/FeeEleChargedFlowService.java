@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.enums.*;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
@@ -52,6 +53,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
     @Autowired
     private FeeEleReadFlowService feeEleReadFlowService;
+
+    @Autowired
+    private FeeOrderService feeOrderService;
 
     private FeeEleChargedFlow feeEleBillToFeeEleCharged(FeeElectricityBill feeEleBill) {
         FeeEleChargedFlow saveChargedFlow = new FeeEleChargedFlow();
@@ -251,12 +255,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         feeEleChargedMap.forEach((String k, List<FeeEleChargedFlow> v) -> {
             FeeEleChargedFlow judgeCharged = v.get(0);
             if (StringUtils.equals("" + judgeCharged.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
-                String batchNo = new IdGenerator().nextId();
+                String orderNo = new IdGenerator().nextId();
                 FeeOrder feeOrder = eleChargedFlowToFeeOrder(judgeCharged);
-                feeOrder.setBatchNo(batchNo);
+                feeOrder.setOrderNo(orderNo);
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                    f.setOrderNo(batchNo);
+                    f.setOrderNo(orderNo);
                     updEleCharges.add(f);
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getEleValleyAmount()).add(f.getElePeakAmount()));
                 });
@@ -276,11 +280,11 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                             updEleCharges.add(f);
                         });
                     } else {
-                        String batchNo = new IdGenerator().nextId();
+                        String orderNo = new IdGenerator().nextId();
                         FeeOrder feeOrder = eleChargedFlowToFeeOrder(value.get(0));
-                        feeOrder.setBatchNo(batchNo);
+                        feeOrder.setOrderNo(orderNo);
                         value.stream().forEach(f -> {
-                            f.setOrderNo(batchNo);
+                            f.setOrderNo(orderNo);
                             f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                             updEleCharges.add(f);
 
@@ -303,7 +307,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
         this.batchUpdate(updEleCharges);
         logger.info("开始生成账单");
-
+        feeOrderService.batchInsert(feeOrders);
     }
 
     @Transactional(readOnly = false)

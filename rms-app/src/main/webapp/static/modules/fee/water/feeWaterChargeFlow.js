@@ -83,12 +83,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 url: feeWaterChargeFlowCommon.baseUrl + "/list",
                 method: "GET"
             },
-            save: {
-                url: feeWaterChargeFlowCommon.baseUrl + "/save",
+            generateFlow: {
+                url: feeWaterChargeFlowCommon.baseUrl + "/generateFlow",
                 method: "POST"
             },
-            delete: {
-                url: feeWaterChargeFlowCommon.baseUrl + "/delete",
+            generateOrder: {
+                url: feeWaterChargeFlowCommon.baseUrl + "/generateOrder",
                 method: "GET"
             },
             selectItem: {
@@ -118,7 +118,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeWaterChargeFlowMVC.Controller.addWaterFun);
+                $("#btn-generateFlow").on("click", feeWaterChargeFlowMVC.Controller.generateFlowFun);
+                $("#btn-generateOrder").on("click", feeWaterChargeFlowMVC.Controller.generateOrderFun);
                 $("#btn-search").on("click", feeWaterChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeWaterChargeFlowMVC.Controller.undoFun);
             },
@@ -170,8 +171,23 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 };
                 return where;
             },
-            addWaterFun: function () {
-
+            generateFlowFun: function () {
+                $.getJSON(feeWaterChargeFlowMVC.URLs.generateFlow.url, "", function (data) {
+                    if (data.code == "200") {
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
+            },
+            generateOrderFun: function () {
+                $.getJSON(feeWaterChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
+                    if (data.code == "200") {
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             queryFun: function () {
                 table.reload('waterChargeFlowTable', {

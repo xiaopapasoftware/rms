@@ -123,7 +123,12 @@
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
         <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-add" class="button">
+            <a href="javascript:void(0);" id="btn-generateFlow" class="button">
+                生成流水账单
+            </a>
+        </div>
+        <div class="widget-toolbar no-border pull-left">
+            <a href="javascript:void(0);" id="btn-generateOrder" class="button">
                 生成应收账单
             </a>
         </div>

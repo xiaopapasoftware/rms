@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.enums.*;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import com.thinkgem.jeesite.modules.fee.water.dao.FeeWaterChargedFlowDao;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterBill;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow;
@@ -52,6 +53,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     @Autowired
     private FeeWaterReadFlowService feeWaterReadFlowService;
+
+    @Autowired
+    private FeeOrderService feeOrderService;
 
     @Transactional(readOnly = false)
     public void saveFeeWaterChargedFlowByFeeWaterBill(FeeWaterBill feeWaterBill) {
@@ -233,12 +237,12 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         feeWaterChargedMap.forEach((String k, List<FeeWaterChargedFlow> v) -> {
             FeeWaterChargedFlow judgeCharge = v.get(0);
             if (StringUtils.equals("" + judgeCharge.getRentType(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
-                String batchNo = new IdGenerator().nextId();
+                String orderNo = new IdGenerator().nextId();
                 FeeOrder feeOrder = feeWaterChargedFlowToFeeOrder(judgeCharge);
-                feeOrder.setBatchNo(batchNo);
+                feeOrder.setOrderNo(orderNo);
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                    f.setOrderNo(batchNo);
+                    f.setOrderNo(orderNo);
                     updWaterCharges.add(f);
 
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getWaterAmount()));
@@ -251,11 +255,11 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
                 /*计算每个房间的收费情况*/
                 chargedFlowMap.forEach((String key, List<FeeWaterChargedFlow> value) -> {
-                    String batchNo = new IdGenerator().nextId();
+                    String orderNo = new IdGenerator().nextId();
                     FeeOrder feeOrder = feeWaterChargedFlowToFeeOrder(value.get(0));
-                    feeOrder.setBatchNo(batchNo);
+                    feeOrder.setOrderNo(orderNo);
                     value.stream().forEach(f -> {
-                        f.setOrderNo(batchNo);
+                        f.setOrderNo(orderNo);
                         f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                         updWaterCharges.add(f);
 
@@ -268,6 +272,8 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
         /*更新收费流水表*/
         dao.batchInsert(updWaterCharges);
+        logger.info("生成订单信息");
+        feeOrderService.batchInsert(feeOrders);
     }
 
     private FeeOrder feeWaterChargedFlowToFeeOrder(FeeWaterChargedFlow feeWaterChargedFlow) {
