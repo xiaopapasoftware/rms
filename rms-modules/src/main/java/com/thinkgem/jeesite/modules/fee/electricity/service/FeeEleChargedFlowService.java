@@ -170,12 +170,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
 
         /*获取上一条抄表记录*/
-        String id = null;
-        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
-        if(Optional.ofNullable(existEleRead).isPresent()){
-            id = existEleRead.getId();
-        }
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id,feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[houseId={}]没有初始化电表数据", house.getId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
@@ -242,9 +237,11 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     }
 
     public void generatorOrder() {
+        /*获取所有为生成订单的数据*/
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
         feeEleChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         List<FeeEleChargedFlow> feeEleChargedFlows = this.findList(feeEleChargedFlow);
+        /*按房屋分组*/
         Map<String, List<FeeEleChargedFlow>> feeEleChargedMap = feeEleChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeEleChargedFlow::getHouseId));
 

@@ -6,8 +6,6 @@ package com.thinkgem.jeesite.modules.fee.water.service;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
@@ -22,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,13 +51,8 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeWaterReadFlow query = new FeeWaterReadFlow();
-        query.setWaterReadDate(feeWaterReadFlow.getWaterReadDate());
-        query.setHouseId(feeWaterReadFlow.getHouseId());
-        List<FeeWaterReadFlow> feeWaterReadFlows = this.findList(query);
-        if (Optional.ofNullable(feeWaterReadFlows).isPresent()
-                && feeWaterReadFlows.size() > 0) {
-            FeeWaterReadFlow existWaterRead = feeWaterReadFlows.get(0);
+        FeeWaterReadFlow existWaterRead = dao.getCurrentReadByDateAndHouseId(feeWaterReadFlow.getWaterReadDate(), feeWaterReadFlow.getHouseId());
+        if (Optional.ofNullable(existWaterRead).isPresent()) {
             feeWaterReadFlow.setId(existWaterRead.getId());
             if (existWaterRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
                 logger.error("当前抄表数是账单生成,不可修改");
@@ -80,7 +74,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     }
 
     private void judgeLastRead(FeeWaterReadFlow feeWaterReadFlow) {
-        FeeWaterReadFlow lastRead = dao.getLastReadFlow(feeWaterReadFlow);
+        FeeWaterReadFlow lastRead = dao.getLastRecord(feeWaterReadFlow.getId(), feeWaterReadFlow.getHouseId());
         if (Optional.ofNullable(lastRead).isPresent()) {
 
             if (feeWaterReadFlow.getWaterDegree() != null && lastRead.getWaterDegree() > feeWaterReadFlow.getWaterDegree()) {
@@ -148,7 +142,11 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         return dao.getFeeWaterReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeWaterReadFlow getLastReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
-        return dao.getLastReadFlow(feeWaterReadFlow);
+    public FeeWaterReadFlow getLastReadFlow(String id, String houseId) {
+        return dao.getLastRecord(id, houseId);
+    }
+
+    public FeeWaterReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId){
+        return dao.getCurrentReadByDateAndHouseId(gasReadDate, houseId);
     }
 }

@@ -14,9 +14,9 @@
         <result column="order_date" property="orderDate" jdbcType="TIMESTAMP"/>
         <result column="amount" property="amount" jdbcType="NUMERIC"/>
         <result column="order_status" property="orderStatus" jdbcType="NUMERIC"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
         <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_by" property="updateBy.id" jdbcType="VARCHAR"/>
         <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
@@ -57,9 +57,9 @@
         <if test="orderDate!=null">#{orderDate,jdbcType=TIMESTAMP},</if>
         <if test="amount!=null">#{amount,jdbcType=NUMERIC},</if>
         <if test="orderStatus!=null">#{orderStatus,jdbcType=NUMERIC},</if>
-        <if test="createBy!=null">#{createBy,jdbcType=VARCHAR},</if>
+        <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
         <if test="createDate!=null">#{createDate,jdbcType=TIMESTAMP},</if>
-        <if test="updateBy!=null">#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null">#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null">#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null">#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null">#{delFlag,jdbcType=VARCHAR},</if>
@@ -76,9 +76,9 @@
         #{item.orderDate,jdbcType=TIMESTAMP},
         #{item.amount,jdbcType=NUMERIC},
         #{item.orderStatus,jdbcType=NUMERIC},
-        #{item.createBy,jdbcType=VARCHAR},
+        #{item.createBy.id,jdbcType=VARCHAR},
         #{item.createDate,jdbcType=TIMESTAMP},
-        #{item.updateBy,jdbcType=VARCHAR},
+        #{item.updateBy.id,jdbcType=VARCHAR},
         #{item.updateDate,jdbcType=TIMESTAMP},
         #{item.remarks,jdbcType=VARCHAR},
         #{item.delFlag,jdbcType=VARCHAR},
@@ -95,7 +95,7 @@
         <if test="orderDate!=null"> order_date=#{orderDate,jdbcType=TIMESTAMP},</if>
         <if test="amount!=null"> amount=#{amount,jdbcType=NUMERIC},</if>
         <if test="orderStatus!=null"> order_status=#{orderStatus,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy,jdbcType=VARCHAR},</if>
+        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
         <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
         <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
         <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
@@ -111,7 +111,7 @@
         order_date=#{item.orderDate,jdbcType=TIMESTAMP},
         amount=#{item.amount,jdbcType=NUMERIC},
         order_status=#{item.orderStatus,jdbcType=NUMERIC},
-        update_by=#{item.updateBy,jdbcType=VARCHAR},
+        update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
         del_flag=#{item.delFlag,jdbcType=VARCHAR},

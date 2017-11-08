@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 @Service
 public class FeeCommonService {
 
+    public static final int FULL_MOUTH_DAYS = 30;
+
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

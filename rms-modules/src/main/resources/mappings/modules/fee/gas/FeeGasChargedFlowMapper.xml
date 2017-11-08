@@ -245,20 +245,6 @@
         <include refid="where"/>
     </select>
 
-    <select id="getLastRecord" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from fee_gas_charged_flow
-        where del_flag=0
-        <if test="id!=null and id!=''">
-            AND id!=#{id,jdbcType=VARCHAR}
-        </if>
-        AND house_id=#{houseId,jdbcType=VARCHAR}
-        AND room_id=#{roomId,jdbcType=VARCHAR}
-        ORDER BY gas_calculate_date DESC
-        limit 0,1;
-    </select>
-
     <select id="getFeeGasChargedFlowByBusinessIdAndFromSource" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -266,9 +252,15 @@
         where
         del_flag=0 and from_source=#{fromSource,jdbcType=NUMERIC}
         and business_id = #{businessId,jdbcType=VARCHAR}
-        <if test="roomId!=null and roomId !=''">
-            room_id = #{roomId,jdbcType=VARCHAR}
-        </if>
+    </select>
+
+    <select id="getLastRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_gas_charged_flow
+        where del_flag=0
+        and house_id=#{houseId,jdbcType=NUMERIC}
+        and room_id = #{roomId,jdbcType=VARCHAR}
     </select>
 
     <select id="getFeeGasChargedFlow" resultMap="FullResultMap"

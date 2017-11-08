@@ -131,7 +131,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
             feeGasReadFlow.setId(id);
             feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeGasReadFlow);
-            //删除相应的收费流水记录
+            /*删除相应的收费流水记录*/
             feeGasChargedFlowService.deleteFeeGasChargedFlowByBusinessIdAndFromSource(id, FeeFromSourceEnum.READ_METER.getValue());
         } else {
             logger.error("该抄表[id={}]不存在,不能删除", id);

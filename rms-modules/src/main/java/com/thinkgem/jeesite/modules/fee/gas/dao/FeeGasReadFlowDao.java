@@ -28,5 +28,5 @@ public interface FeeGasReadFlowDao extends CrudDao<FeeGasReadFlow>{
 
     FeeGasReadFlow getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
 
-    FeeGasReadFlow getCurrentReadByDateAndHouseId(@Param("eleReadDate") Date eleReadDate, @Param("houseId") String houseId);
+    FeeGasReadFlow getCurrentReadByDateAndHouseId(@Param("gasReadDate") Date gasReadDate, @Param("houseId") String houseId);
 }

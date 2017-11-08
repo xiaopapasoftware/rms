@@ -65,7 +65,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeGasBill existBill = dao.getCurrentBillByDateAndHouseNum(feeGasBill.getGasBillDate(), feeGasBill.getHouseGasNum());
+        FeeGasBill existBill = dao.getCurrentBillByDateAndHouseId(feeGasBill.getGasBillDate(), feeGasBill.getHouseId());
         if (Optional.ofNullable(existBill).isPresent()) {
             feeGasBill.setId(existBill.getId());
             if (existBill.getBillStatus() != null && existBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
@@ -91,7 +91,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
         feeGasBill.setPropertyId(house.getPropertyProject().getId());
         this.save(feeGasBill);
 
-        // 判断房屋是否整组，如果整组生成抄表流水记录
+        /*判断房屋是否整组，如果整组生成抄表流水记录*/
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("生成抄表流水");
             feeGasReadFlowService.saveFeeGasReadFlowByFeeGasBill(feeGasBill);
@@ -119,7 +119,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
         feeGasBill.setId(id);
         feeGasBill.setDelFlag(Constants.DEL_FLAG_YES);
         this.save(feeGasBill);
-        //如果是整租，删除相应生成的记录
+        /*如果是整租，删除相应生成的记录*/
         House house = feeCommonService.getHouseById(feeGasBill.getHouseId());
         if (Optional.ofNullable(house).isPresent() && StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             logger.info("删除抄表流水");

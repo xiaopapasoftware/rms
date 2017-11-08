@@ -230,13 +230,13 @@
         limit 0,1;
     </select>
 
-    <select id="getCurrentBillByDateAndHouseNum" resultMap="BaseResultMap">
+    <select id="getCurrentBillByDateAndHouseId" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM fee_gas_bill
         WHERE del_flag=0
         AND DATE_FORMAT(gas_bill_date,'%Y-%m')=DATE_FORMAT(#{gasBillDate,jdbcType=TIMESTAMP},'%Y-%m')
-        AND house_gas_num=#{houseGasNum,jdbcType=VARCHAR}
+        AND house_id=#{houseId,jdbcType=VARCHAR}
     </select>
 
     <select id="getTotalAmount"

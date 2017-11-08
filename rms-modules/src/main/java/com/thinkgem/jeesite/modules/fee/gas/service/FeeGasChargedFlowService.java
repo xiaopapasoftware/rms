@@ -7,6 +7,7 @@ package com.thinkgem.jeesite.modules.fee.gas.service;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
@@ -91,14 +92,15 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
         FeeGasChargedFlow saveChargedFlow = feeGasBillToFeeGasCharged(feeGasBill);
 
-        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue(), null);
-        if (Optional.ofNullable(existGasChargedFlow).isPresent()) {
-            if (existGasChargedFlow.getGenerateOrder() == GenerateOrderEnum.YES.getValue()) {
+        List<FeeGasChargedFlow> existGasChargedFlows = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBill.getId(), FeeFromSourceEnum.ACCOUNT_BILL.getValue());
+        if (Optional.ofNullable(existGasChargedFlows).isPresent() && existGasChargedFlows.size() > 0) {
+            if (existGasChargedFlows.get(0).getGenerateOrder() == GenerateOrderEnum.YES.getValue()) {
                 throw new IllegalArgumentException("该房屋已经生成订单,不可修改");
             }
-            saveChargedFlow.setId(existGasChargedFlow.getId());
+            saveChargedFlow.setId(existGasChargedFlows.get(0).getId());
         }
 
+        /*查询除当前的上一条记录*/
         String id = null;
         FeeGasReadFlow existRead = feeGasReadFlowService.getCurrentReadByDateAndHouseId(feeGasBill.getGasBillDate(), feeGasBill.getHouseId());
         if (Optional.ofNullable(existRead).isPresent()) {
@@ -132,7 +134,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             return;
         }
 
-        /*查询出当前之外的上一条数据*/
+        /*查询除当前之外的上一条数据*/
         FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[户号={}]没有初始化电表数据", feeGasReadFlow.getHouseGasNum());
@@ -140,13 +142,6 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         }
 
         FeeGasChargedFlow saveFeeGasChargeFlow = feeGasReadToFeeGasCharged(feeGasReadFlow);
-
-        saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-        FeeGasChargedFlow existChargeFlow = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue(), null);
-        if (Optional.ofNullable(existChargeFlow).isPresent()) {
-            saveFeeGasChargeFlow.setId(existChargeFlow.getId());
-
-        }
 
         House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
         BigDecimal amount = new BigDecimal(feeGasReadFlow.getGasDegree()).subtract(new BigDecimal(lastReadFlow.getGasDegree())).multiply(new BigDecimal(feeConfig.getConfigValue()));
@@ -158,9 +153,17 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             Long rentRoomSize = rooms.stream().filter(room -> StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())).count();
             amount = amount.divide(new BigDecimal(rentRoomSize));
             saveFeeGasChargeFlow.setGasAmount(amount);
+            saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
             for (Room room : rooms) {
                 FeeGasChargedFlow feeGasChargedFlow = saveFeeGasChargeFlow.clone();
-                feeGasChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
+                feeGasChargedFlow.setRoomId(room.getId());
+                /*如果存在则获取ID*/
+                List<FeeGasChargedFlow> existChargeFlows = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
+                if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
+                    String id = existChargeFlows.stream().filter(f -> StringUtils.equals(f.getRoomId(), room.getId())).map(FeeGasChargedFlow::getId).findFirst().get();
+                    feeGasChargedFlow.setId(id);
+                }
+
                 if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
                     saveFeeGasChargeFlow.setPayer(PayerEnum.RENT_USER.getValue());
                 } else {
@@ -169,6 +172,12 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                 save(feeGasChargedFlow);
             }
         } else {
+            List<FeeGasChargedFlow> existChargeFlows = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
+            if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
+                saveFeeGasChargeFlow.setId(existChargeFlows.get(0).getId());
+            }
+
+            saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
             saveFeeGasChargeFlow.setGasAmount(amount);
             if (StringUtils.equals(house.getHouseStatus(), HouseStatusEnum.PART_RENT.getValue())
                     || StringUtils.equals(house.getHouseStatus(), HouseStatusEnum.WHOLE_RENT.getValue())) {
@@ -182,12 +191,14 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     @Transactional(readOnly = false)
     public void deleteFeeGasChargedFlowByBusinessIdAndFromSource(String feeGasBillId, int fromSource) {
-        FeeGasChargedFlow existGasChargedFlow = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBillId, fromSource, null);
-        if (Optional.ofNullable(existGasChargedFlow).isPresent()) {
-            FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
-            feeGasChargedFlow.setId(existGasChargedFlow.getId());
-            feeGasChargedFlow.setDelFlag(Constants.DEL_FLAG_YES);
-            save(feeGasChargedFlow);
+        List<FeeGasChargedFlow> existGasChargedFlows = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBillId, fromSource);
+        if (Optional.ofNullable(existGasChargedFlows).isPresent() && existGasChargedFlows.size() > 0) {
+            existGasChargedFlows.forEach(gas -> {
+                FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
+                feeGasChargedFlow.setId(gas.getId());
+                feeGasChargedFlow.setDelFlag(Constants.DEL_FLAG_YES);
+                save(feeGasChargedFlow);
+            });
         }
     }
 
@@ -196,19 +207,14 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     }
 
     public void generatorFlow() {
-        /**
-         * 1.去上次生成的记录，如果没有按本月一号开始计算
-         * 2.本次记录的日期减上次生成的日期的天数，如果是同一天怎更新
-         * 3.计算金额 = 配置金额/30*天数
-         */
         List<FeeGasChargedFlow> feeGasChargedFlows = Lists.newArrayList();
         List<Room> rooms = feeCommonService.getJoinRentAllRoom();
         rooms.forEach(r -> {
             FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.GAS_UNIT, r.getHouse().getId(), r.getId());
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                /*创建新增对象*/
                 FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
                 feeGasChargedFlow.setFromSource(FeeFromSourceEnum.SYSTEM_FIX_SET.getValue());
-                feeGasChargedFlow.setGasAmount(new BigDecimal(feeConfig.getConfigValue()));
                 feeGasChargedFlow.setGasCalculateDate(new Date());
                 feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
                 feeGasChargedFlow.setHouseId(r.getHouse().getId());
@@ -217,8 +223,21 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                 feeGasChargedFlow.setHouseGasNum(r.getHouse().getGasAccountNum());
                 feeGasChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
                 feeGasChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
-                feeGasChargedFlow.preInsert();
-                feeGasChargedFlows.add(feeGasChargedFlow);
+                /*计算金额*/
+                double days;
+                FeeGasChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getHouseId(), r.getId());
+                if (Optional.ofNullable(lastCharged).isPresent()) {
+                    days = DateUtils.getDistanceOfTwoDate(new Date(), lastCharged.getGasCalculateDate());
+                } else {
+                    days = Double.valueOf(DateUtils.getDay());
+                }
+                if (days > 0) {
+                    /*金额 = 固定金额/30*上月生成日至今的天数*/
+                    BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS)).multiply(new BigDecimal(days));
+                    feeGasChargedFlow.setGasAmount(amount);
+                    feeGasChargedFlow.preInsert();
+                    feeGasChargedFlows.add(feeGasChargedFlow);
+                }
             }
         });
         dao.batchInsert(feeGasChargedFlows);
@@ -234,7 +253,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         Map<String, List<FeeGasChargedFlow>> feeGasChargedMap = feeGasChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeGasChargedFlow::getHouseId));
 
-        List<FeeGasChargedFlow> updEleCharges = Lists.newArrayList();
+        List<FeeGasChargedFlow> updGasCharges = Lists.newArrayList();
         List<FeeOrder> feeOrders = Lists.newArrayList();
 
         feeGasChargedMap.forEach((String k, List<FeeGasChargedFlow> v) -> {
@@ -246,7 +265,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                     f.setOrderNo(batchNo);
-                    updEleCharges.add(f);
+                    updGasCharges.add(f);
 
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
                 });
@@ -264,7 +283,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                     value.stream().forEach(f -> {
                         f.setOrderNo(batchNo);
                         f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                        updEleCharges.add(f);
+                        updGasCharges.add(f);
 
                         feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
                     });
@@ -273,6 +292,9 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             }
         });
         /*更新收费流水表*/
+        dao.batchUpdate(updGasCharges);
+        logger.info("生成订单记录");
+
     }
 
     private FeeOrder feeGasChargedFlowToFeeOrder(FeeGasChargedFlow feeGasChargedFlow) {

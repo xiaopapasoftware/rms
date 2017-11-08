@@ -29,12 +29,13 @@ import java.util.Optional;
 /**
  * <p>水费账单表实现类 service</p>
  * <p>Table: fee_water_bill - 水费账单表</p>
- * @since 2017-10-20 06:25:59
+ *
  * @author generator code
+ * @since 2017-10-20 06:25:59
  */
 @Service
 @Transactional(readOnly = true)
-public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBill>{
+public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBill> {
 
     private Logger logger = LoggerFactory.getLogger(FeeWaterBillService.class);
 
@@ -60,17 +61,12 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
     public void saveFeeWaterBill(FeeWaterBill feeWaterBill) {
         House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[houseId={}]不存在,请确认", feeWaterBill.getHouseWaterNum());
+            logger.error("当前房屋[houseId={}]不存在,请确认", feeWaterBill.getHouseId());
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeWaterBill query = new FeeWaterBill();
-        query.setWaterBillDate(feeWaterBill.getWaterBillDate());
-        query.setHouseWaterNum(feeWaterBill.getHouseWaterNum());
-        List<FeeWaterBill> feeWaterBills = this.findList(query);
-        if (Optional.ofNullable(feeWaterBills).isPresent()
-                && feeWaterBills.size() > 0) {
-            FeeWaterBill existWaterBill = feeWaterBills.get(0);
+        FeeWaterBill existWaterBill = dao.getCurrentBillByDateAndHouseId(feeWaterBill.getWaterBillDate(), feeWaterBill.getHouseId());
+        if (Optional.ofNullable(existWaterBill).isPresent()) {
             feeWaterBill.setId(existWaterBill.getId());
             if (existWaterBill.getBillStatus() != null && existWaterBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
                     && existWaterBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
@@ -79,14 +75,14 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
             }
         }
 
-        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(),feeWaterBill.getHouseId());
-        if(Optional.ofNullable(lastBill).isPresent()){
-            if(lastBill.getWaterDegree() > feeWaterBill.getWaterDegree()){
+        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(), feeWaterBill.getHouseId());
+        if (Optional.ofNullable(lastBill).isPresent()) {
+            if (lastBill.getWaterDegree() > feeWaterBill.getWaterDegree()) {
                 logger.error("当前账单抄表数不能小于上次抄表数");
                 throw new IllegalArgumentException("当前账单峰值数不能小于上次峰值数");
             }
 
-            if(lastBill.getWaterBillDate().compareTo(feeWaterBill.getWaterBillDate()) > 0){
+            if (lastBill.getWaterBillDate().compareTo(feeWaterBill.getWaterBillDate()) > 0) {
                 logger.error("下月账单已经生成不能修改");
                 throw new IllegalArgumentException("下月账单已经生成不能修改");
             }
@@ -108,13 +104,13 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
     public void deleteFeeWaterBill(String id) {
         FeeWaterBill feeWaterBill = this.get(id);
         if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
-            logger.error("该账单[id={}]已提交,不能删除",id);
+            logger.error("该账单[id={}]已提交,不能删除", id);
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 
-        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(),feeWaterBill.getHouseId());
-        if(Optional.ofNullable(lastBill).isPresent()){
-            if(lastBill.getWaterBillDate().compareTo(feeWaterBill.getWaterBillDate()) > 0){
+        FeeWaterBill lastBill = dao.getLastRecord(feeWaterBill.getId(), feeWaterBill.getHouseId());
+        if (Optional.ofNullable(lastBill).isPresent()) {
+            if (lastBill.getWaterBillDate().compareTo(feeWaterBill.getWaterBillDate()) > 0) {
                 logger.error("下月账单已经生成不能删除");
                 throw new IllegalArgumentException("下月账单已经生成不能删除");
             }

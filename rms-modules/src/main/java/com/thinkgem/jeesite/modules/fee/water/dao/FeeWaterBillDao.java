@@ -27,7 +27,7 @@ public interface FeeWaterBillDao extends CrudDao<FeeWaterBill>{
 
     FeeWaterBill getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
 
-    FeeWaterBill getCurrentBillByDateAndHouseNum(@Param("waterBillDate") Date waterBillDate, @Param("houseWaterNum") String houseWaterNum);
+    FeeWaterBill getCurrentBillByDateAndHouseId(@Param("waterBillDate") Date waterBillDate, @Param("houseId") String houseId);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }
