@@ -4,12 +4,14 @@
  */
 package com.thinkgem.jeesite.modules.fee.order.service;
 
+import com.google.common.collect.Lists;
+import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.enums.OrderStatusEnum;
-import com.thinkgem.jeesite.modules.fee.enums.OrderTypeEnum;
 import com.thinkgem.jeesite.modules.fee.order.dao.FeeOrderDao;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,21 +36,33 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
 
     @Transactional(readOnly = false)
     public void payed(String... id) {
+        List<FeeOrder> feeOrders = Lists.newArrayList();
+        List<FeeOrderAccount> feeOrderAccounts = Lists.newArrayList();
         Arrays.stream(id).forEach(s -> {
             FeeOrder feeOrder = dao.get(s);
-            FeeOrder updOrder = new FeeOrder();
-            updOrder.setId(feeOrder.getId());
-            updOrder.setOrderStatus(OrderStatusEnum.PASS.getValue());
+            feeOrder.setOrderStatus(OrderStatusEnum.PASS.getValue());
+            feeOrders.add(feeOrder);
 
+            feeOrderAccounts.add(feeOrderToAccount(feeOrder));
         });
+
     }
 
     @Transactional(readOnly = false)
     public void repay(String... id) {
+        List<FeeOrder> feeOrders = Lists.newArrayList();
         Arrays.stream(id).forEach(s -> {
             FeeOrder feeOrder = dao.get(s);
-
+            feeOrder.setOrderStatus(OrderStatusEnum.REJECT.getValue());
+            feeOrder.setDelFlag(Constants.DEL_FLAG_YES);
+            feeOrders.add(feeOrder);
         });
+    }
+
+    private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder){
+        FeeOrderAccount feeOrderAccount = new FeeOrderAccount();
+
+        return feeOrderAccount;
     }
 
     public List<FeeOrderVo> getFeeOrderList(FeeCriteriaEntity feeCriteriaEntity) {
