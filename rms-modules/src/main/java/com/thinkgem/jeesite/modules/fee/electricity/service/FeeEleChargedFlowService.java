@@ -240,6 +240,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         return feeEleChargedFlow;
     }
 
+    @Transactional(readOnly = false)
     public void generatorOrder() {
         /*获取所有为生成订单的数据*/
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
@@ -305,14 +306,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
         });
 
-        this.batchUpdate(updEleCharges);
+        dao.batchUpdate(feeEleChargedFlows);
         logger.info("开始生成账单");
         feeOrderService.batchInsert(feeOrders);
-    }
-
-    @Transactional(readOnly = false)
-    public void batchUpdate(List<FeeEleChargedFlow> feeEleChargedFlows){
-        dao.batchUpdate(feeEleChargedFlows);
     }
 
     private FeeOrder eleChargedFlowToFeeOrder(FeeEleChargedFlow feeEleChargedFlow) {

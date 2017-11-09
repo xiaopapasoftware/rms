@@ -39,4 +39,6 @@ public class FeeCriteriaEntity extends DataEntity<FeeCriteriaEntity> {
     private Date startTime;
 
     private Date endTime;
+
+    private Integer type;
 }

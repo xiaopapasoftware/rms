@@ -9,7 +9,7 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
-import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderVo;
+import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
 import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -12,12 +12,14 @@ import com.thinkgem.jeesite.modules.fee.enums.OrderStatusEnum;
 import com.thinkgem.jeesite.modules.fee.order.dao.FeeOrderDao;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
-import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderVo;
+import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>订单实现类 service</p>
@@ -36,37 +38,46 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
 
     @Transactional(readOnly = false)
     public void payed(String... id) {
-        List<FeeOrder> feeOrders = Lists.newArrayList();
+        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
+
+        List<FeeOrder> updOrder = Lists.newArrayList();
         List<FeeOrderAccount> feeOrderAccounts = Lists.newArrayList();
-        Arrays.stream(id).forEach(s -> {
-            FeeOrder feeOrder = dao.get(s);
-            feeOrder.setOrderStatus(OrderStatusEnum.PASS.getValue());
-            feeOrders.add(feeOrder);
+        feeOrders.forEach(f -> {
+            f.setOrderStatus(OrderStatusEnum.PASS.getValue());
+            updOrder.add(f);
 
-            feeOrderAccounts.add(feeOrderToAccount(feeOrder));
+            feeOrderAccounts.add(feeOrderToAccount(f));
         });
-
     }
 
     @Transactional(readOnly = false)
     public void repay(String... id) {
-        List<FeeOrder> feeOrders = Lists.newArrayList();
-        Arrays.stream(id).forEach(s -> {
-            FeeOrder feeOrder = dao.get(s);
-            feeOrder.setOrderStatus(OrderStatusEnum.REJECT.getValue());
-            feeOrder.setDelFlag(Constants.DEL_FLAG_YES);
-            feeOrders.add(feeOrder);
+        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
+
+        List<FeeOrder> updOrders = Lists.newArrayList();
+        feeOrders.forEach(f -> {
+            f.setOrderStatus(OrderStatusEnum.REJECT.getValue());
+            f.setDelFlag(Constants.DEL_FLAG_YES);
+            updOrders.add(f);
         });
     }
 
     private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder){
         FeeOrderAccount feeOrderAccount = new FeeOrderAccount();
-
+        feeOrderAccount.setAmount(feeOrder.getAmount());
+        feeOrderAccount.setHouseId(feeOrder.getHouseId());
+        feeOrderAccount.setOrderNo(feeOrder.getOrderNo());
+        feeOrderAccount.setOrderType(feeOrder.getOrderType());
+        feeOrderAccount.setOrderStatus(feeOrder.getOrderStatus());
+        feeOrderAccount.setPayDate(new Date());
+        feeOrderAccount.setPropertyId(feeOrder.getPropertyId());
+        feeOrderAccount.setRoomId(feeOrder.getRoomId());
         return feeOrderAccount;
     }
 
     public List<FeeOrderVo> getFeeOrderList(FeeCriteriaEntity feeCriteriaEntity) {
-
-        return null;
+        return dao.getFeeOrderList(feeCriteriaEntity);
     }
 }

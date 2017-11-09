@@ -31,4 +31,8 @@ public interface FeeElectricityBillDao extends CrudDao<FeeElectricityBill> {
   FeeElectricityBill getCurrentBillByDateAndHouseNum(@Param("eleBillDate") Date eleBillDate, @Param("houseEleNum") String houseEleNum);
 
   Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
+
+  List<FeeElectricityBill> getEleBillByIds(@Param("ids") String ids);
+
+  int batchUpdate(List<FeeElectricityBill> feeElectricityBills);
 }

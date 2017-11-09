@@ -1,5 +1,6 @@
-package com.thinkgem.jeesite.modules.fee.order.entity;
+package com.thinkgem.jeesite.modules.fee.order.entity.vo;
 
+import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import lombok.Data;
 
 /**
@@ -7,7 +8,7 @@ import lombok.Data;
  * @date 2017年11月08日 14:17
  */
 @Data
-public class FeeOrderVo extends FeeOrder{
+public class FeeOrderVo extends FeeOrder {
 
     private String areaId;
 
