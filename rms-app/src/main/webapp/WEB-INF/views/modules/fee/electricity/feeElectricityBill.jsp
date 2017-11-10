@@ -3,6 +3,12 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic = '${ctxStatic}';</script>
+
+<script src="${ctxStatic}/lodop6/LodopFuncs.js"></script>
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
+    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0></embed>
+</object>
+
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -19,13 +25,16 @@
         .layui-table-cell .layui-form-checkbox {
             top: 5px !important;
         }
-        .tangchao .layui-form-item{
+
+        .tangchao .layui-form-item {
             height: 30px !important;
         }
+
         .tangchao .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-        .tangchao .button{
+
+        .tangchao .button {
             border: 1px solid #009688;
             height: 25px;
             line-height: 25px;
@@ -38,22 +47,48 @@
             color: #009688;
             background-color: #FFFFFF;
         }
+
         .widget-body .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
+
         .widget-body .layui-form-item .layui-input-inline {
             width: 150px;
         }
+
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
 
-        .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
-        .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
-        .autocomplete-selected { background: #F0F0F0; }
-        .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
-        .autocomplete-group { padding: 2px 5px; }
-        .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+        .autocomplete-suggestions {
+            border: 1px solid #999;
+            background: #FFF;
+            overflow: auto;
+        }
+
+        .autocomplete-suggestion {
+            padding: 2px 5px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .autocomplete-selected {
+            background: #F0F0F0;
+        }
+
+        .autocomplete-suggestions strong {
+            font-weight: normal;
+            color: #3399FF;
+        }
+
+        .autocomplete-group {
+            padding: 2px 5px;
+        }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
+        }
     </style>
 </head>
 
@@ -189,13 +224,13 @@
     </div>
 </div>
 
-
-<div id="addDiv" class="tangchao" hidden >
+<div id="addDiv" class="tangchao" hidden>
     <form class="layui-form" id="addFeeEleBillForm" action="">
         <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">账期年月</label>
             <div class="layui-input-inline">
-                <input type="text" id="eleBillDate" required lay-verify="required" readonly placeholder="账期年月" class="layui-input">
+                <input type="text" id="eleBillDate" required lay-verify="required" readonly placeholder="账期年月"
+                       class="layui-input">
             </div>
         </div>
 
@@ -209,7 +244,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
             <div class="layui-input-inline">
-                <input type="number" id="houseEleNum" required lay-verify="required" placeholder="户号" class="layui-input">
+                <input type="number" id="houseEleNum" required lay-verify="required" placeholder="户号"
+                       class="layui-input">
                 <input type="text" id="houseId" name="houseId" hidden>
             </div>
         </div>
@@ -217,21 +253,24 @@
         <div class="layui-form-item">
             <label class="layui-form-label">电表谷值</label>
             <div class="layui-input-inline">
-                <input type="number" id="elePeakDegree" required lay-verify="required" placeholder="电表谷值" class="layui-input">
+                <input type="number" id="elePeakDegree" required lay-verify="required" placeholder="电表谷值"
+                       class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">电表峰值</label>
             <div class="layui-input-inline">
-                <input type="number" id="eleValleyDegree" required lay-verify="required" placeholder="电表峰值" class="layui-input">
+                <input type="number" id="eleValleyDegree" required lay-verify="required" placeholder="电表峰值"
+                       class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">电表金额</label>
             <div class="layui-input-inline">
-                <input type="number" id="eleBillAmount" required lay-verify="required" placeholder="电表金额" class="layui-input">
+                <input type="number" id="eleBillAmount" required lay-verify="required" placeholder="电表金额"
+                       class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -251,6 +290,43 @@
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
     {{# } }}
+</script>
+
+
+<script id="printTableTpl" type="text/html">
+    <table>
+        <tr>
+            <td>区域</td>
+            <td>物业项目</td>
+            <td>地址</td>
+            <td>楼宇</td>
+            <td>房号</td>
+            <td>户号</td>
+            <td>账期</td>
+            <td>谷值</td>
+            <td>峰值</td>
+            <td>金额</td>
+            <td>状态</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.areaName }}</td>
+            <td>{{ item.projectName }}</td>
+            <td>{{ item.projectAddress }}</td>
+            <td>{{ item.buildingName || '' }}</td>
+            <td>{{ item.houseNo || '' }}</td>
+            <td>{{ item.houseEleNum || '' }}</td>
+            <td>{{ item.eleBillDate || '' }}</td>
+            <td>{{ item.elePeakDegree || '' }}</td>
+            <td>{{ item.eleValleyDegree || '' }}</td>
+            <td>{{ item.eleBillAmount || '' }}</td>
+            <td>{{ item.billStatusName || ''}}</td>
+        </tr>
+        {{# }); }}
+        {{# if(d.dataList.length === 0){ }}
+        无数据
+        {{# } }}
+    </table>
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>

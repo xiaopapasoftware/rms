@@ -5,7 +5,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         laydate = layui.laydate;
 
     var addEleReadIndex;
-    var operType;
 
     var feeOrder = {
         init: function () {
@@ -94,28 +93,46 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             };
 
             layui.laytpl.orderTypeFormat = function (value) {
-                if (value == null) {
-                    value = "";
-                }else if (value == 0) {
-                    value = "总表";
+                switch (value){
+                    case 0 :
+                        return "电费";
+                    case 1 :
+                        return "水费";
+                    case 2:
+                        return "燃气费";
+                    case 3:
+                        return "宽带";
+                    case 4:
+                        return "电视";
+                    case 5:
+                        return "房租";
+                    case 6:
+                        return "房租押金";
+                    case 7:
+                        return "定金";
+                    case 8:
+                        return "违约金";
                 }
-                return value;
             };
 
             layui.laytpl.orderStatusFormat = function (value) {
-                if (value == null) {
-                    value = "";
-                }else if (value == 0) {
-                    value = "总表";
+                switch (value){
+                    case 0:
+                        return "待审核";
+                    case 1:
+                        return "待缴费";
+                    case 2:
+                        return "已缴";
+                    case 3:
+                        return "驳回";
                 }
-                return value;
             };
 
         }
     };
 
     var feeOrderCommon = {
-        baseUrl: ctx + "/fee/ele/read/flow"
+        baseUrl: ctx + "/fee/order"
     };
 
     var feeOrderMVC = {
@@ -124,13 +141,13 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 url: feeOrderCommon.baseUrl + "/list",
                 method: "GET"
             },
-            save: {
-                url: feeOrderCommon.baseUrl + "/save",
+            payed: {
+                url: feeOrderCommon.baseUrl + "/payed",
                 method: "POST"
             },
-            delete: {
-                url: feeOrderCommon.baseUrl + "/delete",
-                method: "GET"
+            repay: {
+                url: feeOrderCommon.baseUrl + "/repay",
+                method: "POST"
             },
             selectItem: {
                 url: feeOrderCommon.baseUrl + "/getSubOrgList",
@@ -159,7 +176,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             renderTable: function () {
                 table.render({
-                    elem: '#eleReadFlowTable',
+                    elem: '#feeOrderTable',
                     url: feeOrderMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
@@ -170,7 +187,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
-                        {field: 'roomNo', align: 'center', title: '房号', width: 80},
+                        {field: 'roomNo', align: 'center', title: '房屋', width: 80},
                         {
                             field: 'orderType', align: 'center', title: '费用类型', width: 100,
                             templet: '<div>{{ layui.laytpl.orderTypeFormat(d.orderType) }}</div>'
@@ -197,17 +214,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "startTime": $("#eleReadDates").val().split("~")[0],
-                    "endTime": $("#eleReadDates").val().split("~")[1],
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
-                    "houseId": $("#house").val()
+                    "houseId": $("#house").val(),
+                    "type": $("#orderType").val(),
+                    "status": $("#orderStatus").val()
                 };
                 return where;
             },
             queryFun: function () {
-                table.reload('eleReadFlowTable', {
+                table.reload('feeOrderTable', {
                     where: feeOrderMVC.Controller.getWhereFun()
                 });
             },
@@ -216,24 +233,44 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#project").val("");
                 $("#building").val("");
                 $("#house").val("");
-                $("#eleReadDates").val("");
+                $("#orderType").val("");
+                $("#orderStatus").val("");
                 form.render("select");
             },
             payedFun: function () {
+                var selectRows = table.checkStatus('feeOrderTable');
+                if (selectRows.data.length == 0) {
+                    layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
+                    return;
+                }
+
+                var data = "";
+                $.each(selectRows.data, function (index, object) {
+                    data += "&id=" + object.id;
+                });
+                $.post(feeOrderMVC.URLs.payed.url, data, function (data) {
+                    if (data.code == "200") {
+                        feeOrderMVC.Controller.queryFun();
+                        layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             repayFun: function () {
-                $.post(feeOrderMVC.URLs.save.url, data, function (data) {
+                var selectRows = table.checkStatus('feeOrderTable');
+                if (selectRows.data.length == 0) {
+                    layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
+                    return;
+                }
+
+                var data = "";
+                $.each(selectRows.data, function (index, object) {
+                    data += "&id=" + object.id;
+                });
+                $.post(feeOrderMVC.URLs.repay.url, data, function (data) {
+                    feeOrderMVC.Controller.queryFun();
                     if (data.code == "200") {
-                        $("#separateRentShowDiv").html("");
-                        if (operType == "edit") {
-                            layer.close(addEleReadIndex);
-                        } else {
-                            $("#houseId").val("");
-                            $("#elePeakDegree").val("");
-                            $("#eleValleyDegree").val("");
-                            $("#eleDegree").val("");
-                            form.render('select');
-                        }
                         layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
