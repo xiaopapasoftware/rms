@@ -453,9 +453,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.queryValidSingleRooms(startDate, endDate, propertyProjectId);
   }
 
-  /**
-   * 查询已出租的有效/正常退租的单间合同列表
-   */
   public List<RentContract> queryHousesByHouseId(String houseId) {
     return dao.queryHousesByHouseId(houseId);
   }
@@ -765,7 +762,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   }
 
   /**
-   * 逾期退租，把预期的房租金额分摊到各个时间段内
+   * 逾期退租/特殊退租，把逾期的房租或特殊退租收的房租金额分摊到各个时间段内
    * 
    * @param 逾期退租 expiredDate为合同结束日期， 特殊退expiredDate为已经交过的房租最后一天
    */

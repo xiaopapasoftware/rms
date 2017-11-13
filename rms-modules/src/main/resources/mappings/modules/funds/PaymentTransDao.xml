@@ -128,7 +128,7 @@
 		<!-- 数据范围过滤 -->
 		${sqlMap.dsf}
 		order by FIELD(t.paymentType, '2', '3', '4', '5',
-		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24','25','26','27'),t.startDate
+		'6','28','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24','25','26','27'),t.startDate
 	</select>
 
 	<select id="findAllList" resultType="PaymentTrans">
@@ -141,7 +141,7 @@
 		</where>
 
 		ORDER BY FIELD(a.payment_type, '2', '3', '4', '5',
-		'6','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24','25','26','27'),a.start_date
+		'6','28','0','1','7','8','9','10','11','12','13','14','15','16','18','19','20','21','22','23','24','25','26','27'),a.start_date
 	</select>
 
 	<insert id="insert">
@@ -302,7 +302,7 @@
 	<select id="queryIncomePaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
-		WHERE t.DEL_FLAG = '0'
+		WHERE t.del_flag = '0'
 		AND t.trade_type in ('3', '4')
 		AND t.payment_type = '6'
 		AND t.trade_direction = '1'
@@ -325,8 +325,35 @@
 		</if>
 	</select>
 
+<!--查询某个房屋下合同指定时间内进账款项 -->
+	<select id="queryOutAwardRentsPaymentSByTransIdAndTime" resultType="PaymentTrans">
+		SELECT t.*
+		FROM t_payment_trans t
+		WHERE t.del_flag = '0'
+		AND t.trade_type in ('3', '4')
+		AND t.payment_type = '28'
+		AND t.trade_direction = '0'
+		AND t.trans_status = '2'
+		<if test="startDate != null and startDate != ''">
+			<![CDATA[
+				AND t.START_DATE >=  #{startDate}
+			 ]]>
+		</if>
+		<if test="endDate != null and endDate != ''">
+			<![CDATA[
+				AND t.START_DATE <=  #{endDate}
+			 ]]>
+		</if>
+		<if test="transIdList != null">
+			and t.trans_id in
+			<foreach item="item" index="index" collection="transIdList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	
 	<!--查询某个房屋下合同指定时间内出账款项 -->
-	<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
+	<!--<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
 		WHERE t.DEL_FLAG = '0'
@@ -350,5 +377,5 @@
 				#{item}
 			</foreach>
 		</if>
-	</select>
+	</select>-->
 </mapper>
