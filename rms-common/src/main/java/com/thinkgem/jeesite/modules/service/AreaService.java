@@ -61,7 +61,7 @@ public class AreaService extends TreeService<AreaDao, Area> {
 	}
 
 	public List<Area> getAreaWithAuth(Area area){
-		areaScopeFilter(area,"dsf","a.area_id=sua.area_id");
+		areaScopeFilter(area,"dsf","a.id=sua.area_id");
 		return super.findList(area);
 	}
 	

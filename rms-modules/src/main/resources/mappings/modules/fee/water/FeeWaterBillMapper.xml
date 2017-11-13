@@ -272,7 +272,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_water_bill fwb on fwb.house_id=th.ID and fwb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(fwb.water_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+            AND DATE_FORMAT(fwb.water_bill_date,'%Y-%m')= DATE_FORMAT(#{feeDate},'%Y-%m')
         </if>
         <include refid="commonWhere"/>
         ORDER BY fwb.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC
