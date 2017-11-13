@@ -147,7 +147,12 @@ public enum PaymentTransTypeEnum {
   /**
    * 转租手续费（收）
    */
-  SUBLET_COUNTER_FEE("25");
+  SUBLET_COUNTER_FEE("25"),
+
+  /**
+   * 赠送房租（出）
+   */
+  AWARD_RENT_AMT("28");
 
   PaymentTransTypeEnum(String value) {
     this.value = value;

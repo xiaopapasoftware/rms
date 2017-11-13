@@ -13,45 +13,37 @@ import java.util.Optional;
 
 public interface GrossProfitCalculate {
 
-    MyCache softCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SOFT_NAME);
+  MyCache softCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.SOFT_NAME);
 
-    default GrossProfitReport calculateGrossProfit(GrossProfitCondition condition) {
-        return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum())
-                                             .cost(calculateCost(condition))
-                                             .income(calculateIncome(condition))
-                                             .name(getNameFromCache(condition))
-                                             .build();
+  default GrossProfitReport calculateGrossProfit(GrossProfitCondition condition) {
+    return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum()).cost(calculateCost(condition)).income(calculateIncome(condition)).name(getNameFromCache(condition)).build();
+  }
+
+  default String getNameFromCache(GrossProfitCondition condition) {
+    String cacheKey = GrossProfitAssistant.getCacheKey(condition);
+    String result;
+    Object name = softCache.getObject(cacheKey);
+    if (name != null) {
+      result = name.toString();
+    } else {
+      result = getName(condition);
+      softCache.putObject(cacheKey, result);
     }
+    return result;
+  }
 
-    default String getNameFromCache(GrossProfitCondition condition) {
-        String cacheKey = GrossProfitAssistant.getCacheKey(condition);
-        String result;
-        Object name = softCache.getObject(cacheKey);
-        if (name != null) {
-            result = name.toString();
-        } else {
-            result = getName(condition);
-            softCache.putObject(cacheKey, result);
-        }
-        return result;
-    }
+  String getName(GrossProfitCondition condition);
 
-    String getName(GrossProfitCondition condition);
+  default double calculateCost(GrossProfitCondition condition) {
+    return Optional.ofNullable(this.getChildConditionList(condition))
+        .map(list -> list.stream().mapToDouble(subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateCost(subCondition)).sum()).orElse(0d);
+  }
 
-    default double calculateCost(GrossProfitCondition condition){
-        return Optional.ofNullable(this.getChildConditionList(condition))
-                .map(list -> list.stream().mapToDouble(
-                        subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateCost(subCondition)).sum())
-                .orElse(0d);
-    }
+  default double calculateIncome(GrossProfitCondition condition) {
+    return Optional.ofNullable(this.getChildConditionList(condition))
+        .map(list -> list.stream().mapToDouble(subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateIncome(subCondition)).sum()).orElse(0d);
+  }
 
-    default double calculateIncome(GrossProfitCondition condition){
-        return Optional.ofNullable(this.getChildConditionList(condition))
-                .map(list -> list.stream().mapToDouble(
-                        subCondition -> GrossProfitCalculateStrategy.strategyRegistry.get(subCondition.getTypeEnum().getCode()).calculateIncome(subCondition)).sum())
-                .orElse(0d);
-    }
-
-    List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition);
+  List<GrossProfitCondition> getChildConditionList(GrossProfitCondition condition);
 
 }

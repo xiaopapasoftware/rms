@@ -13,7 +13,7 @@ public enum TradeTypeEnum {
   LEASE_CONTRACT_TRADE("0"),
 
   /**
-   * 预约定金
+   * 预定
    */
   DEPOSIT_AGREEMENT("1"),
 
