@@ -219,8 +219,7 @@
         and business_id = #{feeGasBillId,jdbcType=VARCHAR}
     </select>
 
-    <select id="getLastReadFlow" resultMap="BaseResultMap"
-            parameterType="com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow">
+    <select id="getLastRecord" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from fee_gas_read_flow
@@ -231,6 +230,15 @@
         </if>
         ORDER BY gas_read_date DESC
         limit 0,1;
+    </select>
+
+    <select id="getCurrentReadByDateAndHouseId"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_gas_read_flow
+        where del_flag = 0
+        AND DATE_FORMAT(gas_read_date,'%Y-%m-%d')= DATE_FORMAT(#{gasReadDate,jdbcType=TIMESTAMP},'%Y-%m-%d')
+        AND house_id=#{houseId,jdbcType=VARCHAR}
     </select>
 
     <select id="getFeeGasReadFlowWithAllInfo"

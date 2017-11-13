@@ -10,9 +10,9 @@ public enum OrderStatusEnum {
     // 待审批
     COMMIT(1,"待缴费"),
     // 同意
-    PASS(2,"已缴3"),
-    //驳回
-    REJECT(3,"驳回");
+    PASS(2,"已缴"),
+    //收回
+    REJECT(3,"收回");
 
     private int value;
     private String name;

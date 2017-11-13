@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.enums.*;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
@@ -52,6 +53,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
     @Autowired
     private FeeEleReadFlowService feeEleReadFlowService;
+
+    @Autowired
+    private FeeOrderService feeOrderService;
 
     private FeeEleChargedFlow feeEleBillToFeeEleCharged(FeeElectricityBill feeEleBill) {
         FeeEleChargedFlow saveChargedFlow = new FeeEleChargedFlow();
@@ -101,10 +105,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
 
         /*获取上一条抄表记录*/
-        FeeEleReadFlow queryFeeEleReadFlow = new FeeEleReadFlow();
-        queryFeeEleReadFlow.setHouseId(feeEleBill.getHouseId());
-        queryFeeEleReadFlow.setId(feeEleBill.getId());
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(queryFeeEleReadFlow);
+        String id = null;
+        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleBill.getEleBillDate(),feeEleBill.getHouseId(),null);
+        if(Optional.ofNullable(existEleRead).isPresent()){
+            id = existEleRead.getId();
+        }
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id,feeEleBill.getHouseId(),null);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeEleBill.getHouseId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
@@ -130,7 +136,6 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         } else {
             saveChargedFlow.setPayer(PayerEnum.COMPANY.getValue());
         }
-
         save(saveChargedFlow);
     }
 
@@ -168,7 +173,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow);
+        /*获取上一条抄表记录*/
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[houseId={}]没有初始化电表数据", house.getId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
@@ -234,10 +240,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         return feeEleChargedFlow;
     }
 
+    @Transactional(readOnly = false)
     public void generatorOrder() {
+        /*获取所有为生成订单的数据*/
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
         feeEleChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         List<FeeEleChargedFlow> feeEleChargedFlows = this.findList(feeEleChargedFlow);
+        /*按房屋分组*/
         Map<String, List<FeeEleChargedFlow>> feeEleChargedMap = feeEleChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeEleChargedFlow::getHouseId));
 
@@ -264,18 +273,18 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                 /*公摊记录*/
                 List<FeeEleChargedFlow> commonAreaEleCharge = chargedFlowMap.get("0");
 
-                chargedFlowMap.forEach((String key,List<FeeEleChargedFlow> value) ->{
-                    if(StringUtils.equals(key,"0")){
-                        value.stream().forEach(f ->{
+                chargedFlowMap.forEach((String key, List<FeeEleChargedFlow> value) -> {
+                    if (StringUtils.equals(key, "0")) {
+                        value.stream().forEach(f -> {
                             /*设置公摊的orderNo为000000*/
                             f.setOrderNo("000000");
                             updEleCharges.add(f);
                         });
-                    }else{
+                    } else {
                         String orderNo = new IdGenerator().nextId();
                         FeeOrder feeOrder = eleChargedFlowToFeeOrder(value.get(0));
                         feeOrder.setOrderNo(orderNo);
-                        value.stream().forEach(f ->{
+                        value.stream().forEach(f -> {
                             f.setOrderNo(orderNo);
                             f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                             updEleCharges.add(f);
@@ -283,7 +292,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                             feeOrder.setAmount(feeOrder.getAmount().add(f.getEleAmount()));
 
                             /*如果是租客支付,支付金额添加公摊数*/
-                            if(f.getPayer() == PayerEnum.RENT_USER.getValue()) {
+                            if (f.getPayer() == PayerEnum.RENT_USER.getValue()) {
                                 commonAreaEleCharge.forEach(c -> {
                                     if (StringUtils.equals(DateUtils.formatDate(f.getEleCalculateDate()), DateUtils.formatDate(c.getEleCalculateDate()))) {
                                         feeOrder.setAmount(feeOrder.getAmount().add(c.getEleAmount()));
@@ -297,6 +306,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
         });
 
+        dao.batchUpdate(feeEleChargedFlows);
+        logger.info("开始生成账单");
+        feeOrderService.batchInsert(feeOrders);
     }
 
     private FeeOrder eleChargedFlowToFeeOrder(FeeEleChargedFlow feeEleChargedFlow) {

@@ -10,13 +10,11 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
-import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow;
 import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.water.service.FeeWaterChargedFlowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -64,4 +62,15 @@ public class FeeWaterChargedFlowController extends FeeBaseController {
         return ResponseData.success().data(feeWaterChargedFlow);
     }
 
+    @RequestMapping(value = "generateFlow")
+    public Object generateFlow() {
+        feeWaterChargedFlowService.generatorFlow();
+        return ResponseData.success();
+    }
+
+    @RequestMapping(value = "generateOrder")
+    public Object generateOrder() {
+        feeWaterChargedFlowService.generatorOrder();
+        return ResponseData.success();
+    }
 }

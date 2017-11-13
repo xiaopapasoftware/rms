@@ -9,7 +9,9 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterBill;
 import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterBillVo;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +25,9 @@ public interface FeeWaterBillDao extends CrudDao<FeeWaterBill>{
 
     List<FeeWaterBillVo> getAllHouseFeeWithAreaAndBuildAndProperty(FeeCriteriaEntity feeCriteriaEntity);
 
-    FeeWaterBill getLastWaterBill(FeeWaterBill feeWaterBill);
+    FeeWaterBill getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
+
+    FeeWaterBill getCurrentBillByDateAndHouseId(@Param("waterBillDate") Date waterBillDate, @Param("houseId") String houseId);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }

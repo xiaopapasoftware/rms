@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 @Service
 public class FeeCommonService {
 
+    public static final int FULL_MOUTH_DAYS = 30;
+
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -73,8 +75,9 @@ public class FeeCommonService {
         return roomService.findRoomListByHouseId(houseId);
     }
 
+    /*获取所有合作的房间，只包括已出租的*/
     public List<Room> getJoinRentAllRoom(){
-        return roomService.getJoinRentAllRoom();
+        return feeCommonDao.getJoinRentAllRoom();
     }
 
     public List<Map> getHouseByQueryWhereAndType(String queryWhere, String type) {
@@ -127,7 +130,7 @@ public class FeeCommonService {
             }
         }
 
-        if (!Optional.of(retFeeConfig).isPresent()) {
+        if (!Optional.ofNullable(retFeeConfig).isPresent()) {
             logger.error("{}没有找到费用配置项", feeTypeEnum.getName());
             throw new IllegalArgumentException(feeTypeEnum.getName() + "没有找到费用配置");
         }

@@ -6,10 +6,9 @@ package com.thinkgem.jeesite.modules.fee.gas.service;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
+import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.enums.FeeFromSourceEnum;
 import com.thinkgem.jeesite.modules.fee.gas.dao.FeeGasReadFlowDao;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,13 +52,8 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
             throw new IllegalArgumentException("当前房屋不存在,请确认");
         }
 
-        FeeGasReadFlow query = new FeeGasReadFlow();
-        query.setGasReadDate(feeGasReadFlow.getGasReadDate());
-        query.setHouseId(feeGasReadFlow.getHouseId());
-        List<FeeGasReadFlow> feeGasReadFlows = this.findList(query);
-        if (Optional.ofNullable(feeGasReadFlows).isPresent()
-                && feeGasReadFlows.size() > 0) {
-            FeeGasReadFlow existGasRead = feeGasReadFlows.get(0);
+        FeeGasReadFlow existGasRead = dao.getCurrentReadByDateAndHouseId(feeGasReadFlow.getGasReadDate(), feeGasReadFlow.getHouseId());
+        if (Optional.ofNullable(existGasRead).isPresent()) {
             feeGasReadFlow.setId(existGasRead.getId());
             if (existGasRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
                 logger.error("当前抄表数是账单生成,不可修改");
@@ -80,7 +75,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     }
 
     private void judgeLastRead(FeeGasReadFlow feeGasReadFlow) {
-        FeeGasReadFlow lastRead = dao.getLastReadFlow(feeGasReadFlow);
+        FeeGasReadFlow lastRead = dao.getLastRecord(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
         if (Optional.ofNullable(lastRead).isPresent()) {
 
             if (feeGasReadFlow.getGasDegree() != null && lastRead.getGasDegree() > feeGasReadFlow.getGasDegree()) {
@@ -136,7 +131,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
             feeGasReadFlow.setId(id);
             feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
             this.save(feeGasReadFlow);
-            //删除相应的收费流水记录
+            /*删除相应的收费流水记录*/
             feeGasChargedFlowService.deleteFeeGasChargedFlowByBusinessIdAndFromSource(id, FeeFromSourceEnum.READ_METER.getValue());
         } else {
             logger.error("该抄表[id={}]不存在,不能删除", id);
@@ -148,7 +143,11 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         return dao.getFeeGasReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow) {
-        return dao.getLastReadFlow(feeGasReadFlow);
+    public FeeGasReadFlow getLastReadFlow(String id, String houseId) {
+        return dao.getLastRecord(id, houseId);
+    }
+
+    public FeeGasReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId){
+        return dao.getCurrentReadByDateAndHouseId(gasReadDate, houseId);
     }
 }

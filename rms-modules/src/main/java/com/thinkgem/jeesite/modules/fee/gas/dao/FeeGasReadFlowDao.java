@@ -11,6 +11,7 @@ import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasReadFlowVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,5 +26,7 @@ public interface FeeGasReadFlowDao extends CrudDao<FeeGasReadFlow>{
 
     FeeGasReadFlow getFeeGasReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
 
-    FeeGasReadFlow getLastReadFlow(FeeGasReadFlow feeGasReadFlow);
+    FeeGasReadFlow getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
+
+    FeeGasReadFlow getCurrentReadByDateAndHouseId(@Param("gasReadDate") Date gasReadDate, @Param("houseId") String houseId);
 }

@@ -51,9 +51,14 @@ public class FeeWaterChargedFlow extends DataEntity<FeeWaterChargedFlow> impleme
     private Integer generateOrder;
 
     @Override
-    public FeeWaterChargedFlow clone() throws CloneNotSupportedException {
+    public FeeWaterChargedFlow clone(){
         FeeWaterChargedFlow feeWaterChargedFlow;
-        feeWaterChargedFlow = (FeeWaterChargedFlow) super.clone();
+        try {
+            feeWaterChargedFlow = (FeeWaterChargedFlow) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("服务异常请检查");
+        }
         return feeWaterChargedFlow;
     }
 }

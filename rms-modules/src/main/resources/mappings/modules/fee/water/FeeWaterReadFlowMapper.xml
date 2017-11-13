@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.thinkgem.jeesite.modules.fee.water.dao.FeeWaterReadFlowDao">
 
-    <resultMap id="BaseResultMap"  type="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
+    <resultMap id="BaseResultMap" type="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
         <result column="id" property="id" jdbcType="VARCHAR"/>
         <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
         <result column="from_source" property="fromSource" jdbcType="NUMERIC"/>
@@ -37,20 +37,20 @@
     </sql>
 
     <sql id="Insert_Columns">
-        <if test="id!=null"> id,</if>
-        <if test="businessId!=null"> business_id,</if>
-        <if test="fromSource!=null"> from_source,</if>
-        <if test="propertyId!=null"> property_id,</if>
-        <if test="houseId!=null"> house_id,</if>
-        <if test="houseWaterNum!=null"> house_water_num,</if>
-        <if test="waterReadDate!=null"> water_read_date,</if>
-        <if test="waterDegree!=null"> water_degree,</if>
-        <if test="createBy!=null"> create_by,</if>
-        <if test="createDate!=null"> create_date,</if>
-        <if test="updateBy!=null"> update_by,</if>
-        <if test="updateDate!=null"> update_date,</if>
-        <if test="remarks!=null"> remarks,</if>
-        <if test="delFlag!=null"> del_flag,</if>
+        <if test="id!=null">id,</if>
+        <if test="businessId!=null">business_id,</if>
+        <if test="fromSource!=null">from_source,</if>
+        <if test="propertyId!=null">property_id,</if>
+        <if test="houseId!=null">house_id,</if>
+        <if test="houseWaterNum!=null">house_water_num,</if>
+        <if test="waterReadDate!=null">water_read_date,</if>
+        <if test="waterDegree!=null">water_degree,</if>
+        <if test="createBy!=null">create_by,</if>
+        <if test="createDate!=null">create_date,</if>
+        <if test="updateBy!=null">update_by,</if>
+        <if test="updateDate!=null">update_date,</if>
+        <if test="remarks!=null">remarks,</if>
+        <if test="delFlag!=null">del_flag,</if>
     </sql>
     <sql id="Insert_Values">
         <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
@@ -86,17 +86,17 @@
     </sql>
 
     <sql id="Update_Set_From_Bean">
-        <if test="businessId!=null"> business_id=#{businessId,jdbcType=VARCHAR},</if>
-        <if test="fromSource!=null"> from_source=#{fromSource,jdbcType=NUMERIC},</if>
-        <if test="propertyId!=null"> property_id=#{propertyId,jdbcType=VARCHAR},</if>
-        <if test="houseId!=null"> house_id=#{houseId,jdbcType=VARCHAR},</if>
-        <if test="houseWaterNum!=null"> house_water_num=#{houseWaterNum,jdbcType=VARCHAR},</if>
-        <if test="waterReadDate!=null"> water_read_date=#{waterReadDate,jdbcType=TIMESTAMP},</if>
-        <if test="waterDegree!=null"> water_degree=#{waterDegree,jdbcType=NUMERIC},</if>
-        <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
-        <if test="updateDate!=null"> update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
-        <if test="remarks!=null"> remarks=#{remarks,jdbcType=VARCHAR},</if>
-        <if test="delFlag!=null"> del_flag=#{delFlag,jdbcType=VARCHAR},</if>
+        <if test="businessId!=null">business_id=#{businessId,jdbcType=VARCHAR},</if>
+        <if test="fromSource!=null">from_source=#{fromSource,jdbcType=NUMERIC},</if>
+        <if test="propertyId!=null">property_id=#{propertyId,jdbcType=VARCHAR},</if>
+        <if test="houseId!=null">house_id=#{houseId,jdbcType=VARCHAR},</if>
+        <if test="houseWaterNum!=null">house_water_num=#{houseWaterNum,jdbcType=VARCHAR},</if>
+        <if test="waterReadDate!=null">water_read_date=#{waterReadDate,jdbcType=TIMESTAMP},</if>
+        <if test="waterDegree!=null">water_degree=#{waterDegree,jdbcType=NUMERIC},</if>
+        <if test="updateBy!=null">update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
+        <if test="updateDate!=null">update_date=#{updateDate,jdbcType=TIMESTAMP},</if>
+        <if test="remarks!=null">remarks=#{remarks,jdbcType=VARCHAR},</if>
+        <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
         business_id=#{item.businessId,jdbcType=VARCHAR},
@@ -115,21 +115,22 @@
     <!--where-->
     <sql id="where">
         <where>
-            <if test="id!=null and id!=''"> AND id=#{id}</if>
-            <if test="businessId!=null and businessId!=''"> AND business_id=#{businessId}</if>
-            <if test="fromSource!=null and fromSource!=''"> AND from_source=#{fromSource}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND property_id=#{propertyId}</if>
-            <if test="houseId!=null and houseId!=''"> AND house_id=#{houseId}</if>
-            <if test="houseWaterNum!=null and houseWaterNum!=''"> AND house_water_num=#{houseWaterNum}</if>
-            <if test="waterReadDate!=null and waterReadDate!=''"> AND water_read_date=#{waterReadDate}</if>
-            <if test="waterDegree!=null and waterDegree!=''"> AND water_degree=#{waterDegree}</if>
+            <if test="id!=null and id!=''">AND id=#{id}</if>
+            <if test="businessId!=null and businessId!=''">AND business_id=#{businessId}</if>
+            <if test="fromSource!=null and fromSource!=''">AND from_source=#{fromSource}</if>
+            <if test="propertyId!=null and propertyId!=''">AND property_id=#{propertyId}</if>
+            <if test="houseId!=null and houseId!=''">AND house_id=#{houseId}</if>
+            <if test="houseWaterNum!=null and houseWaterNum!=''">AND house_water_num=#{houseWaterNum}</if>
+            <if test="waterReadDate!=null and waterReadDate!=''">AND water_read_date=#{waterReadDate}</if>
+            <if test="waterDegree!=null and waterDegree!=''">AND water_degree=#{waterDegree}</if>
             AND del_flag = 0
         </where>
     </sql>
     <!--end where-->
 
     <!--insert-->
-    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow"
+            useGeneratedKeys="true" keyProperty="id">
         insert into fee_water_read_flow
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
@@ -170,45 +171,57 @@
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where  id = #{id,jdbcType=VARCHAR}  
+        where id = #{id,jdbcType=VARCHAR}
     </update>
 
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-        update fee_water_read_flow
-        <include refid="BatchUpdate_Set_From_Bean"/>
-        where
-             id = #{id,jdbcType=VARCHAR}  
+            update fee_water_read_flow
+            <include refid="BatchUpdate_Set_From_Bean"/>
+            where
+            id = #{id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
 
     <!-- select -->
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_water_read_flow
+        select
+        <include refid="Base_Column_List"/>
+        from fee_water_read_flow
         where
-             id = #{id,jdbcType=VARCHAR}  
+        id = #{id,jdbcType=VARCHAR}
     </select>
 
-    <select id="findAllList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
-        select <include refid="Base_Column_List"/> from fee_water_read_flow
+    <select id="findAllList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_water_read_flow
         <include refid="where"/>
     </select>
 
-    <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
-        select <include refid="Base_Column_List"/> from fee_water_read_flow
+    <select id="findList" resultMap="BaseResultMap"
+            parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_water_read_flow
         <include refid="where"/>
     </select>
 
     <select id="getFeeWaterReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select <include refid="Base_Column_List"/> from fee_ele_read_flow
+        select
+        <include refid="Base_Column_List"/>
+        from fee_ele_read_flow
         where
         del_flag=0 and from_source=1
         and business_id = #{feeWaterBillId,jdbcType=VARCHAR}
     </select>
 
-    <select id="getLastReadFlow" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow">
-        select <include refid="Base_Column_List"/> from fee_water_read_flow
+    <select id="getLastRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_water_read_flow
         where del_flag = 0
         AND house_id=#{houseId,jdbcType=VARCHAR}
         <if test="id!=null and id!=''">
@@ -218,10 +231,20 @@
         limit 0,1;
     </select>
 
+    <select id="getCurrentReadByDateAndHouseId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from fee_gas_read_flow
+        where del_flag = 0
+        AND DATE_FORMAT(water_read_date,'%Y-%m-%d')= DATE_FORMAT(#{waterReadDate,jdbcType=TIMESTAMP},'%Y-%m-%d')
+        AND house_id=#{houseId,jdbcType=VARCHAR}
+    </select>
+
     <select id="getFeeWaterReadFlowWithAllInfo"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultMap="FeeGasReadFlowWithAllInfo">
-        select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME from
+        select temp.*,sa.name area_name,sa.id area_id,tpp.PROJECT_NAME,tpp.PROJECT_ADDR project_address,tb.BUILDING_NAME
+        from
         (select
         fwrf.id,fwrf.house_id,fwrf.water_degree,fwrf.water_read_date,fwrf.property_id,
         th.HOUSE_NO,th.BUILDING_ID,th.intent_mode,fwrf.from_source,fwrf.create_date,
@@ -247,10 +270,10 @@
 
     <sql id="commonWhere">
         <where>
-            <if test="areaId!=null and areaId!=''"> AND sa.id=#{areaId}</if>
-            <if test="propertyId!=null and propertyId!=''"> AND tpp.id=#{propertyId}</if>
-            <if test="buildId!=null and buildId!=''"> AND tb.id=#{buildId}</if>
-            <if test="houseId!=null and houseId!=''"> AND temp.house_id=#{houseId}</if>
+            <if test="areaId!=null and areaId!=''">AND sa.id=#{areaId}</if>
+            <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
+            <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
+            <if test="houseId!=null and houseId!=''">AND temp.house_id=#{houseId}</if>
             <if test="startTime!=null and startTime!=''">
                 <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(temp.water_read_date,'%Y-%m-%d') ]]>
             </if>

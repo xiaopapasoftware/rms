@@ -5,56 +5,52 @@
 package com.thinkgem.jeesite.modules.fee.order.web;
 
 
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
+import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
+import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
 import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>订单 controller</p>
  * <p>Table: fee_order - 订单</p>
- * @since 2017-11-05 10:05:53
+ *
  * @author generator code
+ * @since 2017-11-05 10:05:53
  */
 @RestController
 @RequestMapping("/fee/order")
-public class FeeOrderController extends BaseController {
+public class FeeOrderController extends FeeBaseController {
 
-      @Autowired
-      private FeeOrderService feeOrderService;
+    @Autowired
+    private FeeOrderService feeOrderService;
 
-      @RequestMapping(value = "save")
-      public Object save(FeeOrder feeOrder) {
-          feeOrderService.save(feeOrder);
-          return ResponseData.success();
-      }
+    @RequestMapping(value = "list")
+    public Object list(FeeCriteriaEntity feeCriteriaEntity) {
+        Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+        feeCriteriaEntity.setPage(page);
+        List<FeeOrderVo> feeOrderVoList = feeOrderService.getFeeOrderList(feeCriteriaEntity);
+        page.setList(feeOrderVoList);
+        return ResponseData.success().page(page);
+    }
 
-     @RequestMapping(value = "list")
-     public Object list(FeeOrder feeOrder,@RequestParam(value = "pageSize",defaultValue = "1") Integer pageSize,@RequestParam(value = "pageSize",defaultValue = "15") Integer pageNo) {
-         Page<FeeOrder> page = feeOrderService.findPage(new Page(pageSize, pageNo), feeOrder);
-         return ResponseData.success().data(page);
-     }
-
-    @RequestMapping(value = "delete")
-    public Object delete(String id) {
-        FeeOrder feeOrder = new FeeOrder();
-        feeOrder.setId(id);
-        feeOrder.setDelFlag(Constants.DEL_FLAG_NO);
-        feeOrderService.save(feeOrder);
+    @RequestMapping(value = "payed")
+    public Object payed(String... id) {
+        feeOrderService.payed(id);
         return ResponseData.success();
     }
 
-   @RequestMapping(value = "get")
-   public Object get(String id) {
-        FeeOrder feeOrder = feeOrderService.get(id);
-        return ResponseData.success().data(feeOrder);
-   }
+    @RequestMapping(value = "repay")
+    public Object repay(String... id) {
+        feeOrderService.repay(id);
+        return ResponseData.success();
+    }
 
 }

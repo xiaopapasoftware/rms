@@ -16,13 +16,20 @@ import java.util.List;
 /**
  * <p>煤气收取流水实现类service</p>
  * <p>Table: fee_gas_charged_flow - 煤气收取流水</p>
- * @since 2017-10-20 06:26:33
+ *
  * @author generator code
-*/
+ * @since 2017-10-20 06:26:33
+ */
 @MyBatisDao
-public interface FeeGasChargedFlowDao extends CrudDao<FeeGasChargedFlow>{
+public interface FeeGasChargedFlowDao extends CrudDao<FeeGasChargedFlow> {
 
-    FeeGasChargedFlow getFeeGasChargedFlowByBusinessIdAndFromSource(@Param("businessId") String businessId, @Param("fromSource")int fromSource,@Param("roomId") String roomId);
+    List<FeeGasChargedFlow> getFeeGasChargedFlowByBusinessIdAndFromSource(@Param("businessId") String businessId, @Param("fromSource") int fromSource);
 
     List<FeeGasChargedFlowVo> getFeeGasChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
+
+    FeeGasChargedFlow getLastRecord(@Param("houseId") String houseId, @Param("roomId") String roomId);
+
+    void batchInsert(List<FeeGasChargedFlow> feeGasChargedFlows);
+
+    void batchUpdate(List<FeeGasChargedFlow> feeGasChargedFlows);
 }

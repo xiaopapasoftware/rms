@@ -83,12 +83,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 url: feeEleChargeFlowCommon.baseUrl + "/list",
                 method: "GET"
             },
-            save: {
-                url: feeEleChargeFlowCommon.baseUrl + "/save",
-                method: "POST"
-            },
-            delete: {
-                url: feeEleChargeFlowCommon.baseUrl + "/delete",
+            generateOrder: {
+                url: feeEleChargeFlowCommon.baseUrl + "/generatorOrder",
                 method: "GET"
             },
             selectItem: {
@@ -118,7 +114,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeEleChargeFlowMVC.Controller.addEleFun);
+                $("#btn-add").on("click", feeEleChargeFlowMVC.Controller.generateOrderFun);
                 $("#btn-search").on("click", feeEleChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeEleChargeFlowMVC.Controller.undoFun);
             },
@@ -178,8 +174,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 };
                 return where;
             },
-            addEleFun: function () {
-
+            generateOrderFun: function () {
+                $.getJSON(feeEleChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
+                    if (data.code == "200") {
+                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
+                    } else {
+                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             queryFun: function () {
                 table.reload('eleChargeFlowTable', {

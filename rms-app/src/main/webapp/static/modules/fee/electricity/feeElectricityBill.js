@@ -2,7 +2,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
     var form = layui.form,
         table = layui.table,
         layer = layui.layer,
-        laydate = layui.laydate;
+        laydate = layui.laydate,
+        laytpl = layui.laytpl;
 
     var addEleBillIndex;
 
@@ -114,6 +115,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             delete: {
                 url: feeEleBillCommon.baseUrl + "/delete",
+                method: "GET"
+            },
+            print: {
+                url: feeEleBillCommon.baseUrl + "/print",
                 method: "GET"
             },
             audit: {
@@ -352,6 +357,27 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
             },
             printFun: function () {
+                var where = feeEleBillMVC.Controller.getWhereFun();
+                where.isRecord="0";
+
+                $.post(feeEleBillMVC.URLs.print.url, where, function (resp) {
+                    if (resp.code == "200") {
+                        if(resp.data.length > 0){
+                            var printHtml="";
+                            laytpl(printTableTpl.innerHTML).render(resp, function (html) {
+                                printHtml = html;
+                            });
+                            var LODOP=getLodop();
+                            LODOP.PRINT_INIT("账单打印");
+                            LODOP.ADD_PRINT_TABLE(0,0,2000,20000,printHtml);
+                            LODOP.PREVIEW();
+                        }else{
+                            layer.msg("没有已录的数据,不能打印", {icon: 5, offset: 100, time: 1000, shift: 6});
+                        }
+                    } else {
+                        layer.msg(resp.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
+                    }
+                });
             },
             saveFun: function () {
                 var data = {
@@ -426,6 +452,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             }
         }
     };
+
     feeEleBill.init();
 });
 

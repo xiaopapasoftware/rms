@@ -47,6 +47,12 @@ public class FeeGasBillController extends FeeBaseController {
         return ResponseData.success().page(page);
     }
 
+    @RequestMapping(value = "print")
+    public Object print(FeeCriteriaEntity feeCriteriaEntity) {
+        List<FeeGasBillVo> feeGasBillVos = feeGasBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
+        return ResponseData.success().data(feeGasBillVos);
+    }
+
     @RequestMapping(value = "delete")
     public Object delete(String id) {
         feeGasBillService.deleteFeeGasBill(id);
