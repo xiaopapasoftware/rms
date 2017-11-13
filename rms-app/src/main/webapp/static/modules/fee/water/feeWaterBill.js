@@ -189,7 +189,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         },
                         {
                             field: 'waterBillAmount', align: 'right', title: '金额', width: 120,
-                            templet: '<div>{{ layui.laytpl.amountFormat(d.eleBillAmount) }}</div>'
+                            templet: '<div>{{ layui.laytpl.amountFormat(d.waterBillAmount) }}</div>'
                         },
                         {field: 'billStatusName', align: 'center', title: '状态', width: 100},
                         {align: 'center', title: '操作', toolbar: '#toolBar', width: 120}
@@ -268,7 +268,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             feeWaterBillFun: function () {
                 feeWaterBillBillIndex = layer.open({
-                    title: "电费账单录入",
+                    title: "水费账单录入",
                     type: 1,
                     resize: true,
                     offset: 'rt',

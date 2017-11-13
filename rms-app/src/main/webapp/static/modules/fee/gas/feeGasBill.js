@@ -189,7 +189,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         },
                         {
                             field: 'gasBillAmount', align: 'right', title: '金额', width: 120,
-                            templet: '<div>{{ layui.laytpl.amountFormat(d.eleBillAmount) }}</div>'
+                            templet: '<div>{{ layui.laytpl.amountFormat(d.gasBillAmount) }}</div>'
                         },
                         {field: 'billStatusName', align: 'center', title: '状态', width: 100},
                         {align: 'center', title: '操作', toolbar: '#toolBar', width: 120}
@@ -268,7 +268,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             feeGasBillFun: function () {
                 feeGasBillBillIndex = layer.open({
-                    title: "电费账单录入",
+                    title: "燃气账单录入",
                     type: 1,
                     resize: true,
                     offset: 'rt',

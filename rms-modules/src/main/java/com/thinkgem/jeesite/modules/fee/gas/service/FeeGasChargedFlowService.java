@@ -210,6 +210,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         return dao.getFeeGasChargedFlow(feeCriteriaEntity);
     }
 
+    @Transactional(readOnly = false)
     public void generatorFlow() {
         List<FeeGasChargedFlow> feeGasChargedFlows = Lists.newArrayList();
         List<Room> rooms = feeCommonService.getJoinRentAllRoom();
@@ -248,6 +249,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         logger.info("总共生成{}条收费流水记录", feeGasChargedFlows.size());
     }
 
+    @Transactional(readOnly = false)
     public void generatorOrder() {
         FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
         feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
@@ -269,6 +271,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                     f.setOrderNo(orderNo);
+                    f.preUpdate();
                     updGasCharges.add(f);
 
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
@@ -287,6 +290,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                     value.stream().forEach(f -> {
                         f.setOrderNo(orderNo);
                         f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                        f.preUpdate();
                         updGasCharges.add(f);
 
                         feeOrder.setAmount(feeOrder.getAmount().add(f.getGasAmount()));
@@ -310,6 +314,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         feeOrder.setPropertyId(feeGasChargedFlow.getPropertyId());
         feeOrder.setOrderType(OrderTypeEnum.GAS.getValue());
         feeOrder.setRoomId(feeGasChargedFlow.getRoomId());
+        feeOrder.setAmount(new BigDecimal(0));
         feeOrder.preInsert();
         return feeOrder;
     }

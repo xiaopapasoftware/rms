@@ -183,6 +183,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         return dao.getFeeWaterChargedFlow(feeCriteriaEntity);
     }
 
+    @Transactional(readOnly = false)
     public void generatorFlow() {
         List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
         List<Room> rooms = feeCommonService.getJoinRentAllRoom();
@@ -222,6 +223,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         logger.info("总共生成{}条收费流水记录", feeWaterChargedFlows.size());
     }
 
+    @Transactional(readOnly = false)
     public void generatorOrder() {
         FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
         feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
@@ -285,6 +287,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         feeOrder.setPropertyId(feeWaterChargedFlow.getPropertyId());
         feeOrder.setOrderType(OrderTypeEnum.WATER.getValue());
         feeOrder.setRoomId(feeWaterChargedFlow.getRoomId());
+        feeOrder.setAmount(new BigDecimal(0));
         feeOrder.preInsert();
         return feeOrder;
     }

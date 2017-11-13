@@ -3,13 +3,6 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic = '${ctxStatic}';</script>
-
-<script src="${ctxStatic}/lodop6/LodopFuncs.js"></script>
-<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
-    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0></embed>
-</object>
-
-
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -21,6 +14,11 @@
     <link rel="stylesheet" href="${ctxStatic}/layui/css/layui.css"/>
     <link rel="stylesheet" href="${ctxStatic}/xqsight/widget/font-awesome.css"/>
     <link rel="stylesheet" href="${ctxStatic}/xqsight/widget/widget.css"/>
+
+    <script src="${ctxStatic}/lodop6/LodopFuncs.js"></script>
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
+        <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0></embed>
+    </object>
 
     <style>
         .layui-table-cell .layui-form-checkbox {

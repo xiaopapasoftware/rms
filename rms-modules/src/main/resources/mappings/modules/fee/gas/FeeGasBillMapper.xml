@@ -250,7 +250,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m') = #{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
     </select>
@@ -272,7 +272,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         left join fee_gas_bill fgb on fgb.house_id=th.ID and fgb.del_flag=0
         <if test="feeDate!=null and feeDate!=''">
-            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')= DATE_FORMAT(#{feeDate},'%Y-%m')
+            AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m') = #{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
         ORDER BY fgb.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC

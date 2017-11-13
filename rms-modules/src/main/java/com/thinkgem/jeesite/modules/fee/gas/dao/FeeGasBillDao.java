@@ -27,7 +27,7 @@ public interface FeeGasBillDao extends CrudDao<FeeGasBill>{
 
     FeeGasBill getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
 
-    FeeGasBill getCurrentBillByDateAndHouseId(@Param("eleBillDate") Date eleBillDate, @Param("houseId") String houseId);
+    FeeGasBill getCurrentBillByDateAndHouseId(@Param("gasBillDate") Date eleBillDate, @Param("houseId") String houseId);
 
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }
