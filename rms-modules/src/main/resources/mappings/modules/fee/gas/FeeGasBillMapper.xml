@@ -275,7 +275,7 @@
             AND DATE_FORMAT(fgb.gas_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
-        ORDER BY fgb.create_date DESC
+        ORDER BY fgb.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC
     </select>
     <!-- end select -->
     <sql id="commonWhere">

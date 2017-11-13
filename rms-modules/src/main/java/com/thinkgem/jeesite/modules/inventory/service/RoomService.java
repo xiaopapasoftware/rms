@@ -41,10 +41,6 @@ public class RoomService extends CrudService<RoomDao, Room> {
     return page;
   }
 
-  public List<Room> getJoinRentAllRoom(){
-    return dao.getJoinRentAllRoom();
-  }
-
   @Override
   public List<Room> findList(Room entity) {
     areaScopeFilter(entity,"dsf","pp.area_id=sua.area_id");

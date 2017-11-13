@@ -290,7 +290,7 @@
             AND DATE_FORMAT(feb.ele_bill_date,'%Y-%m')=#{feeDate,jdbcType=VARCHAR}
         </if>
         <include refid="commonWhere"/>
-        ORDER BY feb.create_date DESC
+        ORDER BY feb.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC
     </select>
     <!-- end select -->
     <sql id="commonWhere">

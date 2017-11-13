@@ -3,6 +3,13 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic = '${ctxStatic}';</script>
+
+<script src="${ctxStatic}/lodop6/LodopFuncs.js"></script>
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
+    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0></embed>
+</object>
+
+
 <html>
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
@@ -244,6 +251,65 @@
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
     {{# } }}
+</script>
+
+<script id="printTableTpl" type="text/html">
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size:11px;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+
+    <table class="gridtable">
+        <tr>
+            <td>区域</td>
+            <td>物业项目</td>
+            <td>地址</td>
+            <td>楼宇</td>
+            <td>房号</td>
+            <td>户号</td>
+            <td>账期</td>
+            <td>仪表数</td>
+            <td>金额</td>
+            <td>状态</td>
+        </tr>
+        {{# layui.each(d.data, function(index, item){ }}
+        <tr>
+            <td>{{ item.areaName }}</td>
+            <td>{{ item.projectName }}</td>
+            <td>{{ item.projectAddress }}</td>
+            <td>{{ item.buildingName || '' }}</td>
+            <td>{{ item.houseNo || '' }}</td>
+            <td>{{ item.houseEleNum || '' }}</td>
+            <td>{{ item.waterBillDate || '' }}</td>
+            <td>{{ item.waterDegree || '' }}</td>
+            <td>{{ item.waterBillAmount || '' }}</td>
+            <td>{{ item.billStatusName || ''}}</td>
+        </tr>
+        {{# }); }}
+        {{# if(d.data.length === 0){ }}
+        无数据
+        {{# } }}
+    </table>
 </script>
 
 <script src="${ctxStatic}/jquery/jquery-1.9.1.min.js"></script>

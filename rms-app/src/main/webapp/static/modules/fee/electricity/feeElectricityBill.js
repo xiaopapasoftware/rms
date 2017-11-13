@@ -358,22 +358,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             printFun: function () {
                 var where = feeEleBillMVC.Controller.getWhereFun();
-                where.isRecord="";
+                where.isRecord="0";
 
                 $.post(feeEleBillMVC.URLs.print.url, where, function (resp) {
                     if (resp.code == "200") {
                         if(resp.data.length > 0){
                             var printHtml="";
-                            var getTpl = printTableTpl.innerHTML;
-                            console.log(getTpl);
-                            console.log(resp);
-                            laytpl(getTpl).render(resp, function (html) {
+                            laytpl(printTableTpl.innerHTML).render(resp, function (html) {
                                 printHtml = html;
                             });
                             var LODOP=getLodop();
-                            LODOP.PRINT_INIT("电费账单打印");
-                            LODOP.SET_PRINT_PAGESIZE(2,0,0,"A4");
-                            LODOP.ADD_PRINT_HTM(88,50,300,200,printHtml);
+                            LODOP.PRINT_INIT("账单打印");
+                            LODOP.ADD_PRINT_TABLE(0,0,2000,20000,printHtml);
                             LODOP.PREVIEW();
                         }else{
                             layer.msg("没有已录的数据,不能打印", {icon: 5, offset: 100, time: 1000, shift: 6});

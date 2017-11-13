@@ -20,4 +20,21 @@
         where th.del_flag=0 and th.id=#{houseId}
     </select>
 
+    <select id="getJoinRentAllRoom" resultType="com.thinkgem.jeesite.modules.inventory.entity.Room">
+        select
+        tr.id,tr.ROOM_NO,
+        tr.ROOM_STATUS,
+        th.ID 'house.id',
+        th.HOUSE_NO 'house.houseNo',
+        th.HOUSE_CODE 'house.houseCode',
+        th.intent_mode 'house.intentMode' ,
+        th.property_project_id 'house.propertyProject.id',
+        th.gas_account_num 'house.gasAccountNum',
+        th.water_account_num 'house.waterAccountNum'
+        from t_room tr
+        left join t_house th on th.id=tr.HOUSE_ID
+        where tr.DEL_FLAG=0 and th.DEL_FLAG=0
+        and th.intent_mode=1 and tr.ROOM_STATUS=3
+    </select>
+
 </mapper>

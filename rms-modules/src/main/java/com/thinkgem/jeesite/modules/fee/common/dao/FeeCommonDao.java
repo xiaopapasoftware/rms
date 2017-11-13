@@ -5,7 +5,10 @@
 package com.thinkgem.jeesite.modules.fee.common.dao;
 
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>电费收取流水实现类service</p>
@@ -19,4 +22,6 @@ public interface FeeCommonDao{
     String getRangeIdByRoomId(@Param("roomId") String roomId);
 
     String getRangeIdByHouseId(@Param("houseId") String houseId);
+
+    List<Room> getJoinRentAllRoom();
 }

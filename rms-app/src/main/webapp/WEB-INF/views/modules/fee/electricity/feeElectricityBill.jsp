@@ -292,9 +292,33 @@
     {{# } }}
 </script>
 
-
 <script id="printTableTpl" type="text/html">
-    <table>
+    <style type="text/css">
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size:11px;
+            color:#333333;
+            border-width: 1px;
+            border-color: #666666;
+            border-collapse: collapse;
+        }
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+    </style>
+
+    <table class="gridtable">
         <tr>
             <td>区域</td>
             <td>物业项目</td>
@@ -323,7 +347,7 @@
             <td>{{ item.billStatusName || ''}}</td>
         </tr>
         {{# }); }}
-        {{# if(d.dataList.length === 0){ }}
+        {{# if(d.data.length === 0){ }}
         无数据
         {{# } }}
     </table>
