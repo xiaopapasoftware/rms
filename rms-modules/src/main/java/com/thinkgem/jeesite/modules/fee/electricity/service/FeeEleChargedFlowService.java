@@ -112,6 +112,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
         FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id,feeEleBill.getHouseId(),null);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            if(feeCommonService.isStartInitFeeData()){
+                return;
+            }
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeEleBill.getHouseId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
         }
@@ -146,6 +149,14 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         FeeEleChargedFlow existChargeFlow = dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
         if (Optional.ofNullable(existChargeFlow).isPresent()) {
             feeEleChargedFlow.setId(existChargeFlow.getId());
+        }
+
+        /*获取上一条抄表记录*/
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
+        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            if(feeCommonService.isStartInitFeeData()){
+                return;
+            }
         }
 
         feeEleChargedFlow = calculateCharge(feeEleReadFlow, feeEleChargedFlow);

@@ -19,6 +19,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,5 +178,14 @@ public class FeeCommonService {
 
     public void clearFeeConfigCache() {
         feeCache.clear();
+    }
+
+    public boolean isStartInitFeeData(){
+        String feeInitFun = DictUtils.getDictValue("fee_data_init_fun","fee_init","1");
+        if(StringUtils.equals(feeInitFun,"0")){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
