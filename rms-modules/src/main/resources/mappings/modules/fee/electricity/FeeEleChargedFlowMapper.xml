@@ -154,7 +154,7 @@
         update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
-        del_flag=#{item.delFlag,jdbcType=VARCHAR},
+        del_flag=#{item.delFlag,jdbcType=VARCHAR}
     </sql>
 
     <!--where-->
@@ -229,7 +229,9 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update fee_ele_charged_flow
-            <include refid="BatchUpdate_Set_From_Bean"/>
+            <set>
+                <include refid="BatchUpdate_Set_From_Bean"/>
+            </set>
             where
             id = #{item.id,jdbcType=VARCHAR}
         </foreach>
@@ -285,7 +287,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0
         <include refid="commonWhere"/>
-        order by ele_calculate_date DESC
+        order by sa.name,tpp.project_name,tb.building_name,th.house_no,temp.room_id ASC,temp.ele_calculate_date DESC
     </select>
 
     <sql id="commonWhere">

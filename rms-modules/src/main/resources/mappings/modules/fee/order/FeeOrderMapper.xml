@@ -197,9 +197,11 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update fee_order
-            <include refid="BatchUpdate_Set_From_Bean"/>
+            <set>
+                <include refid="BatchUpdate_Set_From_Bean"/>
+            </set>
             where
-            id = #{id,jdbcType=VARCHAR}
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -233,8 +235,10 @@
         select
         <include refid="Base_Column_List"/>
         from fee_order
-        where
-        id in (${ids})
+        where id in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
     </select>
 
     <select id="getFeeOrderList" resultMap="FullResultMap"

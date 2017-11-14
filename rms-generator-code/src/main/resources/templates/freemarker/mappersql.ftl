@@ -111,7 +111,9 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
         update ${table.tableName}
-        <include refid="BatchUpdate_Set_From_Bean"/>
+        <set>
+            <include refid="BatchUpdate_Set_From_Bean"/>
+        </set>
         where
             <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
         </foreach>

@@ -84,7 +84,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 method: "GET"
             },
             generateOrder: {
-                url: feeEleChargeFlowCommon.baseUrl + "/generatorOrder",
+                url: feeEleChargeFlowCommon.baseUrl + "/generateOrder",
                 method: "GET"
             },
             selectItem: {

@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.order.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import lombok.Data;
 
@@ -21,8 +22,10 @@ import java.util.Date;
 public class FeeOrder extends DataEntity<FeeOrder>{
 
 	/** 主键 */
-    private String orderNo;
+	private String id;
 
+	/** 订单号*/
+    private String orderNo;
     /** batch_no - 审核编号 */
     private String batchNo;
     /** property_id - 物业ID */
@@ -36,6 +39,7 @@ public class FeeOrder extends DataEntity<FeeOrder>{
     /** payer - 支付者 0：租客 1：公司*/
     private Integer payer;
     /** order_date - 订单时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date orderDate;
     /** amount - 账单金额 */
     private BigDecimal amount;

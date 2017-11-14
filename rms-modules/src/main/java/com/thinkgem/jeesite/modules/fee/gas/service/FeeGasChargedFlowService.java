@@ -161,6 +161,8 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             List<Room> rooms = feeCommonService.getRoomByHouseId(house.getId());
             /*正在出租的房间数*/
             Long rentRoomSize = rooms.stream().filter(room -> StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())).count();
+            rentRoomSize = rentRoomSize == 0 ? 1 :rentRoomSize;
+
             amount = amount.divide(new BigDecimal(rentRoomSize));
             saveFeeGasChargeFlow.setGasAmount(amount);
             saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));

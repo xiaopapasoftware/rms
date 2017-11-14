@@ -237,6 +237,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                     feeEleChargedFlow.setPayer(PayerEnum.COMPANY.getValue());
                 }
 
+                rentRoomSize = rentRoomSize == 0 ? 1 :rentRoomSize;
+
                 feeEleChargedFlow.setEleAmount(new BigDecimal(amount).divide(new BigDecimal(rentRoomSize)));
             } else {
                 Room room = feeCommonService.getRoomById(feeEleChargedFlow.getRoomId());
@@ -298,6 +300,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                         value.stream().forEach(f -> {
                             f.setOrderNo(orderNo);
                             f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+                            f.preUpdate();
                             updEleCharges.add(f);
 
                             feeOrder.setAmount(feeOrder.getAmount().add(f.getEleAmount()));
@@ -331,6 +334,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         feeOrder.setPropertyId(feeEleChargedFlow.getPropertyId());
         feeOrder.setOrderType(OrderTypeEnum.ELECTRICITY.getValue());
         feeOrder.setRoomId(feeEleChargedFlow.getRoomId());
+        feeOrder.setAmount(new BigDecimal(0));
+        feeOrder.preInsert();
         return feeOrder;
     }
 }

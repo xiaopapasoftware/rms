@@ -38,33 +38,38 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
 
     @Transactional(readOnly = false)
     public void payed(String... id) {
-        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<String> ids = Arrays.stream(id).collect(Collectors.toList());
         List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
 
-        List<FeeOrder> updOrder = Lists.newArrayList();
+        List<FeeOrder> updOrders = Lists.newArrayList();
         List<FeeOrderAccount> feeOrderAccounts = Lists.newArrayList();
         feeOrders.forEach(f -> {
             f.setOrderStatus(OrderStatusEnum.PASS.getValue());
-            updOrder.add(f);
+            f.preUpdate();
+            updOrders.add(f);
 
             feeOrderAccounts.add(feeOrderToAccount(f));
         });
+
+        dao.batchUpdate(updOrders);
     }
 
     @Transactional(readOnly = false)
     public void repay(String... id) {
-        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<String> ids = Arrays.stream(id).collect(Collectors.toList());
         List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
-
         List<FeeOrder> updOrders = Lists.newArrayList();
         feeOrders.forEach(f -> {
             f.setOrderStatus(OrderStatusEnum.REJECT.getValue());
             f.setDelFlag(Constants.DEL_FLAG_YES);
+            f.preUpdate();
             updOrders.add(f);
         });
+
+        dao.batchUpdate(updOrders);
     }
 
-    private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder){
+    private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder) {
         FeeOrderAccount feeOrderAccount = new FeeOrderAccount();
         feeOrderAccount.setAmount(feeOrder.getAmount());
         feeOrderAccount.setHouseId(feeOrder.getHouseId());
@@ -74,6 +79,7 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
         feeOrderAccount.setPayDate(new Date());
         feeOrderAccount.setPropertyId(feeOrder.getPropertyId());
         feeOrderAccount.setRoomId(feeOrder.getRoomId());
+        feeOrderAccount.preInsert();
         return feeOrderAccount;
     }
 
