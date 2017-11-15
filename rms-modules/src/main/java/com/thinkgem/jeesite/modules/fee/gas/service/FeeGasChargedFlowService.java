@@ -112,7 +112,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         }
         FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(id, feeGasBill.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isStartInitFeeData()){
+            if(feeCommonService.isOpenInitFeeData()){
                 return;
             }
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeGasBill.getHouseId());
@@ -144,7 +144,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
         /*查询除当前之外的上一条数据*/
         FeeGasReadFlow lastReadFlow = feeGasReadFlowService.getLastReadFlow(feeGasReadFlow.getId(), feeGasReadFlow.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isStartInitFeeData()){
+            if(feeCommonService.isOpenInitFeeData()){
                 return;
             }
             logger.error("当前房屋[户号={}]没有初始化电表数据", feeGasReadFlow.getHouseGasNum());

@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.fee.order.dao.FeeOrderDao;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
 import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
+
+    @Autowired
+    private FeeOrderAccountService feeOrderAccountService;
 
     public void batchInsert(List<FeeOrder> feeOrders) {
         dao.batchInsert(feeOrders);
@@ -52,6 +56,8 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
         });
 
         dao.batchUpdate(updOrders);
+        logger.info("新增台账记录");
+        feeOrderAccountService.batchInsert(feeOrderAccounts);
     }
 
     @Transactional(readOnly = false)

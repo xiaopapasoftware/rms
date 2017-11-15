@@ -83,7 +83,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         }
         FeeWaterReadFlow lastReadFlow = feeWaterReadFlowService.getLastReadFlow(id, feeWaterBill.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isStartInitFeeData()){
+            if(feeCommonService.isOpenInitFeeData()){
                 return;
             }
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeWaterBill.getHouseId());
@@ -115,7 +115,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
         FeeWaterReadFlow lastReadFlow = feeWaterReadFlowService.getLastReadFlow(feeWaterReadFlow.getId(), feeWaterChargedFlow.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isStartInitFeeData()){
+            if(feeCommonService.isOpenInitFeeData()){
                 return;
             }
             logger.error("当前房屋[水户号={}]没有初始化电表数据", feeWaterReadFlow.getHouseWaterNum());

@@ -65,7 +65,6 @@ public class FeeElectricityBillController extends FeeBaseController {
         return ResponseData.success();
     }
 
-
     @RequestMapping(value = "getTotalAmount")
     public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
         return ResponseData.success().data(feeElectricityBillService.getTotalAmount(feeCriteriaEntity));
