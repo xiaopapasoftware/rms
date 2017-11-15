@@ -162,8 +162,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "startTime": $("#gasReadDates").val().split("~")[0],
-                    "endTime": $("#gasReadDates").val().split("~")[1],
+                    //"startTime": $("#gasReadDates").val().split("~")[0],
+                    //"endTime": $("#gasReadDates").val().split("~")[1],
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),

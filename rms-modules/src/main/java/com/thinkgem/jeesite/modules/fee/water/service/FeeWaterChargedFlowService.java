@@ -83,7 +83,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         }
         FeeWaterReadFlow lastReadFlow = feeWaterReadFlowService.getLastReadFlow(id, feeWaterBill.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isOpenInitFeeData()){
+            if (feeCommonService.isOpenInitFeeData()) {
                 return;
             }
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeWaterBill.getHouseId());
@@ -115,7 +115,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
         FeeWaterReadFlow lastReadFlow = feeWaterReadFlowService.getLastReadFlow(feeWaterReadFlow.getId(), feeWaterChargedFlow.getHouseId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
-            if(feeCommonService.isOpenInitFeeData()){
+            if (feeCommonService.isOpenInitFeeData()) {
                 return;
             }
             logger.error("当前房屋[水户号={}]没有初始化电表数据", feeWaterReadFlow.getHouseWaterNum());
@@ -131,7 +131,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
             List<Room> rooms = feeCommonService.getRoomByHouseId(house.getId());
             /*正在出租的房间数*/
             Long rentRoomSize = rooms.stream().filter(room -> StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())).count();
-            rentRoomSize = rentRoomSize == 0 ? 1 :rentRoomSize;
+            rentRoomSize = rentRoomSize == 0 ? 1 : rentRoomSize;
 
             amount = amount.divide(new BigDecimal(rentRoomSize));
             feeWaterChargedFlow.setWaterAmount(amount);
@@ -212,9 +212,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
                 /*计算金额*/
                 double days;
-                FeeWaterChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getHouseId(), r.getId());
+                FeeWaterChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
                 if (Optional.ofNullable(lastCharged).isPresent()) {
-                    days = DateUtils.getDistanceOfTwoDate(new Date(), lastCharged.getWaterCalculateDate());
+                    days = DateUtils.getDistanceOfTwoDate(lastCharged.getWaterCalculateDate(), new Date());
                 } else {
                     days = Double.valueOf(DateUtils.getDay());
                 }
@@ -227,7 +227,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                 }
             }
         });
-        dao.batchInsert(feeWaterChargedFlows);
+        if (feeWaterChargedFlows.size() > 0) {
+            dao.batchInsert(feeWaterChargedFlows);
+        }
         logger.info("总共生成{}条收费流水记录", feeWaterChargedFlows.size());
     }
 
@@ -253,8 +255,13 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                     f.setOrderNo(orderNo);
-                    updWaterCharges.add(f);
 
+                    /*添加更新的收费流水*/
+                    FeeWaterChargedFlow updCharged = f.clone();
+                    updCharged.preUpdate();
+                    updWaterCharges.add(updCharged);
+
+                    /*计算金额*/
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getWaterAmount()));
                 });
                 feeOrders.add(feeOrder);
@@ -271,8 +278,13 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                     value.stream().forEach(f -> {
                         f.setOrderNo(orderNo);
                         f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                        updWaterCharges.add(f);
 
+                        /*添加更新的收费流水*/
+                        FeeWaterChargedFlow updCharged = f.clone();
+                        updCharged.preUpdate();
+                        updWaterCharges.add(updCharged);
+
+                        /*计算金额*/
                         feeOrder.setAmount(feeOrder.getAmount().add(f.getWaterAmount()));
                     });
                     feeOrders.add(feeOrder);
@@ -281,9 +293,13 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         });
 
         /*更新收费流水表*/
-        dao.batchInsert(updWaterCharges);
-        logger.info("生成订单信息");
-        feeOrderService.batchInsert(feeOrders);
+        if (updWaterCharges.size() > 0) {
+            dao.batchInsert(updWaterCharges);
+        }
+        if (feeOrders.size() > 0) {
+            logger.info("生成订单信息");
+            feeOrderService.batchInsert(feeOrders);
+        }
     }
 
     private FeeOrder feeWaterChargedFlowToFeeOrder(FeeWaterChargedFlow feeWaterChargedFlow) {

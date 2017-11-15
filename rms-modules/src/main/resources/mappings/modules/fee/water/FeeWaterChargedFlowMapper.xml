@@ -258,6 +258,7 @@
         where del_flag=0
         and house_id=#{houseId,jdbcType=NUMERIC}
         and room_id = #{roomId,jdbcType=VARCHAR}
+        limit 0,1
     </select>
 
     <select id="getFeeWaterChargedFlowByBusinessIdAndFromSource" resultMap="BaseResultMap">

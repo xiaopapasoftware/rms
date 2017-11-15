@@ -227,7 +227,7 @@
         </if>
         and house_id=#{houseId,jdbcType=VARCHAR}
         ORDER BY gas_bill_date DESC
-        limit 0,1;
+        limit 0,1
     </select>
 
     <select id="getCurrentBillByDateAndHouseId" resultMap="BaseResultMap">

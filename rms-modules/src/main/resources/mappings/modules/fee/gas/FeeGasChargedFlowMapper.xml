@@ -127,7 +127,9 @@
         <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
-        business_id=#{item.businessId,jdbcType=VARCHAR},
+        <if test="item.businessId!=null">
+            business_id=#{item.businessId,jdbcType=VARCHAR},
+        </if>
         from_source=#{item.fromSource,jdbcType=NUMERIC},
         order_no=#{item.orderNo,jdbcType=VARCHAR},
         property_id=#{item.propertyId,jdbcType=VARCHAR},
@@ -263,6 +265,7 @@
         where del_flag=0
         and house_id=#{houseId,jdbcType=NUMERIC}
         and room_id = #{roomId,jdbcType=VARCHAR}
+        limit 0,1
     </select>
 
     <select id="getFeeGasChargedFlow" resultMap="FullResultMap"
