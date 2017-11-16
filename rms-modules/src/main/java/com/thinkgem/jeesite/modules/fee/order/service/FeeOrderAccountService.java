@@ -25,6 +25,6 @@ import java.util.List;
 public class FeeOrderAccountService extends CrudService<FeeOrderAccountDao, FeeOrderAccount> {
 
     void batchInsert(List<FeeOrderAccount> feeOrderAccounts) {
-        batchInsert(feeOrderAccounts);
+        dao.batchInsert(feeOrderAccounts);
     }
 }

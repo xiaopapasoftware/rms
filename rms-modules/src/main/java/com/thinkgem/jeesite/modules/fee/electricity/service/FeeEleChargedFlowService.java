@@ -297,6 +297,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                         value.stream().forEach(f -> {
                             /*设置公摊的orderNo为000000*/
                             f.setOrderNo("000000");
+                            f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+
                             /*添加更新的收费流水*/
                             FeeEleChargedFlow updCharged = f.clone();
                             updCharged.preUpdate();

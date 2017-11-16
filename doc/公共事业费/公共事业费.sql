@@ -371,7 +371,7 @@ create table fee_water_charged_flow
    room_id              varchar(64) comment '房号',
    rent_type            int comment '出租类型 0：整租 1：合租',
    payer                int not null default 0 comment '支付者 0：租客 1：公司',
-   house_gas_num        varchar(60) comment '户号',
+   house_water_num        varchar(60) comment '户号',
    water_calculate_date date not null comment '计算时间',
    water_amount         numeric(19,2) not null default 0 comment '收取金额',
    generate_order       bigint not null default 0 comment '是否已生成订单 0:是 -1:否 ',

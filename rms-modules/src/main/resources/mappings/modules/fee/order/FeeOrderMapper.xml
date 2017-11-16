@@ -255,6 +255,7 @@
         left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         <include refid="commonWhere"/>
+        order by temp.order_status,sa.name,tpp.project_name,tb.building_name,th.house_no,tr.ROOM_NO ASC
     </select>
 
     <sql id="commonWhere">

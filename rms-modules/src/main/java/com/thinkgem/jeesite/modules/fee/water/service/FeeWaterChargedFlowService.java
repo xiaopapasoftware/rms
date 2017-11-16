@@ -294,7 +294,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
         /*更新收费流水表*/
         if (updWaterCharges.size() > 0) {
-            dao.batchInsert(updWaterCharges);
+            dao.batchUpdate(updWaterCharges);
         }
         if (feeOrders.size() > 0) {
             logger.info("生成订单信息");

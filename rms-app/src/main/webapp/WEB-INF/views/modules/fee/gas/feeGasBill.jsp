@@ -299,7 +299,7 @@
             <td>{{ item.projectAddress }}</td>
             <td>{{ item.buildingName || '' }}</td>
             <td>{{ item.houseNo || '' }}</td>
-            <td>{{ item.houseEleNum || '' }}</td>
+            <td>{{ item.houseGasNum || '' }}</td>
             <td>{{ item.gasBillDate || '' }}</td>
             <td>{{ item.gasDegree || '' }}</td>
             <td>{{ item.gasBillAmount || '' }}</td>

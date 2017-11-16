@@ -285,7 +285,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0
         <include refid="commonWhere"/>
-        order by sa.name,tpp.project_name,tb.building_name,th.house_no,temp.room_id ASC,temp.water_calculate_date DESC
+        order by temp.generate_order,sa.name,tpp.project_name,tb.building_name,th.house_no,temp.room_id ASC,temp.water_calculate_date DESC
     </select>
 
     <sql id="commonWhere">

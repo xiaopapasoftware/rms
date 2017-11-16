@@ -46,12 +46,13 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeGasChargeFlowMVC.Controller.saveFun();
             });
 
-            layui.laytpl.NumberFormat = function (value) {
+            layui.laytpl.amountFormat = function (value) {
                 if (value == null) {
                     value = 0;
                 }
-                return (value).toLocaleString();
+                return (value).toLocaleString('zh-Hans-CN', {style: 'currency', currency: 'CNY'});
             };
+
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
@@ -138,12 +139,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             field: 'roomNo', align: 'center', title: '房号', width: 80,
                             templet: '<div>{{ layui.laytpl.roomNoFormat(d.roomNo) }}</div>'
                         },
-                        {field: 'orderNo', align: 'center', title: '订单号', width: 120},
+                        {field: 'orderNo', align: 'center', title: '订单号', width: 200},
                         {field: 'gasCalculateDate', align: 'center', title: '计算日期', width: 120},
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
                         {
                             field: 'gasAmount', align: 'right', title: '金额（元）', width: 120,
-                            templet: '<div>{{ layui.laytpl.NumberFormat(d.gasAmount) }}</div>'
+                            templet: '<div>{{ layui.laytpl.amountFormat(d.gasAmount) }}</div>'
                         },
                         {
                             field: 'generateOrder', align: 'center', title: '是否生成账单', width: 120,
