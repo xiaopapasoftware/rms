@@ -212,7 +212,7 @@
     <select id="getFeeWaterReadFlowByFeeBillId" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
-        from fee_ele_read_flow
+        from fee_water_read_flow
         where
         del_flag=0 and from_source=1
         and business_id = #{feeWaterBillId,jdbcType=VARCHAR}
@@ -234,7 +234,7 @@
     <select id="getCurrentReadByDateAndHouseId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from fee_gas_read_flow
+        from fee_water_read_flow
         where del_flag = 0
         AND DATE_FORMAT(water_read_date,'%Y-%m-%d')= DATE_FORMAT(#{waterReadDate,jdbcType=TIMESTAMP},'%Y-%m-%d')
         AND house_id=#{houseId,jdbcType=VARCHAR}

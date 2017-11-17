@@ -33,14 +33,14 @@ public class FeeBaseController extends BaseController {
     }
 
     @RequestMapping(value = "getArea")
-    public Object getArea() {
-        List<SelectItem> selectItems = feeCommonService.getAreaWithAuth();
+    public Object getArea(String type) {
+        List<SelectItem> selectItems = feeCommonService.getAreaWithAuthByType(type);
         return ResponseData.success().data(selectItems);
     }
 
     @RequestMapping(value = "houseInfo")
     public Object houseInfo(String accountNum,String type) {
-        return ResponseData.success().data(feeCommonService.getHouseByQueryWhereAndType(accountNum, type));
+        return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndNumType(accountNum, type));
     }
 
     @RequestMapping(value = "roomInfo")

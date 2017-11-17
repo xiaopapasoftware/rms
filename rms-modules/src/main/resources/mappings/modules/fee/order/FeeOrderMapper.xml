@@ -197,9 +197,11 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update fee_order
-            <include refid="BatchUpdate_Set_From_Bean"/>
+            <set>
+                <include refid="BatchUpdate_Set_From_Bean"/>
+            </set>
             where
-            id = #{id,jdbcType=VARCHAR}
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -233,8 +235,10 @@
         select
         <include refid="Base_Column_List"/>
         from fee_order
-        where
-        id in (${ids})
+        where id in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
     </select>
 
     <select id="getFeeOrderList" resultMap="FullResultMap"
@@ -251,6 +255,7 @@
         left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         <include refid="commonWhere"/>
+        order by temp.order_status,sa.name,tpp.project_name,tb.building_name,th.house_no,tr.ROOM_NO ASC
     </select>
 
     <sql id="commonWhere">

@@ -127,7 +127,9 @@
         <if test="delFlag!=null">del_flag=#{delFlag,jdbcType=VARCHAR},</if>
     </sql>
     <sql id="BatchUpdate_Set_From_Bean">
-        business_id=#{item.businessId,jdbcType=VARCHAR},
+        <if test="item.businessId!=null">
+            business_id=#{item.businessId,jdbcType=VARCHAR},
+        </if>
         from_source=#{item.fromSource,jdbcType=NUMERIC},
         order_no=#{item.orderNo,jdbcType=VARCHAR},
         property_id=#{item.propertyId,jdbcType=VARCHAR},
@@ -142,7 +144,7 @@
         update_by=#{item.updateBy.id,jdbcType=VARCHAR},
         update_date=#{item.updateDate,jdbcType=TIMESTAMP},
         remarks=#{item.remarks,jdbcType=VARCHAR},
-        del_flag=#{item.delFlag,jdbcType=VARCHAR},
+        del_flag=#{item.delFlag,jdbcType=VARCHAR}
     </sql>
 
     <!--where-->
@@ -213,9 +215,11 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update fee_gas_charged_flow
-            <include refid="BatchUpdate_Set_From_Bean"/>
+            <set>
+                <include refid="BatchUpdate_Set_From_Bean"/>
+            </set>
             where
-            id = #{id,jdbcType=VARCHAR}
+            id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -261,6 +265,7 @@
         where del_flag=0
         and house_id=#{houseId,jdbcType=NUMERIC}
         and room_id = #{roomId,jdbcType=VARCHAR}
+        limit 0,1
     </select>
 
     <select id="getFeeGasChargedFlow" resultMap="FullResultMap"
@@ -278,7 +283,7 @@
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0
         <include refid="commonWhere"/>
-        order by gas_calculate_date DESC
+        order by temp.generate_order,sa.name,tpp.project_name,tb.building_name,th.house_no,temp.room_id ASC,temp.gas_calculate_date DESC
     </select>
 
     <sql id="commonWhere">

@@ -3,7 +3,6 @@ package com.thinkgem.jeesite.modules.fee.common.service;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.thinkgem.jeesite.common.enums.AreaTypeEnum;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
@@ -19,6 +18,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +55,9 @@ public class FeeCommonService {
     @Autowired
     private FeeConfigService feeConfigService;
 
-    private MyCache feeCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.FEE_CACHE);
-
     public static final String FEE_CONFIG_CACHE_KEY = "fee_config_cache_key";
+
+    private MyCache feeCache = MyCacheBuilder.getInstance().getSoftCache(MyCacheConstant.FEE_CACHE);
 
     public House getHouseById(String houseId) {
         return houseService.get(houseId);
@@ -80,15 +80,8 @@ public class FeeCommonService {
         return feeCommonDao.getJoinRentAllRoom();
     }
 
-    public List<Map> getHouseByQueryWhereAndType(String queryWhere, String type) {
-        return houseService.getHouseByQueryWhereAndType(queryWhere, type);
-    }
-
-    public List<SelectItem> getAreaWithAuth() {
-        Area queryArea = new Area();
-        queryArea.setType(AreaTypeEnum.AREA.getValue());
-        List<Area> areas = areaService.getAreaWithAuth(queryArea);
-        return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
+    public List<Map> getHouseByAccountNumAndNumType(String accountNum, String numType) {
+        return houseService.getHouseByAccountNumAndNumType(accountNum, numType);
     }
 
     public List<SelectItem> getAreaWithAuthByType(String type) {
@@ -177,5 +170,14 @@ public class FeeCommonService {
 
     public void clearFeeConfigCache() {
         feeCache.clear();
+    }
+
+    public boolean isOpenInitFeeData(){
+        String feeInitFun = DictUtils.getDictValue("fee_data_init_fun","fee_init","1");
+        if(StringUtils.equals(feeInitFun,"0")){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

@@ -112,11 +112,11 @@
                     <div class="layui-input-inline m-large">
                         <select id="orderType" name="house" lay-filter="orderType" placeholder="费用类型">
                             <option value="">不限</option>
-                            <option value="1">电费</option>
-                            <option value="2">水费</option>
-                            <option value="3">燃气费</option>
-                            <option value="4">宽带</option>
-                            <option value="5">电视</option>
+                            <option value="0">电费</option>
+                            <option value="1">水费</option>
+                            <option value="2">燃气费</option>
+                            <option value="3">宽带</option>
+                            <option value="4">电视</option>
                         </select>
                     </div>
                 </div>

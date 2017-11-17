@@ -9,6 +9,8 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
 
+import java.util.List;
+
 /**
  * <p>订单台账实现类service</p>
  * <p>Table: fee_order_account - 订单台账</p>
@@ -17,4 +19,6 @@ import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
 */
 @MyBatisDao
 public interface FeeOrderAccountDao extends CrudDao<FeeOrderAccount>{
+
+    void batchInsert(List<FeeOrderAccount> feeOrderAccounts);
 }

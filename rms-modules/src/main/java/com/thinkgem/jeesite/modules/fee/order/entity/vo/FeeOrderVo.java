@@ -22,6 +22,8 @@ public class FeeOrderVo extends FeeOrder {
 
     private String houseNo;
 
+    private String roomNo;
+
     private String projectAddress;
 
 }

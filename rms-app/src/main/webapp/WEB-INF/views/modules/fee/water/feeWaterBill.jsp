@@ -297,7 +297,7 @@
             <td>{{ item.projectAddress }}</td>
             <td>{{ item.buildingName || '' }}</td>
             <td>{{ item.houseNo || '' }}</td>
-            <td>{{ item.houseEleNum || '' }}</td>
+            <td>{{ item.houseWaterNum || '' }}</td>
             <td>{{ item.waterBillDate || '' }}</td>
             <td>{{ item.waterDegree || '' }}</td>
             <td>{{ item.waterBillAmount || '' }}</td>

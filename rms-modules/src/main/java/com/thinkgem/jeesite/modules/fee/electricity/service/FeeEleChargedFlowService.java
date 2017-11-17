@@ -106,12 +106,15 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
         /*获取上一条抄表记录*/
         String id = null;
-        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleBill.getEleBillDate(),feeEleBill.getHouseId(),null);
-        if(Optional.ofNullable(existEleRead).isPresent()){
+        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleBill.getEleBillDate(), feeEleBill.getHouseId(), null);
+        if (Optional.ofNullable(existEleRead).isPresent()) {
             id = existEleRead.getId();
         }
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id,feeEleBill.getHouseId(),null);
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id, feeEleBill.getHouseId(), null);
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            if (feeCommonService.isOpenInitFeeData()) {
+                return;
+            }
             logger.error("当前房屋[houseId={}]没有初始化电表数据", feeEleBill.getHouseId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
         }
@@ -148,6 +151,14 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             feeEleChargedFlow.setId(existChargeFlow.getId());
         }
 
+        /*获取上一条抄表记录*/
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(), feeEleReadFlow.getHouseId(), feeEleReadFlow.getRoomId());
+        if (!Optional.ofNullable(lastReadFlow).isPresent()) {
+            if (feeCommonService.isOpenInitFeeData()) {
+                return;
+            }
+        }
+
         feeEleChargedFlow = calculateCharge(feeEleReadFlow, feeEleChargedFlow);
 
         save(feeEleChargedFlow);
@@ -174,7 +185,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
 
         /*获取上一条抄表记录*/
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(feeEleReadFlow.getId(), feeEleReadFlow.getHouseId(), feeEleReadFlow.getRoomId());
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             logger.error("当前房屋[houseId={}]没有初始化电表数据", house.getId());
             throw new IllegalArgumentException("当前房屋没有初始化电表数据");
@@ -226,6 +237,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                     feeEleChargedFlow.setPayer(PayerEnum.COMPANY.getValue());
                 }
 
+                rentRoomSize = rentRoomSize == 0 ? 1 : rentRoomSize;
+
                 feeEleChargedFlow.setEleAmount(new BigDecimal(amount).divide(new BigDecimal(rentRoomSize)));
             } else {
                 Room room = feeCommonService.getRoomById(feeEleChargedFlow.getRoomId());
@@ -262,7 +275,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                 v.stream().forEach(f -> {
                     f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
                     f.setOrderNo(orderNo);
-                    updEleCharges.add(f);
+
+                     /*添加更新的收费流水*/
+                    FeeEleChargedFlow updCharged = f.clone();
+                    updCharged.preUpdate();
+                    updEleCharges.add(updCharged);
+
+                    /*计算金额*/
                     feeOrder.setAmount(feeOrder.getAmount().add(f.getEleValleyAmount()).add(f.getElePeakAmount()));
                 });
                 feeOrders.add(feeOrder);
@@ -278,7 +297,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                         value.stream().forEach(f -> {
                             /*设置公摊的orderNo为000000*/
                             f.setOrderNo("000000");
-                            updEleCharges.add(f);
+                            f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
+
+                            /*添加更新的收费流水*/
+                            FeeEleChargedFlow updCharged = f.clone();
+                            updCharged.preUpdate();
+                            updEleCharges.add(updCharged);
                         });
                     } else {
                         String orderNo = new IdGenerator().nextId();
@@ -287,8 +311,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
                         value.stream().forEach(f -> {
                             f.setOrderNo(orderNo);
                             f.setGenerateOrder(GenerateOrderEnum.YES.getValue());
-                            updEleCharges.add(f);
 
+                            /*添加更新的收费流水*/
+                            FeeEleChargedFlow updCharged = f.clone();
+                            updCharged.preUpdate();
+                            updEleCharges.add(updCharged);
+
+                            /*计算金额*/
                             feeOrder.setAmount(feeOrder.getAmount().add(f.getEleAmount()));
 
                             /*如果是租客支付,支付金额添加公摊数*/
@@ -306,9 +335,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
         });
 
-        dao.batchUpdate(feeEleChargedFlows);
-        logger.info("开始生成账单");
-        feeOrderService.batchInsert(feeOrders);
+        if (feeEleChargedFlows.size() > 0) {
+            dao.batchUpdate(feeEleChargedFlows);
+        }
+        if (feeOrders.size() > 0) {
+            logger.info("开始生成账单");
+            feeOrderService.batchInsert(feeOrders);
+        }
     }
 
     private FeeOrder eleChargedFlowToFeeOrder(FeeEleChargedFlow feeEleChargedFlow) {
@@ -320,6 +353,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         feeOrder.setPropertyId(feeEleChargedFlow.getPropertyId());
         feeOrder.setOrderType(OrderTypeEnum.ELECTRICITY.getValue());
         feeOrder.setRoomId(feeEleChargedFlow.getRoomId());
+        feeOrder.setAmount(new BigDecimal(0));
+        feeOrder.preInsert();
         return feeOrder;
     }
 }

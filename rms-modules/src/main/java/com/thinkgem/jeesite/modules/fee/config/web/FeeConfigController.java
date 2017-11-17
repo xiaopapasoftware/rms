@@ -7,12 +7,8 @@ package com.thinkgem.jeesite.modules.fee.config.web;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.common.entity.SelectItem;
-import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
-import com.thinkgem.jeesite.modules.common.service.SelectItemService;
-import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.config.entity.vo.FeeConfigVo;
 import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
@@ -32,13 +28,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/fee/config")
-public class FeeConfigController extends BaseController {
-
-    @Autowired
-    private SelectItemService selectItemService;
-
-    @Autowired
-    private FeeCommonService feeCommonService;
+public class FeeConfigController extends FeeBaseController {
 
     @Autowired
     private FeeConfigService feeConfigService;
@@ -80,17 +70,4 @@ public class FeeConfigController extends BaseController {
         FeeConfig feeConfig = feeConfigService.get(id);
         return ResponseData.success().data(feeConfig);
     }
-
-    @RequestMapping(value = "getArea")
-    public Object getArea(String type) {
-        List<SelectItem> selectItems = feeCommonService.getAreaWithAuthByType(type);
-        return ResponseData.success().data(selectItems);
-    }
-
-    @RequestMapping(value = "getSubOrgList")
-    public Object getSubOrgList(SelectItemCondition condition) {
-        List<SelectItem> selectItems = selectItemService.getSelectListByBusinessCode(condition);
-        return ResponseData.success().data(selectItems);
-    }
-
 }

@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.fee.order.dao.FeeOrderDao;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrderAccount;
 import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,39 +33,49 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
 
+    @Autowired
+    private FeeOrderAccountService feeOrderAccountService;
+
     public void batchInsert(List<FeeOrder> feeOrders) {
         dao.batchInsert(feeOrders);
     }
 
     @Transactional(readOnly = false)
     public void payed(String... id) {
-        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<String> ids = Arrays.stream(id).collect(Collectors.toList());
         List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
 
-        List<FeeOrder> updOrder = Lists.newArrayList();
+        List<FeeOrder> updOrders = Lists.newArrayList();
         List<FeeOrderAccount> feeOrderAccounts = Lists.newArrayList();
         feeOrders.forEach(f -> {
             f.setOrderStatus(OrderStatusEnum.PASS.getValue());
-            updOrder.add(f);
+            f.preUpdate();
+            updOrders.add(f);
 
             feeOrderAccounts.add(feeOrderToAccount(f));
         });
+
+        dao.batchUpdate(updOrders);
+        logger.info("新增台账记录");
+        feeOrderAccountService.batchInsert(feeOrderAccounts);
     }
 
     @Transactional(readOnly = false)
     public void repay(String... id) {
-        String ids =  Arrays.stream(id).collect(Collectors.joining(","));
+        List<String> ids = Arrays.stream(id).collect(Collectors.toList());
         List<FeeOrder> feeOrders = dao.getFeeOrderByIds(ids);
-
         List<FeeOrder> updOrders = Lists.newArrayList();
         feeOrders.forEach(f -> {
             f.setOrderStatus(OrderStatusEnum.REJECT.getValue());
             f.setDelFlag(Constants.DEL_FLAG_YES);
+            f.preUpdate();
             updOrders.add(f);
         });
+
+        dao.batchUpdate(updOrders);
     }
 
-    private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder){
+    private FeeOrderAccount feeOrderToAccount(FeeOrder feeOrder) {
         FeeOrderAccount feeOrderAccount = new FeeOrderAccount();
         feeOrderAccount.setAmount(feeOrder.getAmount());
         feeOrderAccount.setHouseId(feeOrder.getHouseId());
@@ -74,6 +85,7 @@ public class FeeOrderService extends CrudService<FeeOrderDao, FeeOrder> {
         feeOrderAccount.setPayDate(new Date());
         feeOrderAccount.setPropertyId(feeOrder.getPropertyId());
         feeOrderAccount.setRoomId(feeOrder.getRoomId());
+        feeOrderAccount.preInsert();
         return feeOrderAccount;
     }
 

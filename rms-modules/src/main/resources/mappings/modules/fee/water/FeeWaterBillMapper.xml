@@ -280,6 +280,7 @@
     <!-- end select -->
     <sql id="commonWhere">
         <where>
+            AND th.del_flag=0
             <if test="areaId!=null and areaId!=''">AND sa.id=#{areaId}</if>
             <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
             <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
