@@ -298,6 +298,7 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('339','25','转租手续费（收）','payment_type','款项类型','26','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('341','26','预定违约退款（出）','payment_type','款项类型','27','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('3411','27','应退定金（出）','payment_type','款项类型','28','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('3412','28','赠送房租（出）','payment_type','款项类型','29','0','1',now(),'1',now(),NULL,'0');
 
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('343','3','定金转违约到账待登记','deposit_agreement_busi_status','定金协议业务状态','4','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('344','4','定金转违约到账待审核','deposit_agreement_busi_status','定金协议业务状态','5','0','1',now(),'1',now(),NULL,'0');
