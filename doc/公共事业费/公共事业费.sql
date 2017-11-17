@@ -431,3 +431,10 @@ create table process_flow
 
 alter table process_flow comment '审核记录';
 
+INSERT INTO temprms.sys_dict
+(id, value, label, `type`, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag)
+VALUES('73fb725d48cb48a4968e05c49de485d2', '0', 'fee_data_init_fun', 'fee_init', '费用计算的时候，如果不存在初始化数据，则把当前作为初始化数据保存', 10, '0', '1', '2017-11-14 09:27:19.000', '1', '2017-11-14 09:31:34.000', '0:开启
+1:关闭', '0');
+
+
+
