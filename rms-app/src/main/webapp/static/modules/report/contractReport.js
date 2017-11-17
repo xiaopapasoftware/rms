@@ -126,9 +126,9 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                         contractContent.innerHTML = html;
                     });
 
-                    laypage({
-                        cont : 'contractPage',
-                        pages : data.totalPage,
+                    laypage.render({
+                        elem : 'contractPage',
+                        count : data.totalPage,
                         curr : data.pageNum,
                         groups : 5,
                         skip : true,

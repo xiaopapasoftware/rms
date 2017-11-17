@@ -3,7 +3,7 @@
  */
 
 layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
-    var form = layui.form(),
+    var form = layui.form,
         laypage = layui.laypage,
         layer = layui.layer,
         laytpl = layui.laytpl;
@@ -85,9 +85,9 @@ layui.use(['form', 'laypage', 'layer', 'laytpl'], function () {
                         rentDueUrgeContent.innerHTML = html;
                     });
 
-                    laypage({
-                        cont : 'rentDueUrgePage',
-                        pages : data.totalPage,
+                    laypage.render({
+                        elem : 'rentDueUrgePage',
+                        count : data.totalPage,
                         curr : data.pageNum,
                         groups : 5,
                         skip : true,

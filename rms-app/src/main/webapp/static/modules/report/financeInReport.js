@@ -2,7 +2,7 @@
  * Created by wangganggang on 17/4/22.
  */
 layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
-    var form = layui.form(),
+    var form = layui.form,
         laypage = layui.laypage,
         layer = layui.layer,
         laydate = layui.laydate,
@@ -111,9 +111,9 @@ layui.use(['form', 'laypage', 'layer', 'laydate', 'laytpl'], function () {
                         financeContent.innerHTML = html;
                     });
 
-                    laypage({
-                        cont : 'financePage',
-                        pages : rep.totalPage,
+                    laypage.render({
+                        elem : 'financePage',
+                        count : rep.totalPage,
                         curr : rep.pageNum,
                         groups : 5,
                         skip : true,
