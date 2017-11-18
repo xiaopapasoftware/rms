@@ -683,6 +683,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">是否返租促销：</label>
+			<div class="controls">
+				<form:checkbox path="hasFree" value="1" style="line-height: 30px; height: 30px;"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">减免房租月数：</label>
+			<div class="controls">
+				<form:input path="freeMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">合同签订时间：</label>
 			<div class="controls">
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"

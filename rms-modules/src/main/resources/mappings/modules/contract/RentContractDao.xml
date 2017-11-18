@@ -66,7 +66,9 @@
 		at1.attachment_path as "rentContractFile",
 		at3.attachment_path as "rentContractCusIDFile",
 		at4.attachment_path as "rentContractOtherFile",
-		a.data_source as "dataSource"
+		a.data_source as "dataSource",
+		a.has_free as "hasFree",
+		a.free_months as "freeMonths"
 	</sql>
 
 	<sql id="rentContractJoins">
@@ -540,7 +542,9 @@
 		del_flag,
 		charge_type,
 		return_remark,
-		data_source
+		data_source,
+		has_free,
+		free_months
 		) VALUES (
 		#{id},
 		#{agreementId},
@@ -591,7 +595,9 @@
 		#{delFlag},
 		#{chargeType},
 		#{returnRemark},
-		#{dataSource}
+		#{dataSource},
+		#{hasFree},
+		#{freeMonths}
 		)
 	</insert>
 
@@ -645,7 +651,9 @@
 		remarks = #{remarks},
 		charge_type =
 		#{chargeType},
-		return_remark=#{returnRemark}
+		return_remark=#{returnRemark},
+		has_free=#{hasFree},
+		free_months=#{freeMonths}
 		WHERE id = #{id}
 	</update>
 

@@ -1,16 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
@@ -23,30 +12,8 @@ import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
-import com.thinkgem.jeesite.modules.contract.entity.Accounting;
-import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
-import com.thinkgem.jeesite.modules.contract.entity.Audit;
-import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
-import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.AccountingTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FeeChargeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FileType;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
+import com.thinkgem.jeesite.modules.contract.entity.*;
+import com.thinkgem.jeesite.modules.contract.enums.*;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
@@ -60,6 +27,17 @@ import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 出租合同Service
@@ -542,6 +520,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         }
         genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
       }
+      //若有返租促销，则更改合同最新无优惠的赠送月数金额到账
+      if (rentContract.getHasFree().equals("1")) {
+        genFreePayTrans(id, rentContract.getFreeMonths());
+      }
       // 定金协议转合同，更新原定金协议状态
       if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
         DepositAgreement depositAgreement = depositAgreementService.get(rentContract.getAgreementId());
@@ -697,6 +679,28 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         startD = DateUtils.dateAddMonth(startD, 1);
       }
     }
+  }
+
+  private void genFreePayTrans(String rentContractId, Integer freeMonths) {
+    List<PaymentTrans> transList = paymentTransService.queryNoSignPaymentsByTransId(rentContractId);
+    if (transList.size() >= freeMonths) {
+      transList.stream().limit(freeMonths).forEach(trans -> {
+        paymentTransService.freePaymentById(trans.getId());
+        saveFreePaymentTrans(trans);
+      });
+    }
+  }
+
+  private void saveFreePaymentTrans(PaymentTrans trans) {
+    PaymentTrans freeTrans = new PaymentTrans();
+    BeanUtils.copyProperties(trans, freeTrans);
+    freeTrans.setPaymentType(PaymentTransTypeEnum.AWARD_RENT_AMT.getValue());
+    freeTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
+    freeTrans.setTransAmount(trans.getTradeAmount());
+    freeTrans.setLastAmount(0d);
+    freeTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+    freeTrans.setId(null);
+    paymentTransService.save(freeTrans);
   }
 
   @Transactional(readOnly = true)

@@ -3,23 +3,21 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
-import com.thinkgem.jeesite.modules.entity.User;
-import org.hibernate.validator.constraints.Length;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 出租合同Entity
@@ -98,6 +96,8 @@ public class RentContract extends DataEntity<RentContract> {
   private String returnRemark;// 退租备注
   private String dataSource;
   private String updateUser;
+  private String hasFree;  //是否返租促销
+  private Integer freeMonths; //减免房租月数
   private List<String> contractBusiStatusList;// 用于查询合同列表的状态集合，仅用于特定业务场景合同查询
 
   public RentContract() {
@@ -670,6 +670,22 @@ public class RentContract extends DataEntity<RentContract> {
 
   public void setUpdateUser(String updateUser) {
     this.updateUser = updateUser;
+  }
+
+  public String getHasFree() {
+    return hasFree;
+  }
+
+  public void setHasFree(String hasFree) {
+    this.hasFree = hasFree;
+  }
+
+  public Integer getFreeMonths() {
+    return freeMonths;
+  }
+
+  public void setFreeMonths(Integer freeMonths) {
+    this.freeMonths = freeMonths;
   }
 
   public List<String> getContractBusiStatusList() {

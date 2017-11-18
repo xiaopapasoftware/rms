@@ -351,7 +351,24 @@
 			</foreach>
 		</if>
 	</select>
-	
+
+	<select id="queryNoSignPaymentsByTransId" resultType="PaymentTrans">
+		SELECT t.*
+		FROM t_payment_trans t
+		WHERE t.del_flag = '0'
+		AND t.trade_type in ('3', '4')
+		AND t.payment_type = '6'
+		AND t.trade_direction = '1'
+		AND t.trans_status = '0'
+		AND t.trans_id = #{transId}
+		ORDER BY start_date asc
+	</select>
+
+	<update id="freePaymentById">
+		update t_payment_trans
+		set trans_status = '2',TRANS_AMOUNT = TRADE_AMOUNT, LAST_AMOUNT = '0'
+		WHERE id = #{id}
+	</update>
 	<!--查询某个房屋下合同指定时间内出账款项 -->
 	<!--<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*

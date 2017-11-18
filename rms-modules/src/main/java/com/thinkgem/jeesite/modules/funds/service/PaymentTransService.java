@@ -14,11 +14,7 @@ import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.funds.entity.PaymenttransDtl;
-import com.thinkgem.jeesite.modules.funds.entity.Receipt;
-import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import com.thinkgem.jeesite.modules.funds.entity.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -303,6 +299,10 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     return paymentTransDao.queryOutAwardRentsPaymentSByTransIdAndTime(startDate, endDate, transIdList);
   }
 
+  public List<PaymentTrans> queryNoSignPaymentsByTransId(String transId) {
+    return paymentTransDao.queryNoSignPaymentsByTransId(transId);
+  }
+
   // public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, List<String> transIdList) {
   // return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transIdList);
   // }
@@ -317,5 +317,9 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
       return ptList.get(ptList.size() - 1).getExpiredDate();
     }
     return null;
+  }
+
+  public void freePaymentById(String id) {
+    paymentTransDao.freePaymentById(id);
   }
 }
