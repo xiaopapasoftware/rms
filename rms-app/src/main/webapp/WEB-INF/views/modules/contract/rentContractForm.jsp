@@ -501,6 +501,10 @@
 		//function changeTenantList(rentContractId){//更改承租人列表
 		//    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
 		//}
+		function isHasFree(dom) {
+		    var flag = dom.checked?false:true;
+			$('#freeMonths').attr('disabled',flag);
+        }
 	</script>
 </head>
 <body>
@@ -685,13 +689,13 @@
 		<div class="control-group">
 			<label class="control-label">是否返租促销：</label>
 			<div class="controls">
-				<form:checkbox path="hasFree" value="1" style="line-height: 30px; height: 30px;"/>
+				<form:checkbox path="hasFree"  value="1" style="line-height: 30px; height: 30px;" onclick="isHasFree(this)"  />
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">减免房租月数：</label>
 			<div class="controls">
-				<form:input path="freeMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits"/>
+				<form:input type = "number" placeholder="请填写正整数" id = "freeMonths"  path="freeMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits"  disabled="true" />
 			</div>
 		</div>
 		<div class="control-group">
