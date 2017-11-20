@@ -3,6 +3,7 @@ package com.thinkgem.jeesite.modules.fee.common.service;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
@@ -159,7 +160,7 @@ public class FeeCommonService {
             return (Map<String, FeeConfig>) feeCache.getObject(FEE_CONFIG_CACHE_KEY);
         }
         FeeConfig queryConfig = new FeeConfig();
-        queryConfig.setConfigStatus(0);
+        queryConfig.setConfigStatus(Constants.YES);
         List<FeeConfig> feeConfigs = feeConfigService.findList(queryConfig);
         Map<String, FeeConfig> feeConfigMap = Maps.uniqueIndex(feeConfigs,
                 feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType());
