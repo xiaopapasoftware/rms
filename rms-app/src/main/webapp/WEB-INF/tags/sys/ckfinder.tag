@@ -7,10 +7,26 @@
 <%@ attribute name="readonly" type="java.lang.Boolean" required="false" description="是否查看模式"%>
 <%@ attribute name="maxWidth" type="java.lang.String" required="false" description="最大宽度"%>
 <%@ attribute name="maxHeight" type="java.lang.String" required="false" description="最大高度"%>
+<style>
+    /** 文件上传 **/
+    .layui-upload-button{position: relative; display: inline-block; vertical-align: middle; min-width: 60px; height: 38px; line-height: 38px; border: 1px solid #DFDFDF; border-radius: 2px; overflow: hidden; background-color: #fff; color: #666;}
+    .layui-upload-button:hover{border: 1px solid #aaa; color: #333;}
+    .layui-upload-button:active{border: 1px solid #4CAF50; color: #000;}
+    .layui-upload-file,
+    .layui-upload-button input{opacity: 0.01; filter: Alpha(opacity=1); cursor: pointer; display: block !important;}
+    .layui-upload-button input{position: absolute; left: 0; top: 0; z-index: 1000; font-size: 100px; width: 100%; height: 100%;}
+    .layui-upload-icon{display:block; margin: 0 15px; text-align: center;}
+    .layui-upload-icon i{margin-right: 5px; vertical-align: top; font-size: 20px; color: #5FB878}
+    .layui-upload-iframe{position: absolute; width: 0px; height: 0px; border: 0px; visibility: hidden;}
+    .layui-upload-enter{border: 1px solid #009E94; background-color: #009E94; color: #fff; -webkit-transform: scale(1.1); transform: scale(1.1);}
+    .layui-upload-enter .layui-upload-icon,
+    .layui-upload-enter .layui-upload-icon i{color: #fff;}
+</style>
 <ol id="${input}Preview"></ol><c:if test="${!readonly}">
     <div class="layui-box layui-upload-button">
-       <input type="file" id="${input}_upload_file" name="file" class="layui-upload-file" lay-title="添加" onchange="${input}UploadFile();">
-     <span class="layui-upload-icon"><i class="layui-icon"></i>添加</span></div>
+        <span class="layui-upload-icon"><i class="layui-icon"></i>添加</span>
+        <input type="file" id="${input}_upload_file" name="file" class="layui-upload-file" lay-title="添加" onchange="${input}UploadFile();">
+    </div>
     <%--<input type="file" id="_btn_upload" name="file" class="layui-upload-file" lay-title="添加">--%>
     <%--<a href="javascript:" id="_btn_upload" class="btn">${selectMultiple?'添加':'选择'}</a>--%>&nbsp;
     <a href="javascript:" onclick="${input}DelAll();" class="layui-btn layui-btn-primary">清除</a></c:if>
