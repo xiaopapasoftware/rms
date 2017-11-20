@@ -40,6 +40,7 @@ import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.AccountingTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.AwardRentAmtTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
@@ -398,6 +399,10 @@ public class RentContractController extends BaseController {
     }
     if (StringUtils.isNotEmpty(rentContract.getDataSource()) && DataSourceEnum.FRONT_APP.getValue().equals(rentContract.getDataSource())) {} else {
       rentContract.setDataSource(DataSourceEnum.BACK_SYSTEM.getValue());
+    }
+    if (rentContract.getHasFree() == null) {
+      rentContract.setHasFree(AwardRentAmtTypeEnum.N.getValue());
+      rentContract.setFreeMonths(0);
     }
     int result = rentContractService.saveContract(rentContract);
     if (result == -3) {

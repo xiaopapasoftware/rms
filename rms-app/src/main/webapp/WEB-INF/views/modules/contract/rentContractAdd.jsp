@@ -55,7 +55,7 @@
 				  $("#tenantList").trigger('change');
 			});
 
-			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
+			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #valleyMeterValue, #freeMonths,#coalValue, #waterValue, #userName").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
@@ -103,7 +103,16 @@
 			$("#agreementBusiStatus").val("2");
 			$("#inputForm").validate({
 				submitHandler: function(form){
-					
+					var freeMonths = $('#freeMonths').val();
+					if($("#hasFree").attr('checked')&&(freeMonths==null||freeMonths==""||freeMonths==undefined)){
+						top.$.jBox.tip('减免房租不可为空！','warning');
+						return;
+					}
+					var number = parseFloat(freeMonths);
+					if($("#hasFree").attr('checked') && (number>10 || number <= 0)){
+						top.$.jBox.tip('减免房租至少为1个月且不可超过10个月！','warning');
+						return;
+					}
 					var rental = $("#rental").val();
 					if(rental!=null && rental!=undefined && rental!=""){
 						var rentalNum = parseFloat(rental);
@@ -385,6 +394,16 @@
 		//function changeTenantList(rentContractId){//更改承租人列表
 		//    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
 		//}
+	     function isHasFree(dom) {
+    	    var flag = dom.checked ? false:true;
+			$('#freeMonths').attr('disabled',flag);
+			if(!flag){
+			  $('#freeMonths').addClass("required");
+			}else{
+			  $('#freeMonths').val("0");
+			  $('#freeMonths').removeClass("required");
+			}
+         }
 	</script>
 </head>
 <body>
@@ -595,6 +614,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">是否返租促销：</label>
+			<div class="controls">
+				<form:checkbox path="hasFree"  value="1" style="line-height: 30px; height: 30px;" onclick="isHasFree(this)"  />
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">减免房租月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "freeMonths"  path="freeMonths" htmlEscape="false" maxlength="2" class="input-xlarge  digits"  disabled="true" />
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">合作人：</label>
 			<div class="controls">
 				<form:select path="partner.id" class="input-xlarge">
@@ -609,8 +640,8 @@
 			<div class="controls">
 				<sys:treeselect id="user" name="user.id" value="${rentContract.user.id}" labelName="user.name" labelValue="${rentContract.user.name}"
 					title="用户" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true" notAllowSelectParent="true"/>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
-			<span class="help-inline"><font color="red">*</font></span>
 		</div>
 		<div class="control-group">
 			<label class="control-label">是否开通有线电视：</label>

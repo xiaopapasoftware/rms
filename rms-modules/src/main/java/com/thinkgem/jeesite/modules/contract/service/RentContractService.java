@@ -514,14 +514,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       }
       int monthCountDiff = DateUtils.getMonthSpace(startDate, expireDate);// 合同日期间隔月数
       if (monthCountDiff > 0) {
-        Double rentalAmt = rentContract.getRental();// 房租
+        Double rentalAmt = rentContract.getRental();
         if (rentalAmt != null && rentalAmt > 0) { // 生成房租款项
           genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);
         }
         genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
       }
-      //若有返租促销，则更改合同最新无优惠的赠送月数金额到账
-      if (rentContract.getHasFree().equals("1")) {
+      // 若有返租促销，则更改合同最新无优惠的赠送月数金额到账
+      if (rentContract.getHasFree() != null && AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getHasFree())) {
         genFreePayTrans(id, rentContract.getFreeMonths());
       }
       // 定金协议转合同，更新原定金协议状态
