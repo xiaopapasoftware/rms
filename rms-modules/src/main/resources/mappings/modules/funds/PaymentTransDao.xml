@@ -325,7 +325,7 @@
 		</if>
 	</select>
 
-<!--查询某个房屋下合同指定时间内进账款项 -->
+	<!--查询某个房屋下合同指定时间内进账款项 -->
 	<select id="queryOutAwardRentsPaymentSByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
 		FROM t_payment_trans t
