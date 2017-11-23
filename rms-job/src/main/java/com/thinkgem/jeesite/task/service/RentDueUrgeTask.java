@@ -54,7 +54,7 @@ public class RentDueUrgeTask {
 
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.IN)
-                .propertyType(PropertyType.I).add("temp.free_day", "7,15").end();
+                .propertyType(PropertyType.I).add("temp.free_day", "7,3").end();
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(propertyFilters, sorts);
         reportEntities = reportComponentService.fillTenantInfo(reportEntities);
         sendMsg(reportEntities);
