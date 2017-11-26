@@ -142,6 +142,22 @@
 		  ]]>
 		</if>
 	</select>
+
+	<!-- 查询某个小区下面所有的房间数量 -->
+	<select id="queryRoomsByProjectPropertyId" resultType="int">
+		SELECT  COUNT(*)
+		FROM    t_room tr
+		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+		AND     tr.`DEL_FLAG` = '0'
+	</select>
+
+	<!-- 查询某个小区下面所有的房间数量 -->
+	<select id="queryRoomsByHouseId" resultType="int">
+		SELECT  COUNT(*)
+		FROM    t_room tr
+		WHERE   tr.`HOUSE_ID` = #{houseId}
+		AND     tr.`DEL_FLAG` = '0'
+	</select>
 	
 	<select id="findAllList" resultType="Room">
 		SELECT

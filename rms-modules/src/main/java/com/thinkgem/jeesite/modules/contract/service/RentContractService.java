@@ -77,6 +77,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   private LeaseContractService leaseContractService;
   @Autowired
   private ElectricFeeDao electricFeeDao;
+  @Autowired
+  private RentContractDao rentContractDao;
 
   @Override
   public List<RentContract> findList(RentContract entity) {
@@ -862,4 +864,16 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
       }
     }
   }
+
+  /**
+   * 查询某天某项目下出租的整租/单间合同列表
+   * @param projectId
+   * @param date
+   * @param type
+   * @return
+   */
+  public List<RentContract> queryContractListByProjectId(String projectId, Date date, String type){
+    return rentContractDao.queryContractListByProjectId(projectId, date, type);
+  }
+
 }

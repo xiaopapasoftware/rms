@@ -4,14 +4,13 @@
  */
 package com.thinkgem.jeesite.modules.contract.dao;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 出租合同DAO接口
@@ -50,4 +49,13 @@ public interface RentContractDao extends CrudDao<RentContract> {
    */
   List<RentContract> queryValidConditionalEntireHouses(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId,
                                                        @Param("roomNum") Integer roomNum, @Param("cusspacNum") Integer cusspacNum);
+
+  /**
+   * 查询某天某项目下出租的整租/单间合同列表
+   * @param projectId
+   * @param date
+   * @param type
+   * @return
+   */
+  List<RentContract> queryContractListByProjectId(@Param("projectId") String projectId, @Param("date")Date date, @Param("type")String type);
 }

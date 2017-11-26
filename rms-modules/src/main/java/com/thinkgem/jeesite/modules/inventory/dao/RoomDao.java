@@ -4,16 +4,14 @@
  */
 package com.thinkgem.jeesite.modules.inventory.dao;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 房间信息DAO接口
@@ -50,8 +48,17 @@ public interface RoomDao extends CrudDao<Room> {
   int updateRoomStatus4Deposit(Room paRoom);
 
   /**
-   * 查询某个小区下面已经出租掉的所有的房间数量
+   * 查询某个小区下面所有的房间数量
    */
   int queryRoomsCountByProjectPropertyId(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
 
+  /**
+   * 查询某个小区下面所有的房间数量
+   */
+  int queryRoomsByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId);
+
+  /**
+   * 查询某个房屋下面所有的房间数量
+   */
+  int queryRoomsByHouseId(@Param("houseId") String houseId);
 }

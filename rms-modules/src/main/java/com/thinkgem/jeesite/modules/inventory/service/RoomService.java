@@ -3,16 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -22,6 +12,14 @@ import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 房间信息Service
@@ -214,4 +212,17 @@ public class RoomService extends CrudService<RoomDao, Room> {
     return dao.queryRoomsCountByProjectPropertyId(startDate, propertyProjectId);
   }
 
+  /**
+   * 查询某个小区下面所有的房间数量
+   */
+  public int queryRoomsByProjectPropertyId(String propertyProjectId) {
+    return dao.queryRoomsByProjectPropertyId(propertyProjectId);
+  }
+
+  /**
+   * 查询某个房屋下面所有的房间数量
+   */
+  public int queryRoomsByHouseId(String houseId) {
+    return dao.queryRoomsByHouseId(houseId);
+  }
 }
