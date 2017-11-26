@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.modules.common.service.SelectItemService;
 import com.thinkgem.jeesite.modules.lease.LeaseCalculateStrategy;
 import com.thinkgem.jeesite.modules.lease.condition.LeaseStatisticsCondition;
 import com.thinkgem.jeesite.modules.lease.entity.LeaseStatisticsVO;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +34,7 @@ public class LeaseReportController extends BaseController {
   /**
    * 出租率统计报表-查询
    */
+  @RequiresPermissions("report:lease:view")
   @RequestMapping(value = "leaseStatistics")
   public String leaseStatistics(Model model) {
     model.addAttribute("countyList", getCountyList());
@@ -46,6 +48,7 @@ public class LeaseReportController extends BaseController {
     return selectItemService.getSelectListByBusinessCode(condition);
   }
 
+  @RequiresPermissions("report:lease:view")
   @RequestMapping(value = "listLeaseStatistics")
   @ResponseBody
   public LeaseStatisticsVO listLeaseStatistics(LeaseStatisticsCondition condition) {

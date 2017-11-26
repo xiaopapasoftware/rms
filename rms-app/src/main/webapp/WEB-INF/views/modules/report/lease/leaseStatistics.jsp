@@ -89,7 +89,7 @@
 					   onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"  />
 			</li>
 
-			<shiro:hasPermission name="report:gross:view">
+			<shiro:hasPermission name="report:lease:view">
 				<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
 			</shiro:hasPermission>
 		</ul>
