@@ -94,11 +94,6 @@ public class GrossProfitCalculateStrategy implements InitializingBean {
         .income(childReportList.stream().mapToDouble(GrossProfitReport::getIncome).sum()).name(getName(condition)).build();
   }
 
-  private GrossProfitReport buildSumByChildList(GrossProfitCondition condition, List<GrossProfitReport> childReportList) {
-    return new GrossProfitReportBuilder().typeEnum(condition.getTypeEnum()).cost(childReportList.stream().mapToDouble(GrossProfitReport::getCost).sum())
-        .income(childReportList.stream().mapToDouble(GrossProfitReport::getIncome).sum()).name(getName(condition)).build();
-  }
-
   public GrossProfitReportVO calculateReportCompareVO(List<GrossProfitCondition> conditionList) {
     GrossProfitReportVO reportVO = new GrossProfitReportVO();
     if (!CollectionUtils.isEmpty(conditionList)) {

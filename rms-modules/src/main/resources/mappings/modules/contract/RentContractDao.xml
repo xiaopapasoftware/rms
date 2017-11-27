@@ -675,4 +675,72 @@
 		AND trc.house_id = #{houseId}
 	</select>
 
+	<!--查询某天某项目下出租的整租/单间合同列表 -->
+	<select id="queryContractListByProjectId" resultType="RentContract">
+		SELECT
+		a.id AS "id",
+		a.contract_code AS "contractCode",
+		a.contract_name AS "contractName",
+		a.agreement_id AS "agreementId",
+		a.contract_id AS "contractId",
+		a.rent_mode AS "rentMode",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.room_id AS "room.id",
+		a.user_id AS "user.id",
+		a.contract_source AS "contractSource",
+		a.partner_id AS "partner.id",
+		a.rental AS "rental",
+		a.start_date AS "startDate",
+		a.expired_date AS "expiredDate",
+		a.sign_date AS "signDate",
+		a.sign_type AS "signType",
+		a.has_tv AS "hasTv",
+		a.tv_fee AS "tvFee",
+		a.has_net AS "hasNet",
+		a.net_fee AS "netFee",
+		a.water_fee AS "waterFee",
+		a.gas_fee AS "gasFee",
+		a.service_fee AS "serviceFee",
+		a.ren_months AS "renMonths",
+		a.deposit_months AS "depositMonths",
+		a.deposit_amount AS "depositAmount",
+		a.deposit_electric_amount AS "depositElectricAmount",
+		a.ele_recharge_amount AS "eleRechargeAmount",
+		a.has_visa AS "hasVisa",
+		a.meter_value AS "meterValue",
+		a.total_meter_value AS "totalMeterValue",
+		a.peak_meter_value AS "peakMeterValue",
+		a.valley_meter_value AS "valleyMeterValue",
+		a.coal_value AS "coalValue",
+		a.water_value AS "waterValue",
+		a.remind_time AS "remindTime",
+		a.renew_count AS "renewCount",
+		a.contract_status AS "contractStatus",
+		a.contract_busi_status AS "contractBusiStatus",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.return_remark as "returnRemark",
+		a.charge_type as "chargeType",
+		a.data_source as "dataSource",
+		a.has_free as "hasFree",
+		a.free_months as "freeMonths"
+		FROM t_rent_contract a
+		WHERE a.RENT_MODE = #{type}
+		AND a.DEL_FLAG = '0'
+		AND a.CONTRACT_STATUS = '6'
+		AND a.CONTRACT_BUSI_STATUS = '0'
+		AND a.PROPERTY_PROJECT_ID = #{projectId}
+		<![CDATA[
+			AND a.START_DATE <=  #{date}
+		 ]]>
+		<![CDATA[
+			AND a.EXPIRED_DATE >=  #{date}
+		 ]]>
+	</select>
 </mapper>

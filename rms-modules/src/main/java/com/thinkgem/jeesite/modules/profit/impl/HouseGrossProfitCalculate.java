@@ -67,7 +67,6 @@ public class HouseGrossProfitCalculate implements GrossProfitCalculate {
       // 目前存在部分赠送房租的合同，所以需要在统计时去掉赠送的房租金额
       double awardRentAmt =
           paymentTransService.queryOutAwardRentsPaymentSByTransIdAndTime(condition.getStartDate(), condition.getEndDate(), contractIdList).stream().mapToDouble(PaymentTrans::getTradeAmount).sum();
-
       List<PaymenttransDtl> dtlList = paymenttransDtlService.queryPaymenttransDtlListByContractIdList(condition.getStartDate(), condition.getEndDate(), contractIdList);
       BigDecimal result = BigDecimal.valueOf(income).subtract(BigDecimal.valueOf(awardRentAmt));
       for (PaymenttransDtl paymenttransDtl : dtlList) {

@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.fee.gas.service;
 
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
@@ -59,6 +60,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
 
     @Transactional(readOnly = false)
     public void saveFeeGasBill(FeeGasBill feeGasBill) {
+        feeGasBill.setGasBillDate(DateUtils.lastDateLocalMouth(feeGasBill.getGasBillDate()));
         House house = feeCommonService.getHouseById(feeGasBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
             logger.error("当前房屋[id={}]不存在,请确认", feeGasBill.getHouseId());

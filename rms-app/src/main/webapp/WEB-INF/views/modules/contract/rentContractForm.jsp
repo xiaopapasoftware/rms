@@ -55,7 +55,7 @@
 				  $("#tenantList").trigger('change');
 			});
 			
-			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
+			$("#contractName, #rental, #depositAmount, #renMonths, #depositMonths, #depositElectricAmount, #tvFee, #netFee, #waterFee, #serviceFee, #meterValue, #totalMeterValue, #peakMeterValue, #freeMonths,#valleyMeterValue, #coalValue, #waterValue, #userName").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
@@ -88,12 +88,9 @@
 					if(parseFloat(day)<10){
 						day = "0" + "" + day;
 					}
-					
 					var continueStartDateStyle = year + "-" + month + "-" + day;//原合同结束日期+1
-					
 					$("input[name='signDate']").val(continueStartDateStyle);//合同签订时间默认为原合同结束日期的后一天
 					$("input[name='startDate']").val(continueStartDateStyle);//合同生效时间默认为原合同结束日期的后一天
-					
 					//合同过期时间默认为一年后的当天时间减去前一天
 					oriEndDate.setFullYear(oriEndDate.getFullYear()+1);//合同过期时间默认为一年后的日期减一天
 					oriEndDate.setDate(oriEndDate.getDate()-1);
@@ -179,7 +176,17 @@
 			$("#inputForm").validate({
 				submitHandler: function(form){//单间
 					if($("#rentMode").val()!="0" && $("[id='room.id']").val()=="") {
-						top.$.jBox.tip('请选择房间.','warning');
+						top.$.jBox.tip('请选择房间！','warning');
+						return;
+					}
+					var freeMonths = $('#freeMonths').val();
+					if($("#hasFree").attr('checked')&&(freeMonths==null||freeMonths==""||freeMonths==undefined)){
+						top.$.jBox.tip('减免房租不可为空！','warning');
+						return;
+					}
+					var number = parseFloat(freeMonths);
+					if($("#hasFree").attr('checked') && (number>10 || number <= 0)){
+						top.$.jBox.tip('减免房租至少为1个月且不可超过10个月！','warning');
 						return;
 					}
 					var rental = $("#rental").val();
@@ -443,11 +450,9 @@
 		
 		function startDateChange() {
 			var startDate = new Date($("input[name='startDate']").val());
-			
 			var endDate = new Date(Date.parse(startDate));
 			endDate.setFullYear(endDate.getFullYear()+1);
 			endDate.setDate(endDate.getDate()-1);
-			
 			var year = endDate.getFullYear();
 			var month = endDate.getMonth()+1;
 			if(parseFloat(month)<10)
@@ -457,7 +462,6 @@
 				day = "0"+""+day;
 			var expiredDate=year+"-"+month+"-"+day;
 			$("input[name='expiredDate']").val(expiredDate);
-			
 			//合同续租提醒时间默认为结束时间前1个月
 			endDate.setMonth(endDate.getMonth() - 1);
 			year = endDate.getFullYear();
@@ -479,7 +483,6 @@
 			expiredDate.setFullYear(expiredDate.getFullYear());
 			expiredDate.setMonth(expiredDate.getMonth()-1);
 			expiredDate.setDate(expiredDate.getDate());
-			
 			var year = expiredDate.getFullYear();
 			var month = expiredDate.getMonth() + 1;
 			if(parseFloat(month)<10){
@@ -502,8 +505,14 @@
 		//    $.post("${ctx}/contract/rentContract/changeTenantList", {'rentContractId':rentContractId, 'tenantIds':$.makeArray($("#tenantList").val()).join()});
 		//}
 		function isHasFree(dom) {
-		    var flag = dom.checked?false:true;
+		    var flag = dom.checked ? false:true;
 			$('#freeMonths').attr('disabled',flag);
+			if(!flag){
+			  $('#freeMonths').addClass("required");
+			}else{
+			  $('#freeMonths').val("0");
+			  $('#freeMonths').removeClass("required");
+			}
         }
 	</script>
 </head>
@@ -687,18 +696,6 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">是否返租促销：</label>
-			<div class="controls">
-				<form:checkbox path="hasFree"  value="1" style="line-height: 30px; height: 30px;" onclick="isHasFree(this)"  />
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">减免房租月数：</label>
-			<div class="controls">
-				<form:input type = "number" placeholder="请填写正整数" id = "freeMonths"  path="freeMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits"  disabled="true" />
-			</div>
-		</div>
-		<div class="control-group">
 			<label class="control-label">合同签订时间：</label>
 			<div class="controls">
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
@@ -732,6 +729,18 @@
 					value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">是否返租促销：</label>
+			<div class="controls">
+				<form:checkbox id="hasFree" path="hasFree" value="1" style="line-height: 30px; height: 30px;" onclick="isHasFree(this)"  />
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">减免房租月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "freeMonths"  path="freeMonths" htmlEscape="false" maxlength="2" class="input-xlarge digits"/>
 			</div>
 		</div>
 		<div class="control-group">

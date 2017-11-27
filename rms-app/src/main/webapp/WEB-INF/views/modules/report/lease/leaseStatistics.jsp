@@ -8,31 +8,25 @@
 
         $(document).ready(function() {
         	$("#btnSubmit").click(function () {
-                var startDate = $("#startDate").val();
-                var endDate = $("#endDate").val();
-                if (startDate == "" || endDate == "") {
-                    alert("请选择具体的时间范围");
+                var date = $("#startDate").val();
+                if (date === "") {
+                    alert("请选择具体的时间");
                     return false;
 				}
-				$.post("${ctx}/report/gross/listGrossProfit", {
+				$.post("${ctx}/report/lease/listLeaseStatistics", {
                     county:$("#COUNTY").val(),
                     center:$("#CENTER").val(),
                     area:$("#AREA").val(),
                     project:$("#PROJECT").val(),
-                    building:$("#BUILDING").val(),
-					house:$("#HOUSE").val(),
-                    startDate:startDate,
-                    endDate:endDate
+                    date:date
 				}, function (data, status) {
                     $("#viewTbody").html("");
-                   if(!data || !data.length) return;
+                   if(!data) return;
                    	var html = "";
 					var trs = "";
-					$.each(data,function (index,item) {
-						var tds = "<td>"+item.name+"</td><td>"+item.income+"</td><td>"+item.cost+"</td><td>"+item.totalProfit+"</td><td>"+
-						item.profitPercent+"</td>";
-						trs += "<tr>"+tds+"</tr>";
-					});
+					var tds = "<td>"+data.name+"</td><td>"+data.totalRooms+"</td><td>"+data.leasedRooms+"</td><td>"+data.leasedPercent+"</td><td>"+
+                        data.rentSum+"</td><td>"+data.rentAvg+"</td>";
+					trs += "<tr>"+tds+"</tr>";
 					html +=trs;
                     $('#viewTbody').append(html);
                 })
@@ -85,31 +79,17 @@
 				</select>
 			</li>
 			<li><label>物业项目：</label>
-				<select id="PROJECT" name="project" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'BUILDING')">
-					<option value="">请选择...</option>
-				</select>
-			</li>
-			<li><label>楼宇：</label>
-				<select id="BUILDING" name="building" class="input-medium selectDom"  onchange="changeSelect(this.options[this.options.selectedIndex].value,'HOUSE')">
-					<option value="">请选择...</option>
-				</select>
-			</li>
-			<li><label>房屋：</label>
-				<select id="HOUSE" name="house" class="input-medium selectDom">
+				<select id="PROJECT" name="project" class="input-medium selectDom">
 					<option value="">请选择...</option>
 				</select>
 			</li>
 
-			<li><label>起始年月：</label>
+			<li><label>日期：</label>
 				<input name="startDate" id="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});"  />
+					   onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"  />
 			</li>
 
-			<li><label>截止年月：</label>
-				<input name="endDate" id="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
-					   onclick="WdatePicker({dateFmt:'yyyy-MM',isShowClear:true});" />
-			</li>
-			<shiro:hasPermission name="report:gross:view">
+			<shiro:hasPermission name="report:lease:view">
 				<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
 			</shiro:hasPermission>
 		</ul>
@@ -117,11 +97,12 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>名称</th>
-				<th>收入</th>
-				<th>支出</th>
-				<th>毛利</th>
-				<th>毛利率</th>
+				<th>维度名称</th>
+				<th>房间总数(间)</th>
+				<th>已出租数(间)</th>
+				<th>出租率</th>
+				<th>房租总计(元)</th>
+				<th>月房租均价(元)</th>
 			</tr>
 		</thead>
 		<tbody id = "viewTbody">

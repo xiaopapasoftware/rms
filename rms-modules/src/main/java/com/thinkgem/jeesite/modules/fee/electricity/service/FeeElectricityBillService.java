@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.fee.electricity.service;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
@@ -61,6 +62,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
 
     @Transactional(readOnly = false)
     public void saveFeeElectricityBill(FeeElectricityBill feeElectricityBill) {
+        feeElectricityBill.setEleBillDate(DateUtils.lastDateLocalMouth(feeElectricityBill.getEleBillDate()));
         House house = feeCommonService.getHouseById(feeElectricityBill.getHouseId());
         if (!Optional.ofNullable(house).isPresent()) {
             logger.error("当前房屋[houseId={}]不存在,请确认", feeElectricityBill.getHouseId());
