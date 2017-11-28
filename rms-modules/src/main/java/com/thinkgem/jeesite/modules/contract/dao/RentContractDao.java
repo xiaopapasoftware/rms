@@ -30,11 +30,6 @@ public interface RentContractDao extends CrudDao<RentContract> {
   int queryValidSingleRoomCount(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
 
   /**
-   * 查询已出租的有效的单间合同列表
-   */
-  List<RentContract> queryValidSingleRooms(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
-
-  /**
    * 查询指定时间内某房屋的有效合同
    */
   List<RentContract> queryHousesByHouseId(@Param("houseId") String houseId);
@@ -43,12 +38,6 @@ public interface RentContractDao extends CrudDao<RentContract> {
    * 查询指定日期所有部分出租+完全出租的房屋套数
    */
   int queryValidEntireHouseCount(@Param("propertyProjectId") String propertyProjectId, @Param("startDate") Date startDate);
-
-  /**
-   * 查询不同房型的有效整租合同列表
-   */
-  List<RentContract> queryValidConditionalEntireHouses(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId,
-                                                       @Param("roomNum") Integer roomNum, @Param("cusspacNum") Integer cusspacNum);
 
   /**
    * 查询某天某项目下出租的整租/单间合同列表

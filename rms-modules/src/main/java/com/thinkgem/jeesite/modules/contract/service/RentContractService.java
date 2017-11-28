@@ -426,13 +426,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.queryValidSingleRoomCount(startDate, propertyProjectId);
   }
 
-  /**
-   * 查询已出租的有效的单间合同列表
-   */
-  public List<RentContract> queryValidSingleRooms(Date startDate, Date endDate, String propertyProjectId) {
-    return dao.queryValidSingleRooms(startDate, endDate, propertyProjectId);
-  }
-
   public List<RentContract> queryHousesByHouseId(String houseId) {
     return dao.queryHousesByHouseId(houseId);
   }
@@ -442,13 +435,6 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
    */
   public int queryValidEntireHouseCount(String propertyProjectId, Date startDate) {
     return dao.queryValidEntireHouseCount(propertyProjectId, startDate);
-  }
-
-  /**
-   * 根据不同的房型查询有效的整租合同列表
-   */
-  public List<RentContract> queryValidConditionalEntireHouses(Date startDate, Date endDate, String propertyProjectId, Integer roomNum, Integer cusspacNum) {
-    return dao.queryValidConditionalEntireHouses(startDate, endDate, propertyProjectId, roomNum, cusspacNum);
   }
 
   /**
