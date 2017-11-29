@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterReadFlow;
 import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.water.service.FeeWaterReadFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,12 +33,14 @@ public class FeeWaterReadFlowController extends FeeBaseController {
       private FeeWaterReadFlowService feeWaterReadFlowService;
 
       @RequestMapping(value = "save")
+      @RequiresPermissions("fee:water:read:add")
       public Object save(FeeWaterReadFlow feeWaterReadFlow) {
           feeWaterReadFlowService.saveFeeWaterReadFlow(feeWaterReadFlow);
           return ResponseData.success();
       }
 
      @RequestMapping(value = "list")
+     @RequiresPermissions("fee:water:read:view")
      public Object list(FeeCriteriaEntity feeCriteriaEntity) {
          Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
          feeCriteriaEntity.setPage(page);
@@ -47,6 +50,7 @@ public class FeeWaterReadFlowController extends FeeBaseController {
      }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:water:read:delete")
     public Object delete(String id) {
         feeWaterReadFlowService.deleteFeeWaterReadFlow(id);
         return ResponseData.success();

@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasReadFlow;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.gas.service.FeeGasReadFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,12 +33,14 @@ public class FeeGasReadFlowController extends FeeBaseController {
       private FeeGasReadFlowService feeGasReadFlowService;
 
       @RequestMapping(value = "save")
+      @RequiresPermissions("fee:gas:read:add")
       public Object save(FeeGasReadFlow feeGasReadFlow) {
           feeGasReadFlowService.saveFeeGasReadFlow(feeGasReadFlow);
           return ResponseData.success();
       }
 
      @RequestMapping(value = "list")
+     @RequiresPermissions("fee:gas:read:view")
      public Object list(FeeCriteriaEntity feeCriteriaEntity) {
          Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
          feeCriteriaEntity.setPage(page);
@@ -47,6 +50,7 @@ public class FeeGasReadFlowController extends FeeBaseController {
      }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:gas:read:delete")
     public Object delete(String id) {
         feeGasReadFlowService.deleteFeeGasReadFlow(id);
         return ResponseData.success();

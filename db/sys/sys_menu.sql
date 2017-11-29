@@ -261,57 +261,61 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 
 ---公共事业费菜单--------
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values
-('600','199','0,1,198,199,','费用配置','102','/fee/config/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
+('600','199','0,1,198,199,','费用配置','102','/fee/config/index',NULL,NULL,'1','fee:config:view','1',now(),'1',now(),NULL,'0'),
 ('601','600','0,1,198,199,600,','新增','103',NULL,NULL,NULL,'0','fee:config:add','1',now(),'1',now(),NULL,'0'),
 ('602','600','0,1,198,199,600,','删除','104',NULL,NULL,NULL,'0','fee:config:delete','1',now(),'1',now(),NULL,'0'),
 ('603','600','0,1,198,199,600,','停用','105',NULL,NULL,NULL,'0','fee:config:stop','1',now(),'1',now(),NULL,'0'),
 
-('604','199','0,1,198,199,','电费账单录入','106','/fee/electricity/bill/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
+('604','199','0,1,198,199,','电费账单录入','106','/fee/electricity/bill/index',NULL,NULL,'1','fee:ele:bill:view','1',now(),'1',now(),NULL,'0'),
 ('605','604','0,1,198,199,604,','新增','107',NULL,NULL,NULL,'0','fee:ele:bill:add','1',now(),'1',now(),NULL,'0'),
 ('606','604','0,1,198,199,604,','审核','109',NULL,NULL,NULL,'0','fee:ele:bill:apv','1',now(),'1',now(),NULL,'0'),
 ('607','604','0,1,198,199,604,','打印','110',NULL,NULL,NULL,'0','fee:ele:bill:print','1',now(),'1',now(),NULL,'0'),
+('608','604','0,1,198,199,604,','删除','110',NULL,NULL,NULL,'0','fee:ele:bill:delete','1',now(),'1',now(),NULL,'0'),
 
-('608','199','0,1,198,199,','水费账单录入','111','/fee/water/bill/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('609','608','0,1,198,199,608,','新增','107',NULL,NULL,NULL,'0','fee:water:bill:add','1',now(),'1',now(),NULL,'0'),
-('610','608','0,1,198,199,608,','审核','109',NULL,NULL,NULL,'0','fee:water:bill:apv','1',now(),'1',now(),NULL,'0'),
-('611','608','0,1,198,199,608,','打印','110',NULL,NULL,NULL,'0','fee:water:bill:print','1',now(),'1',now(),NULL,'0'),
+('609','199','0,1,198,199,','水费账单录入','111','/fee/water/bill/index',NULL,NULL,'1','fee:water:bill:view','1',now(),'1',now(),NULL,'0'),
+('610','609','0,1,198,199,609,','新增','107',NULL,NULL,NULL,'0','fee:water:bill:add','1',now(),'1',now(),NULL,'0'),
+('611','609','0,1,198,199,609,','审核','109',NULL,NULL,NULL,'0','fee:water:bill:apv','1',now(),'1',now(),NULL,'0'),
+('612','609','0,1,198,199,609,','打印','110',NULL,NULL,NULL,'0','fee:water:bill:print','1',now(),'1',now(),NULL,'0'),
+('613','609','0,1,198,199,609,','删除','110',NULL,NULL,NULL,'0','fee:water:bill:delete','1',now(),'1',now(),NULL,'0'),
 
-('612','199','0,1,198,199,','煤气账单录入','111','/fee/gas/bill/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('613','612','0,1,198,199,612,','新增','112',NULL,NULL,NULL,'0','fee:gas:bill:add','1',now(),'1',now(),NULL,'0'),
-('614','612','0,1,198,199,612,','审核','113',NULL,NULL,NULL,'0','fee:gas:bill:apv','1',now(),'1',now(),NULL,'0'),
-('615','612','0,1,198,199,612,','打印','114',NULL,NULL,NULL,'0','fee:gas:bill:print','1',now(),'1',now(),NULL,'0'),
+('614','199','0,1,198,199,','煤气账单录入','111','/fee/gas/bill/index',NULL,NULL,'1','fee:gas:bill:view','1',now(),'1',now(),NULL,'0'),
+('615','614','0,1,198,199,614,','新增','112',NULL,NULL,NULL,'0','fee:gas:bill:add','1',now(),'1',now(),NULL,'0'),
+('616','614','0,1,198,199,614,','审核','113',NULL,NULL,NULL,'0','fee:gas:bill:apv','1',now(),'1',now(),NULL,'0'),
+('617','614','0,1,198,199,614,','打印','114',NULL,NULL,NULL,'0','fee:gas:bill:print','1',now(),'1',now(),NULL,'0'),
+('618','614','0,1,198,199,614,','删除','110',NULL,NULL,NULL,'0','fee:gas:bill:delete','1',now(),'1',now(),NULL,'0'),
 
-('616','199','0,1,198,199,','其他账单录入','115','/fee/other/bill/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('617','616','0,1,198,199,616,','新增','116',NULL,NULL,NULL,'0','fee:other:bill:add','1',now(),'1',now(),NULL,'0'),
-('618','616','0,1,198,199,616,','审核','117',NULL,NULL,NULL,'0','fee:other:bill:apv','1',now(),'1',now(),NULL,'0'),
-('619','616','0,1,198,199,616,','打印','118',NULL,NULL,NULL,'0','fee:other:bill:print','1',now(),'1',now(),NULL,'0'),
+('619','199','0,1,198,199,','其他账单录入','115','/fee/other/bill/index',NULL,NULL,'1','fee:other:bill:view','1',now(),'1',now(),NULL,'0'),
+('620','619','0,1,198,199,619,','新增','116',NULL,NULL,NULL,'0','fee:other:bill:add','1',now(),'1',now(),NULL,'0'),
+('621','619','0,1,198,199,619,','审核','117',NULL,NULL,NULL,'0','fee:other:bill:apv','1',now(),'1',now(),NULL,'0'),
+('622','619','0,1,198,199,619,','打印','118',NULL,NULL,NULL,'0','fee:other:bill:print','1',now(),'1',now(),NULL,'0'),
+('623','619','0,1,198,199,619,','删除','110',NULL,NULL,NULL,'0','fee:other:bill:delete','1',now(),'1',now(),NULL,'0'),
 
-('620','199','0,1,198,199,','电费抄表流水','119','/fee/electricity/read/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('621','620','0,1,198,199,620,','新增','120',NULL,NULL,NULL,'0','fee:ele:read:add','1',now(),'1',now(),NULL,'0'),
-('622','620','0,1,198,199,620,','编辑','121',NULL,NULL,NULL,'0','fee:ele:read:edit','1',now(),'1',now(),NULL,'0'),
-('623','620','0,1,198,199,620,','删除','122',NULL,NULL,NULL,'0','fee:ele:read:delete','1',now(),'1',now(),NULL,'0'),
+('624','199','0,1,198,199,','电费抄表流水','119','/fee/electricity/read/index',NULL,NULL,'1','fee:ele:read:view','1',now(),'1',now(),NULL,'0'),
+('625','624','0,1,198,199,624,','新增','120',NULL,NULL,NULL,'0','fee:ele:read:add','1',now(),'1',now(),NULL,'0'),
+('626','624','0,1,198,199,624,','删除','122',NULL,NULL,NULL,'0','fee:ele:read:delete','1',now(),'1',now(),NULL,'0'),
 
-('624','199','0,1,198,199,','水费抄表流水','123','/fee/water/read/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('625','624','0,1,198,199,624,','新增','124',NULL,NULL,NULL,'0','fee:water:read:add','1',now(),'1',now(),NULL,'0'),
-('626','624','0,1,198,199,624,','编辑','125',NULL,NULL,NULL,'0','fee:water:read:edit','1',now(),'1',now(),NULL,'0'),
-('627','624','0,1,198,199,624,','删除','126',NULL,NULL,NULL,'0','fee:water:read:delete','1',now(),'1',now(),NULL,'0'),
+('627','199','0,1,198,199,','水费抄表流水','123','/fee/water/read/index',NULL,NULL,'1','fee:water:read:view','1',now(),'1',now(),NULL,'0'),
+('628','627','0,1,198,199,627,','新增','124',NULL,NULL,NULL,'0','fee:water:read:add','1',now(),'1',now(),NULL,'0'),
+('629','627','0,1,198,199,627,','删除','126',NULL,NULL,NULL,'0','fee:water:read:delete','1',now(),'1',now(),NULL,'0'),
 
-('628','199','0,1,198,199,','煤气抄表流水','127','/fee/gas/read/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('629','628','0,1,198,199,628,','新增','128',NULL,NULL,NULL,'0','fee:gas:read:add','1',now(),'1',now(),NULL,'0'),
-('630','628','0,1,198,199,628,','编辑','129',NULL,NULL,NULL,'0','fee:gas:read:edit','1',now(),'1',now(),NULL,'0'),
-('631','628','0,1,198,199,628,','删除','130',NULL,NULL,NULL,'0','fee:gas:read:delete','1',now(),'1',now(),NULL,'0'),
+('630','199','0,1,198,199,','煤气抄表流水','127','/fee/gas/read/index',NULL,NULL,'1','fee:gas:read:view','1',now(),'1',now(),NULL,'0'),
+('631','630','0,1,198,199,630,','新增','128',NULL,NULL,NULL,'0','fee:gas:read:add','1',now(),'1',now(),NULL,'0'),
+('632','630','0,1,198,199,630,','删除','130',NULL,NULL,NULL,'0','fee:gas:read:delete','1',now(),'1',now(),NULL,'0'),
 
-('632','199','0,1,198,199,','电费收取流水','131','/fee/electricity/charge/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('633','632','0,1,198,199,632,','生成应收账单','132',NULL,NULL,NULL,'0','fee:ele:charge:generate:bill','1',now(),'1',now(),NULL,'0'),
+('633','199','0,1,198,199,','电费收取流水','131','/fee/electricity/charge/index',NULL,NULL,'1','fee:ele:charge:view','1',now(),'1',now(),NULL,'0'),
+('634','633','0,1,198,199,633,','生成应收账单','132',NULL,NULL,NULL,'0','fee:ele:charge:generate:order','1',now(),'1',now(),NULL,'0'),
 
-('634','199','0,1,198,199,','水费收取流水','133','/fee/water/charge/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('635','634','0,1,198,199,634,','生成应收账单','134',NULL,NULL,NULL,'0','fee:water:charge:generate:bill','1',now(),'1',now(),NULL,'0'),
-('636','634','0,1,198,199,634,','生成流水账单','135',NULL,NULL,NULL,'0','fee:water:charge:generate:flow','1',now(),'1',now(),NULL,'0'),
+('635','199','0,1,198,199,','水费收取流水','133','/fee/water/charge/index',NULL,NULL,'1','fee:water:charge:view','1',now(),'1',now(),NULL,'0'),
+('636','635','0,1,198,199,635,','生成应收账单','134',NULL,NULL,NULL,'0','fee:water:charge:generate:order','1',now(),'1',now(),NULL,'0'),
+('637','635','0,1,198,199,635,','生成流水账单','135',NULL,NULL,NULL,'0','fee:water:charge:generate:flow','1',now(),'1',now(),NULL,'0'),
 
-('637','199','0,1,198,199,','煤气收费流水','136','/fee/gas/charge/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('638','637','0,1,198,199,637,','生成应收账单','137',NULL,NULL,NULL,'0','fee:gas:charge:generate:bill','1',now(),'1',now(),NULL,'0'),
-('639','637','0,1,198,199,637,','生成流水账单','138',NULL,NULL,NULL,'0','fee:gas:charge:generate:flow','1',now(),'1',now(),NULL,'0'),
+('638','199','0,1,198,199,','煤气收费流水','136','/fee/gas/charge/index',NULL,NULL,'1','fee:gas:charge:view','1',now(),'1',now(),NULL,'0'),
+('639','638','0,1,198,199,638,','生成应收账单','137',NULL,NULL,NULL,'0','fee:gas:charge:generate:order','1',now(),'1',now(),NULL,'0'),
+('640','638','0,1,198,199,638,','生成流水账单','138',NULL,NULL,NULL,'0','fee:gas:charge:generate:flow','1',now(),'1',now(),NULL,'0'),
 
-('640','199','0,1,198,199,','应收账单信息','139','/fee/order/index',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0'),
-('641','640','0,1,198,199,640,','已收','140',NULL,NULL,NULL,'0','fee:order:payed','1',now(),'1',now(),NULL,'0'),
-('642','640','0,1,198,199,640,','回收账单','141',NULL,NULL,NULL,'0','fee:order:repay','1',now(),'1',now(),NULL,'0');
+('641','199','0,1,198,199,','应收账单信息','139','/fee/order/index',NULL,NULL,'1','fee:order:view','1',now(),'1',now(),NULL,'0'),
+('642','641','0,1,198,199,641,','已收','140',NULL,NULL,NULL,'0','fee:order:payed','1',now(),'1',now(),NULL,'0'),
+('643','641','0,1,198,199,641,','回收账单','141',NULL,NULL,NULL,'0','fee:order:repay','1',now(),'1',now(),NULL,'0');
+
+
+---end menuId 646

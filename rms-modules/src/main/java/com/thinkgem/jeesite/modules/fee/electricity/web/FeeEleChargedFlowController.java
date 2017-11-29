@@ -5,19 +5,13 @@
 package com.thinkgem.jeesite.modules.fee.electricity.web;
 
 
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.common.entity.SelectItem;
-import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
-import com.thinkgem.jeesite.modules.common.service.SelectItemService;
-import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
-import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleChargedFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeEleChargedFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,13 +32,8 @@ public class FeeEleChargedFlowController extends FeeBaseController {
     @Autowired
     private FeeEleChargedFlowService feeEleChargedFlowService;
 
-    @RequestMapping(value = "save")
-    public Object save(FeeEleChargedFlow feeEleChargedFlow) {
-        feeEleChargedFlowService.save(feeEleChargedFlow);
-        return ResponseData.success();
-    }
-
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:ele:charged:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         List<FeeEleChargedFlowVo> feeEleChargedFeeVos = feeEleChargedFlowService.getFeeEleChargedFee(feeCriteriaEntity);
@@ -52,22 +41,8 @@ public class FeeEleChargedFlowController extends FeeBaseController {
         return ResponseData.success().page(page);
     }
 
-    @RequestMapping(value = "delete")
-    public Object delete(String id) {
-        FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
-        feeEleChargedFlow.setId(id);
-        feeEleChargedFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeEleChargedFlowService.save(feeEleChargedFlow);
-        return ResponseData.success();
-    }
-
-    @RequestMapping(value = "get")
-    public Object get(String id) {
-        FeeEleChargedFlow feeEleChargedFlow = feeEleChargedFlowService.get(id);
-        return ResponseData.success().data(feeEleChargedFlow);
-    }
-
     @RequestMapping(value = "generateOrder")
+    @RequiresPermissions("fee:ele:charge:generate:order")
     public Object generateOrder(){
         feeEleChargedFlowService.generatorOrder();
         return ResponseData.success();

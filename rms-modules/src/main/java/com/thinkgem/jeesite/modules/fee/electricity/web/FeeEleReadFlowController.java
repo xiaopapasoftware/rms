@@ -16,6 +16,7 @@ import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeEleReadFlow;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeEleReadFlowVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeEleReadFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,7 @@ public class FeeEleReadFlowController extends FeeBaseController {
     private FeeEleReadFlowService feeEleReadFlowService;
 
     @RequestMapping(value = "save")
+    @RequiresPermissions("fee:ele:read:add")
     public Object save(FeeEleReadFlow feeEleReadFlow, HttpServletRequest request) {
         String[] roomIds = request.getParameterValues("roomIds");
         String[] eleDegrees = request.getParameterValues("eleDegrees");
@@ -46,6 +48,7 @@ public class FeeEleReadFlowController extends FeeBaseController {
     }
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:ele:read:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
@@ -55,6 +58,7 @@ public class FeeEleReadFlowController extends FeeBaseController {
     }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:ele:read:delete")
     public Object delete(String id) {
         feeEleReadFlowService.deleteFeeEleReadFlow(id);
         return ResponseData.success();

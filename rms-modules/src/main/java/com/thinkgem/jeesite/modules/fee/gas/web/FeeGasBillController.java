@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.gas.entity.FeeGasBill;
 import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasBillVo;
 import com.thinkgem.jeesite.modules.fee.gas.service.FeeGasBillService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +34,14 @@ public class FeeGasBillController extends FeeBaseController {
     private FeeGasBillService feeGasBillService;
 
     @RequestMapping(value = "save")
+    @RequiresPermissions("fee:gas:bill:add")
     public Object save(FeeGasBill feeGasBill) {
         feeGasBillService.saveFeeGasBill(feeGasBill);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:gas:bill:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
@@ -48,24 +51,28 @@ public class FeeGasBillController extends FeeBaseController {
     }
 
     @RequestMapping(value = "print")
+    @RequiresPermissions("fee:gas:bill:print")
     public Object print(FeeCriteriaEntity feeCriteriaEntity) {
         List<FeeGasBillVo> feeGasBillVos = feeGasBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
         return ResponseData.success().data(feeGasBillVos);
     }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:gas:bill:delete")
     public Object delete(String id) {
         feeGasBillService.deleteFeeGasBill(id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "audit")
+    @RequiresPermissions("fee:gas:bill:apv")
     public Object audit(String status, String... id) {
         feeGasBillService.feeGasBillAudit(status, id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "getTotalAmount")
+    @RequiresPermissions("fee:gas:bill:view")
     public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
         return ResponseData.success().data(feeGasBillService.getTotalAmount(feeCriteriaEntity));
     }

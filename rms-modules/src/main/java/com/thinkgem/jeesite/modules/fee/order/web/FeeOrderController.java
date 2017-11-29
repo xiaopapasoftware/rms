@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.order.entity.vo.FeeOrderVo;
 import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,7 @@ public class FeeOrderController extends FeeBaseController {
     private FeeOrderService feeOrderService;
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:order:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
@@ -42,12 +44,14 @@ public class FeeOrderController extends FeeBaseController {
     }
 
     @RequestMapping(value = "payed")
+    @RequiresPermissions("fee:order:payed")
     public Object payed(String... id) {
         feeOrderService.payed(id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "repay")
+    @RequiresPermissions("fee:order:repay")
     public Object repay(String... id) {
         feeOrderService.repay(id);
         return ResponseData.success();

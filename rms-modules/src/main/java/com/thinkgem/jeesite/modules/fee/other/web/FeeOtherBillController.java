@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.other.entity.FeeOtherBill;
 import com.thinkgem.jeesite.modules.fee.other.entity.vo.FeeOtherBillVo;
 import com.thinkgem.jeesite.modules.fee.other.service.FeeOtherBillService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,12 +33,14 @@ public class FeeOtherBillController extends BaseController {
       private FeeOtherBillService feeOtherBillService;
 
       @RequestMapping(value = "save")
+      @RequiresPermissions("fee:other:bill:add")
       public Object save(FeeOtherBill feeOtherBill) {
           feeOtherBillService.saveFeeOtherBill(feeOtherBill);
           return ResponseData.success();
       }
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:other:bill:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
@@ -47,24 +50,28 @@ public class FeeOtherBillController extends BaseController {
     }
 
     @RequestMapping(value = "print")
+    @RequiresPermissions("fee:other:bill:print")
     public Object print(FeeCriteriaEntity feeCriteriaEntity) {
         List<FeeOtherBillVo> feeOtherBillVos = feeOtherBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
         return ResponseData.success().data(feeOtherBillVos);
     }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:other:bill:delete")
     public Object delete(String id) {
         feeOtherBillService.deleteFeeGasBill(id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "audit")
+    @RequiresPermissions("fee:other:bill:apv")
     public Object audit(String status, String... id) {
         feeOtherBillService.feeOtherBillAudit(status, id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "getTotalAmount")
+    @RequiresPermissions("fee:other:bill:view")
     public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
         return ResponseData.success().data(feeOtherBillService.getTotalAmount(feeCriteriaEntity));
     }

@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.FeeElectricityBill;
 import com.thinkgem.jeesite.modules.fee.electricity.entity.vo.FeeElectricityBillVo;
 import com.thinkgem.jeesite.modules.fee.electricity.service.FeeElectricityBillService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,12 +34,14 @@ public class FeeElectricityBillController extends FeeBaseController {
     private FeeElectricityBillService feeElectricityBillService;
 
     @RequestMapping(value = "save")
+    @RequiresPermissions("fee:ele:bill:add")
     public Object save(FeeElectricityBill feeElectricityBill) {
         feeElectricityBillService.saveFeeElectricityBill(feeElectricityBill);
         return ResponseData.success().data(feeElectricityBill.getId());
     }
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:ele:bill:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         feeCriteriaEntity.setPage(page);
@@ -48,24 +51,28 @@ public class FeeElectricityBillController extends FeeBaseController {
     }
 
     @RequestMapping(value = "print")
+    @RequiresPermissions("fee:ele:bill:print")
     public Object print(FeeCriteriaEntity feeCriteriaEntity) {
         List<FeeElectricityBillVo> feeElectricityBillVos = feeElectricityBillService.getAllHouseFeeWithAreaAndBuildAndProperty(feeCriteriaEntity);
         return ResponseData.success().data(feeElectricityBillVos);
     }
 
     @RequestMapping(value = "delete")
+    @RequiresPermissions("fee:ele:bill:delete")
     public Object delete(String id) {
         feeElectricityBillService.deleteFeeElectricityBill(id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "audit")
+    @RequiresPermissions("fee:ele:bill:apv")
     public Object audit(String status, String... id) {
         feeElectricityBillService.feeElectricityBillAudit(status, id);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "getTotalAmount")
+    @RequiresPermissions("fee:ele:bill:view")
     public Object getTotalAmount(FeeCriteriaEntity feeCriteriaEntity) {
         return ResponseData.success().data(feeElectricityBillService.getTotalAmount(feeCriteriaEntity));
     }

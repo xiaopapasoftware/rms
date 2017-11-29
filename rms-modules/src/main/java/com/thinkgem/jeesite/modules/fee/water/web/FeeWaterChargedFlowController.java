@@ -13,6 +13,7 @@ import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.water.entity.FeeWaterChargedFlow;
 import com.thinkgem.jeesite.modules.fee.water.entity.vo.FeeWaterChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.water.service.FeeWaterChargedFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,12 +35,14 @@ public class FeeWaterChargedFlowController extends FeeBaseController {
     private FeeWaterChargedFlowService feeWaterChargedFlowService;
 
     @RequestMapping(value = "save")
+    @RequiresPermissions("fee:water:charged:add")
     public Object save(FeeWaterChargedFlow feeWaterChargedFlow) {
         feeWaterChargedFlowService.save(feeWaterChargedFlow);
         return ResponseData.success();
     }
 
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:water:charged:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         List<FeeWaterChargedFlowVo> feeWaterChargedFeeVos = feeWaterChargedFlowService.getFeeWaterChargedFee(feeCriteriaEntity);
@@ -47,28 +50,15 @@ public class FeeWaterChargedFlowController extends FeeBaseController {
         return ResponseData.success().page(page);
     }
 
-    @RequestMapping(value = "delete")
-    public Object delete(String id) {
-        FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
-        feeWaterChargedFlow.setId(id);
-        feeWaterChargedFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeWaterChargedFlowService.save(feeWaterChargedFlow);
-        return ResponseData.success();
-    }
-
-    @RequestMapping(value = "get")
-    public Object get(String id) {
-        FeeWaterChargedFlow feeWaterChargedFlow = feeWaterChargedFlowService.get(id);
-        return ResponseData.success().data(feeWaterChargedFlow);
-    }
-
     @RequestMapping(value = "generateFlow")
+    @RequiresPermissions("fee:water:charge:generate:flow")
     public Object generateFlow() {
         feeWaterChargedFlowService.generatorFlow();
         return ResponseData.success();
     }
 
     @RequestMapping(value = "generateOrder")
+    @RequiresPermissions("fee:water:charge:generate:order")
     public Object generateOrder() {
         feeWaterChargedFlowService.generatorOrder();
         return ResponseData.success();
