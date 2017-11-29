@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="shiro" uri="/WEB-INF/tlds/shiros.tld" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic = '${ctxStatic}';</script>
@@ -186,6 +187,7 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
+        <shiro:hasPermission name="fee:ele:bill:add">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-add" class="button">
                 录入
@@ -196,6 +198,8 @@
                 提交审批
             </a>
         </div>
+        </shiro:hasPermission>
+        <shiro:hasPermission name="fee:ele:bill:apv">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-pass" class="button">
                 同意
@@ -206,12 +210,14 @@
                 驳回
             </a>
         </div>
+        </shiro:hasPermission>
+        <shiro:hasPermission name="fee:ele:bill:print">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-print" class="button">
                 打印
             </a>
         </div>
-
+        </shiro:hasPermission>
         <div class="widget-toolbar no-border">
             总额:<span id="totalAmount">0.00</span>元
         </div>
@@ -287,8 +293,12 @@
 <script type="text/html" id="toolBar">
     {{# var status=d.billStatus }}
     {{# if (status==null || status=='0' || status=='3'){ }}
+    <shiro:hasPermission name="fee:ele:bill:add">
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    </shiro:hasPermission>
+    <shiro:hasPermission name="fee:ele:bill:delete">
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    </shiro:hasPermission>
     {{# } }}
 </script>
 

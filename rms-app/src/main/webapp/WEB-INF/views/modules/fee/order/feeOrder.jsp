@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="shiro" uri="/WEB-INF/tlds/shiros.tld" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
 <script type="text/javascript">var ctx = '${ctx}', ctxStatic = '${ctxStatic}';</script>
@@ -137,16 +138,20 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
+        <shiro:hasPermission name="fee:order:payed">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-payed" class="button">
                 已收
             </a>
         </div>
+        </shiro:hasPermission>
+        <shiro:hasPermission name="fee:order:repay">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-repay" class="button">
                 回收账单
             </a>
         </div>
+        </shiro:hasPermission>
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
