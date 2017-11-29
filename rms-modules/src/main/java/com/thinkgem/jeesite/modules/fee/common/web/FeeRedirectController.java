@@ -63,6 +63,16 @@ public class FeeRedirectController {
         return "modules/fee/water/feeWaterChargeFlow";
     }
 
+    @RequestMapping("other/bill/index")
+    public String otherBillIndex() {
+        return "modules/fee/other/feeOtherBill";
+    }
+
+    @RequestMapping("other/charge/index")
+    public String otherChargeFlowIndex() {
+        return "modules/fee/other/feeOtherChargeFlow";
+    }
+
     @RequestMapping("order/index")
     public String feeOrderIndex() {
         return "modules/fee/order/feeOrder";
