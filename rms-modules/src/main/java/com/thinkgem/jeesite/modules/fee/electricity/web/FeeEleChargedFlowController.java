@@ -42,7 +42,7 @@ public class FeeEleChargedFlowController extends FeeBaseController {
     }
 
     @RequestMapping(value = "generateOrder")
-    @RequiresPermissions("fee:ele:charge:generate:order")
+    @RequiresPermissions("fee:ele:charged:generate:order")
     public Object generateOrder(){
         feeEleChargedFlowService.generatorOrder();
         return ResponseData.success();

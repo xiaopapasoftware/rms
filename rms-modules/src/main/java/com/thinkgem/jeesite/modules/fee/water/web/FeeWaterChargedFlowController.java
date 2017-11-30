@@ -51,14 +51,14 @@ public class FeeWaterChargedFlowController extends FeeBaseController {
     }
 
     @RequestMapping(value = "generateFlow")
-    @RequiresPermissions("fee:water:charge:generate:flow")
+    @RequiresPermissions("fee:water:charged:generate:flow")
     public Object generateFlow() {
         feeWaterChargedFlowService.generatorFlow();
         return ResponseData.success();
     }
 
     @RequestMapping(value = "generateOrder")
-    @RequiresPermissions("fee:water:charge:generate:order")
+    @RequiresPermissions("fee:water:charged:generate:order")
     public Object generateOrder() {
         feeWaterChargedFlowService.generatorOrder();
         return ResponseData.success();

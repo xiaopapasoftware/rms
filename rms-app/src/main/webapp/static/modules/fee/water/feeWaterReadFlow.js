@@ -5,7 +5,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         laydate = layui.laydate;
 
     var addWaterReadIndex;
-    var operType, operId, intentMode;
 
     var feeWaterReadFlow = {
         init: function () {
@@ -188,8 +187,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             layer.msg("当前记录为账单录入生成,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
-                        $("#houseId").val(data.houseId);
-                        operType = "edit";
+                        feeWaterReadFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId,function(){
+                            feeWaterReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId,function(){
+                                feeWaterReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId,function(){
+                                    $("#areaId").val(data.areaId);
+                                    $("#projectId").val(data.propertyId);
+                                    $("#buildingId").val(data.buildingId);
+                                    $("#houseId").val(data.houseId);
+                                    form.render('select');
+                                });
+                            });
+                        });
+
                         $("#waterDegree").val(data.waterDegree);
                         laydate.render({
                             elem: '#waterReadDate',
@@ -308,7 +317,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     form.render('select');
                 });
             },
-            selectItemFun: function (id, type, value) {
+            selectItemFun: function (id, type, value,callbackFun) {
                 $.getJSON(feeWaterReadFlowMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
@@ -325,6 +334,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         }));
                     });
                     form.render('select');
+
+                    if(callbackFun!=undefined && callbackFun !=null){
+                        callbackFun(data);
+                    }
                 });
             }
         }

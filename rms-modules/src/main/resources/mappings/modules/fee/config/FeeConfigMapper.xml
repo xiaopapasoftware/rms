@@ -212,8 +212,9 @@
         LEFT JOIN t_property_project trtpp ON trtpp.id = trth.PROPERTY_PROJECT_ID and trtpp.del_flag=0
         <where>
             fc.del_flag=0
-            <if test="feeType!=null and feeType!=''"> AND fc.fee_type=#{feeType}</if>
-            <if test="configType!=null and configType!=''"> AND fc.config_type=#{configType}</if>
+            <if test="feeType!=null"> AND fc.fee_type=#{feeType,jdbcType=NUMERIC}</if>
+            <if test="configType!=null"> AND fc.config_type=#{configType,jdbcType=NUMERIC}</if>
+            <if test="chargeMethod!=null"> AND fc.charge_method=#{chargeMethod,jdbcType=NUMERIC}</if>
         </where>
     </select>
 

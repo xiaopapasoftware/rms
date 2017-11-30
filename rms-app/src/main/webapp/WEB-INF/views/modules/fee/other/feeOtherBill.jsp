@@ -26,13 +26,16 @@
         .layui-table-cell .layui-form-checkbox {
             top: 5px !important;
         }
-        .tangchao .layui-form-item{
+
+        .tangchao .layui-form-item {
             height: 30px !important;
         }
+
         .tangchao .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-        .tangchao .button{
+
+        .tangchao .button {
             border: 1px solid #009688;
             height: 25px;
             line-height: 25px;
@@ -45,12 +48,15 @@
             color: #009688;
             background-color: #FFFFFF;
         }
+
         .widget-body .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
+
         .widget-body .layui-form-item .layui-input-inline {
             width: 150px;
         }
+
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
@@ -135,35 +141,35 @@
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
         <shiro:hasPermission name="fee:other:bill:add">
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-add" class="button">
-                录入
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-commit" class="button">
-                提交审批
-            </a>
-        </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-add" class="button">
+                    录入
+                </a>
+            </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-commit" class="button">
+                    提交审批
+                </a>
+            </div>
         </shiro:hasPermission>
         <shiro:hasPermission name="fee:other:bill:apv">
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-pass" class="button">
-                同意
-            </a>
-        </div>
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-reject" class="button">
-                驳回
-            </a>
-        </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-pass" class="button">
+                    同意
+                </a>
+            </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-reject" class="button">
+                    驳回
+                </a>
+            </div>
         </shiro:hasPermission>
         <shiro:hasPermission name="fee:other:bill:print">
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-print" class="button">
-                打印
-            </a>
-        </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-print" class="button">
+                    打印
+                </a>
+            </div>
         </shiro:hasPermission>
         <div class="widget-toolbar no-border">
             总额:<span id="totalAmount">0.00</span>元
@@ -178,12 +184,14 @@
 </div>
 
 
-<div id="addDiv" class="tangchao" hidden >
-    <form class="layui-form" id="addFeeEleBillForm" action="">
+<div id="addDiv" class="tangchao" hidden>
+    <form class="layui-form" id="addFeeOtherBillForm" action="">
+        <input type="hidden" id="otherBillId">
         <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">账单日期</label>
             <div class="layui-input-inline">
-                <input type="text" id="billDate" required lay-verify="required" readonly placeholder="账单日期" class="layui-input">
+                <input type="text" id="billDate" required lay-verify="required" readonly placeholder="账单日期"
+                       class="layui-input">
             </div>
         </div>
 
@@ -199,32 +207,45 @@
         </div>
 
         <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">区域项目</label>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
-                        <option value="">区域</option>
-                    </select>
-                </div>
-                <div class="layui-input-inline" style="width: 90px;">
-                    <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
-                        <option value="">物业项目</option>
-                    </select>
-                </div>
+            <label class="layui-form-label">账单单位</label>
+            <div class="layui-input-inline">
+                <select id="billUnit" name="billUnit" placeholder="账单单位">
+                    <option value="0">月</option>
+                    <option value="1">半年</option>
+                    <option value="2">一年</option>
+                </select>
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">楼宇房屋</label>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
-                        <option value="">楼宇</option>
-                    </select>
+
+        <div id="houseSelect">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">区域项目</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
+                            <option value="">区域</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 90px;">
+                        <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
+                            <option value="">物业项目</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="layui-input-inline" style="width: 100px;">
-                    <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
-                        <option value="">房屋</option>
-                    </select>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">楼宇房屋</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
+                            <option value="">楼宇</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
+                            <option value="">房屋</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -232,7 +253,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">账单金额</label>
             <div class="layui-input-inline">
-                <input type="number" id="billAmount" required lay-verify="required" placeholder="账单金额" class="layui-input">
+                <input type="number" id="billAmount" required lay-verify="required" placeholder="账单金额"
+                       class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
@@ -250,10 +272,10 @@
     {{# var status=d.billStatus }}
     {{# if (status==null || status=='0' || status=='3'){ }}
     <shiro:hasPermission name="fee:other:bill:add">
-    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     </shiro:hasPermission>
     <shiro:hasPermission name="fee:other:bill:delete">
-    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+        <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
     </shiro:hasPermission>
     {{# } }}
 </script>
@@ -262,13 +284,14 @@
 <script id="printTableTpl" type="text/html">
     <style type="text/css">
         table.gridtable {
-            font-family: verdana,arial,sans-serif;
-            font-size:11px;
-            color:#333333;
+            font-family: verdana, arial, sans-serif;
+            font-size: 11px;
+            color: #333333;
             border-width: 1px;
             border-color: #666666;
             border-collapse: collapse;
         }
+
         table.gridtable th {
             border-width: 1px;
             padding: 8px;
@@ -276,6 +299,7 @@
             border-color: #666666;
             background-color: #dedede;
         }
+
         table.gridtable td {
             border-width: 1px;
             padding: 8px;

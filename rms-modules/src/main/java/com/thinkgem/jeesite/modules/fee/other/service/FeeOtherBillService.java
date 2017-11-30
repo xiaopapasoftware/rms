@@ -49,12 +49,6 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
 
     @Transactional(readOnly = false)
     public void saveFeeOtherBill(FeeOtherBill feeOtherBill) {
-        House house = feeCommonService.getHouseById(feeOtherBill.getHouseId());
-        if (!Optional.ofNullable(house).isPresent()) {
-            logger.error("当前房屋[id={}]不存在,请确认", feeOtherBill.getHouseId());
-            throw new IllegalArgumentException("当前房屋不存在,请确认");
-        }
-
         if(StringUtils.isNotBlank(feeOtherBill.getId())){
             FeeOtherBill existBill = dao.get(feeOtherBill.getId());
             if (Optional.ofNullable(existBill).isPresent()) {
@@ -63,8 +57,16 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
                     logger.error("当前账单已经提交不能修改");
                     throw new IllegalArgumentException("当前账单已经提交不能修改");
                 }
+                feeOtherBill.setHouseId(existBill.getHouseId());
             }
         }
+
+        House house = feeCommonService.getHouseById(feeOtherBill.getHouseId());
+        if (!Optional.ofNullable(house).isPresent()) {
+            logger.error("当前房屋[id={}]不存在,请确认", feeOtherBill.getHouseId());
+            throw new IllegalArgumentException("当前房屋不存在,请确认");
+        }
+        feeOtherBill.setPropertyId(house.getPropertyProject().getId());
 
         this.save(feeOtherBill);
     }

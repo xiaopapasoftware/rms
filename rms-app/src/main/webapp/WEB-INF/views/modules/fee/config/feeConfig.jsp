@@ -102,8 +102,17 @@
                             <option value="6">运营区域</option>
                             <option value="7">小区</option>
                             <option value="8">楼宇</option>
-                            <option value="9">房号</option>
+                            <option value="9">房屋</option>
                             <option value="10">房间</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="selChargeMethod" name="selChargeMethod" lay-filter="selChargeMethod" placeholder="收取方式" lay-search>
+                            <option value="">收取方式</option>
+                            <option value="0">固定模式</option>
+                            <option value="1">账单模式</option>
                         </select>
                     </div>
                 </div>
@@ -162,7 +171,7 @@
                     <option value="6">运营区域</option>
                     <option value="7">小区</option>
                     <option value="8">楼宇</option>
-                    <option value="9">房号</option>
+                    <option value="9">房屋</option>
                     <option value="10">房间</option>
                 </select>
             </div>

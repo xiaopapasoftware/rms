@@ -44,14 +44,14 @@ public class FeeGasChargedFlowController extends FeeBaseController {
     }
 
     @RequestMapping(value = "generateFlow")
-    @RequiresPermissions("fee:gas:charge:generate:flow")
+    @RequiresPermissions("fee:gas:charged:generate:flow")
     public Object generateFlow() {
         feeGasChargedFlowService.generatorFlow();
         return ResponseData.success();
     }
 
     @RequestMapping(value = "generateOrder")
-    @RequiresPermissions("fee:gas:charge:generate:order")
+    @RequiresPermissions("fee:gas:charged:generate:order")
     public Object generaterOrder() {
         feeGasChargedFlowService.generatorOrder();
         return ResponseData.success();

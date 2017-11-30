@@ -68,7 +68,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeConfigMVC.Controller.saveFun();
             });
 
-            form.on('radio(selChargeMethod)', function(data){
+            form.on('radio(selChargeMethod)', function (data) {
                 $("#chargeMethod").val(data.value);
             });
 
@@ -87,38 +87,38 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
 
                 var value = data.value;
-                if(value > 0){
+                if (value > 0) {
                     $("#businessDiv").show();
-                    if(value==7){
+                    if (value == 7) {
                         $("#projectDiv").show();
                         $("#buildingDiv").hide();
                         $("#houseDiv").hide();
                         $("#roomDiv").hide();
-                    }else if(value==8){
+                    } else if (value == 8) {
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").hide();
                         $("#roomDiv").hide();
-                    }else if(value==9){
+                    } else if (value == 9) {
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").show();
                         $("#roomDiv").hide();
-                    }else if(value==10){
+                    } else if (value == 10) {
                         $("#projectDiv").show();
                         $("#buildingDiv").show();
                         $("#houseDiv").show();
                         $("#roomDiv").show();
-                    }else {
+                    } else {
                         $("#projectDiv").hide();
                         $("#buildingDiv").hide();
                         $("#houseDiv").hide();
                         $("#roomDiv").hide();
                     }
-                }else{
+                } else {
                     $("#businessDiv").hide();
                 }
-                if(value > 6){
+                if (value > 6) {
                     value = 6;
                 }
                 feeConfigMVC.Controller.getAreaFun(value);
@@ -290,7 +290,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'stop') { //编辑
-                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {id: data.id,configStatus:"1"}, function (data) {
+                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {
+                            id: data.id,
+                            configStatus: "1"
+                        }, function (data) {
                             if (data.code == "200") {
                                 feeConfigMVC.Controller.queryFun();
                                 layer.msg('操作成功', {icon: 1, offset: 100, time: 1000, shift: 6});
@@ -298,8 +301,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                                 layer.msg('操作失败', {icon: 5, offset: 100, time: 1000, shift: 6});
                             }
                         });
-                    }else if (layEvent === 'start') { //编辑
-                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {id: data.id,configStatus:"0"}, function (data) {
+                    } else if (layEvent === 'start') { //编辑
+                        $.post(feeConfigMVC.URLs.changeConfigStatus.url, {
+                            id: data.id,
+                            configStatus: "0"
+                        }, function (data) {
                             if (data.code == "200") {
                                 feeConfigMVC.Controller.queryFun();
                                 layer.msg('操作成功', {icon: 1, offset: 100, time: 1000, shift: 6});
@@ -328,6 +334,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 var where = {
                     "feeType": $("#selFeeType").val(),
                     "configType": $("#selConfigType").val(),
+                    "chargeMethod": $("#selChargeMethod").val()
                 };
                 return where;
             },
@@ -355,27 +362,27 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             saveFun: function () {
                 var configType = $("#configType").val();
                 var businessId = 0;
-                if(configType == 0){
+                if (configType == 0) {
                     businessId = 0;
-                }else if(configType < 7){
+                } else if (configType < 7) {
                     businessId = $("#area").val();
-                }else if(configType == 7){
+                } else if (configType == 7) {
                     businessId = $("#project").val();
-                }else if(configType == 8){
+                } else if (configType == 8) {
                     businessId = $("#building").val();
-                }else if(configType == 9){
+                } else if (configType == 9) {
                     businessId = $("#house").val();
-                }else if(configType == 10){
+                } else if (configType == 10) {
                     businessId = $("#room").val();
                 }
 
                 var data = {
-                    "id":$("#id").val(),
+                    "id": $("#id").val(),
                     "feeType": $("#feeType").val(),
                     "configType": configType,
                     "chargeMethod": $("#chargeMethod").val(),
                     "configValue": $("#configValue").val(),
-                    "businessId":businessId
+                    "businessId": businessId
                 };
                 $.post(feeConfigMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
@@ -397,7 +404,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render("select");
             },
             getAreaFun: function (type) {
-                $.getJSON(feeConfigMVC.URLs.selectArea.url, {"type":type}, function (data) {
+                $.getJSON(feeConfigMVC.URLs.selectArea.url, {"type": type}, function (data) {
                     $("#area option").remove();
                     $('#area').append($('<option>', {
                         value: "",

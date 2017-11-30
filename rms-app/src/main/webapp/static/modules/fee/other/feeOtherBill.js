@@ -213,23 +213,30 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'edit') { //编辑
-                        if(data.billStatus != null && data.billStatus != "0" && data.billStatus != "3"){
+                        if (data.billStatus != null && data.billStatus != "0" && data.billStatus != "3") {
                             layer.msg("当前账单已提交,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
+                        $("#otherBillId").val(data.id);
                         $("#billDate").val(data.billDate);
                         $("#billType").val(data.billType);
+                        $("#billUnit").val(data.billUnit);
                         $("#billAmount").val(data.billAmount);
-
-                        $("#areaId").val(data.areaId);
+                        feeOtherBillBillMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId,function(){
+                            feeOtherBillBillMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId,function(){
+                                feeOtherBillBillMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId,function(){
+                                    $("#areaId").val(data.areaId);
+                                    $("#projectId").val(data.propertyId);
+                                    $("#buildingId").val(data.buildingId);
+                                    $("#houseId").val(data.houseId);
+                                    form.render('select');
+                                });
+                            });
+                        });
                         form.render('select');
                         feeOtherBillBillMVC.Controller.feeOtherBillFun();
                     } else if (layEvent === 'del') { //删除
-                        if (data.id == null) {
-                            layer.msg("当前账单没有录入,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
-                            return;
-                        }
-                        if(data.billStatus != null && data.billStatus != "0" &&data.billStatus != "3"){
+                        if (data.billStatus != null && data.billStatus != "0" && data.billStatus != "3") {
                             layer.msg("当前账单已提交,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
@@ -297,7 +304,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             auditFun: function (status) {
                 var selectRows = table.checkStatus('otherBillTable');
-                var data = "status="+status;
+                var data = "status=" + status;
                 $.each(selectRows.data, function (index, object) {
                     data += "&id=" + object.id;
                 });
@@ -332,16 +339,16 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
                 $.post(feeOtherBillBillMVC.URLs.print.url, where, function (resp) {
                     if (resp.code == "200") {
-                        if(resp.data.length > 0){
-                            var printHtml="";
+                        if (resp.data.length > 0) {
+                            var printHtml = "";
                             laytpl(printTableTpl.innerHTML).render(resp, function (html) {
                                 printHtml = html;
                             });
-                            var LODOP=getLodop();
+                            var LODOP = getLodop();
                             LODOP.PRINT_INIT("账单打印");
-                            LODOP.ADD_PRINT_TABLE(0,0,2000,20000,printHtml);
+                            LODOP.ADD_PRINT_TABLE(0, 0, 2000, 20000, printHtml);
                             LODOP.PREVIEW();
-                        }else{
+                        } else {
                             layer.msg("没有已录的数据,不能打印", {icon: 5, offset: 100, time: 1000, shift: 6});
                         }
                     } else {
@@ -351,9 +358,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             saveFun: function () {
                 var data = {
+                    "id": $("#otherBillId").val(),
                     "billDate": $("#billDate").val(),
                     "houseId": $("#houseId").val(),
                     "billType": $("#billType").val(),
+                    "billUnit": $("#billUnit").val(),
                     "billAmount": $("#billAmount").val()
                 };
                 $.post(feeOtherBillBillMVC.URLs.save.url, data, function (data) {
@@ -373,11 +382,13 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             cleanValue: function () {
                 $("#billDate").val("");
                 $("#billType").val("");
-                $("#amount").val("");
+                $("#billUnit").val("");
+                $("#billAmount").val("");
                 $("#areaId").val("");
                 $("#projectId").val("");
                 $("#buildingId").val("");
                 $("#houseId").val("");
+                $("#houseSelect").show();
                 form.render('select');
             },
             getAreaFun: function () {
@@ -398,7 +409,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     form.render('select');
                 });
             },
-            selectItemFun: function (id, type, value) {
+            selectItemFun: function (id, type, value,callbackFun) {
                 $.getJSON(feeOtherBillBillMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
@@ -408,6 +419,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     if (data.data == null) {
                         return;
                     }
+
                     $.each(data.data, function (index, object) {
                         obj.append($('<option>', {
                             value: object.id,
@@ -415,6 +427,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         }));
                     });
                     form.render('select');
+
+                    if(callbackFun!=undefined && callbackFun !=null){
+                        callbackFun(data);
+                    }
                 });
             },
             getTotalAmountFun: function () {

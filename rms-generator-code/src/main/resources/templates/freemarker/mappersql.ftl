@@ -65,7 +65,7 @@
 
     <!--insert-->
     <insert id="insert" parameterType="${basePackage}.${moduleName}.entity.${table.className}" useGeneratedKeys="true" keyProperty="<#list table.primaryKeys as column>${column.javaProperty}</#list>">
-        insert into ${table.tableName}
+        INSERT INTO ${table.tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Insert_Columns"/>
         </trim>
@@ -74,11 +74,11 @@
         </trim>
     </insert>
     <insert id="batchInsert" parameterType="java.util.List">
-        insert into ${table.tableName}
+        INSERT INTO ${table.tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <include refid="Base_Column_List"/>
         </trim>
-        values
+        VALUES
         <foreach collection="list" item="item" index="index" separator=",">
             <trim prefix="(" suffix=")" suffixOverrides=",">
                 <include refid="Batch_Insert_Values"/>
@@ -89,32 +89,32 @@
 
     <!-- delete -->
     <delete id="deleteById" parameterType="<#list table.primaryKeys as key>${key.fullJavaType}</#list>">
-        delete from ${table.tableName}
-        where <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
+        DELETE FROM ${table.tableName}
+        WHERE <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </delete>
 
     <delete id="delete" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
-        delete from ${table.tableName}
+        DELETE FROM ${table.tableName}
         <include refid="where"/>
     </delete>
     <!-- end delete -->
 
     <!-- update -->
     <update id="update" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
-        update ${table.tableName}
+        UPDATE ${table.tableName}
         <set>
             <include refid="Update_Set_From_Bean"/>
         </set>
-        where <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
+        WHERE <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </update>
 
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
-        update ${table.tableName}
+        UPDATE ${table.tableName}
         <set>
             <include refid="BatchUpdate_Set_From_Bean"/>
         </set>
-        where
+        WHERE
             <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
         </foreach>
     </update>
@@ -122,18 +122,18 @@
 
     <!-- select -->
     <select id="get" resultMap="BaseResultMap" parameterType="<#list table.primaryKeys as key>${key.fullJavaType}</#list>">
-        select <include refid="Base_Column_List"/> from ${table.tableName}
-        where
+        SELECT <include refid="Base_Column_List"/> FROM ${table.tableName}
+        WHERE
             <#list table.primaryKeys as column> ${column.columnName} = ${r'#{'}${column.javaProperty},jdbcType=${column.mybatisJdbcType}} <#if column_has_next>and</#if> </#list>
     </select>
 
     <select id="findAllList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
-        select <include refid="Base_Column_List"/> from ${table.tableName}
+        SELECT <include refid="Base_Column_List"/> FROM ${table.tableName}
         <include refid="where"/>
     </select>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="${basePackage}.${moduleName}.entity.${table.className}">
-        select <include refid="Base_Column_List"/> from ${table.tableName}
+        SELECT <include refid="Base_Column_List"/> FROM ${table.tableName}
         <include refid="where"/>
     </select>
     <!-- end select -->

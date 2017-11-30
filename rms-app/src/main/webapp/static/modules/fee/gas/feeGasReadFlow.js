@@ -5,7 +5,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         laydate = layui.laydate;
 
     var addGasReadIndex;
-    var operType, operId, intentMode;
 
     var feeGasReadFlow = {
         init: function () {
@@ -188,8 +187,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             layer.msg("当前记录为账单录入生成,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
-                        $("#houseId").val(data.houseId);
-                        operType = "edit";
+                        feeGasReadFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId,function(){
+                            feeGasReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId,function(){
+                                feeGasReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId,function(){
+                                    $("#areaId").val(data.areaId);
+                                    $("#projectId").val(data.propertyId);
+                                    $("#buildingId").val(data.buildingId);
+                                    $("#houseId").val(data.houseId);
+                                    form.render('select');
+                                });
+                            });
+                        });
                         $("#gasDegree").val(data.gasDegree);
                         laydate.render({
                             elem: '#gasReadDate',
@@ -308,7 +316,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     form.render('select');
                 });
             },
-            selectItemFun: function (id, type, value) {
+            selectItemFun: function (id, type, value,callbackFun) {
                 $.getJSON(feeGasReadFlowMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
@@ -325,6 +333,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         }));
                     });
                     form.render('select');
+
+                    if(callbackFun!=undefined && callbackFun !=null){
+                        callbackFun(data);
+                    }
                 });
             }
         }

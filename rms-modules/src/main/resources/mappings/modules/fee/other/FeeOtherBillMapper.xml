@@ -242,7 +242,7 @@
         sa.name area_name,tpp.AREA_ID,
         th.HOUSE_NO,th.id house_id,
         tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
-        th.BUILDING_ID,tb.BUILDING_NAME,
+        th.BUILDING_ID,tb.BUILDING_NAME,fgb.bill_type,fgb.bill_unit,
         fgb.id,fgb.batch_no,fgb.bill_date,fgb.bill_amount,
         fgb.bill_status,
         case fgb.bill_status when '0' then '待提交' when '1' then '待审核' when '2' then '审核通过' when '3' then '审核驳回' else ''
