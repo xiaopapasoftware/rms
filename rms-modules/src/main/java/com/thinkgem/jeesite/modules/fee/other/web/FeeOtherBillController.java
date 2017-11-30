@@ -59,7 +59,7 @@ public class FeeOtherBillController extends FeeBaseController {
     @RequestMapping(value = "delete")
     @RequiresPermissions("fee:other:bill:delete")
     public Object delete(String id) {
-        feeOtherBillService.deleteFeeGasBill(id);
+        feeOtherBillService.deleteFeeOtherBill(id);
         return ResponseData.success();
     }
 

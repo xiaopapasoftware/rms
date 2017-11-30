@@ -112,7 +112,8 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
     @Transactional(readOnly = false)
     public void deleteFeeElectricityBill(String id) {
         FeeElectricityBill feeElectricityBill = this.get(id);
-        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+        if (feeElectricityBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                && feeElectricityBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }
 

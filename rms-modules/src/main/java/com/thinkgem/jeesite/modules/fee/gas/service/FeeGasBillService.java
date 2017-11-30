@@ -105,7 +105,8 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
     @Transactional(readOnly = false)
     public void deleteFeeGasBill(String id) {
         FeeGasBill feeGasBill = this.get(id);
-        if (feeGasBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+        if (feeGasBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                && feeGasBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
             logger.error("该账单[id={}]已提交,不能删除", id);
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }

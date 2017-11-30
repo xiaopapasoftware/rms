@@ -63,7 +63,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#houseId option").remove();
                 $("#houseId").append('<option value="">房屋</option>');
 
-                $("#separateRentShowDiv").html("");
                 form.render('select');
             });
             form.on('select(projectId)', function (data) {
@@ -83,7 +82,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#houseId option").remove();
                 $("#houseId").append('<option value="">房屋</option>');
 
-                $("#separateRentShowDiv").html("");
                 form.render('select');
             });
 
@@ -184,10 +182,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
-                        {field: 'billDate', align: 'center', title: '账期日期', width: 100},
+                        {field: 'billDate', align: 'center', title: '账期日期', width: 120},
                         {
-                            field: 'amount', align: 'right', title: '金额', width: 120,
-                            templet: '<div>{{ layui.laytpl.amountFormat(d.amount) }}</div>'
+                            field: 'billAmount', align: 'right', title: '金额', width: 120,
+                            templet: '<div>{{ layui.laytpl.amountFormat(d.billAmount) }}</div>'
                         },
                         {field: 'billStatusName', align: 'center', title: '状态', width: 100},
                         {align: 'center', title: '操作', toolbar: '#toolBar', width: 120}
@@ -211,7 +209,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     }
                 });
 
-                table.on('tool(OtherBill)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                table.on('tool(otherBill)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event; //获得 lay-event 对应的值
                     if (layEvent === 'edit') { //编辑
@@ -220,8 +218,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             return;
                         }
                         $("#billDate").val(data.billDate);
-                        $("#houseId").val(data.houseId);
-                        $("#amount").val(data.amount);
+                        $("#billType").val(data.billType);
+                        $("#billAmount").val(data.billAmount);
+
+                        $("#areaId").val(data.areaId);
+                        form.render('select');
                         feeOtherBillBillMVC.Controller.feeOtherBillFun();
                     } else if (layEvent === 'del') { //删除
                         if (data.id == null) {
@@ -287,7 +288,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render("select");
             },
             passFun: function () {
-                var selectRows = table.checkStatus('OtherBillTable');
+                var selectRows = table.checkStatus('otherBillTable');
                 if (selectRows.data.length == 0) {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
@@ -295,7 +296,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeOtherBillBillMVC.Controller.auditFun("2");
             },
             auditFun: function (status) {
-                var selectRows = table.checkStatus('OtherBillTable');
+                var selectRows = table.checkStatus('otherBillTable');
                 var data = "status="+status;
                 $.each(selectRows.data, function (index, object) {
                     data += "&id=" + object.id;
@@ -310,7 +311,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             rejectFun: function () {
-                var selectRows = table.checkStatus('OtherBillTable');
+                var selectRows = table.checkStatus('otherBillTable');
                 if (selectRows.data.length == 0) {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
@@ -318,7 +319,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeOtherBillBillMVC.Controller.auditFun("3");
             },
             commitFun: function () {
-                var selectRows = table.checkStatus('OtherBillTable');
+                var selectRows = table.checkStatus('otherBillTable');
                 if (selectRows.data.length == 0) {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
@@ -353,12 +354,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     "billDate": $("#billDate").val(),
                     "houseId": $("#houseId").val(),
                     "billType": $("#billType").val(),
-                    "amount": $("#amount").val()
+                    "billAmount": $("#billAmount").val()
                 };
                 $.post(feeOtherBillBillMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
-                        feeOtherBillBillMVC.Controller.cleanValue();
-                        $("#houseOtherNum").focus();
+                        feeOtherBillBillMVC.Controller.viewFun();
+                        feeOtherBillBillMVC.Controller.queryFun();
                         layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -367,13 +368,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             viewFun: function () {
                 layer.close(feeOtherBillBillIndex);
-                feeOtherBillBillMVC.Controller.queryFun();
                 feeOtherBillBillMVC.Controller.cleanValue();
             },
             cleanValue: function () {
-                $("#houseId").val("");
                 $("#billDate").val("");
-                $("#amount").val("")
+                $("#billType").val("");
+                $("#amount").val("");
+                $("#areaId").val("");
+                $("#projectId").val("");
+                $("#buildingId").val("");
+                $("#houseId").val("");
+                form.render('select');
             },
             getAreaFun: function () {
                 $.getJSON(feeOtherBillBillMVC.URLs.selectArea.url, "", function (data) {

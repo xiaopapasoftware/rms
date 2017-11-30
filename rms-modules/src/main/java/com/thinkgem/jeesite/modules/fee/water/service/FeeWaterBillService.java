@@ -105,7 +105,8 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
     @Transactional(readOnly = false)
     public void deleteFeeWaterBill(String id) {
         FeeWaterBill feeWaterBill = this.get(id);
-        if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.COMMIT.getValue()) {
+        if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
+                && feeWaterBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
             logger.error("该账单[id={}]已提交,不能删除", id);
             throw new IllegalArgumentException("该账单已提交,不能删除");
         }

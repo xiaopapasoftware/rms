@@ -318,4 +318,4 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 ('643','641','0,1,198,199,641,','回收账单','141',NULL,NULL,NULL,'0','fee:order:repay','1',now(),'1',now(),NULL,'0');
 
 
----end menuId 646
+---end menuId 643
