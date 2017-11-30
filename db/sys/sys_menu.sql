@@ -196,7 +196,8 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('333','199','0,1,199,','公共事业费','10101','/contract/rentContract/initPublicBasicFeeInfo',NULL,NULL,'1',NULL,'1',now(),'1',now(),NULL,'0');
 insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('334','333','0,1,199,333','查看','60',NULL,NULL,NULL,'0','contract:rentContract:view','1',now(),'1',now(),NULL,'0');
-insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('335','333','0,1,199,333','编辑','60',NULL,NULL,NULL,'0','fee:postpaidFee:edit','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('335','333','0,1,199,333','后付费编辑','60',NULL,NULL,NULL,'0','fee:postpaidFee:edit','1',now(),'1',now(),NULL,'0');
+insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_date, update_by, update_date, remarks, del_flag) values('336','333','0,1,199,333','合同费用编辑','60',NULL,NULL,NULL,'0','contract:rentContract:editContractFeeInfo','1',now(),'1',now(),NULL,'0');
 
 
 
