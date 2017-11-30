@@ -6,9 +6,9 @@ package com.thinkgem.jeesite.modules.fee.other.web;
 
 
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.other.entity.FeeOtherBill;
 import com.thinkgem.jeesite.modules.fee.other.entity.vo.FeeOtherBillVo;
 import com.thinkgem.jeesite.modules.fee.other.service.FeeOtherBillService;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/fee/other/bill")
-public class FeeOtherBillController extends BaseController {
+public class FeeOtherBillController extends FeeBaseController {
 
       @Autowired
       private FeeOtherBillService feeOtherBillService;

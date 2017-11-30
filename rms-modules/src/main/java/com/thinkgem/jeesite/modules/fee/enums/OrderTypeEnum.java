@@ -14,7 +14,8 @@ public enum OrderTypeEnum {
     NET(3, "宽带"),
     TV(4, "电视"),
     RENT(5, "房租"),
-    DEPOSIT(6, "房租押金");
+    DEPOSIT(6, "房租押金"),
+    OTHER(9,"其他");
 
     private int value;
     private String name;

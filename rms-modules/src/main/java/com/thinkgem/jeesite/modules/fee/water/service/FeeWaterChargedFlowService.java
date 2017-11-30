@@ -59,7 +59,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     @Transactional(readOnly = false)
     public void saveFeeWaterChargedFlowByFeeWaterBill(FeeWaterBill feeWaterBill) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.WATER_UNIT, feeWaterBill.getHouseId(), null);
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterBill.getHouseId(), null);
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.info("房屋[houseId={}]为固定模式,不生成收费流水", feeWaterBill.getHouseId());
             throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
@@ -105,7 +105,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     @Transactional(readOnly = false)
     public void saveFeeWaterChargedFlowByFeeWaterReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.WATER_UNIT, feeWaterReadFlow.getHouseId(), null);
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterReadFlow.getHouseId(), null);
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeWaterReadFlow.getHouseId());
             return;
@@ -196,7 +196,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
         List<Room> rooms = feeCommonService.getJoinRentAllRoom();
         rooms.forEach(r -> {
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.WATER_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, r.getHouse().getId(), r.getId());
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 /*创建新增对象*/
                 FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();

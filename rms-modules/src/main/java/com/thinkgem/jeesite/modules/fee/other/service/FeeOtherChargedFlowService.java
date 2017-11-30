@@ -13,7 +13,6 @@ import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
 import com.thinkgem.jeesite.modules.fee.common.service.FeeCommonService;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
 import com.thinkgem.jeesite.modules.fee.enums.*;
-import com.thinkgem.jeesite.modules.fee.gas.entity.vo.FeeGasChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.order.entity.FeeOrder;
 import com.thinkgem.jeesite.modules.fee.order.service.FeeOrderService;
 import com.thinkgem.jeesite.modules.fee.other.dao.FeeOtherChargedFlowDao;
@@ -65,8 +64,8 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             feeOtherChargedFlow.setRoomId(r.getId());
             feeOtherChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
 
-            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.NET_UNIT, r.getHouse().getId(), r.getId());
-            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.TV_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.NET_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.TV_UNIT, r.getHouse().getId(), r.getId());
 
             /*计算金额*/
             double days;

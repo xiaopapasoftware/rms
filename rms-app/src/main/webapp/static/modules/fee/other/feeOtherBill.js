@@ -15,6 +15,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             feeOtherBillBillMVC.View.renderTable();
             feeOtherBillBillMVC.Controller.getTotalAmountFun();
 
+            //查询条件
             form.on('select(area)', function (data) {
                 feeOtherBillBillMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
@@ -50,6 +51,42 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeOtherBillBillMVC.Controller.saveFun();
             });
 
+            //新增修改
+            form.on('select(areaId)', function (data) {
+                feeOtherBillBillMVC.Controller.selectItemFun("projectId", "PROJECT", data.value);
+                $("#projectId option").remove();
+                $("#projectId").append('<option value="">物业项目</option>');
+
+                $("#buildingId option").remove();
+                $("#buildingId").append('<option value="">楼宇</option>');
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#separateRentShowDiv").html("");
+                form.render('select');
+            });
+            form.on('select(projectId)', function (data) {
+                feeOtherBillBillMVC.Controller.selectItemFun("buildingId", "BUILDING", data.value);
+
+                $("#buildingId option").remove();
+                $("#buildingId").append('<option value="">楼宇</option>');
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                form.render('select');
+            });
+            form.on('select(buildingId)', function (data) {
+                feeOtherBillBillMVC.Controller.selectItemFun("houseId", "HOUSE", data.value);
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#separateRentShowDiv").html("");
+                form.render('select');
+            });
+
             layui.laytpl.NumberFormat = function (value) {
                 if (value == null) {
                     value = 0;
@@ -67,7 +104,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
     };
 
     var feeOtherBillBillCommon = {
-        baseUrl: ctx + "/fee/Other/bill"
+        baseUrl: ctx + "/fee/other/bill"
     };
 
     var feeOtherBillBillMVC = {
@@ -113,14 +150,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             initDate: function () {
                 laydate.render({
                     elem: '#feeDate',
-                    type: 'month',
-                    btns: ['confirm'],
-                    value: new Date()
+                    type: 'date',
+                    range: '~',
+                    format: 'yyyy-MM-dd'
                 });
                 laydate.render({
                     elem: '#billDate',
-                    type: 'month',
-                    btns: ['confirm'],
+                    type: 'date',
+                    format: 'yyyy-MM-dd',
                     value: new Date()
                 });
             },
@@ -136,7 +173,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             renderTable: function () {
                 table.render({
-                    elem: '#OtherBillTable',
+                    elem: '#otherBillTable',
                     url: feeOtherBillBillMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
@@ -155,7 +192,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'billStatusName', align: 'center', title: '状态', width: 100},
                         {align: 'center', title: '操作', toolbar: '#toolBar', width: 120}
                     ]],
-                    id: 'OtherBillTable',
+                    id: 'otherBillTable',
                     page: true,
                     request: {
                         pageName: 'pageNum',
@@ -213,8 +250,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         Controller: {
             getWhereFun: function () {
                 var where = {
-                    "feeDate": ($("#feeDate").val() == "" || $("#feeDate").val() == null) ? (new Date().getFullYear() + "-" + (new Date().getMonth() < 9 ? "0" + (new Date().getMonth() + 1) : new Date().getMonth() + 1)) : $("#feeDate").val(),
-                    "houseNum":$("#houseNum").val(),
+                    "startTime": $("#feeDate").val().split("~")[0],
+                    "endTime": $("#feeDate").val().split("~")[1],
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
@@ -235,18 +272,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             queryFun: function () {
-                table.reload('OtherBillTable', {
+                table.reload('otherBillTable', {
                     where: feeOtherBillBillMVC.Controller.getWhereFun()
                 });
                 feeOtherBillBillMVC.Controller.getTotalAmountFun();
             },
             undoFun: function () {
+                $("#feeDate").val("");
                 $("#area").val("");
                 $("#project").val("");
                 $("#building").val("");
                 $("#house").val("");
                 $("#status").val("");
-                $("#isRecord").val("");
                 form.render("select");
             },
             passFun: function () {
@@ -342,6 +379,13 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $.getJSON(feeOtherBillBillMVC.URLs.selectArea.url, "", function (data) {
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
+                            value: object.id,
+                            text: object.name
+                        }));
+                    });
+
+                    $.each(data.data, function (index, object) {
+                        $('#areaId').append($('<option>', {
                             value: object.id,
                             text: object.name
                         }));

@@ -81,15 +81,8 @@
         <div class="widget-main padding-6 no-padding-left no-padding-right">
             <form id="queryFrom" class="layui-form layui-form-item layui-form-pane">
                 <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
-                        <input type="text" id="feeDate" name="feeDate" placeholder="缴费年月" readonly
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
-                        <input type="text" id="houseNum" name="houseNum" placeholder="户号"
+                    <div class="layui-input-inline m-large" style="min-width: 200px;">
+                        <input type="text" id="feeDate" name="feeDate" placeholder="账单日期" readonly
                                class="layui-input">
                     </div>
                 </div>
@@ -172,7 +165,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="gasBillTable" lay-filter="gasBill">
+            <table class="layui-hide" id="otherBillTable" lay-filter="otherBill">
             </table>
         </div>
     </div>
@@ -189,17 +182,44 @@
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址</label>
+            <label class="layui-form-label">账单类型</label>
             <div class="layui-input-inline">
-                <input type="text" id="houseAddress" readonly placeholder="地址" class="layui-input">
+                <select id="billType" name="billType" placeholder="账单类型">
+                    <option value="3">宽带</option>
+                    <option value="4">电视</option>
+                    <option value="9">其他</option>
+                </select>
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
-            <div class="layui-input-inline">
-                <input type="number" id="houseGasNum" required lay-verify="required" placeholder="户号" class="layui-input">
-                <input type="text" id="houseId" name="houseId" hidden>
+            <div class="layui-inline">
+                <label class="layui-form-label">区域项目</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
+                        <option value="">区域</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 90px;">
+                    <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
+                        <option value="">物业项目</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">楼宇房屋</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
+                        <option value="">楼宇</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
+                        <option value="">房屋</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -211,7 +231,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <a href="javascript:void(0);" id="btn-save" lay-filter="addGasBill" lay-submit class="button">保存并继续</a>
+                <a href="javascript:void(0);" id="btn-save" lay-filter="addOtherBill" lay-submit class="button">保存并继续</a>
                 <a href="javascript:void(0);" id="btn-view" class="button">
                     统计查看
                 </a>

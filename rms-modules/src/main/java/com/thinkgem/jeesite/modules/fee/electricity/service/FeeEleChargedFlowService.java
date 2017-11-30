@@ -120,8 +120,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
 
         /*计算金额*/
-        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
-        FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
+        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
+        FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
 
         if (peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeEleBill.getHouseId());
@@ -193,8 +193,8 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
-            FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
-            FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+            FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+            FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
 
             if (peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
@@ -215,7 +215,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
             }
         } else {
             feeEleChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeTypeEnum.ELECTRICITY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELECTRICITY_UNIT, feeEleChargedFlow.getHouseId(), feeEleChargedFlow.getRoomId());
 
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", house.getId());
