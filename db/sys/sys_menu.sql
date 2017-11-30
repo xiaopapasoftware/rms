@@ -333,9 +333,13 @@ insert into sys_menu (id, parent_id, parent_ids, name, sort, href, target, icon,
 
 ('638','646','0,1,198,646,','煤气收费流水','136','/fee/gas/charge/index',NULL,NULL,'1','fee:gas:charged:view','1',now(),'1',now(),NULL,'0'),
 ('639','638','0,1,198,646,638,','生成应收账单','137',NULL,NULL,NULL,'0','fee:gas:charged:generate:order','1',now(),'1',now(),NULL,'0'),
-('640','638','0,1,198,646,638,','生成流水账单','138',NULL,NULL,NULL,'0','fee:gas:charged:generate:flow','1',now(),'1',now(),NULL,'0');
+('640','638','0,1,198,646,638,','生成流水账单','138',NULL,NULL,NULL,'0','fee:gas:charged:generate:flow','1',now(),'1',now(),NULL,'0'),
+
+('648','646','0,1,198,646,','其他收费流水','139','/fee/other/charge/index',NULL,NULL,'1','fee:other:charged:view','1',now(),'1',now(),NULL,'0'),
+('649','648','0,1,198,646,648,','生成应收账单','140',NULL,NULL,NULL,'0','fee:other:charged:generate:order','1',now(),'1',now(),NULL,'0'),
+('650','648','0,1,198,646,648,','生成流水账单','141',NULL,NULL,NULL,'0','fee:other:charged:generate:flow','1',now(),'1',now(),NULL,'0');
 
 
 
 
----end menuId 647
+---end menuId 650

@@ -237,20 +237,27 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                 feeGasChargedFlow.setHouseGasNum(r.getHouse().getGasAccountNum());
                 feeGasChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
                 feeGasChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
-                /*计算金额*/
-                double days;
-                FeeGasChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
-                if (Optional.ofNullable(lastCharged).isPresent()) {
-                    days = DateUtils.getDistanceOfTwoDate(lastCharged.getGasCalculateDate(), new Date());
-                } else {
-                    days = Double.valueOf(DateUtils.getDay());
-                }
-                if (days > 0) {
-                    /*金额 = 固定金额/30*上月生成日至今的天数*/
-                    BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS)).multiply(new BigDecimal(days));
-                    feeGasChargedFlow.setGasAmount(amount);
+                /*如果配置为零，则不收取费用*/
+                if(Double.valueOf(feeConfig.getConfigValue()) == 0){
+                    feeGasChargedFlow.setGasAmount(new BigDecimal(0));
                     feeGasChargedFlow.preInsert();
                     feeGasChargedFlows.add(feeGasChargedFlow);
+                }else {
+                    /*计算金额*/
+                    double days;
+                    FeeGasChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
+                    if (Optional.ofNullable(lastCharged).isPresent()) {
+                        days = DateUtils.getDistanceOfTwoDate(lastCharged.getGasCalculateDate(), new Date());
+                    } else {
+                        days = Double.valueOf(DateUtils.getDay());
+                    }
+                    if (days > 0) {
+                    /*金额 = 固定金额/30*上月生成日至今的天数*/
+                        BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS),2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
+                        feeGasChargedFlow.setGasAmount(amount);
+                        feeGasChargedFlow.preInsert();
+                        feeGasChargedFlows.add(feeGasChargedFlow);
+                    }
                 }
             }
         });

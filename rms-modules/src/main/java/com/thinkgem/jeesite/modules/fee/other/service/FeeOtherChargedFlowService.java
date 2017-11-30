@@ -76,29 +76,35 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
                 days = Double.valueOf(DateUtils.getDay());
             }
 
-            if (days > 0) {
-                if (netFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
-                    FeeOtherChargedFlow netFeeOtherChargedFlow = feeOtherChargedFlow.clone();
-                    /*金额 = 固定金额/30*上月生成日至今的天数*/
-                    BigDecimal amount = new BigDecimal(netFeeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS)).multiply(new BigDecimal(days));
-                    netFeeOtherChargedFlow.setAmount(amount);
-                    netFeeOtherChargedFlow.preInsert();
-                    feeChargedFlows.add(netFeeOtherChargedFlow);
-                }
-                if (tvFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
-                    FeeOtherChargedFlow tvFeeOtherChargedFlow = feeOtherChargedFlow.clone();
-                    /*金额 = 固定金额/30*上月生成日至今的天数*/
-                    BigDecimal amount = new BigDecimal(tvFeeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS)).multiply(new BigDecimal(days));
-                    tvFeeOtherChargedFlow.setAmount(amount);
-                    tvFeeOtherChargedFlow.preInsert();
-                    feeChargedFlows.add(tvFeeOtherChargedFlow);
-                }
+            if (netFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                FeeOtherChargedFlow netChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, netFeeConfig, days);
+                netChargedFlow.setType(OrderTypeEnum.NET.getValue());
+                feeChargedFlows.add(netChargedFlow);
+            }
+            if (tvFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                FeeOtherChargedFlow tvChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, tvFeeConfig, days);
+                tvChargedFlow.setType(OrderTypeEnum.NET.getValue());
+                feeChargedFlows.add(tvChargedFlow);
             }
         });
+
         if (feeChargedFlows.size() > 0) {
             dao.batchInsert(feeChargedFlows);
             logger.info("总共生成{}条收费流水记录", feeChargedFlows.size());
         }
+    }
+
+    private FeeOtherChargedFlow getOtherChargedFlow(FeeOtherChargedFlow feeOtherChargedFlow, FeeConfig feeConfig, double days) {
+        FeeOtherChargedFlow otherChargedFlow = feeOtherChargedFlow.clone();
+        if (Double.valueOf(feeConfig.getConfigValue()) == 0) {
+            otherChargedFlow.setAmount(new BigDecimal(0));
+        } else {
+            /*金额 = 固定金额/30*上月生成日至今的天数*/
+            BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS),2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
+            otherChargedFlow.setAmount(amount);
+        }
+        otherChargedFlow.preInsert();
+        return otherChargedFlow;
     }
 
     @Transactional(readOnly = false)

@@ -75,7 +75,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
     };
 
     var feeOtherChargeFlowCommon = {
-        baseUrl: ctx + "/fee/Other/charged/flow"
+        baseUrl: ctx + "/fee/other/charged/flow"
     };
 
     var feeOtherChargeFlowMVC = {
@@ -112,7 +112,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         View: {
             initDate: function () {
                 laydate.render({
-                    elem: '#OtherReadDates',
+                    elem: '#otherReadDates',
                     type: 'date',
                     range: '~',
                     format: 'yyyy-MM-dd'
@@ -126,7 +126,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             renderTable: function () {
                 table.render({
-                    elem: '#OtherChargeFlowTable',
+                    elem: '#otherChargeFlowTable',
                     url: feeOtherChargeFlowMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
@@ -151,7 +151,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             templet: '<div>{{ layui.laytpl.generateOrderFormat(d.generateOrder) }}</div>'
                         }
                     ]],
-                    id: 'OtherChargeFlowTable',
+                    id: 'otherChargeFlowTable',
                     page: true,
                     request: {
                         pageName: 'pageNum',
@@ -191,7 +191,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             queryFun: function () {
-                table.reload('OtherChargeFlowTable', {
+                table.reload('otherChargeFlowTable', {
                     where: feeOtherChargeFlowMVC.Controller.getWhereFun()
                 });
             },

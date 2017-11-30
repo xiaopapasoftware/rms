@@ -136,7 +136,7 @@
     </div>
     <div class="widget-body">
         <div class="widget-main padding-6 no-padding-left no-padding-right">
-            <table class="layui-hide" id="gasChargeFlowTable" lay-filter="gasChargeFlowT">
+            <table class="layui-hide" id="otherChargeFlowTable" lay-filter="otherChargeFlowTable">
             </table>
         </div>
     </div>

@@ -209,21 +209,27 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                 feeWaterChargedFlow.setHouseWaterNum(r.getHouse().getGasAccountNum());
                 feeWaterChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
                 feeWaterChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
-
-                /*计算金额*/
-                double days;
-                FeeWaterChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
-                if (Optional.ofNullable(lastCharged).isPresent()) {
-                    days = DateUtils.getDistanceOfTwoDate(lastCharged.getWaterCalculateDate(), new Date());
-                } else {
-                    days = Double.valueOf(DateUtils.getDay());
-                }
-                if (days > 0) {
-                    /*金额 = 固定金额/30*上月生成日至今的天数*/
-                    BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS)).multiply(new BigDecimal(days));
-                    feeWaterChargedFlow.setWaterAmount(amount);
+                /*如果配置为零，则不收取费用*/
+                if(Double.valueOf(feeConfig.getConfigValue()) == 0){
+                    feeWaterChargedFlow.setWaterAmount(new BigDecimal(0));
                     feeWaterChargedFlow.preInsert();
                     feeWaterChargedFlows.add(feeWaterChargedFlow);
+                }else {
+                    /*计算金额*/
+                    double days;
+                    FeeWaterChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
+                    if (Optional.ofNullable(lastCharged).isPresent()) {
+                        days = DateUtils.getDistanceOfTwoDate(lastCharged.getWaterCalculateDate(), new Date());
+                    } else {
+                        days = Double.valueOf(DateUtils.getDay());
+                    }
+                    if (days > 0) {
+                    /*金额 = 固定金额/30*上月生成日至今的天数*/
+                        BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS),2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
+                        feeWaterChargedFlow.setWaterAmount(amount);
+                        feeWaterChargedFlow.preInsert();
+                        feeWaterChargedFlows.add(feeWaterChargedFlow);
+                    }
                 }
             }
         });

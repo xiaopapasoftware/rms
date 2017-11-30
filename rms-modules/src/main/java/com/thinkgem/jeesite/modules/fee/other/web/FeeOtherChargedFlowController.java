@@ -5,14 +5,13 @@
 package com.thinkgem.jeesite.modules.fee.other.web;
 
 
-import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity;
-import com.thinkgem.jeesite.modules.fee.other.entity.FeeOtherChargedFlow;
+import com.thinkgem.jeesite.modules.fee.common.web.FeeBaseController;
 import com.thinkgem.jeesite.modules.fee.other.entity.vo.FeeOtherChargedFlowVo;
 import com.thinkgem.jeesite.modules.fee.other.service.FeeOtherChargedFlowService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,18 +26,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/fee/other/charged/flow")
-public class FeeOtherChargedFlowController extends BaseController {
+public class FeeOtherChargedFlowController extends FeeBaseController {
 
       @Autowired
       private FeeOtherChargedFlowService feeOtherChargedFlowService;
 
-      @RequestMapping(value = "save")
-      public Object save(FeeOtherChargedFlow feeOtherChargedFlow) {
-          feeOtherChargedFlowService.save(feeOtherChargedFlow);
-          return ResponseData.success();
-      }
-
     @RequestMapping(value = "list")
+    @RequiresPermissions("fee:other:charged:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
         List<FeeOtherChargedFlowVo> feeOtherChargedFeeVos = feeOtherChargedFlowService.getFeeOtherChargedFlow(feeCriteriaEntity);
@@ -46,28 +40,15 @@ public class FeeOtherChargedFlowController extends BaseController {
         return ResponseData.success().page(page);
     }
 
-    @RequestMapping(value = "delete")
-    public Object delete(String id) {
-        FeeOtherChargedFlow feeOtherChargedFlow = new FeeOtherChargedFlow();
-        feeOtherChargedFlow.setId(id);
-        feeOtherChargedFlow.setDelFlag(Constants.DEL_FLAG_NO);
-        feeOtherChargedFlowService.save(feeOtherChargedFlow);
-        return ResponseData.success();
-    }
-
-   @RequestMapping(value = "get")
-   public Object get(String id) {
-        FeeOtherChargedFlow feeOtherChargedFlow = feeOtherChargedFlowService.get(id);
-        return ResponseData.success().data(feeOtherChargedFlow);
-   }
-
     @RequestMapping(value = "generateFlow")
+    @RequiresPermissions("fee:other:charged:generate:flow")
     public Object generateFlow() {
         feeOtherChargedFlowService.generatorFlow();
         return ResponseData.success();
     }
 
     @RequestMapping(value = "generateOrder")
+    @RequiresPermissions("fee:other:charged:generate:flow")
     public Object generaterOrder() {
         feeOtherChargedFlowService.generatorOrder();
         return ResponseData.success();
