@@ -37,7 +37,9 @@ public class FeeOtherChargedFlow extends DataEntity<FeeOtherChargedFlow> impleme
     private Date calculateDate;
     /** amount - 收取金额 */
     private BigDecimal amount;
-    /** type - 账单类型 0:宽带 1:电视 2:其它 */
+    /** rent_type - 出租类型 0：整租 1：合租 */
+    private Integer rentType;
+    /** type - 账单类型 3:宽带 4:电视 9:其它 */
     private Integer type;
     /** generate_order - 是否已生成订单 0:是 -1:否 */
     private Integer generateOrder;

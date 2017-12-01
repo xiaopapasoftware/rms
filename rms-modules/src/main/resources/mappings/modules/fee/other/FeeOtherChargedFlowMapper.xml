@@ -10,6 +10,7 @@
         <result column="room_id" property="roomId" jdbcType="VARCHAR"/>
         <result column="calculate_date" property="calculateDate" jdbcType="TIMESTAMP"/>
         <result column="amount" property="amount" jdbcType="NUMERIC"/>
+        <result column="rent_type" property="rentType" jdbcType="NUMERIC"/>
         <result column="type" property="type" jdbcType="NUMERIC"/>
         <result column="generate_order" property="generateOrder" jdbcType="NUMERIC"/>
         <result column="create_by" property="createBy.id" jdbcType="VARCHAR"/>
@@ -36,7 +37,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, order_no, property_id, house_id, room_id, calculate_date, amount, type, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, order_no, property_id, house_id, room_id, calculate_date, amount, rent_type,type, generate_order, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -47,6 +48,7 @@
         <if test="roomId!=null"> room_id,</if>
         <if test="calculateDate!=null"> calculate_date,</if>
         <if test="amount!=null"> amount,</if>
+        <if test="rentType!=null">rent_type,</if>
         <if test="type!=null"> type,</if>
         <if test="generateOrder!=null"> generate_order,</if>
         <if test="createBy!=null"> create_by,</if>
@@ -64,6 +66,7 @@
         <if test="roomId!=null">#{roomId,jdbcType=VARCHAR},</if>
         <if test="calculateDate!=null">#{calculateDate,jdbcType=TIMESTAMP},</if>
         <if test="amount!=null">#{amount,jdbcType=NUMERIC},</if>
+        <if test="rentType!=null">#{rentType,jdbcType=NUMERIC},</if>
         <if test="type!=null">#{type,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null">#{generateOrder,jdbcType=NUMERIC},</if>
         <if test="createBy!=null">#{createBy.id,jdbcType=VARCHAR},</if>
@@ -81,6 +84,7 @@
         #{item.roomId,jdbcType=VARCHAR},
         #{item.calculateDate,jdbcType=TIMESTAMP},
         #{item.amount,jdbcType=NUMERIC},
+        #{item.rentType,jdbcType=NUMERIC},
         #{item.type,jdbcType=NUMERIC},
         #{item.generateOrder,jdbcType=NUMERIC},
         #{item.createBy.id,jdbcType=VARCHAR},
@@ -98,6 +102,7 @@
         <if test="roomId!=null"> room_id=#{roomId,jdbcType=VARCHAR},</if>
         <if test="calculateDate!=null"> calculate_date=#{calculateDate,jdbcType=TIMESTAMP},</if>
         <if test="amount!=null"> amount=#{amount,jdbcType=NUMERIC},</if>
+        <if test="rentType!=null">rent_type=#{rentType,jdbcType=NUMERIC},</if>
         <if test="type!=null"> type=#{type,jdbcType=NUMERIC},</if>
         <if test="generateOrder!=null"> generate_order=#{generateOrder,jdbcType=NUMERIC},</if>
         <if test="updateBy!=null"> update_by=#{updateBy.id,jdbcType=VARCHAR},</if>
@@ -112,6 +117,7 @@
         room_id=#{item.roomId,jdbcType=VARCHAR},
         calculate_date=#{item.calculateDate,jdbcType=TIMESTAMP},
         amount=#{item.amount,jdbcType=NUMERIC},
+        rent_type=#{item.rentType,jdbcType=NUMERIC},
         type=#{item.type,jdbcType=NUMERIC},
         generate_order=#{item.generateOrder,jdbcType=NUMERIC},
         update_by=#{item.updateBy.id,jdbcType=VARCHAR},
@@ -130,6 +136,7 @@
             <if test="roomId!=null and roomId!=''"> AND room_id=#{roomId}</if>
             <if test="calculateDate!=null and calculateDate!=''"> AND calculate_date=#{calculateDate}</if>
             <if test="amount!=null and amount!=''"> AND amount=#{amount}</if>
+            <if test="rentType!=null and rentType!=''">AND rent_type=#{rentType}</if>
             <if test="type!=null and type!=''"> AND type=#{type}</if>
             <if test="generateOrder!=null and generateOrder!=''"> AND generate_order=#{generateOrder}</if>
             AND del_flag = 0
@@ -189,7 +196,7 @@
                 <include refid="BatchUpdate_Set_From_Bean"/>
             </set>
             where
-             id = #{id,jdbcType=VARCHAR}  
+             id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -227,7 +234,7 @@
         case temp.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,
         th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
         tpp.project_addr,sa.id area_id,sa.name area_name,
-        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
+        case temp.rent_type when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
         from fee_other_charged_flow temp
         LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
         left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0

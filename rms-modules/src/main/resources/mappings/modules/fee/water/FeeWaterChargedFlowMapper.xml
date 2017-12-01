@@ -276,7 +276,7 @@
         case temp.room_id when '0' then '0' else tr.ROOM_NO end ROOM_NO,
         th.house_code,th.house_no,th.intent_mode, tb.building_name,tpp.project_name,
         tpp.project_addr,sa.id area_id,sa.name area_name,
-        case th.intent_mode when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
+        case temp.rent_type when '0' then '整组' when '1' then '合租' else '' end intent_mode_name,temp.*
         from fee_water_charged_flow temp
         LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
         left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0

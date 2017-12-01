@@ -5,6 +5,7 @@
 package com.thinkgem.jeesite.modules.fee.common.dao;
 
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import org.apache.ibatis.annotations.Param;
 

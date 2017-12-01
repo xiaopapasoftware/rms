@@ -319,6 +319,7 @@ create table fee_other_charged_flow
    room_id              varchar(64) comment '房号',
    calculate_date       datetime not null comment '计算时间',
    amount               numeric(19,2) not null default 0 comment '收取金额',
+   rent_type            int comment '出租类型 0：整租 1：合租',
    type                 int not null default 0 comment '账单类型 0:宽带 1:电视 2:其它',
    generate_order       int not null default 0 comment '是否已生成订单 0:是 -1:否 ',
    create_by            varchar(64) comment '创建者',

@@ -38,6 +38,7 @@ public class FeeGasChargedFlowController extends FeeBaseController {
     @RequiresPermissions("fee:gas:charged:view")
     public Object list(FeeCriteriaEntity feeCriteriaEntity) {
         Page page = new Page(feeCriteriaEntity.getPageNum(), feeCriteriaEntity.getPageSize());
+        feeCriteriaEntity.setPage(page);
         List<FeeGasChargedFlowVo> feeGasChargedFeeVos = feeGasChargedFlowService.getFeeGasChargedFee(feeCriteriaEntity);
         page.setList(feeGasChargedFeeVos);
         return ResponseData.success().page(page);

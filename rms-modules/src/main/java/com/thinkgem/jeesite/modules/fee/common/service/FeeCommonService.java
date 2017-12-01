@@ -9,6 +9,7 @@ import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
 import com.thinkgem.jeesite.modules.cache.enums.MyCacheConstant;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.fee.common.dao.FeeCommonDao;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
@@ -16,6 +17,7 @@ import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
 import com.thinkgem.jeesite.modules.fee.enums.FeeUnitEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
@@ -81,6 +83,16 @@ public class FeeCommonService {
         return feeCommonDao.getJoinRentAllRoom();
     }
 
+    /*获取所有整租的房间，只包括已出租的*/
+    public List<House> getWholeRentAllHouse(){
+        House query = new House();
+        query.setIntentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
+        List<House> houses = houseService.findList(query);
+        return houses.stream()
+                .filter(h -> (StringUtils.equals(h.getHouseStatus(),HouseStatusEnum.WHOLE_RENT.getValue()) || StringUtils.equals(h.getHouseStatus(),HouseStatusEnum.PART_RENT.getValue())))
+                .collect(Collectors.toList());
+    }
+
     public List<Map> getHouseByAccountNumAndNumType(String accountNum, String numType) {
         return houseService.getHouseByAccountNumAndNumType(accountNum, numType);
     }
@@ -107,6 +119,9 @@ public class FeeCommonService {
 
         FeeConfig retFeeConfig = null;
         for (String id : rangeId.split(",")) {
+            if(StringUtils.isBlank(id) || StringUtils.equals(id,"0")){
+                continue;
+            }
             String key = id + "_" + feeUnitEnum.getValue();
             FeeConfig feeConfig = feeConfigMap.get(key);
             if (Optional.ofNullable(feeConfig).isPresent()) {

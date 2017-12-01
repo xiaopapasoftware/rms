@@ -56,7 +56,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
-                }else if (value == 0) {
+                } else if (value == 0) {
                     value = "总表";
                 }
                 return value;
@@ -64,10 +64,22 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             layui.laytpl.generateOrderFormat = function (value) {
                 if (value == null) {
                     value = "";
-                }else if (value == 1) {
+                } else if (value == 1) {
                     value = "否";
-                }else if (value == 0) {
+                } else if (value == 0) {
                     value = "是";
+                }
+                return value;
+            };
+            layui.laytpl.typeFormat = function (value) {
+                if (value == null) {
+                    value = "";
+                } else if (value == 3) {
+                    value = "宽带";
+                } else if (value == 4) {
+                    value = "电视";
+                }else if (value == 9) {
+                    value = "其他";
                 }
                 return value;
             };
@@ -142,6 +154,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'orderNo', align: 'center', title: '订单号', width: 200},
                         {field: 'calculateDate', align: 'center', title: '计算日期', width: 120},
                         {field: 'intentModeName', align: 'center', title: '出租类型', width: 100},
+                        {
+                            field: 'type', align: 'center', title: '费用类型', width: 100,
+                            templet: '<div>{{ layui.laytpl.typeFormat(d.type) }}</div>'
+                        },
                         {
                             field: 'amount', align: 'right', title: '金额（元）', width: 120,
                             templet: '<div>{{ layui.laytpl.amountFormat(d.amount) }}</div>'
