@@ -136,19 +136,11 @@
 	  	FROM    t_room tr 
 		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
 		AND     tr.`DEL_FLAG` = '0'
-	    <if test="startDate != null and startDate != ''">
+	    <if test="endDate != null and endDate != ''">
 	  	  <![CDATA[
-			AND tr.create_date <=  #{startDate}
+			AND tr.create_date <=  #{endDate}
 		  ]]>
 		</if>
-	</select>
-
-	<!-- 查询某个小区下面所有的房间数量 -->
-	<select id="queryRoomsByProjectPropertyId" resultType="int">
-		SELECT  COUNT(*)
-		FROM    t_room tr
-		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
-		AND     tr.`DEL_FLAG` = '0'
 	</select>
 
 	<!-- 查询某个小区下面所有的房间数量 -->

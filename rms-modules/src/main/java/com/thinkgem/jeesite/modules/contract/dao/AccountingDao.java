@@ -6,6 +6,9 @@ package com.thinkgem.jeesite.modules.contract.dao;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
 
 /**
  * @author wangshujin
@@ -13,4 +16,6 @@ import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 @MyBatisDao
 public interface AccountingDao extends CrudDao<Accounting> {
   void updatePaymentTransId(Accounting accounting);
+
+  Date getFeeDateByContractId(@Param("contractId") String contractId);
 }

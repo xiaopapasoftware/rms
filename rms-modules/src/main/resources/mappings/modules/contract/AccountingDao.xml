@@ -191,4 +191,11 @@
 			 	</if>
 		</where>
 	</update>
+
+	<select id="getFeeDateByContractId" parameterType="java.lang.String" resultType="java.util.Date">
+		SELECT  FEE_DATE
+	  	FROM    t_accounting where RENT_CONTRACT_ID = #{contractId}
+	  	AND del_flag = "0"
+		ORDER BY FEE_DATE desc limit 1
+	</select>
 </mapper>

@@ -1,5 +1,7 @@
 package com.thinkgem.jeesite.modules.lease.entity;
 
+import com.thinkgem.jeesite.common.utils.excel.annotation.ExcelField;
+
 public class LeaseStatisticsVO {
 
     private String name;
@@ -26,6 +28,7 @@ public class LeaseStatisticsVO {
         this.leasedPercent = leasedPercent;
     }
 
+    @ExcelField(title = "维度名称", align = 2, sort = 1)
     public String getName() {
         return name;
     }
@@ -34,6 +37,7 @@ public class LeaseStatisticsVO {
         this.name = name;
     }
 
+    @ExcelField(title = "房间总数(间)", align = 2, sort = 2)
     public int getTotalRooms() {
         return totalRooms;
     }
@@ -42,6 +46,7 @@ public class LeaseStatisticsVO {
         this.totalRooms = totalRooms;
     }
 
+    @ExcelField(title = "已出租数(间)", align = 2, sort = 3)
     public int getLeasedRooms() {
         return leasedRooms;
     }
@@ -50,6 +55,7 @@ public class LeaseStatisticsVO {
         this.leasedRooms = leasedRooms;
     }
 
+    @ExcelField(title = "房租总计(元)", align = 2, sort = 5)
     public double getRentSum() {
         return rentSum;
     }
@@ -58,6 +64,7 @@ public class LeaseStatisticsVO {
         this.rentSum = rentSum;
     }
 
+    @ExcelField(title = "月房租均价(元)", align = 2, sort = 6)
     public String getRentAvg() {
         return rentAvg;
     }
@@ -66,6 +73,7 @@ public class LeaseStatisticsVO {
         this.rentAvg = rentAvg;
     }
 
+    @ExcelField(title = "出租率", align = 2, sort = 4)
     public String getLeasedPercent() {
         return leasedPercent;
     }

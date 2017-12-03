@@ -300,197 +300,6 @@
 		SELECT count(*) FROM t_rent_contract
 	</select>
 
-	<!-- 获取某个时间日期的所有已经出租掉的房间数，包括合租的和整租的 -->
-	<select id="queryValidSingleRoomCount" resultType="int">
-		SELECT 
-		  COUNT(t.roomid)  
-		FROM
-		  (SELECT 
-		    trc.`ROOM_ID`  AS  roomid
-		  FROM
-		    t_rent_contract trc 
-		  WHERE trc.RENT_MODE = '1'
-		    AND trc.DEL_FLAG = '0' 
-		    AND (
-		      (trc.CONTRACT_STATUS = '1' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '2' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3'))
-   			)
-		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-		    <if test="startDate != null and startDate != ''">
-		  	 <![CDATA[
-					AND trc.START_DATE <=  #{startDate}
-					AND trc.expired_date >= #{startDate}
-			 ]]>
-			</if>
-		  UNION
-		  SELECT 
-		    tr.id AS roomid
-		  FROM
-		    t_room tr 
-		  WHERE tr.`HOUSE_ID` IN 
-		    (SELECT  trc.`HOUSE_ID` 
-		     FROM t_rent_contract trc 
-		     WHERE trc.RENT_MODE = '0'
-		      AND trc.DEL_FLAG = '0' 
-		      AND (
-		      (trc.CONTRACT_STATUS = '1' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '2' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '4' AND (trc.`CONTRACT_BUSI_STATUS` IS NULL OR trc.`CONTRACT_BUSI_STATUS`=''))
-		       OR
-		      (trc.CONTRACT_STATUS = '6' AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3'))
-   			)
-		     AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-		      <if test="startDate != null and startDate != ''">
-			  	 <![CDATA[
-					AND trc.START_DATE <=  #{startDate}
-					AND trc.expired_date >= #{startDate}
-				 ]]>
-			 </if>)
-		    AND tr.`DEL_FLAG` = '0') t
-	</select>
-
-	<!-- 查询所有有效的“合租”合同列表 -->
-	<select id="queryValidSingleRooms" resultType="RentContract">
-		SELECT  * 
-		FROM 	t_rent_contract trc
-		WHERE 	trc.RENT_MODE = '1' 
-		AND 	trc.DEL_FLAG = '0'
-		AND 	trc.CONTRACT_STATUS = '6'
-		AND  	trc.CONTRACT_BUSI_STATUS = '0'
-		<if test="startDate != null and startDate != ''">
-		  	 <![CDATA[
-				AND trc.START_DATE >=  #{startDate}
-			 ]]>
-		</if>
-		<if test="endDate != null and endDate != ''">
-			 <![CDATA[
-				AND trc.START_DATE <=  #{endDate}
-			 ]]>
-		</if>
-		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-	</select>
-
-	<select id="queryValidEntireHouseCount" resultType="int">
-		SELECT 
-		  COUNT(t.house_id) 
-		FROM
-		  (SELECT 
-		    trc.`HOUSE_ID` 
-		  FROM
-		    t_rent_contract trc 
-		  WHERE trc.RENT_MODE = '0' 
-		    AND trc.DEL_FLAG = '0' 
-		    AND (
-		      (
-		        trc.CONTRACT_STATUS = '1' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '2' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '4' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '6' 
-		        AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3')
-		      )
-		    ) 
-		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-		    <if test="startDate != null and startDate != ''">
-			 <![CDATA[
-				AND trc.START_DATE <=  #{startDate}
-				AND trc.expired_date >= #{startDate}
-			 ]]>
-		    </if>
-		  UNION
-		  SELECT DISTINCT 
-		    trc.`HOUSE_ID` 
-		  FROM
-		    t_rent_contract trc 
-		  WHERE trc.RENT_MODE = '1' 
-		    AND trc.DEL_FLAG = '0' 
-		    AND (
-		      (
-		        trc.CONTRACT_STATUS = '1' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '2' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '4' 
-		        AND (
-		          trc.`CONTRACT_BUSI_STATUS` IS NULL 
-		          OR trc.`CONTRACT_BUSI_STATUS` = ''
-		        )
-		      ) 
-		      OR (
-		        trc.CONTRACT_STATUS = '6' 
-		        AND trc.`CONTRACT_BUSI_STATUS` in ('0', '1', '2', '3')
-		      )
-		    ) 
-		    AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-		    <if test="startDate != null and startDate != ''">
-			 <![CDATA[
-				AND trc.START_DATE <=  #{startDate}
-				AND trc.expired_date >= #{startDate}
-			 ]]>
-		    </if>
-		    ) t 
-	</select>
-
-	<!--查询指定房型的有效整租合同 -->
-	<select id="queryValidConditionalEntireHouses" resultType="RentContract">
-		SELECT trc.*
-		FROM t_rent_contract trc,t_house th
-		WHERE trc.RENT_MODE = '0'
-		AND trc.DEL_FLAG = '0'
-		AND trc.CONTRACT_STATUS = '6'
-		AND trc.CONTRACT_BUSI_STATUS = '0'
-		AND trc.PROPERTY_PROJECT_ID = #{propertyProjectId}
-		<if test="startDate != null and startDate != ''">
-		  	 <![CDATA[
-				AND trc.START_DATE >=  #{startDate}
-			 ]]>
-		</if>
-		<if test="endDate != null and endDate != ''">
-			 <![CDATA[
-				AND trc.START_DATE <=  #{endDate}
-			 ]]>
-		</if>
-		AND th.`DEL_FLAG` = '0'
-		AND th.`HOUSE_STATUS` = '4'
-		AND th.`DECORA_STRUC_ROOM_NUM` = #{roomNum}
-		AND th.`DECORA_STRUC_CUSSPAC_NUM` = #{cusspacNum}
-		AND trc.house_id = th.id
-	</select>
-
 	<insert id="insert">
 		INSERT INTO t_rent_contract(
 		id,
@@ -675,8 +484,8 @@
 		AND trc.house_id = #{houseId}
 	</select>
 
-	<!--查询某天某项目下出租的整租/单间合同列表 -->
-	<select id="queryContractListByProjectId" resultType="RentContract">
+	<!--查询某时间段某项目下出租的整租/单间合同列表 -->
+	<select id="queryContractListByProjectIdAndDate" resultType="RentContract">
 		SELECT
 		a.id AS "id",
 		a.contract_code AS "contractCode",
@@ -731,16 +540,16 @@
 		a.has_free as "hasFree",
 		a.free_months as "freeMonths"
 		FROM t_rent_contract a
-		WHERE a.RENT_MODE = #{type}
-		AND a.DEL_FLAG = '0'
+		WHERE a.DEL_FLAG = '0'
 		AND a.CONTRACT_STATUS = '6'
-		AND a.CONTRACT_BUSI_STATUS = '0'
 		AND a.PROPERTY_PROJECT_ID = #{projectId}
-		<![CDATA[
-			AND a.START_DATE <=  #{date}
+		AND
+		!(<![CDATA[
+			a.START_DATE >  #{endDate}
 		 ]]>
+		||
 		<![CDATA[
-			AND a.EXPIRED_DATE >=  #{date}
-		 ]]>
+			a.EXPIRED_DATE <  #{startDate}
+		 ]]>)
 	</select>
 </mapper>

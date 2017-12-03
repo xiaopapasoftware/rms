@@ -3,16 +3,16 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AccountingDao;
 import com.thinkgem.jeesite.modules.contract.entity.Accounting;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -50,5 +50,9 @@ public class AccountingService extends CrudService<AccountingDao, Accounting> {
   @Transactional(readOnly = false)
   public void updatePaymentTransId(Accounting accounting) {
     dao.updatePaymentTransId(accounting);
+  }
+
+  public Date getFeeDateByContractId(String contractId) {
+    return dao.getFeeDateByContractId(contractId);
   }
 }

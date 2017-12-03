@@ -9,7 +9,6 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +63,6 @@ public interface HouseDao extends CrudDao<House> {
    * 预定-整租，更新房屋状态
    */
   int updateHouseStatus4Deposit(House house);
-
-  int queryHousesCountByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId, @Param("startDate") Date startDate);
 
   List<Map> getHouseByAccountNumAndNumType(@Param("accountNum") String accountNum, @Param("numType") String numType);
 }

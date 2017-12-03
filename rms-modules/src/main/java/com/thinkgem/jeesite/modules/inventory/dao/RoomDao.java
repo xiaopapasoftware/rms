@@ -50,12 +50,7 @@ public interface RoomDao extends CrudDao<Room> {
   /**
    * 查询某个小区下面所有的房间数量
    */
-  int queryRoomsCountByProjectPropertyId(@Param("startDate") Date startDate, @Param("propertyProjectId") String propertyProjectId);
-
-  /**
-   * 查询某个小区下面所有的房间数量
-   */
-  int queryRoomsByProjectPropertyId(@Param("propertyProjectId") String propertyProjectId);
+  int queryRoomsCountByProjectPropertyId(@Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
 
   /**
    * 查询某个房屋下面所有的房间数量

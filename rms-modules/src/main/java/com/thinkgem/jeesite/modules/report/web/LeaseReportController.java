@@ -1,5 +1,8 @@
 package com.thinkgem.jeesite.modules.report.web;
 
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
@@ -16,6 +19,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,6 +51,16 @@ public class LeaseReportController extends BaseController {
     condition.setBusiness(SelectItemConstants.ORG);
     condition.setType(SelectItemConstants.COUNTY);
     return selectItemService.getSelectListByBusinessCode(condition);
+  }
+
+  @RequestMapping(value = "exportLeaseStatistics")
+  public void exportLeaseStatistics(LeaseStatisticsCondition condition, HttpServletResponse response, Model model) {
+    String fileName = "出租率统计报表" + DateUtils.formatDate(condition.getStartDate()) + "至" + DateUtils.formatDate(condition.getEndDate());
+    try {
+      new ExportExcel(fileName, LeaseStatisticsVO.class).setDataList(Collections.singletonList(calculateStrategy.calculateLease(fillCondition(condition)))).write(response, fileName  + ".xlsx").dispose();
+    } catch (Exception e) {
+      addMessage(model, ViewMessageTypeEnum.ERROR, "导出出租率统计报表失败！失败信息：" + e.getMessage());
+    }
   }
 
   @RequiresPermissions("report:lease:view")

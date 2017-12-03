@@ -29,6 +29,7 @@ import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -419,22 +420,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return 0;
   }
 
-  /**
-   * 获取某个日期的所有已经出租掉的房间数，包括合租的和整租的
-   */
-  public int queryValidSingleRoomCount(Date startDate, String propertyProjectId) {
-    return dao.queryValidSingleRoomCount(startDate, propertyProjectId);
-  }
-
   public List<RentContract> queryHousesByHouseId(String houseId) {
     return dao.queryHousesByHouseId(houseId);
-  }
-
-  /**
-   * 查询指定日期所有部分出租+完全出租的房屋套数
-   */
-  public int queryValidEntireHouseCount(String propertyProjectId, Date startDate) {
-    return dao.queryValidEntireHouseCount(propertyProjectId, startDate);
   }
 
   /**
@@ -852,14 +839,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   }
 
   /**
-   * 查询某天某项目下出租的整租/单间合同列表
+   * 查询某个时间段下合同列表
    * @param projectId
-   * @param date
-   * @param type
+   * @param startDate
+   * @param endDate
    * @return
    */
-  public List<RentContract> queryContractListByProjectId(String projectId, Date date, String type){
-    return rentContractDao.queryContractListByProjectId(projectId, date, type);
+  public List<RentContract> queryContractListByProjectIdAndDate(@Param("projectId") String projectId, @Param("startDate")Date startDate, @Param("endDate")Date endDate){
+    return rentContractDao.queryContractListByProjectIdAndDate(projectId, startDate, endDate);
   }
 
 }

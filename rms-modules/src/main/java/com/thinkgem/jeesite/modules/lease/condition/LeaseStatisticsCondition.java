@@ -16,7 +16,9 @@ public class LeaseStatisticsCondition {
 
     private String id;
 
-    private Date date;
+    private Date startDate;
+
+    private Date endDate;
 
     public String getCounty() {
         return county;
@@ -66,11 +68,19 @@ public class LeaseStatisticsCondition {
         this.id = id;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }

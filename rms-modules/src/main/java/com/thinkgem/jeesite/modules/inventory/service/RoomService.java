@@ -208,15 +208,8 @@ public class RoomService extends CrudService<RoomDao, Room> {
   /**
    * 查询某个小区下面所有的房间数量
    */
-  public int queryRoomsCountByProjectPropertyId(Date startDate, String propertyProjectId) {
-    return dao.queryRoomsCountByProjectPropertyId(startDate, propertyProjectId);
-  }
-
-  /**
-   * 查询某个小区下面所有的房间数量
-   */
-  public int queryRoomsByProjectPropertyId(String propertyProjectId) {
-    return dao.queryRoomsByProjectPropertyId(propertyProjectId);
+  public int queryRoomsCountByProjectPropertyId(Date endDate, String propertyProjectId) {
+    return dao.queryRoomsCountByProjectPropertyId(endDate, propertyProjectId);
   }
 
   /**

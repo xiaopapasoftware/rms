@@ -7,9 +7,16 @@
 	<script type="text/javascript">
 
         $(document).ready(function() {
+            $("#btnExport").click(function() {
+                $("#searchForm").attr("action", "${ctx}/report/lease/exportLeaseStatistics");
+                $("#searchForm").submit();
+                $("#searchForm").attr("action", "${ctx}/report/lease/listLeaseStatistics");
+            });
+
         	$("#btnSubmit").click(function () {
-                var date = $("#startDate").val();
-                if (date === "") {
+                var startDate = $("#startDate").val();
+                var endDate = $("#endDate").val();
+                if (startDate === ""  || endDate === "") {
                     alert("请选择具体的时间");
                     return false;
 				}
@@ -18,7 +25,8 @@
                     center:$("#CENTER").val(),
                     area:$("#AREA").val(),
                     project:$("#PROJECT").val(),
-                    date:date
+                    startDate:startDate,
+                    endDate:endDate
 				}, function (data, status) {
                     $("#viewTbody").html("");
                    if(!data) return;
@@ -58,7 +66,7 @@
 	</script>
 </head>
 <body>
-	<form:form id="searchForm" modelAttribute="houseRoomReport" action="${ctx}/report/gross/listGrossProfit" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="leaseReport" action="${ctx}/report/lease/listLeaseStatistics" method="post" class="breadcrumb form-search">
 		<ul class="ul-form">
 			<li><label>区县：</label>
 				<select id="COUNTY" name="county" class="input-medium selectDom" onchange="changeSelect(this.options[this.options.selectedIndex].value,'CENTER')">
@@ -84,13 +92,19 @@
 				</select>
 			</li>
 
-			<li><label>日期：</label>
+			<li><label>起始日期：</label>
 				<input name="startDate" id="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					   onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"  />
 			</li>
 
+			<li><label>截止日期：</label>
+				<input name="endDate" id="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
+					   onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"  />
+			</li>
+
 			<shiro:hasPermission name="report:lease:view">
-				<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="button" value="查询"/></li>
+				<li class="btns"><input id="btnExport" class="btn btn-primary" type="button" value="导出"/></li>
 			</shiro:hasPermission>
 		</ul>
 	</form:form>
