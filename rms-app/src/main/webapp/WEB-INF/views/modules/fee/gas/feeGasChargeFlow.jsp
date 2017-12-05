@@ -110,13 +110,12 @@
                         </select>
                     </div>
                 </div>
-                <!-- <div class="layui-inline">
+                <div class="layui-inline">
                     <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="gasReadDates" name="gasReadDates" placeholder="抄表日期" readonly
+                        <input type="text" id="gasReadDates" name="gasReadDates" placeholder="计算日期" readonly
                                class="layui-input">
                     </div>
                 </div>
-                -->
             </form>
         </div>
     </div>

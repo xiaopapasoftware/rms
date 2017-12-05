@@ -112,7 +112,7 @@
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large" style="width: 200px;">
-                        <input type="text" id="waterReadDates" name="waterReadDates" placeholder="抄表日期" readonly
+                        <input type="text" id="waterReadDates" name="waterReadDates" placeholder="计算日期" readonly
                                class="layui-input">
                     </div>
                 </div>
