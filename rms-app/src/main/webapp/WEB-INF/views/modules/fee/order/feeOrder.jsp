@@ -112,7 +112,7 @@
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
                         <select id="orderType" name="house" lay-filter="orderType" placeholder="费用类型">
-                            <option value="">不限</option>
+                            <option value="">费用类型</option>
                             <option value="0">电费</option>
                             <option value="1">水费</option>
                             <option value="2">燃气费</option>
@@ -124,7 +124,7 @@
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
                         <select id="orderStatus" name="house" lay-filter="orderStatus" placeholder="订单状态">
-                            <option value="">不限</option>
+                            <option value="">订单状态</option>
                             <option value="1">待缴费</option>
                             <option value="2">已缴</option>
                             <option value="3">收回</option>
