@@ -10,17 +10,19 @@ import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
 import com.thinkgem.jeesite.modules.lease.LeaseCalculateStrategy;
 import com.thinkgem.jeesite.modules.lease.condition.LeaseStatisticsCondition;
+import com.thinkgem.jeesite.modules.lease.entity.LeaseStatistics;
 import com.thinkgem.jeesite.modules.lease.entity.LeaseStatisticsVO;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,8 +58,9 @@ public class LeaseReportController extends BaseController {
   @RequestMapping(value = "exportLeaseStatistics")
   public void exportLeaseStatistics(LeaseStatisticsCondition condition, HttpServletResponse response, Model model) {
     String fileName = "出租率统计报表" + DateUtils.formatDate(condition.getStartDate()) + "至" + DateUtils.formatDate(condition.getEndDate());
+      List<LeaseStatistics> statisticsList = buildListByVO(calculateStrategy.calculateLeaseVO(fillCondition(condition)));
     try {
-      new ExportExcel(fileName, LeaseStatisticsVO.class).setDataList(Collections.singletonList(calculateStrategy.calculateLease(fillCondition(condition)))).write(response, fileName  + ".xlsx").dispose();
+      new ExportExcel(fileName, LeaseStatistics.class).setDataList(statisticsList).write(response, fileName  + ".xlsx").dispose();
     } catch (Exception e) {
       addMessage(model, ViewMessageTypeEnum.ERROR, "导出出租率统计报表失败！失败信息：" + e.getMessage());
     }
@@ -66,8 +69,17 @@ public class LeaseReportController extends BaseController {
   @RequiresPermissions("report:lease:view")
   @RequestMapping(value = "listLeaseStatistics")
   @ResponseBody
-  public LeaseStatisticsVO listLeaseStatistics(LeaseStatisticsCondition condition) {
-    return calculateStrategy.calculateLease(fillCondition(condition));
+  public List<LeaseStatistics> listLeaseStatistics(LeaseStatisticsCondition condition) {
+    return buildListByVO(calculateStrategy.calculateLeaseVO(fillCondition(condition)));
+  }
+
+  private List<LeaseStatistics> buildListByVO(LeaseStatisticsVO leaseStatisticsVO) {
+    List<LeaseStatistics> statisticsList = new ArrayList<>();
+    statisticsList.add(leaseStatisticsVO.getParent());
+    if (!CollectionUtils.isEmpty(leaseStatisticsVO.getChildList())) {
+      statisticsList.addAll(leaseStatisticsVO.getChildList());
+    }
+    return statisticsList;
   }
 
   private LeaseStatisticsCondition fillCondition(LeaseStatisticsCondition condition) {

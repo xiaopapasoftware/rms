@@ -1,11 +1,11 @@
 package com.thinkgem.jeesite.modules.lease.util;
 
-import com.thinkgem.jeesite.modules.lease.entity.LeaseStatisticsVO;
+import com.thinkgem.jeesite.modules.lease.entity.LeaseStatistics;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
-public class LeaseStatisticsVOBuilder {
+public class LeaseStatisticsBuilder {
 
     private int totalRooms;
 
@@ -15,28 +15,28 @@ public class LeaseStatisticsVOBuilder {
 
     private String name;
 
-    public LeaseStatisticsVOBuilder totalRooms(int totalRooms) {
+    public LeaseStatisticsBuilder totalRooms(int totalRooms) {
         this.totalRooms = totalRooms;
         return this;
     }
 
-    public LeaseStatisticsVOBuilder leasedRooms(int leasedRooms) {
+    public LeaseStatisticsBuilder leasedRooms(int leasedRooms) {
         this.leasedRooms = leasedRooms;
         return this;
     }
 
-    public LeaseStatisticsVOBuilder rentSum(double rentSum) {
+    public LeaseStatisticsBuilder rentSum(double rentSum) {
         this.rentSum = rentSum;
         return this;
     }
 
-    public LeaseStatisticsVOBuilder name(String name) {
+    public LeaseStatisticsBuilder name(String name) {
         this.name = name;
         return this;
     }
 
-    public LeaseStatisticsVO build() {
-        return new LeaseStatisticsVO(name, totalRooms, leasedRooms, formatSum(rentSum), format(rentSum, leasedRooms), format(leasedRooms * 100.0 , totalRooms) + "%");
+    public LeaseStatistics build() {
+        return new LeaseStatistics(name, totalRooms, leasedRooms, formatSum(rentSum), format(rentSum, leasedRooms), format(leasedRooms * 100.0 , totalRooms) + "%");
     }
 
     private double formatSum(Double sum) {

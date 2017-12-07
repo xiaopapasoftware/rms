@@ -29,12 +29,14 @@
                     endDate:endDate
 				}, function (data, status) {
                     $("#viewTbody").html("");
-                   if(!data) return;
+                   if(!data || !data.length) return;
                    	var html = "";
 					var trs = "";
-					var tds = "<td>"+data.name+"</td><td>"+data.totalRooms+"</td><td>"+data.leasedRooms+"</td><td>"+data.leasedPercent+"</td><td>"+
-                        data.rentSum+"</td><td>"+data.rentAvg+"</td>";
-					trs += "<tr>"+tds+"</tr>";
+                    $.each(data,function (index,item) {
+                        var tds = "<td>"+item.name+"</td><td>"+item.totalRooms+"</td><td>"+item.leasedRooms+"</td><td>"+item.leasedPercent+"</td><td>"+
+                            item.rentSum+"</td><td>"+item.rentAvg+"</td>";
+                        trs += "<tr>"+tds+"</tr>";
+                    });
 					html +=trs;
                     $('#viewTbody').append(html);
                 })
