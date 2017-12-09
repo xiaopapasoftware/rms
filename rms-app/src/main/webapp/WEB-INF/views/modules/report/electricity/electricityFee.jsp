@@ -11,8 +11,8 @@
                 var building = $("#BUILDING").val();
                 var house = $("#HOUSE").val();
                 var room = $("#ROOM").val();
-                if (building === "" || house === "" || room === "") {
-                    alert("选择范围最小范围为楼宇");
+                if (building === "" && house === "" && room === "") {
+                    alert("选择范围必须为楼宇、房间、房间号三者之一");
                     return false;
                 }
 				$.post("${ctx}/report/electricity/list", {
@@ -25,8 +25,7 @@
                    	var html = "";
 					var trs = "";
 					$.each(data,function (index,item) {
-						var tds = "<td>"+item.name+"</td><td>"+item.income+"</td><td>"+item.cost+"</td><td>"+item.totalProfit+"</td><td>"+
-						item.profitPercent+"</td>";
+						var tds = "<td>"+item.name+"</td><td>"+item.fee+"</td><td>"+item.updateDate+"</td><td>发送</td>";
 						trs += "<tr>"+tds+"</tr>";
 					});
 					html +=trs;
@@ -108,7 +107,8 @@
 			<tr>
 				<th>名称</th>
 				<th>剩余电费</th>
-				<th>同步时间</th>
+				<th>更新时间</th>
+				<th>短信提醒</th>
 			</tr>
 		</thead>
 		<tbody id = "viewTbody">

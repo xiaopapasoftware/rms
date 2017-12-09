@@ -95,7 +95,7 @@ public class ElectricityReportController extends BaseController {
 
   private List<ElectricityFeeVO> buildVOByRoomIdList(List<String> idList) {
     List<FeeReport> reportList = feeReportService.getFeeReportByRoomIdList(idList, FeeReportTypeEnum.ELECTRICITY.getValue());
-    if (CollectionUtils.isEmpty(reportList)) {
+    if (CollectionUtils.isNotEmpty(reportList)) {
       return reportList.stream().map(this::buildVOByFeeReport).collect(Collectors.toList());
     }
     return null;
