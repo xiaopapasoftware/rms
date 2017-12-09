@@ -4,7 +4,7 @@ public interface SelectItemConstants {
 
     String COUNTY = "COUNTY";
 
-    String COUNTY_Str = "区县";
+    String COUNTY_STR = "区县";
 
     String CENTER = "CENTER";
 
@@ -27,5 +27,7 @@ public interface SelectItemConstants {
     String ORG = "ORG";
 
     String CATEGORY = "CATEGORY";
+
+    String ELECTRICITY = "ELECTRICITY";
 
 }

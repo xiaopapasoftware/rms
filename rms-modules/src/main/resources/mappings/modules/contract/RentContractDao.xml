@@ -552,4 +552,13 @@
 			a.EXPIRED_DATE <  #{startDate}
 		 ]]>)
 	</select>
+
+	<select id="isWholeRentHouse" resultType="Integer">
+		select count(*) from t_rent_contract a
+		WHERE a.DEL_FLAG = '0'
+		AND a.rent_mode = '0'
+		AND a.CONTRACT_STATUS = '6'
+		AND a.contract_busi_status = '0'
+		AND a.HOUSE_ID =  #{houseId}
+	</select>
 </mapper>

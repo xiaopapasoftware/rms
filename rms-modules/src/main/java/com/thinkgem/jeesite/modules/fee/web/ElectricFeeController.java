@@ -1,37 +1,12 @@
 package com.thinkgem.jeesite.modules.fee.web;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
+import com.thinkgem.jeesite.modules.contract.enums.*;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFeeUseInfo;
@@ -43,6 +18,25 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import org.apache.commons.collections.MapUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 电费管理
@@ -52,7 +46,7 @@ import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 public class ElectricFeeController extends BaseController {
 
   @Autowired
-  private RoomService roomServie;
+  private RoomService roomService;
   @Autowired
   private ElectricFeeService electricFeeService;
   @Autowired
@@ -183,7 +177,7 @@ public class ElectricFeeController extends BaseController {
     if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rc.getRentMode())) {
       return setValues(model, rc, electricFee.getChargeAmount().intValue(), "整租不能充值电费！");
     } else {
-      Room room = roomServie.get(rc.getRoom().getId());
+      Room room = roomService.get(rc.getRoom().getId());
       if (room != null) {
         if (StringUtils.isEmpty(room.getMeterNo())) {
           return setValues(model, rc, electricFee.getChargeAmount().intValue(), "该房间的电表号还没有进行设置，请先设置电表号!");
@@ -210,7 +204,7 @@ public class ElectricFeeController extends BaseController {
     if (fee != null) {
       RentContract rc = rentContractService.get(fee.getRentContractId());
       if (rc != null) {
-        String meterNo = roomServie.get(rc.getRoom().getId()).getMeterNo();
+        String meterNo = roomService.get(rc.getRoom().getId()).getMeterNo();
         logger.info("begin RetryFail! Call recharge service! electric meter no is:{},chargeAmount is:{}", meterNo, fee.getChargeAmount());
         String id = tradingAccountsService.charge(meterNo, new DecimalFormat("0").format(fee.getChargeAmount()));
         if (StringUtils.isNotBlank(id) && !"0".equals(id)) {

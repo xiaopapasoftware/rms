@@ -213,9 +213,9 @@ public class RoomService extends CrudService<RoomDao, Room> {
   }
 
   /**
-   * 查询某个房屋下面所有的房间数量
+   * 根据主键查询智能电表号
    */
-  public int queryRoomsByHouseId(String houseId) {
-    return dao.queryRoomsByHouseId(houseId);
+  public String queryMeterNoByRoomId(String roomId) {
+    return dao.queryMeterNoByRoomId(roomId);
   }
 }

@@ -7,6 +7,7 @@ import com.thinkgem.jeesite.modules.cache.enums.MyCacheConstant;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -45,7 +46,10 @@ public class SelectItemService {
   @Autowired
   private BuildingService buildingService;
 
-  private static final SelectItem countyItem = new SelectItem(SelectItemConstants.COUNTY, SelectItemConstants.COUNTY_Str);
+  @Autowired
+  private RentContractService rentContractService;
+
+  private static final SelectItem countyItem = new SelectItem(SelectItemConstants.COUNTY, SelectItemConstants.COUNTY_STR);
   private static final SelectItem centerItem = new SelectItem(SelectItemConstants.CENTER, SelectItemConstants.CENTER_STR);
   private static final SelectItem areaItem = new SelectItem(SelectItemConstants.AREA, SelectItemConstants.AREA_STR);
   private static final SelectItem projectItem = new SelectItem(SelectItemConstants.PROJECT, SelectItemConstants.PROJECT_STR);
@@ -66,6 +70,13 @@ public class SelectItemService {
         return getOrgSelectListByCondition(condition);
       case SelectItemConstants.CATEGORY:
         return getCategorySelectListByCondition(condition);
+      case SelectItemConstants.ELECTRICITY:
+        if (SelectItemConstants.HOUSE.equals(condition.getType())) {
+          return getElectricityHouseSelectList(condition);
+        } else {
+          condition.setBusiness(SelectItemConstants.ORG);
+          return getSelectListByBusinessCode(condition);
+        }
       default:
         return null;
     }
@@ -120,6 +131,13 @@ public class SelectItemService {
       default:
         result = null;
     }
+    selectCache.putObject(getCacheKey(condition), result);
+    return result;
+  }
+
+  private List<SelectItem> getElectricityHouseSelectList(SelectItemCondition condition) {
+    //过滤掉非整租
+    List<SelectItem> result = convertToItemList(houseService.findHouseListByBuildingId(condition.getId()).stream().filter(house -> !rentContractService.isWholeRentHouse(house.getId())).collect(Collectors.toMap(House::getId, House::getHouseNo)));
     selectCache.putObject(getCacheKey(condition), result);
     return result;
   }

@@ -849,4 +849,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return rentContractDao.queryContractListByProjectIdAndDate(projectId, startDate, endDate);
   }
 
+  /**
+   * 判断房屋是否整租
+   * @param houseId
+   * @return
+   */
+  public boolean isWholeRentHouse(String houseId) {
+    return dao.isWholeRentHouse(houseId) > 0;
+  }
+
 }

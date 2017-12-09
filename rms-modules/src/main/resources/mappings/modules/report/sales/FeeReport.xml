@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.report.dao.FeeReportDao">
+
+	<sql id="feeReportColumns">
+		a.ID AS "id",
+		a.ROOM_ID AS "roomId",
+		a.FEE_NO AS "feeNo",
+		a.FEE_TYPE AS "feeType",
+		a.REMAIN_FEE AS "remainFee",
+		a.SMS_RECORD AS "smsRecord",
+		a.create_by AS "createBy",
+		a.create_date AS "createDate",
+		a.update_by AS
+		"updateBy",
+		a.update_date AS
+		"updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+
+
+	<select id="get" resultType="FeeReport">
+		SELECT
+		<include refid="feeReportColumns" />
+		FROM t_fee_report a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="Room">
+		SELECT
+		<include refid="feeReportColumns" />
+		FROM t_fee_report a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if
+				test="roomId != null and roomId != ''">
+				AND a.ROOM_ID = #{roomId}
+			</if>
+			<if test="feeNo != null and feeNo != ''">
+				AND a.FEE_NO = #{feeNo}
+			</if>
+			<if test="feeType != null and feeType != ''">
+				AND a.FEE_TYPE = #{feeType}
+			</if>
+		</where>
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="findAllList" resultType="FeeReport">
+		SELECT
+		<include refid="feeReportColumns" />
+		FROM t_fee_report a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO t_fee_report(
+		ID,
+		ROOM_ID,
+		FEE_NO,
+		FEE_TYPE,
+		REMAIN_FEE,
+		SMS_RECORD,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+		#{roomId},
+		#{feeNo},
+		#{feeType},
+		#{remainFee},
+		#{smsRecord},
+		#{createBy},
+		#{createDate},
+		#{updateBy},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_fee_report SET
+		ID = #{id},
+		ROOM_ID = #{roomId},
+		FEE_NO = #{feeNo},
+		FEE_TYPE = #{feeType},
+		REMAIN_FEE = #{remainFee},
+		SMS_RECORD = #{smsRecord},
+		update_by = #{updateBy},
+		update_date = #{updateDate},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_fee_report SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<select id="getFeeReportByRoomIdList" resultType="FeeReport">
+		SELECT
+		<include refid="feeReportColumns" />
+		FROM t_fee_report a
+		WHERE
+			a.del_flag = '0'  AND
+			a.FEE_TYPE = #{feeType} AND
+			a.ROOM_ID in
+		<foreach collection="roomIdList" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+</mapper>

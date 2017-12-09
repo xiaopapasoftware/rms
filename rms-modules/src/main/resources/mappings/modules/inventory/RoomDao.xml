@@ -143,11 +143,11 @@
 		</if>
 	</select>
 
-	<!-- 查询某个小区下面所有的房间数量 -->
-	<select id="queryRoomsByHouseId" resultType="int">
-		SELECT  COUNT(*)
+	<!-- 根据主键查询智能电表号 -->
+	<select id="queryMeterNoByRoomId" resultType="String">
+		SELECT  METER_NO
 		FROM    t_room tr
-		WHERE   tr.`HOUSE_ID` = #{houseId}
+		WHERE   tr.`ID` = #{roomId}
 		AND     tr.`DEL_FLAG` = '0'
 	</select>
 	

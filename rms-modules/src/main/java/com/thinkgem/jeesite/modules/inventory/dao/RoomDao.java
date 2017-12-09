@@ -32,11 +32,6 @@ public interface RoomDao extends CrudDao<Room> {
    */
   List<Room> findRoomListByHouseId(@Param("houseId") String houseId);
 
-  /**
-   * 更新房间状态
-   */
-  int updateRoomStatus(Room room);
-
   List<House> findFeatureList();
 
   int updateRoomStatus4NewSign(Room paRoom);
@@ -53,7 +48,7 @@ public interface RoomDao extends CrudDao<Room> {
   int queryRoomsCountByProjectPropertyId(@Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
 
   /**
-   * 查询某个房屋下面所有的房间数量
+   * 根据主键查询智能电表号
    */
-  int queryRoomsByHouseId(@Param("houseId") String houseId);
+  public String queryMeterNoByRoomId(String roomId);
 }

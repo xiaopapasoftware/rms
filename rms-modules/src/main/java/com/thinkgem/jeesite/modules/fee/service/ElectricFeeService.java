@@ -3,6 +3,22 @@
  */
 package com.thinkgem.jeesite.modules.fee.service;
 
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.*;
+import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,28 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.PropertiesLoader;
-import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.ElectricChargeStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FeeSettlementStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
-import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
-import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
-import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
 
 /**
  * @author huangsc
@@ -125,6 +119,26 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
             }
         }
         resultMap.put(0, result);// 直接存放智能电表系统的返回值
+    }
+
+    /**
+     * 获得房间剩余电费
+     * @param roomId
+     * @return
+     */
+    public Double getRemainFee(String roomId) {
+        String meterNo = roomDao.queryMeterNoByRoomId(roomId);
+        if (!StringUtils.isBlank(meterNo)) {
+            String url = new PropertiesLoader("jeesite.properties").getProperty("meter.remain.url") + "read_remain_val.action?addr=" + meterNo;
+            try {
+                String result = openHttpsConnection(url, "UTF-8", 60000, 60000);
+                String[] split = result.split(",");
+                return new Double(split[1]) * new Double(split[2]);
+            }catch (Exception e) {
+                logger.error("call meter get fee remain result by " + url);
+            }
+        }
+        return null;
     }
 
     @Transactional(readOnly = false)

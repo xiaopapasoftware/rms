@@ -420,4 +420,5 @@ public class HouseService extends CrudService<HouseDao, House> {
   public List<Map> getHouseByAccountNumAndNumType(String accountNum,String numType){
     return dao.getHouseByAccountNumAndNumType(accountNum,numType);
   }
+
 }
