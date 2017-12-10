@@ -20,8 +20,6 @@ import com.thinkgem.jeesite.modules.report.entity.FeeReport;
 import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
 import com.thinkgem.jeesite.modules.report.service.FeeReportService;
 import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,8 +36,6 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping(value = "${adminPath}/report/electricity")
 public class ElectricityReportController extends BaseController {
-
-  private static final Logger logger = LoggerFactory.getLogger(ElectricityReportController.class);
 
   @Autowired
   private SelectItemService selectItemService;
@@ -63,8 +59,6 @@ public class ElectricityReportController extends BaseController {
   private SmsService smsService;
 
   private final String INIT_SMS_RECORD = "00";
-
-  private final String SMS_CONTENT = "电费提醒服务：至%s，你的电费余额为几元，即将断电或已断电，请及时充值。如您已充值，请忽略此短信。";
 
   /**
    * 电费催缴统计报表-查询
