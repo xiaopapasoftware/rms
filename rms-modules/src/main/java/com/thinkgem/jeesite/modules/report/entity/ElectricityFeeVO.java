@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.report.entity;
 
 public class ElectricityFeeVO {
 
+    private String id;
+
     private String roomId;
 
     private String name;
@@ -9,6 +11,14 @@ public class ElectricityFeeVO {
     private String updateDate;
 
     private double fee;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getRoomId() {
         return roomId;

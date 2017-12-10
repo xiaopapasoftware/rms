@@ -10,6 +10,7 @@ import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
+import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
 import com.thinkgem.jeesite.modules.contract.dao.DepositAgreementDao;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.*;
@@ -24,6 +25,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
@@ -80,6 +82,10 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
   private ElectricFeeDao electricFeeDao;
   @Autowired
   private RentContractDao rentContractDao;
+  @Autowired
+  private ContractTenantDao contractTenantDao;
+  @Autowired
+  private TenantDao tenantDao;
 
   @Override
   public List<RentContract> findList(RentContract entity) {
@@ -856,6 +862,15 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
    */
   public boolean isWholeRentHouse(String houseId) {
     return dao.isWholeRentHouse(houseId) > 0;
+  }
+
+  public String getTenantPhoneByRoomId(String roomId) {
+    RentContract contract = dao.getByRoomId(roomId);
+    if (contract != null) {
+      ContractTenant contractTenant = contractTenantDao.getByContractId(contract.getId());
+      return tenantDao.get(contractTenant.getTenantId()).getCellPhone();
+    }
+    return null;
   }
 
 }

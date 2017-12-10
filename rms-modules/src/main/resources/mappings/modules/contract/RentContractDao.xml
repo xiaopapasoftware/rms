@@ -561,4 +561,13 @@
 		AND a.contract_busi_status = '0'
 		AND a.HOUSE_ID =  #{houseId}
 	</select>
+
+	<select id="getByRoomId" resultType="RentContract">
+		SELECT * FROM
+		t_rent_contract a
+		WHERE  a.room_id = #{roomId}
+		and a.del_flag='0'
+		AND a.CONTRACT_STATUS = '6'
+		AND a.contract_busi_status = '0'
+	</select>
 </mapper>

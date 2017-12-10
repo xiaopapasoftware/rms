@@ -7,6 +7,8 @@ import com.thinkgem.jeesite.modules.common.entity.SelectItem;
 import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
@@ -18,6 +20,8 @@ import com.thinkgem.jeesite.modules.report.entity.FeeReport;
 import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
 import com.thinkgem.jeesite.modules.report.service.FeeReportService;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,10 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +38,8 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping(value = "${adminPath}/report/electricity")
 public class ElectricityReportController extends BaseController {
+
+  private static final Logger logger = LoggerFactory.getLogger(ElectricityReportController.class);
 
   @Autowired
   private SelectItemService selectItemService;
@@ -53,7 +56,15 @@ public class ElectricityReportController extends BaseController {
   @Autowired
   private ElectricFeeService electricFeeService;
 
+  @Autowired
+  private RentContractService rentContractService;
+
+  @Autowired
+  private SmsService smsService;
+
   private final String INIT_SMS_RECORD = "00";
+
+  private final String SMS_CONTENT = "电费提醒服务：至%s，你的电费余额为几元，即将断电或已断电，请及时充值。如您已充值，请忽略此短信。";
 
   /**
    * 电费催缴统计报表-查询
@@ -75,21 +86,22 @@ public class ElectricityReportController extends BaseController {
   @ResponseBody
   public List<ElectricityFeeVO> list(ElectricityFeeCondition condition) {
     List<String> idList = null;
-    String prefix = "";
+    Map<String, String> prefixMap = new HashMap<>();
     if (StringUtils.isNotEmpty(condition.getRoom())) {
       idList = Collections.singletonList(condition.getRoom());
     } else if (StringUtils.isNotEmpty(condition.getHouse())) {
       idList = roomService.findRoomListByHouseId(condition.getHouse()).stream().map(Room::getId).collect(Collectors.toList());
     } else if (StringUtils.isNotEmpty(condition.getBuilding())) {
-      idList = houseService.findHouseListByBuildingId(condition.getBuilding()).stream().map(House::getId).map(roomService::findRoomListByHouseId)
-              .flatMap(Collection::stream).map(roomService::get).map(Room::getId).collect(Collectors.toList());
-      prefix = houseService.get(condition.getHouse()).getHouseNo();
+      List<Room> roomList = houseService.findHouseListByBuildingId(condition.getBuilding()).stream().map(House::getId).map(roomService::findRoomListByHouseId)
+              .flatMap(Collection::stream).map(roomService::get).collect(Collectors.toList());
+      idList = roomList.stream().map(Room::getId).collect(Collectors.toList());
+      prefixMap = roomList.stream().collect(Collectors.toMap(Room::getId, room -> room.getHouse().getHouseNo()));
     }
     if (CollectionUtils.isNotEmpty(idList)) {
       List<ElectricityFeeVO> voList = buildVOByRoomIdList(idList);
-      String finalPrefix = prefix;
       if (CollectionUtils.isNotEmpty(voList)) {
-        voList.forEach(vo -> vo.setName(finalPrefix + vo.getName()));
+        Map<String, String> finalPrefixMap = prefixMap;
+        voList.forEach(vo -> vo.setName(finalPrefixMap.get(vo.getRoomId()) + vo.getName()));
       }
       return voList;
     }
@@ -105,9 +117,10 @@ public class ElectricityReportController extends BaseController {
   }
   private ElectricityFeeVO buildVOByFeeReport(FeeReport report) {
     ElectricityFeeVO vo = new ElectricityFeeVO();
+    vo.setId(report.getId());
     vo.setRoomId(report.getRoomId());
     vo.setFee(report.getRemainFee());
-    vo.setUpdateDate(DateUtils.formatDateTime(report.getUpdateDate()));
+    vo.setUpdateDate(DateUtils.formatDateTime(report.getFeeTime()));
     vo.setName(roomService.get(report.getRoomId()).getRoomNo());
     return vo;
   }
@@ -167,4 +180,18 @@ public class ElectricityReportController extends BaseController {
     feeReport.setRemainFee(formatSum(new Double(split[1]) * new Double(split[2])));
     feeReportService.save(feeReport);
   }
+
+  @RequestMapping(value = "sendSms")
+  @ResponseBody
+  public String sendSms(String id) {
+    FeeReport feeReport = feeReportService.get(id);
+    String phone = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
+    String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
+    String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，即将断电或已断电，请及时充值。如您已充值，请忽略此短信。";
+    if (StringUtils.isNotBlank(phone)) {
+      smsService.sendSms(phone, content);
+    }
+    return "true";
+  }
+
 }

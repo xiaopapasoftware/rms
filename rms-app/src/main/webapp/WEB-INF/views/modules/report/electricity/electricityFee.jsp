@@ -25,7 +25,7 @@
                    	var html = "";
 					var trs = "";
 					$.each(data,function (index,item) {
-						var tds = "<td>"+item.name+"</td><td>"+item.fee+"</td><td>"+item.updateDate+"</td><td>发送</td>";
+						var tds = "<td>"+item.name+"</td><td>"+item.fee+"</td><td>"+item.updateDate+"</td><td><a id=" + item.id + " onclick='sendMessage(this)'>发送</a></td>";
 						trs += "<tr>"+tds+"</tr>";
 					});
 					html +=trs;
@@ -55,7 +55,16 @@
                 $("[id="+type+"]").html(html);
             }
         }
+        function sendMessage(obj) {
+            $.get("${ctx}/report/electricity/sendSms?id="+obj.id,function (data) {
+			    if(data){
+			        alert('发送成功');
+				}else{
+			        alert('发送失败');
+				}
 
+            })
+        }
 	</script>
 </head>
 <body>

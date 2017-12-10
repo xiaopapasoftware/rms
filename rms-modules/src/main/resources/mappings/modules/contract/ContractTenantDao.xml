@@ -168,5 +168,12 @@
 				and leasagrem_change_id = #{leasagremChangeId}
 			</if>
 	</update>
-	
+
+	<select id="getByContractId" resultType="ContractTenant">
+		SELECT * FROM
+		t_contract_tenant
+		WHERE  CONTRACT_ID = #{contractId}
+		and del_flag='0'
+	</select>
+
 </mapper>
