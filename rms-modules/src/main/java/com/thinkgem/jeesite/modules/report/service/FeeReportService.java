@@ -15,4 +15,8 @@ public class FeeReportService extends CrudService<FeeReportDao, FeeReport>{
     public List<FeeReport> getFeeReportByRoomIdList(List<String> roomIdList, String feeType) {
         return dao.getFeeReportByRoomIdList(roomIdList, feeType);
     }
+
+    public List<FeeReport> getFeeReportList(int size) {
+        return dao.getFeeReportList(size);
+    }
 }

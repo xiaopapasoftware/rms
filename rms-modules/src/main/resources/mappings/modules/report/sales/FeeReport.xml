@@ -9,10 +9,11 @@
 		a.FEE_TYPE AS "feeType",
 		a.REMAIN_FEE AS "remainFee",
 		a.SMS_RECORD AS "smsRecord",
-		a.create_by AS "createBy",
+		a.FEE_TIME AS "feeTime",
+		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS
-		"updateBy",
+		"updateBy.id",
 		a.update_date AS
 		"updateDate",
 		a.remarks AS "remarks",
@@ -32,7 +33,7 @@
 		<include refid="feeReportColumns" />
 		FROM t_fee_report a
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
+			a.del_flag = '0'
 			<if
 				test="roomId != null and roomId != ''">
 				AND a.ROOM_ID = #{roomId}
@@ -56,22 +57,15 @@
 	</select>
 
 
-	<select id="findAllList" resultType="FeeReport">
+	<select id="getFeeReportList" resultType="FeeReport">
 		SELECT
 		<include refid="feeReportColumns" />
 		FROM t_fee_report a
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
-
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
+		where
+			a.del_flag = '0'
+			and to_days(UPDATE_DATE) != to_days(now())
+			ORDER BY a.update_date ASC
+			limit 0, ${size}
 	</select>
 
 	<insert id="insert">
@@ -82,6 +76,7 @@
 		FEE_TYPE,
 		REMAIN_FEE,
 		SMS_RECORD,
+		FEE_TIME,
 		create_by,
 		create_date,
 		update_by,
@@ -95,9 +90,10 @@
 		#{feeType},
 		#{remainFee},
 		#{smsRecord},
-		#{createBy},
+		#{feeTime},
+		#{createBy.id},
 		#{createDate},
-		#{updateBy},
+		#{updateBy.id},
 		#{updateDate},
 		#{remarks},
 		#{delFlag}
@@ -106,15 +102,11 @@
 
 	<update id="update">
 		UPDATE t_fee_report SET
-		ID = #{id},
-		ROOM_ID = #{roomId},
-		FEE_NO = #{feeNo},
-		FEE_TYPE = #{feeType},
 		REMAIN_FEE = #{remainFee},
 		SMS_RECORD = #{smsRecord},
-		update_by = #{updateBy},
-		update_date = #{updateDate},
-		remarks = #{remarks}
+		FEE_TIME = #{feeTime},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 

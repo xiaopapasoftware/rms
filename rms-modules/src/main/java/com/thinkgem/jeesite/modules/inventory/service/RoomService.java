@@ -218,4 +218,11 @@ public class RoomService extends CrudService<RoomDao, Room> {
   public String queryMeterNoByRoomId(String roomId) {
     return dao.queryMeterNoByRoomId(roomId);
   }
+
+  /**
+   * 查询没在t_fee_report中出现过但符合条件的room
+   */
+  public List<Room> getValidFeeRoomList() {
+    return dao.getValidFeeRoomList();
+  }
 }

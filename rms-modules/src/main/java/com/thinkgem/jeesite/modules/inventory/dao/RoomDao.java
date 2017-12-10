@@ -50,5 +50,7 @@ public interface RoomDao extends CrudDao<Room> {
   /**
    * 根据主键查询智能电表号
    */
-  public String queryMeterNoByRoomId(String roomId);
+  String queryMeterNoByRoomId(String roomId);
+
+  List<Room> getValidFeeRoomList();
 }

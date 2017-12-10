@@ -122,18 +122,15 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
     }
 
     /**
-     * 获得房间剩余电费
-     * @param roomId
+     * 获得剩余电费
+     * @param meterNo
      * @return
      */
-    public Double getRemainFee(String roomId) {
-        String meterNo = roomDao.queryMeterNoByRoomId(roomId);
-        if (!StringUtils.isBlank(meterNo)) {
+    public String getRemainFeeByMeterNo(String meterNo) {
+        if (StringUtils.isNotBlank(meterNo)) {
             String url = new PropertiesLoader("jeesite.properties").getProperty("meter.remain.url") + "read_remain_val.action?addr=" + meterNo;
             try {
-                String result = openHttpsConnection(url, "UTF-8", 60000, 60000);
-                String[] split = result.split(",");
-                return new Double(split[1]) * new Double(split[2]);
+                return openHttpsConnection(url, "UTF-8", 60000, 60000);
             }catch (Exception e) {
                 logger.error("call meter get fee remain result by " + url);
             }

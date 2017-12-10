@@ -21,4 +21,6 @@ public interface FeeReportDao extends CrudDao<FeeReport> {
 
     List<FeeReport> getFeeReportByRoomIdList(@Param("roomIdList")List<String> roomIdList, @Param("feeType")String feeType);
 
+    public List<FeeReport> getFeeReportList(@Param("size")int size);
+
 }

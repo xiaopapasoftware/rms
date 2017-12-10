@@ -21,13 +21,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -41,9 +42,6 @@ public class ElectricityReportController extends BaseController {
   private SelectItemService selectItemService;
 
   @Autowired
-  private ElectricFeeService electricFeeService;
-
-  @Autowired
   private FeeReportService feeReportService;
 
   @Autowired
@@ -51,6 +49,11 @@ public class ElectricityReportController extends BaseController {
 
   @Autowired
   private HouseService houseService;
+
+  @Autowired
+  private ElectricFeeService electricFeeService;
+
+  private final String INIT_SMS_RECORD = "00";
 
   /**
    * 电费催缴统计报表-查询
@@ -77,10 +80,10 @@ public class ElectricityReportController extends BaseController {
       idList = Collections.singletonList(condition.getRoom());
     } else if (StringUtils.isNotEmpty(condition.getHouse())) {
       idList = roomService.findRoomListByHouseId(condition.getHouse()).stream().map(Room::getId).collect(Collectors.toList());
-      prefix = houseService.get(condition.getHouse()).getHouseNo();
     } else if (StringUtils.isNotEmpty(condition.getBuilding())) {
       idList = houseService.findHouseListByBuildingId(condition.getBuilding()).stream().map(House::getId).map(roomService::findRoomListByHouseId)
               .flatMap(Collection::stream).map(roomService::get).map(Room::getId).collect(Collectors.toList());
+      prefix = houseService.get(condition.getHouse()).getHouseNo();
     }
     if (CollectionUtils.isNotEmpty(idList)) {
       List<ElectricityFeeVO> voList = buildVOByRoomIdList(idList);
@@ -109,10 +112,59 @@ public class ElectricityReportController extends BaseController {
     return vo;
   }
 
-  @RequestMapping(value = "getFee/{id}")
+  @RequestMapping(value = "save")
   @ResponseBody
-  public Double getFee(@PathVariable("id") String id) {
-    return electricFeeService.getRemainFee(id);
+  public String save(Model model) {
+    saveNewRoom();
+    return "true";
   }
 
+  private void saveNewRoom() {
+    List<Room> roomList = roomService.getValidFeeRoomList();
+    roomList.stream().map(this::buildFeeReportByRoom).filter(Objects::nonNull).forEach(feeReportService::save);
+  }
+
+  private FeeReport buildFeeReportByRoom(Room room) {
+    String result = electricFeeService.getRemainFeeByMeterNo(room.getMeterNo());
+    if (StringUtils.isBlank(result) || ",,".equals(result)) {
+      return null;
+    }
+    String[] split = result.split(",");
+    FeeReport feeReport = new FeeReport();
+    feeReport.setRoomId(room.getId());
+    feeReport.setFeeNo(room.getMeterNo());
+    feeReport.setFeeType(FeeReportTypeEnum.ELECTRICITY.getValue());
+    feeReport.setRemainFee(formatSum(new Double(split[1]) * new Double(split[2])));
+    feeReport.setSmsRecord(INIT_SMS_RECORD);
+    feeReport.setFeeTime(DateUtils.parseDate(split[0]));
+    return feeReport;
+  }
+
+  private double formatSum(Double sum) {
+    BigDecimal b = new BigDecimal(sum);
+    return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+  }
+
+  @RequestMapping(value = "update")
+  @ResponseBody
+  public String update(Model model) {
+    updateRoom();
+    return "true";
+  }
+
+  public void updateRoom() {
+    List<FeeReport> feeReportList = feeReportService.getFeeReportList(200);
+    feeReportList.forEach(this::updateFeeReport);
+  }
+
+  public void updateFeeReport(FeeReport feeReport) {
+    String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
+    if (StringUtils.isBlank(result) || ",,".equals(result)) {
+      return ;
+    }
+    String[] split = result.split(",");
+    feeReport.setFeeTime(DateUtils.parseDate(split[0]));
+    feeReport.setRemainFee(formatSum(new Double(split[1]) * new Double(split[2])));
+    feeReportService.save(feeReport);
+  }
 }

@@ -2,6 +2,8 @@ package com.thinkgem.jeesite.modules.report.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 
+import java.util.Date;
+
 public class FeeReport extends DataEntity<FeeReport> {
 
     private static final long serialVersionUID = -5983971812959950028L;
@@ -15,6 +17,8 @@ public class FeeReport extends DataEntity<FeeReport> {
     private String smsRecord;
 
     private Double remainFee;
+
+    private Date feeTime;
 
     public String getRoomId() {
         return roomId;
@@ -54,5 +58,13 @@ public class FeeReport extends DataEntity<FeeReport> {
 
     public void setRemainFee(Double remainFee) {
         this.remainFee = remainFee;
+    }
+
+    public Date getFeeTime() {
+        return feeTime;
+    }
+
+    public void setFeeTime(Date feeTime) {
+        this.feeTime = feeTime;
     }
 }

@@ -4,16 +4,15 @@
  */
 package com.thinkgem.jeesite.common.persistence;
 
-import java.util.Date;
-
-import com.thinkgem.jeesite.modules.utils.UserUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.Length;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
+
+import java.util.Date;
 
 /**
  * 数据Entity类
@@ -55,8 +54,10 @@ public abstract class DataEntity<T> extends BaseEntity<T> {
       this.updateBy = user;
       this.createBy = user;
     }
-    this.updateDate = new Date();
-    this.createDate = this.updateDate;
+    this.createDate = new Date();
+    if (this.updateDate == null) {
+      this.updateDate = this.createDate;
+    }
   }
 
   /**
