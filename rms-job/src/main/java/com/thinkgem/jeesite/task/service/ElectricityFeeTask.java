@@ -37,7 +37,7 @@ public class ElectricityFeeTask {
     /**
      * 更新下剩余费用
      */
-    @Scheduled(cron = "0 0/20 1-8 * * ?")
+    @Scheduled(cron = "0 0/20 1-6 * * ?")
     public void updateRoom() {
         List<FeeReport> feeReportList = feeReportService.getFeeReportList(size);
         feeReportList.forEach(this::updateFeeReport);
