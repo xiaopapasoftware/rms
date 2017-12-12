@@ -168,6 +168,7 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
                 f.setBatchNo(batchNo);
             }
             f.setBillStatus(Integer.valueOf(status));
+            f.preUpdate();
             updEleBills.add(f);
         });
 

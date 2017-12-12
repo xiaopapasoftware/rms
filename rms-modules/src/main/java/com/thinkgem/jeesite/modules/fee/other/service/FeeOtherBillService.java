@@ -120,6 +120,7 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
                 f.setBatchNo(batchNo);
             }
             f.setBillStatus(Integer.valueOf(status));
+            f.preUpdate();
             updOtherBills.add(f);
         });
         int ret = dao.batchUpdate(updOtherBills);

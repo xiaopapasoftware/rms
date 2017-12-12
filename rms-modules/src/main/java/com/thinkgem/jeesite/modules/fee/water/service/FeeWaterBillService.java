@@ -166,6 +166,7 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
                 f.setBatchNo(batchNo);
             }
             f.setBillStatus(Integer.valueOf(status));
+            f.preUpdate();
             updWaterBills.add(f);
         });
         int ret = dao.batchUpdate(updWaterBills);

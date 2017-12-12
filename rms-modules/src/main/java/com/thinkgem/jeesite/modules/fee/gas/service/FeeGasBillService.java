@@ -166,6 +166,7 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
                 f.setBatchNo(batchNo);
             }
             f.setBillStatus(Integer.valueOf(status));
+            f.preUpdate();
             updGasBills.add(f);
         });
         int ret = dao.batchUpdate(updGasBills);
