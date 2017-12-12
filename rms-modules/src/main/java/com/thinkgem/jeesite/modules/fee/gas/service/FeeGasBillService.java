@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.gas.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -135,40 +136,39 @@ public class FeeGasBillService extends CrudService<FeeGasBillDao, FeeGasBill> {
     @Transactional(readOnly = false)
     public void feeGasBillAudit(String status, String... ids) {
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
-        for (String id : ids) {
-            FeeGasBill feeGasBill = dao.get(id);
-            if (Optional.ofNullable(feeGasBill).isPresent()) {
-                switch (status) {
-                    case "1":
-                        if (feeGasBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeGasBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能提交", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可提交");
-                        }
-                        break;
-                    case "2":
-                        if (feeGasBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能同意", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可同意");
-                        }
-                        break;
-                    case "3":
-                        if (feeGasBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能驳回", feeGasBill.getHouseGasNum(), FeeBillStatusEnum.fromValue(feeGasBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不可驳回");
-                        }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("户号[" + feeGasBill.getHouseGasNum() + "]账单不在处理状态");
-                }
-                FeeGasBill updFeeGasBill = new FeeGasBill();
-                if (StringUtils.isBlank(feeGasBill.getBatchNo())) {
-                    updFeeGasBill.setBatchNo(batchNo);
-                }
-                updFeeGasBill.setBillStatus(Integer.valueOf(status));
-                updFeeGasBill.setId(feeGasBill.getId());
-                this.save(updFeeGasBill);
-                //TODO 记录审核日志
+        List<FeeGasBill> feeGasBills = dao.getGasBillByIds(ids);
+        List<FeeGasBill> updGasBills = Lists.newArrayList();
+        feeGasBills.forEach(f -> {
+            switch (status) {
+                case "1":
+                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能提交", f.getHouseGasNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseGasNum() + "]账单不可提交");
+                    }
+                    break;
+                case "2":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能同意", f.getHouseGasNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseGasNum() + "]账单不可同意");
+                    }
+                    break;
+                case "3":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseGasNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseGasNum() + "]账单不可驳回");
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("户号[" + f.getHouseGasNum() + "]账单不在处理状态");
+
             }
-        }
+            if (StringUtils.isBlank(f.getBatchNo())) {
+                f.setBatchNo(batchNo);
+            }
+            f.setBillStatus(Integer.valueOf(status));
+            updGasBills.add(f);
+        });
+        int ret = dao.batchUpdate(updGasBills);
+        logger.info("总共处理{}条数据", ret);
     }
 }

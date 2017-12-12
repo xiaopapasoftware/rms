@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.other.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -25,11 +26,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
-* <p>宽带、电视费、其他账单表实现类 service</p>
-* <p>Table: fee_other_bill - 宽带、电视费、其他账单表</p>
-* @since 2017-11-28 03:02:33
-* @author generator code
-*/
+ * <p>宽带、电视费、其他账单表实现类 service</p>
+ * <p>Table: fee_other_bill - 宽带、电视费、其他账单表</p>
+ *
+ * @author generator code
+ * @since 2017-11-28 03:02:33
+ */
 @Service
 @Transactional(readOnly = true)
 public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBill> {
@@ -49,7 +51,7 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
 
     @Transactional(readOnly = false)
     public void saveFeeOtherBill(FeeOtherBill feeOtherBill) {
-        if(StringUtils.isNotBlank(feeOtherBill.getId())){
+        if (StringUtils.isNotBlank(feeOtherBill.getId())) {
             FeeOtherBill existBill = dao.get(feeOtherBill.getId());
             if (Optional.ofNullable(existBill).isPresent()) {
                 if (existBill.getBillStatus() != null && existBill.getBillStatus() != FeeBillStatusEnum.APP.getValue()
@@ -89,40 +91,38 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
     @Transactional(readOnly = false)
     public void feeOtherBillAudit(String status, String... ids) {
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
-        for (String id : ids) {
-            FeeOtherBill feeOtherBill = dao.get(id);
-            if (Optional.ofNullable(feeOtherBill).isPresent()) {
-                switch (status) {
-                    case "1":
-                        if (feeOtherBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeOtherBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("账单当前状态为{},不能提交",FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName() + "],不能提交");
-                        }
-                        break;
-                    case "2":
-                        if (feeOtherBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("账单当前状态为{},不能同意", FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName() + "],不可同意");
-                        }
-                        break;
-                    case "3":
-                        if (feeOtherBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("账单当前状态为{},不能驳回", FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(feeOtherBill.getBillStatus()).getName() + "],不可驳回");
-                        }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("账单不在处理状态");
-                }
-                FeeOtherBill updFeeOtherBill = new FeeOtherBill();
-                if (StringUtils.isBlank(updFeeOtherBill.getBatchNo())) {
-                    updFeeOtherBill.setBatchNo(batchNo);
-                }
-                updFeeOtherBill.setBillStatus(Integer.valueOf(status));
-                updFeeOtherBill.setId(feeOtherBill.getId());
-                this.save(updFeeOtherBill);
-                //TODO 记录审核日志
+        List<FeeOtherBill> feeOtherBills = dao.getOtherBillByIds(ids);
+        List<FeeOtherBill> updOtherBills = Lists.newArrayList();
+        feeOtherBills.forEach(f -> {
+            switch (status) {
+                case "1":
+                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                        logger.error("账单当前状态为{},不能提交", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不能提交");
+                    }
+                    break;
+                case "2":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("账单当前状态为{},不能同意", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可同意");
+                    }
+                    break;
+                case "3":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("账单当前状态为{},不能驳回", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可驳回");
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("账单不在处理状态");
             }
-        }
+            if (StringUtils.isBlank(f.getBatchNo())) {
+                f.setBatchNo(batchNo);
+            }
+            f.setBillStatus(Integer.valueOf(status));
+            updOtherBills.add(f);
+        });
+        int ret = dao.batchUpdate(updOtherBills);
+        logger.info("总共处理{}条数据", ret);
     }
 }

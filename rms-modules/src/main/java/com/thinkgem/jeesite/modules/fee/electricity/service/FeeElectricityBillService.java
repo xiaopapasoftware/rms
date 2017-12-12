@@ -24,10 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 电费账单表实现类 service
@@ -139,9 +137,8 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
     }
 
     @Transactional(readOnly = false)
-    public void feeElectricityBillAudit(String status, String... id) {
+    public void feeElectricityBillAudit(String status, String... ids) {
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
-        String ids = Arrays.asList(id).stream().collect(Collectors.joining(","));
         List<FeeElectricityBill> feeElectricityBills = dao.getEleBillByIds(ids);
         List<FeeElectricityBill> updEleBills = Lists.newArrayList();
         feeElectricityBills.forEach(f -> {

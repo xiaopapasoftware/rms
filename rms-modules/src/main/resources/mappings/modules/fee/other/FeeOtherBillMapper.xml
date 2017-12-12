@@ -186,8 +186,7 @@
         <set>
             <include refid="BatchUpdate_Set_From_Bean"/>
         </set>
-        where
-             id = #{id,jdbcType=VARCHAR}  
+        where id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -207,6 +206,16 @@
     <select id="findList" resultMap="BaseResultMap" parameterType="com.thinkgem.jeesite.modules.fee.other.entity.FeeOtherBill">
         select <include refid="Base_Column_List"/> from fee_other_bill
         <include refid="where"/>
+    </select>
+
+    <select id="getOtherBillByIds" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM fee_other_bill
+        WHERE id IN
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
     </select>
 
     <select id="getLastRecord" resultMap="BaseResultMap"

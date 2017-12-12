@@ -35,32 +35,31 @@ public class HouseNoCom {
         return houseNos.contains(houseNo);
     }
 
-
-    public String getCombine(Map<String, List<String>> rulesMap, String houseNo, Set<String> outSet, StringBuffer sb) {
+    public Map<String, String> getCombine(Map<String, List<String>> rulesMap, String houseNo, Set<String> outSet, Map<String, String> map) {
         List<String> ruleList = rulesMap.get(houseNo);
         if (Optional.ofNullable(ruleList).isPresent() && ruleList.size() > 0) {
             ruleList.forEach(r -> {
                 String endFix = r.split(RULES_AND)[1];
-                if (sb.length() > 0) {
-                    sb.append(RULES_AND);
-                    sb.append(endFix);
-                } else {
-                    sb.append(r);
+                if (!Optional.ofNullable(map.get(endFix)).isPresent()) {
+                    map.put(endFix, endFix);
+                    outSet.add(map.keySet().stream().collect(Collectors.joining(RULES_AND)));
+                    map.putAll(getCombine(rulesMap, r.split(RULES_AND)[1], outSet, map));
                 }
-                outSet.add(sb.toString());
-                sb.append(getCombine(rulesMap, r.split(RULES_AND)[1], outSet, sb));
             });
         }
-        return sb.toString();
+        return map;
     }
 
     @Test
     public void outRules() {
-        String combineRules = "101&102,102&103,103&104,104&101,104&105";
-        String houseNos = "101,102,103,104";
+        String combineRules1 = "101&102,102&103,103&104,104&101,104&105";
+        String houseNos1 = "101,102,103,104";
 
-        String combineRules1 = "101&102,102&103,101&201,201&202,202&203";
-        String houseNos1 = "101,102,201,202,203";
+        String combineRules = "101&102,102&103,101&201,201&202,202&203";
+        String houseNos = "101,102,201,202,203";
+
+        String combineRules2 = "101&102,102&103";
+        String houseNos2 = "101,101,102";
 
 
         Map<String, List<String>> rulesMap = rulesToMap(combineRules, houseNos);
@@ -72,7 +71,9 @@ public class HouseNoCom {
         Arrays.stream(houseNos.split(COMMON_AND)).forEach(d -> {
             outSet.add(d);
             /*两间及以上的组合*/
-            getCombine(rulesMap, d, outSet, new StringBuffer());
+            Map<String, String> map = new HashMap<>();
+            map.put(d, d);
+            getCombine(rulesMap, d, outSet, map);
         });
 
         String out = outSet.stream()

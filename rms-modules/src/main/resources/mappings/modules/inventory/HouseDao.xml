@@ -528,10 +528,10 @@
 				<when test="numType==0">
 					AND th.ele_account_num LIKE '%${accountNum}%'
 				</when>
-				<when test="numType==1">
+				<when test="numType==2">
 					AND th.water_account_num LIKE '%${accountNum}%'
 				</when>
-				<when test="numType==2">
+				<when test="numType==1">
 					  AND th.gas_account_num LIKE '%${accountNum}%'
 				</when>
 				<when test="numType==3">

@@ -4,6 +4,7 @@
  */
 package com.thinkgem.jeesite.modules.fee.water.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
@@ -136,40 +137,38 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
     @Transactional(readOnly = false)
     public void feeWaterBillAudit(String status, String... ids) {
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
-        for (String id : ids) {
-            FeeWaterBill feeWaterBill = dao.get(id);
-            if (Optional.ofNullable(feeWaterBill).isPresent()) {
-                switch (status) {
-                    case "1":
-                        if (feeWaterBill.getBillStatus() != FeeBillStatusEnum.APP.getValue() && feeWaterBill.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能提交", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可提交");
-                        }
-                        break;
-                    case "2":
-                        if (feeWaterBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能同意", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可同意");
-                        }
-                        break;
-                    case "3":
-                        if (feeWaterBill.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                            logger.error("户号{}账单当前状态为{},不能驳回", feeWaterBill.getHouseWaterNum(), FeeBillStatusEnum.fromValue(feeWaterBill.getBillStatus()).getName());
-                            throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不可驳回");
-                        }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("户号[" + feeWaterBill.getHouseWaterNum() + "]账单不在处理状态");
-                }
-                FeeWaterBill updFeeWaterBill = new FeeWaterBill();
-                if (StringUtils.isBlank(feeWaterBill.getBatchNo())) {
-                    updFeeWaterBill.setBatchNo(batchNo);
-                }
-                updFeeWaterBill.setBillStatus(Integer.valueOf(status));
-                updFeeWaterBill.setId(feeWaterBill.getId());
-                this.save(updFeeWaterBill);
-                //TODO 记录审核日志
+        List<FeeWaterBill> feeWaterBills = dao.getWaterBillByIds(ids);
+        List<FeeWaterBill> updWaterBills = Lists.newArrayList();
+        feeWaterBills.forEach(f -> {
+            switch (status) {
+                case "1":
+                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能提交", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可提交");
+                    }
+                    break;
+                case "2":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能同意", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可同意");
+                    }
+                    break;
+                case "3":
+                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                        logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可驳回");
+                    }
+                    break;
+                default:
+                    throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不在处理状态");
             }
-        }
+            if (StringUtils.isBlank(f.getBatchNo())) {
+                f.setBatchNo(batchNo);
+            }
+            f.setBillStatus(Integer.valueOf(status));
+            updWaterBills.add(f);
+        });
+        int ret = dao.batchUpdate(updWaterBills);
+        logger.info("总共处理{}条数据", ret);
     }
 }

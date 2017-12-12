@@ -26,5 +26,9 @@ public interface FeeOtherBillDao extends CrudDao<FeeOtherBill>{
 
     FeeOtherBill getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
 
+    List<FeeOtherBill> getOtherBillByIds(String ...ids);
+
+    int batchUpdate(List<FeeOtherBill> feeOtherBills);
+
     Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 }

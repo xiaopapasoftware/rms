@@ -184,9 +184,10 @@
     <update id="batchUpdate" parameterType="java.util.List">
         <foreach collection="list" item="item" index="index" open="" close="" separator=";">
             update fee_gas_bill
+            <set>
             <include refid="BatchUpdate_Set_From_Bean"/>
-            where
-            id = #{id,jdbcType=VARCHAR}
+            </set>
+            where id = #{item.id,jdbcType=VARCHAR}
         </foreach>
     </update>
     <!-- end update -->
@@ -237,6 +238,16 @@
         WHERE del_flag=0
         AND DATE_FORMAT(gas_bill_date,'%Y-%m')=DATE_FORMAT(#{gasBillDate,jdbcType=TIMESTAMP},'%Y-%m')
         AND house_id=#{houseId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getGasBillByIds" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM fee_gas_bill
+        WHERE id IN
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
     </select>
 
     <select id="getTotalAmount"

@@ -32,7 +32,7 @@ public interface FeeElectricityBillDao extends CrudDao<FeeElectricityBill> {
 
   Double getTotalAmount(FeeCriteriaEntity feeCriteriaEntity);
 
-  List<FeeElectricityBill> getEleBillByIds(@Param("ids") String ids);
+  List<FeeElectricityBill> getEleBillByIds(String ... ids);
 
   int batchUpdate(List<FeeElectricityBill> feeElectricityBills);
 }
