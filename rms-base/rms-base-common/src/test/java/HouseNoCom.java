@@ -129,9 +129,11 @@ public class HouseNoCom {
             }
         });
 
+        Long sortTime = System.currentTimeMillis();
         String out = outSet.stream()
                 .sorted(Comparator.comparingInt(String::length))
                 .collect(Collectors.joining(COMMON_AND));
+        System.out.println("排序耗时:" + (System.currentTimeMillis() - sortTime));
         System.out.println("总共耗时:" + (System.currentTimeMillis() - start));
         return out;
     }
