@@ -183,6 +183,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
                         {field: 'billDate', align: 'center', title: '账期日期', width: 120},
+                        {field: 'billTypeName', align: 'center', title: '账单类型', width: 120},
                         {
                             field: 'billAmount', align: 'right', title: '金额', width: 120,
                             templet: '<div>{{ layui.laytpl.amountFormat(d.billAmount) }}</div>'
@@ -222,9 +223,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         $("#billType").val(data.billType);
                         $("#billUnit").val(data.billUnit);
                         $("#billAmount").val(data.billAmount);
-                        feeOtherBillBillMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId,function(){
-                            feeOtherBillBillMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId,function(){
-                                feeOtherBillBillMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId,function(){
+                        feeOtherBillBillMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId, function () {
+                            feeOtherBillBillMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId, function () {
+                                feeOtherBillBillMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId, function () {
                                     $("#areaId").val(data.areaId);
                                     $("#projectId").val(data.propertyId);
                                     $("#buildingId").val(data.buildingId);
@@ -409,7 +410,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     form.render('select');
                 });
             },
-            selectItemFun: function (id, type, value,callbackFun) {
+            selectItemFun: function (id, type, value, callbackFun) {
                 $.getJSON(feeOtherBillBillMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
@@ -428,7 +429,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     });
                     form.render('select');
 
-                    if(callbackFun!=undefined && callbackFun !=null){
+                    if (callbackFun != undefined && callbackFun != null) {
                         callbackFun(data);
                     }
                 });

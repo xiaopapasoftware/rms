@@ -139,37 +139,39 @@ public class FeeWaterBillService extends CrudService<FeeWaterBillDao, FeeWaterBi
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
         List<FeeWaterBill> feeWaterBills = dao.getWaterBillByIds(ids);
         List<FeeWaterBill> updWaterBills = Lists.newArrayList();
-        feeWaterBills.forEach(f -> {
-            switch (status) {
-                case "1":
-                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能提交", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可提交");
-                    }
-                    break;
-                case "2":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能同意", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可同意");
-                    }
-                    break;
-                case "3":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可驳回");
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不在处理状态");
-            }
-            if (StringUtils.isBlank(f.getBatchNo())) {
-                f.setBatchNo(batchNo);
-            }
-            f.setBillStatus(Integer.valueOf(status));
-            f.preUpdate();
-            updWaterBills.add(f);
-        });
-        int ret = dao.batchUpdate(updWaterBills);
-        logger.info("总共处理{}条数据", ret);
+        if (Optional.ofNullable(feeWaterBills).isPresent()) {
+            feeWaterBills.forEach(f -> {
+                switch (status) {
+                    case "1":
+                        if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能提交", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可提交");
+                        }
+                        break;
+                    case "2":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能同意", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可同意");
+                        }
+                        break;
+                    case "3":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseWaterNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不可驳回");
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("户号[" + f.getHouseWaterNum() + "]账单不在处理状态");
+                }
+                if (StringUtils.isBlank(f.getBatchNo())) {
+                    f.setBatchNo(batchNo);
+                }
+                f.setBillStatus(Integer.valueOf(status));
+                f.preUpdate();
+                updWaterBills.add(f);
+            });
+            int ret = dao.batchUpdate(updWaterBills);
+            logger.info("总共处理{}条数据", ret);
+        }
     }
 }

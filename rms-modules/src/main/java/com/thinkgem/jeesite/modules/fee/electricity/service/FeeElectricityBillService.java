@@ -141,38 +141,40 @@ public class FeeElectricityBillService extends CrudService<FeeElectricityBillDao
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
         List<FeeElectricityBill> feeElectricityBills = dao.getEleBillByIds(ids);
         List<FeeElectricityBill> updEleBills = Lists.newArrayList();
-        feeElectricityBills.forEach(f -> {
-            switch (status) {
-                case "1":
-                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能提交", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可提交");
-                    }
-                    break;
-                case "2":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能同意", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可同意");
-                    }
-                    break;
-                case "3":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可驳回");
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不在处理状态");
-            }
-            if (StringUtils.isBlank(f.getBatchNo())) {
-                f.setBatchNo(batchNo);
-            }
-            f.setBillStatus(Integer.valueOf(status));
-            f.preUpdate();
-            updEleBills.add(f);
-        });
+        if (Optional.ofNullable(feeElectricityBills).isPresent()) {
+            feeElectricityBills.forEach(f -> {
+                switch (status) {
+                    case "1":
+                        if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能提交", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可提交");
+                        }
+                        break;
+                    case "2":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能同意", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可同意");
+                        }
+                        break;
+                    case "3":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("户号{}账单当前状态为{},不能驳回", f.getHouseEleNum(), FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不可驳回");
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("户号[" + f.getHouseEleNum() + "]账单不在处理状态");
+                }
+                if (StringUtils.isBlank(f.getBatchNo())) {
+                    f.setBatchNo(batchNo);
+                }
+                f.setBillStatus(Integer.valueOf(status));
+                f.preUpdate();
+                updEleBills.add(f);
+            });
 
-        int ret = dao.batchUpdate(updEleBills);
-        logger.info("总共处理{}条数据", ret);
+            int ret = dao.batchUpdate(updEleBills);
+            logger.info("总共处理{}条数据", ret);
+        }
     }
 }

@@ -93,37 +93,39 @@ public class FeeOtherBillService extends CrudService<FeeOtherBillDao, FeeOtherBi
         String batchNo = DateFormatUtils.format(System.currentTimeMillis(), "yyyyMMddHHMMssSSS");
         List<FeeOtherBill> feeOtherBills = dao.getOtherBillByIds(ids);
         List<FeeOtherBill> updOtherBills = Lists.newArrayList();
-        feeOtherBills.forEach(f -> {
-            switch (status) {
-                case "1":
-                    if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
-                        logger.error("账单当前状态为{},不能提交", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不能提交");
-                    }
-                    break;
-                case "2":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("账单当前状态为{},不能同意", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可同意");
-                    }
-                    break;
-                case "3":
-                    if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
-                        logger.error("账单当前状态为{},不能驳回", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
-                        throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可驳回");
-                    }
-                    break;
-                default:
-                    throw new IllegalArgumentException("账单不在处理状态");
-            }
-            if (StringUtils.isBlank(f.getBatchNo())) {
-                f.setBatchNo(batchNo);
-            }
-            f.setBillStatus(Integer.valueOf(status));
-            f.preUpdate();
-            updOtherBills.add(f);
-        });
-        int ret = dao.batchUpdate(updOtherBills);
-        logger.info("总共处理{}条数据", ret);
+        if (Optional.ofNullable(feeOtherBills).isPresent()) {
+            feeOtherBills.forEach(f -> {
+                switch (status) {
+                    case "1":
+                        if (f.getBillStatus() != FeeBillStatusEnum.APP.getValue() && f.getBillStatus() != FeeBillStatusEnum.REJECT.getValue()) {
+                            logger.error("账单当前状态为{},不能提交", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不能提交");
+                        }
+                        break;
+                    case "2":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("账单当前状态为{},不能同意", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可同意");
+                        }
+                        break;
+                    case "3":
+                        if (f.getBillStatus() == FeeBillStatusEnum.APP.getValue()) {
+                            logger.error("账单当前状态为{},不能驳回", FeeBillStatusEnum.fromValue(f.getBillStatus()).getName());
+                            throw new IllegalArgumentException("账单当前状态为[" + FeeBillStatusEnum.fromValue(f.getBillStatus()).getName() + "],不可驳回");
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("账单不在处理状态");
+                }
+                if (StringUtils.isBlank(f.getBatchNo())) {
+                    f.setBatchNo(batchNo);
+                }
+                f.setBillStatus(Integer.valueOf(status));
+                f.preUpdate();
+                updOtherBills.add(f);
+            });
+            int ret = dao.batchUpdate(updOtherBills);
+            logger.info("总共处理{}条数据", ret);
+        }
     }
 }

@@ -112,10 +112,12 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
     @Transactional(readOnly = false)
     public void deleteFeeWaterReadFlowByFeeWaterBill(String feeWaterBillId) {
         FeeWaterReadFlow existReadFlow = dao.getFeeWaterReadFlowByFeeBillId(feeWaterBillId);
-        FeeWaterReadFlow feeWaterReadFlow = new FeeWaterReadFlow();
-        feeWaterReadFlow.setId(existReadFlow.getId());
-        feeWaterReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
-        this.save(feeWaterReadFlow);
+        if (Optional.ofNullable(existReadFlow).isPresent()) {
+            FeeWaterReadFlow feeWaterReadFlow = new FeeWaterReadFlow();
+            feeWaterReadFlow.setId(existReadFlow.getId());
+            feeWaterReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
+            this.save(feeWaterReadFlow);
+        }
     }
 
     @Transactional(readOnly = false)
@@ -146,7 +148,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
         return dao.getLastRecord(id, houseId);
     }
 
-    public FeeWaterReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId){
+    public FeeWaterReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId) {
         return dao.getCurrentReadByDateAndHouseId(gasReadDate, houseId);
     }
 }

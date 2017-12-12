@@ -24,7 +24,7 @@ import java.util.List;
 public interface FeeGasReadFlowDao extends CrudDao<FeeGasReadFlow>{
     List<FeeGasReadFlowVo> getFeeGasReadFlowWithAllInfo(FeeCriteriaEntity feeCriteriaEntity);
 
-    FeeGasReadFlow getFeeGasReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
+    FeeGasReadFlow getFeeGasReadFlowByFeeBillId(@Param("feeGasBillId") String feeEleBillId);
 
     FeeGasReadFlow getLastRecord(@Param("id") String id, @Param("houseId") String houseId);
 

@@ -205,7 +205,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     @Transactional(readOnly = false)
     public void deleteFeeGasChargedFlowByBusinessIdAndFromSource(String feeGasBillId, int fromSource) {
         List<FeeGasChargedFlow> existGasChargedFlows = this.dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasBillId, fromSource);
-        if (Optional.ofNullable(existGasChargedFlows).isPresent() && existGasChargedFlows.size() > 0) {
+        if (Optional.ofNullable(existGasChargedFlows).isPresent()) {
             existGasChargedFlows.forEach(gas -> {
                 FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
                 feeGasChargedFlow.setId(gas.getId());

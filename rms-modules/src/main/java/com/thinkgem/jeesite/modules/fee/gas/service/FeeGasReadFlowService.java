@@ -113,10 +113,12 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
     @Transactional(readOnly = false)
     public void deleteFeeGasReadFlowByFeeGasBill(String feeGasBillId) {
         FeeGasReadFlow existReadFlow = dao.getFeeGasReadFlowByFeeBillId(feeGasBillId);
-        FeeGasReadFlow feeGasReadFlow = new FeeGasReadFlow();
-        feeGasReadFlow.setId(existReadFlow.getId());
-        feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
-        this.save(feeGasReadFlow);
+        if (Optional.ofNullable(existReadFlow).isPresent()) {
+            FeeGasReadFlow feeGasReadFlow = new FeeGasReadFlow();
+            feeGasReadFlow.setId(existReadFlow.getId());
+            feeGasReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
+            this.save(feeGasReadFlow);
+        }
     }
 
     @Transactional(readOnly = false)
@@ -147,7 +149,7 @@ public class FeeGasReadFlowService extends CrudService<FeeGasReadFlowDao, FeeGas
         return dao.getLastRecord(id, houseId);
     }
 
-    public FeeGasReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId){
+    public FeeGasReadFlow getCurrentReadByDateAndHouseId(Date gasReadDate, String houseId) {
         return dao.getCurrentReadByDateAndHouseId(gasReadDate, houseId);
     }
 }

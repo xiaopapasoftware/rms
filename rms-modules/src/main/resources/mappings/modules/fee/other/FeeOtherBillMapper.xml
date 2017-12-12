@@ -31,6 +31,7 @@
         <result column="house_no" property="houseNo" jdbcType="VARCHAR"/>
         <result column="project_addr" property="projectAddress" jdbcType="VARCHAR"/>
         <result column="bill_status_name" property="billStatusName" jdbcType="VARCHAR"/>
+        <result column="bill_type_name" property="billTypeName" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -255,7 +256,8 @@
         fgb.id,fgb.batch_no,fgb.bill_date,fgb.bill_amount,
         fgb.bill_status,
         case fgb.bill_status when '0' then '待提交' when '1' then '待审核' when '2' then '审核通过' when '3' then '审核驳回' else ''
-        end bill_status_name
+        end bill_status_name,
+        case fgb.bill_type when '3' then '宽带' when '4' then '有线电视' else '其他' end bill_type_name
         from fee_other_bill fgb
         left join t_house th on fgb.house_id=th.ID and fgb.del_flag=0
         left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0

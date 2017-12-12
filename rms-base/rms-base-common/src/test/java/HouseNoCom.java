@@ -24,6 +24,22 @@ public class HouseNoCom {
                 .collect(Collectors.groupingBy(d -> d.split(RULES_AND)[0], Collectors.toCollection(ArrayList::new)));
     }
 
+    private Map<String, List<String>> rulesToMap1(String combineRules, Map<String, List<String>> houseNoMap) {
+        Set<String> ruleSet = new HashSet<>();
+        List<String> ruleList = Arrays.stream(combineRules.split(COMMON_AND))
+                .filter(r -> existHouseNo(houseNoMap, r.split(RULES_AND)[0]) && existHouseNo(houseNoMap, r.split(RULES_AND)[1]))
+                .collect(Collectors.toList());
+
+        ruleSet.addAll(ruleList);
+
+        ruleList.forEach(r -> {
+            String[] rules = r.split(RULES_AND);
+            ruleSet.add(String.join(RULES_AND, rules[1], rules[0]));
+        });
+        return ruleSet.stream().collect(Collectors.groupingBy(d -> d.split(RULES_AND)[0], Collectors.toCollection(ArrayList::new)));
+    }
+
+
     /**
      * houseNo 转 map 便于重复情况的处理
      *
@@ -85,7 +101,7 @@ public class HouseNoCom {
 
         Map<String, List<String>> houseMap = houseToMap(houseNos);
 
-        Map<String, List<String>> rulesMap = rulesToMap(rules, houseMap);
+        Map<String, List<String>> rulesMap = rulesToMap1(rules, houseMap);
 
         /*存放组合houseId*/
         final Set<String> outSet = new HashSet<>();
@@ -157,9 +173,17 @@ public class HouseNoCom {
     }
 
     @Test
-    public void test(){
+    public void test() {
         String path = "E:\\test.txt";
         readFile(path);
+    }
+
+    @Test
+    public void test1() {
+        String s="101&102,102&103,103&104,104&101,104&105|101,102,103,104";
+        String[] rulesHouse = s.split(RULES_HOUSE);
+        String out = combineHouse(rulesHouse[0], rulesHouse[1]);
+        System.out.println(out);
     }
 
 }

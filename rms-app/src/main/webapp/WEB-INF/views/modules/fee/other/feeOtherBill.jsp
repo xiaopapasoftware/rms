@@ -200,7 +200,7 @@
             <div class="layui-input-inline">
                 <select id="billType" name="billType" placeholder="账单类型">
                     <option value="3">宽带</option>
-                    <option value="4">电视</option>
+                    <option value="4">有线电视</option>
                     <option value="9">其他</option>
                 </select>
             </div>
@@ -316,6 +316,7 @@
             <td>地址</td>
             <td>楼宇</td>
             <td>房号</td>
+            <td>账单类型</td>
             <td>账单日期</td>
             <td>金额</td>
             <td>状态</td>
@@ -327,6 +328,7 @@
             <td>{{ item.projectAddress }}</td>
             <td>{{ item.buildingName || '' }}</td>
             <td>{{ item.houseNo || '' }}</td>
+            <td>{{ item.billTypeName || ''}}</td>
             <td>{{ item.billDate || '' }}</td>
             <td>{{ item.billAmount || '' }}</td>
             <td>{{ item.billStatusName || ''}}</td>

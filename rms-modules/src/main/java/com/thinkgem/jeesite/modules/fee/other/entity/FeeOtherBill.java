@@ -38,7 +38,7 @@ public class FeeOtherBill extends DataEntity<FeeOtherBill> {
     /** bill_amount - 账单金额 */
     private BigDecimal billAmount;
     /** Bill_type - 账单类型 */
-    private Float billType;
+    private Integer billType;
     /** bill_status - 状态 0:待提交1:待审核 2:审核通过 3:审核驳回 */
     private Integer billStatus;
 }

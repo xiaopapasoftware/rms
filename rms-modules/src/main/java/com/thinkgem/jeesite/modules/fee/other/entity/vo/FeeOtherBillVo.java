@@ -27,4 +27,6 @@ public class FeeOtherBillVo extends FeeOtherBill {
     private String projectAddress;
 
     private String billStatusName;
+
+    private String billTypeName;
 }

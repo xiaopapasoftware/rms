@@ -167,10 +167,12 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     @Transactional(readOnly = false)
     public void deleteFeeEleChargedFlowByBusinessIdAndFromSource(String feeEleBillId, int fromSource) {
         FeeEleChargedFlow existEleChargedFlow = this.dao.getFeeEleChargedFlowByBusinessIdAndFromSource(feeEleBillId, fromSource);
-        FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
-        feeEleChargedFlow.setId(existEleChargedFlow.getId());
-        feeEleChargedFlow.setDelFlag(Constants.DEL_FLAG_YES);
-        save(feeEleChargedFlow);
+        if (Optional.ofNullable(existEleChargedFlow).isPresent()) {
+            FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
+            feeEleChargedFlow.setId(existEleChargedFlow.getId());
+            feeEleChargedFlow.setDelFlag(Constants.DEL_FLAG_YES);
+            save(feeEleChargedFlow);
+        }
     }
 
     public List<FeeEleChargedFlowVo> getFeeEleChargedFee(FeeCriteriaEntity feeCriteriaEntity) {

@@ -58,7 +58,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
         feeEleReadFlow.setFromSource(FeeFromSourceEnum.READ_METER.getValue());
 
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
-            FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(),feeEleReadFlow.getHouseId(),null);
+            FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), null);
             if (Optional.ofNullable(existEleRead).isPresent()) {
                 feeEleReadFlow.setId(existEleRead.getId());
                 if (existEleRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
@@ -81,8 +81,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                     saveFeeEleReadFlow.setRoomId(roomId[i]);
                     saveFeeEleReadFlow.setEleDegree(Float.valueOf(eleDegree[i]));
                     /*查询今天是否已经存在抄表*/
-                    FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(),feeEleReadFlow.getHouseId(),roomId[i]);
-                    if (Optional.ofNullable(existEleRead).isPresent()){
+                    FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), roomId[i]);
+                    if (Optional.ofNullable(existEleRead).isPresent()) {
                         saveFeeEleReadFlow.setId(existEleRead.getId());
                     }
 
@@ -95,7 +95,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                     feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(saveFeeEleReadFlow);
                 }
             } else {
-                FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
+                FeeEleReadFlow existEleRead = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), feeEleReadFlow.getRoomId());
                 if (Optional.ofNullable(existEleRead).isPresent()) {
                     feeEleReadFlow.setId(existEleRead.getId());
                 }
@@ -115,7 +115,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     }
 
     private void judgeLastRead(FeeEleReadFlow feeEleReadFlow) {
-        FeeEleReadFlow lastRead = dao.getLastRecord(feeEleReadFlow.getId(),feeEleReadFlow.getHouseId(),feeEleReadFlow.getRoomId());
+        FeeEleReadFlow lastRead = dao.getLastRecord(feeEleReadFlow.getId(), feeEleReadFlow.getHouseId(), feeEleReadFlow.getRoomId());
         if (Optional.ofNullable(lastRead).isPresent()) {
             if (feeEleReadFlow.getElePeakDegree() != null && lastRead.getElePeakDegree() > feeEleReadFlow.getElePeakDegree()) {
                 logger.error("当前峰值数不能小于上次峰值数");
@@ -163,10 +163,12 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
     @Transactional(readOnly = false)
     public void deleteFeeEleReadFlowByFeeEleBill(String feeEleBillId) {
         FeeEleReadFlow existReadFlow = dao.getFeeEleReadFlowByFeeBillId(feeEleBillId);
-        FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
-        feeEleReadFlow.setId(existReadFlow.getId());
-        feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
-        this.save(feeEleReadFlow);
+        if (Optional.ofNullable(existReadFlow).isPresent()) {
+            FeeEleReadFlow feeEleReadFlow = new FeeEleReadFlow();
+            feeEleReadFlow.setId(existReadFlow.getId());
+            feeEleReadFlow.setDelFlag(Constants.DEL_FLAG_YES);
+            this.save(feeEleReadFlow);
+        }
     }
 
     @Transactional(readOnly = false)
@@ -193,11 +195,11 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
         return dao.getFeeEleReadFlowWithAllInfo(feeCriteriaEntity);
     }
 
-    public FeeEleReadFlow getLastReadFlow(String id,String houseId,String roomId) {
-        return dao.getLastRecord(id,houseId,roomId);
+    public FeeEleReadFlow getLastReadFlow(String id, String houseId, String roomId) {
+        return dao.getLastRecord(id, houseId, roomId);
     }
 
-    public FeeEleReadFlow getCurrentReadByDateAndHouseIdAndRoomId(Date eleReadDate, String houseId, String roomId){
-        return dao.getCurrentReadByDateAndHouseIdAndRoomId(eleReadDate,houseId,roomId);
+    public FeeEleReadFlow getCurrentReadByDateAndHouseIdAndRoomId(Date eleReadDate, String houseId, String roomId) {
+        return dao.getCurrentReadByDateAndHouseIdAndRoomId(eleReadDate, houseId, roomId);
     }
 }

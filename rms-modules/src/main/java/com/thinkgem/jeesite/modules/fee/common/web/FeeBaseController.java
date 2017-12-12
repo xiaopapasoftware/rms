@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.fee.common.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
+import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
@@ -39,7 +40,7 @@ public class FeeBaseController extends BaseController {
     }
 
     @RequestMapping(value = "houseInfo")
-    public Object houseInfo(String accountNum,String type) {
+    public Object houseInfo(String accountNum, String type) {
         return ResponseData.success().data(feeCommonService.getHouseByAccountNumAndNumType(accountNum, type));
     }
 
@@ -50,7 +51,11 @@ public class FeeBaseController extends BaseController {
 
     @ResponseBody
     @ExceptionHandler({RuntimeException.class})
-    public Object runtimeException(RuntimeException e){
-        return ResponseData.failure(RespConstants.ERROR_CODE_101).message(e.getMessage());
+    public Object runtimeException(RuntimeException e) {
+        String message = e.getMessage();
+        if (StringUtils.isBlank(e.getMessage())) {
+            message = "系统异常,请联系开发人员";
+        }
+        return ResponseData.failure(RespConstants.ERROR_CODE_101).message(message);
     }
 }

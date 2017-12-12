@@ -177,7 +177,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     @Transactional(readOnly = false)
     public void deleteFeeWaterChargedFlowByBusinessIdAndFromSource(String feeWaterBillId, int fromSource) {
         List<FeeWaterChargedFlow> existWaterChargedFlows = this.dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterBillId, fromSource);
-        if (Optional.ofNullable(existWaterChargedFlows).isPresent() && existWaterChargedFlows.size() > 0) {
+        if (Optional.ofNullable(existWaterChargedFlows).isPresent()) {
             existWaterChargedFlows.forEach(f -> {
                 FeeWaterChargedFlow updDeeWaterChargeFlow = new FeeWaterChargedFlow();
                 updDeeWaterChargeFlow.setId(f.getId());
