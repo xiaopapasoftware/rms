@@ -120,7 +120,7 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         }
 
         /*计算金额*/
-        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
+        FeeConfig peakFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_PEAK_UNIT, feeEleBill.getHouseId(), null);
         FeeConfig valleyFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.ELE_VALLEY_UNIT, feeEleBill.getHouseId(), null);
 
         if (peakFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue() || valleyFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {

@@ -76,7 +76,7 @@ public class HouseNoCom {
      */
     private Map<String, String> combineHouse(Map<String, List<String>> rulesMap, String houseNo, Set<String> outSet, Map<String, String> map) {
         List<String> ruleList = rulesMap.get(houseNo);
-        if (Optional.ofNullable(ruleList).isPresent() && ruleList.size() > 0) {
+        if (Optional.ofNullable(ruleList).isPresent()) {
             ruleList.forEach(r -> {
                 String endFix = r.split(RULES_AND)[1];
                 if (!Optional.ofNullable(map.get(endFix)).isPresent()) {
@@ -97,7 +97,6 @@ public class HouseNoCom {
      * @return
      */
     public String combineHouse(String rules, String houseNos) {
-        long start = System.currentTimeMillis();
 
         Map<String, List<String>> houseMap = houseToMap(houseNos);
 
@@ -129,29 +128,33 @@ public class HouseNoCom {
             }
         });
 
-        Long sortTime = System.currentTimeMillis();
         String out = outSet.stream()
                 .sorted(Comparator.comparingInt(String::length))
                 .collect(Collectors.joining(COMMON_AND));
-        System.out.println("排序耗时:" + (System.currentTimeMillis() - sortTime));
-        System.out.println("总共耗时:" + (System.currentTimeMillis() - start));
         return out;
     }
 
     public void readFile(String filePath) {
         List<String> input = new ArrayList<>();
         StringBuffer sb = new StringBuffer();
+        FileReader reader = null;
+        BufferedReader br = null;
         try {
-            FileReader reader = new FileReader(filePath);
-            BufferedReader br = new BufferedReader(reader);
+            reader = new FileReader(filePath);
+            br = new BufferedReader(reader);
             String str = null;
             while ((str = br.readLine()) != null) {
                 input.add(str);
             }
-            br.close();
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                br.close();
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         input.forEach(s -> {
             String[] rulesHouse = s.split(RULES_HOUSE);
@@ -162,27 +165,35 @@ public class HouseNoCom {
     }
 
     private void writeFile(String content) {
+        BufferedWriter out = null;
         try {
             File file = new File(".\\output.txt");
             file.createNewFile();
-            BufferedWriter out = new BufferedWriter(new FileWriter(file));
+            out = new BufferedWriter(new FileWriter(file));
             out.write(content);
             out.flush();
-            out.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Test
     public void test() {
+        long start = System.currentTimeMillis();
         String path = "E:\\test.txt";
         readFile(path);
+        System.out.println("总共耗时:" + (System.currentTimeMillis() - start));
     }
 
     @Test
     public void test1() {
-        String s="101&102,102&103,103&104,104&101,104&105|101,102,103,104";
+        String s = "101&102,102&103,103&104,101&104,104&105|101,102,103,104";
         String[] rulesHouse = s.split(RULES_HOUSE);
         String out = combineHouse(rulesHouse[0], rulesHouse[1]);
         System.out.println(out);
