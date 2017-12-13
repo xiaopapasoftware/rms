@@ -8,6 +8,8 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 合同租客关联信息DAO接口
  * @author huangsc
@@ -16,6 +18,6 @@ import org.apache.ibatis.annotations.Param;
 @MyBatisDao
 public interface ContractTenantDao extends CrudDao<ContractTenant> {
 
-    ContractTenant getByContractId(@Param("contractId")String contractId);
+    List<ContractTenant> getByContractId(@Param("contractId")String contractId);
 
 }

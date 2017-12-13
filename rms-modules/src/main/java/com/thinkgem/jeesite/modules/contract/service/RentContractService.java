@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 出租合同Service
@@ -864,11 +865,17 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return dao.isWholeRentHouse(houseId) > 0;
   }
 
-  public String getTenantPhoneByRoomId(String roomId) {
+  public RentContract getByRoomId(String roomId) {
+    return dao.getByRoomId(roomId);
+  }
+
+  public List<String> getTenantPhoneByRoomId(String roomId) {
     RentContract contract = dao.getByRoomId(roomId);
     if (contract != null) {
-      ContractTenant contractTenant = contractTenantDao.getByContractId(contract.getId());
-      return tenantDao.get(contractTenant.getTenantId()).getCellPhone();
+      List<ContractTenant> contractTenantList = contractTenantDao.getByContractId(contract.getId());
+      if (CollectionUtils.isNotEmpty(contractTenantList)) {
+        return contractTenantList.stream().map(contractTenant -> tenantDao.get(contractTenant.getTenantId())).map(Tenant::getCellPhone).collect(Collectors.toList());
+      }
     }
     return null;
   }

@@ -20,6 +20,10 @@ public class FeeReport extends DataEntity<FeeReport> {
 
     private Date feeTime;
 
+    private Date smsTime;
+
+    private String rentContractId;
+
     public String getRoomId() {
         return roomId;
     }
@@ -66,5 +70,21 @@ public class FeeReport extends DataEntity<FeeReport> {
 
     public void setFeeTime(Date feeTime) {
         this.feeTime = feeTime;
+    }
+
+    public Date getSmsTime() {
+        return smsTime;
+    }
+
+    public void setSmsTime(Date smsTime) {
+        this.smsTime = smsTime;
+    }
+
+    public String getRentContractId() {
+        return rentContractId;
+    }
+
+    public void setRentContractId(String rentContractId) {
+        this.rentContractId = rentContractId;
     }
 }

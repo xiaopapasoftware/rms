@@ -10,6 +10,8 @@
 		a.REMAIN_FEE AS "remainFee",
 		a.SMS_RECORD AS "smsRecord",
 		a.FEE_TIME AS "feeTime",
+		a.SMS_TIME AS "smsTime",
+		a.RENT_CONTRACT_ID AS "rentContractId",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS
@@ -72,10 +74,12 @@
 		INSERT INTO t_fee_report(
 		ID,
 		ROOM_ID,
+		RENT_CONTRACT_ID,
 		FEE_NO,
 		FEE_TYPE,
 		REMAIN_FEE,
 		SMS_RECORD,
+		SMS_TIME,
 		FEE_TIME,
 		create_by,
 		create_date,
@@ -86,10 +90,12 @@
 		) VALUES (
 		#{id},
 		#{roomId},
+		#{rentContractId},
 		#{feeNo},
 		#{feeType},
 		#{remainFee},
 		#{smsRecord},
+		#{smsTime},
 		#{feeTime},
 		#{createBy.id},
 		#{createDate},
@@ -107,6 +113,10 @@
 		FEE_TIME = #{feeTime},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
+		,SMS_TIME = #{smsTime}
+		<if test="rentContractId != null and rentContractId != ''">
+			,RENT_CONTRACT_ID = #{rentContractId}
+		</if>
 		WHERE id = #{id}
 	</update>
 
@@ -122,11 +132,16 @@
 		FROM t_fee_report a
 		WHERE
 			a.del_flag = '0'  AND
-			a.FEE_TYPE = #{feeType} AND
 			a.ROOM_ID in
 		<foreach collection="roomIdList" index="index" item="item" open="(" separator="," close=")">
 			#{item}
 		</foreach>
+		<if test="minValue != null">
+			AND a.REMAIN_FEE >= ${minValue}
+		</if>
+		<if test="maxValue != null">
+			AND  <![CDATA[  a.REMAIN_FEE <= ${maxValue} ]]>
+		</if>
 	</select>
 	
 </mapper>

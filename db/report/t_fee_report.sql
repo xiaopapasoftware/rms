@@ -22,10 +22,12 @@ DROP TABLE IF EXISTS `t_fee_report`;
 CREATE TABLE `t_fee_report` (
   `ID` varchar(64) COLLATE utf8_estonian_ci NOT NULL,
   `ROOM_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房间',
+  `RENT_CONTRACT_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT 'rent_contract主键',
   `FEE_NO` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '业务号如电表号',
   `FEE_TYPE` varchar(16) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '费用类型',
   `REMAIN_FEE` float DEFAULT NULL COMMENT '剩余费用',
   `SMS_RECORD` varchar(16) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '短信发送记录',
+  `SMS_TIME` date DEFAULT NULL COMMENT '最近一次短信发送时间',
   `FEE_TIME` datetime DEFAULT NULL COMMENT '费用统计截止时间',
   `CREATE_BY` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '创建者',
   `CREATE_DATE` datetime DEFAULT NULL COMMENT '创建时间',
@@ -35,3 +37,4 @@ CREATE TABLE `t_fee_report` (
   `DEL_FLAG` char(1) COLLATE utf8_estonian_ci NOT NULL DEFAULT '0' COMMENT '删除标记',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='费用统计报表';
+

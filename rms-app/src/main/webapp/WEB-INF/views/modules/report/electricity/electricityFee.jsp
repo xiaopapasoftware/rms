@@ -19,6 +19,8 @@
                     building:building,
 					house:house,
 					room:room,
+                    minValue:$("#minValue").val(),
+                    maxValue:$("#maxValue").val()
 				}, function (data, status) {
                     $("#viewTbody").html("");
                    if(!data || !data.length) return;
@@ -107,6 +109,9 @@
 				<select id="ROOM" name="romm" class="input-medium selectDom">
 					<option value="">请选择...</option>
 				</select>
+			</li>
+			<li><label>剩余金额范围：</label>
+				<input id="minValue" maxlength="64" class="input-medium" style="width:100px;margin-right:20px" placeholder="最小值"/> 至 <input id="maxValue" maxlength="64" class="input-medium" style="width:100px;margin-left:20px" placeholder="最大值"/>元
 			</li>
 			<li class="btns" ><input id="btnSubmit" class="btn btn-primary" type="button"  value="查询"/></li>
 		</ul>

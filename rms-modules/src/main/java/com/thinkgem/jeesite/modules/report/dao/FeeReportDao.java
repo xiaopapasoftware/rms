@@ -19,7 +19,7 @@ import java.util.List;
 @MyBatisDao
 public interface FeeReportDao extends CrudDao<FeeReport> {
 
-    List<FeeReport> getFeeReportByRoomIdList(@Param("roomIdList")List<String> roomIdList, @Param("feeType")String feeType);
+    List<FeeReport> getFeeReportByRoomIdList(@Param("roomIdList")List<String> roomIdList, @Param("minValue")Double minValue, @Param("maxValue")Double maxValue);
 
     public List<FeeReport> getFeeReportList(@Param("size")int size);
 

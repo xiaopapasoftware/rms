@@ -8,6 +8,8 @@ import com.thinkgem.jeesite.modules.common.entity.SelectItemCondition;
 import com.thinkgem.jeesite.modules.common.enums.SelectItemConstants;
 import com.thinkgem.jeesite.modules.common.service.SelectItemService;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -92,7 +94,7 @@ public class ElectricityReportController extends BaseController {
       prefixMap = roomList.stream().collect(Collectors.toMap(Room::getId, room -> room.getHouse().getHouseNo()));
     }
     if (CollectionUtils.isNotEmpty(idList)) {
-      List<ElectricityFeeVO> voList = buildVOByRoomIdList(idList);
+      List<ElectricityFeeVO> voList = buildVOByRoomIdList(idList, condition.getMinValue(), condition.getMaxValue());
       if (CollectionUtils.isNotEmpty(voList)) {
         Map<String, String> finalPrefixMap = prefixMap;
         voList.forEach(vo -> vo.setName(finalPrefixMap.get(vo.getRoomId()) + vo.getName()));
@@ -102,8 +104,8 @@ public class ElectricityReportController extends BaseController {
     return null;
   }
 
-  private List<ElectricityFeeVO> buildVOByRoomIdList(List<String> idList) {
-    List<FeeReport> reportList = feeReportService.getFeeReportByRoomIdList(idList, FeeReportTypeEnum.ELECTRICITY.getValue());
+  private List<ElectricityFeeVO> buildVOByRoomIdList(List<String> idList, Double minValue, Double maxValue) {
+    List<FeeReport> reportList = feeReportService.getFeeReportByRoomIdList(idList, minValue, maxValue);
     if (CollectionUtils.isNotEmpty(reportList)) {
       return reportList.stream().map(this::buildVOByFeeReport).collect(Collectors.toList());
     }
@@ -132,8 +134,9 @@ public class ElectricityReportController extends BaseController {
   }
 
   private FeeReport buildFeeReportByRoom(Room room) {
+    RentContract rentContract = rentContractService.getByRoomId(room.getId());
     String result = electricFeeService.getRemainFeeByMeterNo(room.getMeterNo());
-    if (StringUtils.isBlank(result) || ",,".equals(result)) {
+    if (StringUtils.isBlank(result) || ",,".equals(result) || rentContract == null) {
       return null;
     }
     String[] split = result.split(",");
@@ -144,6 +147,7 @@ public class ElectricityReportController extends BaseController {
     feeReport.setRemainFee(formatSum(new Double(split[1]) * new Double(split[2])));
     feeReport.setSmsRecord(INIT_SMS_RECORD);
     feeReport.setFeeTime(DateUtils.parseDate(split[0]));
+    feeReport.setRentContractId(rentContract.getId());
     return feeReport;
   }
 
@@ -164,28 +168,76 @@ public class ElectricityReportController extends BaseController {
     feeReportList.forEach(this::updateFeeReport);
   }
 
-  public void updateFeeReport(FeeReport feeReport) {
+  private void updateFeeReport(FeeReport feeReport) {
     String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
-    if (StringUtils.isBlank(result) || ",,".equals(result)) {
+    RentContract rentContract = rentContractService.getByRoomId(feeReport.getRoomId());
+    //整租合同以及无正确返回结果
+    if (StringUtils.isBlank(result) || ",,".equals(result) || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
+      //更新下时间，表明更新过
+      feeReportService.save(feeReport);
       return ;
     }
     String[] split = result.split(",");
     feeReport.setFeeTime(DateUtils.parseDate(split[0]));
     feeReport.setRemainFee(formatSum(new Double(split[1]) * new Double(split[2])));
+    checkRentContractId(rentContract.getId(), feeReport);
+    checkSmsTime(feeReport);
+    judgeSendSms(feeReport);
     feeReportService.save(feeReport);
+  }
+
+  //如果是新合同则重置短信发送记录
+  private void checkRentContractId(String rentContractId, FeeReport feeReport) {
+    if (!rentContractId.equals(feeReport.getRentContractId())) {
+      feeReport.setRentContractId(rentContractId);
+      feeReport.setSmsTime(null);
+      feeReport.setSmsRecord(INIT_SMS_RECORD);
+    }
+  }
+
+  //过了一个月短信记录重置
+  private void checkSmsTime(FeeReport feeReport) {
+    if (feeReport.getSmsTime() != null) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(feeReport.getSmsTime());
+      int smsTimeMonth = calendar.get(Calendar.MONTH);
+      calendar.setTime(new Date());
+      int now = calendar.get(Calendar.MONTH);
+      if (smsTimeMonth != now) {
+        feeReport.setSmsRecord(INIT_SMS_RECORD);
+        feeReport.setSmsTime(null);
+      }
+    }
+  }
+
+  private void judgeSendSms(FeeReport feeReport) {
+    if (feeReport.getRemainFee() < 10d && feeReport.getSmsRecord().charAt(0) == '0') {
+      sendSmsByFeeReportId(feeReport.getId(),"已少于10元，避免造成用电不便");
+      feeReport.setSmsRecord("1" + feeReport.getSmsRecord().substring(1));
+      feeReport.setSmsTime(new Date());
+    } else if (feeReport.getRemainFee() < 30d && feeReport.getSmsRecord().charAt(1) == '0') {
+      sendSmsByFeeReportId(feeReport.getId(),"已少于30元，避免造成用电不便");
+      feeReport.setSmsRecord(feeReport.getSmsRecord().substring(0, 1) + "1");
+      feeReport.setSmsTime(new Date());
+    }
   }
 
   @RequestMapping(value = "sendSms")
   @ResponseBody
   public String sendSms(String id) {
-    FeeReport feeReport = feeReportService.get(id);
-    String phone = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
-    String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
-    String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，即将断电或已断电，请及时充值。如您已充值，请忽略此短信。";
-    if (StringUtils.isNotBlank(phone)) {
-      smsService.sendSms(phone, content);
-    }
+    sendSmsByFeeReportId(id, "即将断电或已断电");
     return "true";
+  }
+
+  private void sendSmsByFeeReportId(String feeReportId, String differentContent) {
+    FeeReport feeReport = feeReportService.get(feeReportId);
+    List<String> phoneList = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
+   phoneList = Collections.singletonList("13738175630");
+    String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
+    String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，" + differentContent + ",请及时充值。如您已充值，请忽略此短信。";
+    if (CollectionUtils.isNotEmpty(phoneList)) {
+      phoneList.forEach(phone -> smsService.sendSms(phone, content));
+    }
   }
 
 }

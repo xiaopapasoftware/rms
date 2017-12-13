@@ -8,6 +8,10 @@ public class ElectricityFeeCondition {
 
     private String  room;
 
+    private Double minValue;
+
+    private Double maxValue;
+
     public String getBuilding() {
         return building;
     }
@@ -30,5 +34,21 @@ public class ElectricityFeeCondition {
 
     public void setRoom(String room) {
         this.room = room;
+    }
+
+    public Double getMinValue() {
+        return minValue;
+    }
+
+    public void setMinValue(Double minValue) {
+        this.minValue = minValue;
+    }
+
+    public Double getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(Double maxValue) {
+        this.maxValue = maxValue;
     }
 }
