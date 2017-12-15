@@ -5,7 +5,7 @@ package com.thinkgem.jeesite.modules.fee.enums;
  * @date 2017年10月18日 10:47
  */
 public enum GenerateOrderEnum {
-    YES(0), NO(1);
+    YES(1), NO(0);
 
     private int value;
 
