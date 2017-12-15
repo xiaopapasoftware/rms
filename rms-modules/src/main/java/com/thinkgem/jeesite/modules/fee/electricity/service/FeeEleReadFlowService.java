@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -60,7 +61,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
 
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.WHOLE_RENT.getValue())) {
             List<FeeEleReadFlow> existEleReads = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), "0");
-            if (Optional.ofNullable(existEleReads).isPresent()) {
+            if (!CollectionUtils.isEmpty(existEleReads)) {
                 FeeEleReadFlow existEleRead = existEleReads.get(0);
                 feeEleReadFlow.setId(existEleRead.getId());
                 if (existEleRead.getFromSource() == FeeFromSourceEnum.ACCOUNT_BILL.getValue()) {
@@ -78,7 +79,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
         } else {
             /*新增*/
-            if (StringUtils.isBlank(feeEleReadFlow.getRoomId())) {
+            if (roomId.length > 0) {
                 double allDegree = 0f, houseDegree = 0f;
                 for (int i = 0; i < roomId.length; i++) {
                     if (StringUtils.equals(roomId[i], "0")) {
@@ -104,9 +105,8 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
 
                     /*查询今天是否已经存在抄表，一天只有一条抄表记录*/
                     List<FeeEleReadFlow> existEleReads = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), roomId[i]);
-                    if (Optional.ofNullable(existEleReads).isPresent()) {
-                        FeeEleReadFlow existEleRead = existEleReads.get(0);
-                        saveFeeEleReadFlow.setId(existEleRead.getId());
+                    if (!CollectionUtils.isEmpty(existEleReads)) {
+                        saveFeeEleReadFlow.setId(existEleReads.get(0).getId());
                     }
 
                     judgeLastRead(saveFeeEleReadFlow);
@@ -120,13 +120,17 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             } else {
                 /*修改*/
                 List<FeeEleReadFlow> existEleReads = dao.getCurrentReadByDateAndHouseIdAndRoomId(feeEleReadFlow.getEleReadDate(), feeEleReadFlow.getHouseId(), "");
-
-                FeeEleReadFlow updateRecord = existEleReads.stream().filter(f -> StringUtils.equals(f.getRoomId(), feeEleReadFlow.getRoomId())).findFirst().orElseGet(null);
-                if (Optional.ofNullable(updateRecord).isPresent()) {
-                    feeEleReadFlow.setId(updateRecord.getId());
-                }else {
+                if (CollectionUtils.isEmpty(existEleReads)) {
                     logger.error("当前修改记录不存在请确认在修改");
                     throw new IllegalArgumentException("当前修改记录不存在请确认在修改");
+                } else {
+                    FeeEleReadFlow updateRecord = existEleReads.stream().filter(f -> StringUtils.equals(f.getRoomId(), feeEleReadFlow.getRoomId())).findFirst().orElseGet(null);
+                    if (Optional.ofNullable(updateRecord).isPresent()) {
+                        feeEleReadFlow.setId(updateRecord.getId());
+                    } else {
+                        logger.error("当前修改记录不存在请确认在修改");
+                        throw new IllegalArgumentException("当前修改记录不存在请确认在修改");
+                    }
                 }
 
                 /*修改总表记录*/
@@ -144,7 +148,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
                             .filter(f -> !StringUtils.equals(f.getRoomId(), feeEleReadFlow.getRoomId()) && !StringUtils.equals(f.getRoomId(), "0"))
                             .mapToDouble(FeeEleReadFlow::getEleDegree).sum();
 
-                        otherRecord += feeEleReadFlow.getEleDegree();
+                    otherRecord += feeEleReadFlow.getEleDegree();
 
                     if (allRecord < otherRecord) {
                         logger.error("总表的度数不能小于各房间度数之和");

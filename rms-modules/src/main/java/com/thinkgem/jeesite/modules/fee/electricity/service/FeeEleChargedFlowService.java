@@ -29,6 +29,7 @@ import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -261,6 +262,9 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
         FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
         feeEleChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         List<FeeEleChargedFlow> feeEleChargedFlows = this.findList(feeEleChargedFlow);
+        if(CollectionUtils.isEmpty(feeEleChargedFlows)){
+            return;
+        }
         /*按房屋分组*/
         Map<String, List<FeeEleChargedFlow>> feeEleChargedMap = feeEleChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeEleChargedFlow::getHouseId));

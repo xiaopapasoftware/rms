@@ -7,6 +7,7 @@ package com.thinkgem.jeesite.modules.fee.water.service;
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Constants;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.supcan.treelist.cols.Col;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGenerator;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -29,6 +30,7 @@ import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -147,8 +149,8 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
                 /*更新匹配房间的数据*/
                 if (Optional.ofNullable(existChargeFlows).isPresent()) {
-                    existChargeFlows.forEach(f->{
-                        if(StringUtils.equals(f.getRoomId(), room.getId())){
+                    existChargeFlows.forEach(f -> {
+                        if (StringUtils.equals(f.getRoomId(), room.getId())) {
                             roomFeeWaterCharge.setId(f.getId());
                         }
                     });
@@ -163,7 +165,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
             });
         } else {
             List<FeeWaterChargedFlow> existChargeFlows = dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
-            if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
+            if (!CollectionUtils.isEmpty(existChargeFlows)) {
                 feeWaterChargedFlow.setId(existChargeFlows.get(0).getId());
             }
 
@@ -184,7 +186,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     @Transactional(readOnly = false)
     public void deleteFeeWaterChargedFlowByBusinessIdAndFromSource(String feeWaterBillId, int fromSource) {
         List<FeeWaterChargedFlow> existWaterChargedFlows = this.dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterBillId, fromSource);
-        if (Optional.ofNullable(existWaterChargedFlows).isPresent()) {
+        if (!CollectionUtils.isEmpty(existWaterChargedFlows)) {
             existWaterChargedFlows.forEach(f -> {
                 FeeWaterChargedFlow updDeeWaterChargeFlow = new FeeWaterChargedFlow();
                 updDeeWaterChargeFlow.setId(f.getId());
@@ -202,6 +204,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     public void generatorFlow() {
         List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
         List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        if (CollectionUtils.isEmpty(rooms)) {
+            return;
+        }
         rooms.forEach(r -> {
             FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, r.getHouse().getId(), r.getId());
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
@@ -217,11 +222,11 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                 feeWaterChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
                 feeWaterChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
                 /*如果配置为零，则不收取费用*/
-                if(Double.valueOf(feeConfig.getConfigValue()) == 0){
+                if (Double.valueOf(feeConfig.getConfigValue()) == 0) {
                     feeWaterChargedFlow.setWaterAmount(new BigDecimal(0));
                     feeWaterChargedFlow.preInsert();
                     feeWaterChargedFlows.add(feeWaterChargedFlow);
-                }else {
+                } else {
                     /*计算金额*/
                     double days;
                     FeeWaterChargedFlow lastCharged = dao.getLastRecord(r.getHouse().getId(), r.getId());
@@ -232,7 +237,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                     }
                     if (days > 0) {
                     /*金额 = 固定金额/30*上月生成日至今的天数*/
-                        BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS),2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
+                        BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS), 2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
                         feeWaterChargedFlow.setWaterAmount(amount);
                         feeWaterChargedFlow.preInsert();
                         feeWaterChargedFlows.add(feeWaterChargedFlow);
@@ -251,7 +256,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
         FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
         feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
         List<FeeWaterChargedFlow> feeWaterChargedFlows = this.findList(feeWaterChargedFlow);
-
+        if (CollectionUtils.isEmpty(feeWaterChargedFlows)) {
+            return;
+        }
         /*按房屋分组*/
         Map<String, List<FeeWaterChargedFlow>> feeWaterChargedMap = feeWaterChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeWaterChargedFlow::getHouseId));

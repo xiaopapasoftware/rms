@@ -96,7 +96,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
-                }else if (value == 0) {
+                } else if (value == 0) {
                     value = "总表";
                 }
                 return value;
@@ -203,19 +203,22 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             layer.msg("当前记录为账单录入生成,不可修改", {icon: 5, offset: 100, time: 1000, shift: 6});
                             return;
                         }
-                        feeEleReadFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId,function(){
-                            feeEleReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId,function(){
-                                feeEleReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId,function(){
+                        feeEleReadFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.areaId, function () {
+                            feeEleReadFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.propertyId, function () {
+                                feeEleReadFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.buildingId, function () {
                                     $("#areaId").val(data.areaId);
                                     $("#projectId").val(data.propertyId);
                                     $("#buildingId").val(data.buildingId);
                                     $("#houseId").val(data.houseId);
+                                    $("#areaId").prop('disabled', true);
+                                    $("#projectId").prop('disabled', true);
+                                    $("#buildingId").prop('disabled', true);
+                                    $("#houseId").prop('disabled', true);
                                     form.render('select');
                                 });
                             });
                         });
 
-                        operType = "edit";
                         $("#elePeakDegree").val(data.elePeakDegree);
                         $("#eleValleyDegree").val(data.eleValleyDegree);
                         $("#eleDegree").val(data.eleDegree);
@@ -223,13 +226,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
                         $("#roomId").val(data.roomId);
                         $("#roomNo").html(layui.laytpl.roomNoFormat(data.roomNo));
+                        $("#eleReadDate").val(data.eleReadDate);
+                        $("#eleReadDate").prop('readonly', true);
 
-                        laydate.render({
-                            elem: '#eleReadDate',
-                            type: 'date',
-                            format: 'yyyy-MM-dd',
-                            value: new Date(data.eleReadDate)
-                        });
                         if (data.intentMode == "0") {
                             $("#editShowDiv").hide();
                             $("#separateRentShowDiv").hide();
@@ -239,7 +238,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             $("#separateRentShowDiv").hide();
                             $("#wholeRentShowDiv").hide()
                         }
-                        feeEleReadFlowMVC.Controller.addEleFun();
+
+                        operType = "edit";
+                        addEleReadIndex = layer.open({
+                            title: "电费账单录入",
+                            type: 1,
+                            resize: true,
+                            offset: 'rt',
+                            anim: 2,
+                            area: ['370px', '450px'],
+                            content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                        });
                     } else if (layEvent === 'del') { //删除
                         if (data.fromSource != null && data.fromSource == "1") {
                             layer.msg("当前记录为账单录入生成,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -273,14 +282,19 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             addEleFun: function () {
-                if(operType != 'edit'){
-                    laydate.render({
-                        elem: '#eleReadDate',
-                        type: 'date',
-                        format: 'yyyy-MM-dd',
-                        value: new Date()
-                    });
-                }
+                $("#areaId").prop('disabled', false);
+                $("#projectId").prop('disabled', false);
+                $("#buildingId").prop('disabled', false);
+                $("#houseId").prop('disabled', false);
+                $("#eleReadDate").prop('readonly', false);
+                form.render('select');
+                laydate.render({
+                    elem: '#eleReadDate',
+                    type: 'date',
+                    format: 'yyyy-MM-dd',
+                    value: new Date()
+                });
+
                 addEleReadIndex = layer.open({
                     title: "电费账单录入",
                     type: 1,
@@ -418,7 +432,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     form.render('select');
                 });
             },
-            selectItemFun: function (id, type, value,callbackFun) {
+            selectItemFun: function (id, type, value, callbackFun) {
                 $.getJSON(feeEleReadFlowMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
@@ -428,6 +442,11 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     if (data.data == null) {
                         return;
                     }
+                    $(obj).find('option').remove();
+                    obj.append($('<option>', {
+                        value: "",
+                        text: "请选择"
+                    }));
                     $.each(data.data, function (index, object) {
                         obj.append($('<option>', {
                             value: object.id,
@@ -437,7 +456,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
                     form.render('select');
 
-                    if(callbackFun!=undefined && callbackFun !=null){
+                    if (callbackFun != undefined && callbackFun != null) {
                         callbackFun(data);
                     }
                 });
