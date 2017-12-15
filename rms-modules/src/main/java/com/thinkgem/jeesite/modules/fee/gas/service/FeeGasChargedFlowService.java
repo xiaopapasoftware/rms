@@ -166,15 +166,19 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
             amount = amount.divide(new BigDecimal(rentRoomSize));
             saveFeeGasChargeFlow.setGasAmount(amount);
             saveFeeGasChargeFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            for (Room room : rooms) {
+
+            /*如果存在则获取ID*/
+            List<FeeGasChargedFlow> existChargeFlows = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
+            rooms.forEach(room -> {
                 FeeGasChargedFlow feeGasChargedFlow = saveFeeGasChargeFlow.clone();
                 feeGasChargedFlow.setRoomId(room.getId());
 
-                /*如果存在则获取ID*/
-                List<FeeGasChargedFlow> existChargeFlows = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
-                if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
-                    String id = existChargeFlows.stream().filter(f -> StringUtils.equals(f.getRoomId(), room.getId())).map(FeeGasChargedFlow::getId).findFirst().get();
-                    feeGasChargedFlow.setId(id);
+                if (Optional.ofNullable(existChargeFlows).isPresent()) {
+                    existChargeFlows.forEach(f->{
+                        if(StringUtils.equals(f.getRoomId(), room.getId())){
+                            feeGasChargedFlow.setId(f.getId());
+                        }
+                    });
                 }
 
                 if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
@@ -183,7 +187,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
                     saveFeeGasChargeFlow.setPayer(PayerEnum.COMPANY.getValue());
                 }
                 save(feeGasChargedFlow);
-            }
+            });
         } else {
             List<FeeGasChargedFlow> existChargeFlows = dao.getFeeGasChargedFlowByBusinessIdAndFromSource(feeGasReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
             if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
