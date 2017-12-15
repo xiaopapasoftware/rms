@@ -133,27 +133,34 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
             Long rentRoomSize = rooms.stream().filter(room -> StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())).count();
             rentRoomSize = rentRoomSize == 0 ? 1 : rentRoomSize;
 
+            /*计算金额*/
             amount = amount.divide(new BigDecimal(rentRoomSize));
             feeWaterChargedFlow.setWaterAmount(amount);
             feeWaterChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
-            for (Room room : rooms) {
+
+            /*查询当前抄表是否已经生成收费流水，生成则更新否则新增*/
+            List<FeeWaterChargedFlow> existChargeFlows = dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
+
+            rooms.forEach(room -> {
                 FeeWaterChargedFlow roomFeeWaterCharge = feeWaterChargedFlow.clone();
                 roomFeeWaterCharge.setRoomId(room.getId());
 
-                /*如果存在则获取ID*/
-                List<FeeWaterChargedFlow> existChargeFlows = dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
-                if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {
-                    String id = existChargeFlows.stream().filter(f -> StringUtils.equals(f.getRoomId(), room.getId())).map(FeeWaterChargedFlow::getId).findFirst().get();
-                    roomFeeWaterCharge.setId(id);
+                /*更新匹配房间的数据*/
+                if (Optional.ofNullable(existChargeFlows).isPresent()) {
+                    existChargeFlows.forEach(f->{
+                        if(StringUtils.equals(f.getRoomId(), room.getId())){
+                            roomFeeWaterCharge.setId(f.getId());
+                        }
+                    });
                 }
-
                 if (StringUtils.equals(room.getRoomStatus(), RoomStatusEnum.RENTED.getValue())) {
                     roomFeeWaterCharge.setPayer(PayerEnum.RENT_USER.getValue());
                 } else {
                     roomFeeWaterCharge.setPayer(PayerEnum.COMPANY.getValue());
                 }
                 save(roomFeeWaterCharge);
-            }
+
+            });
         } else {
             List<FeeWaterChargedFlow> existChargeFlows = dao.getFeeWaterChargedFlowByBusinessIdAndFromSource(feeWaterReadFlow.getId(), FeeFromSourceEnum.READ_METER.getValue());
             if (Optional.ofNullable(existChargeFlows).isPresent() && existChargeFlows.size() > 0) {

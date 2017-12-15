@@ -79,7 +79,7 @@ public class FeeWaterReadFlowService extends CrudService<FeeWaterReadFlowDao, Fe
 
             if (feeWaterReadFlow.getWaterDegree() != null && lastRead.getWaterDegree() > feeWaterReadFlow.getWaterDegree()) {
                 logger.error("当前电表度数不能小于上次电表度数");
-                throw new IllegalArgumentException("当前电表度数不能小于上次电表度数");
+                throw new IllegalArgumentException("当前抄表度数不能小于上次抄表度数");
             }
 
             if (lastRead.getWaterReadDate().compareTo(feeWaterReadFlow.getWaterReadDate()) > 0) {
