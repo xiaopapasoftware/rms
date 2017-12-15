@@ -106,11 +106,11 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
 
         /*获取上一条抄表记录*/
         String id = null;
-        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleBill.getEleBillDate(), feeEleBill.getHouseId(), null);
+        FeeEleReadFlow existEleRead = feeEleReadFlowService.getCurrentReadByDateAndHouseIdAndRoomId(feeEleBill.getEleBillDate(), feeEleBill.getHouseId(), "0");
         if (Optional.ofNullable(existEleRead).isPresent()) {
             id = existEleRead.getId();
         }
-        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id, feeEleBill.getHouseId(), null);
+        FeeEleReadFlow lastReadFlow = feeEleReadFlowService.getLastReadFlow(id, feeEleBill.getHouseId(), "0");
         if (!Optional.ofNullable(lastReadFlow).isPresent()) {
             if (feeCommonService.isOpenInitFeeData()) {
                 return;

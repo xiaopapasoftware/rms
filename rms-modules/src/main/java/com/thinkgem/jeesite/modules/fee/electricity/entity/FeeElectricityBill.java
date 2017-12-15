@@ -34,9 +34,9 @@ public class FeeElectricityBill extends DataEntity<FeeElectricityBill>{
     /** ele_bill_amount - 账单金额 */
     private BigDecimal eleBillAmount;
     /** ele_peak_degree - 峰值数 */
-    private Float elePeakDegree;
+    private Double elePeakDegree;
     /** ele_valley_degree - 谷值数 */
-    private Float eleValleyDegree;
+    private Double eleValleyDegree;
     /** bill_status - 状态 0:待提交1:待审核 2:审核通过 3:审核驳回 */
     private Integer billStatus;
 }

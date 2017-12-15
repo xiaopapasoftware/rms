@@ -28,7 +28,7 @@ public interface FeeEleReadFlowDao extends CrudDao<FeeEleReadFlow> {
 
     FeeEleReadFlow getFeeEleReadFlowByFeeBillId(@Param("feeEleBillId") String feeEleBillId);
 
-    FeeEleReadFlow getCurrentReadByDateAndHouseIdAndRoomId(@Param("eleReadDate") Date eleReadDate, @Param("houseId") String houseId, @Param("roomId") String roomId);
+    List<FeeEleReadFlow> getCurrentReadByDateAndHouseIdAndRoomId(@Param("eleReadDate") Date eleReadDate, @Param("houseId") String houseId, @Param("roomId") String roomId);
 
     FeeEleReadFlow getLastRecord(@Param("id") String id, @Param("houseId") String houseId, @Param("roomId") String roomId);
 }

@@ -35,11 +35,11 @@ public class FeeEleReadFlow extends DataEntity<FeeEleReadFlow> implements Clonea
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date eleReadDate;
     /** ele_degree - 电表额度 */
-    private Float eleDegree;
+    private Double eleDegree;
     /** ele_peak_degree - 峰值数 */
-    private Float elePeakDegree;
+    private Double elePeakDegree;
     /** ele_valley_degree - 谷值数 */
-    private Float eleValleyDegree;
+    private Double eleValleyDegree;
 
     @Override
     public FeeEleReadFlow clone(){
