@@ -232,7 +232,6 @@ public class ElectricityReportController extends BaseController {
   private void sendSmsByFeeReportId(String feeReportId, String differentContent) {
     FeeReport feeReport = feeReportService.get(feeReportId);
     List<String> phoneList = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
-   phoneList = Collections.singletonList("13738175630");
     String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
     String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，" + differentContent + ",请及时充值。如您已充值，请忽略此短信。";
     if (CollectionUtils.isNotEmpty(phoneList)) {

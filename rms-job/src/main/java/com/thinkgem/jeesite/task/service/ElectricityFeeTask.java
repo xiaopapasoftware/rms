@@ -65,8 +65,14 @@ public class ElectricityFeeTask {
   private void updateFeeReport(FeeReport feeReport) {
     String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
     RentContract rentContract = rentContractService.getByRoomId(feeReport.getRoomId());
+    //整租合同不进行更新
+    if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
+      feeReport.setDelFlag("1");
+      feeReportService.save(feeReport);
+      return;
+    }
     // 整租合同以及无正确返回结果
-    if (StringUtils.isBlank(result) || ",,".equals(result) || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
+    if (StringUtils.isBlank(result) || ",,".equals(result)) {
       // 更新下时间，表明更新过
       feeReportService.save(feeReport);
       return;

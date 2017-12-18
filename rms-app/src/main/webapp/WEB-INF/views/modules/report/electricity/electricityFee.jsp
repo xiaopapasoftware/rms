@@ -106,7 +106,7 @@
 				</select>
 			</li>
 			<li><label>房间号：</label>
-				<select id="ROOM" name="romm" class="input-medium selectDom">
+				<select id="ROOM" name="room" class="input-medium selectDom">
 					<option value="">请选择...</option>
 				</select>
 			</li>
