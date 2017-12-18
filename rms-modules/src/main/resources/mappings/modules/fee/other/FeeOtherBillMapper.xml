@@ -237,9 +237,9 @@
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity"
             resultType="java.lang.Double">
         select
-        sum(IFNULL(fgb.bill_amount,0))
-        from fee_other_bill fgb
-        left join t_house th on fgb.house_id=th.ID and fgb.del_flag=0
+        sum(IFNULL(fob.bill_amount,0))
+        from fee_other_bill fob
+        left join t_house th on fob.house_id=th.ID and fob.del_flag=0
         left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
         left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
@@ -252,19 +252,19 @@
         sa.name area_name,tpp.AREA_ID,
         th.HOUSE_NO,th.id house_id,
         tpp.PROJECT_NAME,th.PROPERTY_PROJECT_ID PROPERTY_ID,tpp.PROJECT_ADDR,
-        th.BUILDING_ID,tb.BUILDING_NAME,fgb.bill_type,fgb.bill_unit,
-        fgb.id,fgb.batch_no,fgb.bill_date,fgb.bill_amount,
-        fgb.bill_status,
-        case fgb.bill_status when '0' then '待提交' when '1' then '待审核' when '2' then '审核通过' when '3' then '审核驳回' else ''
+        th.BUILDING_ID,tb.BUILDING_NAME,fob.bill_type,fob.bill_unit,
+        fob.id,fob.batch_no,fob.bill_date,fob.bill_amount,
+        fob.bill_status,
+        case fob.bill_status when '0' then '待提交' when '1' then '待审核' when '2' then '审核通过' when '3' then '审核驳回' else ''
         end bill_status_name,
-        case fgb.bill_type when '3' then '宽带' when '4' then '有线电视' else '其他' end bill_type_name
-        from fee_other_bill fgb
-        left join t_house th on fgb.house_id=th.ID and fgb.del_flag=0
+        case fob.bill_type when '3' then '宽带' when '4' then '有线电视' else '其他' end bill_type_name
+        from fee_other_bill fob
+        left join t_house th on fob.house_id=th.ID and fob.del_flag=0
         left join t_property_project tpp on th.PROPERTY_PROJECT_ID=tpp.ID and tpp.DEL_FLAG=0
         left join t_building tb on th.BUILDING_ID=tb.ID and tb.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         <include refid="commonWhere"/>
-        ORDER BY fgb.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC
+        ORDER BY fob.create_date DESC,sa.name,tpp.PROJECT_NAME,tpp.PROJECT_ADDR ASC
     </select>
 
     <sql id="commonWhere">
@@ -274,21 +274,22 @@
             <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
             <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
             <if test="houseId!=null and houseId!=''">AND th.id=#{houseId}</if>
-            <if test="status!=null and status!=''">AND fgb.bill_status=#{status}</if>
+            <if test="status!=null and status!=''">AND fob.bill_status=#{status}</if>
+            <if test="keyWord !=null and keyWord !=''">AND feb.batch_no LIKE  CONCAT('%',#{keyWord,jdbcType=VARCHAR},'%')</if>
             <if test="startTime!=null and startTime!=''">
-                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(fgb.bill_date,'%Y-%m-%d') ]]>
+                <![CDATA[ AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(fob.bill_date,'%Y-%m-%d') ]]>
             </if>
             <if test="endTime!=null and endTime!=''">
-                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(fgb.bill_date,'%Y-%m-%d') ]]>
+                <![CDATA[ AND DATE_FORMAT(#{endTime},'%Y-%m-%d') >= DATE_FORMAT(fob.bill_date,'%Y-%m-%d') ]]>
             </if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord==0">
-                    and fgb.id is not null
+                    and fob.id is not null
                 </if>
                 <!-- 未录 -->
                 <if test="isRecord==1">
-                    and fgb.id is null
+                    and fob.id is null
                 </if>
             </if>
             <!-- 数据范围过滤 -->

@@ -183,7 +183,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
                         {field: 'houseEleNum', align: 'center', title: '户号', width: 140},
                         {field: 'eleBillDate', align: 'center', title: '账期', width: 100},
-                       /* {field: 'batchNo', align: 'center', title: '审核批次号', width: 140},*/
+                        {field: 'batchNo', align: 'center', title: '审核批次号', width: 120},
                         {
                             field: 'elePeakDegree', align: 'right', title: '谷值', width: 120,
                             templet: '<div>{{ layui.laytpl.NumberFormat(d.elePeakDegree) }}</div>'
@@ -262,7 +262,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             getWhereFun: function () {
                 var where = {
                     "feeDate": ($("#feeDate").val() == "" || $("#feeDate").val() == null) ? (new Date().getFullYear() + "-" + (new Date().getMonth() < 9 ? "0" + (new Date().getMonth() + 1) : new Date().getMonth() + 1)) : $("#feeDate").val(),
-                    "houseNum":$("#houseNum").val(),
+                    "keyWord":$("#keyWord").val(),
                     "areaId": $("#area").val(),
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
@@ -291,6 +291,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeEleBillMVC.Controller.getTotalAmountFun();
             },
             undoFun: function () {
+                $("#keyWord").val("");
                 $("#area").val("");
                 $("#project").val("");
                 $("#building").val("");

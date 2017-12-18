@@ -133,6 +133,12 @@
                         </select>
                     </div>
                 </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <input type="text" id="keyWord" name="keyWord" placeholder="审核批次号"
+                               class="layui-input">
+                    </div>
+                </div>
             </form>
         </div>
     </div>

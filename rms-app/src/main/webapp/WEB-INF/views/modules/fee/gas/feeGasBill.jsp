@@ -97,13 +97,6 @@
 
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <input type="text" id="houseNum" name="houseNum" placeholder="户号"
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-inline">
-                    <div class="layui-input-inline m-large">
                         <select id="area" name="area" lay-filter="area" placeholder="区域" lay-search>
                             <option value="">区域</option>
                         </select>
@@ -150,7 +143,12 @@
                         </select>
                     </div>
                 </div>
-
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <input type="text" id="keyWord" name="keyWord" placeholder="户号/审核批次号"
+                               class="layui-input">
+                    </div>
+                </div>
             </form>
         </div>
     </div>

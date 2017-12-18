@@ -297,7 +297,9 @@
             <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>
             <if test="houseId!=null and houseId!=''">AND th.id=#{houseId}</if>
             <if test="status!=null and status!=''">AND fwb.bill_status=#{status}</if>
-            <if test="houseNum!=null and houseNum!=''">AND th.water_account_num LIKE '%#{houseNum}%'</if>
+            <if test="keyWord !=null and keyWord !=''">
+                AND CONCAT(IFNULL(th.water_account_num,''),IFNULL(fwb.batch_no,'')) LIKE CONCAT('%',#{keyWord,jdbcType=VARCHAR},'%')
+            </if>
             <if test="isRecord!=null and isRecord!=''">
                 <!-- 已录 -->
                 <if test="isRecord==0">

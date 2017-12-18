@@ -183,6 +183,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
                         {field: 'billDate', align: 'center', title: '账期日期', width: 120},
+                        {field: 'batchNo', align: 'center', title: '审核批次号', width: 140},
                         {field: 'billTypeName', align: 'center', title: '账单类型', width: 120},
                         {
                             field: 'billAmount', align: 'right', title: '金额', width: 120,
@@ -265,6 +266,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     "propertyId": $("#project").val(),
                     "buildId": $("#building").val(),
                     "houseId": $("#house").val(),
+                    "keyWord":$("#keyWord").val(),
                     "status": $("#status").val()
                 };
                 return where;
@@ -287,6 +289,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeOtherBillBillMVC.Controller.getTotalAmountFun();
             },
             undoFun: function () {
+                $("#keyWord").val("");
                 $("#feeDate").val("");
                 $("#area").val("");
                 $("#project").val("");

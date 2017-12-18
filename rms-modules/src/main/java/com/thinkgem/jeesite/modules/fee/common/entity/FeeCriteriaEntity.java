@@ -41,4 +41,6 @@ public class FeeCriteriaEntity extends DataEntity<FeeCriteriaEntity> {
     private Date endTime;
 
     private Integer type;
+
+    private String keyWord;
 }

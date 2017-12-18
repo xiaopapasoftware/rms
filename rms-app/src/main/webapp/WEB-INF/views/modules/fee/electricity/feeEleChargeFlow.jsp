@@ -123,7 +123,7 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
-        <shiro:hasPermission name="fee:ele:charge:generate:order">
+        <shiro:hasPermission name="fee:ele:charged:generate:order">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-add" class="button">
                 生成应收账单

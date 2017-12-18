@@ -123,14 +123,14 @@
 
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
-        <shiro:hasPermission name="fee:water:charge:generate:flow">
+        <shiro:hasPermission name="fee:water:charged:generate:flow">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-generateFlow" class="button">
                 生成账单流水
             </a>
         </div>
         </shiro:hasPermission>
-        <shiro:hasPermission name="fee:water:charge:generate:order">
+        <shiro:hasPermission name="fee:water:charged:generate:order">
         <div class="widget-toolbar no-border pull-left">
             <a href="javascript:void(0);" id="btn-generateOrder" class="button">
                 生成应收账单
