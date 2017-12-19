@@ -71,7 +71,7 @@ public class ElectricityFeeTask {
       feeReportService.save(feeReport);
       return;
     }
-    // 整租合同以及无正确返回结果
+    // 无正确返回结果
     if (StringUtils.isBlank(result) || ",,".equals(result)) {
       // 更新下时间，表明更新过
       feeReportService.save(feeReport);
@@ -145,7 +145,7 @@ public class ElectricityFeeTask {
   private FeeReport buildFeeReportByRoom(Room room) {
     RentContract rentContract = rentContractService.getByRoomId(room.getId());
     String result = electricFeeService.getRemainFeeByMeterNo(room.getMeterNo());
-    if (StringUtils.isBlank(result) || ",,".equals(result)) {
+    if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode()) || StringUtils.isBlank(result) || ",,".equals(result)) {
       return null;
     }
     String[] split = result.split(",");
