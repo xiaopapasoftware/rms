@@ -10,6 +10,8 @@ public class FeeReport extends DataEntity<FeeReport> {
 
     private String roomId;
 
+    private String fullName;
+
     private String feeNo;
 
     private String feeType;
@@ -30,6 +32,14 @@ public class FeeReport extends DataEntity<FeeReport> {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getFeeNo() {

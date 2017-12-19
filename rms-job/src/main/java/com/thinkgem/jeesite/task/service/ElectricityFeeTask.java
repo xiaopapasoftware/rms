@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.report.entity.FeeReport;
 import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
@@ -47,6 +48,9 @@ public class ElectricityFeeTask {
   @Autowired
   private SmsService smsService;
 
+  @Autowired
+  private PropertyProjectService propertyProjectService;
+
   private final String INIT_SMS_RECORD = "00";
 
   private final int size = 200;
@@ -65,7 +69,7 @@ public class ElectricityFeeTask {
   private void updateFeeReport(FeeReport feeReport) {
     String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
     RentContract rentContract = rentContractService.getByRoomId(feeReport.getRoomId());
-    //整租合同不进行更新
+    //整租合同进行逻辑删除
     if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
       feeReport.setDelFlag("1");
       feeReportService.save(feeReport);
@@ -157,6 +161,8 @@ public class ElectricityFeeTask {
     feeReport.setSmsRecord(INIT_SMS_RECORD);
     feeReport.setFeeTime(DateUtils.parseDate(split[0]));
     feeReport.setRentContractId(rentContract.getId());
+    Room tempRoom = roomService.get(room.getId());
+    feeReport.setFullName(tempRoom.getPropertyProject().getProjectName() + tempRoom.getBuilding().getBuildingName() + tempRoom.getHouse().getHouseNo() + tempRoom.getRoomNo());
     return feeReport;
   }
 

@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `t_fee_report`;
 CREATE TABLE `t_fee_report` (
   `ID` varchar(64) COLLATE utf8_estonian_ci NOT NULL,
   `ROOM_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房间',
+  `FULL_NAME` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '全名',
   `RENT_CONTRACT_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT 'rent_contract主键',
   `FEE_NO` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '业务号如电表号',
   `FEE_TYPE` varchar(16) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '费用类型',

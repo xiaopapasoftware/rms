@@ -5,6 +5,7 @@
 	<sql id="feeReportColumns">
 		a.ID AS "id",
 		a.ROOM_ID AS "roomId",
+		a.FULL_NAME AS "fullName",
 		a.FEE_NO AS "feeNo",
 		a.FEE_TYPE AS "feeType",
 		a.REMAIN_FEE AS "remainFee",
@@ -74,6 +75,7 @@
 		INSERT INTO t_fee_report(
 		ID,
 		ROOM_ID,
+		FULL_NAME,
 		RENT_CONTRACT_ID,
 		FEE_NO,
 		FEE_TYPE,
@@ -90,6 +92,7 @@
 		) VALUES (
 		#{id},
 		#{roomId},
+		#{fullName},
 		#{rentContractId},
 		#{feeNo},
 		#{feeType},

@@ -82,7 +82,6 @@ public class ElectricityReportController extends BaseController {
   @ResponseBody
   public List<ElectricityFeeVO> list(ElectricityFeeCondition condition) {
     List<String> idList = null;
-    Map<String, String> prefixMap = new HashMap<>();
     if (StringUtils.isNotEmpty(condition.getRoom())) {
       idList = Collections.singletonList(condition.getRoom());
     } else if (StringUtils.isNotEmpty(condition.getHouse())) {
@@ -91,15 +90,9 @@ public class ElectricityReportController extends BaseController {
       List<Room> roomList = houseService.findHouseListByBuildingId(condition.getBuilding()).stream().map(House::getId).map(roomService::findRoomListByHouseId)
               .flatMap(Collection::stream).map(roomService::get).collect(Collectors.toList());
       idList = roomList.stream().map(Room::getId).collect(Collectors.toList());
-      prefixMap = roomList.stream().collect(Collectors.toMap(Room::getId, room -> room.getHouse().getHouseNo()));
     }
     if (CollectionUtils.isNotEmpty(idList)) {
-      List<ElectricityFeeVO> voList = buildVOByRoomIdList(idList, condition.getMinValue(), condition.getMaxValue());
-      if (CollectionUtils.isNotEmpty(voList)) {
-        Map<String, String> finalPrefixMap = prefixMap;
-        voList.forEach(vo -> vo.setName(finalPrefixMap.get(vo.getRoomId()) + vo.getName()));
-      }
-      return voList;
+      return buildVOByRoomIdList(idList, condition.getMinValue(), condition.getMaxValue());
     }
     return null;
   }
@@ -117,7 +110,7 @@ public class ElectricityReportController extends BaseController {
     vo.setRoomId(report.getRoomId());
     vo.setFee(report.getRemainFee());
     vo.setUpdateDate(DateUtils.formatDateTime(report.getFeeTime()));
-    vo.setName(roomService.get(report.getRoomId()).getRoomNo());
+    vo.setName(report.getFullName());
     return vo;
   }
 
@@ -136,7 +129,7 @@ public class ElectricityReportController extends BaseController {
   private FeeReport buildFeeReportByRoom(Room room) {
     RentContract rentContract = rentContractService.getByRoomId(room.getId());
     String result = electricFeeService.getRemainFeeByMeterNo(room.getMeterNo());
-    if (StringUtils.isBlank(result) || ",,".equals(result) || rentContract == null) {
+    if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode()) || StringUtils.isBlank(result) || ",,".equals(result)) {
       return null;
     }
     String[] split = result.split(",");
@@ -148,6 +141,8 @@ public class ElectricityReportController extends BaseController {
     feeReport.setSmsRecord(INIT_SMS_RECORD);
     feeReport.setFeeTime(DateUtils.parseDate(split[0]));
     feeReport.setRentContractId(rentContract.getId());
+    Room tempRoom = roomService.get(room.getId());
+    feeReport.setFullName(tempRoom.getPropertyProject().getProjectName() + tempRoom.getBuilding().getBuildingName() + tempRoom.getHouse().getHouseNo() + tempRoom.getRoomNo());
     return feeReport;
   }
 
@@ -163,7 +158,7 @@ public class ElectricityReportController extends BaseController {
     return "true";
   }
 
-  public void updateRoom() {
+  private void updateRoom() {
     List<FeeReport> feeReportList = feeReportService.getFeeReportList(200);
     feeReportList.forEach(this::updateFeeReport);
   }
@@ -171,7 +166,13 @@ public class ElectricityReportController extends BaseController {
   private void updateFeeReport(FeeReport feeReport) {
     String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
     RentContract rentContract = rentContractService.getByRoomId(feeReport.getRoomId());
-    //整租合同以及无正确返回结果
+    //整租合同进行逻辑删除
+    if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
+      feeReport.setDelFlag("1");
+      feeReportService.save(feeReport);
+      return;
+    }
+    //无正确返回结果
     if (StringUtils.isBlank(result) || ",,".equals(result) || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
       //更新下时间，表明更新过
       feeReportService.save(feeReport);
