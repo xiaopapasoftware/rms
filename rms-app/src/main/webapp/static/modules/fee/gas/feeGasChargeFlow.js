@@ -46,6 +46,58 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 feeGasChargeFlowMVC.Controller.saveFun();
             });
 
+            form.on('select(scope)', function (data) {
+                $("#projectId option").remove();
+                $("#projectId").append('<option value="">物业项目</option>');
+
+                $("#buildingId option").remove();
+                $("#buildingId").append('<option value="">楼宇</option>');
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#roomId option").remove();
+                $("#roomId").append('<option value="">房间</option>');
+                form.render('select');
+
+                var value = data.value;
+                if (value > 0) {
+                    $("#businessDiv").show();
+                    if (value == 7) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").hide();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    } else if (value == 8) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    } else if (value == 9) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").show();
+                        $("#roomDiv").hide();
+                    } else if (value == 10) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").show();
+                        $("#roomDiv").show();
+                    } else {
+                        $("#projectDiv").hide();
+                        $("#buildingDiv").hide();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    }
+                } else {
+                    $("#businessDiv").hide();
+                }
+                if (value > 6) {
+                    value = 6;
+                }
+                feeGasChargeFlowMVC.Controller.getAreaFun(value);
+            });
+
             layui.laytpl.amountFormat = function (value) {
                 if (value == null) {
                     value = 0;

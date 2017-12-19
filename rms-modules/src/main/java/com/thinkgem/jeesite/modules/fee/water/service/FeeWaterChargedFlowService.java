@@ -201,9 +201,9 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow() {
+    public void generatorFlow(String scope,String businessId) {
         List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
         if (CollectionUtils.isEmpty(rooms)) {
             return;
         }

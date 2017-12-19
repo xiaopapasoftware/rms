@@ -79,8 +79,8 @@ public class FeeCommonService {
     }
 
     /*获取所有合作的房间，只包括已出租的*/
-    public List<Room> getJoinRentAllRoom(){
-        return feeCommonDao.getJoinRentAllRoom();
+    public List<Room> getJoinRentAllRoom(String scope,String businessId){
+        return feeCommonDao.getJoinRentAllRoom(scope,businessId);
     }
 
     /*获取所有整租的房间，只包括已出租的*/

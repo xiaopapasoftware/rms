@@ -21,7 +21,7 @@
     </select>
 
     <select id="getJoinRentAllRoom" resultType="com.thinkgem.jeesite.modules.inventory.entity.Room">
-        select
+        SELECT
         tr.id,tr.ROOM_NO,
         tr.ROOM_STATUS,
         th.ID 'house.id',
@@ -32,9 +32,30 @@
         th.gas_account_num 'house.gasAccountNum',
         th.water_account_num 'house.waterAccountNum'
         from t_room tr
-        left join t_house th on th.id=tr.HOUSE_ID
-        where tr.DEL_FLAG=0 and th.DEL_FLAG=0
-        and th.intent_mode=1 and tr.ROOM_STATUS=3
+        left join t_house th ON th.id=tr.HOUSE_ID AND tr.DEL_FLAG=0
+        LEFT JOIN t_building tb ON tb.id = th.BUILDING_ID AND tb.del_flag=0
+        LEFT JOIN t_property_project tpp ON tpp.id = th.PROPERTY_PROJECT_ID AND tpp.del_flag=0
+        LEFT JOIN sys_area sa ON sa.id = tpp.AREA_ID AND sa.del_flag=0
+        WHERE tr.DEL_FLAG=0 AND th.DEL_FLAG=0 AND th.intent_mode=1 AND tr.ROOM_STATUS=3
+        <if test="scope!=null and scope!=''">
+            <choose>
+                <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
+                    AND sa.id = #{businessId}
+                </when>
+                <when test="scope==7">
+                    AND tpp.id = #{businessId}
+                </when>
+                <when test="scope==8">
+                    AND tb.id = #{businessId}
+                </when>
+                <when test="scope==9">
+                    AND th.id = #{businessId}
+                </when>
+                <when test="scope==10">
+                    AND tr.id = #{businessId}
+                </when>
+            </choose>
+        </if>
     </select>
 
 </mapper>

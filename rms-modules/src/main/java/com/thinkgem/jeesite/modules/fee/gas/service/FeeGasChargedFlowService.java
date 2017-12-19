@@ -226,9 +226,9 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow() {
+    public void generatorFlow(String scope,String businessId) {
         List<FeeGasChargedFlow> feeGasChargedFlows = Lists.newArrayList();
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
         if (CollectionUtils.isEmpty(rooms)) {
             return;
         }
