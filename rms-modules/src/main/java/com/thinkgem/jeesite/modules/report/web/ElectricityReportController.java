@@ -142,7 +142,7 @@ public class ElectricityReportController extends BaseController {
     feeReport.setFeeTime(DateUtils.parseDate(split[0]));
     feeReport.setRentContractId(rentContract.getId());
     Room tempRoom = roomService.get(room.getId());
-    feeReport.setFullName(tempRoom.getPropertyProject().getProjectName() + tempRoom.getBuilding().getBuildingName() + tempRoom.getHouse().getHouseNo() + tempRoom.getRoomNo());
+    feeReport.setFullName(tempRoom.getPropertyProject().getProjectName() + "-" + tempRoom.getBuilding().getBuildingName() + "-" + tempRoom.getHouse().getHouseNo() + "-" + tempRoom.getRoomNo());
     return feeReport;
   }
 
