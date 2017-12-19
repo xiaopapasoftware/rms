@@ -8,14 +8,18 @@
 
         $(document).ready(function() {
         	$("#btnSubmit").click(function () {
+                var county = $("#COUNTY").val();
+                var center = $("#CENTER").val();
+                var area = $("#AREA").val();
+                var project = $("#PROJECT").val();
                 var building = $("#BUILDING").val();
                 var house = $("#HOUSE").val();
                 var room = $("#ROOM").val();
-                if (building === "" && house === "" && room === "") {
-                    alert("选择范围必须为楼宇、房间、房间号三者之一");
-                    return false;
-                }
 				$.post("${ctx}/report/electricity/list", {
+                    county:county,
+                    center:center,
+                    area:area,
+                    project:project,
                     building:building,
 					house:house,
 					room:room,

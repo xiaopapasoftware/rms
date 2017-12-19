@@ -2,6 +2,14 @@ package com.thinkgem.jeesite.modules.report.condition;
 
 public class ElectricityFeeCondition {
 
+    private String  county;
+
+    private String  center;
+
+    private String  area;
+
+    private String  project;
+
     private String  building;
 
     private String  house;
@@ -11,6 +19,38 @@ public class ElectricityFeeCondition {
     private Double minValue;
 
     private Double maxValue;
+
+    public String getCounty() {
+        return county;
+    }
+
+    public void setCounty(String county) {
+        this.county = county;
+    }
+
+    public String getCenter() {
+        return center;
+    }
+
+    public void setCenter(String center) {
+        this.center = center;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
 
     public String getBuilding() {
         return building;
