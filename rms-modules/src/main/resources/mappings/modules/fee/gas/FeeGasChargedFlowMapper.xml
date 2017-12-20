@@ -259,12 +259,13 @@
     </select>
 
     <select id="getLastRecord" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from fee_gas_charged_flow
-        where del_flag=0
-        and house_id=#{houseId,jdbcType=NUMERIC}
-        and room_id = #{roomId,jdbcType=VARCHAR}
+        FROM fee_gas_charged_flow
+        WHERE del_flag=0
+        AND house_id=#{houseId,jdbcType=NUMERIC}
+        AND room_id = #{roomId,jdbcType=VARCHAR}
+        ORDER BY gas_calculate_date DESC
         limit 0,1
     </select>
 
@@ -281,13 +282,13 @@
         left join t_building tb on th.BUILDING_ID=tb.id and tb.DEL_FLAG=0
         left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
-        where temp.del_flag=0
         <include refid="commonWhere"/>
         order by temp.generate_order,sa.name,tpp.project_name,tb.building_name,th.house_no,tr.room_no ASC,temp.gas_calculate_date DESC
     </select>
 
     <sql id="commonWhere">
         <where>
+            temp.del_flag=0
             <if test="areaId!=null and areaId!=''">AND sa.id=#{areaId}</if>
             <if test="propertyId!=null and propertyId!=''">AND tpp.id=#{propertyId}</if>
             <if test="buildId!=null and buildId!=''">AND tb.id=#{buildId}</if>

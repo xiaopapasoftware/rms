@@ -5,18 +5,18 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         laydate = layui.laydate,
         laytpl = layui.laytpl;
 
-    var feeGasBillBillIndex;
+    var feeGasBillIndex;
 
-    var feeGasBillBill = {
+    var feeGasBill = {
         init: function () {
-            feeGasBillBillMVC.View.initDate();
-            feeGasBillBillMVC.View.bindEvent();
-            feeGasBillBillMVC.Controller.getAreaFun();
-            feeGasBillBillMVC.View.renderTable();
-            feeGasBillBillMVC.Controller.getTotalAmountFun();
+            feeGasBillMVC.View.initDate();
+            feeGasBillMVC.View.bindEvent();
+            feeGasBillMVC.Controller.getAreaFun();
+            feeGasBillMVC.View.renderTable();
+            feeGasBillMVC.Controller.getTotalAmountFun();
 
             form.on('select(area)', function (data) {
-                feeGasBillBillMVC.Controller.selectItemFun("project", "PROJECT", data.value);
+                feeGasBillMVC.Controller.selectItemFun("project", "PROJECT", data.value);
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
 
@@ -28,7 +28,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(project)', function (data) {
-                feeGasBillBillMVC.Controller.selectItemFun("building", "BUILDING", data.value);
+                feeGasBillMVC.Controller.selectItemFun("building", "BUILDING", data.value);
 
                 $("#building option").remove();
                 $("#building").append('<option value="">楼宇</option>');
@@ -39,7 +39,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('select(building)', function (data) {
-                feeGasBillBillMVC.Controller.selectItemFun("house", "HOUSE", data.value);
+                feeGasBillMVC.Controller.selectItemFun("house", "HOUSE", data.value);
 
                 $("#house option").remove();
                 $("#house").append('<option value="">房屋</option>');
@@ -47,7 +47,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 form.render('select');
             });
             form.on('submit(addGasBill)', function () {
-                feeGasBillBillMVC.Controller.saveFun();
+                feeGasBillMVC.Controller.saveFun();
             });
 
             layui.laytpl.NumberFormat = function (value) {
@@ -65,7 +65,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             };
 
             $('#houseGasNum').autocomplete({
-                serviceUrl: feeGasBillBillMVC.URLs.getHouseInfo.url +"?type=1",
+                serviceUrl: feeGasBillMVC.URLs.getHouseInfo.url +"?type=1",
                 dataType: 'json',
                 paramName: "accountNum",
                 zIndex: 999999999,
@@ -99,46 +99,46 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         }
     };
 
-    var feeGasBillBillCommon = {
+    var feeGasBillCommon = {
         baseUrl: ctx + "/fee/gas/bill"
     };
 
-    var feeGasBillBillMVC = {
+    var feeGasBillMVC = {
         URLs: {
             query: {
-                url: feeGasBillBillCommon.baseUrl + "/list",
+                url: feeGasBillCommon.baseUrl + "/list",
                 method: "GET"
             },
             save: {
-                url: feeGasBillBillCommon.baseUrl + "/save",
+                url: feeGasBillCommon.baseUrl + "/save",
                 method: "POST"
             },
             delete: {
-                url: feeGasBillBillCommon.baseUrl + "/delete",
+                url: feeGasBillCommon.baseUrl + "/delete",
                 method: "GET"
             },
             print: {
-                url: feeGasBillBillCommon.baseUrl + "/print",
+                url: feeGasBillCommon.baseUrl + "/print",
                 method: "GET"
             },
             audit: {
-                url: feeGasBillBillCommon.baseUrl + "/audit",
+                url: feeGasBillCommon.baseUrl + "/audit",
                 method: "GET"
             },
             selectItem: {
-                url: feeGasBillBillCommon.baseUrl + "/getSubOrgList",
+                url: feeGasBillCommon.baseUrl + "/getSubOrgList",
                 method: "GET"
             },
             selectArea: {
-                url: feeGasBillBillCommon.baseUrl + "/getArea",
+                url: feeGasBillCommon.baseUrl + "/getArea",
                 method: "GET"
             },
             getTotalAmount: {
-                url: feeGasBillBillCommon.baseUrl + "/getTotalAmount",
+                url: feeGasBillCommon.baseUrl + "/getTotalAmount",
                 method: "GET"
             },
             getHouseInfo: {
-                url: feeGasBillBillCommon.baseUrl + "/houseInfo",
+                url: feeGasBillCommon.baseUrl + "/houseInfo",
                 method: "GET"
             }
         },
@@ -158,19 +158,19 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeGasBillBillMVC.Controller.feeGasBillFun);
-                $("#btn-search").on("click", feeGasBillBillMVC.Controller.queryFun);
-                $("#btn-undo").on("click", feeGasBillBillMVC.Controller.undoFun);
-                $("#btn-pass").on("click", feeGasBillBillMVC.Controller.passFun);
-                $("#btn-reject").on("click", feeGasBillBillMVC.Controller.rejectFun);
-                $("#btn-commit").on("click", feeGasBillBillMVC.Controller.commitFun);
-                $("#btn-print").on("click", feeGasBillBillMVC.Controller.printFun);
-                $("#btn-view").on("click", feeGasBillBillMVC.Controller.viewFun);
+                $("#btn-add").on("click", feeGasBillMVC.Controller.feeGasBillFun);
+                $("#btn-search").on("click", feeGasBillMVC.Controller.queryFun);
+                $("#btn-undo").on("click", feeGasBillMVC.Controller.undoFun);
+                $("#btn-pass").on("click", feeGasBillMVC.Controller.passFun);
+                $("#btn-reject").on("click", feeGasBillMVC.Controller.rejectFun);
+                $("#btn-commit").on("click", feeGasBillMVC.Controller.commitFun);
+                $("#btn-print").on("click", feeGasBillMVC.Controller.printFun);
+                $("#btn-view").on("click", feeGasBillMVC.Controller.viewFun);
             },
             renderTable: function () {
                 table.render({
                     elem: '#gasBillTable',
-                    url: feeGasBillBillMVC.URLs.query.url,
+                    url: feeGasBillMVC.URLs.query.url,
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
                     cols: [[
@@ -227,7 +227,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         $("#houseId").val(data.houseId);
                         $("#gasDegree").val(data.gasDegree);
                         $("#gasBillAmount").val(data.gasBillAmount);
-                        feeGasBillBillMVC.Controller.feeGasBillFun();
+                        feeGasBillMVC.Controller.feeGasBillFun();
                     } else if (layEvent === 'del') { //删除
                         if (data.id == null) {
                             layer.msg("当前账单没有录入,不可删除", {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -238,9 +238,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                             return;
                         }
                         layer.confirm('确认删除吗?', {offset: '100px', icon: 3, title: '提示'}, function (index) {
-                            $.post(feeGasBillBillMVC.URLs.delete.url, {id: data.id}, function (data) {
+                            $.post(feeGasBillMVC.URLs.delete.url, {id: data.id}, function (data) {
                                 if (data.code == "200") {
-                                    feeGasBillBillMVC.Controller.queryFun();
+                                    feeGasBillMVC.Controller.queryFun();
                                     layer.msg('删除成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                                 } else {
                                     layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -267,7 +267,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             feeGasBillFun: function () {
-                feeGasBillBillIndex = layer.open({
+                feeGasBillIndex = layer.open({
                     title: "燃气账单录入",
                     type: 1,
                     resize: true,
@@ -279,9 +279,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             },
             queryFun: function () {
                 table.reload('gasBillTable', {
-                    where: feeGasBillBillMVC.Controller.getWhereFun()
+                    where: feeGasBillMVC.Controller.getWhereFun()
                 });
-                feeGasBillBillMVC.Controller.getTotalAmountFun();
+                feeGasBillMVC.Controller.getTotalAmountFun();
             },
             undoFun: function () {
                 $("#keyWord").val("");
@@ -299,7 +299,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
                 }
-                feeGasBillBillMVC.Controller.auditFun("2");
+                feeGasBillMVC.Controller.auditFun("2");
             },
             auditFun: function (status) {
                 var selectRows = table.checkStatus('gasBillTable');
@@ -307,9 +307,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $.each(selectRows.data, function (index, object) {
                     data += "&id=" + object.id;
                 });
-                $.post(feeGasBillBillMVC.URLs.audit.url, data, function (data) {
+                $.post(feeGasBillMVC.URLs.audit.url, data, function (data) {
                     if (data.code == "200") {
-                        feeGasBillBillMVC.Controller.queryFun();
+                        feeGasBillMVC.Controller.queryFun();
                         layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
@@ -322,7 +322,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     layer.msg("请选择处理的数据", {icon: 5, offset: 100, time: 1000, shift: 6});
                     return;
                 }
-                feeGasBillBillMVC.Controller.auditFun("3");
+                feeGasBillMVC.Controller.auditFun("3");
             },
             commitFun: function () {
                 var selectRows = table.checkStatus('gasBillTable');
@@ -346,14 +346,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     }
                 });
                 if(flag){
-                    feeGasBillBillMVC.Controller.auditFun("1");
+                    feeGasBillMVC.Controller.auditFun("1");
                 }
             },
             printFun: function () {
-                var where = feeGasBillBillMVC.Controller.getWhereFun();
+                var where = feeGasBillMVC.Controller.getWhereFun();
                 where.isRecord="0";
 
-                $.post(feeGasBillBillMVC.URLs.print.url, where, function (resp) {
+                $.post(feeGasBillMVC.URLs.print.url, where, function (resp) {
                     if (resp.code == "200") {
                         if(resp.data.length > 0){
                             var printHtml="";
@@ -380,9 +380,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     "gasDegree": $("#gasDegree").val(),
                     "gasBillAmount": $("#gasBillAmount").val()
                 };
-                $.post(feeGasBillBillMVC.URLs.save.url, data, function (data) {
+                $.post(feeGasBillMVC.URLs.save.url, data, function (data) {
                     if (data.code == "200") {
-                        feeGasBillBillMVC.Controller.cleanValue();
+                        feeGasBillMVC.Controller.cleanValue();
                         $("#houseGasNum").focus();
                         layer.msg('保存成功', {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
@@ -391,9 +391,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             viewFun: function () {
-                layer.close(feeGasBillBillIndex);
-                feeGasBillBillMVC.Controller.queryFun();
-                feeGasBillBillMVC.Controller.cleanValue();
+                layer.close(feeGasBillIndex);
+                feeGasBillMVC.Controller.queryFun();
+                feeGasBillMVC.Controller.cleanValue();
             },
             cleanValue: function () {
                 $("#houseGasNum").val("");
@@ -403,7 +403,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#gasBillAmount").val("")
             },
             getAreaFun: function () {
-                $.getJSON(feeGasBillBillMVC.URLs.selectArea.url, "", function (data) {
+                $.getJSON(feeGasBillMVC.URLs.selectArea.url, "", function (data) {
                     $.each(data.data, function (index, object) {
                         $('#area').append($('<option>', {
                             value: object.id,
@@ -414,7 +414,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             selectItemFun: function (id, type, value) {
-                $.getJSON(feeGasBillBillMVC.URLs.selectItem.url, {
+                $.getJSON(feeGasBillMVC.URLs.selectItem.url, {
                     "business": "ORG",
                     "type": type,
                     "id": value
@@ -433,8 +433,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             getTotalAmountFun: function () {
-                $.getJSON(feeGasBillBillMVC.URLs.getTotalAmount.url,
-                    feeGasBillBillMVC.Controller.getWhereFun(),
+                $.getJSON(feeGasBillMVC.URLs.getTotalAmount.url,
+                    feeGasBillMVC.Controller.getWhereFun(),
                     function (data) {
                         if (data.code == "200") {
                             $("#totalAmount").html(layui.laytpl.amountFormat(data.data));
@@ -443,7 +443,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             }
         }
     };
-    feeGasBillBill.init();
+    feeGasBill.init();
 });
 
 

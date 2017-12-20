@@ -146,13 +146,14 @@
     </div>
 </div>
 
+
 <div id="generateDiv" class="tangchao" hidden >
     <form class="layui-form" id="addFeeEleBillForm" action="">
         <div class="layui-form-item">
             <label class="layui-form-label">配置范围</label>
             <div class="layui-input-inline">
                 <select id="scope" name="scope" lay-filter="scope" placeholder="配置范围">
-                    <option value="0">默认</option>
+                    <option value="">所有</option>
                     <option value="1">公司</option>
                     <option value="2">省份</option>
                     <option value="3">地市</option>
@@ -171,7 +172,7 @@
             <div class="layui-form-item" id="areaDiv">
                 <label class="layui-form-label">关联范围</label>
                 <div class="layui-input-inline">
-                    <select id="areaId" name="areaId" lay-filter="area" placeholder="区域" lay-search>
+                    <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
                         <option value="">区域</option>
                     </select>
                 </div>
@@ -180,7 +181,7 @@
             <div class="layui-form-item" hidden id="projectDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <select id="projectId" name="projectId" lay-filter="project" placeholder="小区" lay-search>
+                    <select id="projectId" name="projectId" lay-filter="projectId" placeholder="小区" lay-search>
                         <option value="">小区</option>
                     </select>
                 </div>
@@ -189,7 +190,7 @@
             <div class="layui-form-item" hidden id="buildingDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <select id="buildingId" name="buildingId" lay-filter="building" placeholder="楼宇" lay-search>
+                    <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
                         <option value="">楼宇</option>
                     </select>
                 </div>
@@ -198,7 +199,7 @@
             <div class="layui-form-item" hidden id="houseDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <select id="houseId" name="houseId" lay-filter="house" placeholder="房屋" lay-search>
+                    <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
                         <option value="">房屋</option>
                     </select>
                 </div>
@@ -207,7 +208,7 @@
             <div class="layui-form-item" hidden id="roomDiv">
                 <label class="layui-form-label"></label>
                 <div class="layui-input-inline">
-                    <select id="roomId" name="roomId" lay-filter="room" placeholder="房间" lay-search>
+                    <select id="roomId" name="roomId" lay-filter="roomId" placeholder="房间" lay-search>
                         <option value="">房间</option>
                     </select>
                 </div>
