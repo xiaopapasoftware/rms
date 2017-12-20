@@ -54,7 +54,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow() {
+    public void generatorFlow(String scope,String businessId) {
         List<FeeOtherChargedFlow> feeChargedFlows = Lists.newArrayList();
 
         List<House> houses = feeCommonService.getWholeRentAllHouse();
@@ -92,7 +92,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             }
         });
 
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom();
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
         rooms.forEach(r -> {
             /*创建新增对象*/
             FeeOtherChargedFlow feeOtherChargedFlow = new FeeOtherChargedFlow();
