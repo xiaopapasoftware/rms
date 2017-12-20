@@ -1,18 +1,11 @@
 package com.thinkgem.jeesite.task.service;
 
-import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.common.service.SmsService;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.contract.service.RentContractService;
-import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
-import com.thinkgem.jeesite.modules.inventory.service.RoomService;
-import com.thinkgem.jeesite.modules.report.entity.FeeReport;
-import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
-import com.thinkgem.jeesite.modules.report.service.FeeReportService;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +14,18 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.report.entity.FeeReport;
+import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
+import com.thinkgem.jeesite.modules.report.service.FeeReportService;
 
 @Service
 @Lazy(false)
@@ -48,9 +48,6 @@ public class ElectricityFeeTask {
   @Autowired
   private SmsService smsService;
 
-  @Autowired
-  private PropertyProjectService propertyProjectService;
-
   private final String INIT_SMS_RECORD = "00";
 
   private final int size = 200;
@@ -69,7 +66,7 @@ public class ElectricityFeeTask {
   private void updateFeeReport(FeeReport feeReport) {
     String result = electricFeeService.getRemainFeeByMeterNo(feeReport.getFeeNo());
     RentContract rentContract = rentContractService.getByRoomId(feeReport.getRoomId());
-    //整租合同进行逻辑删除
+    // 整租合同进行逻辑删除
     if (rentContract == null || RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {
       feeReport.setDelFlag("1");
       feeReportService.save(feeReport);
