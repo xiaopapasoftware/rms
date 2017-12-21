@@ -55,7 +55,7 @@ public class ElectricityFeeTask {
   /**
    * 更新下剩余费用
    */
-  @Scheduled(cron = "0 0/20 1-6 * * ?")
+  @Scheduled(cron = "0 0/30 8-23 * * ?")
   public void updateRoom() {
     log.info("------ElectricityFeeTask updateRoom()开始 执行 ------");
     List<FeeReport> feeReportList = feeReportService.getFeeReportList(size);
