@@ -235,7 +235,7 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
                     } else {
                         days = Double.valueOf(DateUtils.getDay());
                     }
-                    if (days > 0) {
+                    if (days > 1) {
                     /*金额 = 固定金额/30*上月生成日至今的天数*/
                         BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS), 2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
                         feeWaterChargedFlow.setWaterAmount(amount);

@@ -25,7 +25,7 @@ public interface FeeWaterChargedFlowDao extends CrudDao<FeeWaterChargedFlow> {
 
     List<FeeWaterChargedFlow> getFeeWaterChargedFlowByBusinessIdAndFromSource(@Param("businessId") String businessId, @Param("fromSource") int fromSource);
 
-    FeeWaterChargedFlowVo getLastRecord(@Param("houseId") String houseId, @Param("roomId") String roomId);
+    FeeWaterChargedFlow getLastRecord(@Param("houseId") String houseId, @Param("roomId") String roomId);
 
     List<FeeWaterChargedFlowVo> getFeeWaterChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 
