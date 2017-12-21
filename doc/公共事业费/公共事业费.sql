@@ -53,6 +53,7 @@ create table fee_config
    fee_type             int not null comment '费用类型 0：电费单价 1:电费谷单价 2:电费峰单价 3:宽带单价 4:有线电视费单价 5:水费单价 6：燃气费单价 ',
    config_type          int not null comment '配置范围 0：默认 1:公司 2:省份 3:地市 4:区县 5: 服务中心 6: 运营区域 7: 小区 8:楼宇 9：房号 10:房间',
    charge_method        int not null comment '收取方式 0:固定模式 1:账单模式',
+   rent_method          int not null comment '租赁方式 0:整组 1:合租',
    business_id          varchar(120) not null comment '相应范围ID',
    show_name            varchar(200) comment '范围名称',
    config_value         varchar(64) not null default '0' comment '配置的值',
