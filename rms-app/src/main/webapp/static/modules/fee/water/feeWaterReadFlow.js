@@ -143,6 +143,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     range: '~',
                     format: 'yyyy-MM-dd'
                 });
+                laydate.render({
+                    elem: '#waterReadDate',
+                    type: 'date',
+                    format: 'yyyy-MM-dd',
+                    value: new Date()
+                });
             },
             bindEvent: function () {
                 $("#btn-add").on("click", feeWaterReadFlowMVC.Controller.addWaterFun);
@@ -240,12 +246,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             addWaterFun: function () {
-                laydate.render({
-                    elem: '#waterReadDate',
-                    type: 'date',
-                    format: 'yyyy-MM-dd',
-                    value: new Date()
-                });
                 addWaterReadIndex = layer.open({
                     title: "水抄表录入",
                     type: 1,

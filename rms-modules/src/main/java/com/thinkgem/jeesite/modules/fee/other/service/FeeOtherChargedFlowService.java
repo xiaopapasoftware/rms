@@ -115,15 +115,17 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
                 days = Double.valueOf(DateUtils.getDay());
             }
 
-            if (netFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
-                FeeOtherChargedFlow netChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, netFeeConfig, days);
-                netChargedFlow.setType(OrderTypeEnum.NET.getValue());
-                feeChargedFlows.add(netChargedFlow);
-            }
-            if (tvFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
-                FeeOtherChargedFlow tvChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, tvFeeConfig, days);
-                tvChargedFlow.setType(OrderTypeEnum.TV.getValue());
-                feeChargedFlows.add(tvChargedFlow);
+            if(days > 1) {
+                if (netFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                    FeeOtherChargedFlow netChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, netFeeConfig, days);
+                    netChargedFlow.setType(OrderTypeEnum.NET.getValue());
+                    feeChargedFlows.add(netChargedFlow);
+                }
+                if (tvFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
+                    FeeOtherChargedFlow tvChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, tvFeeConfig, days);
+                    tvChargedFlow.setType(OrderTypeEnum.TV.getValue());
+                    feeChargedFlows.add(tvChargedFlow);
+                }
             }
         });
 

@@ -294,7 +294,8 @@
 	<select id="findRoomListByHouseId" resultType="Room">
 		SELECT
 		a.id AS "id",
-		a.room_no AS "roomNo"
+		a.room_no AS "roomNo",
+		a.room_status AS "roomStatus"
 		FROM t_room a
 		WHERE
 		a.del_flag = '0'

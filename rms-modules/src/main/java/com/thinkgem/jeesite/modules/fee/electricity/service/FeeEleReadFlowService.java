@@ -79,7 +79,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
             feeEleChargedFlowService.saveFeeEleChargedFlowByFeeEleReadFlow(feeEleReadFlow);
         } else {
             /*新增*/
-            if (roomId.length > 0) {
+            if (roomId != null && roomId.length > 0) {
                 double allDegree = 0f, houseDegree = 0f;
                 for (int i = 0; i < roomId.length; i++) {
                     if (StringUtils.equals(roomId[i], "0")) {
@@ -257,7 +257,7 @@ public class FeeEleReadFlowService extends CrudService<FeeEleReadFlowDao, FeeEle
 
     public FeeEleReadFlow getCurrentReadByDateAndHouseIdAndRoomId(Date eleReadDate, String houseId, String roomId) {
         List<FeeEleReadFlow> feeEleReadFlows = dao.getCurrentReadByDateAndHouseIdAndRoomId(eleReadDate, houseId, roomId);
-        if (Optional.ofNullable(feeEleReadFlows).isPresent()) {
+        if (!CollectionUtils.isEmpty(feeEleReadFlows)) {
             return feeEleReadFlows.get(0);
         }
         return null;

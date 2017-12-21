@@ -186,6 +186,15 @@
             </div>
         </div>
 
+        <div class="layui-form-item">
+            <label class="layui-form-label">出租模式</label>
+            <input type="hidden" id="rentMethod" value="0">
+            <div class="layui-input-block">
+                <input type="radio" name="selRentMethod" lay-filter="selRentMethod" value="0" title="整租" checked>
+                <input type="radio" name="selRentMethod" lay-filter="selRentMethod" value="1" title="合租">
+            </div>
+        </div>
+
 
         <div id="businessDiv" hidden>
             <div class="layui-form-item" id="areaDiv">

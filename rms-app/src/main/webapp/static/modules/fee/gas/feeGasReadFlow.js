@@ -143,6 +143,12 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     range: '~',
                     format: 'yyyy-MM-dd'
                 });
+                laydate.render({
+                    elem: '#gasReadDate',
+                    type: 'date',
+                    format: 'yyyy-MM-dd',
+                    value: new Date()
+                });
             },
             bindEvent: function () {
                 $("#btn-add").on("click", feeGasReadFlowMVC.Controller.addGasFun);
@@ -239,12 +245,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 return where;
             },
             addGasFun: function () {
-                laydate.render({
-                    elem: '#gasReadDate',
-                    type: 'date',
-                    format: 'yyyy-MM-dd',
-                    value: new Date()
-                });
                 addGasReadIndex = layer.open({
                     title: "燃气抄表录入",
                     type: 1,

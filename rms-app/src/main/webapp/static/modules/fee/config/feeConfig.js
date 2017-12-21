@@ -72,6 +72,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 $("#chargeMethod").val(data.value);
             });
 
+            form.on('radio(selRentMethod)', function (data) {
+                $("#rentMethod").val(data.value);
+            });
+
             form.on('select(configType)', function (data) {
                 $("#project option").remove();
                 $("#project").append('<option value="">物业项目</option>');
@@ -345,7 +349,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     resize: true,
                     offset: 'rt',
                     anim: 2,
-                    area: ['350px', '480px'],
+                    area: ['350px', '520px'],
                     content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
                 });
             },
@@ -381,6 +385,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     "feeType": $("#feeType").val(),
                     "configType": configType,
                     "chargeMethod": $("#chargeMethod").val(),
+                    "rentMethod": $("#rentMethod").val(),
                     "configValue": $("#configValue").val(),
                     "businessId": businessId
                 };
