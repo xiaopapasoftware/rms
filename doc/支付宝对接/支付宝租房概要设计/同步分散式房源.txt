@@ -16,8 +16,8 @@ floor_count=HOUSE_FLOOR，
 total_floor_count=house所属building的total_floor_count，
 flat_building=house所属building的楼宇名称BUILDING_NAME，
 room_num=HOUSE_NO
-room_name=留空不传
-room_face=留空不传
+room_name（不传）
+room_face（不传）
 bedroom_count=DECORA_STRUC_ROOM_NUM
 parlor_count=DECORA_STRUC_CUSSPAC_NUM
 toilet_count=DECORA_STRUC_WASHRO_NUM
