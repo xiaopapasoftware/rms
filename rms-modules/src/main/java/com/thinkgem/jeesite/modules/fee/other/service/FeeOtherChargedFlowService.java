@@ -54,11 +54,11 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow(String scope,String businessId) {
+    public void generatorFlow(String scope, String businessId) {
         List<FeeOtherChargedFlow> feeChargedFlows = Lists.newArrayList();
 
         List<House> houses = feeCommonService.getWholeRentAllHouse();
-        houses.forEach(h ->{
+        houses.forEach(h -> {
             /*创建新增对象*/
             FeeOtherChargedFlow feeOtherChargedFlow = new FeeOtherChargedFlow();
             feeOtherChargedFlow.setCalculateDate(new Date());
@@ -68,8 +68,8 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             feeOtherChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()));
             feeOtherChargedFlow.setPropertyId(h.getPropertyProject().getId());
 
-            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.NET_UNIT, h.getId(),"0");
-            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.TV_UNIT, h.getId(), "0");
+            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.NET_UNIT, h.getId(), "0", RentModelTypeEnum.WHOLE_RENT.getValue());
+            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.TV_UNIT, h.getId(), "0", RentModelTypeEnum.WHOLE_RENT.getValue());
 
              /*计算金额*/
             double days;
@@ -92,7 +92,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             }
         });
 
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope, businessId);
         rooms.forEach(r -> {
             /*创建新增对象*/
             FeeOtherChargedFlow feeOtherChargedFlow = new FeeOtherChargedFlow();
@@ -103,8 +103,8 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             feeOtherChargedFlow.setRentType(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()));
             feeOtherChargedFlow.setPropertyId(r.getHouse().getPropertyProject().getId());
 
-            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.NET_UNIT, r.getHouse().getId(), r.getId());
-            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.TV_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig netFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.NET_UNIT, r.getHouse().getId(), r.getId(), RentModelTypeEnum.JOINT_RENT.getValue());
+            FeeConfig tvFeeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.TV_UNIT, r.getHouse().getId(), r.getId(), RentModelTypeEnum.JOINT_RENT.getValue());
 
             /*计算金额*/
             double days;
@@ -115,7 +115,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
                 days = Double.valueOf(DateUtils.getDay());
             }
 
-            if(days > 1) {
+            if (days > 1) {
                 if (netFeeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                     FeeOtherChargedFlow netChargedFlow = getOtherChargedFlow(feeOtherChargedFlow, netFeeConfig, days);
                     netChargedFlow.setType(OrderTypeEnum.NET.getValue());
@@ -141,7 +141,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
             otherChargedFlow.setAmount(new BigDecimal(0));
         } else {
             /*金额 = 固定金额/30*上月生成日至今的天数*/
-            BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS),2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
+            BigDecimal amount = new BigDecimal(feeConfig.getConfigValue()).divide(new BigDecimal(FeeCommonService.FULL_MOUTH_DAYS), 2, BigDecimal.ROUND_HALF_EVEN).multiply(new BigDecimal(days));
             otherChargedFlow.setAmount(amount);
         }
         otherChargedFlow.preInsert();

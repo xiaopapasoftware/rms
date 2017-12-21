@@ -7,6 +7,7 @@
         <result column="fee_type" property="feeType" jdbcType="NUMERIC"/>
         <result column="config_type" property="configType" jdbcType="NUMERIC"/>
         <result column="charge_method" property="chargeMethod" jdbcType="NUMERIC"/>
+        <result column="rent_method" property="rentMethod" jdbcType="NUMERIC"/>
         <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
         <result column="show_name" property="showName" jdbcType="VARCHAR"/>
         <result column="config_value" property="configValue" jdbcType="VARCHAR"/>
@@ -26,7 +27,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-         id, fee_type, config_type, charge_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag
+         id, fee_type, config_type, charge_method,rent_method, business_id, show_name, config_value, config_status, create_by, create_date, update_by, update_date, remarks, del_flag
     </sql>
 
     <sql id="Insert_Columns">
@@ -34,6 +35,7 @@
         <if test="feeType!=null"> fee_type,</if>
         <if test="configType!=null"> config_type,</if>
         <if test="chargeMethod!=null"> charge_method,</if>
+        <if test="rentMethod!=null"> rent_method,</if>
         <if test="businessId!=null"> business_id,</if>
         <if test="showName!=null"> show_name,</if>
         <if test="configValue!=null"> config_value,</if>
@@ -50,6 +52,7 @@
         <if test="feeType!=null">#{feeType,jdbcType=NUMERIC},</if>
         <if test="configType!=null">#{configType,jdbcType=NUMERIC},</if>
         <if test="chargeMethod!=null">#{chargeMethod,jdbcType=NUMERIC},</if>
+        <if test="rentMethod!=null">#{rentMethod,jdbcType=NUMERIC},</if>
         <if test="businessId!=null">#{businessId,jdbcType=VARCHAR},</if>
         <if test="showName!=null">#{showName,jdbcType=VARCHAR},</if>
         <if test="configValue!=null">#{configValue,jdbcType=VARCHAR},</if>
@@ -66,6 +69,7 @@
         #{item.feeType,jdbcType=NUMERIC},
         #{item.configType,jdbcType=NUMERIC},
         #{item.chargeMethod,jdbcType=NUMERIC},
+        #{item.rentMethod,jdbcType=NUMERIC},
         #{item.businessId,jdbcType=VARCHAR},
         #{item.showName,jdbcType=VARCHAR},
         #{item.configValue,jdbcType=VARCHAR},
@@ -82,6 +86,7 @@
         <if test="feeType!=null"> fee_type=#{feeType,jdbcType=NUMERIC},</if>
         <if test="configType!=null"> config_type=#{configType,jdbcType=NUMERIC},</if>
         <if test="chargeMethod!=null"> charge_method=#{chargeMethod,jdbcType=NUMERIC},</if>
+        <if test="rentMethod!=null"> rent_method=#{rentMethod,jdbcType=NUMERIC},</if>
         <if test="businessId!=null"> business_id=#{businessId,jdbcType=VARCHAR},</if>
         <if test="showName!=null"> show_name=#{showName,jdbcType=VARCHAR},</if>
         <if test="configValue!=null"> config_value=#{configValue,jdbcType=VARCHAR},</if>
@@ -97,6 +102,7 @@
         fee_type=#{item.feeType,jdbcType=NUMERIC},
         config_type=#{item.configType,jdbcType=NUMERIC},
         charge_method=#{item.chargeMethod,jdbcType=NUMERIC},
+        rent_method=#{item.rentMethod,jdbcType=NUMERIC},
         business_id=#{item.businessId,jdbcType=VARCHAR},
         show_name=#{item.showName,jdbcType=VARCHAR},
         config_value=#{item.configValue,jdbcType=VARCHAR},
@@ -116,6 +122,7 @@
             <if test="feeType!=null"> AND fee_type=#{feeType}</if>
             <if test="configType!=null"> AND config_type=#{configType}</if>
             <if test="chargeMethod!=null"> AND charge_method=#{chargeMethod}</if>
+            <if test="rentMethod!=null"> AND rent_method=#{rentMethod}</if>
             <if test="businessId!=null and businessId!=''"> AND business_id=#{businessId}</if>
             <if test="configValue!=null and configValue!=''"> AND config_value=#{configValue}</if>
             <if test="configStatus!=null and configStatus!=''"> AND config_status=#{configStatus}</if>

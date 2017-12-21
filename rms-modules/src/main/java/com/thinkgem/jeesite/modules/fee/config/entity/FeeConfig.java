@@ -23,6 +23,8 @@ public class FeeConfig extends DataEntity<FeeConfig>{
     private Integer configType;
     /** charge_method - 收取方式 0:固定模式 1:账单模式 */
     private Integer chargeMethod;
+    /** rent_method - 租赁方式 0:整组 1:合租 */
+    private Integer rentMethod;
     /** business_id - 相应范围ID */
     private String businessId;
     /** show_name - 范围名称 */

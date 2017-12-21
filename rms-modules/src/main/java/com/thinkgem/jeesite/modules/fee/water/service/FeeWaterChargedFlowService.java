@@ -61,7 +61,8 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     @Transactional(readOnly = false)
     public void saveFeeWaterChargedFlowByFeeWaterBill(FeeWaterBill feeWaterBill) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterBill.getHouseId(), null);
+        House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterBill.getHouseId(), null, house.getIntentMode());
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.info("房屋[houseId={}]为固定模式,不生成收费流水", feeWaterBill.getHouseId());
             throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
@@ -94,7 +95,6 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
         feeWaterChargedFlow.setWaterAmount(new BigDecimal(feeWaterBill.getWaterDegree()).subtract(new BigDecimal(lastReadFlow.getWaterDegree())).multiply(new BigDecimal(feeConfig.getConfigValue())));
 
-        House house = feeCommonService.getHouseById(feeWaterBill.getHouseId());
         if (StringUtils.equals(house.getHouseStatus(), HouseStatusEnum.PART_RENT.getValue())
                 || StringUtils.equals(house.getHouseStatus(), HouseStatusEnum.WHOLE_RENT.getValue())) {
             feeWaterChargedFlow.setPayer(PayerEnum.RENT_USER.getValue());
@@ -107,7 +107,8 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
 
     @Transactional(readOnly = false)
     public void saveFeeWaterChargedFlowByFeeWaterReadFlow(FeeWaterReadFlow feeWaterReadFlow) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterReadFlow.getHouseId(), null);
+        House house = feeCommonService.getHouseById(feeWaterReadFlow.getHouseId());
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, feeWaterReadFlow.getHouseId(), null, house.getIntentMode());
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeWaterReadFlow.getHouseId());
             return;
@@ -124,7 +125,6 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
             throw new IllegalArgumentException("当前房屋没有初始化水表数据");
         }
 
-        House house = feeCommonService.getHouseById(feeWaterReadFlow.getHouseId());
         BigDecimal amount = new BigDecimal(feeWaterReadFlow.getWaterDegree()).subtract(new BigDecimal(lastReadFlow.getWaterDegree())).multiply(new BigDecimal(feeConfig.getConfigValue()));
 
         /*合租的时候,燃气费为公摊数*/
@@ -201,14 +201,14 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow(String scope,String businessId) {
+    public void generatorFlow(String scope, String businessId) {
         List<FeeWaterChargedFlow> feeWaterChargedFlows = Lists.newArrayList();
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope, businessId);
         if (CollectionUtils.isEmpty(rooms)) {
             return;
         }
         rooms.forEach(r -> {
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.WATER_UNIT, r.getHouse().getId(), r.getId(), RentModelTypeEnum.JOINT_RENT.getValue());
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 /*创建新增对象*/
                 FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();

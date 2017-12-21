@@ -79,17 +79,17 @@ public class FeeCommonService {
     }
 
     /*获取所有合作的房间，只包括已出租的*/
-    public List<Room> getJoinRentAllRoom(String scope,String businessId){
-        return feeCommonDao.getJoinRentAllRoom(scope,businessId);
+    public List<Room> getJoinRentAllRoom(String scope, String businessId) {
+        return feeCommonDao.getJoinRentAllRoom(scope, businessId);
     }
 
     /*获取所有整租的房间，只包括已出租的*/
-    public List<House> getWholeRentAllHouse(){
+    public List<House> getWholeRentAllHouse() {
         House query = new House();
         query.setIntentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
         List<House> houses = houseService.findList(query);
         return houses.stream()
-                .filter(h -> (StringUtils.equals(h.getHouseStatus(),HouseStatusEnum.WHOLE_RENT.getValue()) || StringUtils.equals(h.getHouseStatus(),HouseStatusEnum.PART_RENT.getValue())))
+                .filter(h -> (StringUtils.equals(h.getHouseStatus(), HouseStatusEnum.WHOLE_RENT.getValue()) || StringUtils.equals(h.getHouseStatus(), HouseStatusEnum.PART_RENT.getValue())))
                 .collect(Collectors.toList());
     }
 
@@ -104,9 +104,9 @@ public class FeeCommonService {
         return areas.stream().map(area -> new SelectItem(area.getId(), area.getName())).collect(Collectors.toList());
     }
 
-    public FeeConfig getFeeConfig(FeeUnitEnum feeUnitEnum, String houseId, String roomId) {
-        if (feeCache.getObject(getCacheKey(feeUnitEnum, houseId, roomId)) != null) {
-            return (FeeConfig) feeCache.getObject(getCacheKey(feeUnitEnum, houseId, roomId));
+    public FeeConfig getFeeConfig(FeeUnitEnum feeUnitEnum, String houseId, String roomId, String rentMethod) {
+        if (feeCache.getObject(getCacheKey(feeUnitEnum, houseId, roomId, rentMethod)) != null) {
+            return (FeeConfig) feeCache.getObject(getCacheKey(feeUnitEnum, houseId, roomId, rentMethod));
         }
 
         Map<String, FeeConfig> feeConfigMap = getFeeConfig();
@@ -119,7 +119,7 @@ public class FeeCommonService {
 
         FeeConfig retFeeConfig = null;
         for (String id : rangeId.split(",")) {
-            if(StringUtils.isBlank(id) || StringUtils.equals(id,"0")){
+            if (StringUtils.isBlank(id) || StringUtils.equals(id, "0")) {
                 continue;
             }
             String key = id + "_" + feeUnitEnum.getValue();
@@ -145,12 +145,12 @@ public class FeeCommonService {
         }
 
         /*加入到缓存*/
-        feeCache.putObject(getCacheKey(feeUnitEnum, houseId, roomId), retFeeConfig);
+        feeCache.putObject(getCacheKey(feeUnitEnum, houseId, roomId, rentMethod), retFeeConfig);
 
         return retFeeConfig;
     }
 
-    private String getCacheKey(FeeUnitEnum feeUnitEnum, String houseId, String roomId) {
+    private String getCacheKey(FeeUnitEnum feeUnitEnum, String houseId, String roomId, String rentMethod) {
         if (!Optional.ofNullable(houseId).isPresent()) {
             logger.error("查询费用配置房屋ID不能为空");
             throw new IllegalArgumentException("查询费用配置房屋ID不能为空");
@@ -159,7 +159,7 @@ public class FeeCommonService {
         if (Optional.ofNullable(roomId).isPresent() && !StringUtils.equals(roomId, "0")) {
             return Joiner.on("_").join(roomId, houseId, feeUnitEnum.getValue());
         }
-        return Joiner.on("_").join(houseId, feeUnitEnum.getValue());
+        return Joiner.on("_").join(houseId, feeUnitEnum.getValue(), rentMethod);
     }
 
     public String getRangeIdByRoomId(String roomId) {
@@ -178,7 +178,7 @@ public class FeeCommonService {
         queryConfig.setConfigStatus(Constants.YES);
         List<FeeConfig> feeConfigs = feeConfigService.findList(queryConfig);
         Map<String, FeeConfig> feeConfigMap = Maps.uniqueIndex(feeConfigs,
-                feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType());
+                feeConfig -> feeConfig.getBusinessId() + "_" + feeConfig.getFeeType() + "_" + feeConfig.getRentMethod());
 
         feeCache.putObject(FEE_CONFIG_CACHE_KEY, feeConfigMap);
         return feeConfigMap;
@@ -188,11 +188,11 @@ public class FeeCommonService {
         feeCache.clear();
     }
 
-    public boolean isOpenInitFeeData(){
-        String feeInitFun = DictUtils.getDictValue("fee_data_init_fun","fee_init","1");
-        if(StringUtils.equals(feeInitFun,"0")){
+    public boolean isOpenInitFeeData() {
+        String feeInitFun = DictUtils.getDictValue("fee_data_init_fun", "fee_init", "1");
+        if (StringUtils.equals(feeInitFun, "0")) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

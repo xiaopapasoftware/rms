@@ -191,6 +191,14 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return value;
             };
+            layui.laytpl.rentMethodFormat = function (value) {
+                if (value == 0) {
+                    value = "整组";
+                } else if (value == 1) {
+                    value = "合租";
+                }
+                return value;
+            };
         }
     };
 
@@ -266,6 +274,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                         {
                             field: 'chargeMethod', align: 'center', title: '收取方式', width: 100,
                             templet: '<div>{{ layui.laytpl.chargeMethodFormat(d.chargeMethod) }}</div>'
+                        },
+                        {
+                            field: 'rentMethod', align: 'center', title: '租赁方式', width: 100,
+                            templet: '<div>{{ layui.laytpl.rentMethodFormat(d.rentMethod) }}</div>'
                         },
                         {field: 'configValue', align: 'center', title: '配置值', width: 100},
                         {
@@ -349,7 +361,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     resize: true,
                     offset: 'rt',
                     anim: 2,
-                    area: ['350px', '520px'],
+                    area: ['350px', '580px'],
                     content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
                 });
             },

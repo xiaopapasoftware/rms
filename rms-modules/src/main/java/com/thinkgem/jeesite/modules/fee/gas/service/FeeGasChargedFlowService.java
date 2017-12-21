@@ -90,7 +90,7 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     @Transactional(readOnly = false)
     public void saveFeeGasChargedFlowByFeeGasBill(FeeGasBill feeGasBill) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, feeGasBill.getHouseId(), null);
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, feeGasBill.getHouseId(), null, RentModelTypeEnum.WHOLE_RENT.getValue());
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.info("房屋[houseId={}]为固定模式,不生成收费流水", feeGasBill.getHouseId());
             throw new IllegalArgumentException("当前房屋为固定模式,不能生成收费记录");
@@ -137,7 +137,8 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
     @Transactional(readOnly = false)
     public void saveFeeGasChargedFlowByFeeGasReadFlow(FeeGasReadFlow feeGasReadFlow) {
-        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, feeGasReadFlow.getHouseId(), null);
+        House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
+        FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, feeGasReadFlow.getHouseId(), null, house.getIntentMode());
         if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
             logger.error("当前房屋[houseId={}]为固定模式,不能生成收费记录", feeGasReadFlow.getHouseId());
             return;
@@ -155,7 +156,6 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
 
         FeeGasChargedFlow saveFeeGasChargeFlow = feeGasReadToFeeGasCharged(feeGasReadFlow);
 
-        House house = feeCommonService.getHouseById(feeGasReadFlow.getHouseId());
         BigDecimal amount = new BigDecimal(feeGasReadFlow.getGasDegree()).subtract(new BigDecimal(lastReadFlow.getGasDegree())).multiply(new BigDecimal(feeConfig.getConfigValue()));
         /*合租的时候,燃气费为公摊数*/
         if (StringUtils.equals(house.getIntentMode(), RentModelTypeEnum.JOINT_RENT.getValue())) {
@@ -226,14 +226,14 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
-    public void generatorFlow(String scope,String businessId) {
+    public void generatorFlow(String scope, String businessId) {
         List<FeeGasChargedFlow> feeGasChargedFlows = Lists.newArrayList();
-        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope,businessId);
+        List<Room> rooms = feeCommonService.getJoinRentAllRoom(scope, businessId);
         if (CollectionUtils.isEmpty(rooms)) {
             return;
         }
         rooms.forEach(r -> {
-            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, r.getHouse().getId(), r.getId());
+            FeeConfig feeConfig = feeCommonService.getFeeConfig(FeeUnitEnum.GAS_UNIT, r.getHouse().getId(), r.getId(), RentModelTypeEnum.JOINT_RENT.getValue());
             if (feeConfig.getChargeMethod() == ChargeMethodEnum.FIX_MODEL.getValue()) {
                 /*创建新增对象*/
                 FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
