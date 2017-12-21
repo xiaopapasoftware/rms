@@ -16,6 +16,8 @@ public enum RentPayTypeEnum {
    * 付二押二
    */
   PAY_2_DEPOSIT_2("1");
+  
+  
 
   RentPayTypeEnum(String value) {
     this.value = value;
