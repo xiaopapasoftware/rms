@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-@Service
+//@Service
 @Lazy(false)
 public class QuartzJob {
   Logger log = LoggerFactory.getLogger(QuartzJob.class);
