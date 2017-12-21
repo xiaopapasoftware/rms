@@ -21,11 +21,16 @@ e【3工时】、房间新增字段属性：物品配置room_config，按位标�
 （新增房间的前端入口有：房间管理页面新增、新增定金协议页面快速添加链接、新增承租合同的快速添加链接、定金转合同添加页面快速添加链接、新增出租合同页面的快速添加链接）
 生产已有的房间数据，该字段的值要与业务协商初始化到库。
 
-f【】、付X 押Y 改造
+f【3工时】、删除表t_house和表t_room的pay_way字段，同时删除房屋及房间的新增和修改页面上的付款方式下拉框控件，改为两个文本输入框，分别是：
+对于房屋：新增支付间隔月数:rent_month_gap(付几押几的付)，押金月数:depos_month_count，均可修改值且是必填字段，这两个字段同时需要作为房屋查询的搜索条件，房屋查询结果里也要包括这两个字段。新增房屋入口上文有述，在新增或修改时，rent_month_gap字段应限制为正整数范围为1-12，depos_month_count也要是正整数，范围为1-12。对于系统已有的房屋，需要数据脚本批量补充好这两个字段的值；
+对于房间：新增支付间隔月数:rent_month_gap(付几押几的付)，押金月数:depos_month_count，均可修改值且是必填字段，这两个字段同时需要作为房间查询的搜索条件，房间查询结果里也要包括这两个字段。新增房间入口上文有述，在新增或修改时，rent_month_gap字段应限制为正整数范围为1-12，depos_month_count也要是正整数，范围为1-12；对于系统已有的房间，需要数据脚本批量补充好这两个字段的值；
+删除定义的枚举类型：RentPayTypeEnum，删除sys_dict.sql文件里的对应sql，删除字典表里对应的类型为rent_fee_type的值。
 
+g【0.5工时】、房屋或房间的新增或修改页面上的附件（房屋或房间图片）部分，要由目前的选填改为必填，用户必须上传房间或房屋的图片附件才行。
 
 2、接口对接
-a【3工时】、房屋管理页面，如果房屋的意向租赁类型是“整租”且是“分散式房源类型”且房屋的状态为待出租可预订1、已预定2、完全出租4三者之一的，则在该条房屋信息记录后提供“分散式同步支付宝”功能，点击按钮后调用分散式房源同步接口同步这套整租房源（如果房屋的意向租赁类型是“合租”且是分散式房源类型则忽略）。同步成功提示用户，而对于同步失败的接口调用，需按照接口文档友好且准确的提示报错信息（错误码和错误信息详情见接口文档）
+a【3.5工时】、房屋管理页面，如果房屋的意向租赁类型是“整租”且是“分散式房源类型”且房屋的状态为待出租可预订1、已预定2、完全出租4三者之一的，则在该条房屋信息记录后提供“分散式同步支付宝”功能，点击按钮后调用分散式房源同步接口同步这套整租房源（如果房屋的意向租赁类型是“合租”且是分散式房源类型则忽略）。同步成功提示用户，而对于同步失败的接口调用，需按照接口文档友好且准确的提示报错信息（错误码和错误信息详情见接口文档）
+注意：在触发真正的同步房源接口之前，需要先触发同步房屋的所有图片，先从系统内部查询到当前房屋的所有上传的照片，再一一上传到租房平台，拿到返回的url数组。
 room_code=platform_housecode；
 floor_count=HOUSE_FLOOR，
 total_floor_count=house所属building的total_floor_count，
@@ -42,9 +47,19 @@ rent_status=房屋状态为待出租可预订1则传“1”(未租),房屋状态
 intro=short_desc（注意长度，以接口文档长度为限）
 flat_configs（不传）
 room_configs（不传）
-pay_type
+pay_type=房屋表的rent_month_gap
+room_amount=house表的rental
+foregift_amount= rental  乘以  depos_month_count
+other_amount（不传）
+images=上传图片文件后返回的url数组
+owners_name=T_HOUSE_OWNER关联到sys_user表，取name
+owners_tel=T_HOUSE_OWNER关联到sys_user表，取cellphone
+checkin_time=当天日期
+room_status=默认传1（上架）
+rent_type=intent_mode
 
-b【1.5工时】、房间管理页面，如果房间所属房屋的意向租赁类型是“合租”且该房间所属房屋的公寓类型是分散式且房间的状态为待出租可预订1、已预定2、已出租3三者之一的，则在房间管理页面上，该房间记录的操作部分新增“分散式同步支付宝”功能，点击按钮后调用分散式房源同步接口同步该房间。同步成功提示用户，而对于同步失败的接口调用，需按照接口文档友好且准确的提示报错信息（错误码和错误信息详情见接口文档）
+b【3.5工时】、房间管理页面，如果房间所属房屋的意向租赁类型是“合租”且该房间所属房屋的公寓类型是分散式且房间的状态为待出租可预订1、已预定2、已出租3三者之一的，则在房间管理页面上，该房间记录的操作部分新增“分散式同步支付宝”功能，点击按钮后调用分散式房源同步接口同步该房间，同步成功提示用户，而对于同步失败的接口调用，需按照接口文档友好且准确的提示报错信息（错误码和错误信息详情见接口文档）
+注意：在触发真正的同步房源接口之前，需要先触发上传房间的所有图片，先从系统内部查询到当前房间的所有上传的照片，再一一上传到租房平台，拿到返回的url数组。
 room_code=platform_roomcode；
 floor_count=房间所属房屋的HOUSE_FLOOR，
 total_floor_count=房间所属house所属building的total_floor_count，
@@ -61,4 +76,13 @@ rent_status=房间状态为待出租可预订1则传“1”(未租),房间状态
 intro=short_desc（注意长度，以接口文档长度为限）
 flat_configs=share_area_config（具体传值结合接口文档）
 room_configs=room_config（具体传值结合接口文档）
-pay_type
+pay_type=房间表的rent_month_gap
+room_amount=room表的rental
+foregift_amount= rental  乘以  depos_month_count
+other_amount（不传）
+images=上传图片文件后返回的url数组
+owners_name=所属房屋的T_HOUSE_OWNER关联到sys_user表，取name
+owners_tel=所属房屋的T_HOUSE_OWNER关联到sys_user表，取cellphone
+checkin_time=当天日期
+room_status=默认传1（上架）
+rent_type=所属房屋的intent_mode
