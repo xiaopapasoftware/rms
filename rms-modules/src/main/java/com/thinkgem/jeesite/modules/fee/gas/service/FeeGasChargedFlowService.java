@@ -277,10 +277,8 @@ public class FeeGasChargedFlowService extends CrudService<FeeGasChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
-    public void generatorOrder() {
-        FeeGasChargedFlow feeGasChargedFlow = new FeeGasChargedFlow();
-        feeGasChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
-        List<FeeGasChargedFlow> feeGasChargedFlows = this.findList(feeGasChargedFlow);
+    public void generatorOrder(String scope,String businessId) {
+        List<FeeGasChargedFlow> feeGasChargedFlows = dao.getGenerateFeeGasChargedFlow(scope,businessId);
         if (CollectionUtils.isEmpty(feeGasChargedFlows)) {
             return;
         }

@@ -269,6 +269,37 @@
         limit 0,1
     </select>
 
+    <select id="getGenerateFeeGasChargedFlow" resultMap="BaseResultMap">
+        select
+        temp.*
+        from fee_gas_charged_flow temp
+        LEFT JOIN t_room tr on temp.room_id=tr.id and tr.DEL_FLAG=0
+        left join t_house th on temp.house_id=th.ID and th.DEL_FLAG=0
+        left join t_building tb on th.BUILDING_ID=tb.id and tb.DEL_FLAG=0
+        left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
+        left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
+        where temp.del_flag=0 AND  temp.generate_order=0
+        <if test="scope!=null and scope!='' and businessId!=null and businessId!=''">
+            <choose>
+                <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
+                    AND sa.id = #{businessId}
+                </when>
+                <when test="scope==7">
+                    AND tpp.id = #{businessId}
+                </when>
+                <when test="scope==8">
+                    AND tb.id = #{businessId}
+                </when>
+                <when test="scope==9">
+                    AND th.id = #{businessId}
+                </when>
+                <when test="scope==10">
+                    AND tr.id = #{businessId}
+                </when>
+            </choose>
+        </if>
+    </select>
+
     <select id="getFeeGasChargedFlow" resultMap="FullResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity">
         select

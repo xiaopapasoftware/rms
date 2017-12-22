@@ -25,4 +25,6 @@ public interface FeeCommonDao{
     String getRangeIdByHouseId(@Param("houseId") String houseId);
 
     List<Room> getJoinRentAllRoom(@Param("scope")String scope,@Param("businessId")String businessId);
+
+    List<House> getWholeRentAllHouse(@Param("scope")String scope,@Param("businessId")String businessId);
 }

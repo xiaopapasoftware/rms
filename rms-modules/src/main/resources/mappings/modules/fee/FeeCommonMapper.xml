@@ -37,7 +37,7 @@
         LEFT JOIN t_property_project tpp ON tpp.id = th.PROPERTY_PROJECT_ID AND tpp.del_flag=0
         LEFT JOIN sys_area sa ON sa.id = tpp.AREA_ID AND sa.del_flag=0
         WHERE tr.DEL_FLAG=0 AND th.DEL_FLAG=0 AND th.intent_mode=1 AND tr.ROOM_STATUS=3
-        <if test="scope!=null and scope!=''">
+        <if test="scope!=null and scope!='' and businessId!=null and businessId!=''">
             <choose>
                 <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
                     AND sa.id = #{businessId}
@@ -53,6 +53,35 @@
                 </when>
                 <when test="scope==10">
                     AND tr.id = #{businessId}
+                </when>
+            </choose>
+        </if>
+    </select>
+
+    <select id="getWholeRentAllHouse" resultType="com.thinkgem.jeesite.modules.inventory.entity.House">
+        SELECT
+        th.*
+        from t_house th
+        LEFT JOIN t_building tb ON tb.id = th.BUILDING_ID AND tb.del_flag=0
+        LEFT JOIN t_property_project tpp ON tpp.id = th.PROPERTY_PROJECT_ID AND tpp.del_flag=0
+        LEFT JOIN sys_area sa ON sa.id = tpp.AREA_ID AND sa.del_flag=0
+        WHERE th.DEL_FLAG=0 AND th.intent_mode=1 AND (th.house_status=3 or th.house_status=4)
+        <if test="scope!=null and scope!='' and businessId!=null and businessId!=''">
+            <choose>
+                <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
+                    AND sa.id = #{businessId}
+                </when>
+                <when test="scope==7">
+                    AND tpp.id = #{businessId}
+                </when>
+                <when test="scope==8">
+                    AND tb.id = #{businessId}
+                </when>
+                <when test="scope==9">
+                    AND th.id = #{businessId}
+                </when>
+                <when test="scope==10">
+                    AND 1=2
                 </when>
             </choose>
         </if>

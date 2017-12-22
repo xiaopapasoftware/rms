@@ -57,7 +57,7 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
     public void generatorFlow(String scope, String businessId) {
         List<FeeOtherChargedFlow> feeChargedFlows = Lists.newArrayList();
 
-        List<House> houses = feeCommonService.getWholeRentAllHouse();
+        List<House> houses = feeCommonService.getWholeRentAllHouse(scope,businessId);
         houses.forEach(h -> {
             /*创建新增对象*/
             FeeOtherChargedFlow feeOtherChargedFlow = new FeeOtherChargedFlow();
@@ -149,10 +149,8 @@ public class FeeOtherChargedFlowService extends CrudService<FeeOtherChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorOrder() {
-        FeeOtherChargedFlow feeChargedFlow = new FeeOtherChargedFlow();
-        feeChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
-        List<FeeOtherChargedFlow> feeChargedFlows = this.findList(feeChargedFlow);
+    public void generatorOrder(String scope, String businessId) {
+        List<FeeOtherChargedFlow> feeChargedFlows = dao.getGenerateFeeOtherChargedFlow(scope,businessId);
 
         /*按房屋 费用类型 分组*/
         Map<String, List<FeeOtherChargedFlow>> feeChargedMap = feeChargedFlows.stream()

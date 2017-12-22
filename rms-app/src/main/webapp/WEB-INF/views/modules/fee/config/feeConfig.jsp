@@ -158,7 +158,7 @@
 </div>
 
 <div id="addDiv" class="tangchao" hidden>
-    <form class="layui-form" id="addFeeEleBillForm" action="">
+    <form class="layui-form" id="addFeeConfigForm" action="">
         <input type="hidden" id="id"/>
         <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">费用类型</label>
@@ -250,15 +250,6 @@
                     </select>
                 </div>
             </div>
-
-            <%--<div class="layui-form-item">
-                <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
-                    <select id="room" name="room" lay-filter="room" placeholder="房间" lay-search>
-                        <option value="">房间</option>
-                    </select>
-                </div>
-            </div>--%>
         </div>
 
         <div class="layui-form-item">

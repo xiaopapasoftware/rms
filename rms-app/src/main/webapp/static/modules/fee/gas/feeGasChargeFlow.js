@@ -7,6 +7,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
     var feeGasScopeIndex;
 
+    var generateType;
+
     var feeGasChargeFlow = {
         init: function () {
             feeGasChargeFlowMVC.View.initDate();
@@ -139,7 +141,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return (value).toLocaleString('zh-Hans-CN', {style: 'currency', currency: 'CNY'});
             };
-
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
@@ -206,11 +207,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-generateFlow").on("click", feeGasChargeFlowMVC.Controller.showScopeWinFun);
-                $("#btn-generate").on("click", feeGasChargeFlowMVC.Controller.generateFlowFun);
+                $("#btn-generateFlow").on("click", function () {
+                    generateType = "flow";
+                    feeGasChargeFlowMVC.Controller.showScopeWinFun();
+                });
+                $("#btn-generateOrder").on("click", function () {
+                    generateType = "order";
+                    feeGasChargeFlowMVC.Controller.showScopeWinFun();
+                });
                 $("#btn-cancel").on("click", feeGasChargeFlowMVC.Controller.scopeWinCloseFun);
+                $("#btn-generate").on("click", feeGasChargeFlowMVC.Controller.generateFun);
 
-                $("#btn-generateOrder").on("click", feeGasChargeFlowMVC.Controller.generateOrderFun);
                 $("#btn-search").on("click", feeGasChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeGasChargeFlowMVC.Controller.undoFun);
             },
@@ -276,7 +283,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             scopeWinCloseFun: function () {
                 layer.close(feeGasScopeIndex);
             },
-            generateFlowFun: function () {
+            generateFun: function () {
                 var scope = $("#scope").val();
                 var businessId = 0;
                 if (scope == 0) {
@@ -292,23 +299,22 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 } else if (scope == 10) {
                     businessId = $("#roomId").val();
                 }
-                $.getJSON(feeGasChargeFlowMVC.URLs.generateFlow.url, {
+
+                var url = "";
+                if (generateType == "flow") {
+                    url = feeGasChargeFlowMVC.URLs.generateFlow.url;
+                } else if (generateType == "flow") {
+                    url = feeGasChargeFlowMVC.URLs.generateFlow.url;
+                } else {
+                    return;
+                }
+                $.getJSON(url, {
                     "scope": scope,
                     "businessId": businessId
                 }, function (data) {
                     if (data.code == "200") {
                         feeGasChargeFlowMVC.Controller.queryFun();
                         layer.close(feeGasScopeIndex);
-                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
-                    } else {
-                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
-                    }
-                });
-            },
-            generateOrderFun: function () {
-                $.getJSON(feeGasChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
-                    if (data.code == "200") {
-                        feeGasChargeFlowMVC.Controller.queryFun();
                         layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});

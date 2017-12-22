@@ -27,7 +27,7 @@ public interface FeeGasChargedFlowDao extends CrudDao<FeeGasChargedFlow> {
 
     List<FeeGasChargedFlowVo> getFeeGasChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 
-    List<FeeGasChargedFlow> getGenerateFeeGasChargedFlow(String scope,String businessId);
+    List<FeeGasChargedFlow> getGenerateFeeGasChargedFlow(@Param("scope") String scope,@Param("businessId") String businessId);
 
     FeeGasChargedFlow getLastRecord(@Param("houseId") String houseId, @Param("roomId") String roomId);
 

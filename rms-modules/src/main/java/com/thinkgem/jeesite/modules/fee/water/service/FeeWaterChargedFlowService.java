@@ -252,10 +252,8 @@ public class FeeWaterChargedFlowService extends CrudService<FeeWaterChargedFlowD
     }
 
     @Transactional(readOnly = false)
-    public void generatorOrder() {
-        FeeWaterChargedFlow feeWaterChargedFlow = new FeeWaterChargedFlow();
-        feeWaterChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
-        List<FeeWaterChargedFlow> feeWaterChargedFlows = this.findList(feeWaterChargedFlow);
+    public void generatorOrder(String scope, String businessId) {
+        List<FeeWaterChargedFlow> feeWaterChargedFlows = dao.getGenerateFeeWaterChargedFlow(scope,businessId);
         if (CollectionUtils.isEmpty(feeWaterChargedFlows)) {
             return;
         }

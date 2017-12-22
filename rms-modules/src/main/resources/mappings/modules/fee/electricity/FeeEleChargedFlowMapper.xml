@@ -275,7 +275,7 @@
         left join t_property_project tpp on temp.property_id=tpp.id and tpp.DEL_FLAG=0
         left join sys_area sa on tpp.AREA_ID=sa.id and sa.del_flag=0
         where temp.del_flag=0 AND  temp.generate_order=0
-        <if test="scope!=null and scope!=''">
+        <if test="scope!=null and scope!='' and businessId!=null and businessId!=''">
             <choose>
                 <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
                     AND sa.id = #{businessId}

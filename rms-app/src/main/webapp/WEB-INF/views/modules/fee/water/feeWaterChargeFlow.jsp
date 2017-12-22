@@ -146,10 +146,9 @@
     </div>
 </div>
 
-
 <div id="generateDiv" class="tangchao" hidden >
-    <form class="layui-form" id="addFeeEleBillForm" action="">
-        <div class="layui-form-item">
+    <form class="layui-form" id="generateForm" action="">
+        <div class="layui-form-item" style="margin-top: 15px;">
             <label class="layui-form-label">配置范围</label>
             <div class="layui-input-inline">
                 <select id="scope" name="scope" lay-filter="scope" placeholder="配置范围">
@@ -180,16 +179,12 @@
 
             <div class="layui-form-item" hidden id="projectDiv">
                 <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" style="width: 100px;">
                     <select id="projectId" name="projectId" lay-filter="projectId" placeholder="小区" lay-search>
                         <option value="">小区</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="layui-form-item" hidden id="buildingDiv">
-                <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" hidden id="buildingDiv" style="width: 100px;">
                     <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
                         <option value="">楼宇</option>
                     </select>
@@ -198,16 +193,12 @@
 
             <div class="layui-form-item" hidden id="houseDiv">
                 <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" style="width: 100px;">
                     <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
                         <option value="">房屋</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="layui-form-item" hidden id="roomDiv">
-                <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" hidden id="roomDiv" style="width: 100px;">
                     <select id="roomId" name="roomId" lay-filter="roomId" placeholder="房间" lay-search>
                         <option value="">房间</option>
                     </select>
@@ -217,7 +208,8 @@
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <a href="javascript:void(0);" id="btn-generate" lay-filter="btn-generate" lay-submit class="button">生成</a>
+                <a href="javascript:void(0);" id="btn-generate" lay-filter="btn-generate" lay-submit
+                   class="button">生成</a>
                 <a href="javascript:void(0);" id="btn-cancel" class="button">取消</a>
             </div>
         </div>

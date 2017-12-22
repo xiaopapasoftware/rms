@@ -271,6 +271,37 @@
         and business_id = #{businessId,jdbcType=VARCHAR}
     </select>
 
+    <select id="getGenerateFeeWaterChargedFlow" resultMap="BaseResultMap">
+        SELECT
+        temp.*
+        FROM fee_water_charged_flow temp
+        LEFT JOIN t_room tr ON temp.room_id=tr.id AND tr.DEL_FLAG=0
+        LEFT JOIN t_house th ON temp.house_id=th.ID AND th.DEL_FLAG=0
+        LEFT JOIN t_building tb ON th.BUILDING_ID=tb.id AND tb.DEL_FLAG=0
+        LEFT JOIN t_property_project tpp ON temp.property_id=tpp.id AND tpp.DEL_FLAG=0
+        LEFT JOIN sys_area sa ON tpp.AREA_ID=sa.id AND sa.del_flag=0
+        WHERE temp.del_flag=0 AND  temp.generate_order=0
+        <if test="scope!=null and scope!='' and businessId!=null and businessId!=''">
+            <choose>
+                <when test="scope==1 or scope==2  or scope==3  or scope==4  or scope==5  or scope==6">
+                    AND sa.id = #{businessId}
+                </when>
+                <when test="scope==7">
+                    AND tpp.id = #{businessId}
+                </when>
+                <when test="scope==8">
+                    AND tb.id = #{businessId}
+                </when>
+                <when test="scope==9">
+                    AND th.id = #{businessId}
+                </when>
+                <when test="scope==10">
+                    AND tr.id = #{businessId}
+                </when>
+            </choose>
+        </if>
+    </select>
+
     <select id="getFeeWaterChargedFlow" resultMap="FullResultMap"
             parameterType="com.thinkgem.jeesite.modules.fee.common.entity.FeeCriteriaEntity">
         select

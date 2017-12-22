@@ -6,6 +6,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
     var feeOtherScopeIndex;
 
+    var generateType;
+
     var feeOtherChargeFlow = {
         init: function () {
             feeOtherChargeFlowMVC.View.initDate();
@@ -138,7 +140,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return (value).toLocaleString('zh-Hans-CN', {style: 'currency', currency: 'CNY'});
             };
-
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
@@ -150,9 +151,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             layui.laytpl.generateOrderFormat = function (value) {
                 if (value == null) {
                     value = "";
-                } else if (value == 1) {
-                    value = "否";
                 } else if (value == 0) {
+                    value = "否";
+                } else if (value == 1) {
                     value = "是";
                 }
                 return value;
@@ -217,11 +218,17 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-generateFlow").on("click", feeOtherChargeFlowMVC.Controller.showScopeWinFun);
-                $("#btn-generate").on("click", feeOtherChargeFlowMVC.Controller.generateFlowFun);
+                $("#btn-generateFlow").on("click", function () {
+                    generateType = "flow";
+                    feeOtherChargeFlowMVC.Controller.showScopeWinFun();
+                });
+                $("#btn-generateOrder").on("click", function () {
+                    generateType = "order";
+                    feeOtherChargeFlowMVC.Controller.showScopeWinFun();
+                });
                 $("#btn-cancel").on("click", feeOtherChargeFlowMVC.Controller.scopeWinCloseFun);
+                $("#btn-generate").on("click", feeOtherChargeFlowMVC.Controller.generateFun);
 
-                $("#btn-generateOrder").on("click", feeOtherChargeFlowMVC.Controller.generateOrderFun);
                 $("#btn-search").on("click", feeOtherChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeOtherChargeFlowMVC.Controller.undoFun);
             },
@@ -291,7 +298,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             scopeWinCloseFun: function () {
                 layer.close(feeOtherScopeIndex);
             },
-            generateFlowFun: function () {
+            generateFun: function () {
                 var scope = $("#scope").val();
                 var businessId = 0;
                 if (scope == 0) {
@@ -307,23 +314,21 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 } else if (scope == 10) {
                     businessId = $("#roomId").val();
                 }
-                $.getJSON(feeOtherChargeFlowMVC.URLs.generateFlow.url, {
+                var url = "";
+                if (generateType == "flow") {
+                    url = feeOtherChargeFlowMVC.URLs.generateFlow.url;
+                } else if (generateType == "flow") {
+                    url = feeOtherChargeFlowMVC.URLs.generateFlow.url;
+                } else {
+                    return;
+                }
+                $.getJSON(url, {
                     "scope": scope,
                     "businessId": businessId
                 }, function (data) {
                     if (data.code == "200") {
                         feeOtherChargeFlowMVC.Controller.queryFun();
                         layer.close(feeOtherScopeIndex);
-                        layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
-                    } else {
-                        layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});
-                    }
-                });
-            },
-            generateOrderFun: function () {
-                $.getJSON(feeOtherChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
-                    if (data.code == "200") {
-                        feeOtherChargeFlowMVC.Controller.queryFun();
                         layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});

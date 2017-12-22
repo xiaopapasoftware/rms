@@ -29,7 +29,7 @@ public interface FeeWaterChargedFlowDao extends CrudDao<FeeWaterChargedFlow> {
 
     List<FeeWaterChargedFlowVo> getFeeWaterChargedFlow(FeeCriteriaEntity feeCriteriaEntity);
 
-    List<FeeWaterChargedFlow> getGenerateFeeWaterChargedFlow(String scope,String businessId);
+    List<FeeWaterChargedFlow> getGenerateFeeWaterChargedFlow(@Param("scope") String scope,@Param("businessId") String businessId);
 
     void batchInsert(List<FeeWaterChargedFlow> feeWaterChargedFlows);
 

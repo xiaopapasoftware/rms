@@ -50,8 +50,8 @@ public class FeeOtherChargedFlowController extends FeeBaseController {
 
     @RequestMapping(value = "generateOrder")
     @RequiresPermissions("fee:other:charged:generate:flow")
-    public Object generaterOrder() {
-        feeOtherChargedFlowService.generatorOrder();
+    public Object generaterOrder(String scope, String businessId) {
+        feeOtherChargedFlowService.generatorOrder(scope,businessId);
         return ResponseData.success();
     }
 }

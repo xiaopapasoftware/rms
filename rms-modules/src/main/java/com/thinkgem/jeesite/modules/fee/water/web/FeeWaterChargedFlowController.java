@@ -60,8 +60,8 @@ public class FeeWaterChargedFlowController extends FeeBaseController {
 
     @RequestMapping(value = "generateOrder")
     @RequiresPermissions("fee:water:charged:generate:order")
-    public Object generateOrder() {
-        feeWaterChargedFlowService.generatorOrder();
+    public Object generateOrder(String scope, String businessId) {
+        feeWaterChargedFlowService.generatorOrder(scope,businessId);
         return ResponseData.success();
     }
 }

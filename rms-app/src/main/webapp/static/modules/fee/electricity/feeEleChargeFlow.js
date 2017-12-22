@@ -4,6 +4,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
         layer = layui.layer,
         laydate = layui.laydate;
 
+    var feeEleScopeIndex;
+
     var feeEleChargeFlow = {
         init: function () {
             feeEleChargeFlowMVC.View.initDate();
@@ -42,8 +44,89 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
 
                 form.render('select');
             });
-            form.on('submit(addEleBill)', function () {
-                feeEleChargeFlowMVC.Controller.saveFun();
+
+            form.on('select(scope)', function (data) {
+                var value = data.value;
+                if (value > 0) {
+                    $("#businessDiv").show();
+                    if (value == 7) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").hide();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    } else if (value == 8) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    } else if (value == 9) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").show();
+                        $("#roomDiv").hide();
+                    } else if (value == 10) {
+                        $("#projectDiv").show();
+                        $("#buildingDiv").show();
+                        $("#houseDiv").show();
+                        $("#roomDiv").show();
+                    } else {
+                        $("#projectDiv").hide();
+                        $("#buildingDiv").hide();
+                        $("#houseDiv").hide();
+                        $("#roomDiv").hide();
+                    }
+                } else {
+                    $("#businessDiv").hide();
+                }
+            });
+            form.on('select(areaId)', function (data) {
+                $("#areaId").val(data.value);
+                feeEleChargeFlowMVC.Controller.selectItemFun("projectId", "PROJECT", data.value);
+                $("#projectId option").remove();
+                $("#projectId").append('<option value="">物业项目</option>');
+
+                $("#buildingId option").remove();
+                $("#buildingId").append('<option value="">楼宇</option>');
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#roomId option").remove();
+                $("#roomId").append('<option value="">房间</option>');
+                form.render('select');
+            });
+            form.on('select(projectId)', function (data) {
+                feeEleChargeFlowMVC.Controller.selectItemFun("buildingId", "BUILDING", data.value);
+
+                $("#buildingId option").remove();
+                $("#buildingId").append('<option value="">楼宇</option>');
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#roomId option").remove();
+                $("#roomId").append('<option value="">房间</option>');
+
+                form.render('select');
+            });
+            form.on('select(buildingId)', function (data) {
+                feeEleChargeFlowMVC.Controller.selectItemFun("houseId", "HOUSE", data.value);
+
+                $("#houseId option").remove();
+                $("#houseId").append('<option value="">房屋</option>');
+
+                $("#roomId option").remove();
+                $("#roomId").append('<option value="">房间</option>');
+
+                form.render('select');
+            });
+            form.on('select(houseId)', function (data) {
+                feeEleChargeFlowMVC.Controller.selectItemFun("roomId", "ROOM", data.value);
+
+                $("#roomId option").remove();
+                $("#roomId").append('<option value="">房间</option>');
+
+                form.render('select');
             });
 
             layui.laytpl.amountFormat = function (value) {
@@ -52,11 +135,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
                 return (value).toLocaleString('zh-Hans-CN', {style: 'currency', currency: 'CNY'});
             };
-
             layui.laytpl.roomNoFormat = function (value) {
                 if (value == null) {
                     value = "";
-                }else if (value == 0) {
+                } else if (value == 0) {
                     value = "总表";
                 }
                 return value;
@@ -64,9 +146,9 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
             layui.laytpl.generateOrderFormat = function (value) {
                 if (value == null) {
                     value = "";
-                }else if (value == 1) {
+                } else if (value == 0) {
                     value = "否";
-                }else if (value == 0) {
+                } else if (value == 1) {
                     value = "是";
                 }
                 return value;
@@ -115,7 +197,10 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 });
             },
             bindEvent: function () {
-                $("#btn-add").on("click", feeEleChargeFlowMVC.Controller.generateOrderFun);
+                $("#btn-generateOrder").on("click", feeEleChargeFlowMVC.Controller.showScopeWinFun);
+                $("#btn-cancel").on("click", feeEleChargeFlowMVC.Controller.scopeWinCloseFun);
+                $("#btn-generate").on("click", feeEleChargeFlowMVC.Controller.generateOrderFun);
+
                 $("#btn-search").on("click", feeEleChargeFlowMVC.Controller.queryFun);
                 $("#btn-undo").on("click", feeEleChargeFlowMVC.Controller.undoFun);
             },
@@ -175,9 +260,44 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 };
                 return where;
             },
+            showScopeWinFun: function () {
+                feeEleScopeIndex = layer.open({
+                    title: "范围选择",
+                    type: 1,
+                    resize: true,
+                    offset: '100',
+                    anim: 2,
+                    area: ['350px', '400px'],
+                    content: $('#generateDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                });
+            },
+            scopeWinCloseFun: function () {
+                layer.close(feeEleScopeIndex);
+            },
+
             generateOrderFun: function () {
-                $.getJSON(feeEleChargeFlowMVC.URLs.generateOrder.url, "", function (data) {
+                var scope = $("#scope").val();
+                var businessId = 0;
+                if (scope == 0) {
+                    businessId = 0;
+                } else if (scope < 7) {
+                    businessId = $("#areaId").val();
+                } else if (scope == 7) {
+                    businessId = $("#projectId").val();
+                } else if (scope == 8) {
+                    businessId = $("#buildingId").val();
+                } else if (scope == 9) {
+                    businessId = $("#houseId").val();
+                } else if (scope == 10) {
+                    businessId = $("#roomId").val();
+                }
+                $.getJSON(feeEleChargeFlowMVC.URLs.generateOrder.url, {
+                    "scope": scope,
+                    "businessId": businessId
+                }, function (data) {
                     if (data.code == "200") {
+                        feeEleChargeFlowMVC.Controller.queryFun();
+                        layer.close(feeEleScopeIndex);
                         layer.msg(data.msg, {icon: 1, offset: 100, time: 1000, shift: 6});
                     } else {
                         layer.msg(data.msg, {icon: 5, offset: 100, time: 1000, shift: 6});

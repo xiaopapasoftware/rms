@@ -9,7 +9,6 @@ import com.thinkgem.jeesite.modules.cache.MyCache;
 import com.thinkgem.jeesite.modules.cache.MyCacheBuilder;
 import com.thinkgem.jeesite.modules.cache.enums.MyCacheConstant;
 import com.thinkgem.jeesite.modules.common.entity.SelectItem;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.fee.common.dao.FeeCommonDao;
 import com.thinkgem.jeesite.modules.fee.config.entity.FeeConfig;
@@ -17,7 +16,6 @@ import com.thinkgem.jeesite.modules.fee.config.service.FeeConfigService;
 import com.thinkgem.jeesite.modules.fee.enums.FeeUnitEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.service.AreaService;
@@ -84,13 +82,8 @@ public class FeeCommonService {
     }
 
     /*获取所有整租的房间，只包括已出租的*/
-    public List<House> getWholeRentAllHouse() {
-        House query = new House();
-        query.setIntentMode(RentModelTypeEnum.WHOLE_RENT.getValue());
-        List<House> houses = houseService.findList(query);
-        return houses.stream()
-                .filter(h -> (StringUtils.equals(h.getHouseStatus(), HouseStatusEnum.WHOLE_RENT.getValue()) || StringUtils.equals(h.getHouseStatus(), HouseStatusEnum.PART_RENT.getValue())))
-                .collect(Collectors.toList());
+    public List<House> getWholeRentAllHouse(String scope, String businessId) {
+        return feeCommonDao.getWholeRentAllHouse(scope, businessId);
     }
 
     public List<Map> getHouseByAccountNumAndNumType(String accountNum, String numType) {
