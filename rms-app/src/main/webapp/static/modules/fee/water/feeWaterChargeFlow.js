@@ -227,8 +227,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     limits: [20, 30, 60, 90, 150, 300],
                     limit: 20,
                     cols: [[
-                        {field: 'areaName', align: 'center', title: '区域', width: 140},
-                        {field: 'projectName', align: 'center', title: '物业项目', width: 140},
+                        {field: 'areaName', align: 'center', title: '区域', width: 100},
+                        {field: 'projectName', align: 'center', title: '物业项目', width: 120},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', width: 80},
                         {
@@ -276,7 +276,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     offset: '100',
                     anim: 2,
                     area: ['350px', '380px'],
-                    content: $('#generateDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+                    content: $('#generateDiv')
                 });
             },
             scopeWinCloseFun: function () {

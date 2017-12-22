@@ -176,8 +176,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     limit: 20,
                     cols: [[
                         {checkbox: true, width: 20, fixed: true},
-                        {field: 'areaName', align: 'center', title: '区域', width: 140},
-                        {field: 'projectName', align: 'center', title: '物业项目', width: 140},
+                        {field: 'areaName', align: 'center', title: '区域', width: 100},
+                        {field: 'projectName', align: 'center', title: '物业项目', width: 120},
                         {field: 'projectAddress', align: 'center', title: '地址', width: 180},
                         {field: 'buildingName', align: 'center', title: '楼宇', width: 80},
                         {field: 'houseNo', align: 'center', title: '房号', sort: true, width: 80},
