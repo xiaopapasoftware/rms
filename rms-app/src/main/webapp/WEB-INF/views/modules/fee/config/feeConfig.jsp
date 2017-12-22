@@ -20,13 +20,16 @@
         .layui-table-cell .layui-form-checkbox {
             top: 5px !important;
         }
-        .tangchao .layui-form-item{
+
+        .tangchao .layui-form-item {
             height: 30px !important;
         }
+
         .tangchao .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
-        .tangchao .button{
+
+        .tangchao .button {
             border: 1px solid #009688;
             height: 25px;
             line-height: 25px;
@@ -39,12 +42,15 @@
             color: #009688;
             background-color: #FFFFFF;
         }
+
         .widget-body .layui-input, .layui-select, .layui-textarea {
             height: 30px;
         }
+
         .widget-body .layui-form-item .layui-input-inline {
             width: 150px;
         }
+
         .widget-body .layui-form-item .layui-inline {
             margin-right: 0px;
         }
@@ -91,7 +97,8 @@
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="selConfigType" name="selConfigType" lay-filter="selConfigType" placeholder="配置范围" lay-search>
+                        <select id="selConfigType" name="selConfigType" lay-filter="selConfigType" placeholder="配置范围"
+                                lay-search>
                             <option value="">配置范围</option>
                             <option value="0">默认</option>
                             <option value="1">公司</option>
@@ -109,10 +116,21 @@
                 </div>
                 <div class="layui-inline">
                     <div class="layui-input-inline m-large">
-                        <select id="selChargeMethod" name="selChargeMethod" lay-filter="selChargeMethod" placeholder="收取方式" lay-search>
+                        <select id="selChargeMethod" name="selChargeMethod" lay-filter="selChargeMethod"
+                                placeholder="收取方式" lay-search>
                             <option value="">收取方式</option>
                             <option value="0">固定模式</option>
                             <option value="1">账单模式</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <div class="layui-input-inline m-large">
+                        <select id="selRentMethod" name="selRentMethod" lay-filter="selRentMethod"
+                                placeholder="出租方式" lay-search>
+                            <option value="">出租方式</option>
+                            <option value="0">整租</option>
+                            <option value="1">合租</option>
                         </select>
                     </div>
                 </div>
@@ -124,11 +142,11 @@
 <div class="widget-box transparent widget-container-col">
     <div class="widget-header tangchao">
         <shiro:hasPermission name="fee:config:add">
-        <div class="widget-toolbar no-border pull-left">
-            <a href="javascript:void(0);" id="btn-add" class="button">
-                新增
-            </a>
-        </div>
+            <div class="widget-toolbar no-border pull-left">
+                <a href="javascript:void(0);" id="btn-add" class="button">
+                    新增
+                </a>
+            </div>
         </shiro:hasPermission>
     </div>
     <div class="widget-body">
@@ -139,8 +157,7 @@
     </div>
 </div>
 
-
-<div id="addDiv" class="tangchao" hidden >
+<div id="addDiv" class="tangchao" hidden>
     <form class="layui-form" id="addFeeEleBillForm" action="">
         <input type="hidden" id="id"/>
         <div class="layui-form-item" style="margin-top: 15px;">
@@ -208,16 +225,12 @@
 
             <div class="layui-form-item" hidden id="projectDiv">
                 <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" style="width: 100px;">
                     <select id="project" name="project" lay-filter="project" placeholder="小区" lay-search>
                         <option value="">小区</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="layui-form-item" hidden id="buildingDiv">
-                <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" hidden id="buildingDiv" style="width: 100px;">
                     <select id="building" name="building" lay-filter="building" placeholder="楼宇" lay-search>
                         <option value="">楼宇</option>
                     </select>
@@ -226,34 +239,40 @@
 
             <div class="layui-form-item" hidden id="houseDiv">
                 <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
+                <div class="layui-input-inline" style="width: 100px;">
                     <select id="house" name="house" lay-filter="house" placeholder="房屋" lay-search>
                         <option value="">房屋</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="layui-form-item" hidden id="roomDiv">
-                <label class="layui-form-label"></label>
-                <div class="layui-input-inline">
-                    <input type="hidden" id="roomId">
+                <div class="layui-input-inline" hidden id="roomDiv" style="width: 100px;">
                     <select id="room" name="room" lay-filter="room" placeholder="房间" lay-search>
                         <option value="">房间</option>
                     </select>
                 </div>
             </div>
+
+            <%--<div class="layui-form-item">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-inline">
+                    <select id="room" name="room" lay-filter="room" placeholder="房间" lay-search>
+                        <option value="">房间</option>
+                    </select>
+                </div>
+            </div>--%>
         </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">费&nbsp;&nbsp;用&nbsp;&nbsp;值</label>
             <div class="layui-input-inline">
-                <input type="number" id="configValue" required lay-verify="required" placeholder="费用值" class="layui-input">
+                <input type="number" id="configValue" required lay-verify="required" placeholder="费用值"
+                       class="layui-input">
             </div>
         </div>
 
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <a href="javascript:void(0);" id="btn-save" lay-filter="addFeeConfig" lay-submit class="button">保存</a>
+                <a href="javascript:void(0);" id="btn-save" lay-filter="addFeeConfig" lay-submit
+                   class="button">保存</a>
                 <a href="javascript:void(0);" id="btn-cancel" class="button">取消</a>
             </div>
         </div>
@@ -264,13 +283,13 @@
     {{# var status=d.configStatus }}
     {{# if (status=='0'){ }}
     <shiro:hasPermission name="fee:config:stop">
-    <a class="layui-btn layui-btn-mini" lay-event="stop">停用</a>
-    {{# }else{ }}
-    <a class="layui-btn layui-btn-mini" lay-event="start">启用</a>
+        <a class="layui-btn layui-btn-mini" lay-event="stop">停用</a>
+        {{# }else{ }}
+        <a class="layui-btn layui-btn-mini" lay-event="start">启用</a>
     </shiro:hasPermission>
     {{# } }}
     <shiro:hasPermission name="fee:config:delete">
-    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+        <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
     </shiro:hasPermission>
 </script>
 

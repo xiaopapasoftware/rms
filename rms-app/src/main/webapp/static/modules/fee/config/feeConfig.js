@@ -350,7 +350,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 var where = {
                     "feeType": $("#selFeeType").val(),
                     "configType": $("#selConfigType").val(),
-                    "chargeMethod": $("#selChargeMethod").val()
+                    "chargeMethod": $("#selChargeMethod").val(),
+                    "rentMethod": $("#selRentMethod").val()
                 };
                 return where;
             },
@@ -361,7 +362,7 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                     resize: true,
                     offset: 'rt',
                     anim: 2,
-                    area: ['350px', '580px'],
+                    area: ['350px', '480px'],
                     content: $('#addDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
                 });
             },
@@ -393,7 +394,6 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 }
 
                 var data = {
-                    "id": $("#id").val(),
                     "feeType": $("#feeType").val(),
                     "configType": configType,
                     "chargeMethod": $("#chargeMethod").val(),

@@ -222,6 +222,7 @@
             <if test="feeType!=null"> AND fc.fee_type=#{feeType,jdbcType=NUMERIC}</if>
             <if test="configType!=null"> AND fc.config_type=#{configType,jdbcType=NUMERIC}</if>
             <if test="chargeMethod!=null"> AND fc.charge_method=#{chargeMethod,jdbcType=NUMERIC}</if>
+            <if test="rentMethod!=null"> AND fc.rent_method=#{rentMethod,jdbcType=NUMERIC}</if>
         </where>
     </select>
 
