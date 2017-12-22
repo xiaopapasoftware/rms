@@ -47,7 +47,7 @@ public class FeeEleChargedFlow extends DataEntity<FeeEleChargedFlow> implements 
     private BigDecimal elePeakAmount;
     /** ele_valley_amount - 谷金额 */
     private BigDecimal eleValleyAmount;
-    /** generate_order - 是否已生成订单 0:是 -1:否 */
+    /** generate_order - 是否已生成订单 1:是 0:否 */
     private Integer generateOrder;
 
     @Override

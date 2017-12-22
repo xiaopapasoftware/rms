@@ -257,14 +257,13 @@ public class FeeEleChargedFlowService extends CrudService<FeeEleChargedFlowDao, 
     }
 
     @Transactional(readOnly = false)
-    public void generatorOrder() {
+    public void generatorOrder(String scope,String businessId) {
         /*获取所有为生成订单的数据*/
-        FeeEleChargedFlow feeEleChargedFlow = new FeeEleChargedFlow();
-        feeEleChargedFlow.setGenerateOrder(GenerateOrderEnum.NO.getValue());
-        List<FeeEleChargedFlow> feeEleChargedFlows = this.findList(feeEleChargedFlow);
+        List<FeeEleChargedFlow> feeEleChargedFlows = dao.getGenerateFeeEleChargedFlow(scope,businessId);
         if (CollectionUtils.isEmpty(feeEleChargedFlows)) {
             return;
         }
+
         /*按房屋分组*/
         Map<String, List<FeeEleChargedFlow>> feeEleChargedMap = feeEleChargedFlows.stream()
                 .collect(Collectors.groupingBy(FeeEleChargedFlow::getHouseId));
