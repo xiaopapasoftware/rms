@@ -225,33 +225,29 @@
 
         <div id="houseSelect">
             <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">区域项目</label>
-                    <div class="layui-input-inline" style="width: 100px;">
-                        <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
-                            <option value="">区域</option>
-                        </select>
-                    </div>
-                    <div class="layui-input-inline" style="width: 90px;">
-                        <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
-                            <option value="">物业项目</option>
-                        </select>
-                    </div>
+                <label class="layui-form-label">区域项目</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="areaId" name="areaId" lay-filter="areaId" placeholder="区域" lay-search>
+                        <option value="">区域</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="projectId" name="projectId" lay-filter="projectId" placeholder="物业项目" lay-search>
+                        <option value="">物业项目</option>
+                    </select>
                 </div>
             </div>
             <div class="layui-form-item">
-                <div class="layui-inline">
-                    <label class="layui-form-label">楼宇房屋</label>
-                    <div class="layui-input-inline" style="width: 100px;">
-                        <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
-                            <option value="">楼宇</option>
-                        </select>
-                    </div>
-                    <div class="layui-input-inline" style="width: 100px;">
-                        <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
-                            <option value="">房屋</option>
-                        </select>
-                    </div>
+                <label class="layui-form-label">楼宇房屋</label>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="buildingId" name="buildingId" lay-filter="buildingId" placeholder="楼宇" lay-search>
+                        <option value="">楼宇</option>
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 100px;">
+                    <select id="houseId" name="houseId" lay-filter="houseId" placeholder="房屋" lay-search>
+                        <option value="">房屋</option>
+                    </select>
                 </div>
             </div>
         </div>

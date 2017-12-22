@@ -317,8 +317,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 var url = "";
                 if (generateType == "flow") {
                     url = feeOtherChargeFlowMVC.URLs.generateFlow.url;
-                } else if (generateType == "flow") {
-                    url = feeOtherChargeFlowMVC.URLs.generateFlow.url;
+                } else if (generateType == "order") {
+                    url = feeOtherChargeFlowMVC.URLs.generateOrder.url;
                 } else {
                     return;
                 }

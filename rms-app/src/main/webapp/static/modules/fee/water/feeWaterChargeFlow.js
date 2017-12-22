@@ -301,8 +301,8 @@ layui.use(['form', 'table', 'layer', 'laydate', 'laytpl'], function () {
                 var url = "";
                 if (generateType == "flow") {
                     url = feeWaterChargeFlowMVC.URLs.generateFlow.url;
-                } else if (generateType == "flow") {
-                    url = feeWaterChargeFlowMVC.URLs.generateFlow.url;
+                } else if (generateType == "order") {
+                    url = feeWaterChargeFlowMVC.URLs.generateOrder.url;
                 } else {
                     return;
                 }

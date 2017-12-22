@@ -60,7 +60,8 @@
 
     <select id="getWholeRentAllHouse" resultType="com.thinkgem.jeesite.modules.inventory.entity.House">
         SELECT
-        th.*
+        th.*,
+        th.property_project_id 'propertyProject.id'
         from t_house th
         LEFT JOIN t_building tb ON tb.id = th.BUILDING_ID AND tb.del_flag=0
         LEFT JOIN t_property_project tpp ON tpp.id = th.PROPERTY_PROJECT_ID AND tpp.del_flag=0
