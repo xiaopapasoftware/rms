@@ -50,7 +50,7 @@ flat_configs（不传）
 room_configs（不传）
 pay_type=房屋表的rent_month_gap
 room_amount=house表的rental
-foregift_amount= rental  乘以  depos_month_count
+foregift_amount=rental  乘以  depos_month_count
 other_amount（不传）
 images=上传图片文件后返回的url数组
 owners_name=T_HOUSE_OWNER关联到sys_user表，取name
