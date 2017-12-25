@@ -1,19 +1,5 @@
 package com.thinkgem.jeesite.task.service;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -26,6 +12,19 @@ import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.report.entity.FeeReport;
 import com.thinkgem.jeesite.modules.report.entity.FeeReportTypeEnum;
 import com.thinkgem.jeesite.modules.report.service.FeeReportService;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @Lazy(false)
@@ -112,18 +111,17 @@ public class ElectricityFeeTask {
 
   private void judgeSendSms(FeeReport feeReport) {
     if (feeReport.getRemainFee() < 10d && feeReport.getSmsRecord().charAt(0) == '0') {
-      sendSmsByFeeReportId(feeReport.getId(), "已少于10元，避免造成用电不便");
+      sendSmsByFeeReport(feeReport, "已少于10元，避免造成用电不便");
       feeReport.setSmsRecord("1" + feeReport.getSmsRecord().substring(1));
       feeReport.setSmsTime(new Date());
     } else if (feeReport.getRemainFee() < 30d && feeReport.getSmsRecord().charAt(1) == '0') {
-      sendSmsByFeeReportId(feeReport.getId(), "已少于30元，避免造成用电不便");
+      sendSmsByFeeReport(feeReport, "已少于30元，避免造成用电不便");
       feeReport.setSmsRecord(feeReport.getSmsRecord().substring(0, 1) + "1");
       feeReport.setSmsTime(new Date());
     }
   }
 
-  private void sendSmsByFeeReportId(String feeReportId, String differentContent) {
-    FeeReport feeReport = feeReportService.get(feeReportId);
+  private void sendSmsByFeeReport(FeeReport feeReport, String differentContent) {
     List<String> phoneList = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
     String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
     String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，" + differentContent + ",请及时充值。如您已充值，请忽略此短信。";
