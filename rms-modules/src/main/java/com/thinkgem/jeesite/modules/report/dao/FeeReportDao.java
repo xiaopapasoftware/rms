@@ -21,6 +21,8 @@ public interface FeeReportDao extends CrudDao<FeeReport> {
 
     List<FeeReport> getFeeReportByRoomIdList(@Param("roomIdList")List<String> roomIdList, @Param("minValue")Double minValue, @Param("maxValue")Double maxValue);
 
-    public List<FeeReport> getFeeReportList(@Param("size")int size);
+    List<FeeReport> getFeeReportList(@Param("size")int size);
+
+    void deleteFeeReportByRentContractId(@Param("rentContractId")String rentContractId);
 
 }
