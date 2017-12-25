@@ -146,5 +146,12 @@
 			AND  <![CDATA[  a.REMAIN_FEE <= ${maxValue} ]]>
 		</if>
 	</select>
-	
+
+	<update id="deleteFeeReportByRentContractId">
+		update t_fee_report set del_flag = "1",  update_date = now()
+		WHERE
+		del_flag = '0'  AND
+		RENT_CONTRACT_ID = #{rentContractId}
+	</update>
+
 </mapper>

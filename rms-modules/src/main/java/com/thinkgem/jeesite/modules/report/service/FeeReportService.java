@@ -19,4 +19,9 @@ public class FeeReportService extends CrudService<FeeReportDao, FeeReport>{
     public List<FeeReport> getFeeReportList(int size) {
         return dao.getFeeReportList(size);
     }
+
+    public void deleteFeeReportByRentContractId(String rentContractId) {
+        dao.deleteFeeReportByRentContractId(rentContractId);
+    }
+
 }

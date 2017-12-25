@@ -1,26 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.web;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
@@ -33,22 +12,8 @@ import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
-import com.thinkgem.jeesite.modules.contract.entity.Accounting;
-import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
-import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.AccountingTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AwardRentAmtTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
+import com.thinkgem.jeesite.modules.contract.entity.*;
+import com.thinkgem.jeesite.modules.contract.enums.*;
 import com.thinkgem.jeesite.modules.contract.service.AccountingService;
 import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
@@ -75,7 +40,27 @@ import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.report.service.FeeReportService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "${adminPath}/contract/rentContract")
@@ -119,6 +104,8 @@ public class RentContractController extends BaseController {
   private AttachmentService attachmentService;
   @Autowired
   private CompanyService companyService;
+  @Autowired
+  private FeeReportService feeReportService;
 
   @ModelAttribute
   public RentContract get(@RequestParam(required = false) String id) {
@@ -461,6 +448,7 @@ public class RentContractController extends BaseController {
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "正常退租成功，接下来请进行正常退租核算！");
+    feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -489,6 +477,7 @@ public class RentContractController extends BaseController {
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "提前退租成功，接下来请进行提前退租核算！");
+    feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -521,6 +510,7 @@ public class RentContractController extends BaseController {
     rentContract.setContractBusiStatus(ContractBusiStatusEnum.LATE_RETURN_ACCOUNT.getValue());
     rentContractService.save(rentContract);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "逾期退租成功，接下来请进行逾期退租核算！");
+    feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
     return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
   }
 
@@ -546,6 +536,7 @@ public class RentContractController extends BaseController {
     model.addAttribute("accountSize", inAccountList.size());
     model.addAttribute("rentContract", rentContract);
     model.addAttribute("totalRefundAmount", calculateTatalRefundAmt(outAccountList, inAccountList));
+    feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
     return "modules/contract/rentContractCheck";
   }
 
