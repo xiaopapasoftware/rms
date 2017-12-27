@@ -7,12 +7,14 @@ b、【3.5工时】预约申请表t_contract_book改造：user_id修改名称为
 查询结果里预约姓名、预约电话分别是T_CUSTOMER的true_name和预约电话为book_phone。
 另外页面的查询结果里，新增一个跟进销售字段，值为t_contract_book表的sales_id字段关联的sys_user的名称；
 页面的查询结果的房屋管家字段取值仍然是房源表的管家字段，另外新增from_source字段、房源公寓类型（分散式/集中式）、房源编号
+c、【4工时】在每条book_status为“等待管家确认”后新增“工单分配”按钮，该按钮权限暂时分配给admin。点击后弹出sys_user表供选择合适的销售人员以跟进该预约看房记录，选择确认后，把该预约看房申请的book_status改为“预约成功”，同时把该工单申请记录的sales_id更新为选中的sys_user用户id，同时向该销售发送短信，短信内容为：
+“XX员工你好，姓名：XXX，手机号为：XXX的客户预约在XX日期看XX小区XX楼302号A室房源，请提前联系用户做好带看准备。”
+同时针对预约看房申请的book_status已经为“预约成功“的预约申请，后面新增一个”带看人变更“功能，点击后，预约申请状态不变，但是把该工单申请记录的sales_id更新为变更后的sys_user用户id，同时向变更后的销售发送短信，短信内容跟上述短信内容一致。
 
 2、处理支付宝租赁平台返回的预约申请通知：
 a【2工时】、验签成功后，通过看房人手机号码去T_CUSTOMER表查询有无用户信息，如有则把看房人姓名、性别更近到T_CUSTOMER表（返回cust_user_id供后面保存到t_contract_book表），再根据这个customer_id去cust_bind_info查询，如果有类型为2（支付宝账号）的绑定账号，则把返回的支付宝用户Id更新到表cust_bind_info的“三方账号”字段，如果没有类型为2（支付宝账号）的绑定账号，则新增一条cust_bind_info记录。（注意如果返回的芝麻授权Id也不为空，则同时也要判断根据这个customer_id去cust_bind_info查询，如果有类型为3（芝麻信用账号）的绑定账号，有则更新芝麻授权Id值，无则新增类型为3（芝麻信用账号）的绑定账号记录）；
 如果没有查到看房人手机号码对应的T_CUSTOMER表信息，则新增T_CUSTOMER表记录保存对应的字段（姓名、手机号、性别，返回cust_user_id供后面保存到t_contract_book表）），同时保存支付宝用户Id和芝麻授权Id的两条cust_bind_info记录（芝麻授权Id为空则不管）
 b【2工时】、再保存用户预约看房申请记录信息，cust_user_id直接保存，book_phone存返回的bookPhone字段；book_date存返回的lookTime，from_source固定存1（见上述枚举定义），pf_housingcode存返回的roomCode，
 再根据返回的房源编号roomCode（房屋表新增的platform_housecode/房间表新增的platform_roomcode）去查询出house或room，把houseId(肯定有)和roomId(有则保存没有则空)保存到t_contract_book表。
-book_status		 BookStatusEnum.BOOK_SUCCESS(预约成功)
-sales_id		 暂时留空。
-C【1工时】、保存成功后，向房源管家手机发送一条短信，文案为：手机号为XXX的用户【XXX】预约了在XX时间看XX小区XX楼302的A房间（如果是预约看单间则有）
+book_status		 BookStatusEnum.BOOK_APP(等待管家确认)
+sales_id		 初始化暂时留空。
