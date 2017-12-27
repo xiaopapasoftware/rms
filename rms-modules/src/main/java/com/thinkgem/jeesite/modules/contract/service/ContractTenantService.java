@@ -1,13 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
@@ -18,6 +10,13 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wangshujin
@@ -168,5 +167,9 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
         super.save(contractTenant);
       }
     }
+  }
+
+  public List<ContractTenant> getTenantListByContractIdList(List<String> contractIdList) {
+    return dao.getTenantListByContractIdList(contractIdList);
   }
 }

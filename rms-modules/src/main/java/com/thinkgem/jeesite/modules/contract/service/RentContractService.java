@@ -880,4 +880,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     return null;
   }
 
+  public List<RentContract> getByContractNameOrCode(String contractCode, String contractName) {
+    return dao.getByContractNameOrCode(contractCode, contractName);
+  }
+
 }

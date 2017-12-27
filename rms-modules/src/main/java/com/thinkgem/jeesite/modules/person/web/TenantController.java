@@ -3,13 +3,23 @@
  */
 package com.thinkgem.jeesite.modules.person.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
+import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.person.entity.Company;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.CompanyService;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
+import com.thinkgem.jeesite.modules.service.SystemService;
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +31,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.common.mapper.JsonMapper;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
-import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
-import com.thinkgem.jeesite.modules.entity.User;
-import com.thinkgem.jeesite.modules.person.entity.Company;
-import com.thinkgem.jeesite.modules.person.entity.Tenant;
-import com.thinkgem.jeesite.modules.person.service.CompanyService;
-import com.thinkgem.jeesite.modules.person.service.TenantService;
-import com.thinkgem.jeesite.modules.service.SystemService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "${adminPath}/person/tenant")
@@ -51,6 +53,12 @@ public class TenantController extends BaseController {
 
   @Autowired
   private ContractTenantDao contractTenantDao;
+
+  @Autowired
+  private RentContractService rentContractService;
+
+  @Autowired
+  private ContractTenantService contractTenantService;
 
   @ModelAttribute
   public Tenant get(@RequestParam(required = false) String id) {
@@ -107,6 +115,15 @@ public class TenantController extends BaseController {
   // @RequiresPermissions("person:tenant:view")
   @RequestMapping(value = {"list"})
   public String listQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
+    if (StringUtils.isNotBlank(tenant.getContractCode()) || StringUtils.isNotBlank(tenant.getContractName())) {
+      List<RentContract> rentContractList = rentContractService.getByContractNameOrCode(tenant.getContractCode(), tenant.getContractName());
+      if (CollectionUtils.isNotEmpty(rentContractList)) {
+        List<ContractTenant> contractTenantList = contractTenantService.getTenantListByContractIdList(rentContractList.stream().map(RentContract::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isNotEmpty(contractTenantList)) {
+          tenant.setIdList(contractTenantList.stream().map(ContractTenant::getTenantId).collect(Collectors.toList()));
+        }
+      }
+    }
     Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
     model.addAttribute("page", page);
     model.addAttribute("listUser", systemService.findUser(new User()));
