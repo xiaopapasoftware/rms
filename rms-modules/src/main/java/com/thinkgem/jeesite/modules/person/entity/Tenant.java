@@ -3,13 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.person.entity;
 
-import java.util.Date;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.User;
 import org.hibernate.validator.constraints.Length;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.thinkgem.jeesite.common.persistence.DataEntity;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 租客信息Entity
@@ -31,6 +31,11 @@ public class Tenant extends DataEntity<Tenant> {
   private String houseRegister; // 户籍所在地
   private String position; // 职位
   private String customerId;// 当从客户转化为租客时使用
+
+  private String contractCode;//合同号
+  private String contractName;//合同名
+
+  private List<String> idList;
 
   @SuppressWarnings("unused")
   private String label;
@@ -181,5 +186,29 @@ public class Tenant extends DataEntity<Tenant> {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public String getContractCode() {
+    return contractCode;
+  }
+
+  public void setContractCode(String contractCode) {
+    this.contractCode = contractCode;
+  }
+
+  public String getContractName() {
+    return contractName;
+  }
+
+  public void setContractName(String contractName) {
+    this.contractName = contractName;
+  }
+
+  public List<String> getIdList() {
+    return idList;
+  }
+
+  public void setIdList(List<String> idList) {
+    this.idList = idList;
   }
 }

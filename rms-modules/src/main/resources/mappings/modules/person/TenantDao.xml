@@ -111,6 +111,12 @@
 				<if test="dbName == 'mssql'">'%'+#{position}+'%'</if>
 				<if test="dbName == 'mysql'">concat('%',#{position},'%')</if>
 			</if>
+			<if test="idList != null">
+				and a.id in
+				<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">

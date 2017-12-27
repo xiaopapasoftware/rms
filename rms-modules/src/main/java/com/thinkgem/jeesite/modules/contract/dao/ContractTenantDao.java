@@ -20,4 +20,6 @@ public interface ContractTenantDao extends CrudDao<ContractTenant> {
 
     List<ContractTenant> getByContractId(@Param("contractId")String contractId);
 
+    List<ContractTenant> getTenantListByContractIdList(@Param("contractIdList")List<String> contractIdList);
+
 }

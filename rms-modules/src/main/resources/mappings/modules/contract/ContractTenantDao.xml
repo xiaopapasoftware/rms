@@ -176,4 +176,14 @@
 		and del_flag='0'
 	</select>
 
+	<select id="getTenantListByContractIdList" resultType="ContractTenant">
+		SELECT * FROM
+		t_contract_tenant
+		WHERE  CONTRACT_ID IN
+		<foreach item="item" index="index" collection="contractIdList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		and del_flag='0'
+	</select>
+
 </mapper>

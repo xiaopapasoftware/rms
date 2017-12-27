@@ -84,6 +84,12 @@
 					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
+			<li><label style="width:100px;">出租合同号：</label>
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
+			</li>
+			<li><label style="width:100px;">出租合同名称：</label>
+				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+			</li>
 			<li class="btns">
 				<label style="width:100px;"></label>
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" style="width:135px;"/>
