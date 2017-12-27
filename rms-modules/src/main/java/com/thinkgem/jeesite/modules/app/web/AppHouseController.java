@@ -347,7 +347,7 @@ public class AppHouseController extends AppBaseController {
     contractBook.setUserGender(userSex);
     contractBook.setRemarks(remark);
     contractBook.setBookDate(DateUtils.parseDate(appTime));
-    contractBook.setBookStatus(BookStatusEnum.BOOK_APV.value());
+    contractBook.setBookStatus(BookStatusEnum.BOOK_SUCCESS.value());
     contractBookService.save(contractBook);
     /* 获取房屋房屋管家手机号码 */
     String mobile = Global.getConfig("service.manager.mobile");
@@ -443,7 +443,7 @@ public class AppHouseController extends AppBaseController {
   public ResponseData bookingCancel(@PathVariable String id) {
     ContractBook contractBook = new ContractBook();
     contractBook.setId(id);
-    contractBook.setBookStatus(BookStatusEnum.BOOK_CANCEL.value());
+    contractBook.setBookStatus(BookStatusEnum.ADMIN_CANCEL.value());
     contractBookService.updateStatusByHouseId(contractBook);
     return ResponseData.success();
   }

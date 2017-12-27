@@ -6,18 +6,33 @@ package com.thinkgem.jeesite.modules.app.enums;
  */
 public enum BookStatusEnum {
 
-    BOOK_APP("0"),
-    BOOK_APV("1"),
-    BOOK_SUCCESS("2"),
-    BOOK_CANCEL("3");
+  /**
+   * 等待管家确认
+   */
+  BOOK_APP("0"),
 
-    BookStatusEnum(String value) {
-        this.value =value;
-    }
+  /**
+   * 预约成功
+   */
+  BOOK_SUCCESS("1"),
 
-    private String value;
+  /**
+   * 用户取消预约
+   */
+  USER_CANCEL("2"),
 
-    public String value() {
-        return value;
-    }
-    }
+  /**
+   * 管家取消预约
+   */
+  ADMIN_CANCEL("3");
+
+  BookStatusEnum(String value) {
+    this.value = value;
+  }
+
+  private String value;
+
+  public String value() {
+    return value;
+  }
+}
