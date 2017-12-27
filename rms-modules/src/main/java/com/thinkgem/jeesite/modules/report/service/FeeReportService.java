@@ -10,18 +10,19 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class FeeReportService extends CrudService<FeeReportDao, FeeReport>{
+public class FeeReportService extends CrudService<FeeReportDao, FeeReport> {
 
-    public List<FeeReport> getFeeReportByRoomIdList(List<String> roomIdList, Double minValue, Double maxValue) {
-        return dao.getFeeReportByRoomIdList(roomIdList, minValue, maxValue);
-    }
+  public List<FeeReport> getFeeReportByRoomIdList(List<String> roomIdList, Double minValue, Double maxValue) {
+    return dao.getFeeReportByRoomIdList(roomIdList, minValue, maxValue);
+  }
 
-    public List<FeeReport> getFeeReportList(int size) {
-        return dao.getFeeReportList(size);
-    }
+  public List<FeeReport> getFeeReportList(int size) {
+    return dao.getFeeReportList(size);
+  }
 
-    public void deleteFeeReportByRentContractId(String rentContractId) {
-        dao.deleteFeeReportByRentContractId(rentContractId);
-    }
+  @Transactional(readOnly = false)
+  public void deleteFeeReportByRentContractId(String rentContractId) {
+    dao.deleteFeeReportByRentContractId(rentContractId);
+  }
 
 }
