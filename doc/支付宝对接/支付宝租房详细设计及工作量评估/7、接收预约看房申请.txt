@@ -1,0 +1,18 @@
+1、现有系统改造：
+a、【3.5工时】用户信息统一：删除表T_APP_USER，及其相关的实体类，服务接口等等相关业务代码； 用户池信息改造：改造表T_CUSTOMER，USER_ID（销售）字段名称修改为sale_user_ID，字段备注改为“跟进销售”，CONTACT_NAME（姓名）字段名称修改为true_NAME，备注改为“真实姓名”，性别GENDER:1:男 2:女，同时新增如下字段：登录名login_name、登录密码login_pwd、昵称nick_Name、身份证号ID_NO、生日BIRTH、年龄AGE、职业PROFESSION、公司CORP、学历Education（定义学历枚举值）、客户来源（定义客户来源枚举，支付宝租赁平台:1   ...）、三方绑定账号id（三方绑定账户表的主键id）。
+其中身份证号ID_NO字段添加到用户信息管理页面的查询条件里，用户信息管理详情把用户信息表修改的字段和新增的字段都添加上去。
+新建：三方绑定用户信息表cust_bind_info，有如下字段：用户表ID、三方账号类型(定义枚举，科技侠账号1,支付宝账号2,芝麻信用账号3...)、三方账号、三方账号密码、是否有效、创建者、创建时间、更新者、更新时间、备注信息。在人员管理，下新增三级菜单“三方账号管理” ，提供三方绑定用户账号信息查询功能；
+b、【3.5工时】预约申请表t_contract_book改造：user_id修改名称为cust_user_id备注为用户信息id，修改user_phone名称为book_phone备注为预约联系电话（纯粹是预约联系电话，与用户的联系电话无关，用户手机号可在T_CUSTOMER里查看），删除user_name、user_gender字段，新增预约来源字段（from_source，定义枚举：1支付宝租房平台..有待扩充），新增房源编号字段pf_housingcode（参考房屋表新增的platform_housecode/房间表新增的platform_roomcode）。字段更改后对应的dao.xml文件及对象实体类也要对应做调整。
+合同管理-预约管理，查询条件修改：预约姓名-->T_CUSTOMER的true_name，预约电话改为book_phone，新增from_source字段
+查询结果里预约姓名、预约电话分别是T_CUSTOMER的true_name和预约电话为book_phone。
+另外页面的查询结果里，新增一个跟进销售字段，值为t_contract_book表的sales_id字段关联的sys_user的名称；
+页面的查询结果的房屋管家字段取值仍然是房源表的管家字段，另外新增from_source字段、房源公寓类型（分散式/集中式）、房源编号
+
+2、处理支付宝租赁平台返回的预约申请通知：
+a【2工时】、验签成功后，通过看房人手机号码去T_CUSTOMER表查询有无用户信息，如有则把看房人姓名、性别更近到T_CUSTOMER表（返回cust_user_id供后面保存到t_contract_book表），再根据这个customer_id去cust_bind_info查询，如果有类型为2（支付宝账号）的绑定账号，则把返回的支付宝用户Id更新到表cust_bind_info的“三方账号”字段，如果没有类型为2（支付宝账号）的绑定账号，则新增一条cust_bind_info记录。（注意如果返回的芝麻授权Id也不为空，则同时也要判断根据这个customer_id去cust_bind_info查询，如果有类型为3（芝麻信用账号）的绑定账号，有则更新芝麻授权Id值，无则新增类型为3（芝麻信用账号）的绑定账号记录）；
+如果没有查到看房人手机号码对应的T_CUSTOMER表信息，则新增T_CUSTOMER表记录保存对应的字段（姓名、手机号、性别，返回cust_user_id供后面保存到t_contract_book表）），同时保存支付宝用户Id和芝麻授权Id的两条cust_bind_info记录（芝麻授权Id为空则不管）
+b【2工时】、再保存用户预约看房申请记录信息，cust_user_id直接保存，book_phone存返回的bookPhone字段；book_date存返回的lookTime，from_source固定存1（见上述枚举定义），pf_housingcode存返回的roomCode，
+再根据返回的房源编号roomCode（房屋表新增的platform_housecode/房间表新增的platform_roomcode）去查询出house或room，把houseId(肯定有)和roomId(有则保存没有则空)保存到t_contract_book表。
+book_status		 BookStatusEnum.BOOK_SUCCESS(预约成功)
+sales_id		 暂时留空。
+C【1工时】、保存成功后，向房源管家手机发送一条短信，文案为：手机号为XXX的用户【XXX】预约了在XX时间看XX小区XX楼302的A房间（如果是预约看单间则有）
