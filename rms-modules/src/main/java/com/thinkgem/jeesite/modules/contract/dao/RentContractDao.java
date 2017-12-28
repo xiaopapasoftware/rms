@@ -42,5 +42,5 @@ public interface RentContractDao extends CrudDao<RentContract> {
 
   RentContract getByRoomId(@Param("roomId")String roomId);
 
-  List<RentContract> getByContractNameOrCode(@Param("contractCode")String contractCode, @Param("contractName")String contractName);
+  List<RentContract> getByRentContract(RentContract rentContract);
 }

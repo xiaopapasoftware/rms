@@ -571,11 +571,27 @@
 		AND a.contract_busi_status = '0'
 	</select>
 
-	<select id="getByContractNameOrCode" resultType="RentContract">
+	<select id="getByRentContract" parameterType="RentContract" resultType="RentContract">
 		SELECT * FROM
-		t_rent_contract a
-		WHERE  a.del_flag='0'
-		AND a.CONTRACT_CODE like concat('%',#{contractCode},'%')
-		AND a.CONTRACT_NAME LIKE concat('%',#{contractName},'%')
+		t_rent_contract
+		WHERE  del_flag='0'
+		<if test="propertyProject.id != null and propertyProject.id != ''">
+		AND property_project_id = #{propertyProject.id}
+		</if>
+		<if test="building.id != null and building.id != ''">
+		AND building_id = #{building.id}
+		</if>
+		<if test="house.id != null and house.id != ''">
+		AND house_id = #{house.id}
+		</if>
+		<if test="room.id != null and room.id != ''">
+		AND room_id = #{room.id}
+		</if>
+		<if test="contractCode != null and contractCode != ''">
+		AND CONTRACT_CODE like concat('%',#{contractCode},'%')
+		</if>
+		<if test="contractName != null and contractName != ''">
+		AND CONTRACT_NAME LIKE concat('%',#{contractName},'%')
+		</if>
 	</select>
 </mapper>

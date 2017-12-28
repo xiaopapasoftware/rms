@@ -15,6 +15,14 @@ import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseService;
+import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
@@ -59,6 +67,18 @@ public class TenantController extends BaseController {
 
   @Autowired
   private ContractTenantService contractTenantService;
+
+  @Autowired
+  private PropertyProjectService propertyProjectService;
+
+  @Autowired
+  private BuildingService buildingService;
+
+  @Autowired
+  private HouseService houseService;
+
+  @Autowired
+  private RoomService roomService;
 
   @ModelAttribute
   public Tenant get(@RequestParam(required = false) String id) {
@@ -115,8 +135,56 @@ public class TenantController extends BaseController {
   // @RequiresPermissions("person:tenant:view")
   @RequestMapping(value = {"list"})
   public String listQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
-    if (StringUtils.isNotBlank(tenant.getContractCode()) || StringUtils.isNotBlank(tenant.getContractName())) {
-      List<RentContract> rentContractList = rentContractService.getByContractNameOrCode(tenant.getContractCode(), tenant.getContractName());
+    buildTenant(tenant);
+    Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
+    model.addAttribute("page", page);
+    model.addAttribute("listUser", systemService.findUser(new User()));
+    model.addAttribute("listCompany", companyService.findList(new Company()));
+    initOrgSelect(tenant, model);
+    return "modules/person/tenantList";
+  }
+
+  private void initOrgSelect(Tenant tenant, Model model) {
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
+    if (null != tenant.getPropertyProject() && StringUtils.isNotBlank(tenant.getPropertyProject().getId())) {
+      PropertyProject propertyProject = new PropertyProject();
+      propertyProject.setId(tenant.getPropertyProject().getId());
+      Building building = new Building();
+      building.setPropertyProject(propertyProject);
+      List<Building> buildingList = buildingService.findList(building);
+      model.addAttribute("buildingList", buildingList);
+    }
+    if (null != tenant.getBuilding() && StringUtils.isNotBlank(tenant.getBuilding().getId())) {
+      House house = new House();
+      Building building = new Building();
+      building.setId(tenant.getBuilding().getId());
+      house.setBuilding(building);
+      List<House> houseList = houseService.findList(house);
+      model.addAttribute("houseList", houseList);
+    }
+    if (null != tenant.getHouse() && StringUtils.isNotBlank(tenant.getHouse().getId())) {
+      Room room = new Room();
+      House house = new House();
+      house.setId(tenant.getHouse().getId());
+      room.setHouse(house);
+      List<Room> roomList = roomService.findList(room);
+      model.addAttribute("roomList", roomList);
+    }
+  }
+
+  private void buildTenant(Tenant tenant) {
+    if (StringUtils.isNotBlank(tenant.getContractCode()) || StringUtils.isNotBlank(tenant.getContractName())
+        || StringUtils.isNotBlank(tenant.getPropertyProject().getId()) || StringUtils.isNotBlank(tenant.getBuilding().getId())
+        || StringUtils.isNotBlank(tenant.getHouse().getId()) || StringUtils.isNotBlank(tenant.getRoom().getId())) {
+      RentContract rentContract = new RentContract();
+      rentContract.setContractCode(tenant.getContractCode());
+      rentContract.setContractName(tenant.getContractName());
+      rentContract.setPropertyProject(new PropertyProject(tenant.getPropertyProject().getId()));
+      rentContract.setBuilding(new Building(tenant.getBuilding().getId()));
+      rentContract.setHouse(new House(tenant.getHouse().getId()));
+      rentContract.setRoom(new Room(tenant.getRoom().getId()));
+      List<RentContract> rentContractList = rentContractService.getByRentContract(rentContract);
       if (CollectionUtils.isNotEmpty(rentContractList)) {
         List<ContractTenant> contractTenantList = contractTenantService.getTenantListByContractIdList(rentContractList.stream().map(RentContract::getId).collect(Collectors.toList()));
         if (CollectionUtils.isNotEmpty(contractTenantList)) {
@@ -124,17 +192,14 @@ public class TenantController extends BaseController {
         }
       }
     }
-    Page<Tenant> page = tenantService.findPage(new Page<Tenant>(request, response), tenant);
-    model.addAttribute("page", page);
-    model.addAttribute("listUser", systemService.findUser(new User()));
-    model.addAttribute("listCompany", companyService.findList(new Company()));
-    return "modules/person/tenantList";
   }
 
   @RequestMapping(value = {""})
   public String listNoQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("listUser", systemService.findUser(new User()));
     model.addAttribute("listCompany", companyService.findList(new Company()));
+    List<PropertyProject> projectList = propertyProjectService.findList(new PropertyProject());
+    model.addAttribute("projectList", projectList);
     return "modules/person/tenantList";
   }
 

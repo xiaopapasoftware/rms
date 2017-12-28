@@ -14,6 +14,71 @@
 			$("#searchForm").submit();
         	return false;
         }
+        function changeProject() {
+            var project = $("[id='propertyProject.id']").val();
+            var html = "<option value='' selected='selected'>全部</option>";
+            if("" != project) {
+                $.ajaxSetup({ cache: false });
+                $.get("${ctx}/inventory/building/findList?id=" + project, function(data){
+                    for(var i=0;i<data.length;i++) {
+                        html += "<option value='"+data[i].id+"'>"+data[i].buildingName+"</option>";
+                    }
+                    $("[id='building.id']").html(html);
+                });
+            } else {
+                $("[id='building.id']").html(html);
+            }
+            $("[id='building.id']").val("");
+            $("[id='building.id']").prev("[id='s2id_building.id']").find(".select2-chosen").html("全部");
+
+            $("[id='house.id']").html(html);
+            $("[id='house.id']").val("");
+            $("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+
+            $("[id='room.id']").html(html);
+            $("[id='room.id']").val("");
+            $("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+        }
+
+        function buildingChange() {
+            var building = $("[id='building.id']").val();
+            var html = "<option value='' selected='selected'>全部</option>";
+            if("" != building) {
+                $.ajaxSetup({ cache: false });
+                $.get("${ctx}/inventory/house/findList?id=" + building, function(data){
+                    for(var i=0;i<data.length;i++) {
+                        html += "<option value='"+data[i].id+"'>"+data[i].houseNo+"</option>";
+                    }
+                    $("[id='house.id']").html(html);
+                });
+            } else {
+                $("[id='house.id']").html(html);
+            }
+            $("[id='house.id']").val("");
+            $("[id='house.id']").prev("[id='s2id_house.id']").find(".select2-chosen").html("全部");
+
+            $("[id='room.id']").html(html);
+            $("[id='room.id']").val("");
+            $("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+        }
+
+        function houseChange() {
+            var room = $("[id='house.id']").val();
+            var html = "<option value='' selected='selected'>全部</option>";
+            if("" != room) {
+                $.ajaxSetup({ cache: false });
+                $.get("${ctx}/inventory/room/findList?id=" + room, function(data){
+                    for(var i=0;i<data.length;i++) {
+                        html += "<option value='"+data[i].id+"'>"+data[i].roomNo+"</option>";
+                    }
+                    $("[id='room.id']").html(html);
+                });
+            } else {
+                $("[id='room.id']").html(html);
+            }
+            $("[id='room.id']").val("");
+            $("[id='room.id']").prev("[id='s2id_room.id']").find(".select2-chosen").html("全部");
+        }
 	</script>
 </head>
 <body>
@@ -26,7 +91,7 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label style="width:100px;">姓名：</label>
-				<form:input path="tenantName" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
+				<form:input path="tenantName" htmlEscape="false" maxlength="100" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">性别：</label>
 				<form:select path="gender" class="input-medium" style="width:177px;">
@@ -47,15 +112,15 @@
 				</form:select>
 			</li>
 			<li><label style="width:100px;">证件号码：</label>
-				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">手机号码：</label>
-				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+				<form:input path="cellPhone" htmlEscape="false" maxlength="64" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">出生日期：</label>
 				<input name="birthday" type="text" maxlength="20" class="input-medium Wdate"
 					value="<fmt:formatDate value="${tenant.birthday}" pattern="yyyy-MM-dd"/>"
-					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:177px;"/>
+					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">学历：</label>
 				<form:select path="degrees" class="input-medium" style="width:177px;">
@@ -70,13 +135,13 @@
 				</form:select>
 			</li>
 			<li><label style="width:100px;">电子邮箱：</label>
-				<form:input path="email" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+				<form:input path="email" htmlEscape="false" maxlength="64" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">户籍所在地：</label>
-				<form:input path="houseRegister" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+				<form:input path="houseRegister" htmlEscape="false" maxlength="64" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">职位：</label>
-				<form:input path="position" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+				<form:input path="position" htmlEscape="false" maxlength="64" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">跟进销售：</label>
 				<form:select path="user.id" class="input-xlarge" style="width:177px;">
@@ -85,10 +150,34 @@
 				</form:select>
 			</li>
 			<li><label style="width:100px;">出租合同号：</label>
-				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:177px;"/>
+				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium" style="width:162px;"/>
 			</li>
 			<li><label style="width:100px;">出租合同名称：</label>
-				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:177px;"/>
+				<form:input path="contractName" htmlEscape="false" maxlength="64" class="input-medium" style="width:162px;"/>
+			</li>
+			<li><label style="width:100px;">物业项目：</label>
+				<form:select path="propertyProject.id" class="input-medium" style="width:177px;" onchange="changeProject()">
+					<form:option value="" label="全部"/>
+					<form:options items="${projectList}" itemLabel="projectName" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label style="width:100px;">楼宇：</label>
+				<form:select path="building.id" class="input-medium" style="width:177px;" onchange="buildingChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${buildingList}" itemLabel="buildingName" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label style="width:100px;">房屋：</label>
+				<form:select path="house.id" class="input-medium" style="width:177px;" onchange="houseChange()">
+					<form:option value="" label="全部"/>
+					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
+				</form:select>
+			</li>
+			<li><label style="width:100px;">房间：</label>
+				<form:select path="room.id" class="input-medium" style="width:177px;">
+					<form:option value="" label="全部"/>
+					<form:options items="${roomList}" itemLabel="roomNo" itemValue="id" htmlEscape="false"/>
+				</form:select>
 			</li>
 			<li class="btns">
 				<label style="width:100px;"></label>

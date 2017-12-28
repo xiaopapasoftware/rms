@@ -6,6 +6,10 @@ package com.thinkgem.jeesite.modules.person.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.inventory.entity.Building;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import org.hibernate.validator.constraints.Length;
 
 import java.util.Date;
@@ -34,6 +38,10 @@ public class Tenant extends DataEntity<Tenant> {
 
   private String contractCode;//合同号
   private String contractName;//合同名
+  private PropertyProject propertyProject; // 物业项目
+  private Building building; // 楼宇
+  private House house; // 房屋
+  private Room room; // 房间
 
   private List<String> idList;
 
@@ -202,6 +210,38 @@ public class Tenant extends DataEntity<Tenant> {
 
   public void setContractName(String contractName) {
     this.contractName = contractName;
+  }
+
+  public PropertyProject getPropertyProject() {
+    return propertyProject;
+  }
+
+  public void setPropertyProject(PropertyProject propertyProject) {
+    this.propertyProject = propertyProject;
+  }
+
+  public Building getBuilding() {
+    return building;
+  }
+
+  public void setBuilding(Building building) {
+    this.building = building;
+  }
+
+  public House getHouse() {
+    return house;
+  }
+
+  public void setHouse(House house) {
+    this.house = house;
+  }
+
+  public Room getRoom() {
+    return room;
+  }
+
+  public void setRoom(Room room) {
+    this.room = room;
   }
 
   public List<String> getIdList() {
