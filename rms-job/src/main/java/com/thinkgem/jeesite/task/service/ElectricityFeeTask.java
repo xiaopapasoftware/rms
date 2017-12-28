@@ -54,7 +54,7 @@ public class ElectricityFeeTask {
   /**
    * 更新下剩余费用
    */
-  @Scheduled(cron = "0 0/30 8-23 * * ?")
+  @Scheduled(cron = "0 0/30 7-23 * * ?")
   public void updateRoom() {
     log.info("------ElectricityFeeTask updateRoom()开始 执行 ------");
     List<FeeReport> feeReportList = feeReportService.getFeeReportList(size);
@@ -133,7 +133,7 @@ public class ElectricityFeeTask {
   /**
    * 将没在t_fee_report中出现过但符合条件的room保存进去
    */
-  @Scheduled(cron = "0 0 1 * * ?")
+  @Scheduled(cron = "0 0/60 9-20 * * ?")
   public void saveNewRoom() {
     log.info("------ElectricityFeeTask saveNewRoom()开始执行 ------");
     List<Room> roomList = roomService.getValidFeeRoomList();
