@@ -42,6 +42,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -190,6 +191,9 @@ public class TenantController extends BaseController {
         if (CollectionUtils.isNotEmpty(contractTenantList)) {
           tenant.setIdList(contractTenantList.stream().map(ContractTenant::getTenantId).collect(Collectors.toList()));
         }
+      } else {
+        //置空用
+        tenant.setIdList(Collections.singletonList("test"));
       }
     }
   }
