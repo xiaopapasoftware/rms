@@ -3,28 +3,24 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.thinkgem.jeesite.common.persistence.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AgreementChangeDao;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
-import com.thinkgem.jeesite.modules.contract.entity.AgreementChange;
-import com.thinkgem.jeesite.modules.contract.entity.Audit;
-import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
+import com.thinkgem.jeesite.modules.contract.entity.*;
 import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.enums.AuditTypeEnum;
 import com.thinkgem.jeesite.modules.person.dao.TenantDao;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 协议变更Service
@@ -176,5 +172,16 @@ public class AgreementChangeService extends CrudService<AgreementChangeDao, Agre
     agreementChange.setAgreementStatus(auditHis.getAuditStatus());
     agreementChange.preUpdate();
     dao.update(agreementChange);
+  }
+
+  /**
+   * 删除合同下的退租核算记录
+   */
+  @Transactional(readOnly = false)
+  public void delRentContract(RentContract rentContract) {
+    AgreementChange agreementChange = new AgreementChange();
+    agreementChange.preUpdate();
+    agreementChange.setRentContract(rentContract);
+    super.delete(agreementChange);
   }
 }

@@ -1,22 +1,17 @@
 package com.thinkgem.jeesite.modules.fee.service;
 
-import java.util.Date;
-import java.util.List;
-
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.modules.contract.enums.*;
+import com.thinkgem.jeesite.modules.fee.dao.PostpaidFeeDao;
+import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
+import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PublicFeePayStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.fee.dao.PostpaidFeeDao;
-import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
-import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author wangshujin
@@ -96,4 +91,13 @@ public class PostpaidFeeService extends CrudService<PostpaidFeeDao, PostpaidFee>
           postpaidFeeId);
     }
   }
+
+  @Transactional(readOnly = false)
+  public void delRentContract(String rentContractId) {
+    PostpaidFee postpaidFee = new PostpaidFee();
+    postpaidFee.preUpdate();
+    postpaidFee.setRentContractId(rentContractId);
+    super.delete(postpaidFee);
+  }
+
 }

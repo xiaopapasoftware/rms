@@ -172,4 +172,13 @@ public class ContractTenantService extends CrudService<ContractTenantDao, Contra
   public List<ContractTenant> getTenantListByContractIdList(List<String> contractIdList) {
     return dao.getTenantListByContractIdList(contractIdList);
   }
+
+  @Transactional(readOnly = false)
+  public void delRentContract(RentContract rentContract) {
+    ContractTenant contractTenant = new ContractTenant();
+    contractTenant.preUpdate();
+    contractTenant.setContractId(rentContract.getId());
+    super.delete(contractTenant);
+  }
+
 }

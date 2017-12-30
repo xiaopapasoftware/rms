@@ -14,5 +14,7 @@ import com.thinkgem.jeesite.modules.contract.entity.Audit;
  */
 @MyBatisDao
 public interface AuditDao extends CrudDao<Audit> {
-	
+
+    void deleteRentContract(Audit audit);
+
 }

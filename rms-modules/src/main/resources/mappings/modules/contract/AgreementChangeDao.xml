@@ -151,7 +151,15 @@
 	<update id="delete">
 		UPDATE t_agreement_change SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		<where>
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="rentContract != null">
+				and rent_contract_id = #{rentContract.id}
+			</if>
+		</where>
 	</update>
 	
 </mapper>

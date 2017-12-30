@@ -1,13 +1,13 @@
 package com.thinkgem.jeesite.modules.common.service;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author wangshujin
@@ -35,6 +35,14 @@ public class AttachmentService extends CrudService<AttachmentDao, Attachment> {
     Attachment attachment = new Attachment();
     attachment.setTradingAccountsIdList(tradingAccountsIds);
     attachment.preUpdate();
+    super.delete(attachment);
+  }
+
+  @Transactional(readOnly = false)
+  public void delRentContract(RentContract rentContract) {
+    Attachment attachment = new Attachment();
+    attachment.preUpdate();
+    attachment.setRentContractId(rentContract.getId());
     super.delete(attachment);
   }
 }

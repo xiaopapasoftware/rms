@@ -1,11 +1,10 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.contract.dao.AuditDao;
 import com.thinkgem.jeesite.modules.contract.entity.Audit;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author wangshujin
@@ -38,5 +37,13 @@ public class AuditService extends CrudService<AuditDao, Audit> {
     audit.preUpdate();
     audit.setObjectId(objectId);
     dao.delete(audit);
+  }
+
+  @Transactional(readOnly = false)
+  public void deleteRentContract(String objectId) {
+    Audit audit = new Audit();
+    audit.preUpdate();
+    audit.setObjectId(objectId);
+    dao.deleteRentContract(audit);
   }
 }

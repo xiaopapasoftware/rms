@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author wangshujin
@@ -85,10 +86,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     PaymentTrans delPaymentTrans = new PaymentTrans();
     delPaymentTrans.setTransId(objectID);
     List<PaymentTrans> paymentTransList = paymentTransDao.findList(delPaymentTrans);
-    List<String> paymentTransIdList = new ArrayList<String>();
-    for (PaymentTrans p : paymentTransList) {
-      paymentTransIdList.add(p.getId());
-    }
+    List<String> paymentTransIdList = paymentTransList.stream().map(PaymentTrans::getId).collect(Collectors.toList());
     if (CollectionUtils.isNotEmpty(paymentTransIdList)) {
       PaymenttransDtl ptd = new PaymenttransDtl();
       ptd.setTransIdList(paymentTransIdList);

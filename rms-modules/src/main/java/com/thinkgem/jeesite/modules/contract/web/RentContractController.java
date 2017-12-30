@@ -14,11 +14,9 @@ import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.entity.*;
 import com.thinkgem.jeesite.modules.contract.enums.*;
-import com.thinkgem.jeesite.modules.contract.service.AccountingService;
-import com.thinkgem.jeesite.modules.contract.service.ContractTenantService;
-import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
-import com.thinkgem.jeesite.modules.contract.service.RentContractService;
+import com.thinkgem.jeesite.modules.contract.service.*;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
+import com.thinkgem.jeesite.modules.fee.service.PostpaidFeeService;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
@@ -106,6 +104,14 @@ public class RentContractController extends BaseController {
   private CompanyService companyService;
   @Autowired
   private FeeReportService feeReportService;
+  @Autowired
+  private AgreementChangeService agreementChangeService;
+  @Autowired
+  private AuditService auditService;
+  @Autowired
+  private AuditHisService auditHisService;
+  @Autowired
+  private PostpaidFeeService postpaidFeeService;
 
   @ModelAttribute
   public RentContract get(@RequestParam(required = false) String id) {
@@ -1248,4 +1254,22 @@ public class RentContractController extends BaseController {
       }
     }
   }
+  @RequiresPermissions("contract:rentContract:deleteContract")
+  @RequestMapping(value = "deleteContract")
+  public String deleteContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
+    accountingService.delRentContractAccountings(rentContract);
+    agreementChangeService.delRentContract(rentContract);
+    attachmentService.delRentContract(rentContract);
+    auditService.deleteRentContract(rentContract.getId());
+    auditHisService.delete(rentContract.getId());
+    contractTenantService.delRentContract(rentContract);
+    paymentTransService.deletePaymentTransAndTradingAcctouns(rentContract.getId());
+    postpaidFeeService.delRentContract(rentContract.getId());
+    feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
+    rentContract.preUpdate();
+    rentContractService.delete(rentContract);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除成功！");
+    return "redirect:" + Global.getAdminPath() + "/contract/rentContract/";
+  }
+
 }

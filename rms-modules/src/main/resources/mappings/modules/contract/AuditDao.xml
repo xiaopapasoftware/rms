@@ -107,4 +107,13 @@
 		WHERE object_id = #{objectId}
 	</update>
 
+	<update id="deleteRentContract" parameterType="Audit">
+		UPDATE t_audit SET
+		del_flag = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE object_id = #{objectId}
+		and NEXT_ROLE != 'trading_accounts_role'
+	</update>
+
 </mapper>

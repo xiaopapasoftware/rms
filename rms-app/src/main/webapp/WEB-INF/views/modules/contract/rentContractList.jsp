@@ -430,6 +430,9 @@
  					<c:if test="${rentContract.contractStatus!='0' && rentContract.contractStatus!='1'}">
     					<a href="javascript:void(0);" onclick="auditHis('${rentContract.id}')">审核记录</a>
 					</c:if>
+					<shiro:hasPermission name="contract:rentContract:deleteContract">
+						<a href="${ctx}/contract/rentContract/deleteContract?id=${rentContract.id}" onclick="return confirmx('确认要删除合同吗?', this.href)">删除合同</a>
+					</shiro:hasPermission>
 				</td>
 			</tr>
 		</c:forEach>

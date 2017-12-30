@@ -118,7 +118,15 @@
 	<update id="delete">
 		UPDATE t_audit_his SET 
 			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id}
+		<where>
+			del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				and id = #{id}
+			</if>
+			<if test="objectId != null and objectId != ''">
+				and object_id = #{objectId}
+			</if>
+		</where>
 	</update>
 	
 </mapper>
