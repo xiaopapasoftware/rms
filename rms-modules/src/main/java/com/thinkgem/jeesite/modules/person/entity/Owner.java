@@ -3,9 +3,8 @@
  */
 package com.thinkgem.jeesite.modules.person.entity;
 
-import org.hibernate.validator.constraints.Length;
-
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * 业主信息Entity
@@ -18,6 +17,7 @@ public class Owner extends DataEntity<Owner> {
 	private String name;		// 姓名
 	private String socialNumber;		// 身份证号
 	private String cellPhone;		// 手机号
+	private String secondCellPhone;		// 备用手机号
 	private String deskPhone;		// 座机号
 	private String address;		// 详细居住地址
 	
@@ -55,7 +55,15 @@ public class Owner extends DataEntity<Owner> {
 	public void setCellPhone(String cellPhone) {
 		this.cellPhone = cellPhone;
 	}
-	
+
+	public String getSecondCellPhone() {
+		return secondCellPhone;
+	}
+
+	public void setSecondCellPhone(String secondCellPhone) {
+		this.secondCellPhone = secondCellPhone;
+	}
+
 	public String getDeskPhone() {
 		return deskPhone;
 	}

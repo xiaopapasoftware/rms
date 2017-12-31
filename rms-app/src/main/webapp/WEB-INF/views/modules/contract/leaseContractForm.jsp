@@ -441,22 +441,15 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">出租人姓名：</label>
+			<label class="control-label">业主：</label>
 			<div class="controls">
-				<form:input path="lessorName" htmlEscape="false" class="input-xlarge required "/>
-				<span class="help-inline"><font color="red">*</font> </span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">出租人身份证号码：</label>
-			<div class="controls">
-				<form:input path="lessorIdNo" htmlEscape="false" class="input-xlarge"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">出租人手机号：</label>
-			<div class="controls">
-				<form:input path="lessorCellNo" htmlEscape="false" class="input-xlarge"/>
+				<form:select path="owner.id" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<c:forEach items="${ownerList}" var="item">
+						<form:option value="${item.id}">${item.name}-${item.socialNumber}-${item.cellPhone}/${item.secondCellPhone}</form:option>
+					</c:forEach>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -549,9 +542,7 @@
 		</div>
 		<div class="form-actions">
 			<shiro:hasPermission name="contract:leaseContract:edit">
-				<c:if test="${leaseContract.contractStatus=='0' || leaseContract.contractStatus=='2' || empty leaseContract.id}">
-					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
-				</c:if>
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 			</shiro:hasPermission>
 			<shiro:hasPermission name="contract:leaseContract:audit">
 			<c:if test="${leaseContract.contractStatus=='0'}">

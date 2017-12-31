@@ -1,19 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
@@ -30,8 +16,22 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
+import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import com.thinkgem.jeesite.modules.person.service.RemittancerService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 承租合同
@@ -52,6 +52,8 @@ public class LeaseContractController extends BaseController {
   private AuditHisService auditHisService;
   @Autowired
   private HouseService houseService;
+  @Autowired
+  private OwnerService ownerService;
 
   @ModelAttribute
   public LeaseContract get(@RequestParam(required = false) String id) {
@@ -144,6 +146,8 @@ public class LeaseContractController extends BaseController {
     }
     List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
     model.addAttribute("remittancerList", remittancerList);
+    List<Owner> ownerList = ownerService.findList(new Owner());
+    model.addAttribute("ownerList", ownerList);
     return "modules/contract/leaseContractForm";
   }
 

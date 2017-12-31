@@ -34,10 +34,13 @@
 			<li><label style="width:100px;">手机号：</label>
 				<form:input path="cellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li><label style="width:100px;">备用手机号：</label>
+				<form:input path="secondCellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<li><label style="width:100px;">座机号：</label>
 				<form:input path="deskPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">详细居住地址：</label>
+			<li><label style="width:100px;">详细地址：</label>
 				<form:input path="address" htmlEscape="false" maxlength="300" class="input-medium"/>
 			</li>
 			<li class="btns"><label style="width:40px;"></label><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
@@ -51,8 +54,9 @@
 				<th>姓名</th>
 				<th>身份证号</th>
 				<th>手机号</th>
+				<th>备用手机号</th>
 				<th>座机号</th>
-				<th>详细居住地址</th>
+				<th>详细地址</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -72,6 +76,9 @@
 				</td>
 				<td>
 					${owner.cellPhone}
+				</td>
+				<td>
+						${owner.secondCellPhone}
 				</td>
 				<td>
 					${owner.deskPhone}

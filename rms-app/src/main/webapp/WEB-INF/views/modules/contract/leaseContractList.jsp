@@ -139,8 +139,17 @@
 			<li><label style="width:100px;">承租合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">出租人姓名：</label>
-				<form:input path="lessorName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			<li><label style="width:100px;">业主姓名：</label>
+				<form:input path="owner.name" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
+			<li><label style="width:100px;">业主身份证号：</label>
+				<form:input path="owner.socialNumber" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
+			<li><label style="width:100px;">业主手机号：</label>
+				<form:input path="owner.cellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
+			<li><label style="width:100px;">业主备用手机号：</label>
+				<form:input path="owner.secondCellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label style="width:100px;">打款日期：</label>
 				<form:select path="remittanceDate" class="input-medium" style="width:177px;">
@@ -176,9 +185,10 @@
 				<th>合同过期时间</th>
 				<th>合同签订时间</th>
 				<th>承租押金</th>
-				<th>出租人姓名</th>
-				<th>出租人身份证号码</th>
-				<th>出租人手机号</th>
+				<th>业主姓名</th>
+				<th>业主身份证号</th>
+				<th>业主手机号</th>
+				<th>业主备用手机号</th>
 				<th>合同审核状态</th>
 				<th>更新时间</th>
 				<th>操作</th>
@@ -215,13 +225,16 @@
 					${leaseContract.deposit}
 				</td>
 				<td>
-					${leaseContract.lessorName}
+					${leaseContract.owner.name}
 				</td>
 				<td style="white-space:normal;">
-					${leaseContract.lessorIdNo}
+					${leaseContract.owner.socialNumber}
 				</td>
 				<td>
-					${leaseContract.lessorCellNo}
+					${leaseContract.owner.cellPhone}
+				</td>
+				<td>
+					${leaseContract.owner.secondCellPhone}
 				</td>
 				<td>
 					${fns:getDictLabel(leaseContract.contractStatus, 'contract_status', '')}
@@ -231,9 +244,7 @@
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
-					<c:if test="${leaseContract.contractStatus=='2'}">
-    					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
-    				</c:if>
+					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
 					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
 				</shiro:hasPermission>
 					<!--<shiro:hasPermission name="contract:leaseContract:audit">

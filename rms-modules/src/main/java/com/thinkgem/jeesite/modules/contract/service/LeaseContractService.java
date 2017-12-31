@@ -3,7 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
@@ -254,14 +253,11 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       }
 
       // 承租合同明细
-      List<LeaseContractDtl> leaseContractDtlList = leaseContract.getLeaseContractDtlList();
-      if (null != leaseContractDtlList && leaseContractDtlList.size() > 0) {
-        for (LeaseContractDtl leaseContractDtl : leaseContractDtlList) {
-          leaseContractDtl.preInsert();
-          leaseContractDtl.setLeaseContractId(id);
-          leaseContractDtlDao.insert(leaseContractDtl);
-        }
-      }
+      leaseContract.getLeaseContractDtlList().forEach(dtl -> {
+        dtl.preInsert();
+        dtl.setLeaseContractId(id);
+        leaseContractDtlDao.insert(dtl);
+      });
     } else {
       // 审核
       Audit audit = new Audit();
@@ -311,35 +307,14 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
         attachment.setAttachmentPath(leaseContract.getRelocation());
         attachmentDao.insert(attachment);
       }
+      leaseContractDtlDao.deleteContractDtlListByContractId(leaseContract.getId());
+      // 承租合同明细
+      leaseContract.getLeaseContractDtlList().forEach(dtl -> {
+        dtl.preInsert();
+        dtl.setLeaseContractId(id);
+        leaseContractDtlDao.insert(dtl);
+      });
 
-      // 承租合同明细，由于删除手法的特殊性，此处需做修改.
-      List<LeaseContractDtl> leaseContractDtlList = leaseContract.getLeaseContractDtlList();// 总提交数据集
-      List<LeaseContractDtl> addLeaseContractDtlList = Lists.newArrayList();// 新增的list
-      List<LeaseContractDtl> delLeaseContractDtlList = Lists.newArrayList();// 删除的list
-      if (CollectionUtils.isNotEmpty(leaseContractDtlList)) {
-        for (LeaseContractDtl lcd : leaseContractDtlList) {
-          if (StringUtils.isEmpty(lcd.getId()) && BaseEntity.DEL_FLAG_NORMAL.equals(lcd.getDelFlag())) {
-            addLeaseContractDtlList.add(lcd);
-          } else if (StringUtils.isNotEmpty(lcd.getId()) && BaseEntity.DEL_FLAG_DELETE.equals(lcd.getDelFlag())) {
-            delLeaseContractDtlList.add(lcd);
-          } else {// 更新
-            leaseContractDtlDao.update(lcd);
-          }
-        }
-      }
-      if (CollectionUtils.isNotEmpty(delLeaseContractDtlList)) {
-        for (LeaseContractDtl l : delLeaseContractDtlList) {
-          l.preUpdate();
-          leaseContractDtlDao.delete(l);
-        }
-      }
-      if (CollectionUtils.isNotEmpty(addLeaseContractDtlList)) {
-        for (LeaseContractDtl l : addLeaseContractDtlList) {
-          l.preInsert();
-          l.setLeaseContractId(leaseContract.getId());
-          leaseContractDtlDao.insert(l);
-        }
-      }
     }
   }
 
@@ -365,4 +340,5 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     }
     return contractList;
   }
+
 }

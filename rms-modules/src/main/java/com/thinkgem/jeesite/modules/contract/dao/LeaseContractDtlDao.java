@@ -17,4 +17,6 @@ import java.util.List;
 @MyBatisDao
 public interface LeaseContractDtlDao extends CrudDao<LeaseContractDtl> {
     List<LeaseContractDtl> getLeaseContractDtlListByContractId(String contractId);
+
+    void deleteContractDtlListByContractId(String contractId);
 }
