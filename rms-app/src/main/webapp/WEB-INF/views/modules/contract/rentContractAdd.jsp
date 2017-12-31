@@ -343,32 +343,7 @@
 		}
 		
 		function startDateChange() {
-			var startDate = new Date($("input[name='startDate']").val());
-			var endDate = new Date(Date.parse(startDate));
-			endDate.setFullYear(endDate.getFullYear()+1);
-			endDate.setDate(endDate.getDate()-1);
-			var year = endDate.getFullYear();
-			var month = endDate.getMonth()+1;
-			if(parseFloat(month)<10)
-				month = "0"+""+month;
-			var day = endDate.getDate();
-			if(parseFloat(day)<10)
-				day = "0"+""+day;
-			var expiredDate=year+"-"+month+"-"+day;
-			$("input[name='expiredDate']").val(expiredDate);
-			//合同续租提醒时间默认为结束时间前1个月
-			endDate.setMonth(endDate.getMonth() - 1);
-			year = endDate.getFullYear();
-			month = endDate.getMonth() + 1;
-			if(parseFloat(month)<10){
-				month = "0" + "" + month;
-			}
-			day = endDate.getDate();
-			if(parseFloat(day)<10){
-				day = "0" + "" + day;
-			}
-			var remindTime = year + "-" + month + "-" + day;
-			$("input[name='remindTime']").val(remindTime);
+            calculateRange();
 		}
 		
 		function endDateChange() {
@@ -404,6 +379,52 @@
 			  $('#freeMonths').removeClass("required");
 			}
          }
+
+        function calculateRange() {
+            var value = $('#leaseMonth').val();
+            var startDate = $("#startDate").val();
+            var expireDate = nextMonthsDate(startDate,value);
+            var refetCallDate = nextMonthsDate(startDate,value-1);
+            expireDate = new Date(expireDate);
+            refetCallDate = new Date(refetCallDate);
+            expireDate.setDate(expireDate.getDate()-1);
+            refetCallDate.setDate(refetCallDate.getDate()-1);
+            $('#expireDate').val(formatDate(expireDate));
+            $('#remindTime').val(formatDate(refetCallDate));
+        }
+
+        function nextMonthsDate (date, monthNum)
+        {
+            var dateArr = date.split('-');
+            var year = dateArr[0]; //获取当前日期的年份
+            var month = dateArr[1]; //获取当前日期的月份
+            var day = dateArr[2]; //获取当前日期的日
+            var days = new Date(year, month, 0);
+            var year2 = year;
+            var month2 = parseInt(month) + parseInt(monthNum);
+            if (month2 >12) {
+                year2 = parseInt(year2) + parseInt((parseInt(month2) / 12 == 0 ? 1 : parseInt(month2) / 12));
+                month2 = parseInt(month2) % 12;
+            }
+            var day2 = day;
+            var days2 = new Date(year2, month2, 0);
+            days2 = days2.getDate();
+            if (day2 > days2) {
+                day2 = days2;
+            }
+            if (month2 < 10) {
+                month2 = '0' + month2;
+            }
+            return year2 + '-' + month2 + '-' + day2;
+        }
+        function formatDate(date){
+            var year = date.getFullYear();
+            var month = date.getMonth()+1;
+            var day = date.getDate();
+            month = month<10?'0'+month:month;
+            day = day<10?'0'+day:day;
+            return year+'-'+month+'-'+day;
+        }
 	</script>
 </head>
 <body>
@@ -518,14 +539,14 @@
 		<div class="control-group">
 			<label class="control-label">首付房租月数：</label>
 			<div class="controls">
-				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
+				<form:input type = "number" placeholder="请填写正整数" id = "renMonths"  path="renMonths" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">房租押金月数：</label>
 			<div class="controls">
-				<form:input path="depositMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits required"/>
+				<form:input type = "number" placeholder="请填写正整数" id = "depositMonths"  path="depositMonths" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -592,6 +613,15 @@
 				<input name="startDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" onchange="startDateChange()"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">
+				合同租期：
+			</label>
+			<div class="controls">
+				<input type = "number" id = "leaseMonth" placeholder="请输入1-24之间的正整数" class="input-medium required" onblur="calculateRange()" />
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -712,6 +742,7 @@
 					<form:hidden id="rentContractFile" path="rentContractFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 					<sys:ckfinder input="rentContractFile" type="files" uploadPath="/出租合同" selectMultiple="true"/>
 				</c:if>
+				<span class="help-inline"><font color="red">附件最大不能超过10M</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -719,6 +750,7 @@
 			<div class="controls">
 				<form:hidden id="rentContractCusIDFile" path="rentContractCusIDFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="rentContractCusIDFile" type="files" uploadPath="/租客身份证" selectMultiple="true"/>
+				<span class="help-inline"><font color="red">附件最大不能超过10M</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -726,6 +758,7 @@
 			<div class="controls">
 				<form:hidden id="rentContractOtherFile" path="rentContractOtherFile" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="rentContractOtherFile" type="files" uploadPath="/出租合同其他附件" selectMultiple="true"/>
+				<span class="help-inline"><font color="red">附件最大不能超过10M</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
