@@ -5,9 +5,11 @@ import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.Sort;
 import com.thinkgem.jeesite.common.utils.MapKeyHandle;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
+import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.report.dao.ReportComponentDao;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ public class ReportComponentService {
     @Autowired
     private PropertyProjectService propertyProjectService;
 
+    @Autowired
+    private RoomService roomService;
 
     public List<Dict> queryDict(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
         return reportComponentDao.queryDict(new Criterion(propertyFilters, sorts));
@@ -60,7 +64,7 @@ public class ReportComponentService {
             final StringBuffer cellPhoneLead = new StringBuffer();
             if (tenants != null && tenants.size() > 0) {
                 Map finalMap = map;
-                tenants.stream().forEach(t -> {
+                tenants.forEach(t -> {
                     if (StringUtils.equals(MapUtils.getString(t, "contract_id"), MapUtils.getString(finalMap, "contract_id"))) {
                         cellPhone.append(MapUtils.getString(t, "cell_phone")).append(";");
                         tenantName.append(MapUtils.getString(t, "tenant_name")).append(";");
@@ -77,7 +81,11 @@ public class ReportComponentService {
             map.put("id_no", StringUtils.substringBeforeLast(tenantIdNo.toString(), ";"));
             map.put("tenant_name_lead", StringUtils.substringBeforeLast(tenantNameLead.toString(), ";"));
             map.put("cell_phone_lead", StringUtils.substringBeforeLast(cellPhoneLead.toString(), ";"));
-
+            if (RentModelTypeEnum.JOINT_RENT.getValue().equals(MapUtils.getString(map, "rent_mode"))) {
+                map.put("room_num", 1);
+            } else {
+                map.put("room_num", roomService.findRoomListByHouseId(MapUtils.getString(map, "house_id")).size());
+            }
             return MapKeyHandle.keyToJavaProperty(map);
         }).collect(Collectors.toList()) ;
     }

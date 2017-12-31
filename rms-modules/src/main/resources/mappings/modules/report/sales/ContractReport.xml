@@ -6,6 +6,8 @@
         select
         trc.id contract_id,
         trc.contract_code,
+        trc.rent_mode,
+        trc.house_id,
         trc.contract_name,
         trc.charge_type,
         case trc.charge_type when 0 then '预付费' when 1 then '后付费' end charge_type_name,

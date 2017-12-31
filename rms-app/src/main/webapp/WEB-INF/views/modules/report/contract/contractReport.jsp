@@ -185,6 +185,7 @@
                     <col width="100">
                     <col width="100">
                     <col width="120">
+                    <col width="120">
                 </colgroup>
                 <thead>
                 <tr>
@@ -203,6 +204,7 @@
                     <th>水电押金</th>
                     <th>智表首付金</th>
                     <th>合同业务状态</th>
+                    <th>对应房间数</th>
                     <!--<th>承租人</th>
                     <th>承租人电话</th>
                     <th>入住人</th>
@@ -255,6 +257,7 @@
         <td>{{ item.depositElectricAmount || '' }}</td>
         <td>{{ item.eleRechargeAmount || '' }}</td>
         <td>{{ item.contractBusiStatusName || ''}}</td>
+        <td>{{ item.roomNum || ''}}</td>
         <!--<td>{{ item.tenantNameLead || '' }}</td>
         <td>{{ item.cellPhoneLead || '' }}</td>-->
     </tr>
