@@ -67,6 +67,7 @@ create table T_OWNER
    NAME                 VARCHAR(100) comment '姓名',
    SOCIAL_NUMBER	 	VARCHAR(100) COMMENT '身份证号',
    CELL_PHONE           VARCHAR(100) comment '手机号',
+   SECOND_CELL_PHONE    VARCHAR(100) comment '备用手机号',
    DESK_PHONE           VARCHAR(100) comment '座机号',
    ADDRESS              VARCHAR(300) comment '详细居住地址',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
