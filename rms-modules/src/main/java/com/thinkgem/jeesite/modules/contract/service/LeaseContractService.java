@@ -266,6 +266,9 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       audit.preUpdate();
       auditDao.update(audit);
 
+      //删除款项
+      paymentTransService.deletePaymentTransAndTradingAcctouns(leaseContract.getId());
+
       // 保存附件
       Attachment attachment = new Attachment();
       attachment.setLeaseContractId(leaseContract.getId());

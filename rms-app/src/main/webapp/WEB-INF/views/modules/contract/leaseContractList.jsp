@@ -244,8 +244,14 @@
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:leaseContract:edit">
-					<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
-					<!--<a href="${ctx}/contract/leaseContract/delete?id=${leaseContract.id}" onclick="return confirmx('确认要删除该承租合同吗？', this.href)">删除</a>-->
+					<c:if test="${leaseContract.contractStatus!='1'}">
+						<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">修改</a>
+					</c:if>
+				</shiro:hasPermission>
+				<shiro:hasPermission name="contract:superLeaseContract:edit">
+					<c:if test="${leaseContract.contractStatus=='1'}">
+						<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">后门修改</a>
+					</c:if>
 				</shiro:hasPermission>
 					<!--<shiro:hasPermission name="contract:leaseContract:audit">
 					<c:if test="${leaseContract.contractStatus=='0'}">
