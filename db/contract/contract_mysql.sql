@@ -23,6 +23,7 @@ create table T_LEASE_CONTRACT
    LESSOR_NAME			varchar(255)  comment '出租人姓名',
    LESSOR_ID_NO			varchar(255)  comment '出租人身份证号码',
    LESSOR_CELL_NO		varchar(255)  comment '出租人手机号',
+   OWNER_ID		varchar(64)  comment '业主表主键',
    FIRST_REMITTANCE_DATE date comment '首次打款日期',
    REMITTANCE_DATE      varchar(64) comment '打款日期',
    EXPIRED_DATE         date comment '合同过期时间',

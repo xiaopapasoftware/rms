@@ -7,6 +7,7 @@
 		a.name AS "name",
 		a.social_number AS "socialNumber",
 		a.cell_phone AS "cellPhone",
+		a.second_cell_phone AS "secondCellPhone",
 		a.desk_phone AS "deskPhone",
 		a.address AS "address",
 		a.create_by AS "createBy.id",
@@ -57,6 +58,12 @@
 					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
 			</if>
+			<if test="secondCellPhone != null and secondCellPhone != ''">
+				AND a.second_cell_phone LIKE
+				<if test="dbName == 'oracle'">'%'||#{secondCellPhone}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{secondCellPhone}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{secondCellPhone},'%')</if>
+			</if>
 			<if test="deskPhone != null and deskPhone != ''">
 				AND a.desk_phone LIKE 
 					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
@@ -104,6 +111,7 @@
 				a.name AS "name",
 				a.social_number AS "socialNumber",
 				a.cell_phone AS "cellPhone",
+				a.second_cell_phone AS "secondCellPhone",
 				a.desk_phone AS "deskPhone"
 		FROM t_owner a
 		<where>
@@ -125,6 +133,7 @@
 			name,
 			social_number,
 			cell_phone,
+			second_cell_phone,
 			desk_phone,
 			address,
 			create_by,
@@ -138,6 +147,7 @@
 			#{name},
 			#{socialNumber},
 			#{cellPhone},
+			#{secondCellPhone},
 			#{deskPhone},
 			#{address},
 			#{createBy.id},
@@ -154,6 +164,7 @@
 			name = #{name},
 			social_number = #{socialNumber},
 			cell_phone = #{cellPhone},
+			second_cell_phone = #{secondCellPhone},
 			desk_phone = #{deskPhone},
 			address = #{address},
 			update_by = #{updateBy.id},

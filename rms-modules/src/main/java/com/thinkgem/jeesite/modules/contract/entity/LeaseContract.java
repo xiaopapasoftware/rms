@@ -4,20 +4,19 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.Length;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 承租合同Entity
@@ -32,6 +31,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
   private Building building; // 楼宇
   private House house; // 房屋
   private Remittancer remittancer; // 汇款人
+  private Owner owner; // 业主
   private String contractCode; // 合同编号
   private String contractName; // 承租合同名称
   private Date effectiveDate; // 合同生效时间
@@ -102,6 +102,14 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 
   public void setRemittancer(Remittancer remittancer) {
     this.remittancer = remittancer;
+  }
+
+  public Owner getOwner() {
+    return owner;
+  }
+
+  public void setOwner(Owner owner) {
+    this.owner = owner;
   }
 
   public String getContractCode() {
