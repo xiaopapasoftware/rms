@@ -115,7 +115,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
           }
         }
       } catch (Exception e) {
-        this.logger.error("call meter get fee error:", e);
+        logger.error("call meter get fee error:", e);
       }
     }
     resultMap.put(0, result);// 直接存放智能电表系统的返回值
@@ -127,10 +127,11 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
   public String getRemainFeeByMeterNo(String meterNo) {
     if (StringUtils.isNotBlank(meterNo)) {
       String url = new PropertiesLoader("jeesite.properties").getProperty("meter.remain.url") + "read_remain_val.action?addr=" + meterNo;
+      logger.info("call meter get fee remain result by " + url);
       try {
         return openHttpsConnection(url, "UTF-8", 60000, 60000);
       } catch (Exception e) {
-        logger.error("call meter get fee remain result by " + url);
+        logger.error("read_remain_val errors!" + url, e);
       }
     }
     return null;
