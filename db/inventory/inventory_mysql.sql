@@ -71,6 +71,7 @@ create table T_BUILDING
    ID                   varchar(64) NOT NULL,
    T_PROPERTY_PROJECT_MAIN_ID      varchar(64) comment '物业项目',
    BUILDING_NAME    varchar(100) comment '楼宇名称',
+   TOTAL_FLOOR_COUNT tinyint(4) DEFAULT NULL COMMENT '总楼层数',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
    CREATE_DATE          DATETIME COMMENT '创建时间',
    UPDATE_BY            VARCHAR(64) COMMENT '更新者',

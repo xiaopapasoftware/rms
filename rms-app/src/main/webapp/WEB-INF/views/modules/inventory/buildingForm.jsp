@@ -52,6 +52,13 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">总楼层数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" path="totalFloorCount" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">楼宇图片：</label>
 			<div class="controls">
 				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>

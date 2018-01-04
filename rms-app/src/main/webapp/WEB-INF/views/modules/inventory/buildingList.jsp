@@ -46,6 +46,7 @@
 			<tr>
 				<th>物业项目</th>
 				<th>楼宇名称</th>
+				<th>总楼层数</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -64,6 +65,9 @@
 					<a href="${ctx}/inventory/building/form?id=${building.id}">
 						${building.buildingName}
 					</a>
+				</td>
+				<td>
+					${building.totalFloorCount}
 				</td>
 				<td>
 					<fmt:formatDate value="${building.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
