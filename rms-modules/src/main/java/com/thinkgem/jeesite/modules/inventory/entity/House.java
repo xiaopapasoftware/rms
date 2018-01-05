@@ -3,16 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
+import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
 import org.hibernate.validator.constraints.Length;
 
-import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.modules.person.entity.Owner;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 房屋信息Entity
@@ -61,6 +59,10 @@ public class House extends DataEntity<House> {
   private String waterAccountNum;
   /* 煤气户号 */
   private String gasAccountNum;
+
+  private Long newId;
+
+  private String type;
 
   public House() {
     super();
@@ -353,5 +355,21 @@ public class House extends DataEntity<House> {
 
   public void setGasAccountNum(String gasAccountNum) {
     this.gasAccountNum = gasAccountNum;
+  }
+
+  public Long getNewId() {
+    return newId;
+  }
+
+  public void setNewId(Long newId) {
+    this.newId = newId;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

@@ -40,7 +40,9 @@
 		u3.name as "serviceUser.name",
 		a.ele_account_num as eleAccountNum,
 		a.water_account_num as waterAccountNum,
-		a.gas_account_num as gasAccountNum
+		a.gas_account_num as gasAccountNum,
+		a.new_id as newId,
+		a.type as type
 	</sql>
 
 	<sql id="houseJoins">
@@ -195,6 +197,9 @@
 			<if test="isFeature != null and isFeature != ''">
 				and a.is_feature = #{isFeature}
 			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type}
+			</if>
 		</where>
 
 		<!-- 数据范围过滤 -->
@@ -293,7 +298,9 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay"
+		a.pay_way as "payWay",
+		a.new_id as "newId",
+		a.type as "type"
 		FROM t_house a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -344,7 +351,8 @@
 		short_desc,
 		short_location,
 		pay_way,
-		service_user
+		service_user,
+		type
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -377,7 +385,8 @@
 		#{shortDesc},
 		#{shortLocation},
 		#{payWay},
-		#{serviceUser.id}
+		#{serviceUser.id},
+		#{type}
 		)
 	</insert>
 
@@ -413,7 +422,8 @@
 		short_desc = #{shortDesc},
 		short_location = #{shortLocation},
 		pay_way = #{payWay},
-		service_user = #{serviceUser.id}
+		service_user = #{serviceUser.id},
+		type = #{type}
 		WHERE id = #{id}
 	</update>
 
@@ -482,7 +492,9 @@
 		a.gas_account_num as "gasAccountNum",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay"
+		a.pay_way as "payWay",
+		a.new_id as "newId",
+		a.type as "type"
 		FROM t_house a
 		WHERE
 		a.del_flag = '0'
@@ -508,7 +520,9 @@
 		a.pay_way as "payWay",
 		a.ele_account_num as "eleAccountNum",
 		a.water_account_num as "waterAccountNum",
-		a.gas_account_num as "gasAccountNum"
+		a.gas_account_num as "gasAccountNum",
+		a.new_id as "newId",
+		a.type as "type"
 		FROM t_house a
 		where
 		a.del_flag = '0'

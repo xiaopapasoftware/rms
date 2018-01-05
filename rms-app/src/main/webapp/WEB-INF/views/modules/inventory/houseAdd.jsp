@@ -98,6 +98,7 @@
 				return false;
 			}
 		}
+
 	</script>
 </head>
 <body>
@@ -200,8 +201,9 @@
 		<div class="control-group">
 			<label class="control-label">房屋图片：</label>
 			<div class="controls">
-				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge required"/>
 				<sys:ckfinder input="attachmentPath" type="files" uploadPath="/房屋图片" selectMultiple="true"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -217,9 +219,18 @@
 		<div class="control-group">
 			<label class="control-label">是否精选房源：</label>
 			<div class="controls">
-				<form:select path="isFeature" class="input-xlarge required">
+				<form:select path="isFeature" class="input-xlarge">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">公寓类型：</label>
+			<div class="controls">
+				<form:select path="type" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('house_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>

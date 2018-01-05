@@ -119,6 +119,13 @@
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 				</form:select>
 			</li>
+			<li>
+				<label>公寓类型：</label>
+				<form:select path="type" class="input-medium">
+					<form:option value="" label="请选择..." />
+					<form:options items="${fns:getDictList('house_type')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+				</form:select>
+			</li>
 			<shiro:hasPermission name="inventory:house:view">
 				<li class="btns">
 					<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询" /></li>
@@ -138,6 +145,7 @@
 				<th>房屋编码</th>
 				<th>房屋号</th>
 				<th>精选房源</th>
+				<th>公寓类型</th>
 				<th>房屋状态</th>
 				<th>楼层</th>
 				<th>原始面积</th>
@@ -166,6 +174,7 @@
 					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
 					<td>${fns:getDictLabel(house.isFeature, 'yes_no', '')}</td>
 					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>
+					<td>${fns:getDictLabel(house.type, 'house_type', '')}</td>
 					<td>${house.houseFloor}</td>
 					<td>${house.houseSpace}</td>
 					<td>${house.decorationSpance}</td>
