@@ -63,6 +63,13 @@ create table T_PROPERTY_PROJECT
    UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
    REMARKS              VARCHAR(255) COMMENT '备注信息',
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+    `city_code` varchar(6) DEFAULT NULL COMMENT '城市编码',
+  `city_name` varchar(30)  DEFAULT NULL COMMENT '城市名称',
+  `district_code` varchar(6)  DEFAULT NULL COMMENT '行政区县编码',
+  `district_name` varchar(30) DEFAULT NULL COMMENT '行政区县名称',
+  `coordsys` tinyint(4) DEFAULT NULL COMMENT '坐标系 0:百度,1:高德',
+  `comm_req_id` varchar(16)  DEFAULT NULL COMMENT '小区同步请求号',
+  `alipay_status` tinyint(4) DEFAULT NULL COMMENT '小区同步状态',
    primary key (ID)
 ) comment = '物业项目';
 
@@ -78,6 +85,10 @@ create table T_BUILDING
    UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
    REMARKS              VARCHAR(255) COMMENT '备注信息',
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   TOTAL_FLOOR_COUNT tinyint(4) DEFAULT NULL COMMENT '总楼层数',
+  nick_name varchar(16) DEFAULT NULL COMMENT '公寓别名',
+  min_amount varchar(16) DEFAULT NULL COMMENT '房源最小租金',
+  max_amount varchar(16) DEFAULT NULL COMMENT '房源最大租金',
    primary key (ID)
 ) comment = '楼宇信息';
 
@@ -110,43 +121,47 @@ CREATE TABLE `t_house` (
   `rental` float DEFAULT NULL COMMENT '意向租金',
   `short_desc` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '描述',
   `short_location` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '地址描述',
-  `pay_way` varchar(2) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '付款方式',
   `service_user` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '服务管家',
   `ele_account_num` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `water_account_num` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `gas_account_num` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `new_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(16) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '公寓类型',
+  `share_area_config` varchar(32) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '公共区域物品配置',
+  `rent_month_gap` tinyint(4) DEFAULT NULL COMMENT '支付间隔月数',
+  `depos_month_count` tinyint(4) DEFAULT NULL COMMENT '押金月数',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=973 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房屋信息'
+) ENGINE=InnoDB AUTO_INCREMENT=955 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房屋信息'
 update t_house set is_feature='0' where is_feature is null;
 
-create table T_ROOM
-(
-   ID                   varchar(64) NOT NULL,
-   PROPERTY_PROJECT_ID  varchar(64) comment '物业项目',
-   BUILDING_ID          varchar(64) comment '楼宇',
-   HOUSE_ID             varchar(64) comment '房屋',
-   ROOM_NO              varchar(100) comment '房间号',
-   METER_NO             varchar(100) comment '电表号',
-   ROOM_SPACE           varchar(100) comment '房间面积',
-   ORIENTATION          varchar(64) comment '朝向',
-   STRUCTURE            varchar(64) comment '附属结构',
-   ROOM_STATUS          varchar(100) comment '房间状态',
-   is_feature 			varchar(64) comment '是否精选房源',
-   rental 				float 		comment '意向租金',
-   short_desc 			varchar(255) comment '描述',
-   short_location 		varchar(255) comment '地址描述',
-   pay_way 				varchar(2) 	comment '付款方式',
-   CREATE_BY            VARCHAR(64) COMMENT '创建者',
-   CREATE_DATE          DATETIME COMMENT '创建时间',
-   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
-   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
-   REMARKS              VARCHAR(255) COMMENT '备注信息',
-   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
-   primary key (ID)
-) comment = '房间信息';
+CREATE TABLE `t_room` (
+  `ID` varchar(64) COLLATE utf8_estonian_ci NOT NULL,
+  `PROPERTY_PROJECT_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '物业项目',
+  `BUILDING_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '楼宇',
+  `HOUSE_ID` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房屋',
+  `ROOM_NO` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房间号',
+  `METER_NO` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '电表号',
+  `ROOM_SPACE` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房间面积',
+  `ORIENTATION` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '朝向',
+  `ROOM_STATUS` varchar(100) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房间状态',
+  `CREATE_BY` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '创建者',
+  `CREATE_DATE` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_BY` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '更新者',
+  `UPDATE_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `REMARKS` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '备注信息',
+  `DEL_FLAG` char(1) COLLATE utf8_estonian_ci NOT NULL DEFAULT '0' COMMENT '删除标记',
+  `is_feature` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '是否精选房源',
+  `rental` float DEFAULT NULL COMMENT '意向租金',
+  `short_desc` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '描述',
+  `short_location` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '地址描述',
+  `new_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `room_config` varchar(32) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '物品配置',
+  `rent_month_gap` tinyint(4) DEFAULT NULL COMMENT '支付间隔月数',
+  `depos_month_count` tinyint(4) DEFAULT NULL COMMENT '押金月数',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `unique_id` (`new_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3048 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房间信息'
 update t_room set is_feature='0' where is_feature is null;
 
 create table T_DEVICES

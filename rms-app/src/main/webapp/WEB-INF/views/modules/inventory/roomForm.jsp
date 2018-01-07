@@ -16,11 +16,12 @@
 		            event.preventDefault();
 		        }
 		    });
-			$("input[id*='structureList']").keypress(function(event) {
-		        if (event.keyCode == 13) {
-		            event.preventDefault();
-		        }
-		    });
+            $("#btnSubmit").click(function () {
+                if(!$("#attachmentPath").val()){
+                    alert('请先上传房间图片！');
+                    return false;
+                }
+            });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					loading('正在提交，请稍等...');
@@ -93,10 +94,7 @@
 				$("#shortLocation").addClass("required");
 				$("#shortLocation").next("label").remove();
 				$("#shortLocation").next("span").show();
-				
-				$("#payWay").addClass("required");
-				$("#payWay").next("label").remove();
-				$("#payWay").next("span").show();
+
 			} else {
 				$("#rental").removeClass("required");
 				$("#rental").next("label").remove();
@@ -109,10 +107,7 @@
 				$("#shortLocation").removeClass("required");
 				$("#shortLocation").next("label").remove();
 				$("#shortLocation").next("span").hide();
-				
-				$("#payWay").removeClass("required");
-				$("#payWay").next("label").remove();
-				$("#payWay").next("span").hide();
+
 			}
 		}
 	</script>
@@ -169,6 +164,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">支付间隔月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "rentMonthGap"  path="rentMonthGap" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">押金月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "deposMonthCount"  path="deposMonthCount" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">房间面积（平方米）：</label>
 			<div class="controls">
 				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge number"/>
@@ -181,9 +190,9 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">附属结构：</label>
+			<label class="control-label">物品配置：</label>
 			<div class="controls">
-				<form:checkboxes path="structureList" items="${listStructure}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+				<form:checkboxes path="roomConfigList" items="${fns:getDictList('room_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -222,16 +231,6 @@
 			<label class="control-label">地址描述：</label>
 			<div class="controls">
 				<form:input path="shortLocation" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">付款方式：</label>
-			<div class="controls">
-				<form:select path="payWay" class="input-xlarge">
-					<form:option value="" label="请选择..."/>
-					<form:options items="${fns:getDictList('rent_fee_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-				</form:select>
 				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
 			</div>
 		</div>

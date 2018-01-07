@@ -3,26 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.inventory.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.thinkgem.jeesite.modules.entity.Dict;
-import com.thinkgem.jeesite.modules.utils.DictUtils;
-import org.activiti.engine.impl.util.json.JSONObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -38,6 +18,22 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
+import org.activiti.engine.impl.util.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 房间信息Controller
@@ -140,13 +136,11 @@ public class RoomController extends BaseController {
     }
 
     model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-    model.addAttribute("listStructure", DictUtils.getDictList("structure"));
-
     if (StringUtils.isNotEmpty(room.getOrientation())) {
-      room.setOrientationList(convertToDictListFromSelVal(room.getOrientation()));
+      room.setOrientationList(DictUtils.convertToDictListFromSelVal(room.getOrientation()));
     }
-    if (StringUtils.isNotEmpty(room.getStructure())) {
-      room.setStructureList(convertToDictListFromSelVal(room.getStructure()));
+    if (StringUtils.isNotEmpty(room.getRoomConfig())) {
+      room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
     }
     return "modules/inventory/roomForm";
   }
@@ -171,13 +165,12 @@ public class RoomController extends BaseController {
     model.addAttribute("listHouse", listHouse);
 
     model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-    model.addAttribute("listStructure", DictUtils.getDictList("structure"));
 
     if (StringUtils.isNotEmpty(room.getOrientation())) {
-      room.setOrientationList(convertToDictListFromSelVal(room.getOrientation()));
+      room.setOrientationList(DictUtils.convertToDictListFromSelVal(room.getOrientation()));
     }
-    if (StringUtils.isNotEmpty(room.getStructure())) {
-      room.setStructureList(convertToDictListFromSelVal(room.getStructure()));
+    if (StringUtils.isNotEmpty(room.getRoomConfig())) {
+      room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
     }
     return "modules/inventory/roomAdd";
   }
@@ -208,11 +201,11 @@ public class RoomController extends BaseController {
         upRoom.setRoomNo(room.getRoomNo());
         upRoom.setMeterNo(room.getMeterNo());
         upRoom.setRoomSpace(room.getRoomSpace());
-        if (CollectionUtils.isNotEmpty(room.getStructureList())) {
-          upRoom.setStructure(convertToStrFromList(room.getStructureList()));
-        }
         if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-          upRoom.setOrientation(convertToStrFromList(room.getOrientationList()));
+          upRoom.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
+        }
+        if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
+          upRoom.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
         }
         upRoom.setAttachmentPath(room.getAttachmentPath());
         upRoom.setRemarks(room.getRemarks());
@@ -220,14 +213,15 @@ public class RoomController extends BaseController {
         upRoom.setRental(room.getRental());
         upRoom.setShortDesc(room.getShortDesc());
         upRoom.setShortLocation(room.getShortLocation());
-        upRoom.setPayWay(room.getPayWay());
+        upRoom.setRentMonthGap(room.getRentMonthGap());
+        upRoom.setDeposMonthCount(room.getDeposMonthCount());
         roomService.saveRoom(upRoom);
       } else {
-        if (CollectionUtils.isNotEmpty(room.getStructureList())) {
-          room.setStructure(convertToStrFromList(room.getStructureList()));
-        }
         if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-          room.setOrientation(convertToStrFromList(room.getOrientationList()));
+          room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
+        }
+        if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
+          room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
         }
         roomService.saveRoom(room);
       }
@@ -248,7 +242,6 @@ public class RoomController extends BaseController {
         h.setBuilding(bd2);
         model.addAttribute("listHouse", houseService.findList(h));
         model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-        model.addAttribute("listStructure", DictUtils.getDictList("structure"));
         return "modules/inventory/roomForm";
       } else {// 可以新增房间
         House house = houseService.get(room.getHouse());
@@ -261,11 +254,11 @@ public class RoomController extends BaseController {
         } else {
           room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
         }
-        if (CollectionUtils.isNotEmpty(room.getStructureList())) {
-          room.setStructure(convertToStrFromList(room.getStructureList()));
-        }
         if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-          room.setOrientation(convertToStrFromList(room.getOrientationList()));
+          room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
+        }
+        if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
+          room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
         }
         roomService.saveRoom(room);
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房间信息成功");
@@ -293,15 +286,14 @@ public class RoomController extends BaseController {
       listHouse.add(house);
       model.addAttribute("listHouse", listHouse);
       model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-      model.addAttribute("listStructure", DictUtils.getDictList("structure"));
       addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加!");
     } else {// 可以新增
       room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-      if (CollectionUtils.isNotEmpty(room.getStructureList())) {
-        room.setStructure(convertToStrFromList(room.getStructureList()));
-      }
       if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-        room.setOrientation(convertToStrFromList(room.getOrientationList()));
+        room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
+      }
+      if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
+        room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
       }
       roomService.saveRoom(room);
       jsonObject.put("id", room.getId());
@@ -324,38 +316,4 @@ public class RoomController extends BaseController {
     return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
   }
 
-  private String convertToStrFromList(List<Dict> dicts) {
-    String resultStr = StringUtils.EMPTY;
-    for (Dict d : dicts) {
-      if (StringUtils.isNotEmpty(d.getId())) {
-        if (StringUtils.isEmpty(resultStr)) {
-          resultStr = resultStr + d.getId();
-        } else {
-          resultStr = resultStr + "," + d.getId();
-        }
-      }
-    }
-    return resultStr;
-  }
-
-  private List<Dict> convertToDictListFromSelVal(String selVal) {
-    if (StringUtils.isNotEmpty(selVal)) {
-      List<Dict> orientationList = Lists.newArrayList();
-      for (String val : StringUtils.split(selVal, ",")) {
-        Dict d = new Dict();
-        d.setId(val);
-        orientationList.add(d);
-      }
-      return orientationList;
-    } else {
-      return Lists.newArrayList();
-    }
-  }
-
-  public Page<House> listFeature(int p_n, int p_c) {
-    Page<House> page = new Page<House>();
-    page.setPageNo(p_n);
-    page.setPageSize(p_c);
-    return roomService.findFeaturePage(page);
-  }
 }

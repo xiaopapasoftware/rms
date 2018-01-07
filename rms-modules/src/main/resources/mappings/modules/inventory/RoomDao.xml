@@ -17,7 +17,7 @@
 		a.room_space AS "roomSpace",
 		a.orientation AS
 		"orientation",
-		a.structure AS "structure",
+		a.room_config AS "roomConfig",
 		a.room_status AS
 		"roomStatus",
 		a.create_by AS "createBy.id",
@@ -37,7 +37,9 @@
 		a.short_desc as "shortDesc",
 		a.short_location as
 		"shortLocation",
-		a.pay_way as "payWay"
+		a.new_id as "newId",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 	</sql>
 
 	<sql id="roomJoins">
@@ -93,6 +95,12 @@
 			<if test="isFeature != null and isFeature != ''">
 				and a.is_feature = #{isFeature}
 			</if>
+			<if test="rentMonthGap != null">
+				and a.rent_month_gap = #{rentMonthGap}
+			</if>
+			<if test="deposMonthCount != null">
+				and a.depos_month_count = #{deposMonthCount}
+			</if>
 		</where>
 
 		<!-- 数据范围过滤 -->
@@ -121,7 +129,10 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay"
+		a.new_id as "newId",
+		a.room_config AS "roomConfig",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.property_project_id = #{propertyProject.id}
@@ -183,7 +194,7 @@
 		meter_no,
 		room_space,
 		orientation,
-		structure,
+		room_config,
 		room_status,
 		create_by,
 		create_date,
@@ -195,7 +206,8 @@
 		rental,
 		short_desc,
 		short_location,
-		pay_way
+		rent_month_gap,
+		depos_month_count
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -205,7 +217,7 @@
 		#{meterNo},
 		#{roomSpace},
 		#{orientation},
-		#{structure},
+		#{roomConfig},
 		#{roomStatus},
 		#{createBy.id},
 		#{createDate},
@@ -217,7 +229,8 @@
 		#{rental},
 		#{shortDesc},
 		#{shortLocation},
-		#{payWay}
+		#{rentMonthGap},
+		#{deposMonthCount}
 		)
 	</insert>
 
@@ -230,7 +243,7 @@
 		meter_no = #{meterNo},
 		room_space = #{roomSpace},
 		orientation = #{orientation},
-		structure = #{structure},
+		room_config = #{roomConfig},
 		<if test="roomStatus != null and roomStatus != ''">
 			room_status = #{roomStatus},
 		</if>
@@ -241,7 +254,8 @@
 		rental = #{rental},
 		short_desc = #{shortDesc},
 		short_location = #{shortLocation},
-		pay_way = #{payWay}
+		rent_month_gap = #{rentMonthGap},
+		depos_month_count = #{deposMonthCount}
 		WHERE id = #{id}
 	</update>
 

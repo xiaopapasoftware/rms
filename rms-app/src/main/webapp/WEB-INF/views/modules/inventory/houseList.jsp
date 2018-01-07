@@ -102,8 +102,16 @@
 				<form:input path="gasAccountNum" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
-				<label>产证证号：</label> 
+				<label>产权证号：</label>
 				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>支付间隔：</label>
+				<form:input path="rentMonthGap" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>押金月数：</label>
+				<form:input path="deposMonthCount" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
 				<label>房屋状态：</label> 
@@ -156,6 +164,8 @@
 				<th>电户号</th>
 				<th>水户号</th>
 				<th>煤气户号</th>
+				<th>支付间隔月数</th>
+				<th>押金月数</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -184,6 +194,8 @@
 					<td>${house.eleAccountNum}</td>
 					<td>${house.waterAccountNum}</td>
 					<td>${house.gasAccountNum}</td>
+					<td>${house.rentMonthGap}</td>
+					<td>${house.deposMonthCount}</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>

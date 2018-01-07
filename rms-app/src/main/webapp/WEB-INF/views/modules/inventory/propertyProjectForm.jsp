@@ -95,6 +95,42 @@
         </div>
     </div>
     <div class="control-group">
+        <label class="control-label">城市编码：</label>
+        <div class="controls">
+            <form:input path="cityCode" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+            <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">城市名称：</label>
+        <div class="controls">
+            <form:input path="cityName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">行政区县编码：</label>
+        <div class="controls">
+            <form:input path="districtCode" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+            <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">行政区县名称：</label>
+        <div class="controls">
+            <form:input path="districtName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">坐标系：</label>
+        <div class="controls">
+            <form:select path="coordsys" class="input-xlarge required">
+                <form:option value="" label="请选择..."/>
+                <form:options items="${fns:getDictList('coordsys')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+            </form:select>
+            <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
         <label class="control-label">物业项目图片：</label>
         <div class="controls">
             <form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000"

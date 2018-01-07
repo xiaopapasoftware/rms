@@ -34,6 +34,9 @@
 			<li><label>楼宇名称：</label>
 				<form:input path="buildingName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li><label>公寓别名：</label>
+				<form:input path="nickName" htmlEscape="false" maxlength="100" class="input-medium"/>
+			</li>
 			<shiro:hasPermission name="inventory:building:view">
 				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			</shiro:hasPermission>
@@ -47,6 +50,9 @@
 				<th>物业项目</th>
 				<th>楼宇名称</th>
 				<th>总楼层数</th>
+				<th>公寓别名</th>
+				<th>房源最小租金</th>
+				<th>房源最大租金</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -68,6 +74,15 @@
 				</td>
 				<td>
 					${building.totalFloorCount}
+				</td>
+				<td>
+						${building.nickName}
+				</td>
+				<td>
+						${building.minAmount}
+				</td>
+				<td>
+						${building.maxAmount}
 				</td>
 				<td>
 					<fmt:formatDate value="${building.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

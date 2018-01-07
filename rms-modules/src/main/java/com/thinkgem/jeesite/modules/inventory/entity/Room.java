@@ -3,15 +3,13 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-
+import com.google.common.collect.Lists;
+import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import org.hibernate.validator.constraints.Length;
 
-import com.google.common.collect.Lists;
-import com.thinkgem.jeesite.common.persistence.DataEntity;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 房间信息Entity
@@ -32,8 +30,8 @@ public class Room extends DataEntity<Room> {
 	private String orientation;
 	private List<Dict> orientationList = Lists.newArrayList(new Dict());// 朝向列表
 
-	private String structure;
-	private List<Dict> structureList = Lists.newArrayList(new Dict());// 附属结构列表
+	private String roomConfig;
+	private List<Dict> roomConfigList = Lists.newArrayList(new Dict());// 物品配置列表
 
 	private String roomStatus; // 房间状态
 	private String attachmentPath;// 房间图片
@@ -44,7 +42,12 @@ public class Room extends DataEntity<Room> {
     private Double rental;//意向租金
     private String shortDesc;//描述
     private String shortLocation;//地址描述
-    private String payWay;//付款方式
+
+	private Long newId;
+
+	private Integer rentMonthGap;
+
+	private Integer deposMonthCount;
 
 	public Room() {
 		super();
@@ -123,13 +126,22 @@ public class Room extends DataEntity<Room> {
 		this.orientationList = orientationList;
 	}
 
-	public List<Dict> getStructureList() {
-		return structureList;
+	public String getRoomConfig() {
+		return roomConfig;
 	}
 
-	public void setStructureList(List<Dict> structureList) {
-		this.structureList = structureList;
+	public void setRoomConfig(String roomConfig) {
+		this.roomConfig = roomConfig;
 	}
+
+	public List<Dict> getRoomConfigList() {
+		return roomConfigList;
+	}
+
+	public void setRoomConfigList(List<Dict> roomConfigList) {
+		this.roomConfigList = roomConfigList;
+	}
+
 	public String getAttachmentPath() {
 		return attachmentPath;
 	}
@@ -143,14 +155,6 @@ public class Room extends DataEntity<Room> {
 
 	public void setOrientation(String orientation) {
 		this.orientation = orientation;
-	}
-
-	public String getStructure() {
-		return structure;
-	}
-
-	public void setStructure(String structure) {
-		this.structure = structure;
 	}
 
 	public String getChoose() {
@@ -193,11 +197,27 @@ public class Room extends DataEntity<Room> {
 		this.shortLocation = shortLocation;
 	}
 
-	public String getPayWay() {
-		return payWay;
+	public Long getNewId() {
+		return newId;
 	}
 
-	public void setPayWay(String payWay) {
-		this.payWay = payWay;
+	public void setNewId(Long newId) {
+		this.newId = newId;
+	}
+
+	public Integer getRentMonthGap() {
+		return rentMonthGap;
+	}
+
+	public void setRentMonthGap(Integer rentMonthGap) {
+		this.rentMonthGap = rentMonthGap;
+	}
+
+	public Integer getDeposMonthCount() {
+		return deposMonthCount;
+	}
+
+	public void setDeposMonthCount(Integer deposMonthCount) {
+		this.deposMonthCount = deposMonthCount;
 	}
 }

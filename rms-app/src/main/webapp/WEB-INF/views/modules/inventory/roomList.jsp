@@ -111,6 +111,14 @@
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 				</form:select>
 			</li>
+			<li>
+				<label>支付间隔：</label>
+				<form:input path="rentMonthGap" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
+			<li>
+				<label>押金月数：</label>
+				<form:input path="deposMonthCount" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -126,9 +134,10 @@
 				<th>精选房源</th>
 				<th>房间状态</th>
 				<th>电表号</th>
+				<th>支付间隔月数</th>
+				<th>押金月数</th>
 				<th>房间面积(平方米)</th>
 				<th>朝向</th>
-				<th>附属结构</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -147,12 +156,11 @@
 				<td>${fns:getDictLabel(room.isFeature, 'yes_no', '')}</td>
 				<td>${fns:getDictLabel(room.roomStatus, 'room_status', '')}</td>
 				<td>${room.meterNo}</td>
+				<td>${room.rentMonthGap}</td>
+				<td>${room.deposMonthCount}</td>
 				<td>${room.roomSpace}</td>
 				<td>
 					${fns:getDictLabels(room.orientation, 'orientation', '')}
-				</td>
-				<td>
-					${fns:getDictLabels(room.structure, 'structure', '')}
 				</td>
 				<td><fmt:formatDate value="${room.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 				<td><fmt:formatDate value="${room.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>

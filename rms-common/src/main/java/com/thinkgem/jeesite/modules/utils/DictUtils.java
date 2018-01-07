@@ -92,4 +92,32 @@ public class DictUtils {
     return JsonMapper.toJsonString(getDictList(type));
   }
 
+  public static List<Dict> convertToDictListFromSelVal(String selVal) {
+    if (com.thinkgem.jeesite.common.utils.StringUtils.isNotEmpty(selVal)) {
+      List<Dict> orientationList = Lists.newArrayList();
+      for (String val : com.thinkgem.jeesite.common.utils.StringUtils.split(selVal, ",")) {
+        Dict d = new Dict();
+        d.setId(val);
+        orientationList.add(d);
+      }
+      return orientationList;
+    } else {
+      return Lists.newArrayList();
+    }
+  }
+
+  public static String convertToStrFromList(List<Dict> dicts) {
+    String resultStr = com.thinkgem.jeesite.common.utils.StringUtils.EMPTY;
+    for (Dict d : dicts) {
+      if (com.thinkgem.jeesite.common.utils.StringUtils.isNotEmpty(d.getId())) {
+        if (com.thinkgem.jeesite.common.utils.StringUtils.isEmpty(resultStr)) {
+          resultStr = resultStr + d.getId();
+        } else {
+          resultStr = resultStr + "," + d.getId();
+        }
+      }
+    }
+    return resultStr;
+  }
+
 }

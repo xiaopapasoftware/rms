@@ -11,7 +11,12 @@
 		            event.preventDefault();
 		        }
 		    });
-			
+			$("#btnSubmit").click(function () {
+                if(!$("#attachmentPath").val()){
+                    alert('请先上传房屋图片！');
+                    return false;
+                }
+            });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
@@ -196,6 +201,26 @@
 			<label class="control-label">产权证号：</label>
 			<div class="controls">
 				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">支付间隔月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "rentMonthGap"  path="rentMonthGap" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">押金月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "deposMonthCount"  path="deposMonthCount" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">公共区域物品配置：</label>
+			<div class="controls">
+				<form:checkboxes path="shareAreaConfigList" items="${fns:getDictList('share_area_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -26,6 +26,10 @@ public class Building extends DataEntity<Building> {
 
   private String choose;
 
+  private String nickName;
+  private String minAmount;
+  private String maxAmount;
+
   public Building() {
     super();
   }
@@ -74,5 +78,29 @@ public class Building extends DataEntity<Building> {
 
   public void setChoose(String choose) {
     this.choose = choose;
+  }
+
+  public String getNickName() {
+    return nickName;
+  }
+
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
+
+  public String getMinAmount() {
+    return minAmount;
+  }
+
+  public void setMinAmount(String minAmount) {
+    this.minAmount = minAmount;
+  }
+
+  public String getMaxAmount() {
+    return maxAmount;
+  }
+
+  public void setMaxAmount(String maxAmount) {
+    this.maxAmount = maxAmount;
   }
 }

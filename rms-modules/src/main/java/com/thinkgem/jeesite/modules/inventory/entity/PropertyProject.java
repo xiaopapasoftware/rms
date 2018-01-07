@@ -4,12 +4,11 @@
  */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
-import javax.validation.constraints.NotNull;
-
+import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.Area;
 import org.hibernate.validator.constraints.Length;
 
-import com.thinkgem.jeesite.common.persistence.DataEntity;
+import javax.validation.constraints.NotNull;
 
 /**
  * 物业项目Entity
@@ -28,6 +27,14 @@ public class PropertyProject extends DataEntity<PropertyProject> {
   private String attachmentPath;// 物业项目图片
 
   private Area area; //区域
+
+  private String cityCode;
+  private String cityName;
+  private String districtCode;
+  private String districtName;
+  private Integer coordsys;
+  private String commReqId;
+  private Integer alipayStatus;
 
   public PropertyProject() {
     super();
@@ -95,5 +102,61 @@ public class PropertyProject extends DataEntity<PropertyProject> {
 
   public void setAttachmentPath(String attachmentPath) {
     this.attachmentPath = attachmentPath;
+  }
+
+  public String getCityCode() {
+    return cityCode;
+  }
+
+  public void setCityCode(String cityCode) {
+    this.cityCode = cityCode;
+  }
+
+  public String getCityName() {
+    return cityName;
+  }
+
+  public void setCityName(String cityName) {
+    this.cityName = cityName;
+  }
+
+  public String getDistrictCode() {
+    return districtCode;
+  }
+
+  public void setDistrictCode(String districtCode) {
+    this.districtCode = districtCode;
+  }
+
+  public String getDistrictName() {
+    return districtName;
+  }
+
+  public void setDistrictName(String districtName) {
+    this.districtName = districtName;
+  }
+
+  public Integer getCoordsys() {
+    return coordsys;
+  }
+
+  public void setCoordsys(Integer coordsys) {
+    this.coordsys = coordsys;
+  }
+
+  public String getCommReqId() {
+    return commReqId;
+  }
+
+  public void setCommReqId(String commReqId) {
+    this.commReqId = commReqId;
+  }
+
+  public Integer getAlipayStatus() {
+    return alipayStatus;
+  }
+
+  public void setAlipayStatus(Integer alipayStatus) {
+    this.alipayStatus = alipayStatus;
   }
 }

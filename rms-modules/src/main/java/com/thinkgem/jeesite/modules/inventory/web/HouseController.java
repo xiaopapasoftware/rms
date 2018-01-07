@@ -1,23 +1,5 @@
 package com.thinkgem.jeesite.modules.inventory.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.activiti.engine.impl.util.json.JSONObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -34,6 +16,23 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
+import com.thinkgem.jeesite.modules.utils.DictUtils;
+import org.activiti.engine.impl.util.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/house")
@@ -60,6 +59,7 @@ public class HouseController extends BaseController {
     if (StringUtils.isNotBlank(id)) {
       entity = houseService.get(id);
     }
+
     if (entity == null) {
       entity = new House();
     }
@@ -158,6 +158,9 @@ public class HouseController extends BaseController {
       }
       house.setOwnerList(ownerList);
     }
+    if (StringUtils.isNotEmpty(house.getShareAreaConfig())) {
+      house.setShareAreaConfigList(DictUtils.convertToDictListFromSelVal(house.getShareAreaConfig()));
+    }
     model.addAttribute("ownerList", ownerService.findList(new Owner()));
     model.addAttribute("house", house);
     return "modules/inventory/houseForm";
@@ -189,6 +192,9 @@ public class HouseController extends BaseController {
       }
       house.setOwnerList(ownerList);
     }
+    if (StringUtils.isNotEmpty(house.getShareAreaConfig())) {
+      house.setShareAreaConfigList(DictUtils.convertToDictListFromSelVal(house.getShareAreaConfig()));
+    }
     model.addAttribute("ownerList", ownerService.findList(new Owner()));
     model.addAttribute("house", house);
     return "modules/inventory/houseAdd";
@@ -214,6 +220,9 @@ public class HouseController extends BaseController {
       if (CollectionUtils.isNotEmpty(houses)) {
         house.setId(houses.get(0).getId());
       }
+      if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())){
+        house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
+      }
       houseService.saveHouse(house);
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房屋信息成功");
       return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -235,6 +244,9 @@ public class HouseController extends BaseController {
           house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
         } else {
           house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
+        }
+        if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())){
+          house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
         }
         houseService.saveHouse(house);
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房屋信息成功");
@@ -267,6 +279,9 @@ public class HouseController extends BaseController {
         house.setHouseCode(houseCode.split("-")[0] + "-" + (houseService.getCurrentValidHouseNum() + 1));
       } else {
         house.setHouseCode((houseService.getCurrentValidHouseNum() + 1) + "");
+      }
+      if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())){
+        house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
       }
       houseService.saveHouse(house);
       jsonObject.put("id", house.getId());

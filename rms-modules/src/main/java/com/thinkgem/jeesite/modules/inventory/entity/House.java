@@ -4,6 +4,7 @@
 package com.thinkgem.jeesite.modules.inventory.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import org.hibernate.validator.constraints.Length;
@@ -50,7 +51,6 @@ public class House extends DataEntity<House> {
   private Double rental;// 意向租金 0 整套 1 单间
   private String shortDesc;// 描述
   private String shortLocation;// 地址描述
-  private String payWay;// 付款方式
   private User serviceUser;// 服务管家
   private String servcieUserName;
   /* 电户号 */
@@ -64,6 +64,10 @@ public class House extends DataEntity<House> {
 
   private String type;
 
+  private Integer rentMonthGap;
+
+  private Integer deposMonthCount;
+
   public House() {
     super();
   }
@@ -71,6 +75,10 @@ public class House extends DataEntity<House> {
   public House(String id) {
     super(id);
   }
+
+  private String shareAreaConfig;
+
+  private List<Dict> shareAreaConfigList;
 
   @NotNull(message = "物业项目不能为空")
   public PropertyProject getPropertyProject() {
@@ -277,14 +285,6 @@ public class House extends DataEntity<House> {
     this.shortLocation = shortLocation;
   }
 
-  public String getPayWay() {
-    return payWay;
-  }
-
-  public void setPayWay(String payWay) {
-    this.payWay = payWay;
-  }
-
   public String getProjectAddr() {
     return projectAddr;
   }
@@ -371,5 +371,37 @@ public class House extends DataEntity<House> {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public String getShareAreaConfig() {
+    return shareAreaConfig;
+  }
+
+  public void setShareAreaConfig(String shareAreaConfig) {
+    this.shareAreaConfig = shareAreaConfig;
+  }
+
+  public List<Dict> getShareAreaConfigList() {
+    return shareAreaConfigList;
+  }
+
+  public void setShareAreaConfigList(List<Dict> shareAreaConfigList) {
+    this.shareAreaConfigList = shareAreaConfigList;
+  }
+
+  public Integer getRentMonthGap() {
+    return rentMonthGap;
+  }
+
+  public void setRentMonthGap(Integer rentMonthGap) {
+    this.rentMonthGap = rentMonthGap;
+  }
+
+  public Integer getDeposMonthCount() {
+    return deposMonthCount;
+  }
+
+  public void setDeposMonthCount(Integer deposMonthCount) {
+    this.deposMonthCount = deposMonthCount;
   }
 }

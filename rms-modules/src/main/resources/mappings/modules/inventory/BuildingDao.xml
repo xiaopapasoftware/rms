@@ -16,7 +16,10 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		atta.attachment_path AS "attachmentPath",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.nick_name AS nickName,
+		a.min_amount AS minAmount,
+		a.max_amount AS maxAmount
 	</sql>
 	
 	<sql id="buildingJoins">
@@ -49,6 +52,12 @@
 					<if test="dbName == 'oracle'">'%'||#{buildingName}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{buildingName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{buildingName},'%')</if>
+			</if>
+			<if test="nickName != null and nickName != ''">
+				AND a.nick_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{nickName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{nickName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{nickName},'%')</if>
 			</if>
 		</where>
 
@@ -98,7 +107,10 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			nick_name,
+			min_amount,
+			max_amount
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -109,7 +121,10 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{nickName},
+			#{minAmount},
+			#{maxAmount}
 		)
 	</insert>
 	
@@ -120,7 +135,10 @@
 			TOTAL_FLOOR_COUNT = #{totalFloorCount},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			nick_name = #{nickName},
+			min_amount = #{minAmount},
+			max_amount = #{maxAmount}
 		WHERE id = #{id}
 	</update>
 	
@@ -146,16 +164,19 @@
 
 	<select id="getBuildingListByProjectId" resultType="Building">
 		SELECT
-		id,
-		t_property_project_main_id,
-		building_name,
-		TOTAL_FLOOR_COUNT,
-		create_by,
-		create_date,
-		update_by,
-		update_date,
-		remarks,
-		del_flag
+		a.id AS "id",
+		a.t_property_project_main_id AS "propertyProject.id",
+		a.building_name AS "buildingName",
+		a.TOTAL_FLOOR_COUNT AS "totalFloorCount",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.nick_name AS nickName,
+		a.min_amount AS minAmount,
+		a.max_amount AS maxAmount
 		FROM t_building a
 		WHERE
 			a.del_flag = '0'

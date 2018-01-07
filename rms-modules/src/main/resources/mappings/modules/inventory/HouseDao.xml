@@ -35,14 +35,16 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay",
 		a.service_user as "serviceUser.id",
 		u3.name as "serviceUser.name",
 		a.ele_account_num as eleAccountNum,
 		a.water_account_num as waterAccountNum,
 		a.gas_account_num as gasAccountNum,
 		a.new_id as newId,
-		a.type as type
+		a.type as type,
+		a.share_area_config as shareAreaConfig,
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 	</sql>
 
 	<sql id="houseJoins">
@@ -83,7 +85,6 @@
 		h.rental,
 		h.short_desc,
 		h.short_location,
-		h.pay_way,
 		a.attachment_path,
 		h.DECORA_STRUC_ROOM_NUM,
 		h.DECORA_STRUC_CUSSPAC_NUM,
@@ -110,7 +111,6 @@
 		r.rental,
 		r.short_desc,
 		r.short_location,
-		r.pay_way,
 		a.attachment_path,
 		h.DECORA_STRUC_ROOM_NUM,
 		h.DECORA_STRUC_CUSSPAC_NUM,
@@ -200,6 +200,12 @@
 			<if test="type != null and type != ''">
 				and a.type = #{type}
 			</if>
+			<if test="rentMonthGap != null">
+				and a.rent_month_gap = #{rentMonthGap}
+			</if>
+			<if test="deposMonthCount != null">
+				and a.depos_month_count = #{deposMonthCount}
+			</if>
 		</where>
 
 		<!-- 数据范围过滤 -->
@@ -225,7 +231,6 @@
 		h.rental,
 		h.short_desc,
 		h.short_location,
-		h.pay_way,
 		a.attachment_path
 		FROM
 		t_house h
@@ -246,7 +251,6 @@
 		r.rental,
 		r.short_desc,
 		r.short_location,
-		r.pay_way,
 		a.attachment_path
 		FROM
 		t_room r
@@ -298,9 +302,11 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay",
 		a.new_id as "newId",
-		a.type as "type"
+		a.type as "type",
+		a.share_area_config as "shareAreaConfig",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 		FROM t_house a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -350,9 +356,11 @@
 		rental,
 		short_desc,
 		short_location,
-		pay_way,
 		service_user,
-		type
+		type,
+		share_area_config,
+		rent_month_gap,
+		depos_month_count
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -384,9 +392,11 @@
 		#{rental},
 		#{shortDesc},
 		#{shortLocation},
-		#{payWay},
 		#{serviceUser.id},
-		#{type}
+		#{type},
+		#{shareAreaConfig},
+		#{rentMonthGap},
+		#{deposMonthCount}
 		)
 	</insert>
 
@@ -421,9 +431,11 @@
 		rental = #{rental},
 		short_desc = #{shortDesc},
 		short_location = #{shortLocation},
-		pay_way = #{payWay},
 		service_user = #{serviceUser.id},
-		type = #{type}
+		type = #{type},
+		share_area_config = #{shareAreaConfig},
+		rent_month_gap = #{rentMonthGap},
+		depos_month_count = #{deposMonthCount}
 		WHERE id = #{id}
 	</update>
 
@@ -492,9 +504,11 @@
 		a.gas_account_num as "gasAccountNum",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay",
 		a.new_id as "newId",
-		a.type as "type"
+		a.type as "type",
+		a.share_area_config as "shareAreaConfig",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 		FROM t_house a
 		WHERE
 		a.del_flag = '0'
@@ -517,12 +531,14 @@
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
-		a.pay_way as "payWay",
 		a.ele_account_num as "eleAccountNum",
 		a.water_account_num as "waterAccountNum",
 		a.gas_account_num as "gasAccountNum",
 		a.new_id as "newId",
-		a.type as "type"
+		a.type as "type",
+		a.share_area_config as "shareAreaConfig",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount
 		FROM t_house a
 		where
 		a.del_flag = '0'

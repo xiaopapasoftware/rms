@@ -21,7 +21,14 @@
 		c.company_name AS "managementCompany.companyName",
 		atta.attachment_path AS "attachmentPath",
 		sa.id as "area.id",
-		sa.name as "area.name"
+		sa.name as "area.name",
+		a.city_code as cityCode,
+		a.city_name as cityName,
+		a.district_code as districtCode,
+		a.district_name as districtName,
+		a.coordsys as coordsys,
+		a.comm_req_id as commReqId,
+		a.alipay_status as alipayStatus
 	</sql>
 	
 	<sql id="propertyProjectJoins">
@@ -67,10 +74,25 @@
 					<if test="dbName == 'mysql'">concat('%',#{projectSimpleName},'%')</if>
 			</if>
 			<if test="projectAddr != null and projectAddr != ''">
-				AND a.project_addr LIKE 
-					<if test="dbName == 'oracle'">'%'||#{projectAddr}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{projectAddr}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{projectAddr},'%')</if>
+				AND a.project_addr LIKE
+				<if test="dbName == 'oracle'">'%'||#{projectAddr}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{projectAddr}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{projectAddr},'%')</if>
+			</if>
+			<if test="cityName != null and cityName != ''">
+				AND a.city_name LIKE
+					<if test="dbName == 'oracle'">'%'||#{cityName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cityName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cityName},'%')</if>
+			</if>
+			<if test="districtName != null and districtName != ''">
+				AND a.district_name LIKE
+				<if test="dbName == 'oracle'">'%'||#{districtName}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{districtName}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{districtName},'%')</if>
+			</if>
+			<if test="alipayStatus != null">
+				AND a.alipay_status = #{alipayStatus}
 			</if>
 		</where>
 
@@ -123,7 +145,14 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			city_code,
+			city_name,
+			district_code,
+			district_name,
+			coordsys,
+			comm_req_id,
+			alipay_status
 		) VALUES (
 			#{id},
 			#{neighborhood.id},
@@ -137,7 +166,14 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{cityCode},
+			#{cityName},
+			#{districtCode},
+			#{districtName},
+			#{coordsys},
+			#{commReqId},
+			#{alipayStatus}
 		)
 	</insert>
 	
@@ -151,7 +187,12 @@
 			project_addr = #{projectAddr},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
-			remarks = #{remarks}
+			remarks = #{remarks},
+			city_code = #{cityCode},
+			city_name = #{cityName},
+			district_code = #{districtCode},
+			district_name = #{districtName},
+			coordsys = #{coordsys}
 		WHERE id = #{id}
 	</update>
 	

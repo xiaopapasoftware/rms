@@ -1,26 +1,5 @@
 package com.thinkgem.jeesite.modules.app.web;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.exception.ParamsException;
@@ -33,17 +12,9 @@ import com.thinkgem.jeesite.modules.app.alipay.AlipayUtil;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
-import com.thinkgem.jeesite.modules.app.entity.AppToken;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
-import com.thinkgem.jeesite.modules.app.entity.Repair;
-import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.app.entity.ServiceUserComplain;
+import com.thinkgem.jeesite.modules.app.entity.*;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
-import com.thinkgem.jeesite.modules.app.service.AppSmsMessageService;
-import com.thinkgem.jeesite.modules.app.service.AppTokenService;
-import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.RepairService;
-import com.thinkgem.jeesite.modules.app.service.ServiceUserComplainService;
+import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.app.util.RandomStrUtil;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -52,29 +23,8 @@ import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.dao.ContractTenantDao;
-import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
-import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
-import com.thinkgem.jeesite.modules.contract.entity.ContractTenant;
-import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.AgreementAuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AgreementBusiStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.AuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractAuditStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractBusiStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.ContractSourceEnum;
-import com.thinkgem.jeesite.modules.contract.enums.FileType;
-import com.thinkgem.jeesite.modules.contract.enums.MoneyReceivedTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentOrderStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransStatusEnum;
-import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.RentPayTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeModeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
-import com.thinkgem.jeesite.modules.contract.enums.TradingAccountsStatusEnum;
+import com.thinkgem.jeesite.modules.contract.entity.*;
+import com.thinkgem.jeesite.modules.contract.enums.*;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.DepositAgreementService;
 import com.thinkgem.jeesite.modules.contract.service.RentContractService;
@@ -82,27 +32,25 @@ import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.fee.service.ElectricFeeService;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
-import com.thinkgem.jeesite.modules.funds.entity.Receipt;
-import com.thinkgem.jeesite.modules.funds.entity.TradingAccounts;
+import com.thinkgem.jeesite.modules.funds.entity.*;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.HouseAd;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
-import com.thinkgem.jeesite.modules.inventory.service.HouseAdService;
-import com.thinkgem.jeesite.modules.inventory.service.HouseService;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
-import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.inventory.entity.*;
+import com.thinkgem.jeesite.modules.inventory.service.*;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "${apiPath}/house")
@@ -209,7 +157,6 @@ public class AppHouseController extends AppBaseController {
       mp.put("price", df.format(h.getRental()));
       mp.put("short_desc", h.getShortDesc());
       mp.put("short_location", h.getShortLocation());
-      mp.put("pay_way", h.getPayWay());
       String cover = "";
       if (!StringUtils.isEmpty(h.getAttachmentPath())) {
         String img_url = Global.getConfig("img.url");
@@ -240,7 +187,6 @@ public class AppHouseController extends AppBaseController {
     map.put("id", house.getId());
     map.put("title", house.getShortDesc());
     map.put("price", df1.format(house.getRental()));
-    map.put("pay_way", house.getPayWay());
     String cover = "";
     if (!StringUtils.isEmpty(house.getAttachmentPath())) {
       String img_url = Global.getConfig("img.url");
@@ -968,21 +914,16 @@ public class AppHouseController extends AppBaseController {
     rentContract.setBuilding(building);
     if (!hasBooked) {// 新签
       logger.info("当前为新签合同");
-      String payWay = "";// 意向租赁方式
       if (null != room) {
         rentContract.setRental(room.getRental());// 在管家确认前，房租取值于“意向房租”
-        payWay = room.getPayWay();
+        rentContract.setRenMonths(room.getRentMonthGap());
+        rentContract.setDepositMonths(room.getDeposMonthCount());
       } else {
         rentContract.setRental(house.getRental());// 在管家确认前，房租取值于“意向房租”
-        payWay = house.getPayWay();
+        rentContract.setRenMonths(house.getRentMonthGap());
+        rentContract.setDepositMonths(house.getDeposMonthCount());
       }
-      if (RentPayTypeEnum.PAY_3_DEPOSIT_3.getValue().equals(payWay)) {
-        rentContract.setRenMonths(3);
-        rentContract.setDepositMonths(1);
-      } else if (RentPayTypeEnum.PAY_2_DEPOSIT_2.getValue().equals(payWay)) {
-        rentContract.setRenMonths(2);
-        rentContract.setDepositMonths(2);
-      }
+
       rentContract.setDepositAmount(rentContract.getRental() * rentContract.getDepositMonths());
       int result = rentContractService.saveContract(rentContract);
       tailProcess(house, result, data);// 结果处理

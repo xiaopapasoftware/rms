@@ -59,6 +59,24 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">公寓别名：</label>
+			<div class="controls">
+				<form:input path="nickName" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">房源最小租金：</label>
+			<div class="controls">
+				<form:input path="minAmount" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">房源最大租金：</label>
+			<div class="controls">
+				<form:input path="maxAmount" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">楼宇图片：</label>
 			<div class="controls">
 				<form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000" class="input-xlarge"/>

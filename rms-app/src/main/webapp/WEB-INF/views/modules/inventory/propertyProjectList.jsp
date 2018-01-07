@@ -44,6 +44,17 @@
 			<li><label style="width:120px;">项目拼音首字母：</label>
 				<form:input path="projectSimpleName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
 			</li>
+
+			<li><label style="width:120px;">城市名称：</label>
+				<form:input path="cityName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
+			</li>
+			<li><label style="width:120px;">区县名称：</label>
+				<form:input path="districtName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
+			</li>
+			<li><label style="width:120px;">小区同步状态：</label>
+				<form:input path="coordsys" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
+			</li>
+
 			<li><label style="width:120px;">物业项目地址：</label>
 				<form:input path="projectAddr" htmlEscape="false" maxlength="300" class="input-medium" style="width:180px;"/>
 			</li>
@@ -62,6 +73,13 @@
 				<th>物业项目名称</th>
 				<th>物业项目拼音首字母</th>
 				<th>物业项目地址</th>
+				<th>城市编码</th>
+				<th>城市名称</th>
+				<th>区县编码</th>
+				<th>区县名称</th>
+				<th>坐标系</th>
+				<th>同步请求号</th>
+				<th>同步状态</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -89,6 +107,27 @@
 				</td>
 				<td>
 					${propertyProject.projectAddr}
+				</td>
+				<td>
+						${propertyProject.cityCode}
+				</td>
+				<td>
+						${propertyProject.cityName}
+				</td>
+				<td>
+						${propertyProject.districtCode}
+				</td>
+				<td>
+						${propertyProject.districtName}
+				</td>
+				<td>
+						${fns:getDictLabel(propertyProject.coordsys, 'coordsys', '')}
+				</td>
+				<td>
+						${propertyProject.commReqId}
+				</td>
+				<td>
+						${fns:getDictLabel(propertyProject.coordsys, 'alipay_status', '')}
 				</td>
 				<td>
 					<fmt:formatDate value="${propertyProject.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

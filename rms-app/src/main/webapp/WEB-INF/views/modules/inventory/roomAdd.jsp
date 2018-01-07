@@ -16,11 +16,12 @@
 		            event.preventDefault();
 		        }
 		    });
-			$("input[id*='structureList']").keypress(function(event) {
-		        if (event.keyCode == 13) {
-		            event.preventDefault();
-		        }
-		    });
+            $("#btnSubmit").click(function () {
+                if(!$("#attachmentPath").val()){
+                    alert('请先上传房间图片！');
+                    return false;
+                }
+            });
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();
@@ -151,6 +152,20 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">支付间隔月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "rentMonthGap"  path="rentMonthGap" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">押金月数：</label>
+			<div class="controls">
+				<form:input type = "number" placeholder="请填写正整数" id = "deposMonthCount"  path="deposMonthCount" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">房间面积（平方米）：</label>
 			<div class="controls">
 				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge number"/>
@@ -163,9 +178,9 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">附属结构：</label>
+			<label class="control-label">物品配置：</label>
 			<div class="controls">
-				<form:checkboxes path="structureList" items="${listStructure}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
+				<form:checkboxes path="roomConfigList" items="${fns:getDictList('room_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">
