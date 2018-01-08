@@ -11,9 +11,9 @@ public enum FileType {
 
   CERTIFICATE_FILE("委托证明", "1"),
 
-  HOUSE_CERTIFICATE("业主房产证", "2"),
+  HOUSE_CERTIFICATE("产权证明", "2"),
 
-  HOUSE_AGREEMENT_CERTIFICATE("动迁协议", "3"),
+  HOUSE_AGREEMENT_CERTIFICATE("其他材料", "3"),
 
   TENANT_ID("租客身份证", "4"),
 
@@ -46,6 +46,8 @@ public enum FileType {
   DEPOSITRECEIPT_FILE_OTHER("定金协议其他附件", "18"),
 
   RENTCONTRACT_FILE_OTHER("出租合同其他附件", "19"),
+
+  TRUSTEESHIP_CONTRACT_FILE("托管合同", "20"),
 
   APP_USER_AVATAR("APP用户头像", "APP_USER_AVATAR"),
 

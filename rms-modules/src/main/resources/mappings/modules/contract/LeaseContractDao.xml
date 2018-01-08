@@ -33,6 +33,7 @@
 		a.LESSOR_NAME AS "lessorName",
 		a.LESSOR_ID_NO AS "lessorIdNo",
 		a.LESSOR_CELL_NO AS "lessorCellNo",
+		at0.attachment_path as trusteeshipContr,
 		at1.attachment_path as landlordId, 
 		at2.attachment_path as profile,
 		at3.attachment_path as certificate,
@@ -45,6 +46,7 @@
 	</sql>
 	
 	<sql id="leaseContractJoins">
+		left join t_attachment at0 on a.id=at0.lease_contract_id and at0.attachment_type='20' and at0.del_flag='0'
 		left join t_attachment at1 on a.id=at1.lease_contract_id and at1.attachment_type='0' and at1.del_flag='0'
 		left join t_attachment at2 on a.id=at2.lease_contract_id and at2.attachment_type='1' and at2.del_flag='0'
 		left join t_attachment at3 on a.id=at3.lease_contract_id and at3.attachment_type='2' and at3.del_flag='0'

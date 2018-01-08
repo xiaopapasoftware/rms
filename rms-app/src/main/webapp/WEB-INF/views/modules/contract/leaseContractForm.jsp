@@ -453,12 +453,27 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">托管合同：</label>
+			<div class="controls">
+				<form:hidden id="trusteeshipContr" path="trusteeshipContr" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="trusteeshipContr" type="files" uploadPath="/托管合同" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">产权证明：</label>
+			<div class="controls">
+				<form:hidden id="certificate" path="certificate" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
+				<sys:ckfinder input="certificate" type="files" uploadPath="/产权证明" selectMultiple="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">业主身份证：</label>
 			<div class="controls">
 				<form:hidden id="landlordId" path="landlordId" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
 				<sys:ckfinder input="landlordId" type="files" uploadPath="/业主身份证" selectMultiple="true"/>
 			</div>
 		</div>
+		
 		<div class="control-group">
 			<label class="control-label">委托证明：</label>
 			<div class="controls">
@@ -466,18 +481,12 @@
 				<sys:ckfinder input="profile" type="files" uploadPath="/委托证明" selectMultiple="true"/>
 			</div>
 		</div>
+		
 		<div class="control-group">
-			<label class="control-label">业主房产证：</label>
-			<div class="controls">
-				<form:hidden id="certificate" path="certificate" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="certificate" type="files" uploadPath="/业主房产证" selectMultiple="true"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">动迁协议：</label>
+			<label class="control-label">其他材料：</label>
 			<div class="controls">
 				<form:hidden id="relocation" path="relocation" htmlEscape="false" maxlength="4000" class="input-xlarge"/>
-				<sys:ckfinder input="relocation" type="files" uploadPath="/动迁协议" selectMultiple="true"/>
+				<sys:ckfinder input="relocation" type="files" uploadPath="/其他材料" selectMultiple="true"/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -1,6 +1,5 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
@@ -44,20 +43,17 @@ public class LeaseContract extends DataEntity<LeaseContract> {
   private String lessorName;// 出租人姓名
   private String lessorIdNo;// 出租人身份证号码
   private String lessorCellNo;// 出租人手机号
+  private String trusteeshipContr;// 托管合同
+  private String certificate;// 产权证明
   private String landlordId;// 房东身份证
   private String profile;// 委托证明
-  private String certificate;// 房产证
-  private String relocation;// 动迁协议
-
+  private String relocation;// 其他材料
   private String projectName;
   private String buildingBame;
   private String houseNo;
   private String remittancerName;
-
   private String type;
-
   private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
-
   private Integer monthSpace;
 
   public LeaseContract() {
@@ -218,6 +214,14 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 
   public void setLessorCellNo(String lessorCellNo) {
     this.lessorCellNo = lessorCellNo;
+  }
+
+  public String getTrusteeshipContr() {
+    return trusteeshipContr;
+  }
+
+  public void setTrusteeshipContr(String trusteeshipContr) {
+    this.trusteeshipContr = trusteeshipContr;
   }
 
   public String getLandlordId() {
