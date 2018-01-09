@@ -115,6 +115,9 @@ public class RoomController extends BaseController {
   // @RequiresPermissions("inventory:room:view")
   @RequestMapping(value = "form")
   public String form(Room room, Model model) {
+    if (room.getIsNewRecord()) {
+      model.addAttribute("isNew", "y");
+    }
 
     model.addAttribute("room", room);
     model.addAttribute("listPropertyProject", propertyProjectService.findList(new PropertyProject()));

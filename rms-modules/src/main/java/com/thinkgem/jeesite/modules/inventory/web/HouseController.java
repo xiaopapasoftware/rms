@@ -139,6 +139,7 @@ public class HouseController extends BaseController {
       Integer currentValidHouseNum = houseService.getCurrentValidHouseNum();
       currentValidHouseNum = currentValidHouseNum + 1;
       house.setHouseCode(currentValidHouseNum.toString());
+      model.addAttribute("isNew", "y");
     }
     if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
       PropertyProject pp = new PropertyProject();
