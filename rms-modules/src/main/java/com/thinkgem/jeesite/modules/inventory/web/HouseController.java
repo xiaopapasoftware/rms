@@ -140,7 +140,6 @@ public class HouseController extends BaseController {
       currentValidHouseNum = currentValidHouseNum + 1;
       house.setHouseCode(currentValidHouseNum.toString());
       house.setShareAreaConfigList(DictUtils.convertToDictListFromSelVal(("0,1,2,3,4,8,10,11,12")));
-      model.addAttribute("isNew", "y");
     }
     if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
       PropertyProject pp = new PropertyProject();
