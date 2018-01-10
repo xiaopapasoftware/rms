@@ -236,14 +236,7 @@
 		<div class="control-group">
 			<label class="control-label">公共区域物品配置：</label>
 			<div class="controls">
-				<c:choose>
-					<c:when test="${isNew eq 'y'}">
-						<form:checkboxes path="shareAreaConfigList" items="${fns:getDictList('share_area_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class="" checked="true"/>
-					</c:when>
-					<c:otherwise>
-						<form:checkboxes path="shareAreaConfigList" items="${fns:getDictList('share_area_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
-					</c:otherwise>
-				</c:choose>
+				<form:checkboxes path="shareAreaConfigList" items="${fns:getDictList('share_area_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">

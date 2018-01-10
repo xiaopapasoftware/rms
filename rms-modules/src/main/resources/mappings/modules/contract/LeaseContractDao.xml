@@ -7,11 +7,6 @@
 		a.property_project_id AS "propertyProject.id",
 		a.building_id AS "building.id",
 		a.house_id AS "house.id",
-		a.owner_id AS "owner.id",
-		tow.NAME AS "owner.name",
-		tow.SOCIAL_NUMBER AS "owner.socialNumber",
-		tow.CELL_PHONE AS "owner.cellPhone",
-		tow.SECOND_CELL_PHONE AS "owner.secondCellPhone",
 		a.remittancer_id AS "remittancer.id",
 		tr.user_name AS "remittancer.userName",
 		tr.bank_account AS "remittancer.bankAccount",
@@ -55,7 +50,6 @@
 		left join t_building tb on a.building_id=tb.id  
 		left join t_house th on a.house_id=th.id  
 		left join t_remittancer tr on a.remittancer_id=tr.id and tr.del_flag='0'
-		left join t_owner tow on a.owner_id = tow.id and tow.del_flag='0'
 	</sql>
 
 	<select id="get" resultType="LeaseContract">
@@ -94,23 +88,17 @@
 					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
 			</if>
-			<if test="owner != null and owner.name != null and owner.name != ''">
-				AND tow.name LIKE concat('%',#{owner.name},'%')
-			</if>
-			<if test="owner != null and owner.socialNumber != null and owner.socialNumber != ''">
-				AND tow.SOCIAL_NUMBER LIKE concat('%',#{owner.socialNumber},'%')
-			</if>
-			<if test="owner != null and owner.cellPhone != null and owner.cellPhone != ''">
-				AND tow.CELL_PHONE LIKE concat('%',#{owner.cellPhone},'%')
-			</if>
-			<if test="owner != null and owner.secondCellPhone != null and owner.secondCellPhone != ''">
-				AND tow.SECOND_CELL_PHONE LIKE concat('%',#{owner.secondCellPhone},'%')
-			</if>
 			<if test="remittanceDate != null and remittanceDate != ''">
 				AND a.remittance_date = #{remittanceDate}
 			</if>
 			<if test="contractStatus != null and contractStatus != ''">
 				AND a.contract_status = #{contractStatus}
+			</if>
+			<if test="idList != null">
+				and a.id in
+				<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+					#{item}
+				</foreach>
 			</if>
 		</where>
 
@@ -175,8 +163,7 @@
 			update_date,
 			remarks,
 			del_flag,
-			month_space,
-			OWNER_ID
+			month_space
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -198,8 +185,7 @@
 			#{updateDate},
 			#{remarks},
 			#{delFlag},
-			#{monthSpace},
-			#{owner.id}
+			#{monthSpace}
 		)
 	</insert>
 	
@@ -221,8 +207,7 @@
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks},
-			month_space = #{monthSpace},
-			OWNER_ID = #{owner.id}
+			month_space = #{monthSpace}
 		WHERE id = #{id}
 	</update>
 	

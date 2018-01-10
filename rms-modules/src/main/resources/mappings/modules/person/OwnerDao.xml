@@ -178,5 +178,17 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
+
+	<select id="findListByWord" resultType="Owner">
+		SELECT
+		a.*
+		FROM t_owner a
+		where
+			a.del_flag = '0'
+			and (a.name LIKE concat('%',#{word},'%')
+				OR a.social_number LIKE concat('%',#{word},'%')
+				OR a.cell_phone LIKE concat('%',#{word},'%')
+				OR a.second_cell_phone LIKE concat('%',#{word},'%'))
+	</select>
+
 </mapper>

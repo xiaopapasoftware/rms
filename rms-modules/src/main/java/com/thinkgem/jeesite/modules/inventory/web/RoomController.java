@@ -116,7 +116,7 @@ public class RoomController extends BaseController {
   @RequestMapping(value = "form")
   public String form(Room room, Model model) {
     if (room.getIsNewRecord()) {
-      model.addAttribute("isNew", "y");
+      room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(("0,1,2,3,4,8,10,11,12")));
     }
 
     model.addAttribute("room", room);

@@ -192,14 +192,7 @@
 		<div class="control-group">
 			<label class="control-label">物品配置：</label>
 			<div class="controls">
-				<c:choose>
-					<c:when test="${isNew eq 'y'}">
-						<form:checkboxes path="roomConfigList" items="${fns:getDictList('room_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class="" checked="true"/>
-					</c:when>
-					<c:otherwise>
-						<form:checkboxes path="roomConfigList" items="${fns:getDictList('room_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
-					</c:otherwise>
-				</c:choose>
+				<form:checkboxes path="roomConfigList" items="${fns:getDictList('room_config')}" itemLabel="label" itemValue="value" htmlEscape="false" class=""/>
 			</div>
 		</div>
 		<div class="control-group">

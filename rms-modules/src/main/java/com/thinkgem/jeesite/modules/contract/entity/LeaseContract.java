@@ -55,6 +55,8 @@ public class LeaseContract extends DataEntity<LeaseContract> {
   private String type;
   private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
   private Integer monthSpace;
+  private List<Owner> ownerList;
+  private List<String> idList;
 
   public LeaseContract() {
     super();
@@ -310,5 +312,21 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 
   public void setMonthSpace(Integer monthSpace) {
     this.monthSpace = monthSpace;
+  }
+
+  public List<Owner> getOwnerList() {
+    return ownerList;
+  }
+
+  public void setOwnerList(List<Owner> ownerList) {
+    this.ownerList = ownerList;
+  }
+
+  public List<String> getIdList() {
+    return idList;
+  }
+
+  public void setIdList(List<String> idList) {
+    this.idList = idList;
   }
 }

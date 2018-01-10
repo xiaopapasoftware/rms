@@ -6,7 +6,46 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#contractName, #deposit").keypress(function(event) {
+            $(".owners").select2({
+                ajax: {
+                    url: "${ctx}/person/owner/syncAjaxQuery",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data,
+                            pagination: {
+                                more: (params.page * 30) < data.total_count
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                placeholder: "请选择",
+                allowClear: true,
+                escapeMarkup: function (markup) { return markup; },
+                minimumInputLength: 1,
+                templateResult: function (repo) { return repo.text;}
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "${ctx}/contract/leaseContract/ajaxQueryOwners?id="+$("#id").val(),
+                dataType: 'TEXT'
+            }).then(function(data){
+                $("#ownerList").append(data);
+                $("#ownerList").removeData();
+                $("#ownerList").trigger('change');
+            });
+
+            $("#contractName, #deposit").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();
 		        }
@@ -102,6 +141,10 @@
 				$(obj).parent().parent().removeClass("error");
 			}
 		}
+
+        function addOwner() {
+            top.$.jBox.open("iframe:${ctx}/person/owner/add",'添加业主',850,500,{buttons:{'保存':'1','关闭':'2'},submit:saveHandler});
+        }
 		
 		function changeProject() {
 			var project = $("[id='propertyProject.id']").val();
@@ -440,18 +483,18 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
+
 		<div class="control-group">
 			<label class="control-label">业主：</label>
 			<div class="controls">
-				<form:select path="owner.id" class="input-xlarge required">
-					<form:option value="" label="请选择..."/>
-					<c:forEach items="${ownerList}" var="item">
-						<form:option value="${item.id}">${item.name}-${item.socialNumber}-${item.cellPhone}/${item.secondCellPhone}</form:option>
-					</c:forEach>
+				<form:select path="ownerList" style="width:450px;" class="input-xlarge required owners" multiple="true">
+					<option></option>
 				</form:select>
-				<span class="help-inline"><font color="red">*</font></span>
+				<span class="help-inline"><font color="red">*</font> </span>
+				<a href="#" onclick="addOwner()">添加业主</a>
 			</div>
 		</div>
+
 		<div class="control-group">
 			<label class="control-label">托管合同：</label>
 			<div class="controls">

@@ -3,13 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.person.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseOwnerDao;
@@ -17,6 +10,12 @@ import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.person.dao.OwnerDao;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 业主信息Service
@@ -39,7 +38,11 @@ public class OwnerService extends CrudService<OwnerDao, Owner> {
 	public List<Owner> findList(Owner owner) {
 		return super.findList(owner);
 	}
-	
+
+	public List<Owner> findListByWord(String word) {
+		return dao.findListByWord(word);
+	}
+
 	public List<Owner> findByHouse(House house) {
 		HouseOwner houseOwner = new HouseOwner();
 		houseOwner.setHouseId(house.getId());

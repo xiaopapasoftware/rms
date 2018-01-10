@@ -133,22 +133,22 @@
 					<form:options items="${houseList}" itemLabel="houseNo" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:100px;">承租合同编号：</label>
+			<li><label style="width:100px;">合同编号：</label>
 				<form:input path="contractCode" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">承租合同名称：</label>
+			<li><label style="width:100px;">合同名称：</label>
 				<form:input path="contractName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label style="width:100px;">业主姓名：</label>
 				<form:input path="owner.name" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">业主身份证号：</label>
+			<li><label style="width:100px;">业主身份证：</label>
 				<form:input path="owner.socialNumber" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label style="width:100px;">业主手机号：</label>
 				<form:input path="owner.cellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
-			<li><label style="width:100px;">业主备用手机号：</label>
+			<li><label style="width:100px;">业主备用手机：</label>
 				<form:input path="owner.secondCellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label style="width:100px;">打款日期：</label>
@@ -157,7 +157,7 @@
 					<form:options items="${fns:getDictList('remittance_date')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label style="width:100px;">合同审核状态：</label>
+			<li><label style="width:100px;">审核状态：</label>
 				<form:select path="contractStatus" class="input-medium" style="width:177px;">
 					<form:option value="" label="全部"/>
 					<form:options items="${fns:getDictList('contract_status')}" itemLabel="label" itemValue="value" htmlEscape="true"/>
@@ -186,7 +186,6 @@
 				<th>合同签订时间</th>
 				<th>承租押金</th>
 				<th>业主姓名</th>
-				<th>业主身份证号</th>
 				<th>业主手机号</th>
 				<th>业主备用手机号</th>
 				<th>合同审核状态</th>
@@ -225,16 +224,19 @@
 					${leaseContract.deposit}
 				</td>
 				<td>
-					${leaseContract.owner.name}
-				</td>
-				<td style="white-space:normal;">
-					${leaseContract.owner.socialNumber}
-				</td>
-				<td>
-					${leaseContract.owner.cellPhone}
+					<c:forEach items="${leaseContract.ownerList}" var="owner">
+						${owner.name} |
+					</c:forEach>
 				</td>
 				<td>
-					${leaseContract.owner.secondCellPhone}
+					<c:forEach items="${leaseContract.ownerList}" var="owner">
+						${owner.cellPhone} |
+					</c:forEach>
+				</td>
+				<td>
+					<c:forEach items="${leaseContract.ownerList}" var="owner">
+						${owner.secondCellPhone} |
+					</c:forEach>
 				</td>
 				<td>
 					${fns:getDictLabel(leaseContract.contractStatus, 'contract_status', '')}

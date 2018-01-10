@@ -3,11 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.person.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.mapper.JsonMapper;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.person.entity.Owner;
+import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +22,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.person.entity.Owner;
-import com.thinkgem.jeesite.modules.person.service.OwnerService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * 业主信息Controller
@@ -144,4 +145,22 @@ public class OwnerController extends BaseController {
     }
     return "业主的身份证号码或者手机号码或座机号码已经存在，不能重复添加";
   }
+
+  @RequestMapping(value = {"syncAjaxQuery"})
+  @ResponseBody
+  public String syncAjaxQuery(String q) {
+    List<Owner> ownerList = ownerService.findListByWord(q);
+    List<HashMap<String, String>> resultMapList = new ArrayList<HashMap<String, String>>();
+    if (CollectionUtils.isNotEmpty(ownerList)) {
+      for (Owner o : ownerList) {
+        HashMap<String, String> tempMap = new HashMap<String, String>();
+        tempMap.put("id", o.getId());
+        String text = o.getName() + "-" + o.getSocialNumber() + "-" + o.getCellPhone()+"/" + o.getSecondCellPhone();
+        tempMap.put("text", text);
+        resultMapList.add(tempMap);
+      }
+    }
+    return JsonMapper.toJsonString(resultMapList);
+  }
+
 }
