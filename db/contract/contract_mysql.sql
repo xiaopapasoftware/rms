@@ -23,7 +23,6 @@ create table T_LEASE_CONTRACT
    LESSOR_NAME			varchar(255)  comment '出租人姓名',
    LESSOR_ID_NO			varchar(255)  comment '出租人身份证号码',
    LESSOR_CELL_NO		varchar(255)  comment '出租人手机号',
-   OWNER_ID		varchar(64)  comment '业主表主键',
    FIRST_REMITTANCE_DATE date comment '首次打款日期',
    REMITTANCE_DATE      varchar(64) comment '打款日期',
    EXPIRED_DATE         date comment '合同过期时间',
@@ -39,6 +38,19 @@ create table T_LEASE_CONTRACT
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '承租合同';
+
+CREATE TABLE `t_lease_contract_owner` (
+  `ID` varchar(64)  NOT NULL,
+  `LEASE_CONTRACT_ID` varchar(64)  DEFAULT NULL COMMENT '出租合同ID',
+  `OWNER_ID` varchar(64)  DEFAULT NULL COMMENT '业主ID',
+  `CREATE_BY` varchar(64)  DEFAULT NULL COMMENT '创建者',
+  `CREATE_DATE` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_BY` varchar(64)  DEFAULT NULL COMMENT '更新者',
+  `UPDATE_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `REMARKS` varchar(255)  DEFAULT NULL COMMENT '备注信息',
+  `DEL_FLAG` char(1)  NOT NULL DEFAULT '0' COMMENT '删除标记',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8  COMMENT='出租合同业主关联表'
 
 create table T_LEASE_CONTRACT_DTL
 (
