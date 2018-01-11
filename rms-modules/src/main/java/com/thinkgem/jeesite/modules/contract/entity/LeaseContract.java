@@ -40,9 +40,6 @@ public class LeaseContract extends DataEntity<LeaseContract> {
   private Date contractDate; // 合同签订时间
   private Double deposit; // 承租押金
   private String contractStatus; // 合同审核状态
-  private String lessorName;// 出租人姓名
-  private String lessorIdNo;// 出租人身份证号码
-  private String lessorCellNo;// 出租人手机号
   private String trusteeshipContr;// 托管合同
   private String certificate;// 产权证明
   private String landlordId;// 房东身份证
@@ -192,30 +189,6 @@ public class LeaseContract extends DataEntity<LeaseContract> {
 
   public void setContractStatus(String contractStatus) {
     this.contractStatus = contractStatus;
-  }
-
-  public String getLessorName() {
-    return lessorName;
-  }
-
-  public void setLessorName(String lessorName) {
-    this.lessorName = lessorName;
-  }
-
-  public String getLessorIdNo() {
-    return lessorIdNo;
-  }
-
-  public void setLessorIdNo(String lessorIdNo) {
-    this.lessorIdNo = lessorIdNo;
-  }
-
-  public String getLessorCellNo() {
-    return lessorCellNo;
-  }
-
-  public void setLessorCellNo(String lessorCellNo) {
-    this.lessorCellNo = lessorCellNo;
   }
 
   public String getTrusteeshipContr() {
