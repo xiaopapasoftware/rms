@@ -203,7 +203,7 @@
 					${leaseContract.contractName}
 				</a></td>
 				<td>
-					${leaseContract.remittancer.userName}-${leaseContract.remittancer.bankAccount}
+					${leaseContract.remittancer.userName} - ${leaseContract.remittancer.bankName} - ${leaseContract.remittancer.bankAccount}
 				</td>
 				<td>
 					<fmt:formatDate value="${leaseContract.effectiveDate}" pattern="yyyy-MM-dd"/>
