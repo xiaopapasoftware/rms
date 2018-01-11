@@ -413,10 +413,10 @@
 		<div class="control-group">
 			<label class="control-label">汇款人：</label>
 			<div class="controls">
-				<form:select path="remittancer.id" class="input-xlarge required">
+				<form:select path="remittancer.id" class="input-xlarge required" style="width:450px;" >
 					<form:option value="" label="请选择..."/>
 					<c:forEach items="${remittancerList}" var="item">
-						<form:option value="${item.id}">${item.userName}-${item.bankAccount}</form:option>
+						<form:option value="${item.id}">${item.userName} - ${item.bankName} - ${item.bankAccount}</form:option>
 					</c:forEach>
 				</form:select>
 				<span class="help-inline"><font color="red">*</font></span>

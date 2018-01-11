@@ -10,6 +10,7 @@
 		a.remittancer_id AS "remittancer.id",
 		tr.user_name AS "remittancer.userName",
 		tr.bank_account AS "remittancer.bankAccount",
+		tr.bank_name AS "remittancer.bankName",
 		a.contract_code AS "contractCode",
 		a.contract_name AS "contractName",
 		a.effective_date AS "effectiveDate",
@@ -33,7 +34,6 @@
 		tp.project_name as projectName,
 		tb.building_name as buildingBame,
 		th.house_no as houseNo,
-		tr.user_name as remittancerName,
 		a.month_space as "monthSpace"
 	</sql>
 	

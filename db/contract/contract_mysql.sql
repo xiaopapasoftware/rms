@@ -9,6 +9,7 @@ drop table if exists T_LEASE_CONTRACT_DTL;
 drop table if exists T_AUDIT_HIS;
 drop table if exists T_CONTRACT_TENANT;
 drop table if exists t_contract_book;
+drop table if exists t_lease_contract_owner;
 
 create table T_LEASE_CONTRACT
 (

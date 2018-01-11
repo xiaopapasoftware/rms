@@ -63,7 +63,7 @@ create table T_PROPERTY_PROJECT
    UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
    REMARKS              VARCHAR(255) COMMENT '备注信息',
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
-    `city_code` varchar(6) DEFAULT NULL COMMENT '城市编码',
+  `city_code` varchar(6) DEFAULT NULL COMMENT '城市编码',
   `city_name` varchar(30)  DEFAULT NULL COMMENT '城市名称',
   `district_code` varchar(6)  DEFAULT NULL COMMENT '行政区县编码',
   `district_name` varchar(30) DEFAULT NULL COMMENT '行政区县名称',
