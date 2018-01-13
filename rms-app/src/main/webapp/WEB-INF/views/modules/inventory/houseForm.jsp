@@ -129,6 +129,7 @@
 						<form:option value="${item.id}">${item.cellPhone}-${item.name}</form:option>
 					</c:forEach>
 				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -179,18 +180,19 @@
 		<div class="control-group">
 			<label class="control-label">装修面积：</label>
 			<div class="controls">
-				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge required number"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">装修结构：</label>
 			<div class="controls">
-				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">房</span>
-				<form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">厅</span>
-				<form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">卫</span>
+				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">房</font></span>
+				<form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">厅</font></span>
+				<form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">卫</font></span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -279,8 +281,8 @@
 		<div class="control-group">
 			<label class="control-label">意向租金：</label>
 			<div class="controls">
-				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font></span>
 			</div>
 		</div>
 		<div class="control-group">

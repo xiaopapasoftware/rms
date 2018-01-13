@@ -166,11 +166,11 @@
 				<th>煤气户号</th>
 				<th>支付间隔月数</th>
 				<th>押金月数</th>
+				<th>支付宝同步状态</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
 				<th>修改人</th>
-				<th>备注信息</th>
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -196,31 +196,49 @@
 					<td>${house.gasAccountNum}</td>
 					<td>${house.rentMonthGap}</td>
 					<td>${house.deposMonthCount}</td>
+					<td>
+						<c:if test="${house.alipayStatus eq '1'}">
+							已同步
+						</c:if>
+						<c:if test="${house.alipayStatus != '1'}">
+							未同步
+						</c:if>
+					</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td><fmt:formatDate value="${house.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 					<td>${house.createBy.loginName}</td>
 					<td>${house.updateBy.loginName}</td>
-					<td>${house.remarks}</td>
+					<td>
 					<shiro:hasPermission name="inventory:house:edit">
-						<td>
-							<a href="${ctx}/inventory/house/form?id=${house.id}">修改</a>
-						</td>
+						<td><a href="${ctx}/inventory/house/form?id=${house.id}">修改</a></td>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="inventory:house:del">
-						<td>	
-							<a href="${ctx}/inventory/house/delete?id=${house.id}" onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a>
-						</td>
+						<td><a href="${ctx}/inventory/house/delete?id=${house.id}" onclick="return confirmx('确认要删除该房屋、图片及其所有房间和图片的信息吗？', this.href)">删除</a></td>
 					</shiro:hasPermission>
 					<shiro:hasPermission name="device:house:done">
-						<td>
-							<c:if test="${house.houseStatus eq '0'}">
-								<a href="#" onclick="finishDirect('${house.id}');">装修完成</a>
-							</c:if>
-						</td>
+						<c:if test="${house.houseStatus eq '0'}">
+							<td><a href="#" onclick="finishDirect('${house.id}');">装修完成</a></td>
+						</c:if>
 					</shiro:hasPermission>
 				 	<shiro:hasPermission name="device:roomDevices:view">
-					 	<td><a href="${ctx}/device/roomDevices/viewHouseDevices?houseId=${house.id}">查看设备</a></td>
+						<td><a href="${ctx}/device/roomDevices/viewHouseDevices?houseId=${house.id}">查看设备</a></td>
 					</shiro:hasPermission>
+
+					<shiro:hasPermission name="alipay:room:sync">
+						<c:if test="${house.type eq '1' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
+							<td><a href="${ctx}/app/alipay/syncHouse/${house.id}">分散式同步支付宝</a></td>
+						</c:if>
+						<c:if test="${house.type eq '2' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
+							<td><a href="${ctx}/app/alipay/syncHouse/${house.id}">集中式同步支付宝</a></td>
+						</c:if>
+						<c:if test="${house.alipayStatus eq '1' and house.up eq '0'}">
+							<td><a href="${ctx}/app/alipay/upHouse/${house.id}">上架</a></td>
+						</c:if>
+						<c:if test="${house.alipayStatus eq '1' and house.up eq '1'}">
+							<td><a href="${ctx}/app/alipay/downHouse/${house.id}">下架</a></td>
+						</c:if>
+					</shiro:hasPermission>
+					</td>
 				</tr>
 			</c:forEach>
 		</tbody>

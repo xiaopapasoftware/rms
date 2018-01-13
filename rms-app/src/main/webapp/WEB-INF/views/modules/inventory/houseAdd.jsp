@@ -140,6 +140,7 @@
 					</c:forEach>
 				</form:select>
 				<a href="#" onclick="addOwner()">添加业主</a>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
@@ -183,18 +184,19 @@
 		<div class="control-group">
 			<label class="control-label">装修建筑面积（平方米）：</label>
 			<div class="controls">
-				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="decorationSpance" htmlEscape="false" class="input-xlarge number  required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
 		<div class="control-group">
 			<label class="control-label">装修房屋结构：</label>
 			<div class="controls">
-				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">房 </span>
-				<form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">厅 </span>
-				<form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits"/>
-				<span class="help-inline">卫</span>
+				<form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">房</font></span>
+				<form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">厅</font></span>
+				<form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100" class="input-xlarge digits  required"/>
+				<span class="help-inline"><font color="red">卫</font></span>
 			</div>
 		</div>
 		<div class="control-group">

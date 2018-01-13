@@ -360,11 +360,6 @@ public class HouseService extends CrudService<HouseDao, House> {
     return dao.getCurrentValidHouseNum(new House());
   }
 
-  @Transactional(readOnly = true)
-  public House getHouseByHouseId(House house) {
-    return dao.getHouseByHouseId(house);
-  }
-
   /**
    * 根据单间的状态变更，改变房屋的状态（适用于合租的情况）
    */
@@ -419,6 +414,12 @@ public class HouseService extends CrudService<HouseDao, House> {
    */
   public List<Map> getHouseByAccountNumAndNumType(String accountNum,String numType){
     return dao.getHouseByAccountNumAndNumType(accountNum,numType);
+  }
+
+  @Transactional(readOnly = false)
+  public void updateHouseAlipayStatus(House house) {
+    house.preUpdate();
+    dao.updateHouseAlipayStatus(house);
   }
 
 }

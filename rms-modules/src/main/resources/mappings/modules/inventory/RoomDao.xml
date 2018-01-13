@@ -12,6 +12,8 @@
 		a.house_id
 		AS "house.id",
 		th.house_no AS "house.houseNo",
+		th.intent_mode AS "house.intentMode",
+		th.type AS "house.type",
 		a.room_no AS "roomNo",
 		a.meter_no AS "meterNo",
 		a.room_space AS "roomSpace",
@@ -39,7 +41,9 @@
 		"shortLocation",
 		a.new_id as "newId",
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 	</sql>
 
 	<sql id="roomJoins">
@@ -132,7 +136,9 @@
 		a.new_id as "newId",
 		a.room_config AS "roomConfig",
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.property_project_id = #{propertyProject.id}
@@ -207,7 +213,9 @@
 		short_desc,
 		short_location,
 		rent_month_gap,
-		depos_month_count
+		depos_month_count,
+		alipay_status,
+		up
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -230,7 +238,9 @@
 		#{shortDesc},
 		#{shortLocation},
 		#{rentMonthGap},
-		#{deposMonthCount}
+		#{deposMonthCount},
+		#{alipayStatus},
+		#{up}
 		)
 	</insert>
 
@@ -255,7 +265,9 @@
 		short_desc = #{shortDesc},
 		short_location = #{shortLocation},
 		rent_month_gap = #{rentMonthGap},
-		depos_month_count = #{deposMonthCount}
+		depos_month_count = #{deposMonthCount},
+		alipay_status = #{alipayStatus},
+		up = #{up}
 		WHERE id = #{id}
 	</update>
 

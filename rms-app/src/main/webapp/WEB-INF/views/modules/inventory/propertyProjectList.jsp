@@ -52,7 +52,10 @@
 				<form:input path="districtName" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
 			</li>
 			<li><label style="width:120px;">小区同步状态：</label>
-				<form:input path="coordsys" htmlEscape="false" maxlength="100" class="input-medium" style="width:180px;"/>
+				<form:select path="alipayStatus"  class="input-medium" style="width:195px;">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('alipay_status')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
 			</li>
 
 			<li><label style="width:120px;">物业项目地址：</label>
