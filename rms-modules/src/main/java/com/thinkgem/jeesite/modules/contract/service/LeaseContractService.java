@@ -117,7 +117,6 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       // 2.房租款项
       LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
       leaseContractDtl.setLeaseContractId(leaseContract.getId());
-      leaseContractDtl.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
       List<LeaseContractDtl> list = leaseContractDtlDao.findList(leaseContractDtl);
       int monthSpace = leaseContract.getMonthSpace();// 打款月份间隔
       List<PaymentTrans> listPaymentTrans = new ArrayList<PaymentTrans>();
@@ -202,12 +201,11 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
       audit.setObjectType(AuditTypeEnum.LEASE_CONTRACT_CONTENT.getValue());
       audit.setNextRole(LEASE_CONTRACT_ROLE);
       auditDao.insert(audit);
-      // 保存附件
       processLeaseContractAttachmentFiles(id, leaseContract.getTrusteeshipContr(), leaseContract.getLandlordId(), leaseContract.getProfile(), leaseContract.getCertificate(),
-          leaseContract.getRelocation());
+          leaseContract.getRelocation()); // 保存附件
       // 承租合同明细
       List<LeaseContractDtl> leaseContractDtlList = leaseContract.getLeaseContractDtlList();
-      if (null != leaseContractDtlList && leaseContractDtlList.size() > 0) {
+      if (CollectionUtils.isNotEmpty(leaseContractDtlList)) {
         for (LeaseContractDtl leaseContractDtl : leaseContractDtlList) {
           leaseContractDtl.preInsert();
           leaseContractDtl.setLeaseContractId(id);
