@@ -68,6 +68,10 @@ public class House extends DataEntity<House> {
 
   private Integer deposMonthCount;
 
+  private Integer alipayStatus;
+
+  private Integer up;
+
   public House() {
     super();
   }
@@ -403,5 +407,21 @@ public class House extends DataEntity<House> {
 
   public void setDeposMonthCount(Integer deposMonthCount) {
     this.deposMonthCount = deposMonthCount;
+  }
+
+  public Integer getAlipayStatus() {
+    return alipayStatus;
+  }
+
+  public void setAlipayStatus(Integer alipayStatus) {
+    this.alipayStatus = alipayStatus;
+  }
+
+  public Integer getUp() {
+    return up;
+  }
+
+  public void setUp(Integer up) {
+    this.up = up;
   }
 }

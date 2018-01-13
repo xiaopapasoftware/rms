@@ -6,8 +6,11 @@
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
+		pp.comm_req_id AS "propertyProject.commReqId",
+		pp.alipay_status AS "propertyProject.alipayStatus",
 		a.building_id AS "building.id",
 		tb.building_name AS "building.buildingName",
+		tb.TOTAL_FLOOR_COUNT AS "building.totalFloorCount",
 		a.house_code AS "houseCode",
 		a.house_no AS "houseNo",
 		a.certificate_no AS "certificateNo",
@@ -44,7 +47,9 @@
 		a.type as type,
 		a.share_area_config as shareAreaConfig,
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 	</sql>
 
 	<sql id="houseJoins">
@@ -306,7 +311,9 @@
 		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 		FROM t_house a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -360,7 +367,9 @@
 		type,
 		share_area_config,
 		rent_month_gap,
-		depos_month_count
+		depos_month_count,
+		alipay_status,
+		up
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -396,7 +405,9 @@
 		#{type},
 		#{shareAreaConfig},
 		#{rentMonthGap},
-		#{deposMonthCount}
+		#{deposMonthCount},
+		#{alipayStatus},
+		#{up}
 		)
 	</insert>
 
@@ -435,7 +446,9 @@
 		type = #{type},
 		share_area_config = #{shareAreaConfig},
 		rent_month_gap = #{rentMonthGap},
-		depos_month_count = #{deposMonthCount}
+		depos_month_count = #{deposMonthCount},
+		alipay_status = #{alipayStatus},
+		up = #{up}
 		WHERE id = #{id}
 	</update>
 
@@ -508,7 +521,9 @@
 		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 		FROM t_house a
 		WHERE
 		a.del_flag = '0'
@@ -522,11 +537,18 @@
 		a.building_id AS "building.id",
 		a.owner_id AS "owner.id",
 		a.house_no AS "houseNo",
-		a.house_code AS "houseCode",
-		a.house_status AS "houseStatus",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
 		a.decoration_spance AS "decorationSpance",
+		a.house_status AS "houseStatus",
+		a.ORI_STRUC_ROOM_NUM AS "oriStrucRoomNum",
+		a.ORI_STRUC_CUSSPAC_NUM AS "oriStrucCusspacNum",
+		a.ORI_STRUC_WASHRO_NUM AS "oriStrucWashroNum",
+		a.DECORA_STRUC_ROOM_NUM AS "decoraStrucRoomNum",
+		a.DECORA_STRUC_CUSSPAC_NUM AS "decoraStrucCusspacNum",
+		a.DECORA_STRUC_WASHRO_NUM AS "decoraStrucWashroNum",
+		a.house_code AS "houseCode",
+		a.intent_mode AS "intentMode",
 		a.is_feature as "isFeature",
 		a.rental as "rental",
 		a.short_desc as "shortDesc",
@@ -538,7 +560,9 @@
 		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
 		FROM t_house a
 		where
 		a.del_flag = '0'
@@ -573,5 +597,16 @@
 			</choose>
 		</where>
 	</select>
+
+	<update id="updateHouseAlipayStatus">
+		UPDATE  t_house
+		SET 	alipay_status = '1',
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		<if test="up != null and up != ''">
+			up = #{up}
+		</if>
+		WHERE   id = #{id}
+	</update>
 
 </mapper>

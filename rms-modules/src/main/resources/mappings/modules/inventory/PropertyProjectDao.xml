@@ -192,7 +192,9 @@
 			city_name = #{cityName},
 			district_code = #{districtCode},
 			district_name = #{districtName},
-			coordsys = #{coordsys}
+			coordsys = #{coordsys},
+			comm_req_id = #{commReqId},
+			alipay_status = #{alipayStatus}
 		WHERE id = #{id}
 	</update>
 	

@@ -180,7 +180,7 @@
 		<div class="control-group">
 			<label class="control-label">房间面积（平方米）：</label>
 			<div class="controls">
-				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge number"/>
+				<form:input path="roomSpace" htmlEscape="false" class="input-xlarge number  required"/>
 			</div>
 		</div>
 		<div class="control-group">

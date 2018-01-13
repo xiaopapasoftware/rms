@@ -275,9 +275,7 @@ public class AppHouseController extends AppBaseController {
 
     ContractBook contractBook = new ContractBook();
     contractBook.setUserId(telPhone);
-    House house = new House();
-    house.setId(houseId);
-    house = this.houseService.getHouseByHouseId(house);
+    House house = houseService.getHouseById(houseId);
     if (house == null) {
       return ResponseData.failure(RespConstants.ERROR_CODE_109).message(RespConstants.ERROR_MSG_109);
     }

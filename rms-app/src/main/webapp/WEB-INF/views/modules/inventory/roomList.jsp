@@ -136,13 +136,13 @@
 				<th>电表号</th>
 				<th>支付间隔月数</th>
 				<th>押金月数</th>
-				<th>房间面积(平方米)</th>
+				<th>房间面积</th>
+				<th>支付宝同步状态</th>
 				<th>朝向</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
 				<th>修改人</th>
-				<th>备注信息</th>
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -160,13 +160,20 @@
 				<td>${room.deposMonthCount}</td>
 				<td>${room.roomSpace}</td>
 				<td>
+					<c:if test="${room.alipayStatus eq '1'}">
+						已同步
+					</c:if>
+					<c:if test="${room.alipayStatus != '1'}">
+						未同步
+					</c:if>
+				</td>
+				<td>
 					${fns:getDictLabels(room.orientation, 'orientation', '')}
 				</td>
 				<td><fmt:formatDate value="${room.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 				<td><fmt:formatDate value="${room.updateDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
 				<td>${room.createBy.loginName}</td>
 				<td>${room.updateBy.loginName}</td>
-				<td>${room.remarks}</td>
 				<shiro:hasPermission name="inventory:room:edit">
    					<td><a href="${ctx}/inventory/room/form?id=${room.id}">修改</a></td>
    				</shiro:hasPermission>
@@ -181,6 +188,20 @@
 				</shiro:hasPermission>
 				<shiro:hasPermission name="device:roomDevices:view">
 					<td><a href="${ctx}/device/roomDevices/maintainDevices?roomId=${room.id}">设备查看</a></td>
+				</shiro:hasPermission>
+				<shiro:hasPermission name="alipay:room:sync">
+					<c:if test="${room.house.type eq '1' and room.house.intentMode eq '1' and (room.roomStatus eq '1' or room.roomStatus eq '2' or room.roomStatus eq '3')}">
+						<td><a href="${ctx}/app/alipay/syncRoom/${room.id}">分散式同步支付宝</a></td>
+					</c:if>
+					<c:if test="${room.house.type eq '2' and room.house.intentMode eq '1' and (room.roomStatus eq '1' or room.roomStatus eq '2' or room.roomStatus eq '3')}">
+						<td><a href="${ctx}/app/alipay/syncRoom/${room.id}">集中式同步支付宝</a></td>
+					</c:if>
+					<c:if test="${room.alipayStatus eq '1' and room.up eq '0'}">
+						<td><a href="${ctx}/app/alipay/upRoom/${room.id}">上架</a></td>
+					</c:if>
+					<c:if test="${room.alipayStatus eq '1' and room.up eq '1'}">
+						<td><a href="${ctx}/app/alipay/downRoom/${room.id}">下架</a></td>
+					</c:if>
 				</shiro:hasPermission>
 			</tr>
 		</c:forEach>

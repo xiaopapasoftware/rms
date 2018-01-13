@@ -49,6 +49,10 @@ public class Room extends DataEntity<Room> {
 
 	private Integer deposMonthCount;
 
+	private Integer alipayStatus;
+
+	private Integer up;
+
 	public Room() {
 		super();
 	}
@@ -219,5 +223,21 @@ public class Room extends DataEntity<Room> {
 
 	public void setDeposMonthCount(Integer deposMonthCount) {
 		this.deposMonthCount = deposMonthCount;
+	}
+
+	public Integer getAlipayStatus() {
+		return alipayStatus;
+	}
+
+	public void setAlipayStatus(Integer alipayStatus) {
+		this.alipayStatus = alipayStatus;
+	}
+
+	public Integer getUp() {
+		return up;
+	}
+
+	public void setUp(Integer up) {
+		this.up = up;
 	}
 }

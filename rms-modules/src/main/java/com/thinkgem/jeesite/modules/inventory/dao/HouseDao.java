@@ -66,4 +66,6 @@ public interface HouseDao extends CrudDao<House> {
 
   List<Map> getHouseByAccountNumAndNumType(@Param("accountNum") String accountNum, @Param("numType") String numType);
 
+  void updateHouseAlipayStatus(House house);
+
 }
