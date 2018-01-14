@@ -1,21 +1,5 @@
 package com.thinkgem.jeesite.modules.app.web;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.alibaba.druid.util.StringUtils;
 import com.thinkgem.jeesite.common.RespConstants;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.exception.ParamsException;
@@ -24,15 +8,23 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUserPhone;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
+import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
 import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.entity.ResponseData;
-import com.thinkgem.jeesite.modules.app.service.AppUserService;
+import com.thinkgem.jeesite.modules.app.service.CustBindInfoService;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.dao.AttachmentDao;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "${apiPath}/self")
@@ -42,7 +34,7 @@ public class AppSelfController extends AppBaseController {
   private MessageService messageService;
 
   @Autowired
-  private AppUserService appUserService;
+  private CustBindInfoService appUserService;
 
   @Autowired
   private AttachmentDao attachmentDao;
@@ -87,41 +79,41 @@ public class AppSelfController extends AppBaseController {
    *
    * @return
    */
-  @RequestMapping(value = "info/")
-  @ResponseBody
-  public ResponseData getInfo(@CurrentUser AppUser appUser) {
-    Map<String, String> infoMap = new HashMap<String, String>();
-    infoMap.put("name", appUser.getName());
-    infoMap.put("id", appUser.getIdCardNo());
-    infoMap.put("sex", appUser.getSex());
-    infoMap.put("birth", appUser.getBirth());
-    infoMap.put("age", appUser.getAge());
-    infoMap.put("profession", appUser.getProfession());
-    infoMap.put("corp", appUser.getCorp());
-    String img_url = Global.getConfig("img.url");
-    String avatar = "";
-    if (!StringUtils.isEmpty(appUser.getAvatar())) {
-      avatar = img_url + appUser.getAvatar();
-    } else {// default avatar
-      avatar = img_url + "/rms-api/pic/avatar.jpg";
-    }
-    infoMap.put("avatar", avatar);
-    String idCardPhotoFront = "";
-    if (!StringUtils.isEmpty(appUser.getIdCardPhoto＿front())) {
-      idCardPhotoFront = img_url + appUser.getIdCardPhoto＿front();
-    }
-    infoMap.put("id_photo_front", idCardPhotoFront);
-    String idCardPhotoBack = "";
-    if (!StringUtils.isEmpty(appUser.getIdCardPhoto＿back())) {
-      idCardPhotoBack = img_url + appUser.getIdCardPhoto＿back();
-    }
-    infoMap.put("id_photo_back", idCardPhotoBack);
-    return ResponseData.success().data(infoMap);
-  }
+//  @RequestMapping(value = "info/")
+//  @ResponseBody
+//  public ResponseData getInfo(@CurrentUser CustBindInfo appUser) {
+//    Map<String, String> infoMap = new HashMap<String, String>();
+//    infoMap.put("name", appUser.getName());
+//    infoMap.put("id", appUser.getIdCardNo());
+//    infoMap.put("sex", appUser.getSex());
+//    infoMap.put("birth", appUser.getBirth());
+//    infoMap.put("age", appUser.getAge());
+//    infoMap.put("profession", appUser.getProfession());
+//    infoMap.put("corp", appUser.getCorp());
+//    String img_url = Global.getConfig("img.url");
+//    String avatar = "";
+//    if (!StringUtils.isEmpty(appUser.getAvatar())) {
+//      avatar = img_url + appUser.getAvatar();
+//    } else {// default avatar
+//      avatar = img_url + "/rms-api/pic/avatar.jpg";
+//    }
+//    infoMap.put("avatar", avatar);
+//    String idCardPhotoFront = "";
+//    if (!StringUtils.isEmpty(appUser.getIdCardPhoto＿front())) {
+//      idCardPhotoFront = img_url + appUser.getIdCardPhoto＿front();
+//    }
+//    infoMap.put("id_photo_front", idCardPhotoFront);
+//    String idCardPhotoBack = "";
+//    if (!StringUtils.isEmpty(appUser.getIdCardPhoto＿back())) {
+//      idCardPhotoBack = img_url + appUser.getIdCardPhoto＿back();
+//    }
+//    infoMap.put("id_photo_back", idCardPhotoBack);
+//    return ResponseData.success().data(infoMap);
+//  }
 
   @RequestMapping(value = "avatar")
   @ResponseBody
-  public ResponseData avatar(@CurrentUser AppUser appUser, String attachPath) {
+  public ResponseData avatar(@CurrentUser CustBindInfo appUser, String attachPath) {
     Attachment attachment = new Attachment();
     attachment.setAttachmentType(FileType.APP_USER_AVATAR.getValue());
     attachment.setBizId(appUser.getId());
@@ -143,7 +135,7 @@ public class AppSelfController extends AppBaseController {
 
   @RequestMapping(value = "ic")
   @ResponseBody
-  public ResponseData uploadIc(@CurrentUser AppUser appUser, String frontPath, String backPath) {
+  public ResponseData uploadIc(@CurrentUser CustBindInfo appUser, String frontPath, String backPath) {
     if (frontPath == null || backPath == null) {
       throw new ParamsException(RespConstants.ERROR_CODE_101, "身份证前后照片不能为空");
     }
@@ -185,18 +177,18 @@ public class AppSelfController extends AppBaseController {
     return ResponseData.success().data(icMap);
   }
 
-  @RequestMapping(value = "info/change")
-  @ResponseBody
-  public ResponseData changeInfo(@CurrentUser AppUser appUser, HttpServletRequest request) {
-    appUser.setName(request.getParameter("name"));
-    appUser.setIdCardNo(request.getParameter("id"));
-    appUser.setSex(request.getParameter("sex"));
-    appUser.setBirth(request.getParameter("birth"));
-    appUser.setAge(request.getParameter("age"));
-    appUser.setProfession(request.getParameter("profession"));
-    appUser.setCorp(request.getParameter("corp"));
-    appUserService.save(appUser);
-    return ResponseData.success();
-  }
+//  @RequestMapping(value = "info/change")
+//  @ResponseBody
+//  public ResponseData changeInfo(@CurrentUser CustBindInfo appUser, HttpServletRequest request) {
+//    appUser.setName(request.getParameter("name"));
+//    appUser.setIdCardNo(request.getParameter("id"));
+//    appUser.setSex(request.getParameter("sex"));
+//    appUser.setBirth(request.getParameter("birth"));
+//    appUser.setAge(request.getParameter("age"));
+//    appUser.setProfession(request.getParameter("profession"));
+//    appUser.setCorp(request.getParameter("corp"));
+//    appUserService.save(appUser);
+//    return ResponseData.success();
+//  }
 
 }

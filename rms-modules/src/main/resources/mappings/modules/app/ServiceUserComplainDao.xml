@@ -22,25 +22,22 @@
     
 	<select id="get" resultType="ServiceUserComplain">
 		SELECT 
-			<include refid="serviceUserComplainColumns"/>, au.PHONE as "userPhone", au.NAME as "userName"
-		FROM t_service_user_complain a left join t_app_user au on a.user_id = au.id
+			<include refid="serviceUserComplainColumns"/>
+		FROM t_service_user_complain a
 		<include refid="serviceUserComplainJoins"/>
 		WHERE a.id = #{id}
 	</select>
 	
 	<select id="findList" resultType="ServiceUserComplain">
 		SELECT 
-			<include refid="serviceUserComplainColumns"/>, au.PHONE as "userPhone", au.NAME as "userName"
-		FROM t_service_user_complain a left join t_app_user au on a.user_id = au.id
+			<include refid="serviceUserComplainColumns"/>
+		FROM t_service_user_complain a
 		<include refid="serviceUserComplainJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="userId != null and userId != ''">
 				AND a.user_id = #{userId}
 			</if>
-            <if test="userName != null and userName != ''">
-                AND au.NAME = #{userName}
-            </if>
 			<if test="serviceUser != null and serviceUser.id != null and serviceUser.id != ''">
 				AND a.service_user = #{serviceUser.id}
 			</if>
@@ -72,9 +69,9 @@
 	
 	<select id="findAllList" resultType="ServiceUserComplain">
 		SELECT 
-			<include refid="serviceUserComplainColumns"/>, au.PHONE as "userPhone", au.NAME as "userName"
+			<include refid="serviceUserComplainColumns"/>
 		FROM t_service_user_complain a
-		<include refid="serviceUserComplainJoins"/> left join t_app_user au on a.user_id = au.id
+		<include refid="serviceUserComplainJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>		

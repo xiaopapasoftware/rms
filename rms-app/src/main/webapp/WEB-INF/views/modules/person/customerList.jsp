@@ -26,13 +26,16 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label>姓名：</label>
-				<form:input path="contactName" htmlEscape="false" maxlength="100" class="input-medium"/>
+				<form:input path="trueName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>性别：</label>
 				<form:select path="gender" class="input-medium">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('sex')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
+			</li>
+			<li><label>身份证号：</label>
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
 			<li><label>手机号：</label>
 				<form:input path="cellPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
@@ -43,7 +46,7 @@
 					<form:options items="${listUser}" itemLabel="name" itemValue="id" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>是否转租客：</label>
+			<li><label>转租客：</label>
 				<form:select path="isTenant" class="input-medium">
 					<form:option value="" label="请选择..."/>
 					<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
@@ -61,10 +64,10 @@
 			<tr>
 				<th>姓名</th>
 				<th>性别</th>
+				<th>身份证号</th>
 				<th>手机号</th>
 				<th>跟进销售</th>
-				<th>是否转租客</th>
-				<th>创建时间</th>
+				<th>转租客</th>
 				<th>修改时间</th>
 				<th>创建人</th>
 				<th>修改人</th>
@@ -76,10 +79,13 @@
 		<c:forEach items="${page.list}" var="customer">
 			<tr>
 				<td>
-					<a href="${ctx}/person/customer/form?id=${customer.id}">${customer.contactName}</a>
+					<a href="${ctx}/person/customer/form?id=${customer.id}">${customer.trueName}</a>
 				</td>
 				<td>
 					${fns:getDictLabel(customer.gender, 'sex', '')}
+				</td>
+				<td>
+					${customer.idNo}
 				</td>
 				<td>
 					${customer.cellPhone}
@@ -89,9 +95,6 @@
 				</td>
 				<td>
 					${fns:getDictLabel(customer.isTenant, 'yes_no', '')}
-				</td>
-				<td>
-					<fmt:formatDate value="${customer.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 				</td>
 				<td>
 					<fmt:formatDate value="${customer.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

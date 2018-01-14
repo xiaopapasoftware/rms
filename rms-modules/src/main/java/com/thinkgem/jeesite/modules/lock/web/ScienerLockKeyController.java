@@ -3,17 +3,17 @@
  */
 package com.thinkgem.jeesite.modules.lock.web;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.persistence.BaseEntity;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
+import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.service.CustBindInfoService;
+import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.lock.entity.ScienerKey;
+import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,17 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.common.persistence.BaseEntity;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
-import com.thinkgem.jeesite.modules.app.entity.Message;
-import com.thinkgem.jeesite.modules.app.service.AppUserService;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
-import com.thinkgem.jeesite.modules.lock.entity.ScienerKey;
-import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * 钥匙管理Controller
@@ -45,7 +37,7 @@ public class ScienerLockKeyController extends BaseController {
   private ScienerLockService scienerLockService;
 
   @Autowired
-  private AppUserService appUserService;
+  private CustBindInfoService appUserService;
 
   @Autowired
   private MessageService messageService;
@@ -66,17 +58,17 @@ public class ScienerLockKeyController extends BaseController {
   @RequestMapping(value = {"list", ""})
   public String list(ScienerKey keyparam, HttpServletRequest request, HttpServletResponse response, Model model) {
     model.addAttribute("lockList", scienerLockService.getLockList());
-    AppUser appUser = new AppUser();
+    CustBindInfo appUser = new CustBindInfo();
     appUser.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-    List<AppUser> users = appUserService.findList(appUser);
+    List<CustBindInfo> users = appUserService.findList(appUser);
     model.addAttribute("users", users);
 
     List<Map> resKeys = new ArrayList<Map>();
     // 用户科技侠账号与用户名的关系map
-    Map scienerAccountMap = new HashMap();
-    for (AppUser user : users) {
-      scienerAccountMap.put(user.getScienerUserName(), user.getName());
-    }
+//    Map scienerAccountMap = new HashMap();
+//    for (CustBindInfo user : users) {
+//      scienerAccountMap.put(user.getScienerUserName(), user.getName());
+//    }
 
     // 查询条件
     String lockId = null;
@@ -114,7 +106,7 @@ public class ScienerLockKeyController extends BaseController {
             key.put("keyType", "0");// 永久
           }
 
-          key.put("appUserName", scienerAccountMap.get(key.get("username")));
+//          key.put("appUserName", scienerAccountMap.get(key.get("username")));
           resKeys.add(key);
         }
       }
@@ -135,9 +127,9 @@ public class ScienerLockKeyController extends BaseController {
   public String form(ScienerKey key, Model model) {
     model.addAttribute("key", key);
     model.addAttribute("lockList", scienerLockService.getLockList());
-    AppUser appUser = new AppUser();
+    CustBindInfo appUser = new CustBindInfo();
     appUser.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-    List<AppUser> users = appUserService.findList(appUser);
+    List<CustBindInfo> users = appUserService.findList(appUser);
     model.addAttribute("users", users);
     return "modules/lock/scienerKeyForm";
   }

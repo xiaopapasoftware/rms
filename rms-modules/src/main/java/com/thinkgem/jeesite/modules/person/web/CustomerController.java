@@ -1,11 +1,17 @@
 package com.thinkgem.jeesite.modules.person.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thinkgem.jeesite.common.config.Global;
+import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.person.entity.Company;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
+import com.thinkgem.jeesite.modules.person.entity.Tenant;
+import com.thinkgem.jeesite.modules.person.service.CompanyService;
+import com.thinkgem.jeesite.modules.person.service.CustomerService;
+import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -18,17 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.person.entity.Company;
-import com.thinkgem.jeesite.modules.person.entity.Customer;
-import com.thinkgem.jeesite.modules.person.entity.Tenant;
-import com.thinkgem.jeesite.modules.person.service.CompanyService;
-import com.thinkgem.jeesite.modules.person.service.CustomerService;
-import com.thinkgem.jeesite.modules.person.service.TenantService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 客户
@@ -123,7 +121,7 @@ public class CustomerController extends BaseController {
   public String convertToTenant(Customer customer, HttpServletRequest request, HttpServletResponse response, Model model) {
     Tenant tenant = new Tenant();
     tenant.setCellPhone(customer.getCellPhone());
-    tenant.setTenantName(customer.getContactName());
+    tenant.setTenantName(customer.getTrueName());
     tenant.setGender(customer.getGender());
     tenant.setRemarks(customer.getRemarks());
     tenant.setUser(customer.getUser());

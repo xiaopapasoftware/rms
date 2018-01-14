@@ -1,13 +1,15 @@
 package com.thinkgem.jeesite.modules.app.web;
 
 import com.thinkgem.jeesite.common.RespConstants;
-import com.thinkgem.jeesite.common.exception.AuthcException;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.PasswordHelper;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.annotation.AuthIgnore;
 import com.thinkgem.jeesite.modules.app.annotation.CurrentUser;
-import com.thinkgem.jeesite.modules.app.entity.*;
+import com.thinkgem.jeesite.modules.app.entity.AppToken;
+import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
+import com.thinkgem.jeesite.modules.app.entity.Questions;
+import com.thinkgem.jeesite.modules.app.entity.ResponseData;
 import com.thinkgem.jeesite.modules.app.service.*;
 import com.thinkgem.jeesite.modules.lock.service.ScienerLockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import java.util.*;
 public class SystemController extends AppBaseController {
 
     @Autowired
-    private AppUserService appUserService;
+    private CustBindInfoService appUserService;
 
     @Autowired
     private AppTokenService appTokenService;
@@ -68,28 +70,28 @@ public class SystemController extends AppBaseController {
         appSmsMessageService.verifyCode(telPhone, code);
 
         //exist?
-        AppUser searchUser = new AppUser();
-        searchUser.setPhone(telPhone);
-        AppUser existUser = appUserService.getByPhone(searchUser);
-        /*如果用户存在则更新*/
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser.setPassword(PasswordHelper.encryptPassword(password));
-        if(existUser != null){
-            appUser.setId(existUser.getId());
-        }
-        appUserService.save(appUser);
-
-        if(existUser != null) {
-            Message message = new Message();
-            message.setContent("欢迎使用唐巢APP");
-            message.setReceiver(telPhone);
-            message.setSender("system");
-            message.setStatus("00");//新增
-            message.setTitle("注册成功");
-            message.setType("LOGIN");
-            messageService.save(message);
-        }
+//        CustBindInfo searchUser = new CustBindInfo();
+//        searchUser.setPhone(telPhone);
+//        CustBindInfo existUser = appUserService.getByPhone(searchUser);
+//        /*如果用户存在则更新*/
+//        CustBindInfo appUser = new CustBindInfo();
+//        appUser.setPhone(telPhone);
+//        appUser.setPassword(PasswordHelper.encryptPassword(password));
+//        if(existUser != null){
+//            appUser.setId(existUser.getId());
+//        }
+//        appUserService.save(appUser);
+//
+//        if(existUser != null) {
+//            Message message = new Message();
+//            message.setContent("欢迎使用唐巢APP");
+//            message.setReceiver(telPhone);
+//            message.setSender("system");
+//            message.setStatus("00");//新增
+//            message.setTitle("注册成功");
+//            message.setType("LOGIN");
+//            messageService.save(message);
+//        }
         //给用户注册科技侠账号
         /*try {
             String scienerPwd = RandomStrUtil.generateCode(false, 16);
@@ -117,37 +119,37 @@ public class SystemController extends AppBaseController {
         return ResponseData.success().message("验证码发送成功，请注意查收");
     }
 
-    @AuthIgnore
-    @RequestMapping(value = "login/pwd")
-    public ResponseData loginWithPwd(String telPhone, String password) {
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
-        if (appUser == null) {
-            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
-        } else if (!PasswordHelper.checkPassword(appUser.getPassword(), password)) {
-            return new ResponseData(RespConstants.ERROR_CODE_406, RespConstants.ERROR_MSG_406);
-        }
-        return appTokenService.tokenMerge(telPhone);
-    }
+//    @AuthIgnore
+//    @RequestMapping(value = "login/pwd")
+//    public ResponseData loginWithPwd(String telPhone, String password) {
+//        CustBindInfo appUser = new CustBindInfo();
+//        appUser.setPhone(telPhone);
+//        appUser = appUserService.getByPhone(appUser);
+//        if (appUser == null) {
+//            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
+//        } else if (!PasswordHelper.checkPassword(appUser.getPassword(), password)) {
+//            return new ResponseData(RespConstants.ERROR_CODE_406, RespConstants.ERROR_MSG_406);
+//        }
+//        return appTokenService.tokenMerge(telPhone);
+//    }
 
-    @AuthIgnore
-    @RequestMapping(value = "login/code")
-    public ResponseData loginWithCode(String telPhone, String code) {
-        AppUser appUser = new AppUser();
-        appUser.setPhone(telPhone);
-        appUser = appUserService.getByPhone(appUser);
-        if (appUser == null) {
-            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
-        }
-        appSmsMessageService.verifyCode(telPhone, code);
-        //generate user token
-        return appTokenService.tokenMerge(telPhone);
-    }
+//    @AuthIgnore
+//    @RequestMapping(value = "login/code")
+//    public ResponseData loginWithCode(String telPhone, String code) {
+//        CustBindInfo appUser = new CustBindInfo();
+//        appUser.setPhone(telPhone);
+//        appUser = appUserService.getByPhone(appUser);
+//        if (appUser == null) {
+//            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
+//        }
+//        appSmsMessageService.verifyCode(telPhone, code);
+//        //generate user token
+//        return appTokenService.tokenMerge(telPhone);
+//    }
 
 
     @RequestMapping(value = "self/pwd")
-    public ResponseData changePwd(@CurrentUser AppUser appUser, String telPhone, String newPassword, String oldPassword) {
+    public ResponseData changePwd(@CurrentUser CustBindInfo appUser, String telPhone, String newPassword, String oldPassword) {
         if (telPhone == null || newPassword == null || oldPassword == null) {
             return ResponseData.failure(RespConstants.ERROR_CODE_101).message("必填参数不能为空");
         }
@@ -161,25 +163,25 @@ public class SystemController extends AppBaseController {
         }
     }
 
-    @AuthIgnore
-    @RequestMapping(value = "pwd/reset")
-    public ResponseData resetPwd(String telPhone, String code, String password) {
-        if (telPhone == null || code == null || password == null) {
-            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("必填参数不能为空 ");
-        }
-
-        appSmsMessageService.verifyCode(telPhone, code);
-        AppUser searchUser = new AppUser();
-        searchUser.setPhone(telPhone);
-        AppUser appUser = appUserService.getByPhone(searchUser);
-        if (appUser == null) {
-            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
-        }
-        appUser.setPhone(telPhone);
-        appUser.setPassword(PasswordHelper.encryptPassword(password));
-        appUserService.save(appUser);
-        return appTokenService.tokenMerge(telPhone);
-    }
+//    @AuthIgnore
+//    @RequestMapping(value = "pwd/reset")
+//    public ResponseData resetPwd(String telPhone, String code, String password) {
+//        if (telPhone == null || code == null || password == null) {
+//            return ResponseData.failure(RespConstants.ERROR_CODE_101).message("必填参数不能为空 ");
+//        }
+//
+//        appSmsMessageService.verifyCode(telPhone, code);
+//        CustBindInfo searchUser = new CustBindInfo();
+//        searchUser.setPhone(telPhone);
+//        CustBindInfo appUser = appUserService.getByPhone(searchUser);
+//        if (appUser == null) {
+//            throw new AuthcException(RespConstants.ERROR_CODE_403, RespConstants.ERROR_MSG_403);
+//        }
+//        appUser.setPhone(telPhone);
+//        appUser.setPassword(PasswordHelper.encryptPassword(password));
+//        appUserService.save(appUser);
+//        return appTokenService.tokenMerge(telPhone);
+//    }
 
     // 常见问题
     @AuthIgnore
@@ -204,14 +206,14 @@ public class SystemController extends AppBaseController {
         return ResponseData.success().data(map);
     }
 
-    @RequestMapping(value = "scienerToken")
-    public ResponseData scienerToken(@CurrentUser AppUser appUser) {
-        if (appUser.getScienerUserName() != null && appUser.getScienerPassword() != null) {
-            Map scienerRes = scienerLockService.authorize(appUser.getScienerUserName(), appUser.getScienerPassword());
-            return ResponseData.success().message("用户在锁平台授权成功").data(scienerRes.get("access_token"));
-        } else {
-            return ResponseData.failure(RespConstants.ERROR_CODE_104).message(RespConstants.ERROR_MSG_104);
-        }
-    }
+//    @RequestMapping(value = "scienerToken")
+//    public ResponseData scienerToken(@CurrentUser CustBindInfo appUser) {
+////        if (appUser.getScienerUserName() != null && appUser.getScienerPassword() != null) {
+//            Map scienerRes = scienerLockService.authorize(appUser.getScienerUserName(), appUser.getScienerPassword());
+//            return ResponseData.success().message("用户在锁平台授权成功").data(scienerRes.get("access_token"));
+//        } else {
+//            return ResponseData.failure(RespConstants.ERROR_CODE_104).message(RespConstants.ERROR_MSG_104);
+//        }
+//    }
 
 }

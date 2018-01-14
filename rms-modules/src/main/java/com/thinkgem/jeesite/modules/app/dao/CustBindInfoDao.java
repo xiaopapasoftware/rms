@@ -5,17 +5,14 @@ package com.thinkgem.jeesite.modules.app.dao;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
-import com.thinkgem.jeesite.modules.app.entity.AppUser;
+import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
 
 /**
- * APP用户DAO接口
+ * DAO接口
  * @author mabindong
  * @version 2015-11-24
  */
 @MyBatisDao
-public interface AppUserDao extends CrudDao<AppUser> {
-	public AppUser getByPhone(AppUser appUser);
-    public String getServiceUserByPhone(AppUser appUser);
+public interface CustBindInfoDao extends CrudDao<CustBindInfo> {
 
-    public String getServiceUserByContractId(String contract_id);
 }

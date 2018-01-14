@@ -4,9 +4,9 @@
     
 	<sql id="customerColumns">
 		a.id AS "id",
-		a.user_id AS "user.id",
+		a.sale_user_id AS "user.id",
 		su.name AS "user.name",
-		a.contact_name AS "contactName",
+		a.true_name AS "trueName",
 		a.gender AS "gender",
 		a.cell_phone AS "cellPhone",
 		a.is_tenant AS "isTenant",
@@ -17,13 +17,24 @@
 		u2.login_name AS "updateBy.loginName",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.login_name AS "loginName",
+		a.login_pwd AS "loginPwd",
+		a.nick_name AS "nickName",
+		a.ID_NO AS "idNo",
+		a.BIRTH AS "birth",
+		a.AGE AS "age",
+		a.PROFESSION AS "profession",
+		a.CORP AS "corp",
+		a.education AS "education",
+		a.source AS "source",
+		a.cust_bind_info_id AS "custBindInfoId"
 	</sql>
 	
 	<sql id="customerJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
-		LEFT JOIN sys_user su ON su.id = a.user_id
+		LEFT JOIN sys_user su ON su.id = a.sale_user_id
 	</sql>
     
 	<select id="get" resultType="Customer">
@@ -42,13 +53,13 @@
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="user != null and user.id != null and user.id != ''">
-				AND a.user_id = #{user.id}
+				AND a.sale_user_id = #{user.id}
 			</if>
-			<if test="contactName != null and contactName != ''">
-				AND a.contact_name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{contactName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{contactName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{contactName},'%')</if>
+			<if test="trueName != null and trueName != ''">
+				AND a.true_name LIKE
+					<if test="dbName == 'oracle'">'%'||#{trueName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{trueName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{trueName},'%')</if>
 			</if>
 			<if test="gender != null and gender != ''">
 				AND a.gender = #{gender}
@@ -58,6 +69,12 @@
 					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
+			</if>
+			<if test="idNo != null and idNo != ''">
+				AND a.ID_NO LIKE
+				<if test="dbName == 'oracle'">'%'||#{idNo}||'%'</if>
+				<if test="dbName == 'mssql'">'%'+#{idNo}+'%'</if>
+				<if test="dbName == 'mysql'">concat('%',#{idNo},'%')</if>
 			</if>
 			<if test="isTenant != null and isTenant != ''">
 				AND a.is_tenant = #{isTenant}
@@ -94,8 +111,8 @@
 	<select id="findCustomerByTelNo" resultType="Customer">
 		SELECT 
 				a.id AS "id",
-				a.user_id AS "user.id",
-				a.contact_name AS "contactName",
+				a.sale_user_id AS "user.id",
+				a.true_name AS "trueName",
 				a.gender AS "gender",
 				a.cell_phone AS "cellPhone",
 				a.is_tenant AS "isTenant",
@@ -111,8 +128,8 @@
 	<insert id="insert">
 		INSERT INTO t_customer(
 			id,
-			user_id,
-			contact_name,
+			sale_user_id,
+			true_name,
 			gender,
 			cell_phone,
 			is_tenant,
@@ -121,11 +138,22 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			login_name,
+			login_pwd,
+			nick_name,
+			ID_NO,
+			BIRTH,
+			AGE,
+			PROFESSION,
+			CORP,
+			education,
+			source,
+			cust_bind_info_id
 		) VALUES (
 			#{id},
 			#{user.id},
-			#{contactName},
+			#{trueName},
 			#{gender},
 			#{cellPhone},
 			#{isTenant},
@@ -134,14 +162,25 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{loginName},
+			#{loginPwd},
+			#{nickName},
+			#{idNo},
+			#{birth},
+			#{age},
+			#{profession},
+			#{corp},
+			#{education},
+			#{source},
+			#{custBindInfoId}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE t_customer SET
-			user_id = #{user.id},
-			contact_name = #{contactName},
+			sale_user_id = #{user.id},
+			true_name = #{trueName},
 			gender = #{gender},
 			cell_phone = #{cellPhone},
 		 	<if test="isTenant != null and isTenant != ''">

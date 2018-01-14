@@ -37,7 +37,7 @@
 		<div class="control-group">
 			<label class="control-label">姓名：</label>
 			<div class="controls">
-				<form:input path="contactName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<form:input path="trueName" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
@@ -58,6 +58,15 @@
 				<span class="help-inline"><font color="red">*</font> </span>
 			</div>
 		</div>
+
+		<div class="control-group">
+			<label class="control-label">身份证号：</label>
+			<div class="controls">
+				<form:input path="idNo" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+
 		<div class="control-group">
 			<label class="control-label">销售：</label>
 			<div class="controls">
