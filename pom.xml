@@ -569,7 +569,11 @@
                 <version>2.3</version>
             </dependency>
             <!-- CKFinder end -->
-
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay.sdk</artifactId>
+                <version>1.0</version>
+            </dependency>
             <!-- TEST begin -->
             <dependency>
                 <groupId>junit</groupId>

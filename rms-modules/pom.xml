@@ -33,5 +33,9 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alipay.sdk</groupId>
+            <artifactId>alipay.sdk</artifactId>
+        </dependency>
     </dependencies>
 </project>
