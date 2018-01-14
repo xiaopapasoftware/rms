@@ -4,9 +4,6 @@
 package com.thinkgem.jeesite.common.web;
 
 import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import org.activiti.engine.impl.util.json.JSONObject;
 
 import java.beans.PropertyEditorSupport;
