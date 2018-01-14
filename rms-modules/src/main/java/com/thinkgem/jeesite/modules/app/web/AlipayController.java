@@ -84,7 +84,7 @@ public class AlipayController extends BaseController {
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
         //注意该接口使用的前提是，需要开通新的ISVappid权限，目前开发环境的测试账号已被使用
         request.setBizContent("{" +
-                "    \"ka_name\": \" "+ name + " \"" +
+                "    \"ka_name\": \" " + name + " \"" +
                 "}");
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = alipayClient.execute(request);
         if (response.isSuccess()) {
@@ -102,7 +102,7 @@ public class AlipayController extends BaseController {
     public String baseInfoQuery(@PathVariable("kaCode") String kaCode) throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
         AlipayEcoRenthouseKaBaseinfoQueryRequest request = new AlipayEcoRenthouseKaBaseinfoQueryRequest();
-        request.setBizContent("{" + "\"ka_code\": \"" + kaCode  + "\"" + "}");
+        request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
         AlipayEcoRenthouseKaBaseinfoQueryResponse response = alipayClient.execute(request);
         if (response.isSuccess()) {
             return response.getValid();
@@ -118,7 +118,7 @@ public class AlipayController extends BaseController {
     @ResponseBody
     public String serviceCreate(@PathVariable("type") String type) throws AlipayApiException {
         PropertiesLoader loader = new PropertiesLoader("jeesite.properties");
-        String kaCode =  loader.getProperty("alipay.kacode");
+        String kaCode = loader.getProperty("alipay.kacode");
         String url = "";
         if ("1".equals(type)) {
             url = loader.getProperty("alipay.url.reservation");
@@ -146,7 +146,7 @@ public class AlipayController extends BaseController {
      * 房间的分散式同步
      */
     @RequestMapping(value = "syncRoom/{roomId}")
-    public String syncRoom(@PathVariable("roomId")String roomId, RedirectAttributes redirectAttributes) {
+    public String syncRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         Room room = roomService.get(roomId);
         House house = houseService.getHouseById(room.getHouse().getId());
         if (house.getOwner() == null) {
@@ -197,12 +197,12 @@ public class AlipayController extends BaseController {
     /**
      * 房间的分散式同步
      */
-    private boolean syncDispersionRoom(Room room, List<String> imageUrls){
+    private boolean syncDispersionRoom(Room room, List<String> imageUrls) {
         House house = room.getHouse();
         Building building = buildingService.get(house.getBuilding().getId());
         Owner owner = ownerService.get(room.getHouse().getOwner().getId());
         int rentStatus = 2;
-        if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())){
+        if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
             rentStatus = 1;
         }
         StringBuilder sb = new StringBuilder("");
@@ -233,25 +233,25 @@ public class AlipayController extends BaseController {
                 "    \"room_code\": \"00" + room.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"flat_building\": \"" +  building.getBuildingName() + "\"," +
-                "    \"room_num\": \"" +  house.getHouseNo() + "\"," +
-                "    \"room_name\": \"" +  room.getRoomNo() + "\"," +
+                "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
+                "    \"room_num\": \"" + house.getHouseNo() + "\"," +
+                "    \"room_name\": \"" + room.getRoomNo() + "\"," +
                 "    \"room_face\": " + face + "," +
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
                 "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
                 "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" +  house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" +  room.getRoomSpace() + "\"," +
+                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
+                "    \"room_area\": \"" + room.getRoomSpace() + "\"," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" +  room.getShortDesc() + "\"," +
+                "    \"intro\": \"" + room.getShortDesc() + "\"," +
                 "    \"flat_configs\":[\"" + flatConfigs + "]" + "," +
                 "    \"room_configs\":[\"" + roomConfigs + "]" + "," +
                 "    \"pay_type\": " + room.getRentMonthGap() + "," +
                 "    \"room_amount\": " + room.getRental() + "," +
                 "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
-                "    \"owners_name\": \"" +  owner.getName() + "\"," +
-                "    \"owners_tel\": \"" +  owner.getCellPhone() + "\"," +
+                "    \"owners_name\": \"" + owner.getName() + "\"," +
+                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -276,12 +276,12 @@ public class AlipayController extends BaseController {
     /**
      * 房间的集中式同步
      */
-    private boolean syncConcentrationRoom(Room room, List<String> imageUrls){
+    private boolean syncConcentrationRoom(Room room, List<String> imageUrls) {
         House house = room.getHouse();
         Building building = buildingService.get(house.getBuilding().getId());
         Owner owner = ownerService.get(room.getHouse().getOwner().getId());
         int rentStatus = 2;
-        if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())){
+        if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
             rentStatus = 1;
         }
         StringBuilder sb = new StringBuilder("");
@@ -306,19 +306,19 @@ public class AlipayController extends BaseController {
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
                 "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
                 "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" +  house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" +  room.getRoomSpace() + "\"," +
+                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
+                "    \"room_area\": \"" + room.getRoomSpace() + "\"," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" +  room.getShortDesc() + "\"," +
-                "    \"nick_name\": \"" +  building.getNickName() + "\"," +
-                "    \"max_amount\": \"" +  building.getMaxAmount() + "\"," +
+                "    \"intro\": \"" + room.getShortDesc() + "\"," +
+                "    \"nick_name\": \"" + building.getNickName() + "\"," +
+                "    \"max_amount\": \"" + building.getMaxAmount() + "\"," +
                 "    \"room_configs\":[\"" + roomConfigs + "]," +
                 "    \"pay_type\": " + room.getRentMonthGap() + "," +
                 "    \"room_amount\": " + room.getRental() + "," +
                 "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
-                "    \"owners_name\": \"" +  owner.getName() + "\"," +
-                "    \"owners_tel\": \"" +  owner.getCellPhone() + "\"," +
+                "    \"owners_name\": \"" + owner.getName() + "\"," +
+                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -344,7 +344,7 @@ public class AlipayController extends BaseController {
      * 房屋同步
      */
     @RequestMapping(value = "syncHouse/{houseId}")
-    public String syncHouse(@PathVariable("houseId")String houseId, RedirectAttributes redirectAttributes) {
+    public String syncHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         House house = houseService.get(houseId);
         if (house.getOwner() == null) {
             List<Owner> ownerList = ownerService.findByHouse(house);
@@ -389,11 +389,11 @@ public class AlipayController extends BaseController {
     /**
      * 房屋的分散式同步
      */
-    private boolean syncDispersionHouse(House house, List<String> imageUrls){
+    private boolean syncDispersionHouse(House house, List<String> imageUrls) {
         Building building = buildingService.get(house.getBuilding().getId());
         Owner owner = ownerService.get(house.getOwner().getId());
         int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())){
+        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
         StringBuilder sb = new StringBuilder("");
@@ -407,21 +407,21 @@ public class AlipayController extends BaseController {
                 "    \"room_code\": \"0" + house.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"flat_building\": \"" +  building.getBuildingName() + "\"," +
-                "    \"room_num\": \"" +  house.getHouseNo() + "\"," +
+                "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
+                "    \"room_num\": \"" + house.getHouseNo() + "\"," +
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
                 "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
                 "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" +  house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" +  house.getDecorationSpance() + "\"," +
+                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
+                "    \"room_area\": \"" + house.getDecorationSpance() + "\"," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" +  house.getShortDesc() + "\"," +
+                "    \"intro\": \"" + house.getShortDesc() + "\"," +
                 "    \"pay_type\": " + house.getRentMonthGap() + "," +
                 "    \"room_amount\": " + house.getRental() + "," +
                 "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
-                "    \"owners_name\": \"" +  owner.getName() + "\"," +
-                "    \"owners_tel\": \"" +  owner.getCellPhone() + "\"," +
+                "    \"owners_name\": \"" + owner.getName() + "\"," +
+                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -445,11 +445,11 @@ public class AlipayController extends BaseController {
     /**
      * 房屋的集中式同步
      */
-    private boolean syncConcentrationHouse(House house, List<String> imageUrls){
+    private boolean syncConcentrationHouse(House house, List<String> imageUrls) {
         Building building = buildingService.get(house.getBuilding().getId());
         Owner owner = ownerService.get(house.getOwner().getId());
         int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())){
+        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
         StringBuilder sb = new StringBuilder("");
@@ -466,17 +466,17 @@ public class AlipayController extends BaseController {
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
                 "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
                 "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"room_area\": \"" +  house.getDecorationSpance() + "\"," +
+                "    \"room_area\": \"" + house.getDecorationSpance() + "\"," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" +  house.getShortDesc() + "\"," +
-                "    \"nick_name\": \"" +  building.getNickName() + "\"," +
-                "    \"max_amount\": \"" +  building.getMaxAmount() + "\"," +
+                "    \"intro\": \"" + house.getShortDesc() + "\"," +
+                "    \"nick_name\": \"" + building.getNickName() + "\"," +
+                "    \"max_amount\": \"" + building.getMaxAmount() + "\"," +
                 "    \"pay_type\": " + house.getRentMonthGap() + "," +
                 "    \"room_amount\": " + house.getRental() + "," +
                 "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
-                "    \"owners_name\": \"" +  owner.getName() + "\"," +
-                "    \"owners_tel\": \"" +  owner.getCellPhone() + "\"," +
+                "    \"owners_name\": \"" + owner.getName() + "\"," +
+                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -497,16 +497,16 @@ public class AlipayController extends BaseController {
         }
     }
 
-    private List<String> syncPictures(String attachmentPath) throws Exception{
+    private List<String> syncPictures(String attachmentPath) throws Exception {
         List<String> imageUrls = new ArrayList<>();
         String[] images = attachmentPath.split("\\|");
-        for (int i = 1; i < images.length; i++){
+        for (int i = 1; i < images.length; i++) {
             imageUrls.add(syncPicture(images[i]));
         }
         return imageUrls;
     }
 
-    private String syncPicture(String path) throws Exception{
+    private String syncPicture(String path) throws Exception {
         InputStream inputStream = null;
         byte[] data = null;
         try {
@@ -567,7 +567,7 @@ public class AlipayController extends BaseController {
      * 房屋上架
      */
     @RequestMapping(value = "upHouse/{houseId}")
-    public String upHouse(@PathVariable("houseId")String houseId, RedirectAttributes redirectAttributes) {
+    public String upHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         if (upDownHouse(houseId, UpEnum.UP.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋上架成功！");
         } else {
@@ -580,7 +580,7 @@ public class AlipayController extends BaseController {
      * 房屋上架
      */
     @RequestMapping(value = "downHouse/{houseId}")
-    public String downHouse(@PathVariable("houseId")String houseId, RedirectAttributes redirectAttributes) {
+    public String downHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         if (upDownHouse(houseId, UpEnum.DOWN.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋下架成功！");
         } else {
@@ -592,7 +592,7 @@ public class AlipayController extends BaseController {
     private boolean upDownHouse(String houseId, Integer type) {
         House house = houseService.get(houseId);
         int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())){
+        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
@@ -623,7 +623,7 @@ public class AlipayController extends BaseController {
      * 房间上架
      */
     @RequestMapping(value = "upRoom/{roomId}")
-    public String upRoom(@PathVariable("roomId")String roomId, RedirectAttributes redirectAttributes) {
+    public String upRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         if (upDownRoom(roomId, UpEnum.UP.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间上架成功！");
         } else {
@@ -636,7 +636,7 @@ public class AlipayController extends BaseController {
      * 房间上架
      */
     @RequestMapping(value = "downRoom/{roomId}")
-    public String downRoom(@PathVariable("roomId")String roomId, RedirectAttributes redirectAttributes) {
+    public String downRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         if (upDownRoom(roomId, UpEnum.DOWN.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间下架成功！");
         } else {
@@ -649,7 +649,7 @@ public class AlipayController extends BaseController {
         Room room = roomService.get(roomId);
         House house = houseService.get(room.getHouse().getId());
         int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())){
+        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
