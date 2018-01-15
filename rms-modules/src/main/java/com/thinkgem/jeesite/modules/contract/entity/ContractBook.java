@@ -4,8 +4,13 @@
  */
 package com.thinkgem.jeesite.modules.contract.entity;
 
-import java.util.Date;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
+import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 预约、预定、签约等都可能会用到的实体对象
@@ -15,48 +20,34 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
  */
 public class ContractBook extends DataEntity<ContractBook> {
   private static final long serialVersionUID = 1L;
-  private String userId; // user_id
+  private Customer customer;
   private String houseId; // house_id
   private String roomId; // room_id
-  private String userName; // user_name
-  private String userPhone; // user_phone
-  private String userGender; // user_gender
+  private String bookPhone; // user_phone
   private Date bookDate; // book_date
   private String bookStatus; // book_status
-  private String bookBusiStatus; // 业务状态
   private String salesId; // sales_id
-  private String salesName;
+  private String source;
+  private Long housingCode;
+  private String housingType;
+  private String houseType;
+
   private String projectName;
   private String buildingName;
   private String houseCode;
   private String roomNo;
-  private String shortDesc;
-  private String shortLocation;
-  private String attachmentPath;
-  private String depositId;
-  private String contractId;
-  private String contractCode;
-  private Double rent;
-  private String payWay;
-  private String contractBusiStatus;
-  private String updateUser;
-  private Date endDate;
-  private String idNo;
+  private String serviceUserName;
+  private String salesName;
+  private House house;
+  private Room room;
+  private List<String> customerIdList;
 
-  public ContractBook() {
-    super();
+  public Customer getCustomer() {
+    return customer;
   }
 
-  public ContractBook(String id) {
-    super(id);
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 
   public String getHouseId() {
@@ -75,28 +66,12 @@ public class ContractBook extends DataEntity<ContractBook> {
     this.roomId = roomId;
   }
 
-  public String getUserName() {
-    return userName;
+  public String getBookPhone() {
+    return bookPhone;
   }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
-  }
-
-  public String getUserPhone() {
-    return userPhone;
-  }
-
-  public void setUserPhone(String userPhone) {
-    this.userPhone = userPhone;
-  }
-
-  public String getUserGender() {
-    return userGender;
-  }
-
-  public void setUserGender(String userGender) {
-    this.userGender = userGender;
+  public void setBookPhone(String bookPhone) {
+    this.bookPhone = bookPhone;
   }
 
   public Date getBookDate() {
@@ -113,14 +88,6 @@ public class ContractBook extends DataEntity<ContractBook> {
 
   public void setBookStatus(String bookStatus) {
     this.bookStatus = bookStatus;
-  }
-
-  public String getBookBusiStatus() {
-    return bookBusiStatus;
-  }
-
-  public void setBookBusiStatus(String bookBusiStatus) {
-    this.bookBusiStatus = bookBusiStatus;
   }
 
   public String getSalesId() {
@@ -163,84 +130,12 @@ public class ContractBook extends DataEntity<ContractBook> {
     this.roomNo = roomNo;
   }
 
-  public String getShortDesc() {
-    return shortDesc;
+  public String getServiceUserName() {
+    return serviceUserName;
   }
 
-  public void setShortDesc(String shortDesc) {
-    this.shortDesc = shortDesc;
-  }
-
-  public String getAttachmentPath() {
-    return attachmentPath;
-  }
-
-  public void setAttachmentPath(String attachmentPath) {
-    this.attachmentPath = attachmentPath;
-  }
-
-  public String getShortLocation() {
-    return shortLocation;
-  }
-
-  public void setShortLocation(String shortLocation) {
-    this.shortLocation = shortLocation;
-  }
-
-  public String getDepositId() {
-    return depositId;
-  }
-
-  public void setDepositId(String depositId) {
-    this.depositId = depositId;
-  }
-
-  public String getContractCode() {
-    return contractCode;
-  }
-
-  public void setContractCode(String contractCode) {
-    this.contractCode = contractCode;
-  }
-
-  public Double getRent() {
-    return rent;
-  }
-
-  public void setRent(Double rent) {
-    this.rent = rent;
-  }
-
-  public String getPayWay() {
-    return payWay;
-  }
-
-  public void setPayWay(String payWay) {
-    this.payWay = payWay;
-  }
-
-  public String getContractId() {
-    return contractId;
-  }
-
-  public void setContractId(String contractId) {
-    this.contractId = contractId;
-  }
-
-  public String getContractBusiStatus() {
-    return contractBusiStatus;
-  }
-
-  public void setContractBusiStatus(String contractBusiStatus) {
-    this.contractBusiStatus = contractBusiStatus;
-  }
-
-  public String getIdNo() {
-    return idNo;
-  }
-
-  public void setIdNo(String idNo) {
-    this.idNo = idNo;
+  public void setServiceUserName(String serviceUserName) {
+    this.serviceUserName = serviceUserName;
   }
 
   public String getSalesName() {
@@ -251,19 +146,59 @@ public class ContractBook extends DataEntity<ContractBook> {
     this.salesName = salesName;
   }
 
-  public String getUpdateUser() {
-    return updateUser;
+  public String getSource() {
+    return source;
   }
 
-  public void setUpdateUser(String updateUser) {
-    this.updateUser = updateUser;
+  public void setSource(String source) {
+    this.source = source;
   }
 
-  public Date getEndDate() {
-    return endDate;
+  public Long getHousingCode() {
+    return housingCode;
   }
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+  public void setHousingCode(Long housingCode) {
+    this.housingCode = housingCode;
+  }
+
+  public String getHousingType() {
+    return housingType;
+  }
+
+  public void setHousingType(String housingType) {
+    this.housingType = housingType;
+  }
+
+  public String getHouseType() {
+    return houseType;
+  }
+
+  public void setHouseType(String houseType) {
+    this.houseType = houseType;
+  }
+
+  public House getHouse() {
+    return house;
+  }
+
+  public void setHouse(House house) {
+    this.house = house;
+  }
+
+  public Room getRoom() {
+    return room;
+  }
+
+  public void setRoom(Room room) {
+    this.room = room;
+  }
+
+  public List<String> getCustomerIdList() {
+    return customerIdList;
+  }
+
+  public void setCustomerIdList(List<String> customerIdList) {
+    this.customerIdList = customerIdList;
   }
 }

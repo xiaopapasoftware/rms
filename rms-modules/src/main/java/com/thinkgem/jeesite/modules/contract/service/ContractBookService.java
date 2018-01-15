@@ -4,22 +4,22 @@
  */
 package com.thinkgem.jeesite.modules.contract.service;
 
-import java.util.Date;
-import java.util.List;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.common.utils.IdGen;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.dao.ContractBookDao;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
-import com.thinkgem.jeesite.modules.funds.dao.PaymentOrderDao;
-import com.thinkgem.jeesite.modules.funds.entity.PaymentOrder;
+import com.thinkgem.jeesite.modules.dao.UserDao;
+import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
+import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.person.dao.CustomerDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 预约看房信息Service
@@ -28,132 +28,55 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 @Service
 @Transactional(readOnly = true)
 public class ContractBookService extends CrudService<ContractBookDao, ContractBook> {
-  @Autowired
-  private ContractBookDao contractBookDao;
-  @Autowired
-  private PaymentOrderDao paymentOrderDao;
+
   @Autowired
   private RoomDao roomDao;
+  @Autowired
+  private CustomerDao customerDao;
+  @Autowired
+  private HouseDao houseDao;
+  @Autowired
+  private UserDao userDao;
 
   public ContractBook get(String id) {
-    return super.get(id);
+    ContractBook contractBook = super.get(id);
+    if (contractBook != null) {
+      contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
+    }
+    return contractBook;
   }
 
   public List<ContractBook> findList(ContractBook contractBook) {
     List<ContractBook> listResult = super.findList(contractBook);
-    for (ContractBook tmpContractBook : listResult) {
-      if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-        Room room = this.roomDao.get(tmpContractBook.getRoomId());
-        tmpContractBook.setRoomNo(room.getRoomNo());
-        tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-        tmpContractBook.setShortDesc(room.getShortDesc());
-        tmpContractBook.setShortLocation(room.getShortLocation());
-        tmpContractBook.setHouseId(room.getId());
-      }
-    }
+    listResult.forEach(this::completeInfo);
     return listResult;
   }
 
   public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
     Page<ContractBook> pageResult = super.findPage(page, contractBook);
     List<ContractBook> listContractBook = pageResult.getList();
-    for (ContractBook tmpContractBook : listContractBook) {
-      if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-        Room room = this.roomDao.get(tmpContractBook.getRoomId());
-        tmpContractBook.setRoomNo(room.getRoomNo());
-        tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-        tmpContractBook.setShortDesc(room.getShortDesc());
-        tmpContractBook.setShortLocation(room.getShortLocation());
-        tmpContractBook.setHouseId(room.getId());
-      }
-    }
+    listContractBook.forEach(this::completeInfo);
     pageResult.setList(listContractBook);
     return pageResult;
   }
 
-  public ContractBook findOne(ContractBook contractBook) {
-    ContractBook contractBookResult = super.get(contractBook);
-    if (!StringUtils.isBlank(contractBookResult.getRoomId())) {
-      Room room = this.roomDao.get(contractBookResult.getRoomId());
-      contractBookResult.setRoomNo(room.getRoomNo());
-      contractBookResult.setAttachmentPath(room.getAttachmentPath());
-      contractBookResult.setShortDesc(room.getShortDesc());
-      contractBookResult.setShortLocation(room.getShortLocation());
-      contractBookResult.setHouseId(room.getId());
+  private void completeInfo(ContractBook contractBook) {
+    if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getId())) {
+      contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
     }
-    return contractBookResult;
-  }
-
-  public List<ContractBook> findBookedContract(ContractBook contractBook) {
-    return contractBookDao.findBookedContract(contractBook);
-  }
-
-  public List<ContractBook> findRentContract(ContractBook contractBook) {
-    List<ContractBook> listContractBook = contractBookDao.findRentContract(contractBook);
-    for (ContractBook tmpContractBook : listContractBook) {
-      if (!StringUtils.isBlank(tmpContractBook.getRoomId())) {
-        Room room = this.roomDao.get(tmpContractBook.getRoomId());
-        tmpContractBook.setRoomNo(room.getRoomNo());
-        tmpContractBook.setAttachmentPath(room.getAttachmentPath());
-        tmpContractBook.setShortDesc(room.getShortDesc());
-        tmpContractBook.setShortLocation(room.getShortLocation());
-        tmpContractBook.setHouseId(room.getId());
-      }
+    House house = houseDao.get(contractBook.getHouseId());
+    contractBook.setProjectName(house.getPropertyProject().getProjectName());
+    contractBook.setBuildingName(house.getBuilding().getBuildingName());
+    contractBook.setHouseCode(house.getHouseCode());
+    contractBook.setHouseType(house.getType());
+    contractBook.setServiceUserName(house.getServcieUserName());
+    if (StringUtils.isNotBlank(contractBook.getRoomId())) {
+      Room room = roomDao.get(contractBook.getRoomId());
+      contractBook.setRoomNo(room.getRoomNo());
     }
-    return listContractBook;
-  }
-
-  @Transactional(readOnly = false)
-  public void saveOrder(PaymentOrder paymentOrder) {
-    paymentOrder.setId(IdGen.uuid());
-    this.paymentOrderDao.insert(paymentOrder);
-  }
-
-  @Transactional(readOnly = false)
-  public void deleteByTradeId(PaymentOrder paymentOrder) {
-    paymentOrderDao.deleteByTradeId(paymentOrder);
-  }
-
-  public PaymentOrder findByHouseId(PaymentOrder paymentOrder) {
-    List<PaymentOrder> list = this.paymentOrderDao.findByHouseId(paymentOrder);
-    if (null != list && list.size() > 0) return list.get(0);
-    return null;
-  }
-
-  public PaymentOrder findByOrderId(PaymentOrder paymentOrder) {
-    return this.paymentOrderDao.findByOrderId(paymentOrder);
-  }
-
-  public PaymentOrder findByOrderId(String orderId) {
-    PaymentOrder paymentOrder = new PaymentOrder();
-    paymentOrder.setOrderId(orderId);
-    List<PaymentOrder> list = this.paymentOrderDao.findList(paymentOrder);
-    if (null != list && list.size() > 0)
-      paymentOrder = list.get(0);
-    else
-      paymentOrder = null;
-    return paymentOrder;
-  }
-
-  public String generateOrderId() {
-    return DateFormatUtils.format(new Date(), "SSSyyyyMMddHHmmss");
-  }
-
-  @Transactional(readOnly = false)
-  public void updateStatusByOrderId(PaymentOrder paymentOrder) {
-    this.paymentOrderDao.updateStatusByOrderId(paymentOrder);
-  }
-
-  @Transactional(readOnly = false)
-  public void updateStatusByHouseId(ContractBook contractBook) {
-    contractBookDao.updateStatusByHouseId(contractBook);
-  }
-
-  public boolean checkByUser(ContractBook contractBook) {
-    List<ContractBook> list = contractBookDao.findByUser(contractBook);
-    if (null != list && list.size() > 0) {
-      return false;
+    if (StringUtils.isNotBlank(contractBook.getSalesId())) {
+      contractBook.setSalesName(userDao.get(contractBook.getSalesId()).getLoginName());
     }
-    return true;
   }
+
 }

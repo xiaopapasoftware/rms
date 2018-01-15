@@ -1,19 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.thinkgem.jeesite.modules.utils.UserUtils;
-
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
@@ -24,6 +10,24 @@ import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
+import com.thinkgem.jeesite.modules.person.service.CustomerService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 预约看房
@@ -37,6 +41,9 @@ public class ContractBookController extends BaseController {
 
   @Autowired
   private MessageService messageService;// APP消息推送
+
+  @Autowired
+  private CustomerService customerService;
 
   @ModelAttribute
   public ContractBook get(@RequestParam(required = false) String id) {
@@ -53,7 +60,15 @@ public class ContractBookController extends BaseController {
   @RequiresPermissions("contract:contractBook:view")
   @RequestMapping(value = {"list", ""})
   public String list(ContractBook contractBook, HttpServletRequest request, HttpServletResponse response, Model model) {
-    Page<ContractBook> page = contractBookService.findPage(new Page<ContractBook>(request, response), contractBook);
+    if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getTrueName())) {
+      List<Customer> customerList = customerService.findList(contractBook.getCustomer());
+      if (CollectionUtils.isEmpty(customerList)) {
+        contractBook.setCustomerIdList(Collections.singletonList("test"));
+      } else {
+        contractBook.setCustomerIdList(customerList.stream().map(Customer::getId).collect(Collectors.toList()));
+      }
+    }
+    Page<ContractBook> page = contractBookService.findPage(new Page<>(request, response), contractBook);
     model.addAttribute("page", page);
     return "modules/contract/contractBookList";
   }
@@ -90,7 +105,7 @@ public class ContractBookController extends BaseController {
     message.setContent("您的预约申请已被确认,请按约定日期联系管家看房!");
     message.setTitle("预约提醒");
     message.setType("预约提醒");
-    message.setReceiver(contractBook.getUserPhone());
+    message.setReceiver(contractBook.getBookPhone());
     messageService.addMessage(message, true);
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
@@ -108,7 +123,7 @@ public class ContractBookController extends BaseController {
     message.setContent("您的预约申请已被管家取消,请联系管家!");
     message.setTitle("预约提醒");
     message.setType("预约提醒");
-    message.setReceiver(contractBook.getUserPhone());
+    message.setReceiver(contractBook.getBookPhone());
     messageService.addMessage(message, true);
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }

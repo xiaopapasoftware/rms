@@ -231,7 +231,7 @@ public class AlipayController extends BaseController {
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"00" + room.getNewId() + "\"," +
+                "    \"room_code\": \"R" + room.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
                 "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
@@ -301,7 +301,7 @@ public class AlipayController extends BaseController {
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"00" + room.getNewId() + "\"," +
+                "    \"room_code\": \"R" + room.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
@@ -405,7 +405,7 @@ public class AlipayController extends BaseController {
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"0" + house.getNewId() + "\"," +
+                "    \"room_code\": \"H" + house.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
                 "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
@@ -461,7 +461,7 @@ public class AlipayController extends BaseController {
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"0" + house.getNewId() + "\"," +
+                "    \"room_code\": \"H" + house.getNewId() + "\"," +
                 "    \"floor_count\": " + house.getHouseFloor() + "," +
                 "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
                 "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
@@ -599,7 +599,7 @@ public class AlipayController extends BaseController {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
-                "    \"room_code\": \"0" + house.getNewId() + "\"," +
+                "    \"room_code\": \"H" + house.getNewId() + "\"," +
                 "    \"room_status\": " + type + "," +
                 "    \"rent_status\": " + rentStatus + "," +
                 "    \"flats_tag\": " + house.getType() +
@@ -656,7 +656,7 @@ public class AlipayController extends BaseController {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
-                "    \"room_code\": \"00" + room.getNewId() + "\"," +
+                "    \"room_code\": \"R" + room.getNewId() + "\"," +
                 "    \"room_status\": " + type + "," +
                 "    \"rent_status\": " + rentStatus + "," +
                 "    \"flats_tag\": " + house.getType() +

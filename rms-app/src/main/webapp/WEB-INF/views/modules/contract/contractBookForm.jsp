@@ -52,21 +52,9 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">user_name：</label>
+			<label class="control-label">book_phone：</label>
 			<div class="controls">
-				<form:input path="userName" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">user_phone：</label>
-			<div class="controls">
-				<form:input path="userPhone" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">user_gender：</label>
-			<div class="controls">
-				<form:input path="userGender" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:input path="bookPhone" htmlEscape="false" maxlength="64" class="input-xlarge "/>
 			</div>
 		</div>
 		<div class="control-group">

@@ -25,10 +25,10 @@
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<ul class="ul-form">
 			<li><label>预约姓名：</label>
-				<form:input path="userName" htmlEscape="false" maxlength="64" class="input-medium"/>
+				<form:input path="customer.trueName" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
 			<li><label>预约电话：</label>
-				<form:input path="userPhone" htmlEscape="false" maxlength="64" class="input-medium"/>
+				<form:input path="bookPhone" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
 			<li><label>预约时间：</label>
 				<input name="bookDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
@@ -59,8 +59,11 @@
 				<th>预约电话</th>
 				<th>预约时间</th>
 				<th>预约状态</th>
-				<th>房屋管家</th>
-				<th>备注信息</th>
+				<th>跟进销售</th>
+				<th>来源</th>
+				<th>房源编号</th>
+				<th>房源类型</th>
+				<th>公寓类型</th>
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -80,10 +83,10 @@
 					${contractBook.roomNo}
 				</td>
 				<td>
-					${contractBook.userName}
+					${contractBook.customer.trueName}
 				</td>
 				<td>
-					${contractBook.userPhone}
+					${contractBook.bookPhone}
 				</td>
 				<td>
 					<fmt:formatDate value="${contractBook.bookDate}" pattern="yyyy-MM-dd HH:mm"/>
@@ -95,7 +98,16 @@
 					${contractBook.salesName}
 				</td>
 				<td>
-					${contractBook.remarks}
+					${fns:getDictLabel(contractBook.source, 'book_source', '')}
+				</td>
+				<td>
+					${contractBook.housingCode}
+				</td>
+				<td>
+					${fns:getDictLabel(contractBook.housingType, 'housing_type', '')}
+				</td>
+				<td>
+					${fns:getDictLabel(contractBook.houseType, 'house_type', '')}
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">
