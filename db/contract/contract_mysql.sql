@@ -295,23 +295,23 @@ create table T_AUDIT_HIS
    primary key (ID)
 ) comment = '审核历史表';
 
-create table t_contract_book
-(
-	ID                   varchar(64) NOT NULL,
-	user_id              varchar(64),
-	house_id             varchar(64),
-	room_id              varchar(64),
-	user_name            varchar(64),
-	user_phone           varchar(64),
-	user_gender          varchar(64),
-	book_date            DATETIME,
-	book_status          varchar(64),
-	sales_id             varchar(64),
-	CREATE_BY            VARCHAR(64) COMMENT '创建者',
-  CREATE_DATE          DATETIME 	COMMENT '创建时间',
-  UPDATE_BY            VARCHAR(64) COMMENT '更新者',
-  UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
-  REMARKS              VARCHAR(255) COMMENT '备注信息',
-  DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
-	primary key (ID)
-) comment = '预约看房信息';
+CREATE TABLE `t_contract_book` (
+  `ID` varchar(64) COLLATE utf8_estonian_ci NOT NULL,
+  `customer_id` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '用户信息id',
+  `house_id` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL,
+  `room_id` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL,
+  `book_phone` varchar(64) COLLATE utf8_estonian_ci NOT NULL COMMENT '预约联系电话',
+  `book_date` datetime DEFAULT NULL,
+  `book_status` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL,
+  `sales_id` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL,
+  `CREATE_BY` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '创建者',
+  `CREATE_DATE` datetime DEFAULT NULL COMMENT '创建时间',
+  `UPDATE_BY` varchar(64) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '更新者',
+  `UPDATE_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `REMARKS` varchar(255) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '备注信息',
+  `DEL_FLAG` char(1) COLLATE utf8_estonian_ci NOT NULL DEFAULT '0' COMMENT '删除标记',
+  `source` char(1) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '预约来源',
+  `housing_code` bigint(20) unsigned DEFAULT NULL COMMENT '房源编号',
+  `housing_type` char(1) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '房源类型',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='预约看房信息'
