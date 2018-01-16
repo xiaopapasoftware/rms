@@ -112,7 +112,7 @@
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">
 				  <c:if test="${contractBook.bookStatus=='0'}">
-					<a href="${ctx}/contract/book/confirm?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('确认该预约信息吗？', this.href)">确认</a>
+					<a href="${ctx}/contract/book/confirm?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('确认该预约信息吗？', this.href)">工单分配</a>
 					<a href="${ctx}/contract/book/cancel?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('取消该预约信息吗？', this.href)">取消</a>
 				  </c:if>
 				</shiro:hasPermission>

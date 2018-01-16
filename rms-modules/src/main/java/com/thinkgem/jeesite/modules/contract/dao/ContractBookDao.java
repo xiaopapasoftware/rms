@@ -13,4 +13,7 @@ import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
  */
 @MyBatisDao
 public interface ContractBookDao extends CrudDao<ContractBook> {
+
+    void distribution(ContractBook contractBook);
+
 }

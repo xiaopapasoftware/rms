@@ -4,12 +4,14 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.Message;
-import com.thinkgem.jeesite.modules.app.service.MessageService;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
+import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
@@ -40,10 +42,10 @@ public class ContractBookController extends BaseController {
   private ContractBookService contractBookService;
 
   @Autowired
-  private MessageService messageService;// APP消息推送
+  private CustomerService customerService;
 
   @Autowired
-  private CustomerService customerService;
+  private SmsService smsService;
 
   @ModelAttribute
   public ContractBook get(@RequestParam(required = false) String id) {
@@ -73,41 +75,21 @@ public class ContractBookController extends BaseController {
     return "modules/contract/contractBookList";
   }
 
-  @RequiresPermissions("contract:contractBook:view")
-  @RequestMapping(value = "form")
-  public String form(ContractBook contractBook, Model model) {
-    model.addAttribute("contractBook", contractBook);
-    return "modules/contract/contractBookForm";
-  }
-
   @RequiresPermissions("contract:contractBook:edit")
-  @RequestMapping(value = "save")
-  public String save(ContractBook contractBook, Model model, RedirectAttributes redirectAttributes) {
-    if (!beanValidator(model, contractBook)) {
-      return form(contractBook, model);
-    }
-    contractBook.setSalesId(UserUtils.getUser().getId());
-    contractBookService.save(contractBook);
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存预约看房信息成功");
+  @RequestMapping(value = "distribution")
+  public String distribution(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+    contractBookService.distribution(contractBook);
+    sendDistributionSms(contractBook);
+    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "预约成功");
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 
-  @RequiresPermissions("contract:contractBook:edit")
-  @RequestMapping(value = "confirm")
-  public String confirm(ContractBook contractBook, RedirectAttributes redirectAttributes) {
-    contractBook.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-    contractBook = contractBookService.get(contractBook);
-    contractBook.setBookStatus("1");// 预约成功
-    contractBook.setSalesId(UserUtils.getUser().getId());
-    contractBookService.save(contractBook);
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "确认预约信息成功");
-    Message message = new Message();
-    message.setContent("您的预约申请已被确认,请按约定日期联系管家看房!");
-    message.setTitle("预约提醒");
-    message.setType("预约提醒");
-    message.setReceiver(contractBook.getBookPhone());
-    messageService.addMessage(message, true);
-    return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
+  private void sendDistributionSms(ContractBook contractBook) {
+    User user = UserUtils.get(contractBook.getSalesId());
+    String saleName = user.getName();
+    ContractBook record = contractBookService.get(contractBook.getId());
+    String content = saleName + "你好，姓名：" + record.getCustomer().getTrueName() + "，手机号为：" + record.getBookPhone() + "的客户预约在" + DateUtils.formatDate(record.getBookDate()) + "日期看" + record.getProjectName()  + "小区" + record.getBuildingName()  + "楼" + record.getHouseCode()  + "号" + record.getRoomNo()  + "室房源，请提前联系用户做好带看准备。";
+    smsService.sendSms(user.getPhone(), content);
   }
 
   @RequiresPermissions("contract:contractBook:edit")
@@ -121,10 +103,6 @@ public class ContractBookController extends BaseController {
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "取消预约信息成功");
     Message message = new Message();
     message.setContent("您的预约申请已被管家取消,请联系管家!");
-    message.setTitle("预约提醒");
-    message.setType("预约提醒");
-    message.setReceiver(contractBook.getBookPhone());
-    messageService.addMessage(message, true);
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 }

@@ -46,6 +46,12 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
     return contractBook;
   }
 
+  @Transactional(readOnly = false)
+  public void distribution(ContractBook contractBook) {
+    contractBook.preUpdate();
+    dao.distribution(contractBook);
+  }
+
   public List<ContractBook> findList(ContractBook contractBook) {
     List<ContractBook> listResult = super.findList(contractBook);
     listResult.forEach(this::completeInfo);

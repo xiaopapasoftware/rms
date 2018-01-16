@@ -3,6 +3,8 @@ package com.thinkgem.jeesite.modules.app.web;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.internal.util.AlipayEncrypt;
+import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.thinkgem.jeesite.common.config.Global;
@@ -11,6 +13,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
 import com.thinkgem.jeesite.modules.app.enums.HouseTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
@@ -32,17 +35,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.Base64.Encoder;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 支付宝Controller
@@ -71,6 +73,7 @@ public class AlipayController extends BaseController {
     @Autowired
     private BuildingService buildingService;
 
+    private String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
     private String TP_PRIVATEKEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKK0PXoLKnBkgtOl0kvyc9X2tUUdh/lRZr9RE1frjr2ZtAulZ+Moz9VJZFew1UZIzeK0478obY/DjHmD3GMfqJoTguVqJ2MEg+mJ8hJKWelvKLgfFBNliAw+/9O6Jah9Q3mRzCD8pABDEHY7BM54W7aLcuGpIIOa/qShO8dbXn+FAgMBAAECgYA8+nQ380taiDEIBZPFZv7G6AmT97doV3u8pDQttVjv8lUqMDm5RyhtdW4n91xXVR3ko4rfr9UwFkflmufUNp9HU9bHIVQS+HWLsPv9GypdTSNNp+nDn4JExUtAakJxZmGhCu/WjHIUzCoBCn6viernVC2L37NL1N4zrR73lSCk2QJBAPb/UOmtSx+PnA/mimqnFMMP3SX6cQmnynz9+63JlLjXD8rowRD2Z03U41Qfy+RED3yANZXCrE1V6vghYVmASYsCQQCoomZpeNxAKuUJZp+VaWi4WQeMW1KCK3aljaKLMZ57yb5Bsu+P3odyBk1AvYIPvdajAJiiikRdIDmi58dqfN0vAkEAjFX8LwjbCg+aaB5gvsA3t6ynxhBJcWb4UZQtD0zdRzhKLMuaBn05rKssjnuSaRuSgPaHe5OkOjx6yIiOuz98iQJAXIDpSMYhm5lsFiITPDScWzOLLnUR55HL/biaB1zqoODj2so7G2JoTiYiznamF9h9GuFC2TablbINq80U2NcxxQJBAMhw06Ha/U7qTjtAmr2qAuWSWvHU4ANu2h0RxYlKTpmWgO0f47jCOQhdC3T/RK7f38c7q8uPyi35eZ7S1e/PznY=";
     private String TP_OPENAPI_URL = "http://oepnapi.eco.dl.alipaydev.com/gateway.do";
     private String TP_APPID = "2015122300879608";//测试环境
@@ -634,7 +637,7 @@ public class AlipayController extends BaseController {
     }
 
     /**
-     * 房间上架
+     * 房间下架
      */
     @RequestMapping(value = "downRoom/{roomId}")
     public String downRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
@@ -675,6 +678,47 @@ public class AlipayController extends BaseController {
             logger.error("up down room error {}", roomId, e);
             return false;
         }
+    }
+
+    /**
+     * 房间下架
+     */
+    @RequestMapping(value = "reservation", method = RequestMethod.POST)
+    @ResponseBody
+    public String reservation(HttpServletRequest request) {
+        if (!checkSign(request)) {
+            return "fail";
+        }
+        String bookPhone = request.getParameter("bookPhone");
+        try {
+            bookPhone =  AlipayEncrypt.decryptContent(bookPhone, "AES", SPI_PRIVATE_KEY, "UTF-8");
+        } catch (AlipayApiException e) {
+            logger.error("AlipayEncrypt.decryptContent error {}", bookPhone, e);
+            return "fail";
+        }
+        return "success";
+    }
+
+    private boolean checkSign(HttpServletRequest request) {
+        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String[]> requestParams = request.getParameterMap();
+        for (String name : requestParams.keySet()) {
+            String[] values = requestParams.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i] : valueStr + values[i] + ",";
+            }
+            // 乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+            // valueStr = new String(valueStr.getBytes("ISO-8859-1"), "gbk");
+            params.put(name, valueStr);
+        }
+        boolean signVerified = false;
+        try {
+            signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.ali_public_key, "UTF-8");
+        } catch (AlipayApiException e) {
+            logger.error("signVerified error ", e);
+        }
+        return signVerified;
     }
 
 }

@@ -142,4 +142,14 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE house_id = #{houseId} or room_id = #{roomId}
 	</update>
+
+	<update id="distribution">
+		UPDATE t_contract_book SET
+		book_status = #{bookStatus},
+		sales_id = #{salesId},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
 </mapper>
