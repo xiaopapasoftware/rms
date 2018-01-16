@@ -23,12 +23,7 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTradeService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.ReceiptService;
 import com.thinkgem.jeesite.modules.funds.service.TradingAccountsService;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
-import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Company;
 import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
@@ -73,8 +68,6 @@ public class RentContractController extends CommonBusinessController {
     private TradingAccountsService tradingAccountsService;
     @Autowired
     private PaymentTradeService paymentTradeService;
-    @Autowired
-    private RoomService roomService;
     @Autowired
     private ElectricFeeService electricFeeService;
     @Autowired
