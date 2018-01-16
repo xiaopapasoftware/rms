@@ -22,7 +22,6 @@ public class Customer extends DataEntity<Customer> {
 	private String gender;		// 性别
 	private String cellPhone;		// 手机号
 	private String isTenant;		// 是否转租客
-
 	private String loginName;
 	private String loginPwd;
 	private String nickName;

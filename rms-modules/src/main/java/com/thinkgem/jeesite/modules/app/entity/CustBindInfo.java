@@ -1,10 +1,10 @@
 /**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
+ * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
  */
 package com.thinkgem.jeesite.modules.app.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
 
 /**
  * APP用户Entity
@@ -15,6 +15,7 @@ import com.thinkgem.jeesite.common.persistence.DataEntity;
 public class CustBindInfo extends DataEntity<CustBindInfo> {
 
   private static final long serialVersionUID = 1L;
+  private Customer customer;
   private String accountType;
   private String account;
   private String password;
@@ -26,6 +27,14 @@ public class CustBindInfo extends DataEntity<CustBindInfo> {
 
   public CustBindInfo(String id) {
     super(id);
+  }
+
+  public Customer getCustomer() {
+    return customer;
+  }
+
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
   }
 
   public String getAccountType() {

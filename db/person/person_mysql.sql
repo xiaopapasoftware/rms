@@ -9,7 +9,7 @@ drop table if exists T_PARTNER;
 drop table if exists T_COMPANY;
 drop table if exists T_COMPANY_LINKMAN;
 drop table if exists `t_lessor`;
-
+drop table if exists `t_cust_bind_info`;
 
 /* Create Tables */
 create table T_NEIGHBORHOOD_CONTACT 
@@ -46,10 +46,10 @@ create table T_COMPANY_CONTACT
 
 create table T_CUSTOMER
 (
-   ID                   varchar(64) NOT NULL,
-   USER_ID      		varchar(64) comment '销售',
-   CONTACT_NAME         VARCHAR(100) comment '姓名',
-   GENDER				VARCHAR(2) COMMENT '性别',
+   ID                   	varchar(64) NOT NULL,
+   SALE_USER_ID      		varchar(64) comment '销售id',
+   TRUE_NAME         		VARCHAR(100) comment '姓名',
+   GENDER				VARCHAR(2) COMMENT '性别 1:男 2:女',
    CELL_PHONE           VARCHAR(100) comment '手机号',
    IS_TENANT            VARCHAR(2) comment '是否转租客',
    CREATE_BY            VARCHAR(64) COMMENT '创建者',
@@ -58,6 +58,17 @@ create table T_CUSTOMER
    UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
    REMARKS              VARCHAR(255) COMMENT '备注信息',
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   login_name   		VARCHAR(32),  
+	login_pwd   		VARCHAR(32),
+	nick_name   		VARCHAR(32),
+	ID_NO   			VARCHAR(32),
+	BIRTH   			VARCHAR(16),
+	AGE   				VARCHAR(8),
+	PROFESSION   		VARCHAR(64),
+	CORP   				VARCHAR(128),
+	Education   		VARCHAR(32),
+	source   			VARCHAR(64) COMMENT '支付宝租赁平台:1',
+	cust_Bind_Info_Id   VARCHAR(64) COMMENT  '三方绑定账号id',
    primary key (ID)
 ) comment = '客户信息';
 
@@ -183,3 +194,20 @@ create table T_COMPANY_LINKMAN
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    primary key (ID)
 ) comment = '企业联系人';
+
+create table t_cust_bind_info
+(
+   ID                   varchar(64) NOT NULL,
+   cutomer_ID           VARCHAR(32)  ,
+   account_Type         VARCHAR(2) comment '科技侠账号1,支付宝账号2,芝麻信用账号3...',
+   account              VARCHAR(32)  ,
+   password             VARCHAR(64)  ,
+   valid                VARCHAR(2) comment '1-有效，0-无效',
+   CREATE_BY            VARCHAR(64) COMMENT '创建者',
+   CREATE_DATE          DATETIME COMMENT '创建时间',
+   UPDATE_BY            VARCHAR(64) COMMENT '更新者',
+   UPDATE_DATE          TIMESTAMP COMMENT '更新时间',
+   REMARKS              VARCHAR(255) COMMENT '备注信息',
+   DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
+   primary key (ID)
+) comment = '三方绑定用户信息表';
