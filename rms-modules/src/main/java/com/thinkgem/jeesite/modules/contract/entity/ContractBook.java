@@ -34,7 +34,7 @@ public class ContractBook extends DataEntity<ContractBook> {
 
   private String projectName;
   private String buildingName;
-  private String houseCode;
+  private String houseNo;
   private String roomNo;
   private String serviceUserName;
   private String salesName;
@@ -114,12 +114,12 @@ public class ContractBook extends DataEntity<ContractBook> {
     this.buildingName = buildingName;
   }
 
-  public String getHouseCode() {
-    return houseCode;
+  public String getHouseNo() {
+    return houseNo;
   }
 
-  public void setHouseCode(String houseCode) {
-    this.houseCode = houseCode;
+  public void setHouseNo(String houseNo) {
+    this.houseNo = houseNo;
   }
 
   public String getRoomNo() {

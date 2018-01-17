@@ -77,7 +77,7 @@
 					${contractBook.buildingName}
 				</td>
 				<td>
-					${contractBook.houseCode}
+					${contractBook.houseNo}
 				</td>
 				<td>
 					${contractBook.roomNo}

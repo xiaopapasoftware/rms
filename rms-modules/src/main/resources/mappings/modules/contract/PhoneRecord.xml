@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.contract.dao.PhoneRecordDao">
+
+	<sql id="phoneRecordColumns">
+		a.ID AS "id",
+		a.project_id AS "projectId",
+		a.building_id AS "buildingId",
+		a.house_id AS "houseId",
+		a.room_id AS "roomId",
+		a.flats_tag AS "flatsTag",
+		a.ali_user_id AS "aliUserId",
+		a.zhima_open_id AS "zhimaOpenId",
+		a.room_code AS "roomCode",
+		a.record_time AS "recordTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+
+
+	<select id="get" resultType="PhoneRecord">
+		SELECT
+		<include refid="phoneRecordColumns" />
+		FROM t_phone_record a
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="PhoneRecord">
+		SELECT
+		<include refid="phoneRecordColumns" />
+		FROM t_phone_record a
+		<where>
+			a.del_flag = '0'
+			<if
+				test="projectId != null and projectId != ''">
+				AND a.project_id = #{projectId}
+			</if>
+			<if test="buildingId != null and buildingId != ''">
+				AND a.building_id = #{buildingId}
+			</if>
+			<if test="houseId != null and houseId != ''">
+				AND a.house_id = #{houseId}
+			</if>
+			<if test="roomId != null and roomId != ''">
+				AND a.room_id = #{roomId}
+			</if>
+			<if test="flatsTag != null and flatsTag != ''">
+				AND a.flats_tag = #{flatsTag}
+			</if>
+			<if test="aliUserId != null and aliUserId != ''">
+				AND a.ali_user_id = #{aliUserId}
+			</if>
+			<if test="roomCode != null and roomCode != ''">
+				AND a.room_code = #{roomCode}
+			</if>
+			<if test="recordTime != null and recordTime != ''">
+				AND date_format(a.record_time,'%Y-%m-%d') = date_format(#{recordTime},'%Y-%m-%d')
+			</if>
+		</where>
+
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<insert id="insert">
+		INSERT INTO t_phone_record(
+		ID,
+		project_id,
+		building_id,
+		house_id,
+		room_id,
+		flats_tag,
+		ali_user_id,
+		zhima_open_id,
+		room_code,
+		record_time,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		remarks,
+		del_flag
+		) VALUES (
+		#{id},
+		#{projectId},
+		#{buildingId},
+		#{houseId},
+		#{roomId},
+		#{flatsTag},
+		#{aliUserId},
+		#{zhimaOpenId},
+		#{roomCode},
+		#{recordTime},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{remarks},
+		#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE t_phone_record SET
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE t_phone_record SET
+		del_flag = '1'
+		WHERE id = #{id}
+	</update>
+
+</mapper>

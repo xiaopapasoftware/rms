@@ -60,9 +60,7 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
 
   public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
     Page<ContractBook> pageResult = super.findPage(page, contractBook);
-    List<ContractBook> listContractBook = pageResult.getList();
-    listContractBook.forEach(this::completeInfo);
-    pageResult.setList(listContractBook);
+    pageResult.getList().forEach(this::completeInfo);
     return pageResult;
   }
 
@@ -73,7 +71,7 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
     House house = houseDao.get(contractBook.getHouseId());
     contractBook.setProjectName(house.getPropertyProject().getProjectName());
     contractBook.setBuildingName(house.getBuilding().getBuildingName());
-    contractBook.setHouseCode(house.getHouseCode());
+    contractBook.setHouseNo(house.getHouseNo());
     contractBook.setHouseType(house.getType());
     contractBook.setServiceUserName(house.getServcieUserName());
     if (StringUtils.isNotBlank(contractBook.getRoomId())) {
