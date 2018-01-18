@@ -3,15 +3,14 @@
  */
 package com.thinkgem.jeesite.modules.person.service;
 
-import java.util.List;
-
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.modules.person.dao.CustomerDao;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.person.entity.Customer;
-import com.thinkgem.jeesite.modules.person.dao.CustomerDao;
+import java.util.List;
 
 /**
  * 客户信息Service
@@ -46,8 +45,8 @@ public class CustomerService extends CrudService<CustomerDao, Customer> {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Customer> findCustomerByTelNo(Customer customer) {
-		return dao.findCustomerByTelNo(customer);
+	public List<Customer> findCustomerByTelNo(String cellPhone) {
+		return dao.findCustomerByTelNo(cellPhone);
 	}
 
 	/**

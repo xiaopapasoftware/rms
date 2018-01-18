@@ -27,8 +27,7 @@
 		a.PROFESSION AS "profession",
 		a.CORP AS "corp",
 		a.education AS "education",
-		a.source AS "source",
-		a.cust_bind_info_id AS "custBindInfoId"
+		a.source AS "source"
 	</sql>
 	
 	<sql id="customerJoins">
@@ -119,10 +118,8 @@
 				a.del_flag AS "delFlag"
 		FROM t_customer a
 		WHERE
-			 a.del_flag = #{DEL_FLAG_NORMAL}
-			 <if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone = #{cellPhone}
-			</if>
+			 a.del_flag = '0'
+			 AND a.cell_phone = #{cellPhone}
 	</select>
 	
 	<insert id="insert">
@@ -148,8 +145,7 @@
 			PROFESSION,
 			CORP,
 			education,
-			source,
-			cust_bind_info_id
+			source
 		) VALUES (
 			#{id},
 			#{user.id},
@@ -172,8 +168,7 @@
 			#{profession},
 			#{corp},
 			#{education},
-			#{source},
-			#{custBindInfoId}
+			#{source}
 		)
 	</insert>
 	

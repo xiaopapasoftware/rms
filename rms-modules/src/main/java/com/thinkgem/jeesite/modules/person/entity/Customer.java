@@ -32,7 +32,6 @@ public class Customer extends DataEntity<Customer> {
 	private String corp;
 	private String education;
 	private String source;
-	private String custBindInfoId;
 
 	public Customer() {
 		super();
@@ -167,11 +166,4 @@ public class Customer extends DataEntity<Customer> {
 		this.source = source;
 	}
 
-	public String getCustBindInfoId() {
-		return custBindInfoId;
-	}
-
-	public void setCustBindInfoId(String custBindInfoId) {
-		this.custBindInfoId = custBindInfoId;
-	}
 }

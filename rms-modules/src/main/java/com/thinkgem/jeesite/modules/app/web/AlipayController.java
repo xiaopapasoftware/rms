@@ -16,6 +16,9 @@ import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
 import com.thinkgem.jeesite.modules.app.enums.HouseTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
+import com.thinkgem.jeesite.modules.app.util.JsonUtil;
+import com.thinkgem.jeesite.modules.contract.entity.PhoneRecord;
+import com.thinkgem.jeesite.modules.contract.service.PhoneRecordService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -26,7 +29,9 @@ import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
+import com.thinkgem.jeesite.modules.person.entity.Customer;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
+import com.thinkgem.jeesite.modules.person.service.CustomerService;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -72,6 +77,12 @@ public class AlipayController extends BaseController {
 
     @Autowired
     private BuildingService buildingService;
+
+    @Autowired
+    private PhoneRecordService phoneRecordService;
+
+    @Autowired
+    private CustomerService customerService;
 
     private String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
     private String TP_PRIVATEKEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKK0PXoLKnBkgtOl0kvyc9X2tUUdh/lRZr9RE1frjr2ZtAulZ+Moz9VJZFew1UZIzeK0478obY/DjHmD3GMfqJoTguVqJ2MEg+mJ8hJKWelvKLgfFBNliAw+/9O6Jah9Q3mRzCD8pABDEHY7BM54W7aLcuGpIIOa/qShO8dbXn+FAgMBAAECgYA8+nQ380taiDEIBZPFZv7G6AmT97doV3u8pDQttVjv8lUqMDm5RyhtdW4n91xXVR3ko4rfr9UwFkflmufUNp9HU9bHIVQS+HWLsPv9GypdTSNNp+nDn4JExUtAakJxZmGhCu/WjHIUzCoBCn6viernVC2L37NL1N4zrR73lSCk2QJBAPb/UOmtSx+PnA/mimqnFMMP3SX6cQmnynz9+63JlLjXD8rowRD2Z03U41Qfy+RED3yANZXCrE1V6vghYVmASYsCQQCoomZpeNxAKuUJZp+VaWi4WQeMW1KCK3aljaKLMZ57yb5Bsu+P3odyBk1AvYIPvdajAJiiikRdIDmi58dqfN0vAkEAjFX8LwjbCg+aaB5gvsA3t6ynxhBJcWb4UZQtD0zdRzhKLMuaBn05rKssjnuSaRuSgPaHe5OkOjx6yIiOuz98iQJAXIDpSMYhm5lsFiITPDScWzOLLnUR55HL/biaB1zqoODj2so7G2JoTiYiznamF9h9GuFC2TablbINq80U2NcxxQJBAMhw06Ha/U7qTjtAmr2qAuWSWvHU4ANu2h0RxYlKTpmWgO0f47jCOQhdC3T/RK7f38c7q8uPyi35eZ7S1e/PznY=";
@@ -129,7 +140,7 @@ public class AlipayController extends BaseController {
         } else if ("2".equals(type)) {
             url = loader.getProperty("alipay.url.affirm");
         } else if ("3".equals(type)) {
-            url = loader.getProperty("alipay.url.call");
+            url = loader.getProperty("alipay.url.phoneRecord");
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
         AlipayEcoRenthouseKaServiceCreateRequest request = new AlipayEcoRenthouseKaServiceCreateRequest();
@@ -681,22 +692,84 @@ public class AlipayController extends BaseController {
     }
 
     /**
-     * 房间下架
+     * 预约看房
      */
     @RequestMapping(value = "reservation", method = RequestMethod.POST)
     @ResponseBody
     public String reservation(HttpServletRequest request) {
         if (!checkSign(request)) {
-            return "fail";
+            logger.error("check sign error", JsonUtil.object2Json(request.getParameterMap()));
+            return "{\"code\":0}";
         }
         String bookPhone = request.getParameter("bookPhone");
         try {
             bookPhone =  AlipayEncrypt.decryptContent(bookPhone, "AES", SPI_PRIVATE_KEY, "UTF-8");
         } catch (AlipayApiException e) {
             logger.error("AlipayEncrypt.decryptContent error {}", bookPhone, e);
-            return "fail";
+            return "{\"code\":0}";
         }
-        return "success";
+        String bookName = request.getParameter("bookName");
+        String bookSex = request.getParameter("bookSex");
+        List<Customer> customerList = customerService.findCustomerByTelNo(bookPhone);
+        if (CollectionUtils.isEmpty(customerList)) {
+            customerList.forEach(customer -> {
+                customer.setTrueName(bookName);
+                customer.setGender(bookSex);
+                customerService.save(customer);
+            });
+        } else {
+            Customer customer = new Customer();
+            customer.setGender(bookSex);
+            customer.setTrueName(bookName);
+            customer.setCellPhone(bookPhone);
+            customerService.save(customer);
+        }
+        return "{\"code\":1}";
+    }
+
+    /**
+     * 拨号记录
+     */
+    @RequestMapping(value = "phoneRecord", method = RequestMethod.POST)
+    @ResponseBody
+    public String phoneRecord(HttpServletRequest request) {
+        if (!checkSign(request)) {
+            logger.error("check sign error", JsonUtil.object2Json(request.getParameterMap()));
+            return "{\"code\":0}";
+        }
+        PhoneRecord phoneRecord = buildPhoneRecord(request);
+        phoneRecordService.save(phoneRecord);
+        return "{\"code\":1}";
+    }
+
+    private PhoneRecord buildPhoneRecord(HttpServletRequest request) {
+        PhoneRecord phoneRecord = new PhoneRecord();
+        phoneRecord.setAliUserId(request.getParameter("aliUserId"));
+        phoneRecord.setZhimaOpenId(request.getParameter("zhimaOpenId"));
+        phoneRecord.setRoomCode(request.getParameter("roomCode"));
+        phoneRecord.setFlatsTag(Integer.valueOf(request.getParameter("flatsTag")));
+        phoneRecord.setRecordTime(DateUtils.parseDate(request.getParameter("recordTime")));
+        if (phoneRecord.getRoomCode().startsWith("R")) {
+            Room room = (Room) buildRoomByRoomCode(phoneRecord.getRoomCode());
+            phoneRecord.setProjectId(room.getPropertyProject().getId());
+            phoneRecord.setBuildingId(room.getBuilding().getId());
+            phoneRecord.setHouseId(room.getHouse().getId());
+            phoneRecord.setRoomId(room.getId());
+        } else {
+            House house = (House) buildRoomByRoomCode(phoneRecord.getRoomCode());
+            phoneRecord.setProjectId(house.getPropertyProject().getId());
+            phoneRecord.setBuildingId(house.getBuilding().getId());
+            phoneRecord.setHouseId(house.getId());
+        }
+        return phoneRecord;
+    }
+
+    private Object buildRoomByRoomCode(String roomCode) {
+        if (roomCode.startsWith("R")) {
+            return roomService.getByNewId(roomCode.substring(1));
+        } else {
+            return houseService.getByNewId(roomCode.substring(1));
+        }
     }
 
     private boolean checkSign(HttpServletRequest request) {

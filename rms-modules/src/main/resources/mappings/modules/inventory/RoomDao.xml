@@ -334,4 +334,26 @@
 		METER_NO AS meterNo
 		from t_room where METER_NO != '' and DEL_FLAG = '0' and id not in (select ROOM_id from t_fee_report)
 	</select>
+
+	<select id="getByNewId" resultType="Room" parameterType="java.lang.String">
+		select
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		a.building_id AS "building.id",
+		a.house_id AS "house.id",
+		a.room_no AS "roomNo",
+		a.room_status AS "roomStatus",
+		a.del_flag AS "delFlag",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as "shortLocation",
+		a.new_id as "newId",
+		a.room_config AS "roomConfig",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up
+		from t_room where del_flag = '0' and new_id = #{newId}
+	</select>
 </mapper>

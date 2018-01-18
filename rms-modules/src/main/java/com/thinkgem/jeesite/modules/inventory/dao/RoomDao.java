@@ -53,4 +53,9 @@ public interface RoomDao extends CrudDao<Room> {
   String queryMeterNoByRoomId(String roomId);
 
   List<Room> getValidFeeRoomList();
+
+  /**
+   * 根据new_id查找room
+   */
+  Room getByNewId(@Param("newId") String newId);
 }

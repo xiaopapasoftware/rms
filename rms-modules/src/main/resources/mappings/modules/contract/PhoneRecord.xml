@@ -52,7 +52,7 @@
 				AND a.flats_tag = #{flatsTag}
 			</if>
 			<if test="aliUserId != null and aliUserId != ''">
-				AND a.ali_user_id = #{aliUserId}
+				AND a.ali_user_id LIKE concat('%',#{aliUserId},'%')
 			</if>
 			<if test="roomCode != null and roomCode != ''">
 				AND a.room_code = #{roomCode}

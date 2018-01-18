@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,7 +83,10 @@ public class CustomerController extends BaseController {
     if (!beanValidator(model, customer)) {
       return form(customer, model);
     }
-    List<Customer> customers = customerService.findCustomerByTelNo(customer);
+    List<Customer> customers = new ArrayList<>();
+    if (StringUtils.isNotBlank(customer.getCellPhone())) {
+      customers = customerService.findCustomerByTelNo(customer.getCellPhone());
+    }
     if (!customer.getIsNewRecord()) {// 是更新
       if (CollectionUtils.isNotEmpty(customers)) {
         customer.setId(customers.get(0).getId());

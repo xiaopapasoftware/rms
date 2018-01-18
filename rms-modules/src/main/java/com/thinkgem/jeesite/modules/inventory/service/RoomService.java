@@ -225,4 +225,8 @@ public class RoomService extends CrudService<RoomDao, Room> {
   public List<Room> getValidFeeRoomList() {
     return dao.getValidFeeRoomList();
   }
+
+  public Room getByNewId(String newId) {
+    return dao.getByNewId(newId);
+  }
 }

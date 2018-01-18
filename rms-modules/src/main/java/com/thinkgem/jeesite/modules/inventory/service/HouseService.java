@@ -422,4 +422,8 @@ public class HouseService extends CrudService<HouseDao, House> {
     dao.updateHouseAlipayStatus(house);
   }
 
+  public House getByNewId(String newId) {
+    return dao.getByNewId(newId);
+  }
+
 }

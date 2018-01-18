@@ -609,4 +609,8 @@
 		WHERE   id = #{id}
 	</update>
 
+	<select id="getByNewId" resultType="House" parameterType="java.lang.String">
+		select * from t_house where del_flag = '0' and new_id = #{newId}
+	</select>
+
 </mapper>

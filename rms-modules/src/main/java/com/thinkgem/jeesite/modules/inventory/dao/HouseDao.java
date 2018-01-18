@@ -68,4 +68,6 @@ public interface HouseDao extends CrudDao<House> {
 
   void updateHouseAlipayStatus(House house);
 
+  House getByNewId(@Param("newId") String newId);
+
 }
