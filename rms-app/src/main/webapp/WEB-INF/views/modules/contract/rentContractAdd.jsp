@@ -650,7 +650,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">减免房租月数：</label>
+			<label class="control-label">优惠促销房租月数：</label>
 			<div class="controls">
 				<form:input type = "number" placeholder="请填写正整数" id = "freeMonths"  path="freeMonths" htmlEscape="false" maxlength="2" class="input-xlarge  digits"  disabled="true" />
 			</div>

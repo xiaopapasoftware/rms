@@ -68,7 +68,8 @@
 		at4.attachment_path as "rentContractOtherFile",
 		a.data_source as "dataSource",
 		a.has_free as "hasFree",
-		a.free_months as "freeMonths"
+		a.free_months as "freeMonths",
+		a.derate_Rent_Flag as "derateRentFlag"
 	</sql>
 
 	<sql id="rentContractJoins">
@@ -353,7 +354,8 @@
 		return_remark,
 		data_source,
 		has_free,
-		free_months
+		free_months,
+		derate_Rent_Flag
 		) VALUES (
 		#{id},
 		#{agreementId},
@@ -406,7 +408,8 @@
 		#{returnRemark},
 		#{dataSource},
 		#{hasFree},
-		#{freeMonths}
+		#{freeMonths},
+		#{derateRentFlag}
 		)
 	</insert>
 
@@ -462,7 +465,8 @@
 		#{chargeType},
 		return_remark=#{returnRemark},
 		has_free=#{hasFree},
-		free_months=#{freeMonths}
+		free_months=#{freeMonths},
+		derate_Rent_Flag=#{derateRentFlag}
 		WHERE id = #{id}
 	</update>
 
@@ -538,7 +542,8 @@
 		a.charge_type as "chargeType",
 		a.data_source as "dataSource",
 		a.has_free as "hasFree",
-		a.free_months as "freeMonths"
+		a.free_months as "freeMonths",
+		a.derate_Rent_Flag as "derateRentFlag"
 		FROM t_rent_contract a
 		WHERE a.DEL_FLAG = '0'
 		AND a.CONTRACT_STATUS = '6'

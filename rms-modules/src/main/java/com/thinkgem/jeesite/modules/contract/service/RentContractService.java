@@ -475,7 +475,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             int monthCountDiff = DateUtils.getMonthSpace(startDate, expireDate);// 合同日期间隔月数
             if (monthCountDiff > 0) {
                 Double rentalAmt = rentContract.getRental();
-                if (rentalAmt != null && rentalAmt > 0 && "N".equals(rentContract.getDerateRentFlag())) { // 不减免房租生成房租款项
+                if (rentalAmt != null && rentalAmt > 0 && !AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getDerateRentFlag())) { // 不免房租
                     genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);
                 }
                 genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项

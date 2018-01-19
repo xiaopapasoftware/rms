@@ -301,10 +301,6 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     return paymentTransDao.queryNoSignPaymentsByTransId(transId);
   }
 
-  // public List<PaymentTrans> queryCostPaymentByTransIdAndTime(Date startDate, Date endDate, List<String> transIdList) {
-  // return paymentTransDao.queryCostPaymentByTransIdAndTime(startDate, endDate, transIdList);
-  // }
-
   /**
    * 获取合同下所有房租款项里已经到账的款项中，最大的结束日期
    */

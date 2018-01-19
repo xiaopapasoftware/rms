@@ -48,7 +48,7 @@ CREATE TABLE `t_lease_contract_owner` (
   `REMARKS` varchar(255)  DEFAULT NULL COMMENT '备注信息',
   `DEL_FLAG` char(1)  NOT NULL DEFAULT '0' COMMENT '删除标记',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8  COMMENT='出租合同业主关联表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8  COMMENT='出租合同业主关联表';
 
 create table T_LEASE_CONTRACT_DTL
 (
@@ -173,7 +173,8 @@ create table T_RENT_CONTRACT
    REMARKS              VARCHAR(255) COMMENT '备注信息',
    DEL_FLAG             CHAR(1) DEFAULT '0' NOT NULL COMMENT '删除标记',
    HAS_FREE             CHAR(1) DEFAULT '0' COMMENT '是否返租促销',
-   FREE_MONTHS          int(11) default 0 COMMENT '减免房租月数',
+   FREE_MONTHS          int(11) default 0 COMMENT '优惠促销房租月数',
+   derate_Rent_Flag     CHAR(1) DEFAULT '0' COMMENT '是否房租全免'
    primary key (ID)
 ) comment = '出租合同';
 CREATE INDEX  USER_ID_IDX  ON T_RENT_CONTRACT (USER_ID ASC);
