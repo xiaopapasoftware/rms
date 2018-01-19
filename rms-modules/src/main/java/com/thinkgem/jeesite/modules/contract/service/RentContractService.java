@@ -477,12 +477,12 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 Double rentalAmt = rentContract.getRental();
                 if (rentalAmt != null && rentalAmt > 0 && !AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getDerateRentFlag())) { // 不免房租
                     genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);
+                    // 若有返租促销
+                    if (rentContract.getHasFree() != null && AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getHasFree())) {
+                        genFreePayTrans(id, rentContract.getFreeMonths());
+                    }
                 }
                 genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
-            }
-            // 若有返租促销，则更改合同最新无优惠的赠送月数金额到账
-            if (rentContract.getHasFree() != null && AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getHasFree())) {
-                genFreePayTrans(id, rentContract.getFreeMonths());
             }
             // 定金协议转合同，更新原定金协议状态
             if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
@@ -646,21 +646,17 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         if (transList.size() >= freeMonths) {
             transList.stream().limit(freeMonths).forEach(trans -> {
                 paymentTransService.freePaymentById(trans.getId());
-                saveFreePaymentTrans(trans);
+                PaymentTrans freeTrans = new PaymentTrans();
+                BeanUtils.copyProperties(trans, freeTrans);
+                freeTrans.setPaymentType(PaymentTransTypeEnum.AWARD_RENT_AMT.getValue());
+                freeTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
+                freeTrans.setTransAmount(trans.getTradeAmount());
+                freeTrans.setLastAmount(0d);
+                freeTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+                freeTrans.setId(null);
+                paymentTransService.save(freeTrans);
             });
         }
-    }
-
-    private void saveFreePaymentTrans(PaymentTrans trans) {
-        PaymentTrans freeTrans = new PaymentTrans();
-        BeanUtils.copyProperties(trans, freeTrans);
-        freeTrans.setPaymentType(PaymentTransTypeEnum.AWARD_RENT_AMT.getValue());
-        freeTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
-        freeTrans.setTransAmount(trans.getTradeAmount());
-        freeTrans.setLastAmount(0d);
-        freeTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-        freeTrans.setId(null);
-        paymentTransService.save(freeTrans);
     }
 
     @Transactional(readOnly = true)

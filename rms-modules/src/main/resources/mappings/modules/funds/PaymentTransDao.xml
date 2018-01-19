@@ -369,6 +369,7 @@
 		set trans_status = '2',TRANS_AMOUNT = TRADE_AMOUNT, LAST_AMOUNT = '0'
 		WHERE id = #{id}
 	</update>
+
 	<!--查询某个房屋下合同指定时间内出账款项 -->
 	<!--<select id="queryCostPaymentByTransIdAndTime" resultType="PaymentTrans">
 		SELECT t.*
