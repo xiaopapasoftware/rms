@@ -185,7 +185,7 @@
                     }
                     var freeMonths = $('#freeMonths').val();
                     if ($("#hasFree").attr('checked') && (freeMonths == null || freeMonths == "" || freeMonths == undefined)) {
-                        top.$.jBox.tip('减免房租不可为空！', 'warning');
+                        top.$.jBox.tip('促销优惠房租月数不可为空！', 'warning');
                         return;
                     }
                     var number = parseFloat(freeMonths);
