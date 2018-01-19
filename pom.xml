@@ -8,12 +8,6 @@
     <version>1.2.7</version>
     <packaging>pom</packaging>
 
-    <!--<parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.0.RELEASE</version>
-    </parent>-->
-
     <modules>
         <module>rms-common</module>
         <module>rms-modules</module>
@@ -25,15 +19,12 @@
         <module>rms-generator-code</module>
     </modules>
 
-
     <!-- 项目属性 -->
     <properties>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <jetty9.version>9.3.6.v20151106</jetty9.version>
-        <!-- main version setting -->
-        <!--<spring.version>4.1.9.RELEASE</spring.version>-->
         <spring.version>4.3.2.RELEASE</spring.version>
         <validator.version>5.2.4.Final</validator.version>
         <mybatis.version>3.2.8</mybatis.version>
@@ -75,19 +66,8 @@
         <webserver.port>12301</webserver.port>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <downloadSources>true</downloadSources>
-
         <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
-
     </properties>
-
-    <!-- 设定插件仓库 -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>jeesite-repos</id>
-            <name>Jeesite Repository</name>
-            <url>http://maven.jeesite.com/nexus/content/groups/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <!-- 依赖项定义 -->
     <dependencyManagement>
