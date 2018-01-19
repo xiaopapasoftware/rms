@@ -1000,8 +1000,8 @@ public class RentContractController extends CommonBusinessController {
             List<PaymentTrans> pts = paymentTransService.findList(pt);
             if (CollectionUtils.isNotEmpty(pts)) {
                 paymentTransId = pts.get(0).getId();
-                Date feeDate = null;
-                Double feeAmt = 0d;
+                Date feeDate;
+                Double feeAmt;
                 Accounting accounting = new Accounting();
                 accounting.setRentContractId(rc.getId());
                 accounting.setFeeDirection(TradeDirectionEnum.OUT.getValue());
