@@ -598,7 +598,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         if (FeeChargeTypeEnum.PRE_CHARGE.getValue().equals(rentContract.getChargeType())) {// 预付
             Date startD = rentContract.getStartDate();// 开始日期
             for (int i = 0; i < monthCountDiff; i++) {
-                Date expiredDate = null;
+                Date expiredDate;
                 if (i != (monthCountDiff - 1)) {
                     expiredDate = DateUtils.dateAddMonth2(startD, 1);
                 } else {
