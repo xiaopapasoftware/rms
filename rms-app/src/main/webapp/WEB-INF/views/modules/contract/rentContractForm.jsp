@@ -201,8 +201,9 @@
                             return;
                         }
                     }
+                    var eleRechargeAmount = $("#eleRechargeAmount").val();
                     if ($("#rentMode").val() == "0") {//整租
-                        if ($("#eleRechargeAmount").val().length != 0) {
+                        if (eleRechargeAmount != null && eleRechargeAmount != undefined && eleRechargeAmount != "" && parseFloat(eleRechargeAmount) > 0) {
                             top.$.jBox.tip('整租房源不能进行电费充值！', 'warning');
                             return;
                         }
@@ -524,15 +525,14 @@
         function changeDerateRentFlag(dom) {
             var flag = dom.checked ? true : false;
             if (flag) {//房租全免
-                $('#rental').attr('disabled', true);
+                $('#rental').attr('readonly',true);
                 $('#rental').val('0');
                 $('#rental').removeClass("required");
                 //取消房租促销选择
-                $('#hasFree').attr('checked',false);
+                $('#hasFree').attr('checked', false);
                 $('#freeMonths').val("0");
-                $('#freeMonths').removeClass("required");
             } else {
-                $('#rental').attr('disabled', false);
+                $('#rental').attr('readonly', false);
                 $('#rental').addClass("required");
             }
         }
