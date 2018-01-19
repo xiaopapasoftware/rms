@@ -1376,7 +1376,7 @@
 //      map.put("deposit_amount", rentContract.getDepositAmount());
 //      map.put("we_deposit_amount", rentContract.getDepositElectricAmount());
 //    }
-//    // 首付房租月数
+//    // 首付月数
 //    if (null != rentContract.getRenMonths()) {
 //      map.put("pre_rent_month", rentContract.getRenMonths());
 //    }

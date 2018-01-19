@@ -27,7 +27,7 @@ public class AgreementChange extends DataEntity<AgreementChange> {
 	private RentContract rentContract;		// 出租合同
 	private String agreementChangeName;		// 合同变更协议名称
 	private Date startDate;		// 协议生效时间
-	private Integer renMonths; // 首付房租月数
+	private Integer renMonths; // 首付月数
 	private Integer depositMonths; // 房租押金月数
 	private String agreementStatus;		// 协议审核状态
 	private User user;		// 核算人

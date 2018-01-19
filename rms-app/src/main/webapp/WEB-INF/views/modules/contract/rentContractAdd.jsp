@@ -125,8 +125,8 @@
 					var renMonths = $("#renMonths").val();
 					if(renMonths!=null && renMonths!=undefined && renMonths!=""){
 						var renMonthsNum = parseFloat(renMonths);
-						if(renMonthsNum <= 0){
-							top.$.jBox.tip('首付房租月数不合法！','warning');
+						if(renMonthsNum < 0){
+							top.$.jBox.tip('首付月数不合法！','warning');
 							return;
 						}
 					}
@@ -537,7 +537,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">首付房租月数：</label>
+			<label class="control-label">首付月数：</label>
 			<div class="controls">
 				<form:input type = "number" placeholder="请填写正整数" id = "renMonths"  path="renMonths" htmlEscape="false" maxlength="2" class="input-xlarge digits required"/>
 				<span class="help-inline"><font color="red">*</font> </span>

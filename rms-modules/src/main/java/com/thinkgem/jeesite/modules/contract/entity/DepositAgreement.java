@@ -38,7 +38,7 @@ public class DepositAgreement extends DataEntity<DepositAgreement> {
   private Date startDate; // 协议开始时间
   private Date expiredDate; // 协议结束时间
   private Date signDate; // 协议签订时间
-  private Integer renMonths; // 首付房租月数
+  private Integer renMonths; // 首付月数
   private Integer depositMonths; // 房租押金月数
   private Date agreementDate; // 约定合同签约时间
   private Double depositAmount; // 定金金额

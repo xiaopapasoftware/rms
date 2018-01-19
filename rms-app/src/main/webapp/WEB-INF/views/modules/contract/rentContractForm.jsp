@@ -527,6 +527,10 @@
                 $('#rental').attr('disabled', true);
                 $('#rental').val('0');
                 $('#rental').removeClass("required");
+                //取消房租促销选择
+                $('#hasFree').attr('checked',false);
+                $('#freeMonths').val("0");
+                $('#freeMonths').removeClass("required");
             } else {
                 $('#rental').attr('disabled', false);
                 $('#rental').addClass("required");
@@ -710,7 +714,7 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">首付房租月数：</label>
+        <label class="control-label">首付月数：</label>
         <div class="controls">
             <form:input type="number" placeholder="请填写正整数" id="renMonths" path="renMonths" htmlEscape="false"
                         maxlength="2" class="input-xlarge digits required"/>

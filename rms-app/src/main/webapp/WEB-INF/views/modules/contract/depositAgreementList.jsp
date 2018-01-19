@@ -242,27 +242,27 @@
 				<th>定金协议编号</th>
 				<th>数据来源</th>
 				<th>定金协议名称</th>
-				<th style="width:40px;">出租方式</th>
+				<th>出租方式</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
 				<th>房屋</th>
-				<th style="width:40px;">房间</th>
+				<th>房间</th>
 				<th>租客姓名</th>
 				<th>租客手机号</th>
-				<th style="width:80px;">合同开始时间</th>
-				<th style="width:80px;">合同结束时间</th>
-				<th style="width:80px;">协议签订时间</th>
-				<th style="width:40px;">首付房租月数</th>
-				<th style="width:40px;">房租押金月数</th>
-				<th style="width:80px;">约定合同签约时间</th>
+				<th>合同开始时间</th>
+				<th>合同结束时间</th>
+				<th>协议签订时间</th>
+				<th>首付月数</th>
+				<th>房租押金月数</th>
+				<th>约定合同签约时间</th>
 				<th>定金金额</th>
 				<th>房屋租金</th>
-				<th style="width:40px;">销售</th>
-				<th style="width:150px;">定金协议审核状态</th>
-				<th style="width:40px;">定金协议业务状态</th>
-				<th style="width:130px;">更新时间</th>
+				<th>销售</th>
+				<th>定金协议审核状态</th>
+				<th>定金协议业务状态</th>
+				<th>更新时间</th>
 				<th>备注信息</th>
-				<th style="width:150px;">操作</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>

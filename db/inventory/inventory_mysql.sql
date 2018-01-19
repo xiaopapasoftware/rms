@@ -134,7 +134,7 @@ CREATE TABLE `t_house` (
   `up` tinyint(4) DEFAULT NULL COMMENT '上下架',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=955 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房屋信息'
+) ENGINE=InnoDB AUTO_INCREMENT=955 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房屋信息';
 update t_house set is_feature='0' where is_feature is null;
 
 CREATE TABLE `t_room` (
@@ -165,7 +165,7 @@ CREATE TABLE `t_room` (
   `up` tinyint(4) DEFAULT NULL COMMENT '上下架',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3048 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房间信息'
+) ENGINE=InnoDB AUTO_INCREMENT=3048 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房间信息';
 update t_room set is_feature='0' where is_feature is null;
 
 create table T_DEVICES

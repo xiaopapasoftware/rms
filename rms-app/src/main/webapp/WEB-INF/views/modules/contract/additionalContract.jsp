@@ -96,7 +96,7 @@
 			</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">首付房租月数：</label>
+			<label class="control-label">首付月数：</label>
 			<div class="controls">
 				<form:input path="renMonths" htmlEscape="false" maxlength="11" class="input-xlarge  digits"/>
 			</div>

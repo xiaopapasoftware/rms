@@ -52,7 +52,7 @@ public class RentContract extends DataEntity<RentContract> {
     private Double waterFee; // 合租每月水费
     private Double gasFee; // 每月燃气费
     private Double serviceFee; // 服务费比例
-    private Integer renMonths; // 首付房租月数
+    private Integer renMonths; // 首付月数
     private Integer depositMonths; // 房租押金月数
     private Double depositAmount; // 房租押金金额/房租押金续补金额
     private Double depositElectricAmount; // 水电押金金额/水电押金续补金额
