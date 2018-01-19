@@ -13,7 +13,8 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.customer_id AS  "customerId"
 	</sql>
     
 	<select id="get" resultType="CustBindInfo">
@@ -34,6 +35,9 @@
 					<if test="dbName == 'oracle'">'%'||#{account}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{account}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{account},'%')</if>
+			</if>
+			<if test="customerId != null and customerId != ''">
+				AND a.customer_id = #{customerId}
 			</if>
 		</where>
 		<choose>
@@ -75,7 +79,8 @@
 			update_by,
 			update_date,
 			remarks,
-			del_flag
+			del_flag,
+			customer_id
 		) VALUES (
 			#{id},
 			#{accountType},
@@ -87,19 +92,33 @@
 			#{updateBy.id},
 			#{updateDate},
 			#{remarks},
-			#{delFlag}
+			#{delFlag},
+			#{customerId}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE t_cust_bind_info SET
-			account = #{account},
-			password = #{password},
-			account_type = #{accountType},
-			valid = #{valid},
+			<if test="account != null and account != ''">
+				account = #{account},
+			</if>
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+			<if test="accountType != null and accountType != ''">
+				account_type = #{accountType},
+			</if>
+			<if test="valid != null and valid != ''">
+				valid = #{valid},
+			</if>
+			<if test="remarks != null and remarks != ''">
+				remarks = #{remarks},
+			</if>
+			<if test="customerId != null and customerId != ''">
+				customer_id = #{customerId},
+			</if>
 			update_by = #{updateBy.id},
-			update_date = #{updateDate},
-			remarks = #{remarks}
+			update_date = #{updateDate}
 		WHERE id = #{id}
 	</update>
 	
@@ -108,5 +127,14 @@
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
+
+	<select id="getByCustomerIdAndType" resultType="CustBindInfo">
+		SELECT
+		<include refid="appUserColumns"/>
+		FROM t_cust_bind_info
+		WHERE del_flag = '0'
+		AND customer_id = #{customerId}
+		AND account_type = #{accountType}
+	</select>
 
 </mapper>

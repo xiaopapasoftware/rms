@@ -28,9 +28,8 @@ public class ContractBook extends DataEntity<ContractBook> {
   private String bookStatus; // book_status
   private String salesId; // sales_id
   private String source;
-  private Long housingCode;
-  private String housingType;
-  private String houseType;
+  private String housingCode;
+  private Integer housingType;
 
   private String projectName;
   private String buildingName;
@@ -154,28 +153,20 @@ public class ContractBook extends DataEntity<ContractBook> {
     this.source = source;
   }
 
-  public Long getHousingCode() {
+  public String getHousingCode() {
     return housingCode;
   }
 
-  public void setHousingCode(Long housingCode) {
+  public void setHousingCode(String housingCode) {
     this.housingCode = housingCode;
   }
 
-  public String getHousingType() {
+  public Integer getHousingType() {
     return housingType;
   }
 
-  public void setHousingType(String housingType) {
+  public void setHousingType(Integer housingType) {
     this.housingType = housingType;
-  }
-
-  public String getHouseType() {
-    return houseType;
-  }
-
-  public void setHouseType(String houseType) {
-    this.houseType = houseType;
   }
 
   public House getHouse() {

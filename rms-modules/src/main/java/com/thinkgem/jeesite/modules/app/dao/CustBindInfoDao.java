@@ -6,6 +6,7 @@ package com.thinkgem.jeesite.modules.app.dao;
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * DAO接口
@@ -14,5 +15,7 @@ import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
  */
 @MyBatisDao
 public interface CustBindInfoDao extends CrudDao<CustBindInfo> {
+
+    CustBindInfo getByCustomerIdAndType(@Param("customerId") String customerId, @Param("accountType") String accountType);
 
 }

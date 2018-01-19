@@ -45,7 +45,7 @@ public class CustomerService extends CrudService<CustomerDao, Customer> {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Customer> findCustomerByTelNo(String cellPhone) {
+	public Customer findCustomerByTelNo(String cellPhone) {
 		return dao.findCustomerByTelNo(cellPhone);
 	}
 

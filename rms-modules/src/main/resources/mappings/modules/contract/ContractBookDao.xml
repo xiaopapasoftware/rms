@@ -100,7 +100,7 @@
 			housing_type
 		) VALUES (
 			#{id},
-			#{customerId},
+			#{customer.id},
 			#{houseId},
 			#{roomId},
 			#{bookPhone},
@@ -121,7 +121,7 @@
 	
 	<update id="update">
 		UPDATE t_contract_book SET 	
-			customer_id = #{customerId},
+			customer_id = #{customer.id},
 			house_id = #{houseId},
 			room_id = #{roomId},
 			book_phone = #{bookPhone},

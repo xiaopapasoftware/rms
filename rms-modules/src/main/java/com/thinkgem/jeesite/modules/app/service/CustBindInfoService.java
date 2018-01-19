@@ -20,5 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CustBindInfoService extends CrudService<CustBindInfoDao, CustBindInfo> {
 
+    public CustBindInfo getByCustomerIdAndType(String customerId, String accountType){
+        return dao.getByCustomerIdAndType(customerId, accountType);
+    }
 
 }

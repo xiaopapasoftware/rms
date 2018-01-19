@@ -14,10 +14,16 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
+import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
+import com.thinkgem.jeesite.modules.app.enums.AccountTypeEnum;
+import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
 import com.thinkgem.jeesite.modules.app.enums.HouseTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
+import com.thinkgem.jeesite.modules.app.service.CustBindInfoService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
+import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.PhoneRecord;
+import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.PhoneRecordService;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
@@ -83,6 +89,12 @@ public class AlipayController extends BaseController {
 
     @Autowired
     private CustomerService customerService;
+
+    @Autowired
+    private CustBindInfoService custBindInfoService;
+
+    @Autowired
+    private ContractBookService contractBookService;
 
     private String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
     private String TP_PRIVATEKEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAKK0PXoLKnBkgtOl0kvyc9X2tUUdh/lRZr9RE1frjr2ZtAulZ+Moz9VJZFew1UZIzeK0478obY/DjHmD3GMfqJoTguVqJ2MEg+mJ8hJKWelvKLgfFBNliAw+/9O6Jah9Q3mRzCD8pABDEHY7BM54W7aLcuGpIIOa/qShO8dbXn+FAgMBAAECgYA8+nQ380taiDEIBZPFZv7G6AmT97doV3u8pDQttVjv8lUqMDm5RyhtdW4n91xXVR3ko4rfr9UwFkflmufUNp9HU9bHIVQS+HWLsPv9GypdTSNNp+nDn4JExUtAakJxZmGhCu/WjHIUzCoBCn6viernVC2L37NL1N4zrR73lSCk2QJBAPb/UOmtSx+PnA/mimqnFMMP3SX6cQmnynz9+63JlLjXD8rowRD2Z03U41Qfy+RED3yANZXCrE1V6vghYVmASYsCQQCoomZpeNxAKuUJZp+VaWi4WQeMW1KCK3aljaKLMZ57yb5Bsu+P3odyBk1AvYIPvdajAJiiikRdIDmi58dqfN0vAkEAjFX8LwjbCg+aaB5gvsA3t6ynxhBJcWb4UZQtD0zdRzhKLMuaBn05rKssjnuSaRuSgPaHe5OkOjx6yIiOuz98iQJAXIDpSMYhm5lsFiITPDScWzOLLnUR55HL/biaB1zqoODj2so7G2JoTiYiznamF9h9GuFC2TablbINq80U2NcxxQJBAMhw06Ha/U7qTjtAmr2qAuWSWvHU4ANu2h0RxYlKTpmWgO0f47jCOQhdC3T/RK7f38c7q8uPyi35eZ7S1e/PznY=";
@@ -708,23 +720,75 @@ public class AlipayController extends BaseController {
             logger.error("AlipayEncrypt.decryptContent error {}", bookPhone, e);
             return "{\"code\":0}";
         }
+        Customer customer = saveOrUpdateCustomer(bookPhone, request);
+        saveOrUpdateBindInfo(customer.getId(), request);
+        saveReservation(customer, request);
+        return "{\"code\":1}";
+    }
+
+    private void saveReservation(Customer customer, HttpServletRequest request) {
+        ContractBook record = new ContractBook();
+        record.setCustomer(customer);
+        record.setBookPhone(customer.getCellPhone());
+        record.setBookDate(DateUtils.parseDate(request.getParameter("recordTime")));
+        record.setBookStatus(BookStatusEnum.BOOK_APP.value());
+        record.setSource("1");
+        String roomCode = request.getParameter("roomCode");
+        record.setHousingCode(roomCode);
+        record.setHousingType(Integer.valueOf(request.getParameter("flatsTag")));
+        record.setRemarks(request.getParameter("remark"));
+        if (roomCode.startsWith("R")) {
+            record.setRoomId(roomCode.substring(1));
+            record.setHouseId(roomService.get(roomCode.substring(1)).getHouse().getId());
+        } else {
+            record.setHouseId(roomCode.substring(1));
+        }
+        contractBookService.save(record);
+    }
+
+    private void saveOrUpdateBindInfo(String customerId, HttpServletRequest request) {
+        CustBindInfo info = custBindInfoService.getByCustomerIdAndType(customerId, AccountTypeEnum.ALIPAY.getValue());
+        String aliUserId = request.getParameter("aliUserId");
+        String zhimaOpenId = request.getParameter("zhimaOpenId");
+        if (info == null) {
+            info = new CustBindInfo();
+            info.setAccount(aliUserId);
+            info.setCustomerId(customerId);
+            info.setAccountType(AccountTypeEnum.ALIPAY.getValue());
+            info.setValid("0");
+            custBindInfoService.save(info);
+        }  else if (!info.getAccount().equals(aliUserId)) {
+            info.setAccount(aliUserId);
+            custBindInfoService.save(info);
+        }
+        if (StringUtils.isNotBlank(zhimaOpenId)) {
+            CustBindInfo zhimaInfo = custBindInfoService.getByCustomerIdAndType(customerId, AccountTypeEnum.ZHIMA.getValue());
+            if (zhimaInfo == null) {
+                info = new CustBindInfo();
+                info.setAccount(zhimaOpenId);
+                info.setCustomerId(customerId);
+                info.setAccountType(AccountTypeEnum.ZHIMA.getValue());
+                info.setValid("0");
+                custBindInfoService.save(info);
+            }  else if (!zhimaInfo.getAccount().equals(aliUserId)) {
+                info.setAccount(zhimaOpenId);
+                custBindInfoService.save(info);
+            }
+        }
+    }
+
+    private Customer saveOrUpdateCustomer(String bookPhone, HttpServletRequest request) {
         String bookName = request.getParameter("bookName");
         String bookSex = request.getParameter("bookSex");
-        List<Customer> customerList = customerService.findCustomerByTelNo(bookPhone);
-        if (CollectionUtils.isEmpty(customerList)) {
-            customerList.forEach(customer -> {
-                customer.setTrueName(bookName);
-                customer.setGender(bookSex);
-                customerService.save(customer);
-            });
-        } else {
-            Customer customer = new Customer();
-            customer.setGender(bookSex);
-            customer.setTrueName(bookName);
-            customer.setCellPhone(bookPhone);
-            customerService.save(customer);
+        Customer customer = customerService.findCustomerByTelNo(bookPhone);
+        if (customer == null) {
+            customer = new Customer();
         }
-        return "{\"code\":1}";
+        customer.setGender(bookSex);
+        customer.setTrueName(bookName);
+        customer.setCellPhone(bookPhone);
+        customerService.save(customer);
+        return customer;
     }
 
     /**

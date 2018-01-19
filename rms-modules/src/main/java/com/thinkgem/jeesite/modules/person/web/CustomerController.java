@@ -26,7 +26,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,19 +82,19 @@ public class CustomerController extends BaseController {
     if (!beanValidator(model, customer)) {
       return form(customer, model);
     }
-    List<Customer> customers = new ArrayList<>();
+    Customer tempCustomer = null;
     if (StringUtils.isNotBlank(customer.getCellPhone())) {
-      customers = customerService.findCustomerByTelNo(customer.getCellPhone());
+      tempCustomer = customerService.findCustomerByTelNo(customer.getCellPhone());
     }
     if (!customer.getIsNewRecord()) {// 是更新
-      if (CollectionUtils.isNotEmpty(customers)) {
-        customer.setId(customers.get(0).getId());
+      if (tempCustomer != null) {
+        customer.setId(tempCustomer.getId());
       }
       customerService.save(customer);
       addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改客户信息成功");
       return "redirect:" + Global.getAdminPath() + "/person/customer/?repage";
     } else {// 新增
-      if (CollectionUtils.isNotEmpty(customers)) {
+      if (tempCustomer != null) {
         addMessage(model, ViewMessageTypeEnum.WARNING, "客户手机号已被占用，不能重复添加");
         model.addAttribute("listUser", systemService.findUser(new User()));
         return "modules/person/customerForm";

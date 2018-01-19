@@ -8,8 +8,6 @@ import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
 /**
  * 客户信息DAO接口
  * 
@@ -22,7 +20,7 @@ public interface CustomerDao extends CrudDao<Customer> {
 	/**
 	 * 根据手机号查询客户信息
 	 * */
-	List<Customer> findCustomerByTelNo(@Param("cellPhone")String cellPhone);
+	Customer findCustomerByTelNo(@Param("cellPhone")String cellPhone);
 
 	/**
 	 * 更新客户是否转化为租客的状态

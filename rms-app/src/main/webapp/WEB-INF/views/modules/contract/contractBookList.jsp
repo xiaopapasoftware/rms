@@ -63,7 +63,6 @@
 				<th>来源</th>
 				<th>房源编号</th>
 				<th>房源类型</th>
-				<th>公寓类型</th>
 				<th>操作</th>
 			</tr>
 		</thead>
@@ -104,10 +103,7 @@
 					${contractBook.housingCode}
 				</td>
 				<td>
-					${fns:getDictLabel(contractBook.housingType, 'housing_type', '')}
-				</td>
-				<td>
-					${fns:getDictLabel(contractBook.houseType, 'house_type', '')}
+					${fns:getDictLabel(contractBook.housingType, 'house_type', '')}
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">

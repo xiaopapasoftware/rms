@@ -4,7 +4,6 @@
 package com.thinkgem.jeesite.modules.app.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.modules.person.entity.Customer;
 
 /**
  * APP用户Entity
@@ -15,11 +14,11 @@ import com.thinkgem.jeesite.modules.person.entity.Customer;
 public class CustBindInfo extends DataEntity<CustBindInfo> {
 
   private static final long serialVersionUID = 1L;
-  private Customer customer;
   private String accountType;
   private String account;
   private String password;
   private String valid;
+  private String customerId;
 
   public CustBindInfo() {
     super();
@@ -27,14 +26,6 @@ public class CustBindInfo extends DataEntity<CustBindInfo> {
 
   public CustBindInfo(String id) {
     super(id);
-  }
-
-  public Customer getCustomer() {
-    return customer;
-  }
-
-  public void setCustomer(Customer customer) {
-    this.customer = customer;
   }
 
   public String getAccountType() {
@@ -67,5 +58,13 @@ public class CustBindInfo extends DataEntity<CustBindInfo> {
 
   public void setValid(String valid) {
     this.valid = valid;
+  }
+
+  public String getCustomerId() {
+    return customerId;
+  }
+
+  public void setCustomerId(String customerId) {
+    this.customerId = customerId;
   }
 }
