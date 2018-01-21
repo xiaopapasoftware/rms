@@ -5,14 +5,72 @@
 	<title>预约信息管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
+		var scope = {};
+		getSalesmanList();
 		$(document).ready(function() {
-			
+
+            $('#allCheck').click(function () {
+                var chk = document.getElementsByName("chk");
+                for(var i=0;i<chk.length;i++){
+                    chk[i].checked = true;
+                }
+            });
+
+		    $('#allocation').click(function () {
+
+                var result = "";
+                $(".allocationCheck").each(function () {
+                    if($(this).attr("checked")){
+                        result = result + $(this).val() + "|";
+                    }
+                });
+                if(result === ""){
+                    return alert("请选择需要分配的单据");
+                }
+
+                var options = optionCreator();
+                var selectHtml = "<select id = 'selectSalesman' name = 'selectSalesman' >"+options+"</select>"
+                var html =  "<div style='padding:10px;'>输入姓名："+selectHtml+"</div>";
+
+                var submit = function (v, h, f) {
+                    if (f.selectSalesman == '') {
+                        $.jBox.tip("请输入您的姓名。", 'error', { focusId: "selectSalesman" }); // 关闭设置 yourname 为焦点
+                        return false;
+                    }
+					$.post('${ctx}/contract/book/distribution',{
+                        customerIdList:result,
+                        salesId:f.selectSalesman
+					},function (data,status) {
+                        $.jBox.tip("设置成功");
+                        window.location.href = "${ctx}/contract/book";
+                    });
+                    return true;
+                };
+                $.jBox(html, { title: "工单分配", submit: submit });
+            });
+
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
 			$("#pageSize").val(s);
 			$("#searchForm").submit();
         	return false;
+        }
+		
+        function optionCreator() {
+		    var data = scope.salsemanList;
+            var html = "<option value=''>请选择</option>";
+            if(!data || !data.length) return;
+            $.each(data,function (index,item) {
+                html += "<option value = "+item.id+">"+item.name+"</option>";
+            });
+            return html;
+        }
+        function  getSalesmanList() {
+            $.post("${ctx}/sys/user/saleUser",{
+            },function (data,status) {
+                scope.salsemanList =  data;
+            });
         }
 	</script>
 </head>
@@ -44,6 +102,12 @@
 			<shiro:hasPermission name="contract:contractBook:view">
 				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			</shiro:hasPermission>
+			<li class="btns"><input id="allCheck" class="btn btn-primary" type="button" value="全选"/></li>
+			<shiro:hasPermission name="contract:contractBook:edit">
+				<li class="btns">
+					<input id = "allocation" class="btn btn-primary" type = "button"  value = "工单分配"  />
+				</li>
+			</shiro:hasPermission>
 			<li class="clearfix"></li>
 		</ul>
 	</form:form>
@@ -51,6 +115,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
+				<th>选择</th>
 				<th>物业项目</th>
 				<th>楼宇</th>
 				<th>房屋号</th>
@@ -69,6 +134,7 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="contractBook">
 			<tr>
+				<td><input type = "checkbox" class="allocationCheck" value = "${contractBook.id}"  name="chk" /></td>
 				<td>
 					${contractBook.projectName}
 				</td>
@@ -108,7 +174,6 @@
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">
 				  <c:if test="${contractBook.bookStatus=='0'}">
-					<a href="${ctx}/contract/book/confirm?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('确认该预约信息吗？', this.href)">工单分配</a>
 					<a href="${ctx}/contract/book/cancel?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('取消该预约信息吗？', this.href)">取消</a>
 				  </c:if>
 				</shiro:hasPermission>

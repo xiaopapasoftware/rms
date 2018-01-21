@@ -8,6 +8,7 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.Message;
+import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,18 +79,26 @@ public class ContractBookController extends BaseController {
 
   @RequiresPermissions("contract:contractBook:edit")
   @RequestMapping(value = "distribution")
-  public String distribution(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+  public String distribution(@RequestParam("customerIdList") String customerIdList, @RequestParam("salesId") String salesId) {
+    List<String> idList = Arrays.asList(customerIdList.split("\\|"));
+    ContractBook contractBook = new ContractBook();
+    contractBook.setIdList(idList);
+    contractBook.setSalesId(salesId);
+    contractBook.setBookStatus(BookStatusEnum.BOOK_SUCCESS.value());
     contractBookService.distribution(contractBook);
-    sendDistributionSms(contractBook);
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "预约成功");
+    idList.forEach(this::sendDistributionSms);
     return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
   }
 
-  private void sendDistributionSms(ContractBook contractBook) {
+  private void sendDistributionSms(String contractBookId) {
+    ContractBook contractBook = contractBookService.get(contractBookId);
+    String addressInfo = contractBook.getProjectName() + contractBook.getBuildingName()  + "楼" + contractBook.getHouseNo()  + "号";
+    if (StringUtils.isNotBlank(contractBook.getRoomNo())) {
+      addressInfo += contractBook.getRoomNo() + "室房源";
+    }
     User user = UserUtils.get(contractBook.getSalesId());
     String saleName = user.getName();
-    ContractBook record = contractBookService.get(contractBook.getId());
-    String content = saleName + "你好，姓名：" + record.getCustomer().getTrueName() + "，手机号为：" + record.getBookPhone() + "的客户预约在" + DateUtils.formatDate(record.getBookDate()) + "日期看" + record.getProjectName()  + "小区" + record.getBuildingName()  + "楼" + record.getHouseNo()  + "号" + record.getRoomNo()  + "室房源，请提前联系用户做好带看准备。";
+    String content = saleName + "你好，姓名：" + contractBook.getCustomer().getTrueName() + "，手机号为：" + contractBook.getBookPhone() + "的客户预约在" + DateUtils.formatDate(contractBook.getBookDate()) + "日期看" + addressInfo  + "，请提前联系用户做好带看准备。";
     smsService.sendSms(user.getPhone(), content);
   }
 

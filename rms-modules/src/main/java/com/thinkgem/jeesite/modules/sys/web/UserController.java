@@ -3,27 +3,6 @@
  */
 package com.thinkgem.jeesite.modules.sys.web;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolationException;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkgem.jeesite.common.beanvalidator.BeanValidators;
@@ -39,8 +18,26 @@ import com.thinkgem.jeesite.modules.entity.Area;
 import com.thinkgem.jeesite.modules.entity.Office;
 import com.thinkgem.jeesite.modules.entity.Role;
 import com.thinkgem.jeesite.modules.entity.User;
+import com.thinkgem.jeesite.modules.service.OfficeService;
 import com.thinkgem.jeesite.modules.service.SystemService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户Controller
@@ -55,6 +52,8 @@ public class UserController extends BaseController {
   @Autowired
   private SystemService systemService;
 
+  @Autowired
+  private OfficeService officeService;
 
   @ModelAttribute
   public User get(@RequestParam(required = false) String id) {
@@ -372,6 +371,20 @@ public class UserController extends BaseController {
       mapList.add(map);
     }
     return mapList;
+  }
+
+  @RequiresPermissions("user")
+  @ResponseBody
+  @RequestMapping(value = "saleUser")
+  public List<User> saleUser() {
+    Office parent = new Office("3");
+    Office office = new Office();
+    office.setParentIds("0,1,3,");
+    List<Office> officeList = officeService.findList(office);
+    officeList.add(parent);
+    List<User> userList = officeList.stream().map(Office::getId).map(systemService::findUserByOfficeId).flatMap(Collection::stream).collect(Collectors.toList());
+    userList.forEach(user -> user.setName(StringUtils.replace(user.getName(), " ", "")));
+    return userList;
   }
 
   // @InitBinder

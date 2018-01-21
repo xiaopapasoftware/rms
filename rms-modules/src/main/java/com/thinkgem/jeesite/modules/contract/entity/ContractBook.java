@@ -40,6 +40,7 @@ public class ContractBook extends DataEntity<ContractBook> {
   private House house;
   private Room room;
   private List<String> customerIdList;
+  private List<String> idList;
 
   public Customer getCustomer() {
     return customer;
@@ -191,5 +192,13 @@ public class ContractBook extends DataEntity<ContractBook> {
 
   public void setCustomerIdList(List<String> customerIdList) {
     this.customerIdList = customerIdList;
+  }
+
+  public List<String> getIdList() {
+    return idList;
+  }
+
+  public void setIdList(List<String> idList) {
+    this.idList = idList;
   }
 }

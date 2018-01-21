@@ -43,6 +43,7 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
     if (contractBook != null) {
       contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
     }
+    completeInfo(contractBook);
     return contractBook;
   }
 

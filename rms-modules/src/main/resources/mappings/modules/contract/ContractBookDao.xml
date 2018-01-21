@@ -149,7 +149,10 @@
 		sales_id = #{salesId},
 		update_by = #{updateBy.id},
 		update_date = #{updateDate}
-		WHERE id = #{id}
+		WHERE id IN
+		<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 
 </mapper>
