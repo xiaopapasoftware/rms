@@ -152,6 +152,7 @@
 				<th>业主</th>
 				<th>房屋编码</th>
 				<th>房屋号</th>
+				<th>预约热线电话</th>
 				<th>精选房源</th>
 				<th>公寓类型</th>
 				<th>房屋状态</th>
@@ -182,6 +183,7 @@
 					<td>${house.ownerNamesOfHouse}</td> 
 					<td>${house.houseCode}</td>
 					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
+					<td>${house.reservationPhone}</td>
 					<td>${fns:getDictLabel(house.isFeature, 'yes_no', '')}</td>
 					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>
 					<td>${fns:getDictLabel(house.type, 'house_type', '')}</td>
