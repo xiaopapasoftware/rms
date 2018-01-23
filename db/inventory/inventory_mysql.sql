@@ -132,6 +132,7 @@ CREATE TABLE `t_house` (
   `depos_month_count` tinyint(4) DEFAULT NULL COMMENT '押金月数',
   `alipay_status` tinyint(4) DEFAULT NULL COMMENT '支付宝同步状态',
   `up` tinyint(4) DEFAULT NULL COMMENT '上下架',
+  `reservation_phone` varchar(32) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '预约热线电话',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=955 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房屋信息';
@@ -163,6 +164,7 @@ CREATE TABLE `t_room` (
   `depos_month_count` tinyint(4) DEFAULT NULL COMMENT '押金月数',
   `alipay_status` tinyint(4) DEFAULT NULL COMMENT '支付宝同步状态',
   `up` tinyint(4) DEFAULT NULL COMMENT '上下架',
+  `reservation_phone` varchar(32) COLLATE utf8_estonian_ci DEFAULT NULL COMMENT '预约热线电话',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3048 DEFAULT CHARSET=utf8 COLLATE=utf8_estonian_ci COMMENT='房间信息';
