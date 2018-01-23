@@ -119,6 +119,10 @@
 				<label>押金月数：</label>
 				<form:input path="deposMonthCount" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
+			<li>
+				<label>预约热线：</label>
+				<form:input path="reservationPhone" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>

@@ -213,7 +213,7 @@
 				and a.depos_month_count = #{deposMonthCount}
 			</if>
 			<if test="reservationPhone != null and reservationPhone != ''">
-				and a.reservation_phone = #{reservationPhone}
+				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
 			</if>
 		</where>
 

@@ -102,8 +102,8 @@
 				<form:input path="gasAccountNum" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
-				<label>产权证号：</label>
-				<form:input path="certificateNo" htmlEscape="false" maxlength="100" class="input-medium" />
+				<label>预约热线：</label>
+				<form:input path="reservationPhone" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
 			<li>
 				<label>支付间隔：</label>
