@@ -49,7 +49,6 @@ public abstract class CommonBusinessController extends BaseController {
         }
     }
 
-
     protected void commonInit2(Model model, PropertyProject paraPP, Building papaBuild, House ppHouse, Room ppRoom) {
         model.addAttribute("projectList", propertyProjectService.findList(new PropertyProject()));
         setBuildingToModel(model, paraPP);

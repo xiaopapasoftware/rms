@@ -11,8 +11,6 @@ import com.thinkgem.jeesite.modules.contract.enums.LeaseContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractOwnerService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
