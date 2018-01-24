@@ -228,9 +228,9 @@ public class AlipayController extends BaseController {
             flag = syncConcentrationRoom(room, imageUrls);
         }
         if (flag) {
-            addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋同步支付宝成功！");
+            addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间同步支付宝成功！");
         } else {
-            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋同步支付宝失败，请联系管理员！");
+            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间同步支付宝失败，请联系管理员！");
         }
         return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
     }

@@ -612,9 +612,9 @@
 		UPDATE  t_house
 		SET 	alipay_status = '1',
 		update_by = #{updateBy.id},
-		update_date = #{updateDate},
+		update_date = #{updateDate}
 		<if test="up != null and up != ''">
-			up = #{up}
+			,up = #{up}
 		</if>
 		WHERE   id = #{id}
 	</update>
