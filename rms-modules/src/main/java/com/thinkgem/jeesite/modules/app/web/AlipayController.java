@@ -10,6 +10,7 @@ import com.alipay.api.response.*;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
@@ -49,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -95,16 +97,26 @@ public class AlipayController extends BaseController {
     @Autowired
     private ContractBookService contractBookService;
 
-    private final String RESERVATION_URL = "http://rms.tangroom.com/a/app/alipay/reservation";
-    private final String AFFIRM_URL = "http://rms.tangroom.com/a/app/alipay/affirm";
-    private final String RECORD_URL = "http://rms.tangroom.com/a/app/alipay/phoneRecord";
-//    private final String KA_CODE = "1YqOEtXtWgsrhKjIc111";
-    private final String KA_CODE = "DLtUVkJvqngylBZtr";
-    private final String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
-    private final String TP_PRIVATEKEY = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNvtbhfz3p1iH+E5uKkTA4QRTTqE3eGWcEyQc/Tacm45irqPRgGjuqBGFo4QjZRfVfKyDBfODTg6EzSrDttEM5dQNRMxgArZE/kiCxKx9jN3c0PDDcZ9UcqONqmcC4N1qoIhUX1opjrn3bCowOV6Gx/DG2vDmuY/SKgmIehoyhfT8zpbvbmQHTTYHk8HJbVbWaaMMcXiA1DtCP7+0Su7udboiE4cn7ad5Ui4GHVVmfiyeyenQedw68OJyBGw23ufYHiqivieooTiWIkeaPDLNOmdpj11XsTVFcZiSnDZpxmvmsqHVn7zjasbIcLKlBcKqkWMRt9rL9QRojrBP+6KHdAgMBAAECggEAKCpLVLY8ZfvxouI9CS4S1ciOwksm+GbJH7wG+Cq2qPbhhRF0s5Yrc6NrSMg1rATmQ+/tcxhn46Lcw2Cfbag1P3BCd4Wb9/XqVxi13SBn/jyDvuTJPR3gEro9uz/Myam0vwH4UDEHzzHvS+WhNeORo2dyZRQVxp+oy6lscj0eEyBAoqFlih7FK4dlDwGv4qsA/lgd7CZ6Q/lrk68AxOhgC3botcyrXtnLTu2/KGxeKWBkuPiRL2WmD4nL0s8VOBzxveYUTZElVlJZkELY6XwXqgcl4YOab/RHbPJrBedSbtnmNY1MIXUm7VVI5+qAgzQjUMdIKe4/Xn+mpRXQ3m5mwQKBgQDsgCoGi/eyrx85j2GOu2DRp/h3N0PDtYyxGr2TNN748Ju2P6VmKWSoP5MiLkf7VhlaxOy3qkZzE/lgpIEyoDB8n6TyyZf8Afdlr71ZI8mphOdPo69Be16pZG5KtQVZRFoKwe3fKU7BJ42OnuNiljjMD5F0v0DfWgPFLWKQUi/zxQKBgQDetYYHmWsjUJcetOhu7Etq8X76XxJ4JFoStbIAd25zHvpbPZCQ5CAkBNyOxEWfe4lzGTp0OIFWM29joNW5LBA4ZgUfCNo4mGYJ8xMJymgIWEScvu0iGK0ypixGyj8nUjlttRLVqMVbb9NLw6ar15YF8PhGfnB8+2umlemrm8SfOQKBgDo9eZvxHgd/vrXDDGhE1pvqvHJHRsXMUKBQkHzO2VX+kqn31HhrGyGfvlD9irZnRokm05CLOxwdwBy/hh18e1RFUC6F3IqvxUfiVkO8X24Cj5/6FC+Q/QfD9rEpEO8huPbLORPqrT09y0ti72YYzlXaQ5y3eHdISINnIM2fn7VtAoGAQgOIgQQmz8b5pG53XznHeSGwQ8KelOIhmN4mryC3qoQKLbVn/qrAJC0Uu3TONmHF8koOG5kMLWL9p4hrEYJQJIeJCRP0q0XxKQ3WHNbUU3TmkZe+bpbl79d11F3qrlsfDrfXp2FpbpsNBK4v30v9+jDdRvf/m+xiknRpWSbI93ECgYBjGQfRVApk1JlN9rS10RHtE+BLAIpIBTdPfh4eHVB8d0G/DN/nRLHHb3410C13Z/mZIMNb2WAfmctFZJKZthiGtBXCWvPNipCIdxUtaE8nEug8Q1SEOl2TPKYoQl8ISGHXmHMtBKLSxMsWzlBr8yTZ9NY20D9Um3OVLkf87fq2NA==";
-//    private final String TP_OPENAPI_URL = "https://openapi.alipay.com/gateway.do";
-    private final String TP_OPENAPI_URL = "https://openapipre.alipay.com/gateway.do";
-    private final String TP_APPID = "2018012102010762";
+    public static String RESERVATION_URL;//预约看房SPI地址
+    public static String AFFIRM_URL;//确认租约SPI地址
+    public static String RECORD_URL;//拨号记录SPI地址
+    public static String KA_CODE;
+    public static String SPI_PRIVATE_KEY;//手机号解密
+    public static String TP_PRIVATEKEY;//私钥
+    public static String TP_OPENAPI_URL;//网关
+    public static String TP_APPID;
+
+    @PostConstruct
+    public void initParams() {
+        RESERVATION_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.reservation.url");
+        AFFIRM_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.affirm.url");
+        RECORD_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.phone.record.url");
+        KA_CODE = new PropertiesLoader("jeesite.properties").getProperty("alipay.ka.code");
+        SPI_PRIVATE_KEY = new PropertiesLoader("jeesite.properties").getProperty("alipay.spi.privatekey");
+        TP_PRIVATEKEY = new PropertiesLoader("jeesite.properties").getProperty("alipay.private.signkey");
+        TP_OPENAPI_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.open.api");
+        TP_APPID = new PropertiesLoader("jeesite.properties").getProperty("alipay.app.id");
+    }
 
     /**
      * 基础信息维护
@@ -717,7 +729,7 @@ public class AlipayController extends BaseController {
         }
         String bookPhone = request.getParameter("bookPhone");
         try {
-            bookPhone =  AlipayEncrypt.decryptContent(bookPhone, "AES", SPI_PRIVATE_KEY, "UTF-8");
+            bookPhone = AlipayEncrypt.decryptContent(bookPhone, "AES", SPI_PRIVATE_KEY, "UTF-8");
         } catch (AlipayApiException e) {
             logger.error("AlipayEncrypt.decryptContent error {}", bookPhone, e);
             return "{\"code\":0}";
@@ -759,7 +771,7 @@ public class AlipayController extends BaseController {
             info.setAccountType(AccountTypeEnum.ALIPAY.getValue());
             info.setValid("0");
             custBindInfoService.save(info);
-        }  else if (!info.getAccount().equals(aliUserId)) {
+        } else if (!info.getAccount().equals(aliUserId)) {
             info.setAccount(aliUserId);
             custBindInfoService.save(info);
         }
@@ -772,7 +784,7 @@ public class AlipayController extends BaseController {
                 info.setAccountType(AccountTypeEnum.ZHIMA.getValue());
                 info.setValid("0");
                 custBindInfoService.save(info);
-            }  else if (!zhimaInfo.getAccount().equals(aliUserId)) {
+            } else if (!zhimaInfo.getAccount().equals(aliUserId)) {
                 info.setAccount(zhimaOpenId);
                 custBindInfoService.save(info);
             }
