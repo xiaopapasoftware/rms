@@ -99,12 +99,12 @@ public class AlipayController extends BaseController {
 
     public static String RESERVATION_URL;//预约看房SPI地址
     public static String AFFIRM_URL;//确认租约SPI地址
-    public static String RECORD_URL;//拨号记录
+    public static String RECORD_URL;//拨号记录SPI地址
     public static String KA_CODE;
     public static String SPI_PRIVATE_KEY;//手机号解密
     public static String TP_PRIVATEKEY;//私钥
     public static String TP_OPENAPI_URL;//网关
-    public static String TP_APPID;//APP_ID
+    public static String TP_APPID;
 
     @PostConstruct
     public void initParams() {
