@@ -53,6 +53,8 @@ public class Room extends DataEntity<Room> {
 
 	private Integer up;
 
+	private String reservationPhone;
+
 	public Room() {
 		super();
 	}
@@ -239,5 +241,13 @@ public class Room extends DataEntity<Room> {
 
 	public void setUp(Integer up) {
 		this.up = up;
+	}
+
+	public String getReservationPhone() {
+		return reservationPhone;
+	}
+
+	public void setReservationPhone(String reservationPhone) {
+		this.reservationPhone = reservationPhone;
 	}
 }

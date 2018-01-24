@@ -42,7 +42,7 @@
                         salesId:f.selectSalesman
 					},function (data,status) {
                         $.jBox.tip("设置成功");
-                        window.location.href = "${ctx}/contract/book";
+                        $('#searchForm').submit();
                     });
                     return true;
                 };

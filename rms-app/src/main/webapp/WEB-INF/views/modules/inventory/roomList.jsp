@@ -119,6 +119,10 @@
 				<label>押金月数：</label>
 				<form:input path="deposMonthCount" htmlEscape="false" maxlength="100" class="input-medium" />
 			</li>
+			<li>
+				<label>预约热线：</label>
+				<form:input path="reservationPhone" htmlEscape="false" maxlength="100" class="input-medium" />
+			</li>
 			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<li class="clearfix"></li>
 		</ul>
@@ -131,6 +135,7 @@
 				<th>楼宇</th>
 				<th>房屋号</th>
 				<th>房间号</th>
+				<th>预约热线电话</th>
 				<th>精选房源</th>
 				<th>房间状态</th>
 				<th>电表号</th>
@@ -153,6 +158,7 @@
 				<td>${room.building.buildingName}</td>
 				<td>${room.house.houseNo}</td>
 				<td><a href="${ctx}/inventory/room/form?id=${room.id}">${room.roomNo}</a></td>
+				<td>${room.reservationPhone}</td>
 				<td>${fns:getDictLabel(room.isFeature, 'yes_no', '')}</td>
 				<td>${fns:getDictLabel(room.roomStatus, 'room_status', '')}</td>
 				<td>${room.meterNo}</td>

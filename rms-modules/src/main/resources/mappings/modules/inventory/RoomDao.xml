@@ -43,7 +43,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 	</sql>
 
 	<sql id="roomJoins">
@@ -105,6 +106,9 @@
 			<if test="deposMonthCount != null">
 				and a.depos_month_count = #{deposMonthCount}
 			</if>
+			<if test="reservationPhone != null and reservationPhone != ''">
+				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
+			</if>
 		</where>
 
 		<!-- 数据范围过滤 -->
@@ -138,7 +142,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.property_project_id = #{propertyProject.id}
@@ -215,7 +220,8 @@
 		rent_month_gap,
 		depos_month_count,
 		alipay_status,
-		up
+		up,
+		reservation_phone
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -240,7 +246,8 @@
 		#{rentMonthGap},
 		#{deposMonthCount},
 		#{alipayStatus},
-		#{up}
+		#{up},
+		#{reservationPhone}
 		)
 	</insert>
 
@@ -267,7 +274,8 @@
 		rent_month_gap = #{rentMonthGap},
 		depos_month_count = #{deposMonthCount},
 		alipay_status = #{alipayStatus},
-		up = #{up}
+		up = #{up},
+		reservation_phone = #{reservationPhone}
 		WHERE id = #{id}
 	</update>
 
@@ -353,7 +361,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 		from t_room where del_flag = '0' and new_id = #{newId}
 	</select>
 </mapper>

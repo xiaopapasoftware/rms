@@ -49,7 +49,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 	</sql>
 
 	<sql id="houseJoins">
@@ -211,6 +212,9 @@
 			<if test="deposMonthCount != null">
 				and a.depos_month_count = #{deposMonthCount}
 			</if>
+			<if test="reservationPhone != null and reservationPhone != ''">
+				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
+			</if>
 		</where>
 
 		<!-- 数据范围过滤 -->
@@ -313,7 +317,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 		FROM t_house a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
@@ -369,7 +374,8 @@
 		rent_month_gap,
 		depos_month_count,
 		alipay_status,
-		up
+		up,
+		reservation_phone
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -407,7 +413,8 @@
 		#{rentMonthGap},
 		#{deposMonthCount},
 		#{alipayStatus},
-		#{up}
+		#{up},
+		#{reservationPhone}
 		)
 	</insert>
 
@@ -448,7 +455,8 @@
 		rent_month_gap = #{rentMonthGap},
 		depos_month_count = #{deposMonthCount},
 		alipay_status = #{alipayStatus},
-		up = #{up}
+		up = #{up},
+		reservation_phone = #{reservationPhone}
 		WHERE id = #{id}
 	</update>
 
@@ -523,7 +531,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 		FROM t_house a
 		WHERE
 		a.del_flag = '0'
@@ -562,7 +571,8 @@
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
-		a.up as up
+		a.up as up,
+		a.reservation_phone as reservationPhone
 		FROM t_house a
 		where
 		a.del_flag = '0'

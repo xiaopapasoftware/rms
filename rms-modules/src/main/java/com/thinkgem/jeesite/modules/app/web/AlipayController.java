@@ -102,19 +102,19 @@ public class AlipayController extends BaseController {
     private final String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
     private final String TP_PRIVATEKEY = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNvtbhfz3p1iH+E5uKkTA4QRTTqE3eGWcEyQc/Tacm45irqPRgGjuqBGFo4QjZRfVfKyDBfODTg6EzSrDttEM5dQNRMxgArZE/kiCxKx9jN3c0PDDcZ9UcqONqmcC4N1qoIhUX1opjrn3bCowOV6Gx/DG2vDmuY/SKgmIehoyhfT8zpbvbmQHTTYHk8HJbVbWaaMMcXiA1DtCP7+0Su7udboiE4cn7ad5Ui4GHVVmfiyeyenQedw68OJyBGw23ufYHiqivieooTiWIkeaPDLNOmdpj11XsTVFcZiSnDZpxmvmsqHVn7zjasbIcLKlBcKqkWMRt9rL9QRojrBP+6KHdAgMBAAECggEAKCpLVLY8ZfvxouI9CS4S1ciOwksm+GbJH7wG+Cq2qPbhhRF0s5Yrc6NrSMg1rATmQ+/tcxhn46Lcw2Cfbag1P3BCd4Wb9/XqVxi13SBn/jyDvuTJPR3gEro9uz/Myam0vwH4UDEHzzHvS+WhNeORo2dyZRQVxp+oy6lscj0eEyBAoqFlih7FK4dlDwGv4qsA/lgd7CZ6Q/lrk68AxOhgC3botcyrXtnLTu2/KGxeKWBkuPiRL2WmD4nL0s8VOBzxveYUTZElVlJZkELY6XwXqgcl4YOab/RHbPJrBedSbtnmNY1MIXUm7VVI5+qAgzQjUMdIKe4/Xn+mpRXQ3m5mwQKBgQDsgCoGi/eyrx85j2GOu2DRp/h3N0PDtYyxGr2TNN748Ju2P6VmKWSoP5MiLkf7VhlaxOy3qkZzE/lgpIEyoDB8n6TyyZf8Afdlr71ZI8mphOdPo69Be16pZG5KtQVZRFoKwe3fKU7BJ42OnuNiljjMD5F0v0DfWgPFLWKQUi/zxQKBgQDetYYHmWsjUJcetOhu7Etq8X76XxJ4JFoStbIAd25zHvpbPZCQ5CAkBNyOxEWfe4lzGTp0OIFWM29joNW5LBA4ZgUfCNo4mGYJ8xMJymgIWEScvu0iGK0ypixGyj8nUjlttRLVqMVbb9NLw6ar15YF8PhGfnB8+2umlemrm8SfOQKBgDo9eZvxHgd/vrXDDGhE1pvqvHJHRsXMUKBQkHzO2VX+kqn31HhrGyGfvlD9irZnRokm05CLOxwdwBy/hh18e1RFUC6F3IqvxUfiVkO8X24Cj5/6FC+Q/QfD9rEpEO8huPbLORPqrT09y0ti72YYzlXaQ5y3eHdISINnIM2fn7VtAoGAQgOIgQQmz8b5pG53XznHeSGwQ8KelOIhmN4mryC3qoQKLbVn/qrAJC0Uu3TONmHF8koOG5kMLWL9p4hrEYJQJIeJCRP0q0XxKQ3WHNbUU3TmkZe+bpbl79d11F3qrlsfDrfXp2FpbpsNBK4v30v9+jDdRvf/m+xiknRpWSbI93ECgYBjGQfRVApk1JlN9rS10RHtE+BLAIpIBTdPfh4eHVB8d0G/DN/nRLHHb3410C13Z/mZIMNb2WAfmctFZJKZthiGtBXCWvPNipCIdxUtaE8nEug8Q1SEOl2TPKYoQl8ISGHXmHMtBKLSxMsWzlBr8yTZ9NY20D9Um3OVLkf87fq2NA==";
     private final String TP_OPENAPI_URL = "https://openapi.alipay.com/gateway.do";
-    private final String TP_APPID = "2018012102010762";//测试环境
+    private final String TP_APPID = "2018012102010762";
 
     /**
      * 基础信息维护
      */
-    @RequestMapping(value = "baseInfoSync/{name}")
+    @RequestMapping(value = "baseInfoSync")
     @ResponseBody
-    public String baseInfoSync(@PathVariable("name") String name) throws AlipayApiException {
+    public String baseInfoSync() throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
         //注意该接口使用的前提是，需要开通新的ISVappid权限，目前开发环境的测试账号已被使用
         request.setBizContent("{" +
-                "    \"ka_name\": \" " + name + " \"" +
+                "    \"ka_name\": \" 唐巢公寓 \"" +
                 "}");
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = alipayClient.execute(request);
         if (response.isSuccess()) {
@@ -279,7 +279,7 @@ public class AlipayController extends BaseController {
                 "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
                 "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
+                "    \"owners_tel\": \"" + room.getReservationPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -346,7 +346,7 @@ public class AlipayController extends BaseController {
                 "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
                 "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
+                "    \"owners_tel\": \"" + room.getReservationPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -449,7 +449,7 @@ public class AlipayController extends BaseController {
                 "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
                 "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
+                "    \"owners_tel\": \"" + house.getReservationPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
@@ -504,7 +504,7 @@ public class AlipayController extends BaseController {
                 "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
                 "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
                 "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + owner.getCellPhone() + "\"," +
+                "    \"owners_tel\": \"" + house.getReservationPhone() + "\"," +
                 "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
                 "    \"room_status\": " + 1 + "," +
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +

@@ -204,6 +204,7 @@ public class RoomController extends BaseController {
         upRoom.setRoomNo(room.getRoomNo());
         upRoom.setMeterNo(room.getMeterNo());
         upRoom.setRoomSpace(room.getRoomSpace());
+        upRoom.setReservationPhone(room.getReservationPhone());
         if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
           upRoom.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
         }
