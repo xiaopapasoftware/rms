@@ -538,56 +538,56 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
      * 生成合同期内的所有房租款项
      */
     private void genContractRentalPayTrans(String tradeType, String transObjId, RentContract rentContract, int monthCountDiff, Double rentalAmt) {
-        Date startD = rentContract.getStartDate();// 开始日期
-        boolean depositTransContractFlag = false;// 是否定金转合同
-        Double depositAgreementAmount = 0d;// 定金金额
-        if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
-            DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getAgreementId());
-            depositAgreementAmount = depositAgreement.getDepositAmount();
-            depositTransContractFlag = true;
-        }
-        // 生成房租款项列表
-        for (int i = 0; i < monthCountDiff; i++) {
-            PaymentTrans paymentTrans = new PaymentTrans();
-            paymentTrans.setTradeType(tradeType);
-            paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
-            paymentTrans.setTransId(transObjId);
-            paymentTrans.setTradeDirection(TradeDirectionEnum.IN.getValue());
-            paymentTrans.setTradeAmount(rentalAmt);
-            paymentTrans.setStartDate(startD);
-            if (i != (monthCountDiff - 1)) {
-                paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
-            } else {
-                paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+        if (rentalAmt != null && rentalAmt > 0) {
+            Date startD = rentContract.getStartDate();// 开始日期
+            boolean depositTransContractFlag = false;// 是否定金转合同
+            Double depositAgreementAmount = 0d;// 定金金额
+            if (StringUtils.isNotBlank(rentContract.getAgreementId())) {
+                DepositAgreement depositAgreement = depositAgreementDao.get(rentContract.getAgreementId());
+                depositAgreementAmount = depositAgreement.getDepositAmount();
+                depositTransContractFlag = true;
             }
-            if (depositTransContractFlag) {// 定金转合同
-                if (depositAgreementAmount >= rentalAmt) {
-                    paymentTrans.setLastAmount(0D);
-                    paymentTrans.setTransAmount(rentalAmt);
-                    paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
-                    paymentTrans.setTransferDepositAmount(rentalAmt);
-                    depositAgreementAmount = depositAgreementAmount - rentalAmt;
-                } else if (depositAgreementAmount > 0 && depositAgreementAmount < rentalAmt) {
-                    paymentTrans.setLastAmount(rentalAmt - depositAgreementAmount);
-                    paymentTrans.setTransAmount(depositAgreementAmount);
-                    paymentTrans.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
-                    paymentTrans.setTransferDepositAmount(depositAgreementAmount);
-                    depositAgreementAmount = 0d;
+            // 生成房租款项列表
+            for (int i = 0; i < monthCountDiff; i++) {
+                PaymentTrans paymentTrans = new PaymentTrans();
+                paymentTrans.setTradeType(tradeType);
+                paymentTrans.setPaymentType(PaymentTransTypeEnum.RENT_AMOUNT.getValue());
+                paymentTrans.setTransId(transObjId);
+                paymentTrans.setTradeDirection(TradeDirectionEnum.IN.getValue());
+                paymentTrans.setTradeAmount(rentalAmt);
+                paymentTrans.setStartDate(startD);
+                if (i != (monthCountDiff - 1)) {
+                    paymentTrans.setExpiredDate(DateUtils.dateAddMonth2(startD, 1));
                 } else {
+                    paymentTrans.setExpiredDate(rentContract.getExpiredDate());
+                }
+                if (depositTransContractFlag) {// 定金转合同
+                    if (depositAgreementAmount >= rentalAmt) {
+                        paymentTrans.setLastAmount(0D);
+                        paymentTrans.setTransAmount(rentalAmt);
+                        paymentTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+                        paymentTrans.setTransferDepositAmount(rentalAmt);
+                        depositAgreementAmount = depositAgreementAmount - rentalAmt;
+                    } else if (depositAgreementAmount > 0 && depositAgreementAmount < rentalAmt) {
+                        paymentTrans.setLastAmount(rentalAmt - depositAgreementAmount);
+                        paymentTrans.setTransAmount(depositAgreementAmount);
+                        paymentTrans.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
+                        paymentTrans.setTransferDepositAmount(depositAgreementAmount);
+                        depositAgreementAmount = 0d;
+                    } else {
+                        paymentTrans.setLastAmount(rentalAmt);
+                        paymentTrans.setTransAmount(0D);
+                        paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+                    }
+                } else {// 正常保存，无定金
                     paymentTrans.setLastAmount(rentalAmt);
                     paymentTrans.setTransAmount(0D);
                     paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
+                    paymentTrans.setTransferDepositAmount(0d);
                 }
-            } else {// 正常保存，无定金
-                paymentTrans.setLastAmount(rentalAmt);
-                paymentTrans.setTransAmount(0D);
-                paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-                paymentTrans.setTransferDepositAmount(0d);
-            }
-            if (rentalAmt != null && rentalAmt > 0) {
                 paymentTransService.save(paymentTrans);
+                startD = DateUtils.dateAddMonth(startD, 1);
             }
-            startD = DateUtils.dateAddMonth(startD, 1);
         }
     }
 

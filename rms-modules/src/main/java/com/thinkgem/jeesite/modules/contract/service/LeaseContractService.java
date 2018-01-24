@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -117,38 +118,35 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
             // 2.房租款项
             LeaseContractDtl leaseContractDtl = new LeaseContractDtl();
             leaseContractDtl.setLeaseContractId(leaseContract.getId());
-            List<LeaseContractDtl> list = leaseContractDtlDao.findList(leaseContractDtl);
-            List<PaymentTrans> listPaymentTrans = new ArrayList<>();
-            for (LeaseContractDtl tmpLeaseContractDtl : list) {
-                int month = DateUtils.getMonthSpace(tmpLeaseContractDtl.getStartDate(), tmpLeaseContractDtl.getEndDate());//求出每个房租周期间隔的月数
-                month = (month == 0 ? month++ : month);
-                for (int i = 1; i <= month; i++) {
-                    Double depositAmt = tmpLeaseContractDtl.getDeposit();
-                    if (depositAmt != null && depositAmt > 0) {
-                        Date startDate = i == 1 ? tmpLeaseContractDtl.getStartDate() : DateUtils.dateAddMonth2(tmpLeaseContractDtl.getStartDate(), i - 1);
-                        Date endDate = i == month ? tmpLeaseContractDtl.getEndDate() : DateUtils.dateAddMonth2(tmpLeaseContractDtl.getStartDate(), i);
+            List<LeaseContractDtl> leaseContractDtlList = leaseContractDtlDao.findList(leaseContractDtl);
+            for (LeaseContractDtl tmpLeaseContractDtl : leaseContractDtlList) {
+                Date currentStartDate = tmpLeaseContractDtl.getStartDate();//阶段开始日期
+                Date currentEndDate = tmpLeaseContractDtl.getEndDate();//阶段结束日期
+                Double depositRentAmt = tmpLeaseContractDtl.getDeposit();//阶段月承租价格
+                int curMonthCountDiff = DateUtils.getMonthSpace(currentStartDate, currentEndDate);//阶段租期间隔月数
+                if (currentEndDate.after(currentStartDate) && depositRentAmt != null && depositRentAmt > 0) {
+                    if (curMonthCountDiff <= 0) {//日期间隔不足一个月
+                        double dates = DateUtils.getDistanceOfTwoDate(currentStartDate, currentEndDate);
+                        double dailyFee = depositRentAmt / 30;
+                        double amount = dates * dailyFee;
+                        double properAmt = new BigDecimal(amount).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                        paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(),
+                                PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue(), leaseContract.getId(), TradeDirectionEnum.OUT.getValue(), properAmt, properAmt, 0d,
+                                PaymentTransStatusEnum.NO_SIGN.getValue(), currentStartDate, currentEndDate, null);
+                    } else {//日期间隔超过一个月
+                        for (int i = 0; i < curMonthCountDiff; i++) {
+                            if (i != (curMonthCountDiff - 1)) {
+                                paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(),
+                                        PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue(), leaseContract.getId(), TradeDirectionEnum.OUT.getValue(), depositRentAmt, depositRentAmt, 0d,
+                                        PaymentTransStatusEnum.NO_SIGN.getValue(), currentStartDate, DateUtils.dateAddMonth2(currentStartDate, 1), null);
+                            } else {
+                                paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(),
+                                        PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue(), leaseContract.getId(), TradeDirectionEnum.OUT.getValue(), depositRentAmt, depositRentAmt, 0d,
+                                        PaymentTransStatusEnum.NO_SIGN.getValue(), currentStartDate, currentEndDate, null);
 
-                        paymentTransService.generateAndSavePaymentTrans(TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue(), PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue(), leaseContract.getId(),
-                                TradeDirectionEnum.OUT.getValue(), leaseContract.getDeposit(), leaseContract.getDeposit(), 0d, PaymentTransStatusEnum.NO_SIGN.getValue(), leaseContract.getEffectiveDate(),
-                                leaseContract.getExpiredDate(), null);
-
-
-
-
-
-                        paymentTrans.setStartDate(startDate);
-
-                        paymentTrans.setExpiredDate(endDate);
-                        paymentTrans.setTradeAmount(depositAmt);
-                        paymentTrans.setTransAmount(0d);
-                        paymentTrans.setLastAmount(depositAmt);
-                        paymentTrans.setTransStatus(PaymentTransStatusEnum.NO_SIGN.getValue());
-                        paymentTrans.setCreateDate(new Date());
-                        paymentTrans.setCreateBy(UserUtils.getUser());
-                        paymentTrans.setUpdateDate(new Date());
-                        paymentTrans.setUpdateBy(UserUtils.getUser());
-                        paymentTrans.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-                        listPaymentTrans.add(paymentTrans);
+                            }
+                            currentStartDate = DateUtils.dateAddMonth(currentStartDate, 1);
+                        }
                     }
                 }
             }
@@ -224,7 +222,8 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     /**
      * 处理承租合同的附件信息
      */
-    private void processLeaseContractAttachmentFiles(String leaseContractId, String trusteeshipContr, String landlordId, String profile, String certificate, String relocation) {
+    private void processLeaseContractAttachmentFiles(String leaseContractId, String trusteeshipContr, String
+            landlordId, String profile, String certificate, String relocation) {
         Attachment attachment = new Attachment();
         attachment.preInsert();
         attachment.setLeaseContractId(leaseContractId);

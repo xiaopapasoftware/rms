@@ -562,7 +562,7 @@ public class RentContractController extends CommonBusinessController {
      * 应出退租核算项列表
      */
     private List<Accounting> genOutAccountListBack(RentContract rentContract, boolean isPre) {
-        List<Accounting> outAccountings = new ArrayList<Accounting>();
+        List<Accounting> outAccountings = new ArrayList<>();
         // 应退水电费押金
         Accounting eaccounting = new Accounting();
         eaccounting.setFeeType(PaymentTransTypeEnum.WATER_ELECT_DEPOSIT.getValue());
