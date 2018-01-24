@@ -98,10 +98,12 @@ public class AlipayController extends BaseController {
     private final String RESERVATION_URL = "http://rms.tangroom.com/a/app/alipay/reservation";
     private final String AFFIRM_URL = "http://rms.tangroom.com/a/app/alipay/affirm";
     private final String RECORD_URL = "http://rms.tangroom.com/a/app/alipay/phoneRecord";
-    private final String KA_CODE = "1YqOEtXtWgsrhKjIc111";
+//    private final String KA_CODE = "1YqOEtXtWgsrhKjIc111";
+    private final String KA_CODE = "DLtUVkJvqngylBZtr";
     private final String SPI_PRIVATE_KEY = "OFjw+p+lXidckub5aDa88A==";
     private final String TP_PRIVATEKEY = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDNvtbhfz3p1iH+E5uKkTA4QRTTqE3eGWcEyQc/Tacm45irqPRgGjuqBGFo4QjZRfVfKyDBfODTg6EzSrDttEM5dQNRMxgArZE/kiCxKx9jN3c0PDDcZ9UcqONqmcC4N1qoIhUX1opjrn3bCowOV6Gx/DG2vDmuY/SKgmIehoyhfT8zpbvbmQHTTYHk8HJbVbWaaMMcXiA1DtCP7+0Su7udboiE4cn7ad5Ui4GHVVmfiyeyenQedw68OJyBGw23ufYHiqivieooTiWIkeaPDLNOmdpj11XsTVFcZiSnDZpxmvmsqHVn7zjasbIcLKlBcKqkWMRt9rL9QRojrBP+6KHdAgMBAAECggEAKCpLVLY8ZfvxouI9CS4S1ciOwksm+GbJH7wG+Cq2qPbhhRF0s5Yrc6NrSMg1rATmQ+/tcxhn46Lcw2Cfbag1P3BCd4Wb9/XqVxi13SBn/jyDvuTJPR3gEro9uz/Myam0vwH4UDEHzzHvS+WhNeORo2dyZRQVxp+oy6lscj0eEyBAoqFlih7FK4dlDwGv4qsA/lgd7CZ6Q/lrk68AxOhgC3botcyrXtnLTu2/KGxeKWBkuPiRL2WmD4nL0s8VOBzxveYUTZElVlJZkELY6XwXqgcl4YOab/RHbPJrBedSbtnmNY1MIXUm7VVI5+qAgzQjUMdIKe4/Xn+mpRXQ3m5mwQKBgQDsgCoGi/eyrx85j2GOu2DRp/h3N0PDtYyxGr2TNN748Ju2P6VmKWSoP5MiLkf7VhlaxOy3qkZzE/lgpIEyoDB8n6TyyZf8Afdlr71ZI8mphOdPo69Be16pZG5KtQVZRFoKwe3fKU7BJ42OnuNiljjMD5F0v0DfWgPFLWKQUi/zxQKBgQDetYYHmWsjUJcetOhu7Etq8X76XxJ4JFoStbIAd25zHvpbPZCQ5CAkBNyOxEWfe4lzGTp0OIFWM29joNW5LBA4ZgUfCNo4mGYJ8xMJymgIWEScvu0iGK0ypixGyj8nUjlttRLVqMVbb9NLw6ar15YF8PhGfnB8+2umlemrm8SfOQKBgDo9eZvxHgd/vrXDDGhE1pvqvHJHRsXMUKBQkHzO2VX+kqn31HhrGyGfvlD9irZnRokm05CLOxwdwBy/hh18e1RFUC6F3IqvxUfiVkO8X24Cj5/6FC+Q/QfD9rEpEO8huPbLORPqrT09y0ti72YYzlXaQ5y3eHdISINnIM2fn7VtAoGAQgOIgQQmz8b5pG53XznHeSGwQ8KelOIhmN4mryC3qoQKLbVn/qrAJC0Uu3TONmHF8koOG5kMLWL9p4hrEYJQJIeJCRP0q0XxKQ3WHNbUU3TmkZe+bpbl79d11F3qrlsfDrfXp2FpbpsNBK4v30v9+jDdRvf/m+xiknRpWSbI93ECgYBjGQfRVApk1JlN9rS10RHtE+BLAIpIBTdPfh4eHVB8d0G/DN/nRLHHb3410C13Z/mZIMNb2WAfmctFZJKZthiGtBXCWvPNipCIdxUtaE8nEug8Q1SEOl2TPKYoQl8ISGHXmHMtBKLSxMsWzlBr8yTZ9NY20D9Um3OVLkf87fq2NA==";
-    private final String TP_OPENAPI_URL = "https://openapi.alipay.com/gateway.do";
+//    private final String TP_OPENAPI_URL = "https://openapi.alipay.com/gateway.do";
+    private final String TP_OPENAPI_URL = "https://openapipre.alipay.com/gateway.do";
     private final String TP_APPID = "2018012102010762";
 
     /**
@@ -110,9 +112,8 @@ public class AlipayController extends BaseController {
     @RequestMapping(value = "baseInfoSync")
     @ResponseBody
     public String baseInfoSync() throws AlipayApiException {
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
-        //注意该接口使用的前提是，需要开通新的ISVappid权限，目前开发环境的测试账号已被使用
         request.setBizContent("{" +
                 "    \"ka_name\": \" 唐巢公寓 \"" +
                 "}");
@@ -130,7 +131,7 @@ public class AlipayController extends BaseController {
     @RequestMapping(value = "baseInfoQuery/{kaCode}")
     @ResponseBody
     public String baseInfoQuery(@PathVariable("kaCode") String kaCode) throws AlipayApiException {
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoQueryRequest request = new AlipayEcoRenthouseKaBaseinfoQueryRequest();
         request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
         AlipayEcoRenthouseKaBaseinfoQueryResponse response = alipayClient.execute(request);
@@ -155,7 +156,7 @@ public class AlipayController extends BaseController {
         } else if ("3".equals(type)) {
             url = RECORD_URL;
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaServiceCreateRequest request = new AlipayEcoRenthouseKaServiceCreateRequest();
         request.setBizContent("{" +
                 "    \"address\": \"" + url + "\"," +
@@ -254,7 +255,7 @@ public class AlipayController extends BaseController {
             roomConfigs = roomConfig.delete(roomConfig.lastIndexOf(","), roomConfig.length()).toString();
         }
         Integer face = Integer.valueOf(room.getOrientation().split(",")[0]) + 1;
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
@@ -324,7 +325,7 @@ public class AlipayController extends BaseController {
         if (roomConfig.length() > 0) {
             roomConfigs = roomConfig.delete(roomConfig.lastIndexOf(","), roomConfig.length()).toString();
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
@@ -428,7 +429,7 @@ public class AlipayController extends BaseController {
         for (String imageUrl : imageUrls) {
             sb.append(imageUrl).append("\",\"");
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
@@ -484,7 +485,7 @@ public class AlipayController extends BaseController {
         for (String imageUrl : imageUrls) {
             sb.append(imageUrl).append("\",\"");
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
@@ -547,7 +548,7 @@ public class AlipayController extends BaseController {
         }
         Encoder encoder = Base64.getEncoder();
         String encode = encoder.encodeToString(data);
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseCommonImageUploadRequest request = new AlipayEcoRenthouseCommonImageUploadRequest();
         request.setBizContent("{" +
                 "    \"file_base\": \"" + encode + "\"," +
@@ -564,7 +565,7 @@ public class AlipayController extends BaseController {
     }
 
     private boolean syncPropertyProject(PropertyProject project) {
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseCommunityInfoSyncRequest request = new AlipayEcoRenthouseCommunityInfoSyncRequest();
         request.setBizContent("{" +
                 "    \"city_code\": \"" + project.getCityCode() + "\"," +
@@ -623,7 +624,7 @@ public class AlipayController extends BaseController {
         if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
                 "    \"room_code\": \"H" + house.getNewId() + "\"," +
@@ -680,7 +681,7 @@ public class AlipayController extends BaseController {
         if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8");
+        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
                 "    \"room_code\": \"R" + room.getNewId() + "\"," +
