@@ -326,7 +326,7 @@ public class AlipayController extends BaseController {
             roomConfigs = roomConfig.delete(roomConfig.lastIndexOf(","), roomConfig.length()).toString();
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
-        AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
+        AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
                 "    \"room_code\": \"R" + room.getNewId() + "\"," +
@@ -353,7 +353,7 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
-            AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
+            AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
             if (response.isSuccess()) {
                 room.setAlipayStatus(1);
                 room.setUp(UpEnum.UP.getValue());
@@ -486,7 +486,7 @@ public class AlipayController extends BaseController {
             sb.append(imageUrl).append("\",\"");
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
-        AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
+        AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
         request.setBizContent("{" +
                 "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
                 "    \"room_code\": \"H" + house.getNewId() + "\"," +
@@ -511,7 +511,7 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
-            AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
+            AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
             if (response.isSuccess()) {
                 house.setUp(UpEnum.UP.getValue());
                 houseService.updateHouseAlipayStatus(house);
