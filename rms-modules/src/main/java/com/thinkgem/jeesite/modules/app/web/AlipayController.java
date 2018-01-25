@@ -131,7 +131,8 @@ public class AlipayController extends BaseController {
     public String baseInfoSync() throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
-        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"}");
+        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"," +
+                "\"ka_code\": \"" + KA_CODE + "\"}");
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = new AlipayEcoRenthouseKaBaseinfoSyncResponse();
         try {
             logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest is:{}", JSON.toJSONString(request));
@@ -190,9 +191,9 @@ public class AlipayController extends BaseController {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaServiceCreateRequest request = new AlipayEcoRenthouseKaServiceCreateRequest();
         request.setBizContent("{" +
-                "    \"address\": \"" + url + "\"," +
-                "    \"ka_code\": \"" + KA_CODE + "\"," +
-                "    \"type\": " + type +
+                "\"address\": \"" + url + "\"," +
+                "\"ka_code\": \"" + KA_CODE + "\"," +
+                "\"type\": " + type +
                 "}");
         AlipayEcoRenthouseKaServiceCreateResponse response = new AlipayEcoRenthouseKaServiceCreateResponse();
         try {
