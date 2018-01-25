@@ -129,7 +129,9 @@ public class AlipayController extends BaseController {
         request.setBizContent("{" +
                 "    \"ka_name\": \" 唐巢公寓 \"" +
                 "}");
+        logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest detailInfo is:{}", JsonUtil.object2Json(request));
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = alipayClient.execute(request);
+        logger.info("AlipayEcoRenthouseKaBaseinfoSyncResponse detailInfo is:{}", JsonUtil.object2Json(response));
         if (response.isSuccess()) {
             return response.getKaCode();
         } else {
@@ -146,7 +148,9 @@ public class AlipayController extends BaseController {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoQueryRequest request = new AlipayEcoRenthouseKaBaseinfoQueryRequest();
         request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
+        logger.info("AlipayEcoRenthouseKaBaseinfoQueryRequest detailInfo is:{}", JsonUtil.object2Json(request));
         AlipayEcoRenthouseKaBaseinfoQueryResponse response = alipayClient.execute(request);
+        logger.info("AlipayEcoRenthouseKaBaseinfoQueryResponse detailInfo is:{}", JsonUtil.object2Json(response));
         if (response.isSuccess()) {
             return response.getValid();
         } else {
@@ -175,7 +179,9 @@ public class AlipayController extends BaseController {
                 "    \"ka_code\": \"" + KA_CODE + "\"," +
                 "    \"type\": " + type +
                 "}");
+        logger.info("AlipayEcoRenthouseKaServiceCreateRequest detailInfo is:{}", JsonUtil.object2Json(request));
         AlipayEcoRenthouseKaServiceCreateResponse response = alipayClient.execute(request);
+        logger.info("AlipayEcoRenthouseKaServiceCreateResponse detailInfo is:{}", JsonUtil.object2Json(response));
         if (response.isSuccess()) {
             return "success";
         } else {
