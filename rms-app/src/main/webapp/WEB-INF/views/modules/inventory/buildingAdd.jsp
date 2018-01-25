@@ -74,6 +74,16 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">公寓类型：</label>
+			<div class="controls">
+				<form:select path="type" class="input-xlarge required">
+					<form:option value="" label="请选择..."/>
+					<form:options items="${fns:getDictList('building_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+				</form:select>
+				<span class="help-inline"><font color="red">*</font> </span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">总楼层数：</label>
 			<div class="controls">
 				<form:input type = "number" placeholder="请填写正整数" path="totalFloorCount" htmlEscape="false" maxlength="100" class="input-xlarge digits required"/>

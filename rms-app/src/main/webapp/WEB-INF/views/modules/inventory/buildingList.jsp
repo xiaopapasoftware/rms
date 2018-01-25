@@ -49,6 +49,7 @@
 			<tr>
 				<th>物业项目</th>
 				<th>楼宇名称</th>
+				<th>公寓类型</th>
 				<th>总楼层数</th>
 				<th>公寓别名</th>
 				<th>房源最小租金</th>
@@ -72,6 +73,7 @@
 						${building.buildingName}
 					</a>
 				</td>
+				<td>${fns:getDictLabel(building.type, 'building_type', '')}</td>
 				<td>
 					${building.totalFloorCount}
 				</td>

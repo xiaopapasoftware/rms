@@ -169,7 +169,7 @@
 					${contractBook.housingCode}
 				</td>
 				<td>
-					${fns:getDictLabel(contractBook.housingType, 'house_type', '')}
+					${fns:getDictLabel(contractBook.housingType, 'building_type', '')}
 				</td>
 				<td>
 				<shiro:hasPermission name="contract:contractBook:edit">
