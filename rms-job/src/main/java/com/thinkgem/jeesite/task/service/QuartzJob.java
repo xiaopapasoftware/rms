@@ -1,6 +1,6 @@
 package com.thinkgem.jeesite.task.service;
 
-import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -55,8 +54,7 @@ public class QuartzJob {
     PaymentOrder paymentOrder = new PaymentOrder();
     paymentOrder.setOrderStatus(PaymentOrderStatusEnum.TOBEPAY.getValue());
     List<PaymentOrder> allNotPaidOrders = paymentOrderDao.findList(paymentOrder);// 所有未支付成功的订单
-    PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
-    String orderTimeout = proper.getProperty("order.timeout");
+    String orderTimeout = Global.getInstance().getConfig("order.timeout");
     for (PaymentOrder tmpPaymentOrder : allNotPaidOrders) {
       if ((new Date().getTime() - tmpPaymentOrder.getOrderDate().getTime()) / 1000 / 60 > Long.valueOf(orderTimeout)) {
         tmpPaymentOrder.preUpdate();

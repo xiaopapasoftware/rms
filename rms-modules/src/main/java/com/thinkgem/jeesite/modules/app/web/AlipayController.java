@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.app.web;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -10,7 +11,6 @@ import com.alipay.api.response.*;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
@@ -40,6 +40,7 @@ import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,19 +109,21 @@ public class AlipayController extends BaseController {
 
     @PostConstruct
     public void initParams() {
-        RESERVATION_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.reservation.url");
-        AFFIRM_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.affirm.url");
-        RECORD_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.phone.record.url");
-        KA_CODE = new PropertiesLoader("jeesite.properties").getProperty("alipay.ka.code");
-        SPI_PRIVATE_KEY = new PropertiesLoader("jeesite.properties").getProperty("alipay.spi.privatekey");
-        TP_PRIVATEKEY = new PropertiesLoader("jeesite.properties").getProperty("alipay.private.signkey");
-        TP_OPENAPI_URL = new PropertiesLoader("jeesite.properties").getProperty("alipay.open.api");
-        TP_APPID = new PropertiesLoader("jeesite.properties").getProperty("alipay.app.id");
+        Global global = Global.getInstance();
+        RESERVATION_URL = global.getConfig("alipay.reservation.url");
+        AFFIRM_URL = global.getConfig("alipay.affirm.url");
+        RECORD_URL = global.getConfig("alipay.phone.record.url");
+        KA_CODE = global.getConfig("alipay.ka.code");
+        SPI_PRIVATE_KEY = global.getConfig("alipay.spi.privatekey");
+        TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
+        TP_OPENAPI_URL = global.getConfig("alipay.open.api");
+        TP_APPID = global.getConfig("alipay.app.id");
     }
 
     /**
      * 基础信息维护
      */
+    @RequiresPermissions("alipay:baseinfo:sync")
     @RequestMapping(value = "baseInfoSync")
     @ResponseBody
     public String baseInfoSync() throws AlipayApiException {
@@ -129,9 +132,9 @@ public class AlipayController extends BaseController {
         request.setBizContent("{" +
                 "    \"ka_name\": \" 唐巢公寓 \"" +
                 "}");
-        logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest detailInfo is:{}", JsonUtil.object2Json(request));
+        logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest detailInfo is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseKaBaseinfoSyncResponse detailInfo is:{}", JsonUtil.object2Json(response));
+        logger.info("AlipayEcoRenthouseKaBaseinfoSyncResponse detailInfo is:{}", JSON.toJSONString(response));
         if (response.isSuccess()) {
             return response.getKaCode();
         } else {
@@ -142,15 +145,22 @@ public class AlipayController extends BaseController {
     /**
      * 基础信息获取
      */
+    @RequiresPermissions("alipay:baseinfo:sync")
     @RequestMapping(value = "baseInfoQuery/{kaCode}")
     @ResponseBody
-    public String baseInfoQuery(@PathVariable("kaCode") String kaCode) throws AlipayApiException {
+    public String baseInfoQuery(@PathVariable("kaCode") String kaCode) {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoQueryRequest request = new AlipayEcoRenthouseKaBaseinfoQueryRequest();
         request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
-        logger.info("AlipayEcoRenthouseKaBaseinfoQueryRequest detailInfo is:{}", JsonUtil.object2Json(request));
-        AlipayEcoRenthouseKaBaseinfoQueryResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseKaBaseinfoQueryResponse detailInfo is:{}", JsonUtil.object2Json(response));
+        AlipayEcoRenthouseKaBaseinfoQueryResponse response = new AlipayEcoRenthouseKaBaseinfoQueryResponse();
+        try {
+            logger.info("baseInfoQuery TP_OPENAPI_URL is:{}", TP_OPENAPI_URL);
+            logger.info("AlipayEcoRenthouseKaBaseinfoQueryRequest is:{}", JSON.toJSONString(request));
+            response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseKaBaseinfoQueryResponse is:{}", JSON.toJSONString(response));
+        } catch (Exception e) {
+            logger.error("baseInfoQuery execute errors!", e);
+        }
         if (response.isSuccess()) {
             return response.getValid();
         } else {
@@ -161,6 +171,7 @@ public class AlipayController extends BaseController {
     /**
      * 公寓运营商服务地址注册
      */
+    @RequiresPermissions("alipay:baseinfo:sync")
     @RequestMapping(value = "serviceCreate/{type}")
     @ResponseBody
     public String serviceCreate(@PathVariable("type") String type) throws AlipayApiException {
@@ -179,9 +190,9 @@ public class AlipayController extends BaseController {
                 "    \"ka_code\": \"" + KA_CODE + "\"," +
                 "    \"type\": " + type +
                 "}");
-        logger.info("AlipayEcoRenthouseKaServiceCreateRequest detailInfo is:{}", JsonUtil.object2Json(request));
+        logger.info("AlipayEcoRenthouseKaServiceCreateRequest detailInfo is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseKaServiceCreateResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseKaServiceCreateResponse detailInfo is:{}", JsonUtil.object2Json(response));
+        logger.info("AlipayEcoRenthouseKaServiceCreateResponse detailInfo is:{}", JSON.toJSONString(response));
         if (response.isSuccess()) {
             return "success";
         } else {
@@ -192,6 +203,7 @@ public class AlipayController extends BaseController {
     /**
      * 房间的分散式同步
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "syncRoom/{roomId}")
     public String syncRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         Room room = roomService.get(roomId);
@@ -390,6 +402,7 @@ public class AlipayController extends BaseController {
     /**
      * 房屋同步
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "syncHouse/{houseId}")
     public String syncHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         House house = houseService.get(houseId);
@@ -613,6 +626,7 @@ public class AlipayController extends BaseController {
     /**
      * 房屋上架
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "upHouse/{houseId}")
     public String upHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         if (upDownHouse(houseId, UpEnum.UP.getValue())) {
@@ -624,8 +638,9 @@ public class AlipayController extends BaseController {
     }
 
     /**
-     * 房屋上架
+     * 房屋下架
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "downHouse/{houseId}")
     public String downHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         if (upDownHouse(houseId, UpEnum.DOWN.getValue())) {
@@ -669,6 +684,7 @@ public class AlipayController extends BaseController {
     /**
      * 房间上架
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "upRoom/{roomId}")
     public String upRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         if (upDownRoom(roomId, UpEnum.UP.getValue())) {
@@ -682,6 +698,7 @@ public class AlipayController extends BaseController {
     /**
      * 房间下架
      */
+    @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "downRoom/{roomId}")
     public String downRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         if (upDownRoom(roomId, UpEnum.DOWN.getValue())) {

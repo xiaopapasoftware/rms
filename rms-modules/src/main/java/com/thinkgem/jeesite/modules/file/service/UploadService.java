@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.file.service;
 
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
@@ -27,43 +28,40 @@ import java.util.Map;
 @Service
 public class UploadService {
 
-  PropertiesLoader proper = new PropertiesLoader("jeesite.properties");
+    @Autowired
+    private UploadDao uploadDao;
 
-  @Autowired
-  private UploadDao uploadDao;
-
-  public String uploadFile(MultipartFile partFile) throws IOException {
-    String fileName = partFile.getOriginalFilename();
-    String ext = FilenameUtils.getExtension(fileName);
-    File temp = FilesEx.getTempFile(ext);
-    partFile.transferTo(temp);
-    String pathname = UploadSupport.getQuickPathname("images", ext);
-    try {
-      storeFile(temp, pathname);
-    } finally {
-      FileUtils.deleteQuietly(temp);
+    public String uploadFile(MultipartFile partFile) throws IOException {
+        String fileName = partFile.getOriginalFilename();
+        String ext = FilenameUtils.getExtension(fileName);
+        File temp = FilesEx.getTempFile(ext);
+        partFile.transferTo(temp);
+        String pathname = UploadSupport.getQuickPathname("images", ext);
+        try {
+            storeFile(temp, pathname);
+        } finally {
+            FileUtils.deleteQuietly(temp);
+        }
+        return pathname;
     }
 
-    return pathname;
-  }
+    public void storeFile(File file, String filename) throws IllegalStateException, IOException {
+        String prefix = Global.getInstance().getConfig("file.store.path");
+        File dest = new File(UploadSupport.getPath(filename, prefix));
+        FileUtils.moveFile(file, dest);
+    }
 
-  public void storeFile(File file, String filename) throws IllegalStateException, IOException {
-    String prefix = proper.getProperty("file.store.path");
-    File dest = new File(UploadSupport.getPath(filename, prefix));
-    FileUtils.moveFile(file, dest);
-  }
-
-  public List<String> queryFile(List<PropertyFilter> propertyFilters) {
-    List<Map> files = uploadDao.queryAttachment(new Criterion(propertyFilters));
-    List<String> filePaths = new ArrayList<>();
-    files.forEach(map -> {
-      String[] paths = StringUtils.split(MapUtils.getString(map, "attachment_path", ""), "|");
-      for (String path : paths) {
-        filePaths.add(path);
-      }
-    });
-    return filePaths;
-  }
+    public List<String> queryFile(List<PropertyFilter> propertyFilters) {
+        List<Map> files = uploadDao.queryAttachment(new Criterion(propertyFilters));
+        List<String> filePaths = new ArrayList<>();
+        files.forEach(map -> {
+            String[] paths = StringUtils.split(MapUtils.getString(map, "attachment_path", ""), "|");
+            for (String path : paths) {
+                filePaths.add(path);
+            }
+        });
+        return filePaths;
+    }
 
 
 }
