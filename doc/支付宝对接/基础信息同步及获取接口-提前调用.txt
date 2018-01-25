@@ -1,5 +1,5 @@
-1.公寓运营商基础信息同步:/{rms}/a/app/alipay/baseInfoSync/{name}
-	如:/{rms}/a/app/alipay/baseInfoSync/唐巢公寓
+1.公寓运营商基础信息同步:/{rms}/a/app/alipay/baseInfoSync
+	如:/{rms}/a/app/alipay/baseInfoSync
 	返回:ka_code
 2.公寓运营商基础信息获取:/{rms}/a/app/alipay/baseInfoQuery/{kaCode}  
 	如:/{rms}/a/app/alipay/baseInfoQuery/1234

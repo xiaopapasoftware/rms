@@ -106,10 +106,12 @@ public class AlipayController extends BaseController {
     public static String TP_PRIVATEKEY;//私钥
     public static String TP_OPENAPI_URL;//网关
     public static String TP_APPID;
+    public static String COMPANY_NAME;//公司名称
 
     @PostConstruct
     public void initParams() {
         Global global = Global.getInstance();
+        COMPANY_NAME = global.getConfig("alipay.company.name");
         RESERVATION_URL = global.getConfig("alipay.reservation.url");
         AFFIRM_URL = global.getConfig("alipay.affirm.url");
         RECORD_URL = global.getConfig("alipay.phone.record.url");
@@ -129,9 +131,7 @@ public class AlipayController extends BaseController {
     public String baseInfoSync() throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
-        request.setBizContent("{" +
-                "    \"ka_name\": \" 唐巢公寓 \"" +
-                "}");
+        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"}");
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = new AlipayEcoRenthouseKaBaseinfoSyncResponse();
         try {
             logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest is:{}", JSON.toJSONString(request));
