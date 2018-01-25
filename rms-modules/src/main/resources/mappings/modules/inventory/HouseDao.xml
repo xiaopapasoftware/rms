@@ -7,7 +7,12 @@
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
 		pp.comm_req_id AS "propertyProject.commReqId",
-		pp.type as "propertyProject.type",
+		<if test="type != null and type != ''">
+			tb2.TYPE AS "building.type",
+		</if>
+		<if test="type == null or type == ''">
+			tb.TYPE AS "building.type",
+		</if>
 		pp.alipay_status AS "propertyProject.alipayStatus",
 		a.building_id AS "building.id",
 		tb.building_name AS "building.buildingName",
@@ -59,6 +64,9 @@
 		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
+		<if test="type != null and type != ''">
+			JOIN t_building tb2 on tb2.id = a.building_id and tb2.TYPE = #{type}
+		</if>
 		left JOIN t_attachment atta on atta.house_id = a.id
 		<if test="owner != null and owner.id != null and owner.id != ''">
 			join t_house_owner tho on tho.house_id = a.id AND tho.owner_id = #{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
@@ -211,9 +219,6 @@
 			</if>
 			<if test="reservationPhone != null and reservationPhone != ''">
 				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
-			</if>
-			<if test="type != null and type != ''">
-				and pp.TYPE = #{type}
 			</if>
 		</where>
 

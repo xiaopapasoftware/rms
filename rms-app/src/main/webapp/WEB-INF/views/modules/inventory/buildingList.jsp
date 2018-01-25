@@ -37,6 +37,13 @@
 			<li><label>公寓别名：</label>
 				<form:input path="nickName" htmlEscape="false" maxlength="100" class="input-medium"/>
 			</li>
+			<li>
+				<label>公寓类型：</label>
+				<form:select path="type" class="input-medium">
+					<form:option value="" label="请选择..." />
+					<form:options items="${fns:getDictList('building_type')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+				</form:select>
+			</li>
 			<shiro:hasPermission name="inventory:building:view">
 				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			</shiro:hasPermission>
