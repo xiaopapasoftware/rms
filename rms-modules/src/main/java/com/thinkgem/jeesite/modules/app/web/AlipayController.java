@@ -132,9 +132,14 @@ public class AlipayController extends BaseController {
         request.setBizContent("{" +
                 "    \"ka_name\": \" 唐巢公寓 \"" +
                 "}");
-        logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest detailInfo is:{}", JSON.toJSONString(request));
-        AlipayEcoRenthouseKaBaseinfoSyncResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseKaBaseinfoSyncResponse detailInfo is:{}", JSON.toJSONString(response));
+        AlipayEcoRenthouseKaBaseinfoSyncResponse response = new AlipayEcoRenthouseKaBaseinfoSyncResponse();
+        try {
+            logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest is:{}", JSON.toJSONString(request));
+            response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseKaBaseinfoSyncResponse is:{}", JSON.toJSONString(response));
+        } catch (Exception e) {
+            logger.error("baseInfoSync execute errors!", e);
+        }
         if (response.isSuccess()) {
             return response.getKaCode();
         } else {
@@ -154,7 +159,6 @@ public class AlipayController extends BaseController {
         request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
         AlipayEcoRenthouseKaBaseinfoQueryResponse response = new AlipayEcoRenthouseKaBaseinfoQueryResponse();
         try {
-            logger.info("baseInfoQuery TP_OPENAPI_URL is:{}", TP_OPENAPI_URL);
             logger.info("AlipayEcoRenthouseKaBaseinfoQueryRequest is:{}", JSON.toJSONString(request));
             response = alipayClient.execute(request);
             logger.info("AlipayEcoRenthouseKaBaseinfoQueryResponse is:{}", JSON.toJSONString(response));
@@ -190,9 +194,14 @@ public class AlipayController extends BaseController {
                 "    \"ka_code\": \"" + KA_CODE + "\"," +
                 "    \"type\": " + type +
                 "}");
-        logger.info("AlipayEcoRenthouseKaServiceCreateRequest detailInfo is:{}", JSON.toJSONString(request));
-        AlipayEcoRenthouseKaServiceCreateResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseKaServiceCreateResponse detailInfo is:{}", JSON.toJSONString(response));
+        AlipayEcoRenthouseKaServiceCreateResponse response = new AlipayEcoRenthouseKaServiceCreateResponse();
+        try {
+            logger.info("AlipayEcoRenthouseKaServiceCreateRequest is:{}", JSON.toJSONString(request));
+            response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseKaServiceCreateResponse is:{}", JSON.toJSONString(response));
+        } catch (Exception e) {
+            logger.error("serviceCreate execute errors!", e);
+        }
         if (response.isSuccess()) {
             return "success";
         } else {
@@ -231,7 +240,7 @@ public class AlipayController extends BaseController {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间没有上传图片，请上传后再同步！");
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
-        List<String> imageUrls = new ArrayList<>();
+        List<String> imageUrls;
         try {
             imageUrls = syncPictures(room.getAttachmentPath());
         } catch (Exception e) {
@@ -316,7 +325,9 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomDispersionSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 room.setAlipayStatus(1);
                 room.setUp(UpEnum.UP.getValue());
@@ -383,7 +394,9 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomConcentrationSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 room.setAlipayStatus(1);
                 room.setUp(UpEnum.UP.getValue());
@@ -487,7 +500,9 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomDispersionSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 house.setUp(UpEnum.UP.getValue());
                 houseService.updateHouseAlipayStatus(house);
@@ -542,7 +557,9 @@ public class AlipayController extends BaseController {
                 "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomConcentrationSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 house.setUp(UpEnum.UP.getValue());
                 houseService.updateHouseAlipayStatus(house);
@@ -586,7 +603,14 @@ public class AlipayController extends BaseController {
                 "    \"file_type\": \"1\"," +
                 "    \"is_public\": true" +
                 "}");
-        AlipayEcoRenthouseCommonImageUploadResponse response = alipayClient.execute(request);
+        AlipayEcoRenthouseCommonImageUploadResponse response = new AlipayEcoRenthouseCommonImageUploadResponse();
+        try {
+            logger.info("AlipayEcoRenthouseCommonImageUploadRequest is:{}", JSON.toJSONString(request));
+            response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseCommonImageUploadResponse is:{}", JSON.toJSONString(response));
+        } catch (Exception e) {
+            logger.error("sync picture errors ", e);
+        }
         if (response.isSuccess()) {
             return response.getUrl();
         } else {
@@ -607,7 +631,9 @@ public class AlipayController extends BaseController {
                 "    \"address\": \"" + project.getProjectAddr() + "\"" +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseCommunityInfoSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseCommunityInfoSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseCommunityInfoSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 project.setAlipayStatus(Math.toIntExact(response.getStatus()));
                 project.setCommReqId(response.getCommReqId());
@@ -666,7 +692,9 @@ public class AlipayController extends BaseController {
                 "    \"flats_tag\": " + house.getType() +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 house.setUp(type);
                 houseService.updateHouseAlipayStatus(house);
@@ -725,7 +753,9 @@ public class AlipayController extends BaseController {
                 "    \"flats_tag\": " + house.getType() +
                 "}");
         try {
+            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
             if (response.isSuccess()) {
                 room.setUp(type);
                 roomService.save(room);
