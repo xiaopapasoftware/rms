@@ -110,9 +110,9 @@ CREATE TABLE T_BUILDING
   COMMENT '总楼层数',
   nick_name                  VARCHAR(16)                         DEFAULT NULL
   COMMENT '公寓别名',
-  min_amount                 VARCHAR(16)                         DEFAULT NULL
+  min_amount                 VARCHAR(16)                         DEFAULT '0'
   COMMENT '房源最小租金',
-  max_amount                 VARCHAR(16)                         DEFAULT NULL
+  max_amount                 VARCHAR(16)                         DEFAULT '0'
   COMMENT '房源最大租金',
   type                       VARCHAR(1) COLLATE utf8_estonian_ci DEFAULT NULL
   COMMENT '公寓类型,1=分散式，2=集中式',
