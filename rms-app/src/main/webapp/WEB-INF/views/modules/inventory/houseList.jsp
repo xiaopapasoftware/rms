@@ -131,7 +131,7 @@
 				<label>公寓类型：</label>
 				<form:select path="type" class="input-medium">
 					<form:option value="" label="请选择..." />
-					<form:options items="${fns:getDictList('house_type')}" itemLabel="label" itemValue="value" htmlEscape="false" />
+					<form:options items="${fns:getDictList('building_type')}" itemLabel="label" itemValue="value" htmlEscape="false" />
 				</form:select>
 			</li>
 			<shiro:hasPermission name="inventory:house:view">
@@ -185,8 +185,8 @@
 					<td><a href="${ctx}/inventory/house/form?id=${house.id}">${house.houseNo}</a></td>
 					<td>${house.reservationPhone}</td>
 					<td>${fns:getDictLabel(house.isFeature, 'yes_no', '')}</td>
+					<td>${fns:getDictLabel(house.building.type, 'building_type', '')}</td>
 					<td>${fns:getDictLabel(house.houseStatus, 'house_status', '')}</td>
-					<td>${fns:getDictLabel(house.type, 'house_type', '')}</td>
 					<td>${house.houseFloor}</td>
 					<td>${house.houseSpace}</td>
 					<td>${house.decorationSpance}</td>

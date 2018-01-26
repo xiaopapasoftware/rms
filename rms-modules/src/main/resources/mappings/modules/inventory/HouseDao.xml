@@ -7,6 +7,12 @@
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
 		pp.comm_req_id AS "propertyProject.commReqId",
+		<if test="type != null and type != ''">
+			tb2.TYPE AS "building.type",
+		</if>
+		<if test="type == null or type == ''">
+			tb.TYPE AS "building.type",
+		</if>
 		pp.alipay_status AS "propertyProject.alipayStatus",
 		a.building_id AS "building.id",
 		tb.building_name AS "building.buildingName",
@@ -44,7 +50,6 @@
 		a.water_account_num as waterAccountNum,
 		a.gas_account_num as gasAccountNum,
 		a.new_id as newId,
-		a.type as type,
 		a.share_area_config as shareAreaConfig,
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
@@ -59,6 +64,9 @@
 		LEFT JOIN sys_user u3 ON u3.id = a.service_user
 		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
 		LEFT JOIN t_building tb on tb.id = a.building_id
+		<if test="type != null and type != ''">
+			JOIN t_building tb2 on tb2.id = a.building_id and tb2.TYPE = #{type}
+		</if>
 		left JOIN t_attachment atta on atta.house_id = a.id
 		<if test="owner != null and owner.id != null and owner.id != ''">
 			join t_house_owner tho on tho.house_id = a.id AND tho.owner_id = #{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
@@ -203,9 +211,6 @@
 			<if test="isFeature != null and isFeature != ''">
 				and a.is_feature = #{isFeature}
 			</if>
-			<if test="type != null and type != ''">
-				and a.type = #{type}
-			</if>
 			<if test="rentMonthGap != null">
 				and a.rent_month_gap = #{rentMonthGap}
 			</if>
@@ -312,7 +317,6 @@
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
 		a.new_id as "newId",
-		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
@@ -369,7 +373,6 @@
 		short_desc,
 		short_location,
 		service_user,
-		type,
 		share_area_config,
 		rent_month_gap,
 		depos_month_count,
@@ -408,7 +411,6 @@
 		#{shortDesc},
 		#{shortLocation},
 		#{serviceUser.id},
-		#{type},
 		#{shareAreaConfig},
 		#{rentMonthGap},
 		#{deposMonthCount},
@@ -450,7 +452,6 @@
 		short_desc = #{shortDesc},
 		short_location = #{shortLocation},
 		service_user = #{serviceUser.id},
-		type = #{type},
 		share_area_config = #{shareAreaConfig},
 		rent_month_gap = #{rentMonthGap},
 		depos_month_count = #{deposMonthCount},
@@ -526,7 +527,6 @@
 		a.short_desc as "shortDesc",
 		a.short_location as "shortLocation",
 		a.new_id as "newId",
-		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
@@ -566,7 +566,6 @@
 		a.water_account_num as "waterAccountNum",
 		a.gas_account_num as "gasAccountNum",
 		a.new_id as "newId",
-		a.type as "type",
 		a.share_area_config as "shareAreaConfig",
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,

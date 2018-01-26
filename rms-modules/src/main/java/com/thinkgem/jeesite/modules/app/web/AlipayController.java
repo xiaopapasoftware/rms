@@ -17,7 +17,7 @@ import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
 import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
 import com.thinkgem.jeesite.modules.app.enums.AccountTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
-import com.thinkgem.jeesite.modules.app.enums.HouseTypeEnum;
+import com.thinkgem.jeesite.modules.app.enums.BuildingTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
 import com.thinkgem.jeesite.modules.app.service.CustBindInfoService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
@@ -250,9 +250,9 @@ public class AlipayController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
         boolean flag = false;
-        if (HouseTypeEnum.DISPERSION.getValue().equals(house.getType())) {
+        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getType())) {
             flag = syncDispersionRoom(room, imageUrls);
-        } else if (HouseTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
+        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
             flag = syncConcentrationRoom(room, imageUrls);
         }
         if (flag) {
@@ -447,9 +447,9 @@ public class AlipayController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
         }
         boolean flag = false;
-        if (HouseTypeEnum.DISPERSION.getValue().equals(house.getType())) {
+        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getType())) {
             flag = syncDispersionHouse(house, imageUrls);
-        } else if (HouseTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
+        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
             flag = syncConcentrationHouse(house, imageUrls);
         }
         if (flag) {

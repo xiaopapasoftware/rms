@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.BuildingDao">
-    
-	<sql id="buildingColumns">
+
+    <sql id="buildingColumns">
 		a.id AS "id",
 		a.t_property_project_main_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
@@ -19,84 +19,84 @@
 		a.del_flag AS "delFlag",
 		a.nick_name AS nickName,
 		a.min_amount AS minAmount,
-		a.max_amount AS maxAmount
+		a.max_amount AS maxAmount,
+		a.type as type
 	</sql>
-	
-	<sql id="buildingJoins">
+
+    <sql id="buildingJoins">
 		left join t_property_project pp on pp.id = a.t_property_project_main_id
 		left join sys_user u1 on u1.id = a.create_by
 		left join sys_user u2 on u2.id = a.update_by
 		left join t_attachment atta on atta.building_id = a.id
 	</sql>
-    
-	<select id="get" resultType="Building">
-		SELECT 
-			<include refid="buildingColumns"/>
-		FROM t_building a
-		<include refid="buildingJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="Building">
-		SELECT 
-			<include refid="buildingColumns"/>
-		FROM t_building a
-		<include refid="buildingJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
-				AND a.t_property_project_main_id = #{propertyProject.id}
-			</if>
-			<if test="buildingName != null and buildingName != ''">
-				AND a.building_name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{buildingName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{buildingName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{buildingName},'%')</if>
-			</if>
-			<if test="nickName != null and nickName != ''">
-				AND a.nick_name LIKE
-				<if test="dbName == 'oracle'">'%'||#{nickName}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{nickName}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{nickName},'%')</if>
-			</if>
-		</where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+    <select id="get" resultType="Building">
+        SELECT
+        <include refid="buildingColumns"/>
+        FROM t_building a
+        <include refid="buildingJoins"/>
+        WHERE a.id = #{id}
+    </select>
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="Building">
-		SELECT 
-			<include refid="buildingColumns"/>
-		FROM t_building a
-		<include refid="buildingJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
+    <select id="findList" resultType="Building">
+        SELECT
+        <include refid="buildingColumns"/>
+        FROM t_building a
+        <include refid="buildingJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+                AND a.t_property_project_main_id = #{propertyProject.id}
+            </if>
+            <if test="buildingName != null and buildingName != ''">
+                AND a.building_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{buildingName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{buildingName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{buildingName},'%')</if>
+            </if>
+            <if test="nickName != null and nickName != ''">
+                AND a.nick_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{nickName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{nickName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{nickName},'%')</if>
+            </if>
+            <if test="type != null and type != ''">
+                and a.type = #{type}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+    <select id="findAllList" resultType="Building">
+        SELECT
+        <include refid="buildingColumns"/>
+        FROM t_building a
+        <include refid="buildingJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+    <insert id="insert">
 		INSERT INTO t_building(
 			id,
 			t_property_project_main_id,
@@ -110,7 +110,8 @@
 			del_flag,
 			nick_name,
 			min_amount,
-			max_amount
+			max_amount,
+			type
 		) VALUES (
 			#{id},
 			#{propertyProject.id},
@@ -124,11 +125,12 @@
 			#{delFlag},
 			#{nickName},
 			#{minAmount},
-			#{maxAmount}
+			#{maxAmount},
+			#{type}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE t_building SET 	
 			t_property_project_main_id = #{propertyProject.id},
 			building_name = #{buildingName},
@@ -138,31 +140,32 @@
 			remarks = #{remarks},
 			nick_name = #{nickName},
 			min_amount = #{minAmount},
-			max_amount = #{maxAmount}
+			max_amount = #{maxAmount},
+			TYPE = #{type}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE t_building SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
-	<select id="findBuildingByBldNameAndProProj" resultType="Building">
-		SELECT 	
-			a.id AS "id",
-			a.t_property_project_main_id AS "propertyProject.id",
-			a.building_name AS "buildingName",
-			a.del_flag AS "delFlag"
-		FROM t_building a
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.t_property_project_main_id = #{propertyProject.id}
-			AND a.building_name = #{buildingName}
-		</where>
-	</select>
 
-	<select id="getBuildingListByProjectId" resultType="Building">
+    <select id="findBuildingByBldNameAndProProj" resultType="Building">
+        SELECT
+        a.id AS "id",
+        a.t_property_project_main_id AS "propertyProject.id",
+        a.building_name AS "buildingName",
+        a.del_flag AS "delFlag"
+        FROM t_building a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.t_property_project_main_id = #{propertyProject.id}
+            AND a.building_name = #{buildingName}
+        </where>
+    </select>
+
+    <select id="getBuildingListByProjectId" resultType="Building">
 		SELECT
 		a.id AS "id",
 		a.t_property_project_main_id AS "propertyProject.id",
@@ -176,7 +179,8 @@
 		a.del_flag AS "delFlag",
 		a.nick_name AS nickName,
 		a.min_amount AS minAmount,
-		a.max_amount AS maxAmount
+		a.max_amount AS maxAmount,
+		a.type AS type
 		FROM t_building a
 		WHERE
 			a.del_flag = '0'

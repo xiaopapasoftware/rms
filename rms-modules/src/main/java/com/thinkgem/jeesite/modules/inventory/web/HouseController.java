@@ -69,7 +69,7 @@ public class HouseController extends BaseController {
   @RequiresPermissions("inventory:house:view")
   @RequestMapping(value = {"list"})
   public String listQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
-    Page<House> page = houseService.findPage(new Page<House>(request, response), house);
+    Page<House> page = houseService.findPage(new Page<>(request, response), house);
     model.addAttribute("page", page);
     // 查询房屋下所有的业主信息
     if (page != null && CollectionUtils.isNotEmpty(page.getList())) {
