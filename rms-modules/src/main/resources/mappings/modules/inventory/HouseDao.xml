@@ -64,7 +64,7 @@
     </sql>
 
     <select id="get" resultType="House">
-        SELECT
+        SELECT DISTINCT
         <include refid="houseColumns"/>
         FROM t_house a
         <include refid="houseJoins"/>
@@ -264,7 +264,7 @@
 	</select>
 
     <select id="findAllList" resultType="House">
-        SELECT
+        SELECT DISTINCT
         <include refid="houseColumns"/>
         FROM t_house a
         <include refid="houseJoins"/>
