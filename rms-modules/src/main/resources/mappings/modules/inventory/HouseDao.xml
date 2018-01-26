@@ -141,7 +141,7 @@
 	</select>
 
     <select id="findList" resultType="House">
-        SELECT
+        SELECT DISTINCT
         <include refid="houseColumns"/>
         FROM t_house a
         <include refid="houseJoins"/>
@@ -532,6 +532,7 @@
 		a.building_id AS "building.id",
 		a.owner_id AS "owner.id",
 		a.house_no AS "houseNo",
+		tb.TYPE AS "building.type",
 		a.house_floor AS "houseFloor",
 		a.house_space AS "houseSpace",
 		a.decoration_spance AS "decorationSpance",
@@ -558,10 +559,8 @@
 		a.alipay_status as alipayStatus,
 		a.up as up,
 		a.reservation_phone as reservationPhone
-		FROM t_house a
-		where
-		a.del_flag = '0'
-		AND a.id = #{id}
+		FROM t_house a LEFT JOIN t_building tb on tb.id = a.building_id and tb.del_flag = '0'
+		where a.del_flag = '0' AND a.id = #{id}
 	</select>
 
     <select id="getHouseByAccountNumAndNumType" resultType="java.util.Map">

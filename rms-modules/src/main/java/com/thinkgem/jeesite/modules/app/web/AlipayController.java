@@ -211,7 +211,7 @@ public class AlipayController extends BaseController {
     }
 
     /**
-     * 房间的分散式同步
+     * 房间同步（集中式/分散式）
      */
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "syncRoom/{roomId}")
@@ -250,9 +250,9 @@ public class AlipayController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
         boolean flag = false;
-        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getType())) {
+        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getBuilding().getType())) {
             flag = syncDispersionRoom(room, imageUrls);
-        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
+        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getBuilding().getType())) {
             flag = syncConcentrationRoom(room, imageUrls);
         }
         if (flag) {
@@ -414,7 +414,7 @@ public class AlipayController extends BaseController {
     }
 
     /**
-     * 房屋同步
+     * 房屋同步（分散式/集中式）
      */
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "syncHouse/{houseId}")
@@ -447,9 +447,9 @@ public class AlipayController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
         }
         boolean flag = false;
-        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getType())) {
+        if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getBuilding().getType())) {
             flag = syncDispersionHouse(house, imageUrls);
-        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getType())) {
+        } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getBuilding().getType())) {
             flag = syncConcentrationHouse(house, imageUrls);
         }
         if (flag) {
@@ -690,7 +690,7 @@ public class AlipayController extends BaseController {
                 "    \"room_code\": \"H" + house.getNewId() + "\"," +
                 "    \"room_status\": " + type + "," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"flats_tag\": " + house.getType() +
+                "    \"flats_tag\": " + house.getBuilding().getType() +
                 "}");
         try {
             logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
@@ -751,7 +751,7 @@ public class AlipayController extends BaseController {
                 "    \"room_code\": \"R" + room.getNewId() + "\"," +
                 "    \"room_status\": " + type + "," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"flats_tag\": " + house.getType() +
+                "    \"flats_tag\": " + house.getBuilding().getType() +
                 "}");
         try {
             logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
