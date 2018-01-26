@@ -180,7 +180,7 @@
 					${phoneRecord.roomNo}
 				</td>
 				<td>
-					${fns:getDictLabel(phoneRecord.flatsTag, 'building_type', '')}
+					${fns:getDictLabel(phoneRecord.flatsTag, 'housing_type', '')}
 				</td>
 				<td>
 					${phoneRecord.aliUserId}

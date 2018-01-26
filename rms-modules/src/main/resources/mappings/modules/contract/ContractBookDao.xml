@@ -22,7 +22,6 @@
 		a.housing_type as housingType
 	</sql>
 
-    
 	<select id="get" resultType="ContractBook">
 		SELECT 
 			<include refid="contractBookColumns"/>

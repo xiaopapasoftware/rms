@@ -17,7 +17,6 @@ public class PhoneRecord extends DataEntity<PhoneRecord> {
     private String zhimaOpenId;
     private String roomCode;
     private Date recordTime;
-
     private String projectName;
     private String buildingName;
     private String houseCode;
