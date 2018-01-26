@@ -2,94 +2,76 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.HouseDao">
 
-	<sql id="houseColumns">
-		a.id AS "id",
-		a.property_project_id AS "propertyProject.id",
-		pp.project_name AS "propertyProject.projectName",
-		pp.comm_req_id AS "propertyProject.commReqId",
-		<if test="type != null and type != ''">
-			tb2.TYPE AS "building.type",
-		</if>
-		<if test="type == null or type == ''">
-			tb.TYPE AS "building.type",
-		</if>
-		pp.alipay_status AS "propertyProject.alipayStatus",
-		a.building_id AS "building.id",
-		tb.building_name AS "building.buildingName",
-		tb.TOTAL_FLOOR_COUNT AS "building.totalFloorCount",
-		a.house_code AS "houseCode",
-		a.house_no AS "houseNo",
-		a.certificate_no AS "certificateNo",
-		a.house_floor AS "houseFloor",
-		a.house_space AS "houseSpace",
-		a.decoration_spance AS "decorationSpance",
-		a.ORI_STRUC_ROOM_NUM AS "oriStrucRoomNum",
-		a.ORI_STRUC_CUSSPAC_NUM AS "oriStrucCusspacNum",
-		a.ORI_STRUC_WASHRO_NUM AS "oriStrucWashroNum",
-		a.DECORA_STRUC_ROOM_NUM AS "decoraStrucRoomNum",
-		a.DECORA_STRUC_CUSSPAC_NUM AS "decoraStrucCusspacNum",
-		a.DECORA_STRUC_WASHRO_NUM AS "decoraStrucWashroNum",
-		a.house_status AS "houseStatus",
-		a.create_by AS "createBy.id",
-		u1.login_name AS "createBy.loginName",
-		a.create_date AS "createDate",
-		a.update_by AS "updateBy.id",
-		u2.login_name AS "updateBy.loginName",
-		a.update_date AS "updateDate",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag",
-		atta.attachment_path AS "attachmentPath",
-		a.intent_mode as "intentMode",
-		a.is_feature as "isFeature",
-		a.rental as "rental",
-		a.short_desc as "shortDesc",
-		a.short_location as "shortLocation",
-		a.service_user as "serviceUser.id",
-		u3.name as "serviceUser.name",
-		a.ele_account_num as eleAccountNum,
-		a.water_account_num as waterAccountNum,
-		a.gas_account_num as gasAccountNum,
-		a.new_id as newId,
-		a.share_area_config as shareAreaConfig,
-		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount,
-		a.alipay_status as alipayStatus,
-		a.up as up,
-		a.reservation_phone as reservationPhone
-	</sql>
+    <sql id="houseColumns">
+        a.id AS "id",
+        a.property_project_id AS "propertyProject.id",
+        pp.project_name AS "propertyProject.projectName",
+        pp.comm_req_id AS "propertyProject.commReqId",
+        tb.TYPE AS "building.type",
+        pp.alipay_status AS "propertyProject.alipayStatus",
+        a.building_id AS "building.id",
+        tb.building_name AS "building.buildingName",
+        tb.TOTAL_FLOOR_COUNT AS "building.totalFloorCount",
+        a.house_code AS "houseCode",
+        a.house_no AS "houseNo",
+        a.certificate_no AS "certificateNo",
+        a.house_floor AS "houseFloor",
+        a.house_space AS "houseSpace",
+        a.decoration_spance AS "decorationSpance",
+        a.ORI_STRUC_ROOM_NUM AS "oriStrucRoomNum",
+        a.ORI_STRUC_CUSSPAC_NUM AS "oriStrucCusspacNum",
+        a.ORI_STRUC_WASHRO_NUM AS "oriStrucWashroNum",
+        a.DECORA_STRUC_ROOM_NUM AS "decoraStrucRoomNum",
+        a.DECORA_STRUC_CUSSPAC_NUM AS "decoraStrucCusspacNum",
+        a.DECORA_STRUC_WASHRO_NUM AS "decoraStrucWashroNum",
+        a.house_status AS "houseStatus",
+        a.create_by AS "createBy.id",
+        u1.login_name AS "createBy.loginName",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy.id",
+        u2.login_name AS "updateBy.loginName",
+        a.update_date AS "updateDate",
+        a.remarks AS "remarks",
+        a.del_flag AS "delFlag",
+        atta.attachment_path AS "attachmentPath",
+        a.intent_mode as "intentMode",
+        a.is_feature as "isFeature",
+        a.rental as "rental",
+        a.short_desc as "shortDesc",
+        a.short_location as "shortLocation",
+        a.service_user as "serviceUser.id",
+        u3.name as "serviceUser.name",
+        a.ele_account_num as eleAccountNum,
+        a.water_account_num as waterAccountNum,
+        a.gas_account_num as gasAccountNum,
+        a.new_id as newId,
+        a.share_area_config as shareAreaConfig,
+        a.rent_month_gap as rentMonthGap,
+        a.depos_month_count as deposMonthCount,
+        a.alipay_status as alipayStatus,
+        a.up as up,
+        a.reservation_phone as reservationPhone
+    </sql>
 
-	<sql id="houseJoins">
-		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN sys_user u2 ON u2.id = a.update_by
-		LEFT JOIN sys_user u3 ON u3.id = a.service_user
-		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
-		LEFT JOIN t_building tb on tb.id = a.building_id
-		<if test="type != null and type != ''">
-			JOIN t_building tb2 on tb2.id = a.building_id and tb2.TYPE = #{type}
-		</if>
-		left JOIN t_attachment atta on atta.house_id = a.id
-		<if test="owner != null and owner.id != null and owner.id != ''">
-			join t_house_owner tho on tho.house_id = a.id AND tho.owner_id = #{owner.id} and tho.del_flag = #{DEL_FLAG_NORMAL}
-		</if>
-	</sql>
+    <sql id="houseJoins">
+        LEFT JOIN sys_user u1 ON u1.id = a.create_by and u1.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN sys_user u2 ON u2.id = a.update_by and u2.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN sys_user u3 ON u3.id = a.service_user and u3.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN t_property_project pp on pp.id = a.property_project_id and pp.del_flag = #{DEL_FLAG_NORMAL}
+        LEFT JOIN t_building tb on tb.id = a.building_id and tb.del_flag = #{DEL_FLAG_NORMAL}
+        left JOIN t_attachment atta on atta.house_id = a.id and atta.del_flag = #{DEL_FLAG_NORMAL}
+        left join t_house_owner tho on tho.house_id = a.id  and tho.del_flag = #{DEL_FLAG_NORMAL}
+    </sql>
 
-	<select id="get" resultType="House">
-		SELECT
-		<include refid="houseColumns" />
-		FROM t_house a
-		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN
-		sys_user u2 ON u2.id = a.update_by
-		LEFT JOIN sys_user u3 ON u3.id =
-		a.service_user
-		LEFT JOIN t_property_project pp on pp.id =
-		a.property_project_id
-		LEFT JOIN t_building tb on tb.id = a.building_id
-		left JOIN t_attachment atta on atta.house_id = a.id
-		WHERE a.id = #{id}
-	</select>
+    <select id="get" resultType="House">
+        SELECT
+        <include refid="houseColumns"/>
+        FROM t_house a
+        <include refid="houseJoins"/>
+        WHERE a.id = #{id}
+    </select>
 
-	<select id="getFeatureInfo" resultType="House">
+    <select id="getFeatureInfo" resultType="House">
 		SELECT
 		*
 		FROM
@@ -144,7 +126,7 @@
 		WHERE r.id = #{id})t2
 	</select>
 
-	<select id="getHouseByHouseId" resultType="House">
+    <select id="getHouseByHouseId" resultType="House">
 		select 
 				h.id house_id,
 				'' room_id 
@@ -158,84 +140,88 @@
 		where 	r.id=#{id}
 	</select>
 
-	<select id="findList" resultType="House">
-		SELECT
-		<include refid="houseColumns" />
-		FROM t_house a
-		<include refid="houseJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if
-				test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
-				AND a.property_project_id = #{propertyProject.id}
-			</if>
-			<if test="building != null and building.id != null and building.id != ''">
-				AND a.building_id = #{building.id}
-			</if>
-			<if test="houseNo != null and houseNo != ''">
-				AND a.house_no LIKE
-				<if test="dbName == 'oracle'">'%'||#{houseNo}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{houseNo}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{houseNo},'%')</if>
-			</if>
-			<if test="certificateNo != null and certificateNo != ''">
-				AND a.certificate_no LIKE
-				<if test="dbName == 'oracle'">'%'||#{certificateNo}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{certificateNo}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{certificateNo},'%')</if>
-			</if>
-			<if test="houseCode != null and houseCode != ''">
-				AND a.house_code LIKE
-				<if test="dbName == 'oracle'">'%'||#{houseCode}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{houseCode}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{houseCode},'%')</if>
-			</if>
-			<if test="houseStatus != null and houseStatus != ''">
-				AND a.house_status = #{houseStatus}
-			</if>
-			<if test="eleAccountNum != null and eleAccountNum != ''">
-				AND a.ele_account_num = #{eleAccountNum}
-			</if>
-			<if test="waterAccountNum != null and waterAccountNum != ''">
-				AND a.water_account_num = #{waterAccountNum}
-			</if>
-			<if test="gasAccountNum != null and gasAccountNum != ''">
-				AND a.gas_account_num = #{gasAccountNum}
-			</if>
-			<if test="choose != null and choose != ''">
-				and a.house_status not in('0','2','4')
-			</if>
-			<if test="intentMode != null and intentMode != ''">
-				and a.intent_mode = #{intentMode}
-			</if>
-			<if test="isFeature != null and isFeature != ''">
-				and a.is_feature = #{isFeature}
-			</if>
-			<if test="rentMonthGap != null">
-				and a.rent_month_gap = #{rentMonthGap}
-			</if>
-			<if test="deposMonthCount != null">
-				and a.depos_month_count = #{deposMonthCount}
-			</if>
-			<if test="reservationPhone != null and reservationPhone != ''">
-				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
-			</if>
-		</where>
+    <select id="findList" resultType="House">
+        SELECT
+        <include refid="houseColumns"/>
+        FROM t_house a
+        <include refid="houseJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if
+                    test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+                AND a.property_project_id = #{propertyProject.id}
+            </if>
+            <if test="building != null and building.id != null and building.id != ''">
+                AND a.building_id = #{building.id}
+            </if>
+            <if test="houseNo != null and houseNo != ''">
+                AND a.house_no LIKE
+                <if test="dbName == 'oracle'">'%'||#{houseNo}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{houseNo}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{houseNo},'%')</if>
+            </if>
+            <if test="certificateNo != null and certificateNo != ''">
+                AND a.certificate_no LIKE
+                <if test="dbName == 'oracle'">'%'||#{certificateNo}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{certificateNo}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{certificateNo},'%')</if>
+            </if>
+            <if test="houseCode != null and houseCode != ''">
+                AND a.house_code LIKE
+                <if test="dbName == 'oracle'">'%'||#{houseCode}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{houseCode}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{houseCode},'%')</if>
+            </if>
+            <if test="houseStatus != null and houseStatus != ''">
+                AND a.house_status = #{houseStatus}
+            </if>
+            <if test="eleAccountNum != null and eleAccountNum != ''">
+                AND a.ele_account_num = #{eleAccountNum}
+            </if>
+            <if test="waterAccountNum != null and waterAccountNum != ''">
+                AND a.water_account_num = #{waterAccountNum}
+            </if>
+            <if test="gasAccountNum != null and gasAccountNum != ''">
+                AND a.gas_account_num = #{gasAccountNum}
+            </if>
+            <if test="choose != null and choose != ''">
+                and a.house_status not in('0','2','4')
+            </if>
+            <if test="intentMode != null and intentMode != ''">
+                and a.intent_mode = #{intentMode}
+            </if>
+            <if test="isFeature != null and isFeature != ''">
+                and a.is_feature = #{isFeature}
+            </if>
+            <if test="rentMonthGap != null">
+                and a.rent_month_gap = #{rentMonthGap}
+            </if>
+            <if test="deposMonthCount != null">
+                and a.depos_month_count = #{deposMonthCount}
+            </if>
+            <if test="reservationPhone != null and reservationPhone != ''">
+                and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
+            </if>
+            <if test="type != null and type != ''">
+                and tb.TYPE = #{type}
+            </if>
+            <if test="owner != null and owner.id != null and owner.id != ''">
+                and tho.owner_id = #{owner.id}
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
-
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-
-	<select id="findFeatureList" resultType="House">
+    <select id="findFeatureList" resultType="House">
 		SELECT
 		*
 		FROM
@@ -277,70 +263,70 @@
 		AND r.del_flag = '0') t2
 	</select>
 
-	<select id="findAllList" resultType="House">
-		SELECT
-		<include refid="houseColumns" />
-		FROM t_house a
-		<include refid="houseJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
+    <select id="findAllList" resultType="House">
+        SELECT
+        <include refid="houseColumns"/>
+        FROM t_house a
+        <include refid="houseJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-	<select id="findHouseListByProPrjAndBuildingAndHouseNo" resultType="House">
-		SELECT
-		a.id AS "id",
-		a.property_project_id AS "propertyProject.id",
-		a.building_id AS "building.id",
-		a.owner_id AS "owner.id",
-		a.house_no AS "houseNo",
-		a.house_code AS "houseCode",
-		a.house_status AS "houseStatus",
-		a.house_floor AS "houseFloor",
-		a.house_space AS "houseSpace",
-		a.ele_account_num AS "eleAccountNum",
-		a.water_account_num AS "waterAccountNum",
-		a.gas_account_num AS "gasAccountNum",
-		a.decoration_spance AS "decorationSpance",
-		a.is_feature as "isFeature",
-		a.rental as "rental",
-		a.short_desc as "shortDesc",
-		a.short_location as "shortLocation",
-		a.new_id as "newId",
-		a.share_area_config as "shareAreaConfig",
-		a.rent_month_gap as rentMonthGap,
-		a.depos_month_count as deposMonthCount,
-		a.alipay_status as alipayStatus,
-		a.up as up,
-		a.reservation_phone as reservationPhone
-		FROM t_house a
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.property_project_id =
-			#{propertyProject.id}
-			AND a.building_id = #{building.id}
-			AND a.house_no
-			= #{houseNo}
-		</where>
-	</select>
+    <select id="findHouseListByProPrjAndBuildingAndHouseNo" resultType="House">
+        SELECT
+        a.id AS "id",
+        a.property_project_id AS "propertyProject.id",
+        a.building_id AS "building.id",
+        a.owner_id AS "owner.id",
+        a.house_no AS "houseNo",
+        a.house_code AS "houseCode",
+        a.house_status AS "houseStatus",
+        a.house_floor AS "houseFloor",
+        a.house_space AS "houseSpace",
+        a.ele_account_num AS "eleAccountNum",
+        a.water_account_num AS "waterAccountNum",
+        a.gas_account_num AS "gasAccountNum",
+        a.decoration_spance AS "decorationSpance",
+        a.is_feature as "isFeature",
+        a.rental as "rental",
+        a.short_desc as "shortDesc",
+        a.short_location as "shortLocation",
+        a.new_id as "newId",
+        a.share_area_config as "shareAreaConfig",
+        a.rent_month_gap as rentMonthGap,
+        a.depos_month_count as deposMonthCount,
+        a.alipay_status as alipayStatus,
+        a.up as up,
+        a.reservation_phone as reservationPhone
+        FROM t_house a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.property_project_id =
+            #{propertyProject.id}
+            AND a.building_id = #{building.id}
+            AND a.house_no
+            = #{houseNo}
+        </where>
+    </select>
 
-	<select id="getCurrentValidHouseNum" resultType="int">
+    <select id="getCurrentValidHouseNum" resultType="int">
 		SELECT count(*)
 		from t_house
 		WHERE del_flag = #{DEL_FLAG_NORMAL}
 	</select>
 
-	<insert id="insert">
+    <insert id="insert">
 		INSERT INTO t_house(
 		id,
 		property_project_id,
@@ -420,54 +406,54 @@
 		)
 	</insert>
 
-	<update id="update">
-		UPDATE t_house SET
-		property_project_id = #{propertyProject.id},
-		building_id = #{building.id},
-		owner_id = #{owner.id},
-		house_code = #{houseCode},
-		house_no = #{houseNo},
-		certificate_no = #{certificateNo},
-		house_floor = #{houseFloor},
-		house_space = #{houseSpace},
-		decoration_spance = #{decorationSpance},
-		ORI_STRUC_ROOM_NUM = #{oriStrucRoomNum},
-		ORI_STRUC_CUSSPAC_NUM= #{oriStrucCusspacNum},
-		ORI_STRUC_WASHRO_NUM= #{oriStrucWashroNum},
-		DECORA_STRUC_ROOM_NUM= #{decoraStrucRoomNum},
-		DECORA_STRUC_CUSSPAC_NUM= #{decoraStrucCusspacNum},
-		DECORA_STRUC_WASHRO_NUM= #{decoraStrucWashroNum},
-		ele_account_num= #{eleAccountNum},
-		water_account_num= #{waterAccountNum},
-		gas_account_num= #{gasAccountNum},
-		<if test="houseStatus != null and houseStatus != ''">
-			house_status = #{houseStatus},
-		</if>
-		update_by = #{updateBy.id},
-		update_date = #{updateDate},
-		remarks = #{remarks},
-		intent_mode = #{intentMode},
-		is_feature = #{isFeature},
-		rental = #{rental},
-		short_desc = #{shortDesc},
-		short_location = #{shortLocation},
-		service_user = #{serviceUser.id},
-		share_area_config = #{shareAreaConfig},
-		rent_month_gap = #{rentMonthGap},
-		depos_month_count = #{deposMonthCount},
-		alipay_status = #{alipayStatus},
-		up = #{up},
-		reservation_phone = #{reservationPhone}
-		WHERE id = #{id}
-	</update>
+    <update id="update">
+        UPDATE t_house SET
+        property_project_id = #{propertyProject.id},
+        building_id = #{building.id},
+        owner_id = #{owner.id},
+        house_code = #{houseCode},
+        house_no = #{houseNo},
+        certificate_no = #{certificateNo},
+        house_floor = #{houseFloor},
+        house_space = #{houseSpace},
+        decoration_spance = #{decorationSpance},
+        ORI_STRUC_ROOM_NUM = #{oriStrucRoomNum},
+        ORI_STRUC_CUSSPAC_NUM= #{oriStrucCusspacNum},
+        ORI_STRUC_WASHRO_NUM= #{oriStrucWashroNum},
+        DECORA_STRUC_ROOM_NUM= #{decoraStrucRoomNum},
+        DECORA_STRUC_CUSSPAC_NUM= #{decoraStrucCusspacNum},
+        DECORA_STRUC_WASHRO_NUM= #{decoraStrucWashroNum},
+        ele_account_num= #{eleAccountNum},
+        water_account_num= #{waterAccountNum},
+        gas_account_num= #{gasAccountNum},
+        <if test="houseStatus != null and houseStatus != ''">
+            house_status = #{houseStatus},
+        </if>
+        update_by = #{updateBy.id},
+        update_date = #{updateDate},
+        remarks = #{remarks},
+        intent_mode = #{intentMode},
+        is_feature = #{isFeature},
+        rental = #{rental},
+        short_desc = #{shortDesc},
+        short_location = #{shortLocation},
+        service_user = #{serviceUser.id},
+        share_area_config = #{shareAreaConfig},
+        rent_month_gap = #{rentMonthGap},
+        depos_month_count = #{deposMonthCount},
+        alipay_status = #{alipayStatus},
+        up = #{up},
+        reservation_phone = #{reservationPhone}
+        WHERE id = #{id}
+    </update>
 
-	<update id="delete">
+    <update id="delete">
 		UPDATE t_house SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
-	<update id="updateHouseStatus4NewSign">
+    <update id="updateHouseStatus4NewSign">
 		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
@@ -477,7 +463,7 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<update id="updateHouseStatus4RenewSign">
+    <update id="updateHouseStatus4RenewSign">
 		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
@@ -487,7 +473,7 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<update id="updateHouseStatusFromDepositToContract">
+    <update id="updateHouseStatusFromDepositToContract">
 		UPDATE  t_house
 		SET 	house_status = '4',
 			    update_by = #{updateBy.id},
@@ -497,7 +483,7 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<update id="updateHouseStatus4Deposit">
+    <update id="updateHouseStatus4Deposit">
 		UPDATE  t_house
 		SET 	house_status = '2',
 			    update_by = #{updateBy.id},
@@ -507,7 +493,7 @@
 		and 	del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<select id="findHouseListByBuildingId" resultType="House">
+    <select id="findHouseListByBuildingId" resultType="House">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
@@ -539,7 +525,7 @@
 		AND a.building_id = #{buildingId}
 	</select>
 
-	<select id="getHouseById" resultType="House">
+    <select id="getHouseById" resultType="House">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
@@ -578,47 +564,47 @@
 		AND a.id = #{id}
 	</select>
 
-	<select id="getHouseByAccountNumAndNumType" resultType="java.util.Map">
-		SELECT th.id,th.ele_account_num eleAccountNum,th.water_account_num waterAccountNum,
-		th.gas_account_num gasAccountNum,th.intent_mode intentModel,
-		concat(tpp.PROJECT_ADDR,tb.BUILDING_NAME,'号',th.HOUSE_NO,'室') projectAddr
-		FROM T_HOUSE th
-		LEFT JOIN t_building tb ON th.BUILDING_ID=tb.ID AND tb.del_flag=0
-		LEFT JOIN t_property_project tpp ON th.PROPERTY_PROJECT_ID = tpp.ID  AND tpp.del_flag=0
-		<where>
-			th.del_flag=0
-			<choose>
-				<when test="numType==0">
-					AND th.ele_account_num LIKE '%${accountNum}%'
-				</when>
-				<when test="numType==2">
-					AND th.water_account_num LIKE '%${accountNum}%'
-				</when>
-				<when test="numType==1">
-					  AND th.gas_account_num LIKE '%${accountNum}%'
-				</when>
-				<when test="numType==3">
-					AND concat(tpp.PROJECT_ADDR,tb.BUILDING_NAME,'号',th.HOUSE_NO,'室') LIKE '%${accountNum}%'
-				</when>
-				<otherwise>
-					AND 1=2
-				</otherwise>
-			</choose>
-		</where>
-	</select>
+    <select id="getHouseByAccountNumAndNumType" resultType="java.util.Map">
+        SELECT th.id,th.ele_account_num eleAccountNum,th.water_account_num waterAccountNum,
+        th.gas_account_num gasAccountNum,th.intent_mode intentModel,
+        concat(tpp.PROJECT_ADDR,tb.BUILDING_NAME,'号',th.HOUSE_NO,'室') projectAddr
+        FROM T_HOUSE th
+        LEFT JOIN t_building tb ON th.BUILDING_ID=tb.ID AND tb.del_flag=0
+        LEFT JOIN t_property_project tpp ON th.PROPERTY_PROJECT_ID = tpp.ID AND tpp.del_flag=0
+        <where>
+            th.del_flag=0
+            <choose>
+                <when test="numType==0">
+                    AND th.ele_account_num LIKE '%${accountNum}%'
+                </when>
+                <when test="numType==2">
+                    AND th.water_account_num LIKE '%${accountNum}%'
+                </when>
+                <when test="numType==1">
+                    AND th.gas_account_num LIKE '%${accountNum}%'
+                </when>
+                <when test="numType==3">
+                    AND concat(tpp.PROJECT_ADDR,tb.BUILDING_NAME,'号',th.HOUSE_NO,'室') LIKE '%${accountNum}%'
+                </when>
+                <otherwise>
+                    AND 1=2
+                </otherwise>
+            </choose>
+        </where>
+    </select>
 
-	<update id="updateHouseAlipayStatus">
-		UPDATE  t_house
-		SET 	alipay_status = '1',
-		update_by = #{updateBy.id},
-		update_date = #{updateDate}
-		<if test="up != null and up != ''">
-			,up = #{up}
-		</if>
-		WHERE   id = #{id}
-	</update>
+    <update id="updateHouseAlipayStatus">
+        UPDATE t_house
+        SET alipay_status = '1',
+        update_by = #{updateBy.id},
+        update_date = #{updateDate}
+        <if test="up != null and up != ''">
+            ,up = #{up}
+        </if>
+        WHERE id = #{id}
+    </update>
 
-	<select id="getByNewId" resultType="House" parameterType="java.lang.String">
+    <select id="getByNewId" resultType="House" parameterType="java.lang.String">
 		select * from t_house where del_flag = '0' and new_id = #{newId}
 	</select>
 

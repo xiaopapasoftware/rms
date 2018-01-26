@@ -21,11 +21,8 @@ public class Building extends DataEntity<Building> {
     private PropertyProject propertyProject; // 物业项目
     private String buildingName; // 楼宇名称
     private String attachmentPath; // 楼宇图片路径
-
     private int totalFloorCount; //总楼层数
-
     private String choose;
-
     private String nickName;
     private String minAmount;
     private String maxAmount;

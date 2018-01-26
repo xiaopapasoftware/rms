@@ -128,8 +128,7 @@ public class HouseController extends BaseController {
     House house = new House();
     house.setBuilding(building);
     house.setChoose(building.getChoose());// 过滤不可用
-    List<House> list = houseService.findList(house);
-    return list;
+    return houseService.findList(house);
   }
 
   @RequiresPermissions("inventory:house:view")
