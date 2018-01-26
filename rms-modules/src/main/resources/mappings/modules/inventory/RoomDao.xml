@@ -2,18 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.inventory.dao.RoomDao">
 
-	<sql id="roomColumns">
+    <sql id="roomColumns">
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		pp.project_name AS "propertyProject.projectName",
 		a.building_id AS
 		"building.id",
 		tb.building_name AS "building.buildingName",
+		tb.type AS "building.type",
 		a.house_id
 		AS "house.id",
 		th.house_no AS "house.houseNo",
 		th.intent_mode AS "house.intentMode",
-		th.type AS "house.type",
 		a.room_no AS "roomNo",
 		a.meter_no AS "meterNo",
 		a.room_space AS "roomSpace",
@@ -47,7 +47,7 @@
 		a.reservation_phone as reservationPhone
 	</sql>
 
-	<sql id="roomJoins">
+    <sql id="roomJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN
 		sys_user u2 ON u2.id = a.update_by
@@ -60,71 +60,71 @@
 		t_attachment atta on atta.room_id = a.id
 	</sql>
 
-	<select id="get" resultType="Room">
-		SELECT
-		<include refid="roomColumns" />
-		FROM t_room a
-		<include refid="roomJoins" />
-		WHERE a.id = #{id}
-	</select>
+    <select id="get" resultType="Room">
+        SELECT
+        <include refid="roomColumns"/>
+        FROM t_room a
+        <include refid="roomJoins"/>
+        WHERE a.id = #{id}
+    </select>
 
-	<select id="findList" resultType="Room">
-		SELECT
-		<include refid="roomColumns" />
-		FROM t_room a
-		<include refid="roomJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if
-				test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
-				AND a.property_project_id = #{propertyProject.id}
-			</if>
-			<if test="building != null and building.id != null and building.id != ''">
-				AND a.building_id = #{building.id}
-			</if>
-			<if test="house != null and house.id != null and house.id != ''">
-				AND a.house_id = #{house.id}
-			</if>
-			<if test="roomNo != null and roomNo != ''">
-				AND a.room_no LIKE
-				<if test="dbName == 'oracle'">'%'||#{roomNo}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{roomNo}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{roomNo},'%')</if>
-			</if>
-			<if test="roomStatus != null and roomStatus != ''">
-				AND a.room_status = #{roomStatus}
-			</if>
-			<if test="choose !=null and choose != ''">
-				and a.room_status not in('0','2','3')
-			</if>
-			<if test="isFeature != null and isFeature != ''">
-				and a.is_feature = #{isFeature}
-			</if>
-			<if test="rentMonthGap != null">
-				and a.rent_month_gap = #{rentMonthGap}
-			</if>
-			<if test="deposMonthCount != null">
-				and a.depos_month_count = #{deposMonthCount}
-			</if>
-			<if test="reservationPhone != null and reservationPhone != ''">
-				and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
-			</if>
-		</where>
+    <select id="findList" resultType="Room">
+        SELECT
+        <include refid="roomColumns"/>
+        FROM t_room a
+        <include refid="roomJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if
+                    test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+                AND a.property_project_id = #{propertyProject.id}
+            </if>
+            <if test="building != null and building.id != null and building.id != ''">
+                AND a.building_id = #{building.id}
+            </if>
+            <if test="house != null and house.id != null and house.id != ''">
+                AND a.house_id = #{house.id}
+            </if>
+            <if test="roomNo != null and roomNo != ''">
+                AND a.room_no LIKE
+                <if test="dbName == 'oracle'">'%'||#{roomNo}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{roomNo}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{roomNo},'%')</if>
+            </if>
+            <if test="roomStatus != null and roomStatus != ''">
+                AND a.room_status = #{roomStatus}
+            </if>
+            <if test="choose !=null and choose != ''">
+                and a.room_status not in('0','2','3')
+            </if>
+            <if test="isFeature != null and isFeature != ''">
+                and a.is_feature = #{isFeature}
+            </if>
+            <if test="rentMonthGap != null">
+                and a.rent_month_gap = #{rentMonthGap}
+            </if>
+            <if test="deposMonthCount != null">
+                and a.depos_month_count = #{deposMonthCount}
+            </if>
+            <if test="reservationPhone != null and reservationPhone != ''">
+                and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
+            </if>
+        </where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-	<select id="findRoomByPrjAndBldAndHouNoAndRomNo" resultType="Room">
+    <select id="findRoomByPrjAndBldAndHouNoAndRomNo" resultType="Room">
 		SELECT
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
@@ -152,50 +152,50 @@
 		AND a.room_no = #{roomNo}
 	</select>
 
-	<!-- 查询某个小区下面某个时间点所有的房间数量 -->
-	<select id="queryRoomsCountByProjectPropertyId" resultType="int">
-	  	SELECT  COUNT(*)
-	  	FROM    t_room tr 
-		WHERE   tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
-		AND     tr.`DEL_FLAG` = '0'
-	    <if test="endDate != null and endDate != ''">
-	  	  <![CDATA[
+    <!-- 查询某个小区下面某个时间点所有的房间数量 -->
+    <select id="queryRoomsCountByProjectPropertyId" resultType="int">
+        SELECT COUNT(*)
+        FROM t_room tr
+        WHERE tr.`PROPERTY_PROJECT_ID` = #{propertyProjectId}
+        AND tr.`DEL_FLAG` = '0'
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[
 			AND tr.create_date <=  #{endDate}
 		  ]]>
-		</if>
-	</select>
+        </if>
+    </select>
 
-	<!-- 根据主键查询智能电表号 -->
-	<select id="queryMeterNoByRoomId" resultType="String">
+    <!-- 根据主键查询智能电表号 -->
+    <select id="queryMeterNoByRoomId" resultType="String">
 		SELECT  METER_NO
 		FROM    t_room tr
 		WHERE   tr.`ID` = #{roomId}
 		AND     tr.`DEL_FLAG` = '0'
 	</select>
-	
-	<select id="findAllList" resultType="Room">
-		SELECT
-		<include refid="roomColumns" />
-		FROM t_room a
-		<include refid="roomJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+    <select id="findAllList" resultType="Room">
+        SELECT
+        <include refid="roomColumns"/>
+        FROM t_room a
+        <include refid="roomJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
 
-	<insert id="insert">
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO t_room(
 		id,
 		property_project_id,
@@ -251,41 +251,41 @@
 		)
 	</insert>
 
-	<update id="update">
-		UPDATE t_room SET
-		property_project_id = #{propertyProject.id},
-		building_id = #{building.id},
-		house_id = #{house.id},
-		room_no = #{roomNo},
-		meter_no = #{meterNo},
-		room_space = #{roomSpace},
-		orientation = #{orientation},
-		room_config = #{roomConfig},
-		<if test="roomStatus != null and roomStatus != ''">
-			room_status = #{roomStatus},
-		</if>
-		update_by = #{updateBy.id},
-		update_date = #{updateDate},
-		remarks = #{remarks},
-		is_feature = #{isFeature},
-		rental = #{rental},
-		short_desc = #{shortDesc},
-		short_location = #{shortLocation},
-		rent_month_gap = #{rentMonthGap},
-		depos_month_count = #{deposMonthCount},
-		alipay_status = #{alipayStatus},
-		up = #{up},
-		reservation_phone = #{reservationPhone}
-		WHERE id = #{id}
-	</update>
+    <update id="update">
+        UPDATE t_room SET
+        property_project_id = #{propertyProject.id},
+        building_id = #{building.id},
+        house_id = #{house.id},
+        room_no = #{roomNo},
+        meter_no = #{meterNo},
+        room_space = #{roomSpace},
+        orientation = #{orientation},
+        room_config = #{roomConfig},
+        <if test="roomStatus != null and roomStatus != ''">
+            room_status = #{roomStatus},
+        </if>
+        update_by = #{updateBy.id},
+        update_date = #{updateDate},
+        remarks = #{remarks},
+        is_feature = #{isFeature},
+        rental = #{rental},
+        short_desc = #{shortDesc},
+        short_location = #{shortLocation},
+        rent_month_gap = #{rentMonthGap},
+        depos_month_count = #{deposMonthCount},
+        alipay_status = #{alipayStatus},
+        up = #{up},
+        reservation_phone = #{reservationPhone}
+        WHERE id = #{id}
+    </update>
 
-	<update id="delete">
+    <update id="delete">
 		UPDATE t_room SET
 		del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="updateRoomStatus4NewSign">
+
+    <update id="updateRoomStatus4NewSign">
 		UPDATE 		t_room 
 		SET 		room_status = '3',
 					update_by = #{updateBy.id},
@@ -295,7 +295,7 @@
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<update id="updateRoomStatus4RenewSign">
+    <update id="updateRoomStatus4RenewSign">
 		UPDATE 		t_room 
 		SET 		room_status = '3',
 					update_by = #{updateBy.id},
@@ -304,8 +304,8 @@
 		AND 		room_status = '3'
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
-	
-	<update id="updateRoomStatusFromDepositToContract">
+
+    <update id="updateRoomStatusFromDepositToContract">
 		UPDATE 		t_room 
 		SET 		room_status = '3',
 					update_by = #{updateBy.id},
@@ -314,8 +314,8 @@
 		AND 		room_status = '2'
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
-	
-	<update id="updateRoomStatus4Deposit">
+
+    <update id="updateRoomStatus4Deposit">
 		UPDATE 		t_room 
 		SET 		room_status = '2',
 					update_by = #{updateBy.id},
@@ -325,7 +325,7 @@
 		and 		del_flag = #{DEL_FLAG_NORMAL}
 	</update>
 
-	<select id="findRoomListByHouseId" resultType="Room">
+    <select id="findRoomListByHouseId" resultType="Room">
 		SELECT
 		a.id AS "id",
 		a.room_no AS "roomNo",
@@ -337,13 +337,13 @@
 		ORDER BY  a.room_no ASC
 	</select>
 
-	<select id="getValidFeeRoomList" resultType="Room">
+    <select id="getValidFeeRoomList" resultType="Room">
 		select id AS id,
 		METER_NO AS meterNo
 		from t_room where METER_NO != '' and DEL_FLAG = '0' and id not in (select ROOM_id from t_fee_report)
 	</select>
 
-	<select id="getByNewId" resultType="Room" parameterType="java.lang.String">
+    <select id="getByNewId" resultType="Room" parameterType="java.lang.String">
 		select
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",

@@ -13,241 +13,243 @@ import java.util.List;
 
 /**
  * 房间信息Entity
- * 
+ *
  * @author huangsc
  * @version 2015-06-09
  */
 public class Room extends DataEntity<Room> {
 
-	private static final long serialVersionUID = 1L;
-	private PropertyProject propertyProject; // 物业项目
-	private Building building; // 楼宇
-	private House house; // 房屋
-	private String roomNo; // 房间号
-	private String meterNo; // 电表号
-	private String roomSpace; // 房间面积
+    private static final long serialVersionUID = 1L;
+    private PropertyProject propertyProject; // 物业项目
+    private Building building; // 楼宇
+    private House house; // 房屋
+    private String roomNo; // 房间号
+    private String meterNo; // 电表号
+    private String roomSpace; // 房间面积
 
-	private String orientation;
-	private List<Dict> orientationList = Lists.newArrayList(new Dict());// 朝向列表
+    private String orientation;
+    private List<Dict> orientationList = Lists.newArrayList(new Dict());// 朝向列表
 
-	private String roomConfig;
-	private List<Dict> roomConfigList = Lists.newArrayList(new Dict());// 物品配置列表
+    private String roomConfig;
+    private List<Dict> roomConfigList = Lists.newArrayList(new Dict());// 物品配置列表
 
-	private String roomStatus; // 房间状态
-	private String attachmentPath;// 房间图片
-	
-	private String choose;
-	
+    private String roomStatus; // 房间状态
+    private String attachmentPath;// 房间图片
+
+    private String choose;
+
     private String isFeature;//是否精选房源
     private Double rental;//意向租金
     private String shortDesc;//描述
     private String shortLocation;//地址描述
 
-	private Long newId;
+    private Long newId;
 
-	private Integer rentMonthGap;
+    private Integer rentMonthGap;
 
-	private Integer deposMonthCount;
+    private Integer deposMonthCount;
 
-	private Integer alipayStatus;
+    private Integer alipayStatus;
 
-	private Integer up;
+    private Integer up;
 
-	private String reservationPhone;
+    private String reservationPhone;
 
-	public Room() {
-		super();
-	}
+    public Room() {
+        super();
+    }
 
-	public Room(String id) {
-		super(id);
-	}
+    public Room(String id) {
+        super(id);
+    }
 
-	@NotNull(message = "物业项目不能为空")
-	public PropertyProject getPropertyProject() {
-		return propertyProject;
-	}
+    @NotNull(message = "物业项目不能为空")
+    public PropertyProject getPropertyProject() {
+        return propertyProject;
+    }
 
-	public void setPropertyProject(PropertyProject propertyProject) {
-		this.propertyProject = propertyProject;
-	}
+    public void setPropertyProject(PropertyProject propertyProject) {
+        this.propertyProject = propertyProject;
+    }
 
-	@NotNull(message = "楼宇不能为空")
-	public Building getBuilding() {
-		return building;
-	}
+    @NotNull(message = "楼宇不能为空")
+    public Building getBuilding() {
+        return building;
+    }
 
-	public void setBuilding(Building building) {
-		this.building = building;
-	}
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
 
-	@NotNull(message = "房屋号不能为空")
-	public House getHouse() {
-		return house;
-	}
+    @NotNull(message = "房屋号不能为空")
+    public House getHouse() {
+        return house;
+    }
 
-	public void setHouse(House house) {
-		this.house = house;
-	}
+    public void setHouse(House house) {
+        this.house = house;
+    }
 
-	@Length(min = 1, max = 100, message = "房间号长度必须介于 1 和 100 之间")
-	public String getRoomNo() {
-		return roomNo;
-	}
+    @Length(min = 1, max = 100, message = "房间号长度必须介于 1 和 100 之间")
+    public String getRoomNo() {
+        return roomNo;
+    }
 
-	public void setRoomNo(String roomNo) {
-		this.roomNo = roomNo;
-	}
+    public void setRoomNo(String roomNo) {
+        this.roomNo = roomNo;
+    }
 
-	@Length(min = 0, max = 100, message = "电表号长度必须介于 0 和 100 之间")
-	public String getMeterNo() {
-		return meterNo;
-	}
+    @Length(min = 0, max = 100, message = "电表号长度必须介于 0 和 100 之间")
+    public String getMeterNo() {
+        return meterNo;
+    }
 
-	public void setMeterNo(String meterNo) {
-		this.meterNo = meterNo;
-	}
+    public void setMeterNo(String meterNo) {
+        this.meterNo = meterNo;
+    }
 
-	public String getRoomSpace() {
-		return roomSpace;
-	}
+    public String getRoomSpace() {
+        return roomSpace;
+    }
 
-	public void setRoomSpace(String roomSpace) {
-		this.roomSpace = roomSpace;
-	}
+    public void setRoomSpace(String roomSpace) {
+        this.roomSpace = roomSpace;
+    }
 
-	@Length(min = 1, max = 100, message = "房间状态长度必须介于 1 和 100 之间")
-	public String getRoomStatus() {
-		return roomStatus;
-	}
+    @Length(min = 1, max = 100, message = "房间状态长度必须介于 1 和 100 之间")
+    public String getRoomStatus() {
+        return roomStatus;
+    }
 
-	public void setRoomStatus(String roomStatus) {
-		this.roomStatus = roomStatus;
-	}
-	public List<Dict> getOrientationList() {
-		return orientationList;
-	}
+    public void setRoomStatus(String roomStatus) {
+        this.roomStatus = roomStatus;
+    }
 
-	public void setOrientationList(List<Dict> orientationList) {
-		this.orientationList = orientationList;
-	}
+    public List<Dict> getOrientationList() {
+        return orientationList;
+    }
 
-	public String getRoomConfig() {
-		return roomConfig;
-	}
+    public void setOrientationList(List<Dict> orientationList) {
+        this.orientationList = orientationList;
+    }
 
-	public void setRoomConfig(String roomConfig) {
-		this.roomConfig = roomConfig;
-	}
+    public String getRoomConfig() {
+        return roomConfig;
+    }
 
-	public List<Dict> getRoomConfigList() {
-		return roomConfigList;
-	}
+    public void setRoomConfig(String roomConfig) {
+        this.roomConfig = roomConfig;
+    }
 
-	public void setRoomConfigList(List<Dict> roomConfigList) {
-		this.roomConfigList = roomConfigList;
-	}
+    public List<Dict> getRoomConfigList() {
+        return roomConfigList;
+    }
 
-	public String getAttachmentPath() {
-		return attachmentPath;
-	}
+    public void setRoomConfigList(List<Dict> roomConfigList) {
+        this.roomConfigList = roomConfigList;
+    }
 
-	public void setAttachmentPath(String attachmentPath) {
-		this.attachmentPath = attachmentPath;
-	}
-	public String getOrientation() {
-		return orientation;
-	}
+    public String getAttachmentPath() {
+        return attachmentPath;
+    }
 
-	public void setOrientation(String orientation) {
-		this.orientation = orientation;
-	}
+    public void setAttachmentPath(String attachmentPath) {
+        this.attachmentPath = attachmentPath;
+    }
 
-	public String getChoose() {
-		return choose;
-	}
+    public String getOrientation() {
+        return orientation;
+    }
 
-	public void setChoose(String choose) {
-		this.choose = choose;
-	}
+    public void setOrientation(String orientation) {
+        this.orientation = orientation;
+    }
 
-	public String getIsFeature() {
-		return isFeature;
-	}
+    public String getChoose() {
+        return choose;
+    }
 
-	public void setIsFeature(String isFeature) {
-		this.isFeature = isFeature;
-	}
+    public void setChoose(String choose) {
+        this.choose = choose;
+    }
 
-	public Double getRental() {
-		return rental;
-	}
+    public String getIsFeature() {
+        return isFeature;
+    }
 
-	public void setRental(Double rental) {
-		this.rental = rental;
-	}
+    public void setIsFeature(String isFeature) {
+        this.isFeature = isFeature;
+    }
 
-	public String getShortDesc() {
-		return shortDesc;
-	}
+    public Double getRental() {
+        return rental;
+    }
 
-	public void setShortDesc(String shortDesc) {
-		this.shortDesc = shortDesc;
-	}
+    public void setRental(Double rental) {
+        this.rental = rental;
+    }
 
-	public String getShortLocation() {
-		return shortLocation;
-	}
+    public String getShortDesc() {
+        return shortDesc;
+    }
 
-	public void setShortLocation(String shortLocation) {
-		this.shortLocation = shortLocation;
-	}
+    public void setShortDesc(String shortDesc) {
+        this.shortDesc = shortDesc;
+    }
 
-	public Long getNewId() {
-		return newId;
-	}
+    public String getShortLocation() {
+        return shortLocation;
+    }
 
-	public void setNewId(Long newId) {
-		this.newId = newId;
-	}
+    public void setShortLocation(String shortLocation) {
+        this.shortLocation = shortLocation;
+    }
 
-	public Integer getRentMonthGap() {
-		return rentMonthGap;
-	}
+    public Long getNewId() {
+        return newId;
+    }
 
-	public void setRentMonthGap(Integer rentMonthGap) {
-		this.rentMonthGap = rentMonthGap;
-	}
+    public void setNewId(Long newId) {
+        this.newId = newId;
+    }
 
-	public Integer getDeposMonthCount() {
-		return deposMonthCount;
-	}
+    public Integer getRentMonthGap() {
+        return rentMonthGap;
+    }
 
-	public void setDeposMonthCount(Integer deposMonthCount) {
-		this.deposMonthCount = deposMonthCount;
-	}
+    public void setRentMonthGap(Integer rentMonthGap) {
+        this.rentMonthGap = rentMonthGap;
+    }
 
-	public Integer getAlipayStatus() {
-		return alipayStatus;
-	}
+    public Integer getDeposMonthCount() {
+        return deposMonthCount;
+    }
 
-	public void setAlipayStatus(Integer alipayStatus) {
-		this.alipayStatus = alipayStatus;
-	}
+    public void setDeposMonthCount(Integer deposMonthCount) {
+        this.deposMonthCount = deposMonthCount;
+    }
 
-	public Integer getUp() {
-		return up;
-	}
+    public Integer getAlipayStatus() {
+        return alipayStatus;
+    }
 
-	public void setUp(Integer up) {
-		this.up = up;
-	}
+    public void setAlipayStatus(Integer alipayStatus) {
+        this.alipayStatus = alipayStatus;
+    }
 
-	public String getReservationPhone() {
-		return reservationPhone;
-	}
+    public Integer getUp() {
+        return up;
+    }
 
-	public void setReservationPhone(String reservationPhone) {
-		this.reservationPhone = reservationPhone;
-	}
+    public void setUp(Integer up) {
+        this.up = up;
+    }
+
+    public String getReservationPhone() {
+        return reservationPhone;
+    }
+
+    public void setReservationPhone(String reservationPhone) {
+        this.reservationPhone = reservationPhone;
+    }
 }
