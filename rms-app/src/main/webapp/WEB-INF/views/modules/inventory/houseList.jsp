@@ -226,11 +226,11 @@
 						<td><a href="${ctx}/device/roomDevices/viewHouseDevices?houseId=${house.id}">查看设备</a></td>
 					</shiro:hasPermission>
 
-					<shiro:hasPermission name="alipay:room:sync">
-						<c:if test="${house.type eq '1' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
+					<shiro:hasPermission name="alipay:houseAndRoom:sync">
+						<c:if test="${house.building.type eq '1' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
 							<td><a href="${ctx}/app/alipay/syncHouse/${house.id}">分散式同步支付宝</a></td>
 						</c:if>
-						<c:if test="${house.type eq '2' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
+						<c:if test="${house.building.type eq '2' and house.intentMode eq '0' and (house.houseStatus eq '1' or house.houseStatus eq '2' or house.houseStatus eq '4')}">
 							<td><a href="${ctx}/app/alipay/syncHouse/${house.id}">集中式同步支付宝</a></td>
 						</c:if>
 						<c:if test="${house.alipayStatus eq '1' and house.up eq '0'}">
