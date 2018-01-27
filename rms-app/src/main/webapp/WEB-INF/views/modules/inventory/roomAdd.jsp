@@ -208,6 +208,27 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">意向租金：</label>
+			<div class="controls">
+				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">描述：</label>
+			<div class="controls">
+				<form:input path="shortDesc" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">地址描述：</label>
+			<div class="controls">
+				<form:input path="shortLocation" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>

@@ -83,31 +83,20 @@
 		function isFeatureChange() {
 			var isFeature = $("#isFeature").val();
 			if("1" == isFeature) {
-				$("#rental").addClass("required");
-				$("#rental").next("label").remove();
-				$("#rental").next("span").show();
-				
 				$("#shortDesc").addClass("required");
 				$("#shortDesc").next("label").remove();
 				$("#shortDesc").next("span").show();
-				
 				$("#shortLocation").addClass("required");
 				$("#shortLocation").next("label").remove();
 				$("#shortLocation").next("span").show();
 
 			} else {
-				$("#rental").removeClass("required");
-				$("#rental").next("label").remove();
-				$("#rental").next("span").hide();
-				
 				$("#shortDesc").removeClass("required");
 				$("#shortDesc").next("label").remove();
 				$("#shortDesc").next("span").hide();
-				
 				$("#shortLocation").removeClass("required");
 				$("#shortLocation").next("label").remove();
 				$("#shortLocation").next("span").hide();
-
 			}
 		}
 	</script>
@@ -223,7 +212,7 @@
 		<div class="control-group">
 			<label class="control-label">意向租金：</label>
 			<div class="controls">
-				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+				<form:input path="rental" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
 				<span class="help-inline" style="display:none;"><font color="red">*</font></span>
 			</div>
 		</div>
