@@ -11,6 +11,7 @@ import com.alipay.api.response.*;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+import com.thinkgem.jeesite.common.utils.StreamUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
@@ -53,9 +54,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 import java.util.Base64.Encoder;
 
@@ -121,7 +123,7 @@ public class AlipayController extends BaseController {
         TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
         TP_OPENAPI_URL = global.getConfig("alipay.open.api");
         TP_APPID = global.getConfig("alipay.app.id");
-        FILE_ACCESS_DOMAN = global.getConfig("alipay.file.access.domain");
+        FILE_ACCESS_DOMAN = global.getConfig("file.access.domain");
     }
 
     /**
@@ -587,15 +589,16 @@ public class AlipayController extends BaseController {
     }
 
     private String syncPicture(String path) throws Exception {
-        InputStream inputStream;
         byte[] data = null;
         try {
-            inputStream = new FileInputStream(FILE_ACCESS_DOMAN + path);
-            data = new byte[inputStream.available()];
-            inputStream.read(data);
-            inputStream.close();
+            HttpURLConnection conn = (HttpURLConnection) new URL(FILE_ACCESS_DOMAN + path).openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(5000);
+            InputStream inStream = conn.getInputStream();
+            data = StreamUtils.getBytes(inStream);//得到图片的二进制数据
+            inStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("syncPicture errors!", e);
         }
         Encoder encoder = Base64.getEncoder();
         String encode = encoder.encodeToString(data);
