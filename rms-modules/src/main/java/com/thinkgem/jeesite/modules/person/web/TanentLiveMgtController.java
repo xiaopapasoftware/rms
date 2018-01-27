@@ -1,11 +1,13 @@
 package com.thinkgem.jeesite.modules.person.web;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.modules.contract.entity.RentContract;
+import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
+import com.thinkgem.jeesite.modules.contract.service.RentContractService;
 import com.thinkgem.jeesite.modules.contract.web.CommonBusinessController;
+import com.thinkgem.jeesite.modules.person.entity.Partner;
+import com.thinkgem.jeesite.modules.person.service.PartnerService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,22 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.thinkgem.jeesite.common.persistence.Page;
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.contract.entity.RentContract;
-import com.thinkgem.jeesite.modules.contract.enums.ContractSignTypeEnum;
-import com.thinkgem.jeesite.modules.contract.service.RentContractService;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
-import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
-import com.thinkgem.jeesite.modules.inventory.service.HouseService;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
-import com.thinkgem.jeesite.modules.inventory.service.RoomService;
-import com.thinkgem.jeesite.modules.person.entity.Partner;
-import com.thinkgem.jeesite.modules.person.service.PartnerService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping(value = "${adminPath}/person/tanentLiveMgt")
@@ -72,7 +60,7 @@ public class TanentLiveMgtController extends CommonBusinessController {
             model.addAttribute("page", page);
         }
         if (rentContract != null) {
-            commonInit(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
+            commonInit("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
         }
     }
 
@@ -84,7 +72,7 @@ public class TanentLiveMgtController extends CommonBusinessController {
             rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
         }
         model.addAttribute("rentContract", rentContract);
-        commonInit2(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
+        commonInit2("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
         model.addAttribute("partnerList", partnerService.findList(new Partner()));
         return "modules/person/tanentLiveRentPersonsMgtForm";
     }

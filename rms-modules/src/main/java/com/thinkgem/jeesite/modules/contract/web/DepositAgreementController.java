@@ -1,6 +1,5 @@
 package com.thinkgem.jeesite.modules.contract.web;
 
-import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -20,13 +19,10 @@ import com.thinkgem.jeesite.modules.funds.entity.PaymentTrade;
 import com.thinkgem.jeesite.modules.funds.entity.PaymentTrans;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTradeService;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.person.entity.Partner;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.PartnerService;
@@ -86,7 +82,7 @@ public class DepositAgreementController extends CommonBusinessController {
     @RequiresPermissions("contract:depositAgreement:view")
     @RequestMapping(value = {""})
     public String listNoQuery(DepositAgreement depositAgreement, HttpServletRequest request, HttpServletResponse response, Model model) {
-        commonInit(model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse());
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse());
         return "modules/contract/depositAgreementList";
     }
 
@@ -116,7 +112,7 @@ public class DepositAgreementController extends CommonBusinessController {
             }
         }
         model.addAttribute("page", page);
-        commonInit(model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse());
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse());
         return "modules/contract/depositAgreementList";
     }
 
@@ -130,7 +126,7 @@ public class DepositAgreementController extends CommonBusinessController {
         if (null != depositAgreement && !StringUtils.isBlank(depositAgreement.getId())) {
             depositAgreement.setTenantList(depositAgreementService.findTenant(depositAgreement));
         }
-        commonInit2(model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse(), depositAgreement.getRoom());
+        commonInit2("projectList", "buildingList", "houseList", "roomList", model, depositAgreement.getPropertyProject(), depositAgreement.getBuilding(), depositAgreement.getHouse(), depositAgreement.getRoom());
         List<Tenant> tenantList = tenantService.findList(new Tenant());
         model.addAttribute("tenantList", tenantList);
         return "modules/contract/depositAgreementForm";
@@ -368,7 +364,7 @@ public class DepositAgreementController extends CommonBusinessController {
         rentContract.setAgreementId(depositAgreement.getId());
         rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
         model.addAttribute("rentContract", rentContract);
-        commonInit(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
         model.addAttribute("partnerList", partnerService.findList(new Partner()));
         model.addAttribute("tenantList", tenantService.findList(new Tenant()));
         model.addAttribute("depositAmount", depositAgreement.getDepositAmount());

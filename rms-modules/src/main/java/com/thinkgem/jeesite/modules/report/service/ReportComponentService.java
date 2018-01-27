@@ -42,7 +42,6 @@ public class ReportComponentService {
     }
 
     public List<PropertyProject> queryProject(List<PropertyFilter> propertyFilters, List<Sort> sorts) {
-        //return reportComponentDao.queryProject(new Criterion(propertyFilters, sorts));
         return propertyProjectService.findList(new PropertyProject());
     }
 
@@ -87,6 +86,6 @@ public class ReportComponentService {
                 map.put("room_num", roomService.findRoomListByHouseId(MapUtils.getString(map, "house_id")).size());
             }
             return MapKeyHandle.keyToJavaProperty(map);
-        }).collect(Collectors.toList()) ;
+        }).collect(Collectors.toList());
     }
 }

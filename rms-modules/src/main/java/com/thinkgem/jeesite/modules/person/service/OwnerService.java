@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.service;
 
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -19,58 +16,54 @@ import java.util.List;
 
 /**
  * 业主信息Service
- * 
- * @author huangsc
- * @version 2015-06-06
  */
 @Service
 @Transactional(readOnly = true)
 public class OwnerService extends CrudService<OwnerDao, Owner> {
-	@Autowired
-	private HouseOwnerDao houseOwnerDao;
-	@Autowired
-	private OwnerDao ownerDao;
-	
-	public Owner get(String id) {
-		return super.get(id);
-	}
+    @Autowired
+    private HouseOwnerDao houseOwnerDao;
+    @Autowired
+    private OwnerDao ownerDao;
 
-	public List<Owner> findList(Owner owner) {
-		return super.findList(owner);
-	}
+    public Owner get(String id) {
+        return super.get(id);
+    }
 
-	public List<Owner> findListByWord(String word) {
-		return dao.findListByWord(word);
-	}
+    public List<Owner> findList(Owner owner) {
+        return super.findList(owner);
+    }
 
-	public List<Owner> findByHouse(House house) {
-		HouseOwner houseOwner = new HouseOwner();
-		houseOwner.setHouseId(house.getId());
-		List<HouseOwner> houseOwnerList = houseOwnerDao.findList(houseOwner);
-		List<Owner> ownerList = new ArrayList<Owner>();
-		for(HouseOwner tmpHouseOwner : houseOwnerList) {
-			Owner owner = ownerDao.get(tmpHouseOwner.getOwnerId());
-			ownerList.add(owner);
-		}
-		return ownerList;
-	}
+    public List<Owner> findListByWord(String word) {
+        return dao.findListByWord(word);
+    }
 
-	public Page<Owner> findPage(Page<Owner> page, Owner owner) {
-		return super.findPage(page, owner);
-	}
+    public List<Owner> findByHouse(House house) {
+        HouseOwner houseOwner = new HouseOwner();
+        houseOwner.setHouseId(house.getId());
+        List<HouseOwner> houseOwnerList = houseOwnerDao.findList(houseOwner);
+        List<Owner> ownerList = new ArrayList<>();
+        for (HouseOwner tmpHouseOwner : houseOwnerList) {
+            ownerList.add(ownerDao.get(tmpHouseOwner.getOwnerId()));
+        }
+        return ownerList;
+    }
 
-	@Transactional(readOnly = false)
-	public void save(Owner owner) {
-		super.save(owner);
-	}
+    public Page<Owner> findPage(Page<Owner> page, Owner owner) {
+        return super.findPage(page, owner);
+    }
 
-	@Transactional(readOnly = false)
-	public void delete(Owner owner) {
-		super.delete(owner);
-	}
+    @Transactional(readOnly = false)
+    public void save(Owner owner) {
+        super.save(owner);
+    }
 
-	@Transactional(readOnly = true)
-	public List<Owner> findOwnersByCerNoOrMobNoOrTelNo(Owner owner) {
-		return dao.findOwnersByCerNoOrMobNoOrTelNo(owner);
-	}
+    @Transactional(readOnly = false)
+    public void delete(Owner owner) {
+        super.delete(owner);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Owner> findOwnersByCerNoOrMobNoOrTelNo(Owner owner) {
+        return dao.findOwnersByCerNoOrMobNoOrTelNo(owner);
+    }
 }

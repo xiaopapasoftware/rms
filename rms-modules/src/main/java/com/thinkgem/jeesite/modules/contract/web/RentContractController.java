@@ -127,7 +127,7 @@ public class RentContractController extends CommonBusinessController {
             model.addAttribute("page", page);
         }
         if (rentContract != null) {
-            commonInit(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
+            commonInit("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse());
         }
     }
 
@@ -172,7 +172,7 @@ public class RentContractController extends CommonBusinessController {
             rentContract.setContractCode((rentContractService.getAllValidRentContractCounts() + 1) + "-" + "CZ");
         }
         model.addAttribute("rentContract", rentContract);
-        commonInit2(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
+        commonInit2("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
         model.addAttribute("partnerList", partnerService.findList(new Partner()));
         return "modules/contract/rentContractForm";
     }
@@ -261,7 +261,7 @@ public class RentContractController extends CommonBusinessController {
         rentContract.setContractCode(rentContract.getContractCode().split("-")[0] + "-" + currContractNum + "-" + rentContract.getContractCode().split("-")[2]);
         rentContract.setLiveList(rentContractService.findLiveTenant(rentContract));
         rentContract.setTenantList(rentContractService.findTenant(rentContract));
-        commonInit2(model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
+        commonInit2("projectList", "buildingList", "houseList", "roomList", model, rentContract.getPropertyProject(), rentContract.getBuilding(), rentContract.getHouse(), rentContract.getRoom());
         model.addAttribute("tenantList", tenantService.findList(new Tenant()));
         model.addAttribute("renew", "1");
         model.addAttribute("partnerList", partnerService.findList(new Partner()));

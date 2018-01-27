@@ -73,7 +73,7 @@ public class LeaseContractController extends CommonBusinessController {
             }
         });
         model.addAttribute("page", page);
-        commonInit(model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         return "modules/contract/leaseContractList";
     }
 
@@ -96,7 +96,7 @@ public class LeaseContractController extends CommonBusinessController {
     @RequiresPermissions("contract:leaseContract:view")
     @RequestMapping(value = {""})
     public String listNoQuery(LeaseContract leaseContract, Model model) {
-        commonInit(model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         return "modules/contract/leaseContractList";
     }
 
@@ -121,7 +121,7 @@ public class LeaseContractController extends CommonBusinessController {
         if (leaseContract.getIsNewRecord()) {
             leaseContract.setContractCode((leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
         }
-        commonInit(model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
+        commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
         model.addAttribute("remittancerList", remittancerList);
         List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(leaseContract.getId());
