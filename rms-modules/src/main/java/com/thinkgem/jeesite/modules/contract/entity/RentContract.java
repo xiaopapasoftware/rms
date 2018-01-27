@@ -704,4 +704,5 @@ public class RentContract extends DataEntity<RentContract> {
     public void setDerateRentFlag(String derateRentFlag) {
         this.derateRentFlag = derateRentFlag;
     }
+
 }

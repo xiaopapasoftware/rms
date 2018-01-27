@@ -107,6 +107,7 @@ public class AlipayController extends BaseController {
     public static String TP_OPENAPI_URL;//网关
     public static String TP_APPID;
     public static String COMPANY_NAME;//公司名称
+    public static String FILE_ACCESS_DOMAN;//附件
 
     @PostConstruct
     public void initParams() {
@@ -120,6 +121,7 @@ public class AlipayController extends BaseController {
         TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
         TP_OPENAPI_URL = global.getConfig("alipay.open.api");
         TP_APPID = global.getConfig("alipay.app.id");
+        FILE_ACCESS_DOMAN = global.getConfig("file.access.domain");
     }
 
     /**
@@ -438,7 +440,7 @@ public class AlipayController extends BaseController {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋没有上传图片，请上传后再同步！");
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
         }
-        List<String> imageUrls = new ArrayList<>();
+        List<String> imageUrls;
         try {
             imageUrls = syncPictures(house.getAttachmentPath());
         } catch (Exception e) {
@@ -585,10 +587,10 @@ public class AlipayController extends BaseController {
     }
 
     private String syncPicture(String path) throws Exception {
-        InputStream inputStream = null;
+        InputStream inputStream;
         byte[] data = null;
         try {
-            inputStream = new FileInputStream(path);
+            inputStream = new FileInputStream(FILE_ACCESS_DOMAN + path);
             data = new byte[inputStream.available()];
             inputStream.read(data);
             inputStream.close();
