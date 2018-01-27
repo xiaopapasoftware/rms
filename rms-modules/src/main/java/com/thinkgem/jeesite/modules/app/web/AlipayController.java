@@ -121,7 +121,7 @@ public class AlipayController extends BaseController {
         TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
         TP_OPENAPI_URL = global.getConfig("alipay.open.api");
         TP_APPID = global.getConfig("alipay.app.id");
-        FILE_ACCESS_DOMAN = global.getConfig("file.access.domain");
+        FILE_ACCESS_DOMAN = global.getConfig("alipay.file.access.domain");
     }
 
     /**
