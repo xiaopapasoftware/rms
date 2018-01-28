@@ -10,6 +10,7 @@ import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
+import com.thinkgem.jeesite.common.service.ServiceException;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StreamUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
@@ -255,9 +256,19 @@ public class AlipayController extends BaseController {
         }
         boolean flag = false;
         if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getBuilding().getType())) {
-            flag = syncDispersionRoom(room, imageUrls);
+            try {
+                flag = syncDispersionRoom(room, imageUrls);
+            } catch (ServiceException e) {
+                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, e.getMessage());
+                return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
+            }
         } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getBuilding().getType())) {
-            flag = syncConcentrationRoom(room, imageUrls);
+            try {
+                flag = syncConcentrationRoom(room, imageUrls);
+            } catch (ServiceException e) {
+                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, e.getMessage());
+                return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
+            }
         }
         if (flag) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间同步支付宝成功！");
@@ -340,11 +351,11 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync room error {}, {}", room.getId(), response.getMsg());
-                return false;
+                throw new ServiceException(response.getMsg());
             }
         } catch (Exception e) {
             logger.error("sync room error {}", room.getId(), e);
-            return false;
+            throw new ServiceException(e);
         }
     }
 
@@ -409,11 +420,11 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync room error {}, {}", room.getId(), response.getMsg());
-                return false;
+                throw new ServiceException(response.getMsg());
             }
         } catch (Exception e) {
             logger.error("sync room error {}", room.getId(), e);
-            return false;
+            throw new ServiceException(e);
         }
     }
 
@@ -452,9 +463,19 @@ public class AlipayController extends BaseController {
         }
         boolean flag = false;
         if (BuildingTypeEnum.DISPERSION.getValue().equals(house.getBuilding().getType())) {
-            flag = syncDispersionHouse(house, imageUrls);
+            try {
+                flag = syncDispersionHouse(house, imageUrls);
+            } catch (ServiceException e) {
+                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, e.getMessage());
+                return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
+            }
         } else if (BuildingTypeEnum.CONCENTRATION.getValue().equals(house.getBuilding().getType())) {
-            flag = syncConcentrationHouse(house, imageUrls);
+            try {
+                flag = syncConcentrationHouse(house, imageUrls);
+            } catch (ServiceException e) {
+                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, e.getMessage());
+                return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
+            }
         }
         if (flag) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋同步支付宝成功！");
@@ -514,11 +535,11 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync house error {}, {}", house.getId(), response.getMsg());
-                return false;
+                throw new ServiceException(response.getMsg());
             }
         } catch (Exception e) {
             logger.error("sync house error {}", house.getId(), e);
-            return false;
+            throw new ServiceException(e);
         }
     }
 
@@ -571,11 +592,11 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync house error {}, {}", house.getId(), response.getMsg());
-                return false;
+                throw new ServiceException(response.getMsg());
             }
         } catch (Exception e) {
             logger.error("sync house error {}", house.getId(), e);
-            return false;
+            throw new ServiceException(e);
         }
     }
 
@@ -647,11 +668,11 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync property project error {}, {}", project.getId(), response.getMsg());
-                return false;
+                throw new ServiceException(response.getMsg());
             }
         } catch (AlipayApiException e) {
             logger.error("sync property project error {}", project.getId(), e);
-            return false;
+            throw new ServiceException(e);
         }
     }
 
