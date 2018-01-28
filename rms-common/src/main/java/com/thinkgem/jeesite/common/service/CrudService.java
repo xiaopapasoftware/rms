@@ -4,14 +4,13 @@
  */
 package com.thinkgem.jeesite.common.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Service基类
@@ -30,9 +29,6 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
     /**
      * 获取单条数据
-     *
-     * @param id
-     * @return
      */
     public T get(String id) {
         return dao.get(id);
@@ -40,9 +36,6 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
     /**
      * 查询列表数据
-     *
-     * @param entity
-     * @return
      */
     public List<T> findList(T entity) {
         return dao.findList(entity);
@@ -50,9 +43,6 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
     /**
      * 获取单条数据
-     *
-     * @param entity
-     * @return
      */
     public T get(T entity) {
         return dao.get(entity);
@@ -60,10 +50,6 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
     /**
      * 查询分页数据
-     *
-     * @param page   分页对象
-     * @param entity
-     * @return
      */
     public Page<T> findPage(Page<T> page, T entity) {
         entity.setPage(page);
@@ -73,8 +59,6 @@ public abstract class CrudService<D extends CrudDao<T>, T extends DataEntity<T>>
 
     /**
      * 保存数据（插入或更新）
-     *
-     * @param entity
      */
     @Transactional(readOnly = false)
     public void save(T entity) {
