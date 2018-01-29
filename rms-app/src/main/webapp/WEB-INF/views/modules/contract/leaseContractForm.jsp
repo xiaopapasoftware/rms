@@ -532,7 +532,7 @@
             <form:select path="ownerList" style="width:450px;" class="input-xlarge required owners" multiple="true">
                 <option></option>
             </form:select>
-            <span class="help-inline"><font color="red">*</font> </span>
+            <span class="help-inline"><font color="red">*</font></span>
             <a href="#" onclick="addOwner()">添加业主</a>
         </div>
     </div>

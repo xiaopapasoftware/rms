@@ -11,7 +11,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
-import com.thinkgem.jeesite.modules.person.entity.Owner;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,20 +79,7 @@ public class HouseService extends CrudService<HouseDao, House> {
             toAddattachment.setAttachmentPath(house.getAttachmentPath());
             attachmentService.save(toAddattachment);
         }
-        // 房屋业主关系信息
-        HouseOwner houseOwner = new HouseOwner();
-        houseOwner.setHouseId(house.getId());
-        houseOwner.preUpdate();
-        houseOwnerService.delete(houseOwner);
-        List<Owner> ownerList = house.getOwnerList();
-        if (CollectionUtils.isNotEmpty(ownerList)) {
-            for (Owner owner : ownerList) {
-                houseOwner = new HouseOwner();
-                houseOwner.setOwnerId(owner.getId());
-                houseOwner.setHouseId(house.getId());
-                houseOwnerService.save(houseOwner);
-            }
-        }
+        houseOwnerService.processHouseAndOwner(house.getId(), house.getOwnerList());// 房屋业主关系信息
     }
 
     @Transactional(readOnly = false)

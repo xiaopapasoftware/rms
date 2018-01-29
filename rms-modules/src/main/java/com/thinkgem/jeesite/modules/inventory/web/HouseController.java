@@ -89,7 +89,7 @@ public class HouseController extends CommonBusinessController {
 
     @RequiresPermissions("inventory:house:view")
     @RequestMapping(value = {""})
-    public String listNoQuery(House house, HttpServletRequest request, HttpServletResponse response, Model model) {
+    public String listNoQuery(House house, Model model) {
         initQueryCondition(model, house);
         return "modules/inventory/houseList";
     }
@@ -119,15 +119,8 @@ public class HouseController extends CommonBusinessController {
             house.setShareAreaConfigList(DictUtils.convertToDictListFromSelVal(("0,1,2,3,4,8,10,11,12")));
         }
         initPropertyProjectAndBuildings("listPropertyProject", "listBuilding", model, house.getPropertyProject());
-        List<Owner> ownerList;
-        if (!house.getIsNewRecord()) {// 修改房屋信息
-            if (null == house.getOwner() || StringUtils.isEmpty(house.getOwner().getId())) {
-                ownerList = ownerService.findByHouse(house);
-            } else {
-                ownerList = new ArrayList<>();
-                ownerList.add(ownerService.get(house.getOwner().getId()));
-            }
-            house.setOwnerList(ownerList);
+        if (!house.getIsNewRecord()) {
+            house.setOwnerList(ownerService.findByHouse(house));
         }
         if (StringUtils.isNotEmpty(house.getShareAreaConfig())) {
             house.setShareAreaConfigList(DictUtils.convertToDictListFromSelVal(house.getShareAreaConfig()));
@@ -144,11 +137,11 @@ public class HouseController extends CommonBusinessController {
         currentValidHouseNum = currentValidHouseNum + 1;
         house.setHouseCode(currentValidHouseNum.toString());
         if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
-            List<Building> list = new ArrayList<Building>();
+            List<Building> list = new ArrayList<>();
             list.add(buildingService.get(house.getBuilding()));
             model.addAttribute("listBuilding", list);
         }
-        List<PropertyProject> list = new ArrayList<PropertyProject>();
+        List<PropertyProject> list = new ArrayList<>();
         list.add(propertyProjectService.get(house.getPropertyProject()));
         model.addAttribute("listPropertyProject", list);
         model.addAttribute("listOwner", ownerService.findList(new Owner()));
@@ -174,7 +167,7 @@ public class HouseController extends CommonBusinessController {
     @RequiresPermissions("inventory:house:edit")
     @RequestMapping(value = "finishDirect")
     @ResponseBody
-    public String finishDirect(House house, Model model, RedirectAttributes redirectAttributes) {
+    public String finishDirect(House house) {
         House h = houseService.get(house);
         houseService.finishHouseDirect4Status(h);
         return "SUCCESS";
@@ -224,12 +217,12 @@ public class HouseController extends CommonBusinessController {
     @RequiresPermissions("contract:rentContract:edit")
     @RequestMapping(value = "ajaxSave")
     @ResponseBody
-    public String ajaxSave(House house, Model model, RedirectAttributes redirectAttributes) {
+    public String ajaxSave(House house, Model model) {
         JSONObject jsonObject = new JSONObject();
         List<House> houses = houseService.findHouseListByProPrjAndBuildingAndHouseNo(house);
         if (CollectionUtils.isNotEmpty(houses)) {
             if (house.getPropertyProject() != null && StringUtils.isNotEmpty(house.getPropertyProject().getId())) {
-                List<Building> list = new ArrayList<Building>();
+                List<Building> list = new ArrayList<>();
                 list.add(buildingService.get(house.getBuilding()));
                 model.addAttribute("listBuilding", list);
             }

@@ -6,11 +6,10 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContract;
-import com.thinkgem.jeesite.modules.contract.entity.LeaseContractOwner;
 import com.thinkgem.jeesite.modules.contract.enums.LeaseContractAuditStatusEnum;
 import com.thinkgem.jeesite.modules.contract.service.AuditHisService;
-import com.thinkgem.jeesite.modules.contract.service.LeaseContractOwnerService;
 import com.thinkgem.jeesite.modules.contract.service.LeaseContractService;
+import com.thinkgem.jeesite.modules.inventory.service.HouseOwnerService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.entity.Remittancer;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
@@ -47,7 +46,7 @@ public class LeaseContractController extends CommonBusinessController {
     @Autowired
     private OwnerService ownerService;
     @Autowired
-    private LeaseContractOwnerService leaseContractOwnerService;
+    private HouseOwnerService houseOwnerService;
 
     @ModelAttribute
     public LeaseContract get(@RequestParam(required = false) String id) {
@@ -67,10 +66,7 @@ public class LeaseContractController extends CommonBusinessController {
         buildIdListByOwner(leaseContract);
         Page<LeaseContract> page = leaseContractService.findPage(new Page<>(request, response), leaseContract);
         page.getList().forEach(contract -> {
-            List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(contract.getId());
-            if (CollectionUtils.isNotEmpty(contractOwnerList)) {
-                contract.setOwnerList(contractOwnerList.stream().map(LeaseContractOwner::getOwnerId).map(ownerService::get).collect(Collectors.toList()));
-            }
+            contract.setOwnerList(ownerService.findByHouse(contract.getHouse()));
         });
         model.addAttribute("page", page);
         commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
@@ -79,14 +75,21 @@ public class LeaseContractController extends CommonBusinessController {
 
     private void buildIdListByOwner(LeaseContract leaseContract) {
         Owner owner = leaseContract.getOwner();
+
+
         if (StringUtils.isNotBlank(owner.getName()) || StringUtils.isNotBlank(owner.getSocialNumber()) || StringUtils.isNotBlank(owner.getCellPhone())
                 || StringUtils.isNotBlank(owner.getSecondCellPhone())) {
             List<Owner> ownerList = ownerService.findList(owner);
             if (CollectionUtils.isNotEmpty(ownerList)) {
+
+
                 List<String> idList = leaseContractOwnerService.getContractIdListByOwnerIdList(ownerList.stream().map(Owner::getId).collect(Collectors.toList()));
                 if (CollectionUtils.isNotEmpty(idList)) {
                     leaseContract.setIdList(idList);
                 }
+
+
+
             } else {
                 leaseContract.setIdList(Collections.singletonList("test"));
             }
@@ -122,12 +125,12 @@ public class LeaseContractController extends CommonBusinessController {
             leaseContract.setContractCode((leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
         }
         commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
-        List<Remittancer> remittancerList = remittancerService.findList(new Remittancer());
-        model.addAttribute("remittancerList", remittancerList);
-        List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(leaseContract.getId());
-        if (CollectionUtils.isNotEmpty(contractOwnerList)) {
-            leaseContract.setOwnerList(contractOwnerList.stream().map(LeaseContractOwner::getOwnerId).map(ownerService::get).collect(Collectors.toList()));
-        }
+        model.addAttribute("remittancerList", remittancerService.findList(new Remittancer()));
+        leaseContract.setOwnerList(ownerService.findByHouse(leaseContract.getHouse()));
+//        List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(leaseContract.getId());
+//        if (CollectionUtils.isNotEmpty(contractOwnerList)) {
+//            leaseContract.setOwnerList(contractOwnerList.stream().map(LeaseContractOwner::getOwnerId).map(ownerService::get).collect(Collectors.toList()));
+//        }
         return "modules/contract/leaseContractForm";
     }
 
@@ -163,13 +166,14 @@ public class LeaseContractController extends CommonBusinessController {
             leaseContract.setContractCode(codeArr[0] + "-" + (leaseContractService.getTotalValidLeaseContractCounts() + 1) + "-" + "SF");
         }
         leaseContractService.save(leaseContract);
-        leaseContractOwnerService.deleteListByContractId(leaseContract.getId());
-        leaseContract.getOwnerList().forEach(owner -> {
-            LeaseContractOwner contractOwner = new LeaseContractOwner();
-            contractOwner.setLeaseContractId(leaseContract.getId());
-            contractOwner.setOwnerId(owner.getId());
-            leaseContractOwnerService.save(contractOwner);
-        });
+        houseOwnerService.processHouseAndOwner(leaseContract.getHouse().getId(), leaseContract.getOwnerList());// 房屋业主关系信息
+//        leaseContractOwnerService.deleteListByContractId(leaseContract.getId());
+//        leaseContract.getOwnerList().forEach(owner -> {
+//            LeaseContractOwner contractOwner = new LeaseContractOwner();
+//            contractOwner.setLeaseContractId(leaseContract.getId());
+//            contractOwner.setOwnerId(owner.getId());
+//            leaseContractOwnerService.save(contractOwner);
+//        });
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存承租合同成功！");
         return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
     }
@@ -187,9 +191,9 @@ public class LeaseContractController extends CommonBusinessController {
     @ResponseBody
     public String ajaxQueryOwners(String id) {
         if (StringUtils.isNotBlank(id)) {
-            List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(id);
-            if (CollectionUtils.isNotEmpty(contractOwnerList)) {
-                return getSelectOptionResult(contractOwnerList.stream().map(LeaseContractOwner::getOwnerId).map(ownerService::get).collect(Collectors.toList()));
+            List<Owner> ownerList = ownerService.findByHouse(leaseContractService.get(id).getHouse());
+            if (CollectionUtils.isNotEmpty(ownerList)) {
+                return getSelectOptionResult(ownerList);
             }
         }
         return "";

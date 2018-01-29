@@ -1,7 +1,6 @@
 package com.thinkgem.jeesite.modules.contract.service;
 
 import com.thinkgem.jeesite.common.service.CrudService;
-import com.thinkgem.jeesite.modules.contract.dao.LeaseContractOwnerDao;
 import com.thinkgem.jeesite.modules.contract.entity.LeaseContractOwner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

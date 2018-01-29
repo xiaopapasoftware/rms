@@ -40,9 +40,8 @@ public class OwnerService extends CrudService<OwnerDao, Owner> {
     public List<Owner> findByHouse(House house) {
         HouseOwner houseOwner = new HouseOwner();
         houseOwner.setHouseId(house.getId());
-        List<HouseOwner> houseOwnerList = houseOwnerDao.findList(houseOwner);
         List<Owner> ownerList = new ArrayList<>();
-        for (HouseOwner tmpHouseOwner : houseOwnerList) {
+        for (HouseOwner tmpHouseOwner : houseOwnerDao.findList(houseOwner)) {
             ownerList.add(ownerDao.get(tmpHouseOwner.getOwnerId()));
         }
         return ownerList;
