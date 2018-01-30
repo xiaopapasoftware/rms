@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.person.dao.OwnerDao">
-    
-	<sql id="ownerColumns">
+
+    <sql id="ownerColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.social_number AS "socialNumber",
@@ -19,115 +19,97 @@
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag"
 	</sql>
-	
-	<sql id="ownerJoins">
+
+    <sql id="ownerJoins">
 		LEFT JOIN sys_user u1 ON u1.id = a.create_by
 		LEFT JOIN sys_user u2 ON u2.id = a.update_by
 	</sql>
-    
-	<select id="get" resultType="Owner">
-		SELECT 
-			<include refid="ownerColumns"/>
-		FROM t_owner a
-		<include refid="ownerJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="Owner">
-		SELECT 
-			<include refid="ownerColumns"/>
-		FROM t_owner a
-		<include refid="ownerJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
-			<if test="socialNumber != null and socialNumber != ''">
-				AND a.social_number LIKE 
-					<if test="dbName == 'oracle'">'%'||#{socialNumber}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{socialNumber}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{socialNumber},'%')</if>
-			</if>
-			<if test="cellPhone != null and cellPhone != ''">
-				AND a.cell_phone LIKE 
-					<if test="dbName == 'oracle'">'%'||#{cellPhone}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{cellPhone}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{cellPhone},'%')</if>
-			</if>
-			<if test="secondCellPhone != null and secondCellPhone != ''">
-				AND a.second_cell_phone LIKE
-				<if test="dbName == 'oracle'">'%'||#{secondCellPhone}||'%'</if>
-				<if test="dbName == 'mssql'">'%'+#{secondCellPhone}+'%'</if>
-				<if test="dbName == 'mysql'">concat('%',#{secondCellPhone},'%')</if>
-			</if>
-			<if test="deskPhone != null and deskPhone != ''">
-				AND a.desk_phone LIKE 
-					<if test="dbName == 'oracle'">'%'||#{deskPhone}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{deskPhone}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{deskPhone},'%')</if>
-			</if>
-			<if test="address != null and address != ''">
-				AND a.address LIKE 
-					<if test="dbName == 'oracle'">'%'||#{address}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{address}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{address},'%')</if>
-			</if>
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="Owner">
-		SELECT 
-			<include refid="ownerColumns"/>
-		FROM t_owner a
-		<include refid="ownerJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findOwnersByCerNoOrMobNoOrTelNo" resultType="Owner">
-		SELECT 
-				a.id AS "id",
-				a.name AS "name",
-				a.social_number AS "socialNumber",
-				a.cell_phone AS "cellPhone",
-				a.second_cell_phone AS "secondCellPhone",
-				a.desk_phone AS "deskPhone"
-		FROM t_owner a
-		<where>
-			<if test="socialNumber != null and socialNumber != ''">
-				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.social_number = #{socialNumber})
-			</if>
-			<if test="cellPhone != null and cellPhone != ''">
-				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.cell_phone = #{cellPhone})
-			</if>
-			<if test="deskPhone != null and deskPhone != ''">
-				or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.desk_phone = #{deskPhone})
-			</if>
-		</where>	
-	</select>
-	
-	<insert id="insert">
+
+    <select id="get" resultType="Owner">
+        SELECT
+        <include refid="ownerColumns"/>
+        FROM t_owner a
+        <include refid="ownerJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="Owner">
+        SELECT
+        <include refid="ownerColumns"/>
+        FROM t_owner a
+        <include refid="ownerJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="name != null and name != ''">
+                AND a.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="socialNumber != null and socialNumber != ''">
+                AND a.social_number LIKE concat('%',#{socialNumber},'%')
+            </if>
+            <if test="cellPhone != null and cellPhone != ''">
+                AND a.cell_phone LIKE concat('%',#{cellPhone},'%')
+            </if>
+            <if test="secondCellPhone != null and secondCellPhone != ''">
+                AND a.second_cell_phone LIKE concat('%',#{secondCellPhone},'%')
+            </if>
+            <if test="deskPhone != null and deskPhone != ''">
+                AND a.desk_phone LIKE concat('%',#{deskPhone},'%')
+            </if>
+            <if test="address != null and address != ''">
+                AND a.address LIKE concat('%',#{address},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="Owner">
+        SELECT
+        <include refid="ownerColumns"/>
+        FROM t_owner a
+        <include refid="ownerJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findOwnersByCerNoOrMobNoOrTelNo" resultType="Owner">
+        SELECT
+        a.id AS "id",
+        a.name AS "name",
+        a.social_number AS "socialNumber",
+        a.cell_phone AS "cellPhone",
+        a.second_cell_phone AS "secondCellPhone",
+        a.desk_phone AS "deskPhone"
+        FROM t_owner a
+        <where>
+            <if test="socialNumber != null and socialNumber != ''">
+                or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.social_number = #{socialNumber})
+            </if>
+            <if test="cellPhone != null and cellPhone != ''">
+                or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.cell_phone = #{cellPhone})
+            </if>
+            <if test="deskPhone != null and deskPhone != ''">
+                or (a.del_flag = #{DEL_FLAG_NORMAL} AND a.desk_phone = #{deskPhone})
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO t_owner(
 			id,
 			name,
@@ -158,8 +140,8 @@
 			#{delFlag}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE t_owner SET 	
 			name = #{name},
 			social_number = #{socialNumber},
@@ -172,14 +154,14 @@
 			remarks = #{remarks}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE t_owner SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
-	<select id="findListByWord" resultType="Owner">
+    <select id="findListByWord" resultType="Owner">
 		SELECT
 		a.*
 		FROM t_owner a

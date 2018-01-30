@@ -255,11 +255,6 @@
 						<a href="${ctx}/contract/leaseContract/form?id=${leaseContract.id}">后门修改</a>
 					</c:if>
 				</shiro:hasPermission>
-					<!--<shiro:hasPermission name="contract:leaseContract:audit">
-					<c:if test="${leaseContract.contractStatus=='0'}">
-						<a href="javascript:void(0);" onclick="toAudit('${leaseContract.id}')">审核</a>
-					</c:if>
-					</shiro:hasPermission>-->
 			 	<shiro:hasPermission name="contract:leaseContract:view">
 					<c:if test="${leaseContract.contractStatus=='1' || leaseContract.contractStatus=='2'}">
 						<a href="javascript:void(0);" onclick="auditHis('${leaseContract.id}')">审核记录</a>

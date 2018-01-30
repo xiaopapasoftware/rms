@@ -8,77 +8,78 @@ import org.hibernate.validator.constraints.Length;
 
 /**
  * 业主信息Entity
+ *
  * @author huangsc
  * @version 2015-06-06
  */
 public class Owner extends DataEntity<Owner> {
-	
-	private static final long serialVersionUID = 1L;
-	private String name;		// 姓名
-	private String socialNumber;		// 身份证号
-	private String cellPhone;		// 手机号
-	private String secondCellPhone;		// 备用手机号
-	private String deskPhone;		// 座机号
-	private String address;		// 详细居住地址
-	
-	public Owner() {
-		super();
-	}
 
-	public Owner(String id){
-		super(id);
-	}
+    private static final long serialVersionUID = 1L;
+    private String name;        // 姓名
+    private String socialNumber;        // 身份证号
+    private String cellPhone;        // 手机号
+    private String secondCellPhone;        // 备用手机号
+    private String deskPhone;        // 座机号
+    private String address;        // 详细居住地址
 
-	@Length(min=1, max=100, message="姓名长度必须介于 1 和 100 之间")
-	public String getName() {
-		return name;
-	}
+    public Owner() {
+        super();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	@Length(min=1, max=100, message="身份证号长度必须介于 1 和 100 之间")
-	public String getSocialNumber() {
-		return socialNumber;
-	}
+    public Owner(String id) {
+        super(id);
+    }
 
-	public void setSocialNumber(String socialNumber) {
-		this.socialNumber = socialNumber;
-	}
-	
-	@Length(min=1, max=100, message="手机号长度必须介于 1 和 100 之间")
-	public String getCellPhone() {
-		return cellPhone;
-	}
+    @Length(min = 1, max = 100, message = "姓名长度必须介于 1 和 100 之间")
+    public String getName() {
+        return name;
+    }
 
-	public void setCellPhone(String cellPhone) {
-		this.cellPhone = cellPhone;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getSecondCellPhone() {
-		return secondCellPhone;
-	}
+    @Length(min = 1, max = 100, message = "身份证号长度必须介于 1 和 100 之间")
+    public String getSocialNumber() {
+        return socialNumber;
+    }
 
-	public void setSecondCellPhone(String secondCellPhone) {
-		this.secondCellPhone = secondCellPhone;
-	}
+    public void setSocialNumber(String socialNumber) {
+        this.socialNumber = socialNumber;
+    }
 
-	public String getDeskPhone() {
-		return deskPhone;
-	}
+    @Length(min = 1, max = 100, message = "手机号长度必须介于 1 和 100 之间")
+    public String getCellPhone() {
+        return cellPhone;
+    }
 
-	public void setDeskPhone(String deskPhone) {
-		this.deskPhone = deskPhone;
-	}
-	
-	@Length(min=0, max=300, message="详细居住地址长度必须介于 0 和 300 之间")
-	public String getAddress() {
-		return address;
-	}
+    public void setCellPhone(String cellPhone) {
+        this.cellPhone = cellPhone;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
+    public String getSecondCellPhone() {
+        return secondCellPhone;
+    }
+
+    public void setSecondCellPhone(String secondCellPhone) {
+        this.secondCellPhone = secondCellPhone;
+    }
+
+    public String getDeskPhone() {
+        return deskPhone;
+    }
+
+    public void setDeskPhone(String deskPhone) {
+        this.deskPhone = deskPhone;
+    }
+
+    @Length(min = 0, max = 300, message = "详细居住地址长度必须介于 0 和 300 之间")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
 }

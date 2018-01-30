@@ -47,6 +47,7 @@
 		left join t_building tb on a.building_id=tb.id  and tb.del_flag='0'
 		left join t_house th on a.house_id=th.id and th.del_flag='0'
 		left join t_house_owner tho on tho.house_id = a.house_id  and tho.del_flag = '0'
+		left join t_owner town on town.ID = tho.owner_id and town.del_flag = '0'
 		left join t_remittancer tr on a.remittancer_id=tr.id and tr.del_flag='0'
 	</sql>
 
@@ -75,16 +76,10 @@
                 AND a.house_id = #{house.id}
             </if>
             <if test="contractCode != null and contractCode != ''">
-                AND a.contract_code LIKE
-                <if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
+                AND a.contract_code LIKE concat('%',#{contractCode},'%')
             </if>
             <if test="contractName != null and contractName != ''">
-                AND a.contract_name LIKE
-                <if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
-                <if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
-                <if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
+                AND a.contract_name LIKE concat('%',#{contractName},'%')
             </if>
             <if test="remittanceDate != null and remittanceDate != ''">
                 AND a.remittance_date = #{remittanceDate}
@@ -92,11 +87,17 @@
             <if test="contractStatus != null and contractStatus != ''">
                 AND a.contract_status = #{contractStatus}
             </if>
-            <if test="idList != null">
-                and a.id in
-                <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
+			<if test="owner != null and owner.name != null and owner.name != ''">
+                AND town.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="owner != null and owner.socialNumber != null and owner.socialNumber != ''">
+                AND town.social_number LIKE concat('%',#{socialNumber},'%')
+            </if>
+            <if test="owner != null and owner.cellPhone != null and owner.cellPhone != ''">
+                AND town.cell_phone LIKE concat('%',#{cellPhone},'%')
+            </if>
+            <if test="owner != null and owner.secondCellPhone != null and owner.secondCellPhone != ''">
+                AND town.second_cell_phone LIKE concat('%',#{secondCellPhone},'%')
             </if>
         </where>
         <!-- 数据范围过滤 -->
@@ -119,10 +120,8 @@
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>
-
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
-
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
                 ORDER BY ${page.orderBy}

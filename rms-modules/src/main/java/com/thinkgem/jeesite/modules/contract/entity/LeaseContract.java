@@ -19,287 +19,278 @@ import java.util.List;
 
 /**
  * 承租合同Entity
- * 
+ *
  * @author huangsc
  * @version 2015-06-06
  */
 public class LeaseContract extends DataEntity<LeaseContract> {
 
-  private static final long serialVersionUID = 1L;
-  private PropertyProject propertyProject; // 物业项目
-  private Building building; // 楼宇
-  private House house; // 房屋
-  private Remittancer remittancer; // 汇款人
-  private Owner owner; // 业主
-  private String contractCode; // 合同编号
-  private String contractName; // 承租合同名称
-  private Date effectiveDate; // 合同生效时间
-  private Date firstRemittanceDate; // 首次打款日期
-  private String remittanceDate; // 打款日期
-  private Date expiredDate; // 合同过期时间
-  private Date contractDate; // 合同签订时间
-  private Double deposit; // 承租押金
-  private String contractStatus; // 合同审核状态
-  private String trusteeshipContr;// 托管合同
-  private String certificate;// 产权证明
-  private String landlordId;// 房东身份证
-  private String profile;// 委托证明
-  private String relocation;// 其他材料
-  private String projectName;
-  private String buildingBame;
-  private String houseNo;
-  private String remittancerName;
-  private String type;
-  private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
-  private Integer monthSpace;
-  private List<Owner> ownerList;
-  private List<String> idList;
+    private static final long serialVersionUID = 1L;
+    private PropertyProject propertyProject; // 物业项目
+    private Building building; // 楼宇
+    private House house; // 房屋
+    private Remittancer remittancer; // 汇款人
+    private String contractCode; // 合同编号
+    private String contractName; // 承租合同名称
+    private Date effectiveDate; // 合同生效时间
+    private Date firstRemittanceDate; // 首次打款日期
+    private String remittanceDate; // 打款日期
+    private Date expiredDate; // 合同过期时间
+    private Date contractDate; // 合同签订时间
+    private Double deposit; // 承租押金
+    private String contractStatus; // 合同审核状态
+    private String trusteeshipContr;// 托管合同
+    private String certificate;// 产权证明
+    private String landlordId;// 房东身份证
+    private String profile;// 委托证明
+    private String relocation;// 其他材料
+    private String projectName;
+    private String buildingBame;
+    private String houseNo;
+    private String remittancerName;
+    private String type;
+    private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
+    private Integer monthSpace;
+    private List<Owner> ownerList;
+    private Owner owner; //业主信息查询条件
 
-  public LeaseContract() {
-    super();
-  }
+    public LeaseContract() {
+        super();
+    }
 
-  public LeaseContract(String id) {
-    super(id);
-  }
+    public LeaseContract(String id) {
+        super(id);
+    }
 
-  @NotNull(message = "物业项目不能为空")
-  public PropertyProject getPropertyProject() {
-    return propertyProject;
-  }
+    @NotNull(message = "物业项目不能为空")
+    public PropertyProject getPropertyProject() {
+        return propertyProject;
+    }
 
-  public void setPropertyProject(PropertyProject propertyProject) {
-    this.propertyProject = propertyProject;
-  }
+    public void setPropertyProject(PropertyProject propertyProject) {
+        this.propertyProject = propertyProject;
+    }
 
-  @NotNull(message = "楼宇不能为空")
-  public Building getBuilding() {
-    return building;
-  }
+    @NotNull(message = "楼宇不能为空")
+    public Building getBuilding() {
+        return building;
+    }
 
-  public void setBuilding(Building building) {
-    this.building = building;
-  }
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
 
-  @NotNull(message = "房屋不能为空")
-  public House getHouse() {
-    return house;
-  }
+    @NotNull(message = "房屋不能为空")
+    public House getHouse() {
+        return house;
+    }
 
-  public void setHouse(House house) {
-    this.house = house;
-  }
+    public void setHouse(House house) {
+        this.house = house;
+    }
 
-  @NotNull(message = "汇款人不能为空")
-  public Remittancer getRemittancer() {
-    return remittancer;
-  }
+    @NotNull(message = "汇款人不能为空")
+    public Remittancer getRemittancer() {
+        return remittancer;
+    }
 
-  public void setRemittancer(Remittancer remittancer) {
-    this.remittancer = remittancer;
-  }
+    public void setRemittancer(Remittancer remittancer) {
+        this.remittancer = remittancer;
+    }
 
-  public Owner getOwner() {
-    return owner;
-  }
+    public String getContractCode() {
+        return contractCode;
+    }
 
-  public void setOwner(Owner owner) {
-    this.owner = owner;
-  }
+    public void setContractCode(String contractCode) {
+        this.contractCode = contractCode;
+    }
 
-  public String getContractCode() {
-    return contractCode;
-  }
+    @Length(min = 1, max = 100, message = "承租合同名称长度必须介于 1 和 100 之间")
+    public String getContractName() {
+        return contractName;
+    }
 
-  public void setContractCode(String contractCode) {
-    this.contractCode = contractCode;
-  }
+    public void setContractName(String contractName) {
+        this.contractName = contractName;
+    }
 
-  @Length(min = 1, max = 100, message = "承租合同名称长度必须介于 1 和 100 之间")
-  public String getContractName() {
-    return contractName;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "合同生效时间不能为空")
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
 
-  public void setContractName(String contractName) {
-    this.contractName = contractName;
-  }
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @NotNull(message = "合同生效时间不能为空")
-  public Date getEffectiveDate() {
-    return effectiveDate;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "首次打款日期不能为空")
+    public Date getFirstRemittanceDate() {
+        return firstRemittanceDate;
+    }
 
-  public void setEffectiveDate(Date effectiveDate) {
-    this.effectiveDate = effectiveDate;
-  }
+    public void setFirstRemittanceDate(Date firstRemittanceDate) {
+        this.firstRemittanceDate = firstRemittanceDate;
+    }
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @NotNull(message = "首次打款日期不能为空")
-  public Date getFirstRemittanceDate() {
-    return firstRemittanceDate;
-  }
+    @Length(min = 1, max = 64, message = "打款日期长度必须介于 1 和 64 之间")
+    public String getRemittanceDate() {
+        return remittanceDate;
+    }
 
-  public void setFirstRemittanceDate(Date firstRemittanceDate) {
-    this.firstRemittanceDate = firstRemittanceDate;
-  }
+    public void setRemittanceDate(String remittanceDate) {
+        this.remittanceDate = remittanceDate;
+    }
 
-  @Length(min = 1, max = 64, message = "打款日期长度必须介于 1 和 64 之间")
-  public String getRemittanceDate() {
-    return remittanceDate;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "合同过期时间不能为空")
+    public Date getExpiredDate() {
+        return expiredDate;
+    }
 
-  public void setRemittanceDate(String remittanceDate) {
-    this.remittanceDate = remittanceDate;
-  }
+    public void setExpiredDate(Date expiredDate) {
+        this.expiredDate = expiredDate;
+    }
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @NotNull(message = "合同过期时间不能为空")
-  public Date getExpiredDate() {
-    return expiredDate;
-  }
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "合同签订时间不能为空")
+    public Date getContractDate() {
+        return contractDate;
+    }
 
-  public void setExpiredDate(Date expiredDate) {
-    this.expiredDate = expiredDate;
-  }
+    public void setContractDate(Date contractDate) {
+        this.contractDate = contractDate;
+    }
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  @NotNull(message = "合同签订时间不能为空")
-  public Date getContractDate() {
-    return contractDate;
-  }
+    @NotNull(message = "承租押金不能为空")
+    public Double getDeposit() {
+        return deposit;
+    }
 
-  public void setContractDate(Date contractDate) {
-    this.contractDate = contractDate;
-  }
+    public void setDeposit(Double deposit) {
+        this.deposit = deposit;
+    }
 
-  @NotNull(message = "承租押金不能为空")
-  public Double getDeposit() {
-    return deposit;
-  }
+    @Length(min = 1, max = 64, message = "合同审核状态长度必须介于 1 和 64 之间")
+    public String getContractStatus() {
+        return contractStatus;
+    }
 
-  public void setDeposit(Double deposit) {
-    this.deposit = deposit;
-  }
+    public void setContractStatus(String contractStatus) {
+        this.contractStatus = contractStatus;
+    }
 
-  @Length(min = 1, max = 64, message = "合同审核状态长度必须介于 1 和 64 之间")
-  public String getContractStatus() {
-    return contractStatus;
-  }
+    public String getTrusteeshipContr() {
+        return trusteeshipContr;
+    }
 
-  public void setContractStatus(String contractStatus) {
-    this.contractStatus = contractStatus;
-  }
+    public void setTrusteeshipContr(String trusteeshipContr) {
+        this.trusteeshipContr = trusteeshipContr;
+    }
 
-  public String getTrusteeshipContr() {
-    return trusteeshipContr;
-  }
+    public String getLandlordId() {
+        return landlordId;
+    }
 
-  public void setTrusteeshipContr(String trusteeshipContr) {
-    this.trusteeshipContr = trusteeshipContr;
-  }
+    public void setLandlordId(String landlordId) {
+        this.landlordId = landlordId;
+    }
 
-  public String getLandlordId() {
-    return landlordId;
-  }
+    public String getProfile() {
+        return profile;
+    }
 
-  public void setLandlordId(String landlordId) {
-    this.landlordId = landlordId;
-  }
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 
-  public String getProfile() {
-    return profile;
-  }
+    public String getCertificate() {
+        return certificate;
+    }
 
-  public void setProfile(String profile) {
-    this.profile = profile;
-  }
+    public void setCertificate(String certificate) {
+        this.certificate = certificate;
+    }
 
-  public String getCertificate() {
-    return certificate;
-  }
+    public String getProjectName() {
+        return projectName;
+    }
 
-  public void setCertificate(String certificate) {
-    this.certificate = certificate;
-  }
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
 
-  public String getProjectName() {
-    return projectName;
-  }
+    public String getBuildingBame() {
+        return buildingBame;
+    }
 
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
+    public void setBuildingBame(String buildingBame) {
+        this.buildingBame = buildingBame;
+    }
 
-  public String getBuildingBame() {
-    return buildingBame;
-  }
+    public String getHouseNo() {
+        return houseNo;
+    }
 
-  public void setBuildingBame(String buildingBame) {
-    this.buildingBame = buildingBame;
-  }
+    public void setHouseNo(String houseNo) {
+        this.houseNo = houseNo;
+    }
 
-  public String getHouseNo() {
-    return houseNo;
-  }
+    public String getRemittancerName() {
+        return remittancerName;
+    }
 
-  public void setHouseNo(String houseNo) {
-    this.houseNo = houseNo;
-  }
+    public void setRemittancerName(String remittancerName) {
+        this.remittancerName = remittancerName;
+    }
 
-  public String getRemittancerName() {
-    return remittancerName;
-  }
+    public List<LeaseContractDtl> getLeaseContractDtlList() {
+        return leaseContractDtlList;
+    }
 
-  public void setRemittancerName(String remittancerName) {
-    this.remittancerName = remittancerName;
-  }
+    public void setLeaseContractDtlList(List<LeaseContractDtl> leaseContractDtlList) {
+        this.leaseContractDtlList = leaseContractDtlList;
+    }
 
-  public List<LeaseContractDtl> getLeaseContractDtlList() {
-    return leaseContractDtlList;
-  }
+    public String getRelocation() {
+        return relocation;
+    }
 
-  public void setLeaseContractDtlList(List<LeaseContractDtl> leaseContractDtlList) {
-    this.leaseContractDtlList = leaseContractDtlList;
-  }
+    public void setRelocation(String relocation) {
+        this.relocation = relocation;
+    }
 
-  public String getRelocation() {
-    return relocation;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public void setRelocation(String relocation) {
-    this.relocation = relocation;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public Integer getMonthSpace() {
+        return monthSpace;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public void setMonthSpace(Integer monthSpace) {
+        this.monthSpace = monthSpace;
+    }
 
-  public Integer getMonthSpace() {
-    return monthSpace;
-  }
+    public List<Owner> getOwnerList() {
+        return ownerList;
+    }
 
-  public void setMonthSpace(Integer monthSpace) {
-    this.monthSpace = monthSpace;
-  }
+    public void setOwnerList(List<Owner> ownerList) {
+        this.ownerList = ownerList;
+    }
 
-  public List<Owner> getOwnerList() {
-    return ownerList;
-  }
+    public Owner getOwner() {
+        return owner;
+    }
+    public void setOwner(Owner owner) {
+        this.owner = owner;
+    }
 
-  public void setOwnerList(List<Owner> ownerList) {
-    this.ownerList = ownerList;
-  }
-
-  public List<String> getIdList() {
-    return idList;
-  }
-
-  public void setIdList(List<String> idList) {
-    this.idList = idList;
-  }
 }
