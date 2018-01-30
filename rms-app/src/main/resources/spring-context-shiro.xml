@@ -18,6 +18,8 @@
 				${apiPath}/** = anon
 				${adminPath}/page/** = anon
 				/userfiles/** = anon
+				${adminPath}/app/alipay/reservation = anon
+				${adminPath}/app/alipay/phoneRecord = anon
 				${adminPath}/cas = cas
 				${adminPath}/login = authc
 				${adminPath}/logout = logout
