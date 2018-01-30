@@ -100,7 +100,9 @@ public class LeaseContractController extends CommonBusinessController {
         }
         commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         model.addAttribute("remittancerList", remittancerService.findList(new Remittancer()));
-        leaseContract.setOwnerList(ownerService.findByHouse(leaseContract.getHouse()));
+        if (leaseContract.getHouse() != null && StringUtils.isNotEmpty(leaseContract.getHouse().getId())) {
+            leaseContract.setOwnerList(ownerService.findByHouse(leaseContract.getHouse()));
+        }
         return "modules/contract/leaseContractForm";
     }
 
