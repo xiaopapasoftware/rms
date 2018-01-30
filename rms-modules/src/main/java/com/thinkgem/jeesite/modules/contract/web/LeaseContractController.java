@@ -63,7 +63,6 @@ public class LeaseContractController extends CommonBusinessController {
     @RequiresPermissions("contract:leaseContract:view")
     @RequestMapping(value = {"list"})
     public String listQuery(LeaseContract leaseContract, HttpServletRequest request, HttpServletResponse response, Model model) {
-        buildIdListByOwner(leaseContract);
         Page<LeaseContract> page = leaseContractService.findPage(new Page<>(request, response), leaseContract);
         page.getList().forEach(contract -> {
             contract.setOwnerList(ownerService.findByHouse(contract.getHouse()));
@@ -71,29 +70,6 @@ public class LeaseContractController extends CommonBusinessController {
         model.addAttribute("page", page);
         commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         return "modules/contract/leaseContractList";
-    }
-
-    private void buildIdListByOwner(LeaseContract leaseContract) {
-        Owner owner = leaseContract.getOwner();
-
-
-        if (StringUtils.isNotBlank(owner.getName()) || StringUtils.isNotBlank(owner.getSocialNumber()) || StringUtils.isNotBlank(owner.getCellPhone())
-                || StringUtils.isNotBlank(owner.getSecondCellPhone())) {
-            List<Owner> ownerList = ownerService.findList(owner);
-            if (CollectionUtils.isNotEmpty(ownerList)) {
-
-
-                List<String> idList = leaseContractOwnerService.getContractIdListByOwnerIdList(ownerList.stream().map(Owner::getId).collect(Collectors.toList()));
-                if (CollectionUtils.isNotEmpty(idList)) {
-                    leaseContract.setIdList(idList);
-                }
-
-
-
-            } else {
-                leaseContract.setIdList(Collections.singletonList("test"));
-            }
-        }
     }
 
     @RequiresPermissions("contract:leaseContract:view")
@@ -127,10 +103,6 @@ public class LeaseContractController extends CommonBusinessController {
         commonInit("projectList", "buildingList", "houseList", "roomList", model, leaseContract.getPropertyProject(), leaseContract.getBuilding(), null);
         model.addAttribute("remittancerList", remittancerService.findList(new Remittancer()));
         leaseContract.setOwnerList(ownerService.findByHouse(leaseContract.getHouse()));
-//        List<LeaseContractOwner> contractOwnerList = leaseContractOwnerService.getListByContractId(leaseContract.getId());
-//        if (CollectionUtils.isNotEmpty(contractOwnerList)) {
-//            leaseContract.setOwnerList(contractOwnerList.stream().map(LeaseContractOwner::getOwnerId).map(ownerService::get).collect(Collectors.toList()));
-//        }
         return "modules/contract/leaseContractForm";
     }
 
@@ -167,13 +139,6 @@ public class LeaseContractController extends CommonBusinessController {
         }
         leaseContractService.save(leaseContract);
         houseOwnerService.processHouseAndOwner(leaseContract.getHouse().getId(), leaseContract.getOwnerList());// 房屋业主关系信息
-//        leaseContractOwnerService.deleteListByContractId(leaseContract.getId());
-//        leaseContract.getOwnerList().forEach(owner -> {
-//            LeaseContractOwner contractOwner = new LeaseContractOwner();
-//            contractOwner.setLeaseContractId(leaseContract.getId());
-//            contractOwner.setOwnerId(owner.getId());
-//            leaseContractOwnerService.save(contractOwner);
-//        });
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存承租合同成功！");
         return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
     }
@@ -182,7 +147,6 @@ public class LeaseContractController extends CommonBusinessController {
     @RequestMapping(value = "delete")
     public String delete(LeaseContract leaseContract, RedirectAttributes redirectAttributes) {
         leaseContractService.delete(leaseContract);
-        leaseContractOwnerService.deleteListByContractId(leaseContract.getId());
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除承租合同成功");
         return "redirect:" + Global.getAdminPath() + "/contract/leaseContract/?repage";
     }
@@ -203,7 +167,7 @@ public class LeaseContractController extends CommonBusinessController {
         StringBuffer optionResultBuf = new StringBuffer();
         if (CollectionUtils.isNotEmpty(ownerList)) {
             ownerList.forEach(owner -> optionResultBuf.append("<option selected value='").append(owner.getId()).append("'>").append(owner.getName()).append("-").append(owner.getSocialNumber()).append("-")
-                    .append(owner.getCellPhone()).append("/").append(owner.getSecondCellPhone()).append("</option>"));
+                    .append(owner.getCellPhone()).append(StringUtils.isEmpty(owner.getSecondCellPhone()) ? "" : "/" + owner.getSecondCellPhone()).append("</option>"));
         }
         return optionResultBuf.toString();
     }

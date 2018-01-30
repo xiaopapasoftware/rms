@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.contract.dao.LeaseContractDao">
-    
-	<sql id="leaseContractColumns">
+
+    <sql id="leaseContractColumns">
 		a.id AS "id",
 		a.property_project_id AS "propertyProject.id",
 		a.building_id AS "building.id",
@@ -36,8 +36,8 @@
 		th.house_no as houseNo,
 		a.month_space as "monthSpace"
 	</sql>
-	
-	<sql id="leaseContractJoins">
+
+    <sql id="leaseContractJoins">
 		left join t_attachment at0 on a.id=at0.lease_contract_id and at0.attachment_type='20' and at0.del_flag='0'
 		left join t_attachment at1 on a.id=at1.lease_contract_id and at1.attachment_type='0' and at1.del_flag='0'
 		left join t_attachment at2 on a.id=at2.lease_contract_id and at2.attachment_type='1' and at2.del_flag='0'
@@ -50,96 +50,94 @@
 		left join t_remittancer tr on a.remittancer_id=tr.id and tr.del_flag='0'
 	</sql>
 
-	<select id="get" resultType="LeaseContract">
-		SELECT  DISTINCT
-			<include refid="leaseContractColumns"/>
-		FROM t_lease_contract a
-		<include refid="leaseContractJoins"/>
-		WHERE a.id = #{id}
-	</select>
-	
-	<select id="findList" resultType="LeaseContract">
-		SELECT DISTINCT
-			<include refid="leaseContractColumns"/>
-		FROM t_lease_contract a
-		<include refid="leaseContractJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
-				AND a.property_project_id = #{propertyProject.id}
-			</if>
-			<if test="building != null and building.id != null and building.id != ''">
-				AND a.building_id = #{building.id}
-			</if>
-			<if test="house != null and house.id != null and house.id != ''">
-				AND a.house_id = #{house.id}
-			</if>
-			<if test="contractCode != null and contractCode != ''">
-				AND a.contract_code LIKE 
-					<if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
-			</if>
-			<if test="contractName != null and contractName != ''">
-				AND a.contract_name LIKE 
-					<if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
-			</if>
-			<if test="remittanceDate != null and remittanceDate != ''">
-				AND a.remittance_date = #{remittanceDate}
-			</if>
-			<if test="contractStatus != null and contractStatus != ''">
-				AND a.contract_status = #{contractStatus}
-			</if>
-			<if test="idList != null">
-				and a.id in
-				<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
-					#{item}
-				</foreach>
-			</if>
-		</where>
+    <select id="get" resultType="LeaseContract">
+        SELECT DISTINCT
+        <include refid="leaseContractColumns"/>
+        FROM t_lease_contract a
+        <include refid="leaseContractJoins"/>
+        WHERE a.id = #{id}
+    </select>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+    <select id="findList" resultType="LeaseContract">
+        SELECT DISTINCT
+        <include refid="leaseContractColumns"/>
+        FROM t_lease_contract a
+        <include refid="leaseContractJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
+                AND a.property_project_id = #{propertyProject.id}
+            </if>
+            <if test="building != null and building.id != null and building.id != ''">
+                AND a.building_id = #{building.id}
+            </if>
+            <if test="house != null and house.id != null and house.id != ''">
+                AND a.house_id = #{house.id}
+            </if>
+            <if test="contractCode != null and contractCode != ''">
+                AND a.contract_code LIKE
+                <if test="dbName == 'oracle'">'%'||#{contractCode}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{contractCode}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{contractCode},'%')</if>
+            </if>
+            <if test="contractName != null and contractName != ''">
+                AND a.contract_name LIKE
+                <if test="dbName == 'oracle'">'%'||#{contractName}||'%'</if>
+                <if test="dbName == 'mssql'">'%'+#{contractName}+'%'</if>
+                <if test="dbName == 'mysql'">concat('%',#{contractName},'%')</if>
+            </if>
+            <if test="remittanceDate != null and remittanceDate != ''">
+                AND a.remittance_date = #{remittanceDate}
+            </if>
+            <if test="contractStatus != null and contractStatus != ''">
+                AND a.contract_status = #{contractStatus}
+            </if>
+            <if test="idList != null">
+                and a.id in
+                <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="LeaseContract">
-		SELECT  DISTINCT
-			<include refid="leaseContractColumns"/>
-		FROM t_lease_contract a
-		<include refid="leaseContractJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
+    <select id="findAllList" resultType="LeaseContract">
+        SELECT DISTINCT
+        <include refid="leaseContractColumns"/>
+        FROM t_lease_contract a
+        <include refid="leaseContractJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="getTotalValidLeaseContractCounts" resultType="int">
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getTotalValidLeaseContractCounts" resultType="int">
 		SELECT count(*) FROM t_lease_contract
 	</select>
-	
-	<insert id="insert">
+
+    <insert id="insert">
 		INSERT INTO t_lease_contract(
 			id,
 			property_project_id,
@@ -186,8 +184,8 @@
 			#{monthSpace}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE t_lease_contract SET 	
 			property_project_id = #{propertyProject.id},
 			building_id = #{building.id},
@@ -208,14 +206,14 @@
 			month_space = #{monthSpace}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE t_lease_contract SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
-	<select id="getLeaseContractListByHouseId" resultType="LeaseContract">
+    <select id="getLeaseContractListByHouseId" resultType="LeaseContract">
 		SELECT
 			a.id AS "id",
 			a.property_project_id AS "propertyProject.id",
