@@ -88,16 +88,16 @@
                 AND a.contract_status = #{contractStatus}
             </if>
 			<if test="owner != null and owner.name != null and owner.name != ''">
-                AND town.name LIKE concat('%',#{name},'%')
+                AND town.name LIKE concat('%',#{owner.name},'%')
             </if>
             <if test="owner != null and owner.socialNumber != null and owner.socialNumber != ''">
-                AND town.social_number LIKE concat('%',#{socialNumber},'%')
+                AND town.social_number LIKE concat('%',#{owner.socialNumber},'%')
             </if>
             <if test="owner != null and owner.cellPhone != null and owner.cellPhone != ''">
-                AND town.cell_phone LIKE concat('%',#{cellPhone},'%')
+                AND town.cell_phone LIKE concat('%',#{owner.cellPhone},'%')
             </if>
             <if test="owner != null and owner.secondCellPhone != null and owner.secondCellPhone != ''">
-                AND town.second_cell_phone LIKE concat('%',#{secondCellPhone},'%')
+                AND town.second_cell_phone LIKE concat('%',#{owner.secondCellPhone},'%')
             </if>
         </where>
         <!-- 数据范围过滤 -->

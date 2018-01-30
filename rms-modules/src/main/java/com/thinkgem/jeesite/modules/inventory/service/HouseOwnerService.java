@@ -18,6 +18,7 @@ public class HouseOwnerService extends CrudService<HouseOwnerDao, HouseOwner> {
         return super.findList(houseOwner);
     }
 
+    @Transactional(readOnly = false)
     public void processHouseAndOwner(String houseId, List<Owner> ownerList) {
         HouseOwner houseOwner = new HouseOwner();
         houseOwner.setHouseId(houseId);
