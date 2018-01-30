@@ -803,7 +803,7 @@ public class AlipayController extends BaseController {
     @RequestMapping(value = "reservation", method = RequestMethod.POST)
     @ResponseBody
     public String reservation(HttpServletRequest request) {
-        logger.info(JsonUtil.object2Json(request.getParameterMap()));
+        logger.info("reservation request map is:{}", JSON.toJSONString(request.getParameterMap()));
         if (!checkSign(request)) {
             logger.error("check sign error", JsonUtil.object2Json(request.getParameterMap()));
             return "{\"code\":0}";
@@ -892,7 +892,7 @@ public class AlipayController extends BaseController {
     @RequestMapping(value = "phoneRecord", method = RequestMethod.POST)
     @ResponseBody
     public String phoneRecord(HttpServletRequest request) {
-        logger.info(JsonUtil.object2Json(request.getParameterMap()));
+        logger.info("phoneRecord request map is:{}", JSON.toJSONString(request.getParameterMap()));
         if (!checkSign(request)) {
             logger.error("check sign error", JsonUtil.object2Json(request.getParameterMap()));
             return "{\"code\":0}";
