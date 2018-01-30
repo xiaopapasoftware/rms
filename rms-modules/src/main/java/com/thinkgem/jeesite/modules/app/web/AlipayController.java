@@ -947,7 +947,7 @@ public class AlipayController extends BaseController {
         }
         boolean signVerified = false;
         try {
-            signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.ali_public_key, "UTF-8");
+            signVerified = AlipaySignature.rsaCheckV2(params, AlipayConfig.ali_public_key, "UTF-8");
         } catch (AlipayApiException e) {
             logger.error("signVerified error ", e);
         }
