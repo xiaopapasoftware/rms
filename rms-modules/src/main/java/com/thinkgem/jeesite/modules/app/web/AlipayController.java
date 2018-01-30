@@ -15,7 +15,6 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StreamUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
 import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
 import com.thinkgem.jeesite.modules.app.enums.AccountTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
@@ -126,7 +125,7 @@ public class AlipayController extends BaseController {
         TP_OPENAPI_URL = global.getConfig("alipay.open.api");
         TP_APPID = global.getConfig("alipay.app.id");
         FILE_ACCESS_DOMAN = global.getConfig("file.access.domain");
-        ALIPAY_PUBLIC_KEY= global.getConfig("alipay.public.key");
+        ALIPAY_PUBLIC_KEY = global.getConfig("alipay.public.key");
     }
 
     /**
@@ -949,7 +948,7 @@ public class AlipayController extends BaseController {
         }
         boolean signVerified = false;
         try {
-            signVerified = AlipaySignature.rsaCheckV1(params, AlipayConfig.ali_public_key, "UTF-8");
+            signVerified = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, "UTF-8");
         } catch (AlipayApiException e) {
             logger.error("signVerified error ", e);
         }
