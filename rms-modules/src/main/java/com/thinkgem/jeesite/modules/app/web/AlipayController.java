@@ -15,7 +15,6 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StreamUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.app.alipay.AlipayConfig;
 import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
 import com.thinkgem.jeesite.modules.app.enums.AccountTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
@@ -827,7 +826,7 @@ public class AlipayController extends BaseController {
         ContractBook record = new ContractBook();
         record.setCustomer(customer);
         record.setBookPhone(customer.getCellPhone());
-        record.setBookDate(DateUtils.parseDate(request.getParameter("recordTime")));
+        record.setBookDate(DateUtils.parseDate(request.getParameter("lookTime")));
         record.setBookStatus(BookStatusEnum.BOOK_APP.value());
         record.setSource("1");
         String roomCode = request.getParameter("roomCode");
@@ -835,10 +834,11 @@ public class AlipayController extends BaseController {
         record.setHousingType(Integer.valueOf(request.getParameter("flatsTag")));
         record.setRemarks(request.getParameter("remark"));
         if (roomCode.startsWith("R")) {
-            record.setRoomId(roomCode.substring(1));
-            record.setHouseId(roomService.get(roomCode.substring(1)).getHouse().getId());
+            Room room = roomService.getByNewId(roomCode.substring(1));
+            record.setRoomId(room.getId());
+            record.setHouseId(room.getHouse().getId());
         } else {
-            record.setHouseId(roomCode.substring(1));
+            record.setHouseId(houseService.getByNewId(roomCode.substring(1)).getId());
         }
         contractBookService.save(record);
     }
@@ -949,7 +949,7 @@ public class AlipayController extends BaseController {
         }
         boolean signVerified = false;
         try {
-            signVerified = AlipaySignature.rsaCheckV2(params, AlipayConfig.ali_public_key, "UTF-8");
+            signVerified = AlipaySignature.rsaCheckV2(params, ALIPAY_PUBLIC_KEY, "UTF-8");
         } catch (AlipayApiException e) {
             logger.error("signVerified error ", e);
         }

@@ -363,6 +363,6 @@
 		a.alipay_status as alipayStatus,
 		a.up as up,
 		a.reservation_phone as reservationPhone
-		from t_room where del_flag = '0' and new_id = #{newId}
+		from t_room a where del_flag = '0' and new_id = #{newId}
 	</select>
 </mapper>

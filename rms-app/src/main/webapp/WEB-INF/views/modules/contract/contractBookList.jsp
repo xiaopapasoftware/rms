@@ -128,7 +128,6 @@
 				<th>来源</th>
 				<th>房源编号</th>
 				<th>房源类型</th>
-				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -169,14 +168,7 @@
 					${contractBook.housingCode}
 				</td>
 				<td>
-					${fns:getDictLabel(contractBook.housingType, 'housing_type', '')}
-				</td>
-				<td>
-				<shiro:hasPermission name="contract:contractBook:edit">
-				  <c:if test="${contractBook.bookStatus=='0'}">
-					<a href="${ctx}/contract/book/cancel?id=${contractBook.id}&userId=${contractBook.userId}" onclick="return confirm('取消该预约信息吗？', this.href)">取消</a>
-				  </c:if>
-				</shiro:hasPermission>
+					${fns:getDictLabel(contractBook.housingType, 'house_type', '')}
 				</td>
 			</tr>
 		</c:forEach>

@@ -131,7 +131,7 @@
 	<select id="getByCustomerIdAndType" resultType="CustBindInfo">
 		SELECT
 		<include refid="appUserColumns"/>
-		FROM t_cust_bind_info
+		FROM t_cust_bind_info a
 		WHERE del_flag = '0'
 		AND customer_id = #{customerId}
 		AND account_type = #{accountType}

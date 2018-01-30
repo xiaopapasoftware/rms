@@ -1,13 +1,10 @@
 package com.thinkgem.jeesite.modules.contract.web;
 
 import com.thinkgem.jeesite.common.config.Global;
-import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
-import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
-import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
@@ -24,7 +21,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -102,17 +98,17 @@ public class ContractBookController extends BaseController {
     smsService.sendSms(user.getPhone(), content);
   }
 
-  @RequiresPermissions("contract:contractBook:edit")
-  @RequestMapping(value = "cancel")
-  public String cancel(ContractBook contractBook, RedirectAttributes redirectAttributes) {
-    contractBook.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
-    contractBook = contractBookService.get(contractBook);
-    contractBook.setBookStatus("3");// 管家取消预约
-    contractBook.setSalesId(UserUtils.getUser().getId());
-    contractBookService.save(contractBook);
-    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "取消预约信息成功");
-    Message message = new Message();
-    message.setContent("您的预约申请已被管家取消,请联系管家!");
-    return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
-  }
+//  @RequiresPermissions("contract:contractBook:edit")
+//  @RequestMapping(value = "cancel")
+//  public String cancel(ContractBook contractBook, RedirectAttributes redirectAttributes) {
+//    contractBook.setDelFlag(BaseEntity.DEL_FLAG_NORMAL);
+//    contractBook = contractBookService.get(contractBook);
+//    contractBook.setBookStatus("3");// 管家取消预约
+//    contractBook.setSalesId(UserUtils.getUser().getId());
+//    contractBookService.save(contractBook);
+//    addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "取消预约信息成功");
+//    Message message = new Message();
+//    message.setContent("您的预约申请已被管家取消,请联系管家!");
+//    return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
+//  }
 }
