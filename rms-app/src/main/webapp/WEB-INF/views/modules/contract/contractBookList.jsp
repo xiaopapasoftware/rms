@@ -168,7 +168,7 @@
 					${contractBook.housingCode}
 				</td>
 				<td>
-					${fns:getDictLabel(contractBook.housingType, 'house_type', '')}
+					${fns:getDictLabel(contractBook.housingType, 'housing_type', '')}
 				</td>
 			</tr>
 		</c:forEach>
