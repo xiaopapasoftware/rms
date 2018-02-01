@@ -353,7 +353,7 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync room error {}, {}", room.getId(), response.getMsg());
-                throw new ServiceException(response.getMsg());
+                throw new ServiceException(response.getSubMsg());
             }
         } catch (Exception e) {
             logger.error("sync room error {}", room.getId(), e);
@@ -422,7 +422,7 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync room error {}, {}", room.getId(), response.getMsg());
-                throw new ServiceException(response.getMsg());
+                throw new ServiceException(response.getSubMsg());
             }
         } catch (Exception e) {
             logger.error("sync room error {}", room.getId(), e);
@@ -537,7 +537,7 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync house error {}, {}", house.getId(), response.getMsg());
-                throw new ServiceException(response.getMsg());
+                throw new ServiceException(response.getSubMsg());
             }
         } catch (Exception e) {
             logger.error("sync house error {}", house.getId(), e);
@@ -594,7 +594,7 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync house error {}, {}", house.getId(), response.getMsg());
-                throw new ServiceException(response.getMsg());
+                throw new ServiceException(response.getSubMsg());
             }
         } catch (Exception e) {
             logger.error("sync house error {}", house.getId(), e);
@@ -670,7 +670,7 @@ public class AlipayController extends BaseController {
                 return true;
             } else {
                 logger.error("sync property project error {}, {}", project.getId(), response.getMsg());
-                throw new ServiceException(response.getMsg());
+                throw new ServiceException(response.getSubMsg());
             }
         } catch (AlipayApiException e) {
             logger.error("sync property project error {}", project.getId(), e);
