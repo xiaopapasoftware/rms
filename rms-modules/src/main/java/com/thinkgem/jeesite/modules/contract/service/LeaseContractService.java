@@ -225,29 +225,33 @@ public class LeaseContractService extends CrudService<LeaseContractDao, LeaseCon
     private void processLeaseContractAttachmentFiles(String leaseContractId, String trusteeshipContr, String
             landlordId, String profile, String certificate, String relocation) {
         Attachment attachment = new Attachment();
-        attachment.preInsert();
         attachment.setLeaseContractId(leaseContractId);
         if (!StringUtils.isBlank(trusteeshipContr)) {
+            attachment.preInsert();
             attachment.setAttachmentType(FileType.TRUSTEESHIP_CONTRACT_FILE.getValue());
             attachment.setAttachmentPath(trusteeshipContr);
             attachmentDao.insert(attachment);
         }
         if (!StringUtils.isBlank(landlordId)) {
+            attachment.preInsert();
             attachment.setAttachmentType(FileType.OWNER_ID.getValue());
             attachment.setAttachmentPath(landlordId);
             attachmentDao.insert(attachment);
         }
         if (!StringUtils.isBlank(profile)) {
+            attachment.preInsert();
             attachment.setAttachmentType(FileType.CERTIFICATE_FILE.getValue());
             attachment.setAttachmentPath(profile);
             attachmentDao.insert(attachment);
         }
         if (!StringUtils.isBlank(certificate)) {
+            attachment.preInsert();
             attachment.setAttachmentType(FileType.HOUSE_CERTIFICATE.getValue());
             attachment.setAttachmentPath(certificate);
             attachmentDao.insert(attachment);
         }
         if (!StringUtils.isBlank(relocation)) {
+            attachment.preInsert();
             attachment.setAttachmentType(FileType.HOUSE_AGREEMENT_CERTIFICATE.getValue());
             attachment.setAttachmentPath(relocation);
             attachmentDao.insert(attachment);
