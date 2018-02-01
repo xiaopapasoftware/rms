@@ -137,8 +137,9 @@ public class AlipayController extends BaseController {
     public String baseInfoSync() throws AlipayApiException {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoSyncRequest request = new AlipayEcoRenthouseKaBaseinfoSyncRequest();
-        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"," +
-                "\"ka_code\": \"" + KA_CODE + "\"}");
+        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"}");//第一次维护
+        //        request.setBizContent("{\"ka_name\": \"" + COMPANY_NAME + "\"," +
+        //                "\"ka_code\": \"" + KA_CODE + "\"}");//以后修改
         AlipayEcoRenthouseKaBaseinfoSyncResponse response = new AlipayEcoRenthouseKaBaseinfoSyncResponse();
         try {
             logger.info("AlipayEcoRenthouseKaBaseinfoSyncRequest is:{}", JSON.toJSONString(request));
