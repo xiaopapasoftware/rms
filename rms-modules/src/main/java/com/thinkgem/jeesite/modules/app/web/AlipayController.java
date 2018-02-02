@@ -648,6 +648,9 @@ public class AlipayController extends BaseController {
         }
     }
 
+    /**
+     * 同步小区（物业项目）
+     */
     private boolean syncPropertyProject(PropertyProject project) {
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseCommunityInfoSyncRequest request = new AlipayEcoRenthouseCommunityInfoSyncRequest();

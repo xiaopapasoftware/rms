@@ -168,6 +168,7 @@
 				<th>支付间隔月数</th>
 				<th>押金月数</th>
 				<th>支付宝同步状态</th>
+				<th>支付宝上下架状态</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
 				<th>创建人</th>
@@ -204,6 +205,14 @@
 						</c:if>
 						<c:if test="${house.alipayStatus != '1'}">
 							未同步
+						</c:if>
+					</td>
+					<td>
+						<c:if test="${house.alipayStatus eq '1' and house.up eq '1'}">
+							已上架
+						</c:if>
+						<c:if test="${house.alipayStatus eq '1' and house.up eq '0'}">
+							已下架
 						</c:if>
 					</td>
 					<td><fmt:formatDate value="${house.createDate}" pattern="yyyy-MM-dd HH:mm:ss" /></td>

@@ -143,6 +143,7 @@
 				<th>押金月数</th>
 				<th>房间面积</th>
 				<th>支付宝同步状态</th>
+				<th>支付宝上下架状态</th>
 				<th>朝向</th>
 				<th>创建时间</th>
 				<th>修改时间</th>
@@ -171,6 +172,14 @@
 					</c:if>
 					<c:if test="${room.alipayStatus != '1'}">
 						未同步
+					</c:if>
+				</td>
+				<td>
+					<c:if test="${room.alipayStatus eq '1' and room.up eq '1'}">
+						已上架
+					</c:if>
+					<c:if test="${room.alipayStatus eq '1' and room.up eq '0'}">
+						已下架
 					</c:if>
 				</td>
 				<td>
