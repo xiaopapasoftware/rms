@@ -253,7 +253,7 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">房屋图片：</label>
+        <label class="control-label">房屋图片（仅支持JPG、PNG、JPEG格式）：</label>
         <div class="controls">
             <form:hidden id="attachmentPath" path="attachmentPath" htmlEscape="false" maxlength="4000"
                          class="input-xlarge"/>
