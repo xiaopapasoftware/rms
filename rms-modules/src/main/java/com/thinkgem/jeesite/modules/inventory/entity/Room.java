@@ -26,33 +26,22 @@ public class Room extends DataEntity<Room> {
     private String roomNo; // 房间号
     private String meterNo; // 电表号
     private String roomSpace; // 房间面积
-
     private String orientation;
     private List<Dict> orientationList = Lists.newArrayList(new Dict());// 朝向列表
-
     private String roomConfig;
     private List<Dict> roomConfigList = Lists.newArrayList(new Dict());// 物品配置列表
-
     private String roomStatus; // 房间状态
     private String attachmentPath;// 房间图片
-
     private String choose;
-
     private String isFeature;//是否精选房源
     private Double rental;//意向租金
     private String shortDesc;//描述
     private String shortLocation;//地址描述
-
     private Long newId;
-
     private Integer rentMonthGap;
-
     private Integer deposMonthCount;
-
     private Integer alipayStatus;
-
     private Integer up;
-
     private String reservationPhone;
 
     public Room() {

@@ -48,7 +48,7 @@ public class House extends DataEntity<House> {
     private String roomId;
     private String intentMode;// 意向租赁类型
     private String isFeature;// 是否精选房源
-    private Double rental;// 意向租金 0 整套 1 单间
+    private Double rental;// 意向租金   0 整套 1 单间
     private String shortDesc;// 描述
     private String shortLocation;// 地址描述
     private User serviceUser;// 服务管家
@@ -62,11 +62,11 @@ public class House extends DataEntity<House> {
 
     private Long newId;
 
-    private Integer rentMonthGap;
+    private Integer rentMonthGap;//房租支付间隔月数
 
-    private Integer deposMonthCount;
+    private Integer deposMonthCount;//押金月数
 
-    private Integer alipayStatus;
+    private Integer alipayStatus;//支付宝同步状态
 
     private Integer up;
 

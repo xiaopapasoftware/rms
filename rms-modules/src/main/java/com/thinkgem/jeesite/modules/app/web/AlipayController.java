@@ -15,7 +15,10 @@ import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StreamUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
+import com.thinkgem.jeesite.modules.app.entity.BaseSyncHousingModel;
 import com.thinkgem.jeesite.modules.app.entity.CustBindInfo;
+import com.thinkgem.jeesite.modules.app.entity.DispersedSynchronizeHousingModel;
+import com.thinkgem.jeesite.modules.app.entity.FocusSynchronizeHousingModel;
 import com.thinkgem.jeesite.modules.app.enums.AccountTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.BookStatusEnum;
 import com.thinkgem.jeesite.modules.app.enums.BuildingTypeEnum;
@@ -59,7 +62,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-import java.util.Base64.Encoder;
 
 /**
  * 支付宝Controller
@@ -285,8 +287,6 @@ public class AlipayController extends BaseController {
      */
     private boolean syncDispersionRoom(Room room, List<String> imageUrls) {
         House house = room.getHouse();
-        Building building = buildingService.get(house.getBuilding().getId());
-        Owner owner = ownerService.get(room.getHouse().getOwner().getId());
         int rentStatus = 2;
         if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
             rentStatus = 1;
@@ -295,53 +295,11 @@ public class AlipayController extends BaseController {
         for (String imageUrl : imageUrls) {
             sb.append(imageUrl).append("\",\"");
         }
-        StringBuilder shareAreaConfigs = new StringBuilder("");
-        for (String s : house.getShareAreaConfig().split(",")) {
-            shareAreaConfigs.append(Integer.valueOf(s) + 1).append("\",\"");
-        }
-        String flatConfigs = "";
-        if (shareAreaConfigs.length() > 0) {
-            flatConfigs = shareAreaConfigs.delete(shareAreaConfigs.lastIndexOf(","), shareAreaConfigs.length()).toString();
-        }
-        StringBuilder roomConfig = new StringBuilder("");
-        for (String s : room.getRoomConfig().split(",")) {
-            roomConfig.append(Integer.valueOf(s) + 1).append("\",\"");
-        }
-        String roomConfigs = "";
-        if (roomConfig.length() > 0) {
-            roomConfigs = roomConfig.delete(roomConfig.lastIndexOf(","), roomConfig.length()).toString();
-        }
-        Integer face = Integer.valueOf(room.getOrientation().split(",")[0]) + 1;
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
+        AlipayClient
+                alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
-        request.setBizContent("{" +
-                "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"R" + room.getNewId() + "\"," +
-                "    \"floor_count\": " + house.getHouseFloor() + "," +
-                "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
-                "    \"room_num\": \"" + house.getHouseNo() + "\"," +
-                "    \"room_name\": \"" + room.getRoomNo() + "\"," +
-                "    \"room_face\": " + face + "," +
-                "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
-                "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
-                "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" + room.getRoomSpace() + "\"," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" + room.getShortDesc() + "\"," +
-                "    \"flat_configs\":[\"" + flatConfigs + "]" + "," +
-                "    \"room_configs\":[\"" + roomConfigs + "]" + "," +
-                "    \"pay_type\": " + room.getRentMonthGap() + "," +
-                "    \"room_amount\": " + room.getRental() + "," +
-                "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
-                "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
-                "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + room.getReservationPhone() + "\"," +
-                "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
-                "    \"room_status\": " + 1 + "," +
-                "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
-                "}");
+        DispersedSynchronizeHousingModel model = (DispersedSynchronizeHousingModel) setCommonHouseRoomModel(room, house, buildingService.get(house.getBuilding().getId()), rentStatus, sb, ownerService.get(house.getOwner().getId()).getName());
+        request.setBizContent(JSON.toJSONString(model));
         try {
             logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
@@ -367,7 +325,6 @@ public class AlipayController extends BaseController {
     private boolean syncConcentrationRoom(Room room, List<String> imageUrls) {
         House house = room.getHouse();
         Building building = buildingService.get(house.getBuilding().getId());
-        Owner owner = ownerService.get(room.getHouse().getOwner().getId());
         int rentStatus = 2;
         if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(room.getRoomStatus())) {
             rentStatus = 1;
@@ -376,41 +333,12 @@ public class AlipayController extends BaseController {
         for (String imageUrl : imageUrls) {
             sb.append(imageUrl).append("\",\"");
         }
-        StringBuilder roomConfig = new StringBuilder("");
-        for (String s : room.getRoomConfig().split(",")) {
-            roomConfig.append(Integer.valueOf(s) + 1).append("\",\"");
-        }
-        String roomConfigs = "";
-        if (roomConfig.length() > 0) {
-            roomConfigs = roomConfig.delete(roomConfig.lastIndexOf(","), roomConfig.length()).toString();
-        }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
-        request.setBizContent("{" +
-                "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"R" + room.getNewId() + "\"," +
-                "    \"floor_count\": " + house.getHouseFloor() + "," +
-                "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
-                "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
-                "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" + room.getRoomSpace() + "\"," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" + room.getShortDesc() + "\"," +
-                "    \"nick_name\": \"" + building.getNickName() + "\"," +
-                "    \"max_amount\": \"" + building.getMaxAmount() + "\"," +
-                "    \"room_configs\":[\"" + roomConfigs + "]," +
-                "    \"pay_type\": " + room.getRentMonthGap() + "," +
-                "    \"room_amount\": " + room.getRental() + "," +
-                "    \"foregift_amount\": " + (room.getRental() * room.getDeposMonthCount()) + "," +
-                "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()).toString() + "]," +
-                "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + room.getReservationPhone() + "\"," +
-                "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
-                "    \"room_status\": " + 1 + "," +
-                "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
-                "}");
+        FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(room, house, building, rentStatus, sb, ownerService.get(house.getOwner().getId()).getName());
+        model.setNick_name(building.getNickName());
+        model.setMax_amount(building.getMaxAmount());
+        request.setBizContent(JSON.toJSONString(model));
         try {
             logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
@@ -492,7 +420,6 @@ public class AlipayController extends BaseController {
      */
     private boolean syncDispersionHouse(House house, List<String> imageUrls) {
         Building building = buildingService.get(house.getBuilding().getId());
-        Owner owner = ownerService.get(house.getOwner().getId());
         int rentStatus = 2;
         if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
@@ -503,30 +430,8 @@ public class AlipayController extends BaseController {
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
-        request.setBizContent("{" +
-                "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"H" + house.getNewId() + "\"," +
-                "    \"floor_count\": " + house.getHouseFloor() + "," +
-                "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"flat_building\": \"" + building.getBuildingName() + "\"," +
-                "    \"room_num\": \"" + house.getHouseNo() + "\"," +
-                "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
-                "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
-                "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"flat_area\": \"" + house.getDecorationSpance() + "\"," +
-                "    \"room_area\": \"" + house.getDecorationSpance() + "\"," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" + house.getShortDesc() + "\"," +
-                "    \"pay_type\": " + house.getRentMonthGap() + "," +
-                "    \"room_amount\": " + house.getRental() + "," +
-                "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
-                "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
-                "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + house.getReservationPhone() + "\"," +
-                "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
-                "    \"room_status\": " + 1 + "," +
-                "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
-                "}");
+        DispersedSynchronizeHousingModel model = (DispersedSynchronizeHousingModel) setCommonHouseRoomModel(null, house, building, rentStatus, sb, ownerService.get(house.getOwner().getId()).getName());
+        request.setBizContent(JSON.toJSONString(model));
         try {
             logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
@@ -550,7 +455,6 @@ public class AlipayController extends BaseController {
      */
     private boolean syncConcentrationHouse(House house, List<String> imageUrls) {
         Building building = buildingService.get(house.getBuilding().getId());
-        Owner owner = ownerService.get(house.getOwner().getId());
         int rentStatus = 2;
         if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
             rentStatus = 1;
@@ -561,29 +465,10 @@ public class AlipayController extends BaseController {
         }
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
-        request.setBizContent("{" +
-                "    \"comm_req_id\": \"" + house.getPropertyProject().getCommReqId() + "\"," +
-                "    \"room_code\": \"H" + house.getNewId() + "\"," +
-                "    \"floor_count\": " + house.getHouseFloor() + "," +
-                "    \"total_floor_count\": \"" + building.getTotalFloorCount() + "\"," +
-                "    \"bedroom_count\": " + house.getDecoraStrucRoomNum() + "," +
-                "    \"parlor_count\": " + house.getDecoraStrucCusspacNum() + "," +
-                "    \"toilet_count\": " + house.getDecoraStrucWashroNum() + "," +
-                "    \"room_area\": \"" + house.getDecorationSpance() + "\"," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"intro\": \"" + house.getShortDesc() + "\"," +
-                "    \"nick_name\": \"" + building.getNickName() + "\"," +
-                "    \"max_amount\": \"" + building.getMaxAmount() + "\"," +
-                "    \"pay_type\": " + house.getRentMonthGap() + "," +
-                "    \"room_amount\": " + house.getRental() + "," +
-                "    \"foregift_amount\": " + (house.getRental() * house.getDeposMonthCount()) + "," +
-                "    \"images\":[\"" + sb.delete(sb.lastIndexOf(","), sb.length()) + "]," +
-                "    \"owners_name\": \"" + owner.getName() + "\"," +
-                "    \"owners_tel\": \"" + house.getReservationPhone() + "\"," +
-                "    \"checkin_time\": \"" + DateUtils.formatDate(new Date()) + "\"," +
-                "    \"room_status\": " + 1 + "," +
-                "    \"rent_type\": " + (Integer.valueOf(house.getIntentMode()) + 1) +
-                "}");
+        FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(null, house, building, rentStatus, sb, ownerService.get(house.getOwner().getId()).getName());
+        model.setNick_name(building.getNickName());
+        model.setMax_amount(building.getMaxAmount());
+        request.setBizContent(JSON.toJSONString(model));
         try {
             logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
             AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
@@ -623,12 +508,10 @@ public class AlipayController extends BaseController {
         } catch (IOException e) {
             logger.error("syncPicture errors!", e);
         }
-        Encoder encoder = Base64.getEncoder();
-        String encode = encoder.encodeToString(data);
         AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseCommonImageUploadRequest request = new AlipayEcoRenthouseCommonImageUploadRequest();
         request.setBizContent("{" +
-                "    \"file_base\": \"" + encode + "\"," +
+                "    \"file_base\": \"" + Base64.getEncoder().encodeToString(data) + "\"," +
                 "    \"file_type\": \"1\"," +
                 "    \"is_public\": true" +
                 "}");
@@ -643,7 +526,7 @@ public class AlipayController extends BaseController {
         if (response.isSuccess()) {
             return response.getUrl();
         } else {
-            logger.error("sync picture error {}, {}", path, response.getMsg());
+            logger.error("sync picture error，path is: {}, {}", FILE_ACCESS_DOMAN + path, response.getMsg());
             throw new IllegalArgumentException("调用失败");
         }
     }
@@ -960,4 +843,57 @@ public class AlipayController extends BaseController {
         return signVerified;
     }
 
+    /**
+     * 参数设置
+     */
+    private BaseSyncHousingModel setCommonHouseRoomModel(Room room, House house, Building building, int rentStatus, StringBuilder sb, String ownerName) {
+        DispersedSynchronizeHousingModel model = new DispersedSynchronizeHousingModel();
+        model.setComm_req_id(house.getPropertyProject().getCommReqId());
+        if (room != null) {
+            model.setRoom_code("R" + room.getNewId());
+            model.setRoom_area(room.getRoomSpace());
+            List<String> targetArrayList1 = new ArrayList<>();
+            for (String s : room.getRoomConfig().split(",")) {
+                targetArrayList1.add(String.valueOf(Integer.valueOf(s) + 1));
+            }
+            model.setRoom_configs((String[]) targetArrayList1.toArray());
+            model.setRoom_name(room.getRoomNo());
+            model.setRoom_face(String.valueOf(Integer.valueOf(room.getOrientation().split(",")[0]) + 1));
+        } else {
+            model.setRoom_code("H" + house.getNewId());
+        }
+        //公共区域物品配置,分散式整租不用设置
+        List<String> targetArrayList2 = new ArrayList<>();
+        for (String s : house.getShareAreaConfig().split(",")) {
+            targetArrayList2.add(String.valueOf(Integer.valueOf(s) + 1));
+        }
+        model.setFlat_configs((String[]) targetArrayList2.toArray());
+        model.setFlat_area(house.getDecorationSpance());
+        Integer houseFloor = house.getHouseFloor();
+        model.setFloor_count(houseFloor == null || houseFloor == 0 ? "" : String.valueOf(houseFloor));
+        Integer totalFloorCount = building.getTotalFloorCount();
+        model.setTotal_floor_count(totalFloorCount == null || totalFloorCount == 0 ? "" : String.valueOf(totalFloorCount));
+        Integer decoraStrucRoomNum = house.getDecoraStrucRoomNum();
+        model.setBedroom_count(decoraStrucRoomNum == null || decoraStrucRoomNum == 0 ? "" : String.valueOf(decoraStrucRoomNum));
+        Integer decoraStrucCusspacNum = house.getDecoraStrucCusspacNum();
+        model.setParlor_count(decoraStrucCusspacNum == null || decoraStrucCusspacNum == 0 ? "" : String.valueOf(decoraStrucCusspacNum));
+        Integer decoraStrucWashroNum = house.getDecoraStrucWashroNum();
+        model.setToilet_count(decoraStrucWashroNum == null || decoraStrucWashroNum == 0 ? "" : String.valueOf(decoraStrucWashroNum));
+        model.setFlat_building(building.getBuildingName());
+        model.setRoom_num(house.getHouseNo());
+        model.setRent_status(String.valueOf(rentStatus));
+        model.setIntro(house.getShortDesc() + " " + house.getShortLocation());
+        Integer rentMonthGap = house.getRentMonthGap();
+        model.setPay_type(rentMonthGap == null || rentMonthGap == 0 ? "" : String.valueOf(rentMonthGap));
+        Double rental = house.getRental();
+        model.setRoom_amount(rental == null ? "" : String.valueOf(rental));
+        model.setForegift_amount(house.getRental() != null && house.getDeposMonthCount() != null && house.getDeposMonthCount() != 0 ? String.valueOf(house.getRental() * house.getDeposMonthCount()) : "");
+        model.setImages(sb.delete(sb.lastIndexOf(","), sb.length()).toString());
+        model.setOwners_name(ownerName);
+        model.setOwners_tel(house.getReservationPhone());
+        model.setCheckin_time(DateUtils.formatDate(new Date()));
+        model.setRoom_status(String.valueOf(UpEnum.UP.getValue()));
+        model.setRent_type(String.valueOf(Integer.valueOf(house.getIntentMode()) + 1));
+        return model;
+    }
 }

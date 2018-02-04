@@ -184,9 +184,9 @@ CREATE TABLE `t_house` (
   `depos_month_count`        TINYINT(4)                                    DEFAULT NULL
   COMMENT '押金月数',
   `alipay_status`            TINYINT(4)                                    DEFAULT NULL
-  COMMENT '支付宝同步状态',
+  COMMENT '支付宝同步状态 0：同步处理中，1：同步成功，2：同步失败（审批拒绝）',
   `up`                       TINYINT(4)                                    DEFAULT NULL
-  COMMENT '上下架',
+  COMMENT '上下架 0:下架  1:上架',
   `reservation_phone`        VARCHAR(32)                                   DEFAULT NULL
   COMMENT '预约热线电话',
   PRIMARY KEY (`ID`),
@@ -247,9 +247,9 @@ CREATE TABLE `t_room` (
   `depos_month_count`   TINYINT(4)                                    DEFAULT NULL
   COMMENT '押金月数',
   `alipay_status`       TINYINT(4)                                    DEFAULT NULL
-  COMMENT '支付宝同步状态',
+  COMMENT '支付宝同步状态 0：同步处理中，1：同步成功，2：同步失败（审批拒绝）',
   `up`                  TINYINT(4)                                    DEFAULT NULL
-  COMMENT '上下架',
+  COMMENT '上下架 0:下架  1:上架',
   `reservation_phone`   VARCHAR(32)                                   DEFAULT NULL
   COMMENT '预约热线电话',
   PRIMARY KEY (`ID`),
