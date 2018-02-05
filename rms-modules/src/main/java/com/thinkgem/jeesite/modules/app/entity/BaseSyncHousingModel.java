@@ -1,35 +1,46 @@
 package com.thinkgem.jeesite.modules.app.entity;
 
+import java.util.List;
+
 /**
  * 支付宝房源同步对象
  */
 public class BaseSyncHousingModel {
-    protected String comm_req_id;
-    protected String room_code;
-    protected String floor_count;
-    protected String total_floor_count;
-    protected String bedroom_count;
-    protected String parlor_count;
-    protected String toilet_count;
-    protected String room_area;
-    protected String rent_status;
-    protected String pay_type;
-    protected String intro;
-    protected String room_amount;
-    protected String foregift_amount;
-    protected String images;
-    protected String owners_name;
-    protected String owners_tel;
-    protected String checkin_time;
-    protected String room_status;
-    protected String rent_type;
-    protected String flat_area;
-    protected String flat_building;
-    protected String room_num;
-    protected String[] room_configs;
-    protected String[] flat_configs;
-    protected String room_name;
-    protected String room_face;
+    protected String comm_req_id;//小区同步请求号
+    protected String room_code;//传递给支付宝租房的房源编号
+    protected String floor_count;//所在楼层
+    protected String total_floor_count;//房屋总楼层
+    protected String bedroom_count;//户型-房数
+    protected String parlor_count;//户型-厅数
+    protected String toilet_count;//户型-卫数
+    protected String room_area;//房间面积
+    protected String rent_status;//出租状态，1-未租，2-已租
+    protected String pay_type;//房租付几个月的方式
+    protected String intro;//房源描述
+    protected String room_amount;//租金
+    protected String foregift_amount;//押金
+    protected String[] images;//房源图片
+    protected String owners_name;//管家姓名
+    protected String owners_tel;//管家电话（预约看房用）
+    protected String checkin_time;//可入住时间
+    protected String room_status;// 房源初始上下架状态 1：上架 0：下架
+    protected String rent_type;//出租类型 1：整租，2：合租
+    protected String flat_area;//公寓面积
+    protected String flat_building;//楼号
+    protected String room_num;//房屋号-201
+    protected String[] room_configs;//分散式房间物品配置
+    protected String[] flat_configs;//分散式合租公共区域物品配置，分散式整租不用设置
+    protected String room_name;//房间号，A-Z
+    protected String room_face;//房间朝向
+    protected AlipayEcoRenthouseOtherAmount[] other_amount;//其他费用
+    private String nick_name;
+    private String max_amount;
+
+    class AlipayEcoRenthouseOtherAmount {
+        String name;//费用名称：门卡费
+        String amount;//费用金额 30
+        String unit;//费用单位 元
+    }
 
     public String getComm_req_id() {
         return comm_req_id;
@@ -62,7 +73,6 @@ public class BaseSyncHousingModel {
     public void setTotal_floor_count(String total_floor_count) {
         this.total_floor_count = total_floor_count;
     }
-
 
     public String getBedroom_count() {
         return bedroom_count;
@@ -137,11 +147,11 @@ public class BaseSyncHousingModel {
         this.foregift_amount = foregift_amount;
     }
 
-    public String getImages() {
+    public String[] getImages() {
         return images;
     }
 
-    public void setImages(String images) {
+    public void setImages(String[] images) {
         this.images = images;
     }
 
@@ -239,5 +249,29 @@ public class BaseSyncHousingModel {
 
     public void setRoom_face(String room_face) {
         this.room_face = room_face;
+    }
+
+    public String getNick_name() {
+        return nick_name;
+    }
+
+    public void setNick_name(String nick_name) {
+        this.nick_name = nick_name;
+    }
+
+    public String getMax_amount() {
+        return max_amount;
+    }
+
+    public void setMax_amount(String max_amount) {
+        this.max_amount = max_amount;
+    }
+
+    public AlipayEcoRenthouseOtherAmount[] getOther_amount() {
+        return other_amount;
+    }
+
+    public void setOther_amount(AlipayEcoRenthouseOtherAmount[] other_amount) {
+        this.other_amount = other_amount;
     }
 }
