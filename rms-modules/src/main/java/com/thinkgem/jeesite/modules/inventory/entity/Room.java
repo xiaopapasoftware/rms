@@ -44,6 +44,15 @@ public class Room extends DataEntity<Room> {
     private Integer up;
     private String reservationPhone;
 
+    /**
+     * 支付宝租房同步用
+     */
+    private String waterFee;//固定预收水费；
+    private String gasFee;//固定预收燃气费
+    private String tvFee;//固定预收电视费
+    private String netFee;//固定预收宽带费
+    private String serviceFee;//固定预收服务费
+
     public Room() {
         super();
     }
@@ -241,4 +250,45 @@ public class Room extends DataEntity<Room> {
     public void setReservationPhone(String reservationPhone) {
         this.reservationPhone = reservationPhone;
     }
+
+    public String getWaterFee() {
+        return waterFee;
+    }
+
+    public void setWaterFee(String waterFee) {
+        this.waterFee = waterFee;
+    }
+
+    public String getGasFee() {
+        return gasFee;
+    }
+
+    public void setGasFee(String gasFee) {
+        this.gasFee = gasFee;
+    }
+
+    public String getTvFee() {
+        return tvFee;
+    }
+
+    public void setTvFee(String tvFee) {
+        this.tvFee = tvFee;
+    }
+
+    public String getNetFee() {
+        return netFee;
+    }
+
+    public void setNetFee(String netFee) {
+        this.netFee = netFee;
+    }
+
+    public String getServiceFee() {
+        return serviceFee;
+    }
+
+    public void setServiceFee(String serviceFee) {
+        this.serviceFee = serviceFee;
+    }
+
 }

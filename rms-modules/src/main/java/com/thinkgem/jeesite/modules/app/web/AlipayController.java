@@ -824,6 +824,11 @@ public class AlipayController extends BaseController {
             model.setForegift_amount(rental != null && deposMonthCounts != null && deposMonthCounts != 0 ? String.valueOf(rental * deposMonthCounts) : "0");
             model.setOwners_tel(room.getReservationPhone());
             model.setRent_type(String.valueOf(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()) + 1));
+
+
+
+
+
         } else {
             model.setRoom_code("H" + house.getNewId());
             String houseStatus = house.getHouseStatus();
@@ -885,5 +890,10 @@ public class AlipayController extends BaseController {
         model.setMax_amount(building.getMaxAmount());
 
         return model;
+    }
+
+
+    private List<> generateOtherFeeList(String warterFee,String gasFee,String tvFee,String netFee,String serviceFee){
+        BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount AlipayEcoRenthouseOtherAmount = new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount();
     }
 }

@@ -53,10 +53,13 @@ public class House extends DataEntity<House> {
     private String shortLocation;// 地址描述
     private User serviceUser;// 服务管家
     private String servcieUserName;
+
     /* 电户号 */
     private String eleAccountNum;
+
     /* 水户号 */
     private String waterAccountNum;
+
     /* 煤气户号 */
     private String gasAccountNum;
 
@@ -72,7 +75,7 @@ public class House extends DataEntity<House> {
 
     private String reservationPhone;
 
-    private String type;//公寓类型，作为查询条件
+    private String type;//公寓类型，集中式/分散式 作为查询条件
 
     public House() {
         super();
@@ -82,9 +85,18 @@ public class House extends DataEntity<House> {
         super(id);
     }
 
-    private String shareAreaConfig;
+    private String shareAreaConfig;//用于支付宝租房同步，公共区域物品配置
 
     private List<Dict> shareAreaConfigList;
+
+    /**
+     * 支付宝租房同步用
+     * */
+    private String waterFee;//固定预收水费；
+    private String gasFee;//固定预收燃气费
+    private String tvFee;//固定预收电视费
+    private String netFee;//固定预收宽带费
+    private String serviceFee;//固定预收服务费
 
     @NotNull(message = "物业项目不能为空")
     public PropertyProject getPropertyProject() {
@@ -433,5 +445,45 @@ public class House extends DataEntity<House> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getWaterFee() {
+        return waterFee;
+    }
+
+    public void setWaterFee(String waterFee) {
+        this.waterFee = waterFee;
+    }
+
+    public String getGasFee() {
+        return gasFee;
+    }
+
+    public void setGasFee(String gasFee) {
+        this.gasFee = gasFee;
+    }
+
+    public String getTvFee() {
+        return tvFee;
+    }
+
+    public void setTvFee(String tvFee) {
+        this.tvFee = tvFee;
+    }
+
+    public String getNetFee() {
+        return netFee;
+    }
+
+    public void setNetFee(String netFee) {
+        this.netFee = netFee;
+    }
+
+    public String getServiceFee() {
+        return serviceFee;
+    }
+
+    public void setServiceFee(String serviceFee) {
+        this.serviceFee = serviceFee;
     }
 }
