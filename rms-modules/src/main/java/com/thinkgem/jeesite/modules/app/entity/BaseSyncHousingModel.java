@@ -36,10 +36,34 @@ public class BaseSyncHousingModel {
     private String nick_name;
     private String max_amount;
 
-    class AlipayEcoRenthouseOtherAmount {
+    public class AlipayEcoRenthouseOtherAmount {
         String name;//费用名称：门卡费
         String amount;//费用金额 30
-        String unit;//费用单位 元
+        String unit = "元";//费用单位 元
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getAmount() {
+            return amount;
+        }
+
+        public void setAmount(String amount) {
+            this.amount = amount;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
     }
 
     public String getComm_req_id() {

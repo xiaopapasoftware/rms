@@ -91,12 +91,18 @@ public class House extends DataEntity<House> {
 
     /**
      * 支付宝租房同步用
-     * */
-    private String waterFee;//固定预收水费；
-    private String gasFee;//固定预收燃气费
-    private String tvFee;//固定预收电视费
-    private String netFee;//固定预收宽带费
-    private String serviceFee;//固定预收服务费
+     */
+    private String feeConfigInfo;//用于同步支付宝的各种费用，配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
+    private String feeDesc1;
+    private String feeAmt1;
+    private String feeDesc2;
+    private String feeAmt2;
+    private String feeDesc3;
+    private String feeAmt3;
+    private String feeDesc4;
+    private String feeAmt4;
+    private String feeDesc5;
+    private String feeAmt5;
 
     @NotNull(message = "物业项目不能为空")
     public PropertyProject getPropertyProject() {
@@ -447,43 +453,91 @@ public class House extends DataEntity<House> {
         this.type = type;
     }
 
-    public String getWaterFee() {
-        return waterFee;
+    public String getFeeConfigInfo() {
+        return feeConfigInfo;
     }
 
-    public void setWaterFee(String waterFee) {
-        this.waterFee = waterFee;
+    public void setFeeConfigInfo(String feeConfigInfo) {
+        this.feeConfigInfo = feeConfigInfo;
     }
 
-    public String getGasFee() {
-        return gasFee;
+    public String getFeeDesc1() {
+        return feeDesc1;
     }
 
-    public void setGasFee(String gasFee) {
-        this.gasFee = gasFee;
+    public void setFeeDesc1(String feeDesc1) {
+        this.feeDesc1 = feeDesc1;
     }
 
-    public String getTvFee() {
-        return tvFee;
+    public String getFeeAmt1() {
+        return feeAmt1;
     }
 
-    public void setTvFee(String tvFee) {
-        this.tvFee = tvFee;
+    public void setFeeAmt1(String feeAmt1) {
+        this.feeAmt1 = feeAmt1;
     }
 
-    public String getNetFee() {
-        return netFee;
+    public String getFeeDesc2() {
+        return feeDesc2;
     }
 
-    public void setNetFee(String netFee) {
-        this.netFee = netFee;
+    public void setFeeDesc2(String feeDesc2) {
+        this.feeDesc2 = feeDesc2;
     }
 
-    public String getServiceFee() {
-        return serviceFee;
+    public String getFeeAmt2() {
+        return feeAmt2;
     }
 
-    public void setServiceFee(String serviceFee) {
-        this.serviceFee = serviceFee;
+    public void setFeeAmt2(String feeAmt2) {
+        this.feeAmt2 = feeAmt2;
+    }
+
+    public String getFeeDesc3() {
+        return feeDesc3;
+    }
+
+    public void setFeeDesc3(String feeDesc3) {
+        this.feeDesc3 = feeDesc3;
+    }
+
+    public String getFeeAmt3() {
+        return feeAmt3;
+    }
+
+    public void setFeeAmt3(String feeAmt3) {
+        this.feeAmt3 = feeAmt3;
+    }
+
+    public String getFeeDesc4() {
+        return feeDesc4;
+    }
+
+    public void setFeeDesc4(String feeDesc4) {
+        this.feeDesc4 = feeDesc4;
+    }
+
+    public String getFeeAmt4() {
+        return feeAmt4;
+    }
+
+    public void setFeeAmt4(String feeAmt4) {
+        this.feeAmt4 = feeAmt4;
+    }
+
+    public String getFeeDesc5() {
+        return feeDesc5;
+    }
+
+    public void setFeeDesc5(String feeDesc5) {
+        this.feeDesc5 = feeDesc5;
+    }
+
+    public String getFeeAmt5() {
+        return feeAmt5;
+    }
+
+    public void setFeeAmt5(String feeAmt5) {
+        this.feeAmt5 = feeAmt5;
     }
 }

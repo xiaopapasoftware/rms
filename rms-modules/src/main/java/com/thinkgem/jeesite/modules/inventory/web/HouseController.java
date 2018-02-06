@@ -127,6 +127,7 @@ public class HouseController extends CommonBusinessController {
         }
         model.addAttribute("ownerList", ownerService.findList(new Owner()));
         model.addAttribute("house", house);
+        collectFeesToConifg(house, null, house.getFeeConfigInfo());
         return "modules/inventory/houseForm";
     }
 
@@ -187,6 +188,7 @@ public class HouseController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                 house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
             }
+            house.setFeeConfigInfo(collectFeesToConifg(house, null));
             houseService.saveHouse(house);
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房屋信息成功");
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -207,6 +209,7 @@ public class HouseController extends CommonBusinessController {
                 if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                     house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
                 }
+                house.setFeeConfigInfo(collectFeesToConifg(house, null));
                 houseService.saveHouse(house);
                 addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房屋信息成功");
                 return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -230,7 +233,7 @@ public class HouseController extends CommonBusinessController {
             list.add(propertyProjectService.get(house.getPropertyProject()));
             model.addAttribute("listPropertyProject", list);
             model.addAttribute("listOwner", ownerService.findList(new Owner()));
-            addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下的房屋号已被使用，不能重复添加");
+            addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下的房屋号已被使用，不能重复添加！");
         } else {
             if (StringUtils.isBlank(house.getHouseStatus()))
                 house.setHouseStatus(HouseStatusEnum.TO_RENOVATION.getValue());
@@ -243,6 +246,7 @@ public class HouseController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                 house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
             }
+            house.setFeeConfigInfo(collectFeesToConifg(house, null));
             houseService.saveHouse(house);
             jsonObject.put("id", house.getId());
             jsonObject.put("name", house.getHouseNo());

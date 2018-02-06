@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.contract.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,9 +16,6 @@ import java.util.List;
 
 /**
  * 承租合同Entity
- *
- * @author huangsc
- * @version 2015-06-06
  */
 public class LeaseContract extends DataEntity<LeaseContract> {
 
@@ -49,7 +43,7 @@ public class LeaseContract extends DataEntity<LeaseContract> {
     private String houseNo;
     private String remittancerName;
     private String type;
-    private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<LeaseContractDtl>();
+    private List<LeaseContractDtl> leaseContractDtlList = new ArrayList<>();
     private Integer monthSpace;
     private List<Owner> ownerList;
     private Owner owner; //业主信息查询条件

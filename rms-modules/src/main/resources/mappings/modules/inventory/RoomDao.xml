@@ -44,7 +44,8 @@
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
 		a.up as up,
-		a.reservation_phone as reservationPhone
+		a.reservation_phone as reservationPhone,
+		a.fee_config_info as feeConfigInfo
 	</sql>
 
     <sql id="roomJoins">
@@ -143,7 +144,8 @@
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
 		a.up as up,
-		a.reservation_phone as reservationPhone
+		a.reservation_phone as reservationPhone,
+		a.fee_config_info as feeConfigInfo
 		FROM t_room a
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.property_project_id = #{propertyProject.id}
@@ -221,7 +223,8 @@
 		depos_month_count,
 		alipay_status,
 		up,
-		reservation_phone
+		reservation_phone,
+		fee_config_info
 		) VALUES (
 		#{id},
 		#{propertyProject.id},
@@ -247,7 +250,8 @@
 		#{deposMonthCount},
 		#{alipayStatus},
 		#{up},
-		#{reservationPhone}
+		#{reservationPhone},
+		#{feeConfigInfo}
 		)
 	</insert>
 
@@ -275,7 +279,8 @@
         depos_month_count = #{deposMonthCount},
         alipay_status = #{alipayStatus},
         up = #{up},
-        reservation_phone = #{reservationPhone}
+        reservation_phone = #{reservationPhone},
+		fee_config_info = #{feeConfigInfo}
         WHERE id = #{id}
     </update>
 
@@ -362,7 +367,8 @@
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
 		a.up as up,
-		a.reservation_phone as reservationPhone
+		a.reservation_phone as reservationPhone,
+		a.fee_config_info as feeConfigInfo
 		from t_room a where del_flag = '0' and new_id = #{newId}
 	</select>
 </mapper>

@@ -189,6 +189,8 @@ CREATE TABLE `t_house` (
   COMMENT '上下架 0:下架  1:上架',
   `reservation_phone`        VARCHAR(32)                                   DEFAULT NULL
   COMMENT '预约热线电话',
+  `fee_config_info`          VARCHAR(1024)                                 DEFAULT NULL
+  COMMENT '同步至支付宝租房的房源各种费用信息，形如： 费用描述1=123,费用描述2=123,费用描述3=123,费用描述4=123,费用描述5=134,费用描述6=212',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
 )
@@ -252,6 +254,8 @@ CREATE TABLE `t_room` (
   COMMENT '上下架 0:下架  1:上架',
   `reservation_phone`   VARCHAR(32)                                   DEFAULT NULL
   COMMENT '预约热线电话',
+  `fee_config_info`     VARCHAR(1024)                                 DEFAULT NULL
+  COMMENT '同步至支付宝租房的房源各种费用信息，形如： 费用描述1=123,费用描述2=123,费用描述3=123,费用描述4=123,费用描述5=134,费用描述6=212',
   PRIMARY KEY (`ID`),
   UNIQUE KEY `unique_id` (`new_id`)
 )

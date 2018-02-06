@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.modules.contract.entity.PhoneRecord;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.PhoneRecordService;
+import com.thinkgem.jeesite.modules.contract.web.CommonBusinessController;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -69,7 +70,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping(value = "${adminPath}/app/alipay")
-public class AlipayController extends BaseController {
+public class AlipayController extends CommonBusinessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AlipayController.class);
 
@@ -824,11 +825,9 @@ public class AlipayController extends BaseController {
             model.setForegift_amount(rental != null && deposMonthCounts != null && deposMonthCounts != 0 ? String.valueOf(rental * deposMonthCounts) : "0");
             model.setOwners_tel(room.getReservationPhone());
             model.setRent_type(String.valueOf(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()) + 1));
-
-
-
-
-
+            if (StringUtils.isNotEmpty(room.getFeeConfigInfo())) {
+                model.setOther_amount((BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]) collectFeesToConifg(room.getFeeConfigInfo()).toArray());
+            }
         } else {
             model.setRoom_code("H" + house.getNewId());
             String houseStatus = house.getHouseStatus();
@@ -846,6 +845,9 @@ public class AlipayController extends BaseController {
             model.setForegift_amount(rental != null && deposMonthCounts != null && deposMonthCounts != 0 ? String.valueOf(rental * deposMonthCounts) : "0");
             model.setOwners_tel(house.getReservationPhone());
             model.setRent_type(String.valueOf(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()) + 1));
+            if (StringUtils.isNotEmpty(house.getFeeConfigInfo())) {
+                model.setOther_amount((BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]) collectFeesToConifg(house.getFeeConfigInfo()).toArray());
+            }
         }
         model.setComm_req_id(house.getPropertyProject().getCommReqId());
 
@@ -890,10 +892,5 @@ public class AlipayController extends BaseController {
         model.setMax_amount(building.getMaxAmount());
 
         return model;
-    }
-
-
-    private List<> generateOtherFeeList(String warterFee,String gasFee,String tvFee,String netFee,String serviceFee){
-        BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount AlipayEcoRenthouseOtherAmount = new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount();
     }
 }
