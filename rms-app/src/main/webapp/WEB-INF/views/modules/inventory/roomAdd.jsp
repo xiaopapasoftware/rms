@@ -231,42 +231,48 @@
         </div>
     </div>
     <div class="control-group">
-        <div class="controls">
-            <label class="control-label">（1）费用描述：</label>
-            <form:input path="feeDesc1" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（1）费用金额（元）：</label>
-            <form:input path="feeAmt1" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
-        </div>
-        <div class="controls">
-            <label class="control-label">（2）费用描述：</label>
-            <form:input path="feeDesc2" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（2）费用金额（元）：</label>
-            <form:input path="feeAmt2" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
-        </div>
-        <div class="controls">
-            <label class="control-label">（3）费用描述：</label>
-            <form:input path="feeDesc3" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（3）费用金额（元）：</label>
-            <form:input path="feeAmt3" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
-        </div>
-        <div class="controls">
-            <label class="control-label">（4）费用描述：</label>
-            <form:input path="feeDesc4" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（4）费用金额（元）：</label>
-            <form:input path="feeAmt4" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
-        </div>
-        <div class="controls">
-            <label class="control-label">（5）费用描述：</label>
-            <form:input path="feeDesc5" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（5）费用金额（元）：</label>
-            <form:input path="feeAmt5" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
-        </div>
-    </div>
-    <div class="control-group">
         <label class="control-label">备注信息：</label>
         <div class="controls">
             <form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
         </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">（1）费用描述：</label>
+        <div class="controls">
+            <form:input path="feeDesc1" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+        </div>
+        <label class="control-label">（1）费用金额（元）：</label>
+        <div class="controls">
+            <form:input path="feeAmt1" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">（2）费用描述：</label>
+        <div class="controls"><form:input path="feeDesc2" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+        </div>
+        <label class="control-label">（2）费用金额（元）：</label>
+        <div class="controls"><form:input path="feeAmt2" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;</div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">（3）费用描述：</label>
+        <div class="controls"><form:input path="feeDesc3" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+        </div>
+        <label class="control-label">（3）费用金额（元）：</label>
+        <div class="controls"><form:input path="feeAmt3" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;</div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">（4）费用描述：</label>
+        <div class="controls"><form:input path="feeDesc4" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+        </div>
+        <label class="control-label">（4）费用金额（元）：</label>
+        <div class="controls"><form:input path="feeAmt4" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;</div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">（5）费用描述：</label>
+        <div class="controls"><form:input path="feeDesc5" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+        </div>
+        <label class="control-label">（5）费用金额（元）：</label>
+        <div class="controls"><form:input path="feeAmt5" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;</div>
     </div>
 </form:form>
 </body>
