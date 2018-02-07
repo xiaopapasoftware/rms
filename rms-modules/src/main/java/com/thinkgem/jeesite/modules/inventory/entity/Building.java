@@ -26,7 +26,7 @@ public class Building extends DataEntity<Building> {
     private String nickName;
     private String minAmount;
     private String maxAmount;
-    private String type;
+    private String type;//公寓类型
 
     public Building() {
         super();

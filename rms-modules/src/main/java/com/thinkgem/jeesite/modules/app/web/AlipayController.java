@@ -62,7 +62,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * 支付宝Controller
+ * 支付宝租房同步Controller
  *
  * @author xiao
  * @version 2018-01-02
@@ -74,19 +74,7 @@ public class AlipayController extends CommonBusinessController {
     private static final Logger logger = LoggerFactory.getLogger(AlipayController.class);
 
     @Autowired
-    private HouseService houseService;
-
-    @Autowired
-    private PropertyProjectService projectService;
-
-    @Autowired
     private OwnerService ownerService;
-
-    @Autowired
-    private RoomService roomService;
-
-    @Autowired
-    private BuildingService buildingService;
 
     @Autowired
     private PhoneRecordService phoneRecordService;
@@ -234,7 +222,7 @@ public class AlipayController extends CommonBusinessController {
             }
             house.setOwner(ownerList.get(0));
         }
-        house.setPropertyProject(projectService.get(house.getPropertyProject().getId()));
+        house.setPropertyProject(propertyProjectService.get(house.getPropertyProject().getId()));
         room.setHouse(house);
         boolean result;
         try {
@@ -312,6 +300,20 @@ public class AlipayController extends CommonBusinessController {
         House house = room.getHouse();
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
         FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(room, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        Room pr = new Room();
+        pr.setBuildingType(BuildingTypeEnum.CONCENTRATION.getValue());
+        pr.setOrientation(room.getOrientation());
+        List<Room> tatalRooms = roomService.findList(pr);
+        model.setAll_room_num(CollectionUtils.isNotEmpty(tatalRooms) ? String.valueOf(tatalRooms.size()) : "1");
+        List<Room> canbeRentedRooms = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tatalRooms)) {
+            for (Room m : tatalRooms) {
+                if (RoomStatusEnum.RENT_FOR_RESERVE.getValue().equals(m.getRoomStatus())) {
+                    canbeRentedRooms.add(m);
+                }
+            }
+        }
+        model.setCan_rent_num(CollectionUtils.isNotEmpty(canbeRentedRooms) ? String.valueOf(canbeRentedRooms.size()) : "1");
         request.setBizContent(JSON.toJSONString(model));
         logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
@@ -349,7 +351,7 @@ public class AlipayController extends CommonBusinessController {
             }
             house.setOwner(ownerList.get(0));
         }
-        house.setPropertyProject(projectService.get(house.getPropertyProject().getId()));
+        house.setPropertyProject(propertyProjectService.get(house.getPropertyProject().getId()));
         boolean result;
         try {
             result = syncPropertyProject(house.getPropertyProject());
@@ -414,11 +416,13 @@ public class AlipayController extends CommonBusinessController {
     }
 
     /**
-     * 房屋集中式同步
+     * 房屋集中式同步（集中式只有单间）
      */
     private boolean syncConcentrationHouse(House house, List<String> imageUrls) throws AlipayApiException {
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
         FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(null, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        model.setAll_room_num("1");
+        model.setCan_rent_num("1");
         request.setBizContent(JSON.toJSONString(model));
         logger.info("AlipayEcoRenthouseRoomConcentrationSyncRequest is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseRoomConcentrationSyncResponse response = alipayClient.execute(request);
@@ -504,7 +508,7 @@ public class AlipayController extends CommonBusinessController {
         if (response.isSuccess()) {
             project.setAlipayStatus(Math.toIntExact(response.getStatus()));
             project.setCommReqId(response.getCommReqId());
-            projectService.save(project);
+            propertyProjectService.save(project);
             return true;
         } else {
             logger.error("sync property project error {}, {}", project.getId(), response.getMsg());
@@ -771,7 +775,7 @@ public class AlipayController extends CommonBusinessController {
     }
 
     private boolean checkSign(HttpServletRequest request) {
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
         for (String name : requestParams.keySet()) {
             String[] values = requestParams.get(name);

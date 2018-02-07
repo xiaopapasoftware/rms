@@ -96,18 +96,15 @@ public class RoomController extends CommonBusinessController {
     public String form(Room room, Model model) {
         if (room.getIsNewRecord()) {
             room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(("0,1,2,3,4,8,10,11,12")));
-        }
-        model.addAttribute("room", room);
-        initProperBuildAndHouse("listPropertyProject", "listBuilding", "listHouse", model, room.getPropertyProject(), room.getBuilding());
-        model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-        if (StringUtils.isNotEmpty(room.getOrientation())) {
-            room.setOrientationList(DictUtils.convertToDictListFromSelVal(room.getOrientation()));
-        }
-        if (StringUtils.isNotEmpty(room.getRoomConfig())) {
-            logger.info("roomConfig is :{}", room.getRoomConfig());
-            room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
+        } else {
+            if (StringUtils.isNotEmpty(room.getRoomConfig())) {
+                logger.info("roomConfig is :{}", room.getRoomConfig());
+                room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
+            }
         }
         collectFeesToConifg(null, room, room.getFeeConfigInfo());
+        model.addAttribute("room", room);
+        initProperBuildAndHouse("listPropertyProject", "listBuilding", "listHouse", model, room.getPropertyProject(), room.getBuilding());
         return "modules/inventory/roomForm";
     }
 
@@ -124,10 +121,6 @@ public class RoomController extends CommonBusinessController {
         List<House> listHouse = new ArrayList<>();
         listHouse.add(houseService.get(room.getHouse()));
         model.addAttribute("listHouse", listHouse);
-        model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
-        if (StringUtils.isNotEmpty(room.getOrientation())) {
-            room.setOrientationList(DictUtils.convertToDictListFromSelVal(room.getOrientation()));
-        }
         if (StringUtils.isNotEmpty(room.getRoomConfig())) {
             room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
         }
@@ -160,9 +153,7 @@ public class RoomController extends CommonBusinessController {
                 upRoom.setMeterNo(room.getMeterNo());
                 upRoom.setRoomSpace(room.getRoomSpace());
                 upRoom.setReservationPhone(room.getReservationPhone());
-                if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-                    upRoom.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
-                }
+                upRoom.setOrientation(room.getOrientation());
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                     upRoom.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
                 }
@@ -177,9 +168,6 @@ public class RoomController extends CommonBusinessController {
                 upRoom.setFeeConfigInfo(collectFeesToConifg(null, room));
                 roomService.saveRoom(upRoom);
             } else {
-                if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-                    room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
-                }
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                     room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
                 }
@@ -192,7 +180,6 @@ public class RoomController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(rooms)) {// 重复
                 addMessage(model, ViewMessageTypeEnum.WARNING, "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加!");
                 initProperBuildAndHouse("listPropertyProject", "listBuilding", "listHouse", model, room.getPropertyProject(), room.getBuilding());
-                model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
                 return "modules/inventory/roomForm";
             } else {// 可以新增房间
                 House house = houseService.get(room.getHouse());
@@ -204,9 +191,6 @@ public class RoomController extends CommonBusinessController {
                     room.setRoomStatus(RoomStatusEnum.RENTED.getValue());
                 } else {
                     room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-                }
-                if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-                    room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
                 }
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                     room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
@@ -234,13 +218,9 @@ public class RoomController extends CommonBusinessController {
             List<House> listHouse = new ArrayList<>();
             listHouse.add(houseService.get(room.getHouse()));
             model.addAttribute("listHouse", listHouse);
-            model.addAttribute("listOrientation", DictUtils.getDictList("orientation"));
             addMessage(jsonObject, ViewMessageTypeEnum.ERROR, "该物业项目及该楼宇下及该房屋下的房间号已被使用，不能重复添加!");
         } else {// 可以新增
             room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
-            if (CollectionUtils.isNotEmpty(room.getOrientationList())) {
-                room.setOrientation(DictUtils.convertToStrFromList(room.getOrientationList()));
-            }
             if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                 room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
             }

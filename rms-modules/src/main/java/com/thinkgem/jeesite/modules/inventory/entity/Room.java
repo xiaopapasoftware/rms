@@ -5,7 +5,6 @@ package com.thinkgem.jeesite.modules.inventory.entity;
 
 import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.persistence.DataEntity;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import org.hibernate.validator.constraints.Length;
 
@@ -27,8 +26,7 @@ public class Room extends DataEntity<Room> {
     private String roomNo; // 房间号
     private String meterNo; // 电表号
     private String roomSpace; // 房间面积
-    private String orientation;
-    private List<Dict> orientationList = Lists.newArrayList(new Dict());// 朝向列表
+    private String orientation;// 房间朝向     0东 1南 2西 3北 4东南 5东北 6西南 7西北
     private String roomConfig;
     private List<Dict> roomConfigList = Lists.newArrayList(new Dict());// 物品配置列表
     private String roomStatus; // 房间状态
@@ -44,7 +42,6 @@ public class Room extends DataEntity<Room> {
     private Integer alipayStatus;
     private Integer up;
     private String reservationPhone;
-
     /**
      * 支付宝租房同步用
      */
@@ -59,6 +56,7 @@ public class Room extends DataEntity<Room> {
     private String feeAmt4;
     private String feeDesc5;
     private String feeAmt5;
+    private String buildingType;//公寓类型，用于查询
 
     public Room() {
         super();
@@ -128,14 +126,6 @@ public class Room extends DataEntity<Room> {
 
     public void setRoomStatus(String roomStatus) {
         this.roomStatus = roomStatus;
-    }
-
-    public List<Dict> getOrientationList() {
-        return orientationList;
-    }
-
-    public void setOrientationList(List<Dict> orientationList) {
-        this.orientationList = orientationList;
     }
 
     public String getRoomConfig() {
@@ -344,5 +334,13 @@ public class Room extends DataEntity<Room> {
 
     public void setFeeAmt5(String feeAmt5) {
         this.feeAmt5 = feeAmt5;
+    }
+
+    public String getBuildingType() {
+        return buildingType;
+    }
+
+    public void setBuildingType(String buildingType) {
+        this.buildingType = buildingType;
     }
 }

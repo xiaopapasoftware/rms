@@ -47,11 +47,6 @@ public interface RoomDao extends CrudDao<Room> {
    */
   int queryRoomsCountByProjectPropertyId(@Param("endDate") Date endDate, @Param("propertyProjectId") String propertyProjectId);
 
-  /**
-   * 根据主键查询智能电表号
-   */
-  String queryMeterNoByRoomId(String roomId);
-
   List<Room> getValidFeeRoomList();
 
   /**
