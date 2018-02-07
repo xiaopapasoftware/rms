@@ -154,7 +154,11 @@ public abstract class CommonBusinessController extends BaseController {
         if (StringUtils.isNotEmpty(feeDesc5) && StringUtils.isNotEmpty(feeAmt5)) {
             resultSB.append(feeDesc5).append("=").append(feeAmt5).append(",");
         }
-        return resultSB.deleteCharAt(resultSB.length() - 1).toString();
+        if (StringUtils.isNotEmpty(resultSB.toString())) {
+            return resultSB.deleteCharAt(resultSB.length() - 1).toString();
+        } else {
+            return "";
+        }
     }
 
     /**

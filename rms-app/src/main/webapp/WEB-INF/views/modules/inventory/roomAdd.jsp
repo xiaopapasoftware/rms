@@ -178,7 +178,8 @@
     <div class="control-group">
         <label class="control-label">朝向：</label>
         <div class="controls">
-            <form:radiobuttons path="${orientation}" items="${fns:getDictList('orientation')}" itemLabel="label"
+            <form:radiobuttons name="orientation" path="orientation" items="${fns:getDictList('orientation')}"
+                               itemLabel="label"
                                itemValue="value" htmlEscape="false" class="required"/>
         </div>
     </div>

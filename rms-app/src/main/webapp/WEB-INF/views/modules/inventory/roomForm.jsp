@@ -183,7 +183,8 @@
     <div class="control-group">
         <label class="control-label">朝向：</label>
         <div class="controls">
-            <form:radiobuttons path="${orientation}" items="${fns:getDictList('orientation')}" itemLabel="label"
+            <form:radiobuttons name="orientation" path="orientation" items="${fns:getDictList('orientation')}"
+                               itemLabel="label"
                                itemValue="value" htmlEscape="false" class="required"/>
         </div>
     </div>
@@ -243,10 +244,14 @@
     </div>
     <div class="control-group">
         <div class="controls">
-            <label class="control-label">（1）费用描述：</label>
-            <form:input path="feeDesc1" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
-            <label class="control-label">（1）费用金额（元）：</label>
-            <form:input path="feeAmt1" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+            <div class="controls">
+                <label class="control-label">（1）费用描述：</label>
+                <form:input path="feeDesc1" htmlEscape="false" class="input-xlarge"/>&nbsp;&nbsp;&nbsp;
+            </div>
+            <div class="controls">
+                <label class="control-label">（1）费用金额（元）：</label>
+                <form:input path="feeAmt1" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+            </div>
         </div>
         <div class="controls">
             <label class="control-label">（2）费用描述：</label>
