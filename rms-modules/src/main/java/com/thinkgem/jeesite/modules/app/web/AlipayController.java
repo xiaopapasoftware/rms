@@ -798,6 +798,7 @@ public class AlipayController extends CommonBusinessController {
      */
     private BaseSyncHousingModel setCommonHouseRoomModel(Room room, House house, Building building, List<String> imageUrls) {
         DispersedSynchronizeHousingModel model = new DispersedSynchronizeHousingModel();
+        String commonGoodsConfig;//房源物品配置
         if (room != null) {
             model.setRoom_code("R" + room.getNewId());
             model.setRoom_name(room.getRoomNo());
@@ -812,11 +813,7 @@ public class AlipayController extends CommonBusinessController {
                 model.setRent_status("1");//未租
             }
             model.setIntro(room.getShortDesc() + " " + room.getShortLocation());
-            List<String> targetArrayList1 = new ArrayList<>();
-            for (String s : room.getRoomConfig().split(",")) {
-                targetArrayList1.add(String.valueOf(Integer.valueOf(s) + 1));
-            }
-            model.setRoom_configs(targetArrayList1.toArray(new String[]{}));
+            commonGoodsConfig = room.getRoomConfig();
             Integer rentMonthGap = room.getRentMonthGap();
             model.setPay_type(rentMonthGap == null || rentMonthGap == 0 ? "0" : String.valueOf(rentMonthGap));
             Double rental = room.getRental();
@@ -836,6 +833,7 @@ public class AlipayController extends CommonBusinessController {
             } else {
                 model.setRent_status("1");//未租
             }
+            commonGoodsConfig = house.getShareAreaConfig();
             model.setIntro(house.getShortDesc() + " " + house.getShortLocation());
             Integer rentMonthGap = house.getRentMonthGap();
             model.setPay_type(rentMonthGap == null || rentMonthGap == 0 ? "0" : String.valueOf(rentMonthGap));
@@ -872,11 +870,21 @@ public class AlipayController extends CommonBusinessController {
 
         model.setFlat_area(house.getDecorationSpance());
 
-        List<String> targetArrayList2 = new ArrayList<>();
-        for (String s : house.getShareAreaConfig().split(",")) {
-            targetArrayList2.add(String.valueOf(Integer.valueOf(s) + 1));
+        if (StringUtils.isNotEmpty(house.getShareAreaConfig())) {
+            List<String> targetArrayList = new ArrayList<>();
+            for (String s : house.getShareAreaConfig().split(",")) {
+                targetArrayList.add(String.valueOf(Integer.valueOf(s) + 1));
+            }
+            model.setFlat_configs(targetArrayList.toArray(new String[]{}));
         }
-        model.setFlat_configs(targetArrayList2.toArray(new String[]{}));
+
+        if (StringUtils.isNotEmpty(commonGoodsConfig)) {
+            List<String> targetArrayList = new ArrayList<>();
+            for (String s : commonGoodsConfig.split(",")) {
+                targetArrayList.add(String.valueOf(Integer.valueOf(s) + 1));
+            }
+            model.setRoom_configs(targetArrayList.toArray(new String[]{}));
+        }
 
         model.setImages(imageUrls.toArray(new String[]{}));
 
