@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.app.entity.BaseSyncHousingModel;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
-import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.entity.*;
 import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
@@ -103,42 +100,18 @@ public abstract class CommonBusinessController extends BaseController {
      * 处理房源的费用配置信息，转为可存到数据库的数据。
      * 配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
      */
-    protected String collectFeesToConifg(House house, Room room) {
+    protected String collectFeesToConifg(BaseHousingEntity baseHousingEntity) {
         StringBuilder resultSB = new StringBuilder();
-        String feeDesc1 = null;
-        String feeAmt1 = null;
-        String feeDesc2 = null;
-        String feeAmt2 = null;
-        String feeDesc3 = null;
-        String feeAmt3 = null;
-        String feeDesc4 = null;
-        String feeAmt4 = null;
-        String feeDesc5 = null;
-        String feeAmt5 = null;
-        if (house != null) {
-            feeAmt1 = house.getFeeAmt1();
-            feeAmt2 = house.getFeeAmt2();
-            feeAmt3 = house.getFeeAmt3();
-            feeAmt4 = house.getFeeAmt4();
-            feeAmt5 = house.getFeeAmt5();
-            feeDesc1 = house.getFeeDesc1();
-            feeDesc2 = house.getFeeDesc2();
-            feeDesc3 = house.getFeeDesc3();
-            feeDesc4 = house.getFeeDesc4();
-            feeDesc5 = house.getFeeDesc5();
-        }
-        if (room != null) {
-            feeAmt1 = room.getFeeAmt1();
-            feeAmt2 = room.getFeeAmt2();
-            feeAmt3 = room.getFeeAmt3();
-            feeAmt4 = room.getFeeAmt4();
-            feeAmt5 = room.getFeeAmt5();
-            feeDesc1 = room.getFeeDesc1();
-            feeDesc2 = room.getFeeDesc2();
-            feeDesc3 = room.getFeeDesc3();
-            feeDesc4 = room.getFeeDesc4();
-            feeDesc5 = room.getFeeDesc5();
-        }
+        String feeAmt1 = baseHousingEntity.getFeeAmt1();
+        String feeAmt2 = baseHousingEntity.getFeeAmt2();
+        String feeAmt3 = baseHousingEntity.getFeeAmt3();
+        String feeAmt4 = baseHousingEntity.getFeeAmt4();
+        String feeAmt5 = baseHousingEntity.getFeeAmt5();
+        String feeDesc1 = baseHousingEntity.getFeeDesc1();
+        String feeDesc2 = baseHousingEntity.getFeeDesc2();
+        String feeDesc3 = baseHousingEntity.getFeeDesc3();
+        String feeDesc4 = baseHousingEntity.getFeeDesc4();
+        String feeDesc5 = baseHousingEntity.getFeeDesc5();
         if (StringUtils.isNotEmpty(feeDesc1) && StringUtils.isNotEmpty(feeAmt1)) {
             resultSB.append(feeDesc1).append("=").append(feeAmt1).append(",");
         }
@@ -165,54 +138,41 @@ public abstract class CommonBusinessController extends BaseController {
      * 把数据库配置的feeConfigInfo值转为页面可渲染的费用信息
      * 配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
      */
-    protected void collectFeesToConifg(House house, Room room, String feeConfigInfo) {
+    protected void collectFeesToConifg(BaseHousingEntity baseHousingEntity, String feeConfigInfo) {
         if (StringUtils.isNotEmpty(feeConfigInfo)) {
             List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> list = collectFeesToConifg(feeConfigInfo);
-            if (house != null) {
-                if (CollectionUtils.isNotEmpty(list)) {
-                    if (list.get(0) != null) {
-                        house.setFeeDesc1(list.get(0).getName());
-                        house.setFeeAmt1(list.get(0).getAmount());
+            if (CollectionUtils.isNotEmpty(list)) {
+                int size = list.size();
+                if (baseHousingEntity != null) {
+                    if (size > 0) {
+                        if (list.get(0) != null) {
+                            baseHousingEntity.setFeeDesc1(list.get(0).getName());
+                            baseHousingEntity.setFeeAmt1(list.get(0).getAmount());
+                        }
                     }
-                    if (list.get(1) != null) {
-                        house.setFeeDesc2(list.get(1).getName());
-                        house.setFeeAmt2(list.get(1).getAmount());
+                    if (size > 1) {
+                        if (list.get(1) != null) {
+                            baseHousingEntity.setFeeDesc2(list.get(1).getName());
+                            baseHousingEntity.setFeeAmt2(list.get(1).getAmount());
+                        }
                     }
-                    if (list.get(2) != null) {
-                        house.setFeeDesc3(list.get(2).getName());
-                        house.setFeeAmt3(list.get(2).getAmount());
+                    if (size > 2) {
+                        if (list.get(2) != null) {
+                            baseHousingEntity.setFeeDesc3(list.get(2).getName());
+                            baseHousingEntity.setFeeAmt3(list.get(2).getAmount());
+                        }
                     }
-                    if (list.get(3) != null) {
-                        house.setFeeDesc4(list.get(3).getName());
-                        house.setFeeAmt4(list.get(3).getAmount());
+                    if (size > 3) {
+                        if (list.get(3) != null) {
+                            baseHousingEntity.setFeeDesc4(list.get(3).getName());
+                            baseHousingEntity.setFeeAmt4(list.get(3).getAmount());
+                        }
                     }
-                    if (list.get(4) != null) {
-                        house.setFeeDesc5(list.get(4).getName());
-                        house.setFeeAmt5(list.get(4).getAmount());
-                    }
-                }
-            }
-            if (room != null) {
-                if (CollectionUtils.isNotEmpty(list)) {
-                    if (list.get(0) != null) {
-                        room.setFeeDesc1(list.get(0).getName());
-                        room.setFeeAmt1(list.get(0).getAmount());
-                    }
-                    if (list.get(1) != null) {
-                        room.setFeeDesc2(list.get(1).getName());
-                        room.setFeeAmt2(list.get(1).getAmount());
-                    }
-                    if (list.get(2) != null) {
-                        room.setFeeDesc3(list.get(2).getName());
-                        room.setFeeAmt3(list.get(2).getAmount());
-                    }
-                    if (list.get(3) != null) {
-                        room.setFeeDesc4(list.get(3).getName());
-                        room.setFeeAmt4(list.get(3).getAmount());
-                    }
-                    if (list.get(4) != null) {
-                        room.setFeeDesc5(list.get(4).getName());
-                        room.setFeeAmt5(list.get(4).getAmount());
+                    if (size > 4) {
+                        if (list.get(4) != null) {
+                            baseHousingEntity.setFeeDesc5(list.get(4).getName());
+                            baseHousingEntity.setFeeAmt5(list.get(4).getAmount());
+                        }
                     }
                 }
             }

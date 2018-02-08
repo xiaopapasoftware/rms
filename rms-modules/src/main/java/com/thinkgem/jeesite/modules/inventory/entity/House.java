@@ -1,9 +1,5 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.inventory.entity;
 
-import com.thinkgem.jeesite.common.persistence.DataEntity;
 import com.thinkgem.jeesite.modules.entity.Dict;
 import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
@@ -14,16 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 房屋信息Entity
- *
- * @author huangsc
- * @version 2015-06-06
+ * 房屋信息
  */
-public class House extends DataEntity<House> {
-
+public class House extends BaseHousingEntity<House> {
     private static final long serialVersionUID = 1L;
-    private PropertyProject propertyProject; // 物业项目
-    private Building building; // 楼宇
     private Owner owner; // 业主
     private String houseCode;// 房屋序号
     private String houseNo; // 房屋号
@@ -39,42 +29,19 @@ public class House extends DataEntity<House> {
     private Integer decoraStrucWashroNum;// 装修后房屋结构-卫数
     private String ownerNamesOfHouse;// 用于查询房屋时，显示该房屋下所有的业主姓名
     private String houseStatus; // 房屋状态
-    private String attachmentPath; // 房屋图片路径
-    private String choose;
     private List<Owner> ownerList = new ArrayList<>();// 用来渲染业主查询条件下拉框数据源
     private String projectAddr;
-    private String orientation;
     private String houseId;
     private String roomId;
     private String intentMode;// 意向租赁类型
-    private String isFeature;// 是否精选房源
-    private Double rental;// 意向租金   0 整套 1 单间
-    private String shortDesc;// 描述
-    private String shortLocation;// 地址描述
     private User serviceUser;// 服务管家
     private String servcieUserName;
-
     /* 电户号 */
     private String eleAccountNum;
-
     /* 水户号 */
     private String waterAccountNum;
-
     /* 煤气户号 */
     private String gasAccountNum;
-
-    private Long newId;
-
-    private Integer rentMonthGap;//房租支付间隔月数
-
-    private Integer deposMonthCount;//押金月数
-
-    private Integer alipayStatus;//支付宝同步状态
-
-    private Integer up;
-
-    private String reservationPhone;
-
     private String type;//公寓类型，集中式/分散式 作为查询条件
 
     public House() {
@@ -88,39 +55,6 @@ public class House extends DataEntity<House> {
     private String shareAreaConfig;//用于支付宝租房同步，公共区域物品配置
 
     private List<Dict> shareAreaConfigList;
-
-    /**
-     * 支付宝租房同步用
-     */
-    private String feeConfigInfo;//用于同步支付宝的各种费用，配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
-    private String feeDesc1;
-    private String feeAmt1;
-    private String feeDesc2;
-    private String feeAmt2;
-    private String feeDesc3;
-    private String feeAmt3;
-    private String feeDesc4;
-    private String feeAmt4;
-    private String feeDesc5;
-    private String feeAmt5;
-
-    @NotNull(message = "物业项目不能为空")
-    public PropertyProject getPropertyProject() {
-        return propertyProject;
-    }
-
-    public void setPropertyProject(PropertyProject propertyProject) {
-        this.propertyProject = propertyProject;
-    }
-
-    @NotNull(message = "楼宇不能为空")
-    public Building getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
-    }
 
     public Owner getOwner() {
         return owner;
@@ -189,21 +123,6 @@ public class House extends DataEntity<House> {
         this.houseStatus = houseStatus;
     }
 
-    public String getAttachmentPath() {
-        return attachmentPath;
-    }
-
-    public void setAttachmentPath(String attachmentPath) {
-        this.attachmentPath = attachmentPath;
-    }
-
-    public String getChoose() {
-        return choose;
-    }
-
-    public void setChoose(String choose) {
-        this.choose = choose;
-    }
 
     public Integer getOriStrucRoomNum() {
         return oriStrucRoomNum;
@@ -277,37 +196,6 @@ public class House extends DataEntity<House> {
         this.intentMode = intentMode;
     }
 
-    public String getIsFeature() {
-        return isFeature;
-    }
-
-    public void setIsFeature(String isFeature) {
-        this.isFeature = isFeature;
-    }
-
-    public Double getRental() {
-        return rental;
-    }
-
-    public void setRental(Double rental) {
-        this.rental = rental;
-    }
-
-    public String getShortDesc() {
-        return shortDesc;
-    }
-
-    public void setShortDesc(String shortDesc) {
-        this.shortDesc = shortDesc;
-    }
-
-    public String getShortLocation() {
-        return shortLocation;
-    }
-
-    public void setShortLocation(String shortLocation) {
-        this.shortLocation = shortLocation;
-    }
 
     public String getProjectAddr() {
         return projectAddr;
@@ -317,13 +205,6 @@ public class House extends DataEntity<House> {
         this.projectAddr = projectAddr;
     }
 
-    public String getOrientation() {
-        return orientation;
-    }
-
-    public void setOrientation(String orientation) {
-        this.orientation = orientation;
-    }
 
     public String getHouseId() {
         return houseId;
@@ -381,13 +262,6 @@ public class House extends DataEntity<House> {
         this.gasAccountNum = gasAccountNum;
     }
 
-    public Long getNewId() {
-        return newId;
-    }
-
-    public void setNewId(Long newId) {
-        this.newId = newId;
-    }
 
     public String getShareAreaConfig() {
         return shareAreaConfig;
@@ -405,139 +279,11 @@ public class House extends DataEntity<House> {
         this.shareAreaConfigList = shareAreaConfigList;
     }
 
-    public Integer getRentMonthGap() {
-        return rentMonthGap;
-    }
-
-    public void setRentMonthGap(Integer rentMonthGap) {
-        this.rentMonthGap = rentMonthGap;
-    }
-
-    public Integer getDeposMonthCount() {
-        return deposMonthCount;
-    }
-
-    public void setDeposMonthCount(Integer deposMonthCount) {
-        this.deposMonthCount = deposMonthCount;
-    }
-
-    public Integer getAlipayStatus() {
-        return alipayStatus;
-    }
-
-    public void setAlipayStatus(Integer alipayStatus) {
-        this.alipayStatus = alipayStatus;
-    }
-
-    public Integer getUp() {
-        return up;
-    }
-
-    public void setUp(Integer up) {
-        this.up = up;
-    }
-
-    public String getReservationPhone() {
-        return reservationPhone;
-    }
-
-    public void setReservationPhone(String reservationPhone) {
-        this.reservationPhone = reservationPhone;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getFeeConfigInfo() {
-        return feeConfigInfo;
-    }
-
-    public void setFeeConfigInfo(String feeConfigInfo) {
-        this.feeConfigInfo = feeConfigInfo;
-    }
-
-    public String getFeeDesc1() {
-        return feeDesc1;
-    }
-
-    public void setFeeDesc1(String feeDesc1) {
-        this.feeDesc1 = feeDesc1;
-    }
-
-    public String getFeeAmt1() {
-        return feeAmt1;
-    }
-
-    public void setFeeAmt1(String feeAmt1) {
-        this.feeAmt1 = feeAmt1;
-    }
-
-    public String getFeeDesc2() {
-        return feeDesc2;
-    }
-
-    public void setFeeDesc2(String feeDesc2) {
-        this.feeDesc2 = feeDesc2;
-    }
-
-    public String getFeeAmt2() {
-        return feeAmt2;
-    }
-
-    public void setFeeAmt2(String feeAmt2) {
-        this.feeAmt2 = feeAmt2;
-    }
-
-    public String getFeeDesc3() {
-        return feeDesc3;
-    }
-
-    public void setFeeDesc3(String feeDesc3) {
-        this.feeDesc3 = feeDesc3;
-    }
-
-    public String getFeeAmt3() {
-        return feeAmt3;
-    }
-
-    public void setFeeAmt3(String feeAmt3) {
-        this.feeAmt3 = feeAmt3;
-    }
-
-    public String getFeeDesc4() {
-        return feeDesc4;
-    }
-
-    public void setFeeDesc4(String feeDesc4) {
-        this.feeDesc4 = feeDesc4;
-    }
-
-    public String getFeeAmt4() {
-        return feeAmt4;
-    }
-
-    public void setFeeAmt4(String feeAmt4) {
-        this.feeAmt4 = feeAmt4;
-    }
-
-    public String getFeeDesc5() {
-        return feeDesc5;
-    }
-
-    public void setFeeDesc5(String feeDesc5) {
-        this.feeDesc5 = feeDesc5;
-    }
-
-    public String getFeeAmt5() {
-        return feeAmt5;
-    }
-
-    public void setFeeAmt5(String feeAmt5) {
-        this.feeAmt5 = feeAmt5;
     }
 }

@@ -127,7 +127,7 @@ public class HouseController extends CommonBusinessController {
         }
         model.addAttribute("ownerList", ownerService.findList(new Owner()));
         model.addAttribute("house", house);
-        collectFeesToConifg(house, null, house.getFeeConfigInfo());
+        collectFeesToConifg(house, house.getFeeConfigInfo());
         return "modules/inventory/houseForm";
     }
 
@@ -188,7 +188,7 @@ public class HouseController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                 house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
             }
-            house.setFeeConfigInfo(collectFeesToConifg(house, null));
+            house.setFeeConfigInfo(collectFeesToConifg(house));
             houseService.saveHouse(house);
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房屋信息成功");
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -209,7 +209,7 @@ public class HouseController extends CommonBusinessController {
                 if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                     house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
                 }
-                house.setFeeConfigInfo(collectFeesToConifg(house, null));
+                house.setFeeConfigInfo(collectFeesToConifg(house));
                 houseService.saveHouse(house);
                 addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房屋信息成功");
                 return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
@@ -246,7 +246,7 @@ public class HouseController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(house.getShareAreaConfigList())) {
                 house.setShareAreaConfig(DictUtils.convertToStrFromList(house.getShareAreaConfigList()));
             }
-            house.setFeeConfigInfo(collectFeesToConifg(house, null));
+            house.setFeeConfigInfo(collectFeesToConifg(house));
             houseService.saveHouse(house);
             jsonObject.put("id", house.getId());
             jsonObject.put("name", house.getHouseNo());
