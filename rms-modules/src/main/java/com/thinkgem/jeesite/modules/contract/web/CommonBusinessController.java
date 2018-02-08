@@ -11,7 +11,6 @@ import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.util.ArrayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 
@@ -100,7 +99,7 @@ public abstract class CommonBusinessController extends BaseController {
      * 处理房源的费用配置信息，转为可存到数据库的数据。
      * 配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
      */
-    protected String collectFeesToConifg(BaseHousingEntity baseHousingEntity) {
+    protected String convertToFeeStr(BaseHousingEntity baseHousingEntity) {
         StringBuilder resultSB = new StringBuilder();
         String feeAmt1 = baseHousingEntity.getFeeAmt1();
         String feeAmt2 = baseHousingEntity.getFeeAmt2();
@@ -138,9 +137,9 @@ public abstract class CommonBusinessController extends BaseController {
      * 把数据库配置的feeConfigInfo值转为页面可渲染的费用信息
      * 配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
      */
-    protected void collectFeesToConifg(BaseHousingEntity baseHousingEntity, String feeConfigInfo) {
+    protected void setHousingFeeConfigInfo(BaseHousingEntity baseHousingEntity, String feeConfigInfo) {
         if (StringUtils.isNotEmpty(feeConfigInfo)) {
-            List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> list = collectFeesToConifg(feeConfigInfo);
+            List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> list = convertFeeToList(feeConfigInfo);
             if (CollectionUtils.isNotEmpty(list)) {
                 int size = list.size();
                 if (baseHousingEntity != null) {
@@ -184,7 +183,7 @@ public abstract class CommonBusinessController extends BaseController {
      * 配置形如：feeName1=feeAmt1,feeName2=feeAmt2,feeName3=feeAmt3,feeName4=feeAmt4,feeName5=feeAmt5
      * 转化为List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount>
      */
-    protected List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> collectFeesToConifg(String feeConfigInfo) {
+    protected List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> convertFeeToList(String feeConfigInfo) {
         List<BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount> list = new ArrayList<>();
         if (StringUtils.isNotEmpty(feeConfigInfo)) {
             String[] array1 = feeConfigInfo.split(",");

@@ -33,10 +33,6 @@ import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
-import com.thinkgem.jeesite.modules.inventory.service.BuildingService;
-import com.thinkgem.jeesite.modules.inventory.service.HouseService;
-import com.thinkgem.jeesite.modules.inventory.service.PropertyProjectService;
-import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
@@ -819,7 +815,7 @@ public class AlipayController extends CommonBusinessController {
             for (String s : room.getRoomConfig().split(",")) {
                 targetArrayList1.add(String.valueOf(Integer.valueOf(s) + 1));
             }
-            model.setRoom_configs((String[]) targetArrayList1.toArray());
+            model.setRoom_configs(targetArrayList1.toArray(new String[]{}));
             Integer rentMonthGap = room.getRentMonthGap();
             model.setPay_type(rentMonthGap == null || rentMonthGap == 0 ? "0" : String.valueOf(rentMonthGap));
             Double rental = room.getRental();
@@ -829,7 +825,7 @@ public class AlipayController extends CommonBusinessController {
             model.setOwners_tel(room.getReservationPhone());
             model.setRent_type(String.valueOf(Integer.valueOf(RentModelTypeEnum.JOINT_RENT.getValue()) + 1));
             if (StringUtils.isNotEmpty(room.getFeeConfigInfo())) {
-                model.setOther_amount((BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]) collectFeesToConifg(room.getFeeConfigInfo()).toArray());
+                model.setOther_amount(convertFeeToList(room.getFeeConfigInfo()).toArray(new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]{}));
             }
         } else {
             model.setRoom_code("H" + house.getNewId());
@@ -849,7 +845,7 @@ public class AlipayController extends CommonBusinessController {
             model.setOwners_tel(house.getReservationPhone());
             model.setRent_type(String.valueOf(Integer.valueOf(RentModelTypeEnum.WHOLE_RENT.getValue()) + 1));
             if (StringUtils.isNotEmpty(house.getFeeConfigInfo())) {
-                model.setOther_amount((BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]) collectFeesToConifg(house.getFeeConfigInfo()).toArray());
+                model.setOther_amount(convertFeeToList(house.getFeeConfigInfo()).toArray(new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]{}));
             }
         }
         model.setComm_req_id(house.getPropertyProject().getCommReqId());
@@ -879,9 +875,9 @@ public class AlipayController extends CommonBusinessController {
         for (String s : house.getShareAreaConfig().split(",")) {
             targetArrayList2.add(String.valueOf(Integer.valueOf(s) + 1));
         }
-        model.setFlat_configs((String[]) targetArrayList2.toArray());
+        model.setFlat_configs(targetArrayList2.toArray(new String[]{}));
 
-        model.setImages((String[]) imageUrls.toArray());
+        model.setImages(imageUrls.toArray(new String[]{}));
 
         Owner owner = ownerService.get(house.getOwner().getId());
         model.setOwners_name(owner != null ? owner.getName() : COMPANY_NAME);

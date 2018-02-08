@@ -102,7 +102,7 @@ public class RoomController extends CommonBusinessController {
                 room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
             }
         }
-        collectFeesToConifg(room, room.getFeeConfigInfo());
+        setHousingFeeConfigInfo(room, room.getFeeConfigInfo());
         model.addAttribute("room", room);
         initProperBuildAndHouse("listPropertyProject", "listBuilding", "listHouse", model, room.getPropertyProject(), room.getBuilding());
         return "modules/inventory/roomForm";
@@ -165,13 +165,13 @@ public class RoomController extends CommonBusinessController {
                 upRoom.setShortLocation(room.getShortLocation());
                 upRoom.setRentMonthGap(room.getRentMonthGap());
                 upRoom.setDeposMonthCount(room.getDeposMonthCount());
-                upRoom.setFeeConfigInfo(collectFeesToConifg(room));
+                upRoom.setFeeConfigInfo(convertToFeeStr(room));
                 roomService.saveRoom(upRoom);
             } else {
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                     room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
                 }
-                room.setFeeConfigInfo(collectFeesToConifg(room));
+                room.setFeeConfigInfo(convertToFeeStr(room));
                 roomService.saveRoom(room);
             }
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "修改房间信息成功");
@@ -195,7 +195,7 @@ public class RoomController extends CommonBusinessController {
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                     room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
                 }
-                room.setFeeConfigInfo(collectFeesToConifg(room));
+                room.setFeeConfigInfo(convertToFeeStr(room));
                 roomService.saveRoom(room);
                 addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "保存房间信息成功");
                 return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
@@ -224,7 +224,7 @@ public class RoomController extends CommonBusinessController {
             if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {
                 room.setRoomConfig(DictUtils.convertToStrFromList(room.getRoomConfigList()));
             }
-            room.setFeeConfigInfo(collectFeesToConifg(room));
+            room.setFeeConfigInfo(convertToFeeStr(room));
             roomService.saveRoom(room);
             jsonObject.put("id", room.getId());
             jsonObject.put("name", room.getRoomNo());
