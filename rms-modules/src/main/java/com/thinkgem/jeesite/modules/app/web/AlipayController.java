@@ -27,6 +27,7 @@ import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.contract.service.ContractBookService;
 import com.thinkgem.jeesite.modules.contract.service.PhoneRecordService;
 import com.thinkgem.jeesite.modules.contract.web.CommonBusinessController;
+import com.thinkgem.jeesite.modules.entity.User;
 import com.thinkgem.jeesite.modules.inventory.entity.Building;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
@@ -879,8 +880,8 @@ public class AlipayController extends CommonBusinessController {
 
         model.setImages(imageUrls.toArray(new String[]{}));
 
-        Owner owner = ownerService.get(house.getOwner().getId());
-        model.setOwners_name(owner != null ? owner.getName() : COMPANY_NAME);
+        User u = house.getServiceUser();
+        model.setOwners_name(u != null ? u.getName() : "");
 
         model.setCheckin_time(DateUtils.formatDate(new Date()));
 
