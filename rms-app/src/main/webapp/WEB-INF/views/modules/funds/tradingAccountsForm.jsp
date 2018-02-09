@@ -6,6 +6,9 @@
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
         $(document).ready(function () {
+
+            top.$.jBox.tip.mess = null;
+
             $("#inputForm").validate({
                 submitHandler: function (form) {
                     var tradeTypeVar = $("#tradeType").val();

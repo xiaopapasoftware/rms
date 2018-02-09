@@ -18,8 +18,6 @@
             ${content}
     </div>
     <script type="text/javascript">
-        alert("content is:" + "${content}");
-        alert("type is:" + "${ctype}");
         if (!top.$.jBox.tip.mess) {
             top.$.jBox.tip.mess = 1;
             top.$.jBox.tip("${content}", "${ctype}", {

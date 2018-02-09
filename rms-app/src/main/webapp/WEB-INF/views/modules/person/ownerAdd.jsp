@@ -6,8 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//console.log($(window.parent.document).find("[id='jbox-iframe']").contents().find("[id='owner.id']").html());
-			//$("#name").focus();
+            top.$.jBox.tip.mess = null;
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					var saveData = $("#inputForm").serialize();

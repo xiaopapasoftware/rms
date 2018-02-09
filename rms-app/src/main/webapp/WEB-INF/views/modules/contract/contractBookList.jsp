@@ -8,7 +8,7 @@
 		var scope = {};
 		getSalesmanList();
 		$(document).ready(function() {
-
+            top.$.jBox.tip.mess = null;
             $('#allCheck').click(function () {
                 var chk = document.getElementsByName("chk");
                 for(var i=0;i<chk.length;i++){

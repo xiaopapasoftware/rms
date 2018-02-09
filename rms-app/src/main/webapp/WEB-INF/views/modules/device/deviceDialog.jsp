@@ -6,8 +6,8 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+            top.$.jBox.tip.mess = null;
 			$("tr[attr-devicesChooseFlag='1']").addClass("error");
-			//$("tr[attr-devicesChooseFlag='1'] td:nth-child(1)").find("INPUT[type = 'radio']").attr("disabled",true); 
 		});
 		function page(n,s){
 			$("#pageNo").val(n);

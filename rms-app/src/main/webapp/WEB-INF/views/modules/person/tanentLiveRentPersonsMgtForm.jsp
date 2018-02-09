@@ -6,6 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+            top.$.jBox.tip.mess = null;
 			$(".tanants").select2({
 			    ajax: {
 				    url: "${ctx}/person/tenant/syncAjaxQuery",

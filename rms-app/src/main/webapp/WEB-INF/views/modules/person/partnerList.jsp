@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+            top.$.jBox.tip.mess = null;
 		});
 		function page(n,s){
 			$("#pageNo").val(n);
@@ -57,7 +57,6 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				
 				<th>姓名</th>
 				<th>手机号</th>
 				<th>座机号</th>

@@ -7,6 +7,7 @@
 	<%@include file="/WEB-INF/views/include/supcan.jsp" %>
 	<script type="text/javascript">
 		$(document).ready(function() {
+            top.$.jBox.tip.mess = null;
 			su = supcan(AF, "Test", {
 				ready: function(){
 					// 加载数据

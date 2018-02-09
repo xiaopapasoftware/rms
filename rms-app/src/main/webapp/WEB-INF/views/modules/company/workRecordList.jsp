@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			
+            top.$.jBox.tip.mess = null;
 		});
 		function page(n,s){
 			$("#pageNo").val(n);

@@ -6,7 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			//$("#name").focus();
+            top.$.jBox.tip.mess = null;
 			$("#inputForm").validate({
 				submitHandler: function(form){
 					if($("#receiptList").find("tr").length>0) {

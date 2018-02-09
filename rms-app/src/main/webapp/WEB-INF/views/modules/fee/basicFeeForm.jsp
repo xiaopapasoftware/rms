@@ -11,6 +11,7 @@
 		            event.preventDefault();
 		        }
 		    });
+            top.$.jBox.tip.mess = null;
 		});
 		function submitData() {
 			$("#inputForm").validate({

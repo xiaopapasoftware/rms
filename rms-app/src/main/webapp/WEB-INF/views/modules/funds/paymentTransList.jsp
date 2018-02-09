@@ -6,8 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#messageBox").show();
-			
+            top.$.jBox.tip.mess = null;
 			$("#btnExport").click(function(){
 				$("#searchForm").attr("action","${ctx}/funds/paymentTrans/exportPaymentTrans");
 				$("#searchForm").submit();

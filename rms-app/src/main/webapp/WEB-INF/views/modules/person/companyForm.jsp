@@ -6,6 +6,7 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+            top.$.jBox.tip.mess = null;
 			$("#companyName, #idNo, #tellPhone, #companyAdress,#businessAdress,#bankName,#bankAccount").keypress(function(event) {
 		        if (event.keyCode == 13) {
 		            event.preventDefault();

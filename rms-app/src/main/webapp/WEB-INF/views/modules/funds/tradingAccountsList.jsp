@@ -6,6 +6,9 @@
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
+
+		    top.$.jBox.tip.mess = null;
+
 			$("#btnExport").click(function(){
 				$("#searchForm").attr("action","${ctx}/funds/tradingAccounts/exportTradingAccounts");
 				$("#searchForm").submit();
