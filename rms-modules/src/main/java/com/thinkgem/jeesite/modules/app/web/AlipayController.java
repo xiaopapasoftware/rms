@@ -797,7 +797,7 @@ public class AlipayController extends CommonBusinessController {
      * 参数设置
      */
     private BaseSyncHousingModel setCommonHouseRoomModel(Room room, House house, Building building, List<String> imageUrls) {
-        DispersedSynchronizeHousingModel model = new DispersedSynchronizeHousingModel();
+        BaseSyncHousingModel model = new BaseSyncHousingModel();
         String commonGoodsConfig;//房源物品配置
         if (room != null) {
             model.setRoom_code("R" + room.getNewId());
