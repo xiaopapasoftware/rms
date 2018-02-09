@@ -223,7 +223,7 @@ public class AlipayController extends CommonBusinessController {
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
         if (StringUtils.isBlank(room.getOrientation())) {
-            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间没有选择朝向，请上传后再同步！");
+            addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间没有选择朝向，请设置后再同步！");
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
         if (StringUtils.isBlank(room.getAttachmentPath())) {
