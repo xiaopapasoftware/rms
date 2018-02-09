@@ -35,9 +35,7 @@ import com.thinkgem.jeesite.modules.inventory.entity.Room;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
-import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
-import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -69,9 +67,6 @@ import java.util.*;
 public class AlipayController extends CommonBusinessController {
 
     private static final Logger logger = LoggerFactory.getLogger(AlipayController.class);
-
-    @Autowired
-    private OwnerService ownerService;
 
     @Autowired
     private PhoneRecordService phoneRecordService;
@@ -211,14 +206,6 @@ public class AlipayController extends CommonBusinessController {
     public String syncRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
         Room room = roomService.get(roomId);
         House house = houseService.getHouseById(room.getHouse().getId());
-        if (house.getOwner() == null) {
-            List<Owner> ownerList = ownerService.findByHouse(house);
-            if (CollectionUtils.isEmpty(ownerList)) {
-                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间所属房屋没有业主信息，请联系管理员！");
-                return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
-            }
-            house.setOwner(ownerList.get(0));
-        }
         house.setPropertyProject(propertyProjectService.get(house.getPropertyProject().getId()));
         room.setHouse(house);
         boolean result;
@@ -342,14 +329,6 @@ public class AlipayController extends CommonBusinessController {
     @RequestMapping(value = "syncHouse/{houseId}")
     public String syncHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
         House house = houseService.get(houseId);
-        if (house.getOwner() == null) {
-            List<Owner> ownerList = ownerService.findByHouse(house);
-            if (CollectionUtils.isEmpty(ownerList)) {
-                addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间所属房屋没有业主信息，请联系管理员！");
-                return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
-            }
-            house.setOwner(ownerList.get(0));
-        }
         house.setPropertyProject(propertyProjectService.get(house.getPropertyProject().getId()));
         boolean result;
         try {
