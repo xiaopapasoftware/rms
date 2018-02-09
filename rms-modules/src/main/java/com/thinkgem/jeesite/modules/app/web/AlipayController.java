@@ -282,7 +282,8 @@ public class AlipayController extends CommonBusinessController {
     private boolean syncDispersionRoom(Room room, List<String> imageUrls) throws AlipayApiException {
         House house = room.getHouse();
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
-        DispersedSynchronizeHousingModel model = (DispersedSynchronizeHousingModel) setCommonHouseRoomModel(room, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        DispersedSynchronizeHousingModel model = new DispersedSynchronizeHousingModel();
+        setCommonHouseRoomModel(model, room, house, buildingService.get(house.getBuilding().getId()), imageUrls);
         request.setBizContent(JSON.toJSONString(model));
         logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
@@ -296,7 +297,8 @@ public class AlipayController extends CommonBusinessController {
     private boolean syncConcentrationRoom(Room room, List<String> imageUrls) throws AlipayApiException {
         House house = room.getHouse();
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
-        FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(room, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        FocusSynchronizeHousingModel model = new FocusSynchronizeHousingModel();
+        setCommonHouseRoomModel(model, room, house, buildingService.get(house.getBuilding().getId()), imageUrls);
         Room pr = new Room();
         pr.setBuildingType(BuildingTypeEnum.CONCENTRATION.getValue());
         pr.setOrientation(room.getOrientation());
@@ -403,7 +405,8 @@ public class AlipayController extends CommonBusinessController {
      */
     private boolean syncDispersionHouse(House house, List<String> imageUrls) throws AlipayApiException {
         AlipayEcoRenthouseRoomDispersionSyncRequest request = new AlipayEcoRenthouseRoomDispersionSyncRequest();
-        DispersedSynchronizeHousingModel model = (DispersedSynchronizeHousingModel) setCommonHouseRoomModel(null, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        DispersedSynchronizeHousingModel model = new DispersedSynchronizeHousingModel();
+        setCommonHouseRoomModel(model, null, house, buildingService.get(house.getBuilding().getId()), imageUrls);
         request.setBizContent(JSON.toJSONString(model));
         logger.info("AlipayEcoRenthouseRoomDispersionSyncRequest is:{}", JSON.toJSONString(request));
         AlipayEcoRenthouseRoomDispersionSyncResponse response = alipayClient.execute(request);
@@ -417,7 +420,8 @@ public class AlipayController extends CommonBusinessController {
      */
     private boolean syncConcentrationHouse(House house, List<String> imageUrls) throws AlipayApiException {
         AlipayEcoRenthouseRoomConcentrationSyncRequest request = new AlipayEcoRenthouseRoomConcentrationSyncRequest();
-        FocusSynchronizeHousingModel model = (FocusSynchronizeHousingModel) setCommonHouseRoomModel(null, house, buildingService.get(house.getBuilding().getId()), imageUrls);
+        FocusSynchronizeHousingModel model = new FocusSynchronizeHousingModel();
+        setCommonHouseRoomModel(model, null, house, buildingService.get(house.getBuilding().getId()), imageUrls);
         model.setAll_room_num("1");
         model.setCan_rent_num("1");
         request.setBizContent(JSON.toJSONString(model));
@@ -796,8 +800,7 @@ public class AlipayController extends CommonBusinessController {
     /**
      * 参数设置
      */
-    private BaseSyncHousingModel setCommonHouseRoomModel(Room room, House house, Building building, List<String> imageUrls) {
-        BaseSyncHousingModel model = new BaseSyncHousingModel();
+    private void setCommonHouseRoomModel(BaseSyncHousingModel model, Room room, House house, Building building, List<String> imageUrls) {
         String commonGoodsConfig;//房源物品配置
         if (room != null) {
             model.setRoom_code("R" + room.getNewId());
@@ -898,7 +901,5 @@ public class AlipayController extends CommonBusinessController {
         model.setNick_name(building.getNickName());
 
         model.setMax_amount(building.getMaxAmount());
-
-        return model;
     }
 }
