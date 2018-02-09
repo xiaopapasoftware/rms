@@ -218,7 +218,7 @@ public class AlipayController extends CommonBusinessController {
         }
 
         //小区同步过或同步失败
-        if (StringUtils.isBlank(house.getPropertyProject().getCommReqId()) && !result) {
+        if (!result) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间所属小区同步支付宝失败，请联系管理员！");
             return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
         }
@@ -339,7 +339,7 @@ public class AlipayController extends CommonBusinessController {
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
         }
         //小区同步过或同步失败
-        if (StringUtils.isBlank(house.getPropertyProject().getCommReqId()) && !result) {
+        if (!result) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋所属小区同步支付宝失败，请联系管理员！");
             return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
         }
