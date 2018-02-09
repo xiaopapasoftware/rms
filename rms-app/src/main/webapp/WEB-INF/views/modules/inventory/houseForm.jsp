@@ -131,7 +131,7 @@
         <div class="controls">
             <sys:treeselect id="serviceUser" name="serviceUser" value="${house.serviceUser.id}"
                             labelName="serviceUser.name" labelValue="${house.serviceUser.name}"
-                            title="用户" url="/sys/office/treeData?type=3" cssClass="" allowClear="true"
+                            title="用户" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
                             notAllowSelectParent="true"/>
         </div>
     </div>

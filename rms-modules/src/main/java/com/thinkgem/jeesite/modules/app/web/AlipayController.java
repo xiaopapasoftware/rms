@@ -317,7 +317,7 @@ public class AlipayController extends CommonBusinessController {
             roomService.saveRoom(room);
             return true;
         } else {
-            logger.error("sync room error ! roomId is {}, errorMsg is:{}", room.getId(), response.getMsg());
+            logger.error("sync room error ! roomId is {}, errorMsg is:{},subMsg is:{}", room.getId(), response.getMsg(), response.getSubMsg());
             throw new AlipayApiException(response.getSubMsg());
         }
     }
@@ -419,7 +419,7 @@ public class AlipayController extends CommonBusinessController {
             houseService.updateHouseAlipayStatus(house);
             return true;
         } else {
-            logger.error("sync house error! houseId is : {},  responseMsg is:{}", house.getId(), response.getMsg());
+            logger.error("sync house error! houseId is : {},  responseMsg is:{},responseSubMsg is {}", house.getId(), response.getMsg(), response.getSubMsg());
             throw new AlipayApiException(response.getSubMsg());
         }
     }
@@ -815,6 +815,7 @@ public class AlipayController extends CommonBusinessController {
             } else {
                 model.setRent_status("1");//未租
             }
+            model.setRoom_area(house.getDecorationSpance());
             commonGoodsConfig = house.getShareAreaConfig();
             model.setIntro(house.getShortDesc() + " " + house.getShortLocation());
             Integer rentMonthGap = house.getRentMonthGap();
