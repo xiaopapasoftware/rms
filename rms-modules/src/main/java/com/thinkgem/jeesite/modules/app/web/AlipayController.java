@@ -842,16 +842,22 @@ public class AlipayController extends CommonBusinessController {
 
         model.setRoom_num(house.getHouseNo());
 
-        Integer decoraStrucRoomNum = house.getDecoraStrucRoomNum();
-        model.setBedroom_count(decoraStrucRoomNum == null || decoraStrucRoomNum == 0 ? "0" : String.valueOf(decoraStrucRoomNum));
-
-        Integer decoraStrucCusspacNum = house.getDecoraStrucCusspacNum();
-        model.setParlor_count(decoraStrucCusspacNum == null || decoraStrucCusspacNum == 0 ? "0" : String.valueOf(decoraStrucCusspacNum));
-
-        Integer decoraStrucWashroNum = house.getDecoraStrucWashroNum();
-        model.setToilet_count(decoraStrucWashroNum == null || decoraStrucWashroNum == 0 ? "0" : String.valueOf(decoraStrucWashroNum));
-
-        model.setFlat_area(house.getDecorationSpance());
+        //对于集中式单间同步，由于目前集中式单间的房屋没有维护正确，暂时用1房1厅1卫代替，等以后有集中式房屋，再改回来。
+        //对于集中式公寓面积暂时传为单间面积，等以后有集中式房屋，再改回来。
+        if (BuildingTypeEnum.CONCENTRATION.getValue().equals(building.getType())) {
+            model.setBedroom_count("1");
+            model.setParlor_count("1");
+            model.setToilet_count("1");
+            model.setFlat_area(room.getRoomSpace());
+        } else {
+            Integer decoraStrucRoomNum = house.getDecoraStrucRoomNum();
+            model.setBedroom_count(decoraStrucRoomNum == null || decoraStrucRoomNum == 0 ? "0" : String.valueOf(decoraStrucRoomNum));
+            Integer decoraStrucCusspacNum = house.getDecoraStrucCusspacNum();
+            model.setParlor_count(decoraStrucCusspacNum == null || decoraStrucCusspacNum == 0 ? "0" : String.valueOf(decoraStrucCusspacNum));
+            Integer decoraStrucWashroNum = house.getDecoraStrucWashroNum();
+            model.setToilet_count(decoraStrucWashroNum == null || decoraStrucWashroNum == 0 ? "0" : String.valueOf(decoraStrucWashroNum));
+            model.setFlat_area(house.getDecorationSpance());
+        }
 
         if (StringUtils.isNotEmpty(house.getShareAreaConfig())) {
             List<String> targetArrayList = new ArrayList<>();
