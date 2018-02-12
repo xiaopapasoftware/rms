@@ -877,7 +877,7 @@ public class AlipayController extends CommonBusinessController {
 
         model.setImages(imageUrls.toArray(new String[]{}));
 
-        User u = house.getServiceUser();
+        User u = house.getSalesUser();
         model.setOwners_name(u != null ? u.getName() : "");
 
         model.setCheckin_time(DateUtils.formatDate(new Date()));

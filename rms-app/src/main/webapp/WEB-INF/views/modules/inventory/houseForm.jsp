@@ -136,6 +136,15 @@
         </div>
     </div>
     <div class="control-group">
+        <label class="control-label">跟进销售：</label>
+        <div class="controls">
+            <sys:treeselect id="salesUser" name="salesUser" value="${house.salesUser.id}"
+                            labelName="salesUser.name" labelValue="${house.salesUser.name}"
+                            title="用户" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
+                            notAllowSelectParent="true"/>
+        </div>
+    </div>
+    <div class="control-group">
         <label class="control-label">房屋编码：</label>
         <div class="controls">
             <form:input path="houseCode" htmlEscape="false" maxlength="100" class="input-xlarge required"

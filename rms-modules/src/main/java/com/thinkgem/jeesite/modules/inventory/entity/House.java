@@ -35,7 +35,7 @@ public class House extends BaseHousingEntity<House> {
     private String roomId;
     private String intentMode;// 意向租赁类型
     private User serviceUser;// 服务管家
-    private String servcieUserName;
+    private User salesUser;//跟进销售
     /* 电户号 */
     private String eleAccountNum;
     /* 水户号 */
@@ -230,12 +230,12 @@ public class House extends BaseHousingEntity<House> {
         this.serviceUser = serviceUser;
     }
 
-    public String getServcieUserName() {
-        return servcieUserName;
+    public User getSalesUser() {
+        return salesUser;
     }
 
-    public void setServcieUserName(String servcieUserName) {
-        this.servcieUserName = servcieUserName;
+    public void setSalesUser(User salesUser) {
+        this.salesUser = salesUser;
     }
 
     public String getEleAccountNum() {

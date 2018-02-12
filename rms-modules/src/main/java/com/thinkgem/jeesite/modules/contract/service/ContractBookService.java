@@ -23,64 +23,65 @@ import java.util.List;
 
 /**
  * 预约看房信息Service
+ *
  * @author huangsc
  */
 @Service
 @Transactional(readOnly = true)
 public class ContractBookService extends CrudService<ContractBookDao, ContractBook> {
 
-  @Autowired
-  private RoomDao roomDao;
-  @Autowired
-  private CustomerDao customerDao;
-  @Autowired
-  private HouseDao houseDao;
-  @Autowired
-  private UserDao userDao;
+    @Autowired
+    private RoomDao roomDao;
+    @Autowired
+    private CustomerDao customerDao;
+    @Autowired
+    private HouseDao houseDao;
+    @Autowired
+    private UserDao userDao;
 
-  public ContractBook get(String id) {
-    ContractBook contractBook = super.get(id);
-    if (contractBook != null) {
-      contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
+    public ContractBook get(String id) {
+        ContractBook contractBook = super.get(id);
+        if (contractBook != null) {
+            contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
+        }
+        completeInfo(contractBook);
+        return contractBook;
     }
-    completeInfo(contractBook);
-    return contractBook;
-  }
 
-  @Transactional(readOnly = false)
-  public void distribution(ContractBook contractBook) {
-    contractBook.preUpdate();
-    dao.distribution(contractBook);
-  }
-
-  public List<ContractBook> findList(ContractBook contractBook) {
-    List<ContractBook> listResult = super.findList(contractBook);
-    listResult.forEach(this::completeInfo);
-    return listResult;
-  }
-
-  public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
-    Page<ContractBook> pageResult = super.findPage(page, contractBook);
-    pageResult.getList().forEach(this::completeInfo);
-    return pageResult;
-  }
-
-  private void completeInfo(ContractBook contractBook) {
-    if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getId())) {
-      contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
+    @Transactional(readOnly = false)
+    public void distribution(ContractBook contractBook) {
+        contractBook.preUpdate();
+        dao.distribution(contractBook);
     }
-    House house = houseDao.get(contractBook.getHouseId());
-    contractBook.setProjectName(house.getPropertyProject().getProjectName());
-    contractBook.setBuildingName(house.getBuilding().getBuildingName());
-    contractBook.setHouseNo(house.getHouseNo());
-    contractBook.setServiceUserName(house.getServcieUserName());
-    if (StringUtils.isNotBlank(contractBook.getRoomId())) {
-      Room room = roomDao.get(contractBook.getRoomId());
-      contractBook.setRoomNo(room.getRoomNo());
+
+    public List<ContractBook> findList(ContractBook contractBook) {
+        List<ContractBook> listResult = super.findList(contractBook);
+        listResult.forEach(this::completeInfo);
+        return listResult;
     }
-    if (StringUtils.isNotBlank(contractBook.getSalesId())) {
-      contractBook.setSalesName(userDao.get(contractBook.getSalesId()).getLoginName());
+
+    public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
+        Page<ContractBook> pageResult = super.findPage(page, contractBook);
+        pageResult.getList().forEach(this::completeInfo);
+        return pageResult;
     }
-  }
+
+    private void completeInfo(ContractBook contractBook) {
+        if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getId())) {
+            contractBook.setCustomer(customerDao.get(contractBook.getCustomer().getId()));
+        }
+        House house = houseDao.get(contractBook.getHouseId());
+        contractBook.setProjectName(house.getPropertyProject().getProjectName());
+        contractBook.setBuildingName(house.getBuilding().getBuildingName());
+        contractBook.setHouseNo(house.getHouseNo());
+        contractBook.setServiceUserName(house.getSalesUser().getName());
+        if (StringUtils.isNotBlank(contractBook.getRoomId())) {
+            Room room = roomDao.get(contractBook.getRoomId());
+            contractBook.setRoomNo(room.getRoomNo());
+        }
+        if (StringUtils.isNotBlank(contractBook.getSalesId())) {
+            contractBook.setSalesName(userDao.get(contractBook.getSalesId()).getLoginName());
+        }
+    }
 
 }

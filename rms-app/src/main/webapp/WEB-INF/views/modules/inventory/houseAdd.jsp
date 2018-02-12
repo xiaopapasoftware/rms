@@ -152,7 +152,16 @@
         <div class="controls">
             <sys:treeselect id="serviceUser" name="serviceUser" value="${house.serviceUser.id}"
                             labelName="serviceUser.name" labelValue="${house.serviceUser.name}"
-                            title="用户" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
+                            title="服务管家" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
+                            notAllowSelectParent="true"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">跟进销售：</label>
+        <div class="controls">
+            <sys:treeselect id="salesUser" name="salesUser" value="${house.salesUser.id}"
+                            labelName="salesUser.name" labelValue="${house.salesUser.name}"
+                            title="跟进销售" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
                             notAllowSelectParent="true"/>
         </div>
     </div>

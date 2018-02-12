@@ -170,6 +170,8 @@ CREATE TABLE `t_house` (
   COMMENT '地址描述',
   `service_user`             VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL
   COMMENT '服务管家',
+  `sales_user`               VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL
+  COMMENT '跟进销售',
   `ele_account_num`          VARCHAR(64) CHARACTER SET utf8
   COLLATE utf8_bin                                                         DEFAULT NULL,
   `water_account_num`        VARCHAR(64) CHARACTER SET utf8
