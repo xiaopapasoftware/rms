@@ -14,60 +14,61 @@ import java.util.Map;
 
 /**
  * 房屋信息DAO接口
- * 
+ *
  * @author huangsc
  * @version 2015-06-06
  */
 @MyBatisDao
 public interface HouseDao extends CrudDao<House> {
 
-  /**
-   * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
-   */
-  List<House> findHouseListByProPrjAndBuildingAndHouseNo(House house);
+    /**
+     * 根据物业项目ID+楼宇ID+房屋号查询房屋信息
+     */
+    List<House> findHouseListByProPrjAndBuildingAndHouseNo(House house);
 
-  /**
-   * 根据物业项目ID查询房屋信息
-   */
-  List<House> findHouseListByBuildingId(String buildingId);
+    /**
+     * 根据物业项目ID查询房屋信息
+     */
+    List<House> findHouseListByBuildingId(String buildingId);
 
-  /**
-   * 获取当前有效房屋的总数量
-   */
-  int getCurrentValidHouseNum(House house);
+    /**
+     * 获取当前有效房屋的总数量
+     */
+    int getCurrentValidHouseNum(House house);
 
-  List<House> findFeatureList(House house);
+    List<House> findFeatureList(House house);
 
-  House getFeatureInfo(House house);
+    House getFeatureInfo(House house);
 
-  House getHouseByHouseId(House house);
+    /**
+     * 为了不去做太多的join操作
+     */
+    House getHouseById(String id);
 
-  House getHouseById(String id);
+    /**
+     * 新签-整租,更新房屋状态
+     */
+    int updateHouseStatus4NewSign(House house);
 
-  /**
-   * 新签-整租,更新房屋状态
-   */
-  int updateHouseStatus4NewSign(House house);
+    /**
+     * 续签-整租,更新房屋状态
+     */
+    int updateHouseStatus4RenewSign(House house);
 
-  /**
-   * 续签-整租,更新房屋状态
-   */
-  int updateHouseStatus4RenewSign(House house);
+    /**
+     * 定金转合同-整租，更新房屋状态
+     */
+    int updateHouseStatusFromDepositToContract(House house);
 
-  /**
-   * 定金转合同-整租，更新房屋状态
-   */
-  int updateHouseStatusFromDepositToContract(House house);
+    /**
+     * 预定-整租，更新房屋状态
+     */
+    int updateHouseStatus4Deposit(House house);
 
-  /**
-   * 预定-整租，更新房屋状态
-   */
-  int updateHouseStatus4Deposit(House house);
+    List<Map> getHouseByAccountNumAndNumType(@Param("accountNum") String accountNum, @Param("numType") String numType);
 
-  List<Map> getHouseByAccountNumAndNumType(@Param("accountNum") String accountNum, @Param("numType") String numType);
+    void updateHouseAlipayStatus(House house);
 
-  void updateHouseAlipayStatus(House house);
-
-  House getByNewId(@Param("newId") String newId);
+    House getByNewId(@Param("newId") String newId);
 
 }
