@@ -177,7 +177,7 @@ CREATE TABLE `t_house` (
   `gas_account_num`          VARCHAR(64) CHARACTER SET utf8
   COLLATE utf8_bin                                                         DEFAULT NULL,
   `new_id`                   BIGINT(20) UNSIGNED                  NOT NULL AUTO_INCREMENT,
-  `share_area_config`        VARCHAR(32) COLLATE utf8_estonian_ci          DEFAULT NULL
+  `share_area_config`        VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL
   COMMENT '公共区域物品配置 第1位：WIFI；第2位：空调；第3位：热水器；第4位：洗衣机；第5位：冰箱；第6位：电视；第7位：微波炉；第8位：燃气灶；第9位：抽油烟机；第10位：电磁炉；第11位：床；第12位：书桌；第13位：衣柜；第14位：沙发；第15位：阳台；第16位：独卫。',
   `rent_month_gap`           TINYINT(4)                                    DEFAULT NULL
   COMMENT '支付间隔月数',
@@ -242,7 +242,7 @@ CREATE TABLE `t_room` (
   `short_location`      VARCHAR(255) COLLATE utf8_estonian_ci         DEFAULT NULL
   COMMENT '地址描述',
   `new_id`              BIGINT(20) UNSIGNED                  NOT NULL AUTO_INCREMENT,
-  `room_config`         VARCHAR(32) COLLATE utf8_estonian_ci          DEFAULT NULL
+  `room_config`         VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL
   COMMENT '物品配置 第1位：WIFI；第2位：空调；第3位：热水器；第4位：洗衣机；第5位：冰箱；第6位：电视；第7位：微波炉；第8位：燃气灶；第9位：抽油烟机；第10位：电磁炉；第11位：床；第12位：书桌；第13位：衣柜；第14位：沙发；第15位：阳台；第16位：独卫。',
   `rent_month_gap`      TINYINT(4)                                    DEFAULT NULL
   COMMENT '支付间隔月数',
