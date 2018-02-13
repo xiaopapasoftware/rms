@@ -81,8 +81,8 @@
         <th>归属部门</th>
         <th class="sort-column login_name">登录名</th>
         <th class="sort-column name">姓名</th>
-        <th>电话</th>
-        <th>手机</th>
+        <th>私人号码</th>
+        <th>工作号码</th>
         <%--<th>角色</th> --%>
         <shiro:hasPermission name="sys:user:edit">
             <th>操作</th>

@@ -687,12 +687,11 @@ public class AlipayController extends CommonBusinessController {
             User user = UserUtils.get(salesUser.getId());
             String saleName = user.getName();
             String addressInfo = projectName + buildingName + "楼" + houseNo + "号" + (StringUtils.isNotEmpty(roomNo) ? roomNo + "室" : "");
-            String content = saleName + "你好，姓名：" + customer.getTrueName() + "，手机号为：" + customer.getCellPhone() + "的客户预约在" + request.getParameter("lookTime") + "日期看" + addressInfo + "，请提前联系用户做好带看准备。";
+            String content = saleName + "你好，姓名为" + customer.getTrueName() + "，手机号为" + customer.getCellPhone() + "的客户预约在" + request.getParameter("lookTime") + "看" + addressInfo + "，请提前联系用户做好带看准备。";
             logger.info("短信号码是：{}，短信内容是：{}。", user.getMobile(), content);
             smsService.sendSms(user.getMobile(), content);
         }
         contractBookService.save(record);
-
     }
 
     private void saveOrUpdateBindInfo(String customerId, HttpServletRequest request) {
