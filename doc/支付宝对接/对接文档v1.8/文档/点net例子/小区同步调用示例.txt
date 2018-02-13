@@ -1,0 +1,15 @@
+          IAopClient client = new DefaultAopClient("http://oepnapi.eco.dl.alipaydev.com/gateway.do", "2015122300879608", private_key, "json", "1.0", "RSA", "", "GBK", false);
+          AlipayEcoRenthouseCommunityInfoSyncRequest request = new AlipayEcoRenthouseCommunityInfoSyncRequest();
+          request.BizContent = "{" +
+                                   "\"city_code\":\"\"," +
+                                   "\"city_name\":\"上海市\"," +
+                                 "\"district_code\":\"\"," +
+                                  "\"district_name\":\"徐汇区\"," +
+                                      "\"community_name\":\"徐家汇花园\"," +
+                                          "\"address\":\"\"," +
+                                             "\"community_locations\":\"114.032395|22.519725\"," +
+                                          "\"poi\":\"\"," +
+                                   "\"coordsys\":\"0\"" +
+                                   "  }";                                  
+            AlipayEcoRenthouseCommunityInfoSyncResponse response = client.Execute(request);
+            Console.WriteLine(response.Body);
