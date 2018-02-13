@@ -371,6 +371,6 @@
 		a.sales_user as "salesUser.id",
         u.name as "salesUser.name"
 		from t_room a LEFT JOIN sys_user u ON u.id = a.sales_user and u.del_flag = '0'
-   where del_flag = '0' and new_id = #{newId}
+   where a.del_flag = '0' and a.new_id = #{newId}
 	</select>
 </mapper>

@@ -1,7 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.contract.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
@@ -31,7 +27,6 @@ public class ContractBook extends DataEntity<ContractBook> {
     private String buildingName;
     private String houseNo;
     private String roomNo;
-    private String serviceUserName;
     private String salesName;
     private House house;
     private Room room;
@@ -124,14 +119,6 @@ public class ContractBook extends DataEntity<ContractBook> {
 
     public void setRoomNo(String roomNo) {
         this.roomNo = roomNo;
-    }
-
-    public String getServiceUserName() {
-        return serviceUserName;
-    }
-
-    public void setServiceUserName(String serviceUserName) {
-        this.serviceUserName = serviceUserName;
     }
 
     public String getSalesName() {

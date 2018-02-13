@@ -74,7 +74,6 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
         contractBook.setProjectName(house.getPropertyProject().getProjectName());
         contractBook.setBuildingName(house.getBuilding().getBuildingName());
         contractBook.setHouseNo(house.getHouseNo());
-        contractBook.setServiceUserName(house.getSalesUser().getName());
         if (StringUtils.isNotBlank(contractBook.getRoomId())) {
             Room room = roomDao.get(contractBook.getRoomId());
             contractBook.setRoomNo(room.getRoomNo());
