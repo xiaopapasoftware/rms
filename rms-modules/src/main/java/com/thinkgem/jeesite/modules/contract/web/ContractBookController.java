@@ -36,67 +36,67 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "${adminPath}/contract/book")
 public class ContractBookController extends BaseController {
 
-  @Autowired
-  private ContractBookService contractBookService;
+    @Autowired
+    private ContractBookService contractBookService;
 
-  @Autowired
-  private CustomerService customerService;
+    @Autowired
+    private CustomerService customerService;
 
-  @Autowired
-  private SmsService smsService;
+    @Autowired
+    private SmsService smsService;
 
-  @ModelAttribute
-  public ContractBook get(@RequestParam(required = false) String id) {
-    ContractBook entity = null;
-    if (StringUtils.isNotBlank(id)) {
-      entity = contractBookService.get(id);
+    @ModelAttribute
+    public ContractBook get(@RequestParam(required = false) String id) {
+        ContractBook entity = null;
+        if (StringUtils.isNotBlank(id)) {
+            entity = contractBookService.get(id);
+        }
+        if (entity == null) {
+            entity = new ContractBook();
+        }
+        return entity;
     }
-    if (entity == null) {
-      entity = new ContractBook();
-    }
-    return entity;
-  }
 
-  @RequiresPermissions("contract:contractBook:view")
-  @RequestMapping(value = {"list", ""})
-  public String list(ContractBook contractBook, HttpServletRequest request, HttpServletResponse response, Model model) {
-    if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getTrueName())) {
-      List<Customer> customerList = customerService.findList(contractBook.getCustomer());
-      if (CollectionUtils.isEmpty(customerList)) {
-        contractBook.setCustomerIdList(Collections.singletonList("test"));
-      } else {
-        contractBook.setCustomerIdList(customerList.stream().map(Customer::getId).collect(Collectors.toList()));
-      }
+    @RequiresPermissions("contract:contractBook:view")
+    @RequestMapping(value = {"list", ""})
+    public String list(ContractBook contractBook, HttpServletRequest request, HttpServletResponse response, Model model) {
+        if (contractBook.getCustomer() != null && StringUtils.isNotBlank(contractBook.getCustomer().getTrueName())) {
+            List<Customer> customerList = customerService.findList(contractBook.getCustomer());
+            if (CollectionUtils.isEmpty(customerList)) {
+                contractBook.setCustomerIdList(Collections.singletonList("test"));
+            } else {
+                contractBook.setCustomerIdList(customerList.stream().map(Customer::getId).collect(Collectors.toList()));
+            }
+        }
+        Page<ContractBook> page = contractBookService.findPage(new Page<>(request, response), contractBook);
+        model.addAttribute("page", page);
+        return "modules/contract/contractBookList";
     }
-    Page<ContractBook> page = contractBookService.findPage(new Page<>(request, response), contractBook);
-    model.addAttribute("page", page);
-    return "modules/contract/contractBookList";
-  }
 
-  @RequiresPermissions("contract:contractBook:edit")
-  @RequestMapping(value = "distribution")
-  public String distribution(@RequestParam("customerIdList") String customerIdList, @RequestParam("salesId") String salesId) {
-    List<String> idList = Arrays.asList(customerIdList.split("\\|"));
-    ContractBook contractBook = new ContractBook();
-    contractBook.setIdList(idList);
-    contractBook.setSalesId(salesId);
-    contractBook.setBookStatus(BookStatusEnum.BOOK_SUCCESS.value());
-    contractBookService.distribution(contractBook);
-    idList.forEach(this::sendDistributionSms);
-    return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
-  }
-
-  private void sendDistributionSms(String contractBookId) {
-    ContractBook contractBook = contractBookService.get(contractBookId);
-    String addressInfo = contractBook.getProjectName() + contractBook.getBuildingName()  + "楼" + contractBook.getHouseNo()  + "号";
-    if (StringUtils.isNotBlank(contractBook.getRoomNo())) {
-      addressInfo += contractBook.getRoomNo() + "室房源";
+    @RequiresPermissions("contract:contractBook:edit")
+    @RequestMapping(value = "distribution")
+    public String distribution(@RequestParam("customerIdList") String customerIdList, @RequestParam("salesId") String salesId) {
+        List<String> idList = Arrays.asList(customerIdList.split("\\|"));
+        ContractBook contractBook = new ContractBook();
+        contractBook.setIdList(idList);
+        contractBook.setSalesId(salesId);
+        contractBook.setBookStatus(BookStatusEnum.BOOK_SUCCESS.value());
+        contractBookService.distribution(contractBook);
+        idList.forEach(this::sendDistributionSms);
+        return "redirect:" + Global.getAdminPath() + "/contract/book/?repage";
     }
-    User user = UserUtils.get(contractBook.getSalesId());
-    String saleName = user.getName();
-    String content = saleName + "你好，姓名：" + contractBook.getCustomer().getTrueName() + "，手机号为：" + contractBook.getBookPhone() + "的客户预约在" + DateUtils.formatDate(contractBook.getBookDate()) + "日期看" + addressInfo  + "，请提前联系用户做好带看准备。";
-    smsService.sendSms(user.getPhone(), content);
-  }
+
+    private void sendDistributionSms(String contractBookId) {
+        ContractBook contractBook = contractBookService.get(contractBookId);
+        String addressInfo = contractBook.getProjectName() + contractBook.getBuildingName() + "楼" + contractBook.getHouseNo() + "号";
+        if (StringUtils.isNotBlank(contractBook.getRoomNo())) {
+            addressInfo += contractBook.getRoomNo() + "室房源";
+        }
+        User user = UserUtils.get(contractBook.getSalesId());
+        String saleName = user.getName();
+        String content = saleName + "你好，姓名：" + contractBook.getCustomer().getTrueName() + "，手机号为：" + contractBook.getBookPhone() + "的客户预约在" + DateUtils.formatDate(contractBook.getBookDate()) + "日期看" + addressInfo + "，请提前联系用户做好带看准备。";
+        smsService.sendSms(user.getMobile(), content);
+    }
 
 //  @RequiresPermissions("contract:contractBook:edit")
 //  @RequestMapping(value = "cancel")
