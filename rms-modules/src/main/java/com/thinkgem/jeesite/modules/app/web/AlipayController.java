@@ -148,7 +148,6 @@ public class AlipayController extends CommonBusinessController {
     @RequestMapping(value = "baseInfoQuery/{kaCode}")
     @ResponseBody
     public String baseInfoQuery(@PathVariable("kaCode") String kaCode) {
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaBaseinfoQueryRequest request = new AlipayEcoRenthouseKaBaseinfoQueryRequest();
         request.setBizContent("{" + "\"ka_code\": \"" + kaCode + "\"" + "}");
         AlipayEcoRenthouseKaBaseinfoQueryResponse response = new AlipayEcoRenthouseKaBaseinfoQueryResponse();
@@ -181,7 +180,6 @@ public class AlipayController extends CommonBusinessController {
         } else if ("3".equals(type)) {
             url = RECORD_URL;
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseKaServiceCreateRequest request = new AlipayEcoRenthouseKaServiceCreateRequest();
         request.setBizContent("{" +
                 "\"address\": \"" + url + "\"," +
@@ -532,11 +530,13 @@ public class AlipayController extends CommonBusinessController {
 
     private boolean upDownHouse(String houseId, Integer type) {
         House house = houseService.get(houseId);
-        int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
-            rentStatus = 1;
+        String houseStatus = house.getHouseStatus();
+        String rentStatus;
+        if (HouseStatusEnum.BE_RESERVED.getValue().equals(houseStatus) || HouseStatusEnum.PART_RENT.getValue().equals(houseStatus) || HouseStatusEnum.WHOLE_RENT.getValue().equals(houseStatus)) {
+            rentStatus = "2";//已租
+        } else {
+            rentStatus = "1";//未租
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
                 "    \"room_code\": \"H" + house.getNewId() + "\"," +
@@ -592,18 +592,19 @@ public class AlipayController extends CommonBusinessController {
 
     private boolean upDownRoom(String roomId, Integer type) {
         Room room = roomService.get(roomId);
-        House house = houseService.get(room.getHouse().getId());
-        int rentStatus = 2;
-        if (HouseStatusEnum.RENT_FOR_RESERVE.getValue().equals(house.getHouseStatus())) {
-            rentStatus = 1;
+        String rentStatus;
+        String roomStatus = room.getRoomStatus();
+        if (RoomStatusEnum.BE_RESERVED.getValue().equals(roomStatus) || RoomStatusEnum.RENTED.getValue().equals(roomStatus)) {
+            rentStatus = "2";//已租
+        } else {
+            rentStatus = "1";//未租
         }
-        AlipayClient alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
         AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
         request.setBizContent("{" +
                 "    \"room_code\": \"R" + room.getNewId() + "\"," +
                 "    \"room_status\": " + type + "," +
                 "    \"rent_status\": " + rentStatus + "," +
-                "    \"flats_tag\": " + house.getBuilding().getType() +
+                "    \"flats_tag\": " + houseService.get(room.getHouse().getId()).getBuilding().getType() +
                 "}");
         try {
             logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
