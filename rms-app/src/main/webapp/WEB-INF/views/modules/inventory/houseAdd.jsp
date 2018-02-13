@@ -6,7 +6,7 @@
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #oriStrucRoomNum, #oriStrucCusspacNum, #oriStrucWashroNum,#decoraStrucRoomNum,#decoraStrucCusspacNum,#decoraStrucWashroNum").keypress(function (event) {
+            $("#houseNo, #houseFloor, #houseSpace, #decorationSpance, #oriStrucRoomNum, #oriStrucCusspacNum, #oriStrucWashroNum,#decoraStrucRoomNum,#decoraStrucCusspacNum,#decoraStrucWashroNum,#eleAccountNum, #waterAccountNum, #gasAccountNum, #certificateNo, #rentMonthGap, #deposMonthCount, #shareAreaConfigList, #intentMode, #isFeature, #rental, #shortDesc, #shortLocation, #remarks, #feeDesc1, #feeAmt1, #feeDesc2, #feeAmt2, #feeDesc3, #feeAmt3, #feeDesc4, #feeAmt4, #feeDesc5, #feeAmt5").keypress(function (event) {
                 if (event.keyCode == 13) {
                     event.preventDefault();
                 }

@@ -6,7 +6,7 @@
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#roomNo, #meterNo, #roomSpace,#orientation").keypress(function (event) {
+            $("#roomNo, #meterNo, #roomSpace,#orientation,#roomConfigList, #isFeature, #rental, #salesUser, #shortDesc, #shortLocation, #remarks, #feeDesc1, #feeAmt1, #feeDesc2, #feeAmt2, #feeDesc3, #feeAmt3, #feeDesc4, #feeAmt4, #feeDesc5, #feeAmt5").keypress(function (event) {
                 if (event.keyCode == 13) {
                     event.preventDefault();
                 }
