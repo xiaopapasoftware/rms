@@ -94,7 +94,7 @@ public class ContractBookController extends BaseController {
         }
         User user = UserUtils.get(contractBook.getSalesId());
         String saleName = user.getName();
-        String content = saleName + "你好，姓名：" + contractBook.getCustomer().getTrueName() + "，手机号为：" + contractBook.getBookPhone() + "的客户预约在" + DateUtils.formatDate(contractBook.getBookDate()) + "日期看" + addressInfo + "，请提前联系用户做好带看准备。";
+        String content = saleName + "你好，姓名为" + contractBook.getCustomer().getTrueName() + "，手机号为" + contractBook.getBookPhone() + "的客户预约在" + DateUtils.formatDate(contractBook.getBookDate()) + "看" + addressInfo + "，请提前联系用户做好带看准备。";
         smsService.sendSms(user.getMobile(), content);
     }
 

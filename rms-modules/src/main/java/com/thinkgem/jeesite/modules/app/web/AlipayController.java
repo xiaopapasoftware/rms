@@ -812,7 +812,7 @@ public class AlipayController extends CommonBusinessController {
      */
     private void setCommonHouseRoomModel(BaseSyncHousingModel model, Room room, House house, Building building, List<String> imageUrls) {
         String commonGoodsConfig;//房源物品配置
-        User salesUser = null;
+        User salesUser;//跟进销售
         if (room != null) {
             model.setRoom_code("R" + room.getNewId());
             model.setRoom_name(room.getRoomNo());
