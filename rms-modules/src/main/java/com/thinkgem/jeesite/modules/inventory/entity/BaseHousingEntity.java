@@ -1,6 +1,7 @@
 package com.thinkgem.jeesite.modules.inventory.entity;
 
 import com.thinkgem.jeesite.common.persistence.DataEntity;
+import com.thinkgem.jeesite.modules.entity.User;
 
 import javax.validation.constraints.NotNull;
 
@@ -20,6 +21,7 @@ public class BaseHousingEntity<T> extends DataEntity<T> {
     protected String orientation;// 房间朝向     0东 1南 2西 3北 4东南 5东北 6西南 7西北 8 9
     protected Double rental;//意向租金
     protected Long newId;
+    protected User salesUser;//跟进销售
     protected Integer rentMonthGap;//房租支付间隔月数
     protected Integer deposMonthCount;//押金月数
     protected Integer alipayStatus;//支付宝同步状态
@@ -257,5 +259,13 @@ public class BaseHousingEntity<T> extends DataEntity<T> {
 
     public void setFeeAmt5(String feeAmt5) {
         this.feeAmt5 = feeAmt5;
+    }
+
+    public User getSalesUser() {
+        return salesUser;
+    }
+
+    public void setSalesUser(User salesUser) {
+        this.salesUser = salesUser;
     }
 }

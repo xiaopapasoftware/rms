@@ -781,6 +781,7 @@ public class AlipayController extends CommonBusinessController {
      */
     private void setCommonHouseRoomModel(BaseSyncHousingModel model, Room room, House house, Building building, List<String> imageUrls) {
         String commonGoodsConfig;//房源物品配置
+        User salesUser = null;
         if (room != null) {
             model.setRoom_code("R" + room.getNewId());
             model.setRoom_name(room.getRoomNo());
@@ -807,6 +808,7 @@ public class AlipayController extends CommonBusinessController {
             if (StringUtils.isNotEmpty(room.getFeeConfigInfo())) {
                 model.setOther_amount(convertFeeToList(room.getFeeConfigInfo()).toArray(new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]{}));
             }
+            salesUser = room.getSalesUser();
         } else {
             model.setRoom_code("H" + house.getNewId());
             String houseStatus = house.getHouseStatus();
@@ -829,6 +831,7 @@ public class AlipayController extends CommonBusinessController {
             if (StringUtils.isNotEmpty(house.getFeeConfigInfo())) {
                 model.setOther_amount(convertFeeToList(house.getFeeConfigInfo()).toArray(new BaseSyncHousingModel.AlipayEcoRenthouseOtherAmount[]{}));
             }
+            salesUser = house.getSalesUser();
         }
         model.setComm_req_id(house.getPropertyProject().getCommReqId());
 
@@ -877,9 +880,6 @@ public class AlipayController extends CommonBusinessController {
 
         model.setImages(imageUrls.toArray(new String[]{}));
 
-        User u = house.getSalesUser();
-        model.setOwners_name(u != null ? u.getName() : "");
-
         model.setCheckin_time(DateUtils.formatDate(new Date()));
 
         model.setRoom_status(String.valueOf(UpEnum.UP.getValue()));
@@ -887,5 +887,7 @@ public class AlipayController extends CommonBusinessController {
         model.setNick_name(building.getNickName());
 
         model.setMax_amount(building.getMaxAmount());
+
+        model.setOwners_name(salesUser != null ? salesUser.getName() : "");
     }
 }

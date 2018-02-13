@@ -40,6 +40,8 @@
 		a.short_location as
 		"shortLocation",
 		a.new_id as "newId",
+	  	a.sales_user as "salesUser.id",
+        u3.name as "salesUser.name",
 		a.rent_month_gap as rentMonthGap,
 		a.depos_month_count as deposMonthCount,
 		a.alipay_status as alipayStatus,
@@ -49,12 +51,13 @@
 	</sql>
 
     <sql id="roomJoins">
-		LEFT JOIN sys_user u1 ON u1.id = a.create_by
-		LEFT JOIN sys_user u2 ON u2.id = a.update_by
-		LEFT JOIN t_property_project pp on pp.id = a.property_project_id
-		LEFT JOIN t_building tb on tb.id = a.building_id
-		LEFT JOIN t_house th on th.id = a.house_id
-		left join t_attachment atta on atta.room_id = a.id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by and u1.del_flag = '0'
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by and u2.del_flag = '0'
+		LEFT JOIN sys_user u3 ON u3.id = a.sales_user and u3.del_flag = '0'
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id and pp.del_flag = '0'
+		LEFT JOIN t_building tb on tb.id = a.building_id and tb.del_flag = '0'
+		LEFT JOIN t_house th on th.id = a.house_id  and th.del_flag = '0'
+		left join t_attachment atta on atta.room_id = a.id and atta.del_flag = '0'
 	</sql>
 
     <select id="get" resultType="Room">
@@ -112,10 +115,8 @@
                 and tb.type = #{buildingType}
             </if>
         </where>
-
         <!-- 数据范围过滤 -->
         ${sqlMap.dsf}
-
         <choose>
             <when test="page !=null and page.orderBy != null and page.orderBy != ''">
                 ORDER BY ${page.orderBy}
@@ -146,8 +147,10 @@
 		a.alipay_status as alipayStatus,
 		a.up as up,
 		a.reservation_phone as reservationPhone,
+	  	a.sales_user as "salesUser.id",
+        u.name as "salesUser.name",
 		a.fee_config_info as feeConfigInfo
-		FROM t_room a
+		FROM t_room a LEFT JOIN sys_user u ON u.id = a.sales_user and u.del_flag = '0'
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
 		AND a.property_project_id = #{propertyProject.id}
 		AND a.building_id = #{building.id}
@@ -212,6 +215,7 @@
 		rental,
 		short_desc,
 		short_location,
+		sales_user,
 		rent_month_gap,
 		depos_month_count,
 		alipay_status,
@@ -239,6 +243,7 @@
 		#{rental},
 		#{shortDesc},
 		#{shortLocation},
+		#{salesUser.id},
 		#{rentMonthGap},
 		#{deposMonthCount},
 		#{alipayStatus},
@@ -265,6 +270,7 @@
         update_date = #{updateDate},
         remarks = #{remarks},
         is_feature = #{isFeature},
+        sales_user = #{salesUser.id},
         rental = #{rental},
         short_desc = #{shortDesc},
         short_location = #{shortLocation},
@@ -361,7 +367,10 @@
 		a.alipay_status as alipayStatus,
 		a.up as up,
 		a.reservation_phone as reservationPhone,
-		a.fee_config_info as feeConfigInfo
-		from t_room a where del_flag = '0' and new_id = #{newId}
+		a.fee_config_info as feeConfigInfo,
+		a.sales_user as "salesUser.id",
+        u.name as "salesUser.name"
+		from t_room a LEFT JOIN sys_user u ON u.id = a.sales_user and u.del_flag = '0'
+   where del_flag = '0' and new_id = #{newId}
 	</select>
 </mapper>

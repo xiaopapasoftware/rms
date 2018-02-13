@@ -35,7 +35,7 @@ public class House extends BaseHousingEntity<House> {
     private String roomId;
     private String intentMode;// 意向租赁类型
     private User serviceUser;// 服务管家
-    private User salesUser;//跟进销售
+
     /* 电户号 */
     private String eleAccountNum;
     /* 水户号 */
@@ -228,14 +228,6 @@ public class House extends BaseHousingEntity<House> {
 
     public void setServiceUser(User serviceUser) {
         this.serviceUser = serviceUser;
-    }
-
-    public User getSalesUser() {
-        return salesUser;
-    }
-
-    public void setSalesUser(User salesUser) {
-        this.salesUser = salesUser;
     }
 
     public String getEleAccountNum() {
