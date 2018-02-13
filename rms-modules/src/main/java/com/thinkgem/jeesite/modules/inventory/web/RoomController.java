@@ -98,7 +98,6 @@ public class RoomController extends CommonBusinessController {
             room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(("0,1,2,3,4,8,10,11,12")));
         } else {
             if (StringUtils.isNotEmpty(room.getRoomConfig())) {
-                logger.info("roomConfig is :{}", room.getRoomConfig());
                 room.setRoomConfigList(DictUtils.convertToDictListFromSelVal(room.getRoomConfig()));
             }
         }
@@ -166,6 +165,7 @@ public class RoomController extends CommonBusinessController {
                 upRoom.setRentMonthGap(room.getRentMonthGap());
                 upRoom.setDeposMonthCount(room.getDeposMonthCount());
                 upRoom.setFeeConfigInfo(convertToFeeStr(room));
+                upRoom.setSalesUser(room.getSalesUser());
                 roomService.saveRoom(upRoom);
             } else {
                 if (CollectionUtils.isNotEmpty(room.getRoomConfigList())) {

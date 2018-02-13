@@ -217,26 +217,26 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">房源描述：</label>
-        <div class="controls">
-            <form:input path="shortDesc" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-            <span class="help-inline" style="display:none;"><font color="red">*</font></span>
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label">房源地址描述：</label>
-        <div class="controls">
-            <form:input path="shortLocation" htmlEscape="false" maxlength="100" class="input-xlarge"/>
-            <span class="help-inline" style="display:none;"><font color="red">*</font></span>
-        </div>
-    </div>
-    <div class="control-group">
         <label class="control-label">跟进销售：</label>
         <div class="controls">
             <sys:treeselect id="salesUser" name="salesUser" value="${room.salesUser.id}"
                             labelName="salesUser.name" labelValue="${room.salesUser.name}"
                             title="跟进销售" url="/sys/office/treeData?type=3" cssClass="required" allowClear="true"
                             notAllowSelectParent="true"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">房源描述：</label>
+        <div class="controls">
+            <form:textarea path="shortDesc" htmlEscape="false" rows="4" maxlength="255" class="input-xlarge"/>
+            <span class="help-inline" style="display:none;"><font color="red">*</font></span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">房源地址描述：</label>
+        <div class="controls">
+            <form:textarea path="shortLocation" htmlEscape="false" rows="4" maxlength="140" class="input-xlarge"/>
+            <span class="help-inline" style="display:none;"><font color="red">*</font></span>
         </div>
     </div>
     <div class="control-group">
