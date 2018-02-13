@@ -21,6 +21,7 @@ import com.thinkgem.jeesite.modules.app.enums.BuildingTypeEnum;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
 import com.thinkgem.jeesite.modules.app.service.CustBindInfoService;
 import com.thinkgem.jeesite.modules.app.util.JsonUtil;
+import com.thinkgem.jeesite.modules.common.service.SmsService;
 import com.thinkgem.jeesite.modules.contract.entity.ContractBook;
 import com.thinkgem.jeesite.modules.contract.entity.PhoneRecord;
 import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
@@ -36,6 +37,7 @@ import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.person.entity.Customer;
 import com.thinkgem.jeesite.modules.person.service.CustomerService;
+import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -79,6 +81,9 @@ public class AlipayController extends CommonBusinessController {
 
     @Autowired
     private ContractBookService contractBookService;
+
+    @Autowired
+    private SmsService smsService;
 
     private AlipayClient alipayClient;
     public static String RESERVATION_URL;//预约看房SPI地址
@@ -653,14 +658,40 @@ public class AlipayController extends CommonBusinessController {
         record.setHousingCode(roomCode);
         record.setHousingType(Integer.valueOf(request.getParameter("flatsTag")));
         record.setRemarks(request.getParameter("remark"));
+        User salesUser = null;
+        String projectName = "";
+        String buildingName = "";
+        String houseNo = "";
+        String roomNo = "";
         if (roomCode.startsWith("R")) {
             Room room = roomService.getByNewId(roomCode.substring(1));
+            projectName = propertyProjectService.get(room.getPropertyProject().getId()).getProjectName();
+            buildingName = buildingService.get(room.getBuilding().getId()).getBuildingName();
+            houseNo = houseService.get(room.getHouse().getId()).getHouseNo();
+            roomNo = room.getRoomNo();
             record.setRoomId(room.getId());
             record.setHouseId(room.getHouse().getId());
+            salesUser = room.getSalesUser();
         } else {
-            record.setHouseId(houseService.getByNewId(roomCode.substring(1)).getId());
+            House h = houseService.getByNewId(roomCode.substring(1));
+            projectName = propertyProjectService.get(h.getPropertyProject().getId()).getProjectName();
+            buildingName = buildingService.get(h.getBuilding().getId()).getBuildingName();
+            houseNo = h.getHouseNo();
+            record.setHouseId(h.getId());
+            salesUser = h.getSalesUser();
+        }
+        if (salesUser != null) {
+            record.setSalesId(salesUser.getId());
+            record.setSalesName(salesUser.getName());
+            //向该销售发送预约提示短信
+            User user = UserUtils.get(salesUser.getId());
+            String saleName = user.getName();
+            String addressInfo = projectName + buildingName + "楼" + houseNo + "号" + (StringUtils.isNotEmpty(roomNo) ? roomNo + "室" : "");
+            String content = saleName + "你好，姓名：" + customer.getTrueName() + "，手机号为：" + customer.getCellPhone() + "的客户预约在" + request.getParameter("lookTime") + "日期看" + addressInfo + "，请提前联系用户做好带看准备。";
+            smsService.sendSms(user.getPhone(), content);
         }
         contractBookService.save(record);
+
     }
 
     private void saveOrUpdateBindInfo(String customerId, HttpServletRequest request) {
