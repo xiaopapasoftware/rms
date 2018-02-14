@@ -179,9 +179,10 @@ CREATE TABLE T_RENT_CONTRACT
   HAS_FREE                CHAR(1)     DEFAULT '0'
   COMMENT '是否返租促销',
   FREE_MONTHS             INT(11)     DEFAULT 0
-  COMMENT '优惠促销房租月数',
+  COMMENT '返租促销减免房租月数',
   derate_Rent_Flag        CHAR(1)     DEFAULT '0'
   COMMENT '是否房租全免',
+  lease_term_months       INT COMMENT '房源租赁周期（月）',
   PRIMARY KEY (ID)
 )
   COMMENT = '出租合同';

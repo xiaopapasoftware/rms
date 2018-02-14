@@ -100,6 +100,7 @@ public class RentContract extends DataEntity<RentContract> {
     private Integer freeMonths; //优惠促销房租月数
     private List<String> contractBusiStatusList;// 用于查询合同列表的状态集合，仅用于特定业务场景合同查询
     private String derateRentFlag;//是否房租全免 1-全免；0-不免
+    private Integer leaseTermMonths;//房源租赁周期（月）
 
     public RentContract() {
         super();
@@ -703,6 +704,14 @@ public class RentContract extends DataEntity<RentContract> {
 
     public void setDerateRentFlag(String derateRentFlag) {
         this.derateRentFlag = derateRentFlag;
+    }
+
+    public Integer getLeaseTermMonths() {
+        return leaseTermMonths;
+    }
+
+    public void setLeaseTermMonths(Integer leaseTermMonths) {
+        this.leaseTermMonths = leaseTermMonths;
     }
 
 }

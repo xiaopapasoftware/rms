@@ -269,7 +269,9 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:3000px;">
 		<thead>
 			<tr>
-				<th>原合同编号</th>
+				<c:if test="${rentContract.refContractNo!='' && rentContract.refContractNo!=null && rentContract.refContractNo!=undefined}">
+					<th>原合同编号</th>
+				</c:if>
 				<th>原定金编号</th>
 				<th>合同编号</th>
 				<th>合同名称</th>
@@ -301,9 +303,11 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="rentContract">
 			<tr <c:if test="${rentContract.contractBusiStatus=='7'||rentContract.contractBusiStatus=='8'||rentContract.contractBusiStatus=='9'||rentContract.contractBusiStatus=='16'}">style="background-color:#f1f2f2;"</c:if>>
-				<td>
-					${rentContract.refContractNo}
-				</td>
+				<c:if test="${rentContract.refContractNo!='' && rentContract.refContractNo!=null && rentContract.refContractNo!=undefined}">
+					<td>
+						 ${rentContract.refContractNo}
+					</td>
+				</c:if>
 				<td>
 					${rentContract.refAgreementNo}
 				</td>

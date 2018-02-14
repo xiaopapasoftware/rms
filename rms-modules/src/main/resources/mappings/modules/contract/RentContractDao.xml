@@ -34,6 +34,7 @@
 		a.ren_months AS "renMonths",
 		a.deposit_months AS "depositMonths",
 		a.deposit_amount AS "depositAmount",
+		a.lease_term_months AS "leaseTermMonths",
 		a.deposit_electric_amount AS "depositElectricAmount",
 		a.ele_recharge_amount AS "eleRechargeAmount",
 		a.has_visa AS "hasVisa",
@@ -355,7 +356,8 @@
 		data_source,
 		has_free,
 		free_months,
-		derate_Rent_Flag
+		derate_Rent_Flag,
+		lease_term_months
 		) VALUES (
 		#{id},
 		#{agreementId},
@@ -409,7 +411,8 @@
 		#{dataSource},
 		#{hasFree},
 		#{freeMonths},
-		#{derateRentFlag}
+		#{derateRentFlag},
+		#{leaseTermMonths}
 		)
 	</insert>
 
@@ -448,6 +451,7 @@
 		renew_count = #{renewCount},
 		meter_value = #{meterValue},
 		total_meter_value = #{totalMeterValue},
+		lease_term_months = #{leaseTermMonths},
 		peak_meter_value = #{peakMeterValue},
 		valley_meter_value = #{valleyMeterValue},
 		coal_value = #{coalValue},
@@ -537,6 +541,7 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
+		a.lease_term_months AS "leaseTermMonths",
 		a.del_flag AS "delFlag",
 		a.return_remark as "returnRemark",
 		a.charge_type as "chargeType",

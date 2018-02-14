@@ -525,7 +525,7 @@
         function changeDerateRentFlag(dom) {
             var flag = dom.checked ? true : false;
             if (flag) {//房租全免
-                $('#rental').attr('readonly',true);
+                $('#rental').attr('readonly', true);
                 $('#rental').val('0');
                 $('#rental').removeClass("required");
                 //取消房租促销选择
@@ -538,16 +538,18 @@
         }
 
         function calculateRange() {
-            var value = $('#leaseMonth').val();
-            var startDate = $("#startDate").val();
-            var expireDate = nextMonthsDate(startDate, value);
-            var refetCallDate = nextMonthsDate(startDate, value - 1);
-            expireDate = new Date(expireDate);
-            refetCallDate = new Date(refetCallDate);
-            expireDate.setDate(expireDate.getDate() - 1);
-            refetCallDate.setDate(refetCallDate.getDate() - 1);
-            $('#expireDate').val(formatDate(expireDate));
-            $('#remindTime').val(formatDate(refetCallDate));
+            var value = $('#leaseTermMonths').val();
+            if (value != null && value != undefined && value != "") {
+                var startDate = $("#startDate").val();
+                var expireDate = nextMonthsDate(startDate, value);
+                var refetCallDate = nextMonthsDate(startDate, value - 1);
+                expireDate = new Date(expireDate);
+                refetCallDate = new Date(refetCallDate);
+                expireDate.setDate(expireDate.getDate() - 1);
+                refetCallDate.setDate(refetCallDate.getDate() - 1);
+                $('#expireDate').val(formatDate(expireDate));
+                $('#remindTime').val(formatDate(refetCallDate));
+            }
         }
 
         function nextMonthsDate(date, monthNum) {
@@ -814,10 +816,10 @@
     </div>
     <div class="control-group">
         <label class="control-label">
-            合同租期：
+            合同租期（月）：
         </label>
         <div class="controls">
-            <input type="number" id="leaseMonth" placeholder="请输入1-24之间的正整数" class="input-medium required"
+            <input type="number" id="leaseTermMonths" placeholder="请输入1-24之间的正整数" class="input-medium required"
                    onblur="calculateRange()"/>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>
