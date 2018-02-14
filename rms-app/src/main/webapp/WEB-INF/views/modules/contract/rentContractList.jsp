@@ -286,28 +286,19 @@
         <th>原定金编号/名称</th>
         <th>原合同编号/名称</th>
         <th>合同编号/名称</th>
+        <th>出租方式</th>
         <th>合同来源</th>
         <th>数据来源</th>
-        <th>合同签订类型</th>
-        <th>续签次数</th>
-        <th>出租方式</th>
-        <th>物业项目</th>
-        <th>楼宇</th>
-        <th>房屋号</th>
-        <th>房间号</th>
-        <th>月租金</th>
-        <th>合同生效时间</th>
-        <th>合同过期时间</th>
-        <th>合同签订时间</th>
-        <th>续租提醒时间</th>
-        <th>合同审核状态</th>
-        <th>合同业务状态</th>
-        <th>销售姓名</th>
-        <th>合作人姓名</th>
-        <th>创建时间</th>
-        <th>修改时间</th>
-        <th>创建人</th>
-        <th>修改人</th>
+        <th>付费方式</th>
+        <th>签订类型</th>
+        <th>签订时间</th>
+        <th>生效时间</th>
+        <th>过期时间</th>
+        <th>租赁周期（月）</th>
+        <th>审核状态</th>
+        <th>业务状态</th>
+        <th>是否返租促销</th>
+        <th>是否房租全免</th>
         <th>操作</th>
     </tr>
     </thead>
@@ -316,48 +307,33 @@
         <tr
                 <c:if test="${rentContract.contractBusiStatus=='7'||rentContract.contractBusiStatus=='8'||rentContract.contractBusiStatus=='9'||rentContract.contractBusiStatus=='16'}">style="background-color:#f1f2f2;"</c:if>>
             <td>
-                    ${rentContract.refAgreementNo} / ${rentContract.refAgreementName}
+                    ${rentContract.refAgreementNo} - ${rentContract.refAgreementName}
             </td>
             <td>
-                    ${rentContract.refContractNo} / ${rentContract.refContractName}
-            </td>
-            <td>
-
+                    ${rentContract.refContractNo} - ${rentContract.refContractName}
             </td>
             <td>
                 <a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
-                        ${rentContract.contractCode} / ${rentContract.contractName}
+                        ${rentContract.contractCode} - ${rentContract.contractName}
                 </a>
+            </td>
+            <td>
+                    ${fns:getDictLabel(rentContract.rentMode, 'rent_mode', '')}
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.contractSource, 'contract_source', '')}
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.dataSource, 'data_source', '管理系统')}
-                </a>
+            </td>
+            <td>
+                    ${fns:getDictLabel(rentContract.chargeType, 'charge_type', '')}
+            </td>
             <td>
                     ${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
             </td>
             <td>
-                    ${rentContract.renewCount}
-            </td>
-            <td>
-                    ${fns:getDictLabel(rentContract.rentMode, 'rent_mode', '')}
-            </td>
-            <td>
-                    ${rentContract.projectName}
-            </td>
-            <td>
-                    ${rentContract.buildingBame}
-            </td>
-            <td>
-                    ${rentContract.houseNo}
-            </td>
-            <td>
-                    ${rentContract.roomNo}
-            </td>
-            <td>
-                    ${rentContract.rental}
+                <fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd"/>
             </td>
             <td>
                 <fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>
@@ -366,10 +342,7 @@
                 <fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd"/>
             </td>
             <td>
-                <fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd"/>
-            </td>
-            <td>
-                <fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>
+                    ${rentContract.leaseTermMonths}
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.contractStatus, 'rent_contract_status', '')}
@@ -378,15 +351,11 @@
                     ${fns:getDictLabel(rentContract.contractBusiStatus, 'rent_contract_busi_status', '')}
             </td>
             <td>
-                    ${rentContract.user.name}
+                    ${fns:getDictLabel(rentContract.hasFree, 'yes_no', '否')}
             </td>
             <td>
-                    ${rentContract.partner.partnerName}
+                    ${fns:getDictLabel(rentContract.derateRentFlag, 'yes_no', '否')}
             </td>
-            <td><fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            <td><fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-            <td>${rentContract.createBy.loginName}</td>
-            <td>${rentContract.updateBy.loginName}</td>
             <td>
                 <shiro:hasPermission name="contract:rentContract:edit">
                     <c:if test="${rentContract.dataSource=='2' && rentContract.contractStatus=='0'}">

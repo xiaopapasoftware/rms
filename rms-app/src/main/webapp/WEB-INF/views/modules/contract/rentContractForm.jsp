@@ -797,7 +797,7 @@
     <div class="control-group">
         <label class="control-label">合同签订时间：</label>
         <div class="controls">
-            <input name="signDate" id="signDate" type="text" readonly="readonly" maxlength="20"
+            <input name="signDate" id="signDate" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate required"
                    value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd"/>"
                    onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
@@ -807,7 +807,7 @@
     <div class="control-group">
         <label class="control-label">合同生效时间：</label>
         <div class="controls">
-            <input name="startDate" id="startDate" type="text" readonly="readonly" maxlength="20"
+            <input name="startDate" id="startDate" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate required"
                    value="<fmt:formatDate value="${rentContract.startDate}" pattern="yyyy-MM-dd"/>"
                    onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" onchange="startDateChange()"/>
@@ -828,7 +828,7 @@
     <div class="control-group">
         <label class="control-label">合同过期时间：</label>
         <div class="controls">
-            <input name="expiredDate" id="expireDate" type="text" readonly="readonly" maxlength="20"
+            <input name="expiredDate" id="expireDate" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate required"
                    value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd"/>"
                    onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" onchange="endDateChange()"/>
@@ -838,11 +838,17 @@
     <div class="control-group">
         <label class="control-label">续租提醒时间：</label>
         <div class="controls">
-            <input name="remindTime" id="remindTime" type="text" readonly="readonly" maxlength="20"
+            <input name="remindTime" id="remindTime" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate required"
                    value="<fmt:formatDate value="${rentContract.remindTime}" pattern="yyyy-MM-dd"/>"
                    onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
             <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">续签次数：</label>
+        <div class="controls">
+            <form:input path="renewCount" htmlEscape="false" class="input-xlarge number" readonly="true"/>
         </div>
     </div>
     <div class="control-group">
@@ -853,7 +859,7 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">优惠促销房租月数：</label>
+        <label class="control-label">返租促销减免房租月数：</label>
         <div class="controls">
             <form:input type="number" placeholder="请填写正整数" id="freeMonths" path="freeMonths" htmlEscape="false"
                         maxlength="2" class="input-xlarge digits"/>
@@ -998,6 +1004,36 @@
         <label class="control-label">入住水表系数：</label>
         <div class="controls">
             <form:input path="waterValue" htmlEscape="false" class="input-xlarge  number"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">创建时间：</label>
+        <div class="controls">
+            <input name="createDate" id="createDate" type="text" readonly="true" maxlength="20"
+                   class="input-medium Wdate required"
+                   value="<fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd"/>"/>
+            <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">修改时间：</label>
+        <div class="controls">
+            <input name="updateDate" id="updateDate" type="text" readonly="true" maxlength="20"
+                   class="input-medium Wdate required"
+                   value="<fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd"/>"/>
+            <span class="help-inline"><font color="red">*</font> </span>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">创建人：</label>
+        <div class="controls">
+            <form:input path="createBy.loginName" readonly="true" htmlEscape="false" class="input-xlarg"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">修改人：</label>
+        <div class="controls">
+            <form:input path="updateBy.loginName" readonly="true" htmlEscape="false" class="input-xlarge"/>
         </div>
     </div>
     <div class="control-group">
