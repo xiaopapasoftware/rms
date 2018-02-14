@@ -819,9 +819,10 @@
             合同租期（月）：
         </label>
         <div class="controls">
-            <input type="number" id="leaseTermMonths" placeholder="请输入1-24之间的正整数" class="input-medium required"
-                   onblur="calculateRange()"/>
-            <span class="help-inline"><font color="red">*</font> </span>
+            <form:input type="number" path="leaseTermMonths" id="leaseTermMonths" placeholder="请输入1-24之间的正整数"
+                        class="input-medium required number" htmlEscape="false" maxlength="2"
+                        onblur="calculateRange()"/>
+            <span class="help-inline"><font color="red">*</font></span>
         </div>
     </div>
     <div class="control-group">

@@ -163,7 +163,7 @@ CREATE TABLE T_RENT_CONTRACT
   REMIND_TIME             DATE COMMENT '续租提醒时间',
   CONTRACT_STATUS         VARCHAR(64) COMMENT '合同状态',
   CONTRACT_BUSI_STATUS    VARCHAR(64) COMMENT '合同业务状态',
-  CHARGE_TYPE             VARCHAR(64) COMMENT '付费方式',
+  CHARGE_TYPE             VARCHAR(64) COMMENT '付费方式，分为预付费、后付费、综合付费',
   return_remark           VARCHAR(64) COMMENT '退租备注',
   renew_count             INT         DEFAULT 0
   COMMENT '续签次数',

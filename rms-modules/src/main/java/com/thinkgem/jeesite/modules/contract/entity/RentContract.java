@@ -28,8 +28,12 @@ import java.util.List;
 public class RentContract extends DataEntity<RentContract> {
 
     private static final long serialVersionUID = 1L;
-    private String agreementId; // 原定金协议
-    private String contractId; // 原出租合同
+    private String agreementId; // 原定金协议ID
+    private String refAgreementNo;// 原定金协议编号
+    private String refAgreementName;//原定金协议名称
+    private String contractId; // 原出租合同ID
+    private String refContractNo;// 原合同编号
+    private String refContractName;//原合同名称
     private String contractCode; // 合同编号
     private String contractName; // 合同名称
     private String rentMode; // 出租方式
@@ -85,8 +89,6 @@ public class RentContract extends DataEntity<RentContract> {
     private String tenantIdNo;// 租客身份证,用于查询条件
     private String leaseTenantNames;// 承租人姓名，用于显示查询结果
     private String liveNames;// 入住人姓名，用于显示查询结果
-    private String refAgreementNo;// 原定金协议编号
-    private String refContractNo;// 原合同编号
     private String rentContractFile;// 出租合同文件
     private String rentContractCusIDFile;// 租客身份证
     private String rentContractOtherFile;// 出租合同其他附件
@@ -714,4 +716,19 @@ public class RentContract extends DataEntity<RentContract> {
         this.leaseTermMonths = leaseTermMonths;
     }
 
+    public String getRefAgreementName() {
+        return refAgreementName;
+    }
+
+    public void setRefAgreementName(String refAgreementName) {
+        this.refAgreementName = refAgreementName;
+    }
+
+    public String getRefContractName() {
+        return refContractName;
+    }
+
+    public void setRefContractName(String refContractName) {
+        this.refContractName = refContractName;
+    }
 }
