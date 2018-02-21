@@ -1010,7 +1010,7 @@
         <label class="control-label">创建时间：</label>
         <div class="controls">
             <input name="createDate" id="createDate" type="text" readonly="true" maxlength="20"
-                   class="input-medium Wdate required"
+                   class="input-medium Wdate"
                    value="<fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd"/>"/>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>
@@ -1019,7 +1019,7 @@
         <label class="control-label">修改时间：</label>
         <div class="controls">
             <input name="updateDate" id="updateDate" type="text" readonly="true" maxlength="20"
-                   class="input-medium Wdate required"
+                   class="input-medium Wdate"
                    value="<fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd"/>"/>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>
