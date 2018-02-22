@@ -659,10 +659,10 @@ public class AlipayController extends CommonBusinessController {
         record.setHousingCode(roomCode);
         record.setHousingType(Integer.valueOf(request.getParameter("flatsTag")));
         record.setRemarks(request.getParameter("remark"));
-        User salesUser = null;
-        String projectName = "";
-        String buildingName = "";
-        String houseNo = "";
+        User salesUser;
+        String projectName;
+        String buildingName;
+        String houseNo;
         String roomNo = "";
         if (roomCode.startsWith("R")) {
             Room room = roomService.getByNewId(roomCode.substring(1));
@@ -691,6 +691,8 @@ public class AlipayController extends CommonBusinessController {
             String content = saleName + "你好，姓名为" + customer.getTrueName() + "，手机号为" + customer.getCellPhone() + "的客户预约在" + request.getParameter("lookTime") + "看" + addressInfo + "，请提前联系用户做好带看准备。";
             logger.info("短信号码是：{}，短信内容是：{}。", user.getMobile(), content);
             smsService.sendSms(user.getMobile(), content);
+        } else {
+            logger.error("can not find salesUser data!");
         }
         contractBookService.save(record);
     }
