@@ -1,7 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights
- * reserved.
- */
 package com.thinkgem.jeesite.modules.contract.service;
 
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -22,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * 预约看房信息Service
- *
- * @author huangsc
+ * 预约看房
  */
 @Service
 @Transactional(readOnly = true)
@@ -54,7 +48,11 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
         dao.distribution(contractBook);
     }
 
+    /**
+     * 被预约的销售只能看到其名下的预约数据
+     */
     public List<ContractBook> findList(ContractBook contractBook) {
+        salesUserDataScopeFilter(contractBook, "filterSQLKey", "a.sales_id=su.id");
         List<ContractBook> listResult = super.findList(contractBook);
         listResult.forEach(this::completeInfo);
         return listResult;

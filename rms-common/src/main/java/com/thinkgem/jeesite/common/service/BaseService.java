@@ -236,4 +236,17 @@ public abstract class BaseService {
         return sqlString.toString();
     }
 
+    /**
+     * 数据范围过滤
+     * 预约管理-用于控制销售只看到其本人自己的数据
+     */
+    public static void salesUserDataScopeFilter(BaseEntity<?> entity, String sqlMapKey, String condition) {
+        User user = entity.getCurrentUser();
+        if (user.isAdmin()) {
+            return;
+        }
+        StringBuilder sqlString = new StringBuilder();
+        sqlString.append(" and exists (select 1 from sys_user su where su.id = '" + user.getId() + "' and " + condition + " )");
+        entity.getSqlMap().put(sqlMapKey, sqlString.toString());
+    }
 }

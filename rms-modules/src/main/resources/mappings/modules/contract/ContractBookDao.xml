@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.contract.dao.ContractBookDao">
-    
-	<sql id="contractBookColumns">
+
+    <sql id="contractBookColumns">
 		a.id AS "id",
 		a.customer_id AS "customer.id",
 		a.house_id AS "houseId",
@@ -22,63 +22,64 @@
 		a.housing_type as housingType
 	</sql>
 
-	<select id="get" resultType="ContractBook">
-		SELECT 
-			<include refid="contractBookColumns"/>
-		FROM t_contract_book a
-		WHERE a.id = #{id} and a.del_flag='0'
-	</select>
+    <select id="get" resultType="ContractBook">
+        SELECT
+        <include refid="contractBookColumns"/>
+        FROM t_contract_book a
+        WHERE a.id = #{id} and a.del_flag='0'
+    </select>
 
-	<select id="findList" resultType="ContractBook">
-		SELECT 
-			<include refid="contractBookColumns"/>
-		FROM t_contract_book a
-		<where>
-			a.del_flag = '0'
-			<if test="bookPhone != null and bookPhone != ''">
-				AND a.book_phone = #{bookPhone}
-			</if>
-			<if test="bookDate != null and bookDate != ''">
-				AND date_format(a.book_date,'%Y-%m-%d') = date_format(#{bookDate},'%Y-%m-%d')
-			</if>
-			<if test="bookStatus != null and bookStatus != ''">
-				AND a.book_status = #{bookStatus}
-			</if>
-			<if test="customerIdList != null">
-				and a.customer_id in
-				<foreach item="item" index="index" collection="customerIdList" open="(" separator="," close=")">
-					#{item}
-				</foreach>
-			</if>
-		</where>
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<select id="findAllList" resultType="ContractBook">
-		SELECT 
-			<include refid="contractBookColumns"/>
-		FROM t_contract_book a
-		<where>
-			a.del_flag = '0'
-		</where>		
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
-	
-	<insert id="insert">
+    <select id="findList" resultType="ContractBook">
+        SELECT
+        <include refid="contractBookColumns"/>
+        FROM t_contract_book a
+        <where>
+            a.del_flag = '0'
+            <if test="bookPhone != null and bookPhone != ''">
+                AND a.book_phone = #{bookPhone}
+            </if>
+            <if test="bookDate != null and bookDate != ''">
+                AND date_format(a.book_date,'%Y-%m-%d') = date_format(#{bookDate},'%Y-%m-%d')
+            </if>
+            <if test="bookStatus != null and bookStatus != ''">
+                AND a.book_status = #{bookStatus}
+            </if>
+            <if test="customerIdList != null">
+                and a.customer_id in
+                <foreach item="item" index="index" collection="customerIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            ${sqlMap.filterSQLKey}<!-- 被指定预约的销售只能看到其自己名下的预约信息 -->
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="findAllList" resultType="ContractBook">
+        SELECT
+        <include refid="contractBookColumns"/>
+        FROM t_contract_book a
+        <where>
+            a.del_flag = '0'
+        </where>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insert">
 		INSERT INTO t_contract_book(
 			id,
 			customer_id,
@@ -117,8 +118,8 @@
 			#{housingType}
 		)
 	</insert>
-	
-	<update id="update">
+
+    <update id="update">
 		UPDATE t_contract_book SET 	
 			customer_id = #{customer.id},
 			house_id = #{houseId},
@@ -135,23 +136,23 @@
 			housing_type = #{housingType}
 		WHERE id = #{id}
 	</update>
-	
-	<update id="delete">
+
+    <update id="delete">
 		UPDATE t_contract_book SET 
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE house_id = #{houseId} or room_id = #{roomId}
 	</update>
 
-	<update id="distribution">
-		UPDATE t_contract_book SET
-		book_status = #{bookStatus},
-		sales_id = #{salesId},
-		update_by = #{updateBy.id},
-		update_date = #{updateDate}
-		WHERE id IN
-		<foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
-			#{item}
-		</foreach>
-	</update>
+    <update id="distribution">
+        UPDATE t_contract_book SET
+        book_status = #{bookStatus},
+        sales_id = #{salesId},
+        update_by = #{updateBy.id},
+        update_date = #{updateDate}
+        WHERE id IN
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
 
 </mapper>
