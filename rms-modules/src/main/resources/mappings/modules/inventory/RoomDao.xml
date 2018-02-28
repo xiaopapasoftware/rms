@@ -108,11 +108,21 @@
             <if test="reservationPhone != null and reservationPhone != ''">
                 and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
             </if>
-            <if test="alipayStatus != null and alipayStatus != ''">
-                and a.alipay_status = #{alipayStatus}
+            <if test="alipayStatus != null and alipayStatus != '' or alipayStatus==0">
+                <if test="alipayStatus == 1">
+                    and a.alipay_status = '1'
+                </if>
+                <if test="alipayStatus == 0">
+                    and (a.alipay_status = '0' OR a.alipay_status is NULL)
+                </if>
             </if>
-            <if test="up != null and up != ''">
-                and a.up = #{up}
+            <if test="up != null and up != '' or up==0">
+                <if test="up == 1">
+                    and a.up = '1'
+                </if>
+                <if test="up == 0">
+                    and (a.up = '0' OR a.up is NULL)
+                </if>
             </if>
             <if test="orientation != null and orientation != ''">
                 and a.orientation = #{orientation}

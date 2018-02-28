@@ -130,7 +130,7 @@
             <form:input path="reservationPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
         </li>
         <li>
-            <label>支付宝同步状态：</label>
+            <label style="width:104px;">支付宝同步状态：</label>
             <form:select path="alipayStatus" class="input-medium">
                 <form:option value="" label="请选择..."/>
                 <form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value"
@@ -138,7 +138,7 @@
             </form:select>
         </li>
         <li>
-            <label>支付宝上下架状态：</label>
+            <label style="width:117px;">支付宝上下架状态：</label>
             <form:select path="up" class="input-medium">
                 <form:option value="" label="请选择..."/>
                 <form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value"
