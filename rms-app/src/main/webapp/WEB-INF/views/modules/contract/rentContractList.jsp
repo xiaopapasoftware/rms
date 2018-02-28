@@ -283,13 +283,12 @@
 <table id="contentTable" class="table table-striped table-bordered table-condensed" style="width:3000px;">
     <thead>
     <tr>
-        <th>原定金编号/名称</th>
-        <th>原合同编号/名称</th>
         <th>合同编号/名称</th>
         <th>出租方式</th>
         <th>合同来源</th>
         <th>数据来源</th>
         <th>付费方式</th>
+        <th>月租金额</th>
         <th>签订类型</th>
         <th>签订时间</th>
         <th>生效时间</th>
@@ -299,6 +298,8 @@
         <th>业务状态</th>
         <th>是否返租促销</th>
         <th>是否房租全免</th>
+        <th>原定金编号/名称</th>
+        <th>原合同编号/名称</th>
         <th>操作</th>
     </tr>
     </thead>
@@ -306,12 +307,6 @@
     <c:forEach items="${page.list}" var="rentContract">
         <tr
                 <c:if test="${rentContract.contractBusiStatus=='7'||rentContract.contractBusiStatus=='8'||rentContract.contractBusiStatus=='9'||rentContract.contractBusiStatus=='16'}">style="background-color:#f1f2f2;"</c:if>>
-            <td>
-                    ${rentContract.refAgreementNo} - ${rentContract.refAgreementName}
-            </td>
-            <td>
-                    ${rentContract.refContractNo} - ${rentContract.refContractName}
-            </td>
             <td>
                 <a href="${ctx}/contract/rentContract/form?id=${rentContract.id}">
                         ${rentContract.contractCode} - ${rentContract.contractName}
@@ -328,6 +323,9 @@
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.chargeType, 'charge_type', '')}
+            </td>
+            <td>
+                    ${rentContract.rental}
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.signType, 'contract_sign_type', '')}
@@ -355,6 +353,12 @@
             </td>
             <td>
                     ${fns:getDictLabel(rentContract.derateRentFlag, 'yes_no', '否')}
+            </td>
+            <td>
+                    ${rentContract.refAgreementNo} - ${rentContract.refAgreementName}
+            </td>
+            <td>
+                    ${rentContract.refContractNo} - ${rentContract.refContractName}
             </td>
             <td>
                 <shiro:hasPermission name="contract:rentContract:edit">

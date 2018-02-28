@@ -58,7 +58,11 @@ public class ContractBookService extends CrudService<ContractBookDao, ContractBo
         return listResult;
     }
 
+    /**
+     * 被预约的销售只能看到其名下的预约数据
+     */
     public Page<ContractBook> findPage(Page<ContractBook> page, ContractBook contractBook) {
+        salesUserDataScopeFilter(contractBook, "filterSQLKey", "a.sales_id=su.id");
         Page<ContractBook> pageResult = super.findPage(page, contractBook);
         pageResult.getList().forEach(this::completeInfo);
         return pageResult;
