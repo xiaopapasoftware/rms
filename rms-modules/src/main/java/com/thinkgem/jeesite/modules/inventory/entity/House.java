@@ -35,7 +35,6 @@ public class House extends BaseHousingEntity<House> {
     private String roomId;
     private String intentMode;// 意向租赁类型
     private User serviceUser;// 服务管家
-
     /* 电户号 */
     private String eleAccountNum;
     /* 水户号 */

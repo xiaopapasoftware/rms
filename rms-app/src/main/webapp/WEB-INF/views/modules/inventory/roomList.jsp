@@ -129,8 +129,26 @@
             <label>预约热线：</label>
             <form:input path="reservationPhone" htmlEscape="false" maxlength="100" class="input-medium"/>
         </li>
-        <li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
-        <li class="clearfix"></li>
+        <li>
+            <label>支付宝同步状态：</label>
+            <form:select path="alipayStatus" class="input-medium">
+                <form:option value="" label="请选择..."/>
+                <form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value"
+                              htmlEscape="false"/>
+            </form:select>
+        </li>
+        <li>
+            <label>支付宝上下架状态：</label>
+            <form:select path="up" class="input-medium">
+                <form:option value="" label="请选择..."/>
+                <form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value"
+                              htmlEscape="false"/>
+            </form:select>
+        </li>
+        <shiro:hasPermission name="inventory:room:view">
+            <li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+            <li class="clearfix"></li>
+        </shiro:hasPermission>
     </ul>
 </form:form>
 <sys:message content="${message}" type="${messageType}"/>

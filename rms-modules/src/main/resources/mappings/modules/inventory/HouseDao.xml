@@ -192,6 +192,12 @@
             <if test="reservationPhone != null and reservationPhone != ''">
                 and a.reservation_phone LIKE concat('%',#{reservationPhone},'%')
             </if>
+            <if test="alipayStatus != null and alipayStatus != ''">
+                and a.alipay_status = #{alipayStatus}
+            </if>
+            <if test="up != null and up != ''">
+                and a.up = #{up}
+            </if>
             <if test="type != null and type != ''">
                 and tb.TYPE = #{type}
             </if>
