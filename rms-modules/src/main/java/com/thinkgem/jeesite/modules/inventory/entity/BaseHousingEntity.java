@@ -18,7 +18,7 @@ public class BaseHousingEntity<T> extends DataEntity<T> {
     protected String isFeature;//是否精选房源
     protected String attachmentPath;// 房源图片
     protected String choose;
-    protected String orientation;// 房间朝向     0东 1南 2西 3北 4东南 5东北 6西南 7西北 8 9
+    protected String orientation;// 朝向 0东 1南 2西 3北 4东南 5东北 6西南 7西北 8 9
     protected Double rental;//意向租金
     protected Long newId;
     protected User salesUser;//跟进销售
