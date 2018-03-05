@@ -164,9 +164,9 @@ CREATE TABLE `t_house` (
   COMMENT '是否精选房源',
   `rental`                   FLOAT                                         DEFAULT NULL
   COMMENT '意向租金',
-  `short_desc`               VARCHAR(255) COLLATE utf8_estonian_ci         DEFAULT NULL
+  `short_desc`               VARCHAR(400) COLLATE utf8_estonian_ci         DEFAULT NULL
   COMMENT '描述',
-  `short_location`           VARCHAR(255) COLLATE utf8_estonian_ci         DEFAULT NULL
+  `short_location`           VARCHAR(400) COLLATE utf8_estonian_ci         DEFAULT NULL
   COMMENT '地址描述',
   `service_user`             VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL
   COMMENT '服务管家',
@@ -239,9 +239,9 @@ CREATE TABLE `t_room` (
   COMMENT '是否精选房源',
   `rental`              FLOAT                                         DEFAULT NULL
   COMMENT '意向租金',
-  `short_desc`          VARCHAR(255) COLLATE utf8_estonian_ci         DEFAULT NULL
+  `short_desc`          VARCHAR(400) COLLATE utf8_estonian_ci         DEFAULT NULL
   COMMENT '描述',
-  `short_location`      VARCHAR(255) COLLATE utf8_estonian_ci         DEFAULT NULL
+  `short_location`      VARCHAR(400) COLLATE utf8_estonian_ci         DEFAULT NULL
   COMMENT '地址描述',
   `new_id`              BIGINT(20) UNSIGNED                  NOT NULL AUTO_INCREMENT,
   `sales_user`          VARCHAR(64) COLLATE utf8_estonian_ci          DEFAULT NULL

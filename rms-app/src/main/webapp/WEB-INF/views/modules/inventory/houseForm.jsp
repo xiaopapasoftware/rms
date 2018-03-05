@@ -183,7 +183,7 @@
         <label class="control-label">原始结构：</label>
         <div class="controls">
             <form:input path="oriStrucRoomNum" htmlEscape="false" maxlength="100"
-                        class="input-xlarge required digits"/>
+                        class="input-xlarge digits required"/>
             <span class="help-inline"><font color="red">房 </font></span>
             <form:input path="oriStrucCusspacNum" htmlEscape="false" maxlength="100"
                         class="input-xlarge digits required"/>
@@ -204,13 +204,13 @@
         <label class="control-label">装修结构：</label>
         <div class="controls">
             <form:input path="decoraStrucRoomNum" htmlEscape="false" maxlength="100"
-                        class="input-xlarge digits  required"/>
+                        class="input-xlarge digits required"/>
             <span class="help-inline"><font color="red">房</font></span>
             <form:input path="decoraStrucCusspacNum" htmlEscape="false" maxlength="100"
-                        class="input-xlarge digits  required"/>
+                        class="input-xlarge digits required"/>
             <span class="help-inline"><font color="red">厅</font></span>
             <form:input path="decoraStrucWashroNum" htmlEscape="false" maxlength="100"
-                        class="input-xlarge digits  required"/>
+                        class="input-xlarge digits required"/>
             <span class="help-inline"><font color="red">卫</font></span>
         </div>
     </div>
@@ -300,16 +300,16 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">房源描述：</label>
+        <label class="control-label">房源描述（最大400字，如同步支付宝，房源描述和房源地址描述一共不得超过400字。）：</label>
         <div class="controls">
-            <form:textarea path="shortDesc" htmlEscape="false" rows="4" maxlength="255" class="input-xlarge"/>
+            <form:textarea path="shortDesc" htmlEscape="false" rows="4" maxlength="400" class="input-xlarge"/>
             <span class="help-inline" style="display:none;"><font color="red">*</font></span>
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">房源地址描述：</label>
+        <label class="control-label">房源地址描述（最大400字，如同步支付宝，房源描述和房源地址描述一共不得超过400字。）：</label>
         <div class="controls">
-            <form:textarea path="shortLocation" htmlEscape="false" rows="4" maxlength="140" class="input-xlarge"/>
+            <form:textarea path="shortLocation" htmlEscape="false" rows="4" maxlength="400" class="input-xlarge"/>
             <span class="help-inline" style="display:none;"><font color="red">*</font></span>
         </div>
     </div>
