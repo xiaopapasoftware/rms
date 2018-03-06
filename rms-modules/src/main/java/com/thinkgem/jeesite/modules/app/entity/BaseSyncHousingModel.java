@@ -35,6 +35,7 @@ public class BaseSyncHousingModel {
     protected AlipayEcoRenthouseOtherAmount[] other_amount;//其他费用
     private String nick_name;
     private String max_amount;
+    private String room_store_no;//房源对应的店铺编号
 
     public class AlipayEcoRenthouseOtherAmount {
         String name;//费用名称：门卡费
@@ -297,5 +298,13 @@ public class BaseSyncHousingModel {
 
     public void setOther_amount(AlipayEcoRenthouseOtherAmount[] other_amount) {
         this.other_amount = other_amount;
+    }
+
+    public String getRoom_store_no() {
+        return room_store_no;
+    }
+
+    public void setRoom_store_no(String room_store_no) {
+        this.room_store_no = room_store_no;
     }
 }

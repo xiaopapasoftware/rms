@@ -97,6 +97,7 @@ public class AlipayController extends CommonBusinessController {
     public static String COMPANY_NAME;//公司名称
     public static String FILE_ACCESS_DOMAN;//附件
     public static String ALIPAY_PUBLIC_KEY;//支付宝验签公钥
+    public static String ALIPAY_ROOM_STORE_NO;//支付宝店铺编号
 
     @PostConstruct
     public void initParams() {
@@ -112,6 +113,7 @@ public class AlipayController extends CommonBusinessController {
         TP_APPID = global.getConfig("alipay.app.id");
         FILE_ACCESS_DOMAN = global.getConfig("file.access.domain");
         ALIPAY_PUBLIC_KEY = global.getConfig("alipay.public.key");
+        ALIPAY_ROOM_STORE_NO = global.getConfig("alipay.room.store.no");
         alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
     }
 
@@ -923,5 +925,7 @@ public class AlipayController extends CommonBusinessController {
         model.setMax_amount(building.getMaxAmount());
 
         model.setOwners_name(salesUser != null ? salesUser.getName() : "");
+
+        model.setRoom_store_no(ALIPAY_ROOM_STORE_NO);
     }
 }
