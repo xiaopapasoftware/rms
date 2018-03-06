@@ -1,5 +1,12 @@
 package com.thinkgem.jeesite.modules.inventory.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayEcoRenthouseRoomStateSyncRequest;
+import com.alipay.api.response.AlipayEcoRenthouseRoomStateSyncResponse;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -15,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +35,20 @@ public class RoomService extends CrudService<RoomDao, Room> {
 
     @Autowired
     private AttachmentService attachmentService;
+
+    private AlipayClient alipayClient;
+    public static String TP_PRIVATEKEY;//私钥
+    public static String TP_OPENAPI_URL;//网关
+    public static String TP_APPID;
+
+    @PostConstruct
+    public void initParams() {
+        Global global = Global.getInstance();
+        TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
+        TP_OPENAPI_URL = global.getConfig("alipay.open.api");
+        TP_APPID = global.getConfig("alipay.app.id");
+        alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
+    }
 
     public Page<House> findFeaturePage(Page<House> page) {
         page.setList(dao.findFeatureList());
@@ -216,4 +238,44 @@ public class RoomService extends CrudService<RoomDao, Room> {
     public Room getByNewId(String newId) {
         return dao.getByNewId(newId);
     }
+
+    /**
+     * 支付宝上下架
+     *
+     * @param buildingType 公寓类型，分散式/集中式
+     */
+    @Transactional(readOnly = false)
+    public boolean upDownRoom(String roomId, Integer type, String buildingType) {
+        Room room = dao.get(roomId);
+        String rentStatus;
+        String roomStatus = room.getRoomStatus();
+        if (RoomStatusEnum.BE_RESERVED.getValue().equals(roomStatus) || RoomStatusEnum.RENTED.getValue().equals(roomStatus)) {
+            rentStatus = "2";//已租
+        } else {
+            rentStatus = "1";//未租
+        }
+        AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
+        request.setBizContent("{" +
+                "    \"room_code\": \"R" + room.getNewId() + "\"," +
+                "    \"room_status\": " + type + "," +
+                "    \"rent_status\": " + rentStatus + "," +
+                "    \"flats_tag\": " + buildingType + "}");
+        try {
+            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
+            AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
+            if (response.isSuccess()) {
+                room.setUp(type);
+                super.save(room);
+                return true;
+            } else {
+                logger.error("up down room error {}, {}", roomId, response.getMsg());
+                return false;
+            }
+        } catch (AlipayApiException e) {
+            logger.error("up down room error {}", roomId, e);
+            return false;
+        }
+    }
+
 }

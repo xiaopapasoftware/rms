@@ -1,5 +1,12 @@
 package com.thinkgem.jeesite.modules.inventory.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipayEcoRenthouseRoomStateSyncRequest;
+import com.alipay.api.response.AlipayEcoRenthouseRoomStateSyncResponse;
+import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
@@ -16,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +42,20 @@ public class HouseService extends CrudService<HouseDao, House> {
 
     @Autowired
     private HouseOwnerService houseOwnerService;
+
+    private AlipayClient alipayClient;
+    public static String TP_PRIVATEKEY;//私钥
+    public static String TP_OPENAPI_URL;//网关
+    public static String TP_APPID;
+
+    @PostConstruct
+    public void initParams() {
+        Global global = Global.getInstance();
+        TP_PRIVATEKEY = global.getConfig("alipay.private.signkey");
+        TP_OPENAPI_URL = global.getConfig("alipay.open.api");
+        TP_APPID = global.getConfig("alipay.app.id");
+        alipayClient = new DefaultAlipayClient(TP_OPENAPI_URL, TP_APPID, TP_PRIVATEKEY, "json", "UTF-8", "", "RSA2");
+    }
 
     @Override
     public List<House> findList(House entity) {
@@ -201,7 +223,7 @@ public class HouseService extends CrudService<HouseDao, House> {
     }
 
     /**
-     * 预定-整租，是否成功锁定房源
+     * 预定-整租，是否成功锁定房源，整租房源状态从“待出租可预订”改为“已预定”
      *
      * @return true表示已经成功锁定房源，false表示未能锁定房源
      */
@@ -400,4 +422,41 @@ public class HouseService extends CrudService<HouseDao, House> {
         return dao.getByNewId(newId);
     }
 
+    /**
+     * 支付宝-整租房屋上下架
+     */
+    @Transactional(readOnly = false)
+    public boolean upDownHouse(String houseId, Integer type) {
+        House house = dao.get(houseId);
+        String houseStatus = house.getHouseStatus();
+        String rentStatus;
+        if (HouseStatusEnum.BE_RESERVED.getValue().equals(houseStatus) || HouseStatusEnum.PART_RENT.getValue().equals(houseStatus) || HouseStatusEnum.WHOLE_RENT.getValue().equals(houseStatus)) {
+            rentStatus = "2";//已租
+        } else {
+            rentStatus = "1";//未租
+        }
+        AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
+        request.setBizContent("{" +
+                "    \"room_code\": \"H" + house.getNewId() + "\"," +
+                "    \"room_status\": " + type + "," +
+                "    \"rent_status\": " + rentStatus + "," +
+                "    \"flats_tag\": " + house.getBuilding().getType() +
+                "}");
+        try {
+            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
+            AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
+            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
+            if (response.isSuccess()) {
+                house.setUp(type);
+                updateHouseAlipayStatus(house);
+                return true;
+            } else {
+                logger.error("up down house error {}, {}", houseId, response.getMsg());
+                return false;
+            }
+        } catch (AlipayApiException e) {
+            logger.error("up down house error {}", houseId, e);
+            return false;
+        }
+    }
 }

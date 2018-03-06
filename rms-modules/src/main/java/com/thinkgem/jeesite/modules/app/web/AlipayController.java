@@ -508,7 +508,7 @@ public class AlipayController extends CommonBusinessController {
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "upHouse/{houseId}")
     public String upHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
-        if (upDownHouse(houseId, UpEnum.UP.getValue())) {
+        if (houseService.upDownHouse(houseId, UpEnum.UP.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋上架成功！");
         } else {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋上架失败，请联系管理员！");
@@ -522,46 +522,12 @@ public class AlipayController extends CommonBusinessController {
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "downHouse/{houseId}")
     public String downHouse(@PathVariable("houseId") String houseId, RedirectAttributes redirectAttributes) {
-        if (upDownHouse(houseId, UpEnum.DOWN.getValue())) {
+        if (houseService.upDownHouse(houseId, UpEnum.DOWN.getValue())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房屋下架成功！");
         } else {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房屋下架失败，请联系管理员！");
         }
         return "redirect:" + Global.getAdminPath() + "/inventory/house/?repage";
-    }
-
-    private boolean upDownHouse(String houseId, Integer type) {
-        House house = houseService.get(houseId);
-        String houseStatus = house.getHouseStatus();
-        String rentStatus;
-        if (HouseStatusEnum.BE_RESERVED.getValue().equals(houseStatus) || HouseStatusEnum.PART_RENT.getValue().equals(houseStatus) || HouseStatusEnum.WHOLE_RENT.getValue().equals(houseStatus)) {
-            rentStatus = "2";//已租
-        } else {
-            rentStatus = "1";//未租
-        }
-        AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
-        request.setBizContent("{" +
-                "    \"room_code\": \"H" + house.getNewId() + "\"," +
-                "    \"room_status\": " + type + "," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"flats_tag\": " + house.getBuilding().getType() +
-                "}");
-        try {
-            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
-            AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
-            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
-            if (response.isSuccess()) {
-                house.setUp(type);
-                houseService.updateHouseAlipayStatus(house);
-                return true;
-            } else {
-                logger.error("up down house error {}, {}", houseId, response.getMsg());
-                return false;
-            }
-        } catch (AlipayApiException e) {
-            logger.error("up down house error {}", houseId, e);
-            return false;
-        }
     }
 
     /**
@@ -570,7 +536,7 @@ public class AlipayController extends CommonBusinessController {
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "upRoom/{roomId}")
     public String upRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
-        if (upDownRoom(roomId, UpEnum.UP.getValue())) {
+        if (roomService.upDownRoom(roomId, UpEnum.UP.getValue(), houseService.get(roomService.get(roomId).getHouse().getId()).getBuilding().getType())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间上架成功！");
         } else {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间上架失败，请联系管理员！");
@@ -584,46 +550,12 @@ public class AlipayController extends CommonBusinessController {
     @RequiresPermissions("alipay:houseAndRoom:sync")
     @RequestMapping(value = "downRoom/{roomId}")
     public String downRoom(@PathVariable("roomId") String roomId, RedirectAttributes redirectAttributes) {
-        if (upDownRoom(roomId, UpEnum.DOWN.getValue())) {
+        if (roomService.upDownRoom(roomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(roomId).getHouse().getId()).getBuilding().getType())) {
             addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "房间下架成功！");
         } else {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "房间下架失败，请联系管理员！");
         }
         return "redirect:" + Global.getAdminPath() + "/inventory/room/?repage";
-    }
-
-    private boolean upDownRoom(String roomId, Integer type) {
-        Room room = roomService.get(roomId);
-        String rentStatus;
-        String roomStatus = room.getRoomStatus();
-        if (RoomStatusEnum.BE_RESERVED.getValue().equals(roomStatus) || RoomStatusEnum.RENTED.getValue().equals(roomStatus)) {
-            rentStatus = "2";//已租
-        } else {
-            rentStatus = "1";//未租
-        }
-        AlipayEcoRenthouseRoomStateSyncRequest request = new AlipayEcoRenthouseRoomStateSyncRequest();
-        request.setBizContent("{" +
-                "    \"room_code\": \"R" + room.getNewId() + "\"," +
-                "    \"room_status\": " + type + "," +
-                "    \"rent_status\": " + rentStatus + "," +
-                "    \"flats_tag\": " + houseService.get(room.getHouse().getId()).getBuilding().getType() +
-                "}");
-        try {
-            logger.info("AlipayEcoRenthouseRoomStateSyncRequest is:{}", JSON.toJSONString(request));
-            AlipayEcoRenthouseRoomStateSyncResponse response = alipayClient.execute(request);
-            logger.info("AlipayEcoRenthouseRoomStateSyncResponse is:{}", JSON.toJSONString(response));
-            if (response.isSuccess()) {
-                room.setUp(type);
-                roomService.save(room);
-                return true;
-            } else {
-                logger.error("up down room error {}, {}", roomId, response.getMsg());
-                return false;
-            }
-        } catch (AlipayApiException e) {
-            logger.error("up down room error {}", roomId, e);
-            return false;
-        }
     }
 
     /**
