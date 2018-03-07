@@ -83,7 +83,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
      *
      * @param beginDate 开始日期 格式：2015-11-01
      * @param endDate   结束日期 格式：2015-11-21
-     * @return Map<String   ,   String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
+     * @return Map<String       ,       String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
      */
     public Map<Integer, String> getMeterFee(String rentContractId, String beginDate, String endDate) {
         Map<Integer, String> resultMap = new HashMap<Integer, String>();
@@ -103,8 +103,9 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
         if (!StringUtils.isBlank(meterNo)) {
             String meterurl = Global.getInstance().getConfig("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
             try {
+                logger.info("get electric fee request is:{}", meterurl);
                 result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
-                logger.info("call meter get fee result:" + result);
+                logger.info("get electric fee response is:{}", result);
                 if (!StringUtils.isBlank(result)) {
                     result = result + ",";// 人工在结尾添加,
                     Pattern p = Pattern.compile("(.*?)\\,(.*?)");
