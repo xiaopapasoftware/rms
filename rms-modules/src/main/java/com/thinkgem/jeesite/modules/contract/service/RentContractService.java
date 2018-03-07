@@ -5,6 +5,8 @@ import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.IdGen;
+import com.thinkgem.jeesite.modules.app.enums.AlipayHousingSyncStatus;
+import com.thinkgem.jeesite.modules.app.enums.UpEnum;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
 import com.thinkgem.jeesite.modules.common.enums.ValidatorFlagEnum;
@@ -320,8 +322,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         String originalHouseId = originalRentContract.getHouse().getId();
         String originalRoomId = originalRentContract.getRoom() == null ? "" : originalRentContract.getRoom().getId();
         originalRoomId = StringUtils.isBlank(originalRoomId) ? "" : originalRoomId;
-        if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 修改了房屋或房间
-            // 回滚前房源
+        if (!originalHouseId.equals(curHouseId) || !originalRoomId.equals(curRoomId)) {// 修改了房屋或房间，回滚前房源状态
             if (StringUtils.isNotBlank(originalRoomId)) {// 合租，把单间从“已出租”改为“待出租可预订”
                 houseService.returnSingleRoom(roomService.get(originalRoomId));
             } else {// 整租，把房屋从“完全出租”改为“待出租可预订”
@@ -340,10 +341,22 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     private int doRentHouseOrRoom(RentContract rentContract, String curHouseId, String curRoomId) {
         // 出租新房源
         if (StringUtils.isNotBlank(curRoomId)) {// 合租，把单间从“待出租可预订”改为“已出租”
-            boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);// 合租，把房间从“待出租可预订”变为“已出租”
+            boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);
+            if (isLock) {  //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
+                Room room = roomService.get(curRoomId);
+                if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                    roomService.upDownRoom(curRoomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(curRoomId).getHouse().getId()).getBuilding().getType());
+                }
+            }
             return doProcessHouseStatusAfterLockRoom(isLock, curRoomId, rentContract);
         } else {// 整租，把房屋从“待出租可预订”改为“完全出租”
             boolean isLock = houseService.isLockWholeHouse4NewSign(curHouseId);
+            if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
+                House house = houseService.get(curHouseId);
+                if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                    houseService.upDownHouse(curHouseId, UpEnum.DOWN.getValue());
+                }
+            }
             return doProcessAllRoomsAfterLockHouse(isLock, curHouseId, rentContract);
         }
     }
@@ -361,9 +374,20 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             } else {// 非定金转合同，直接新签
                 if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentContract.getRentMode())) {// 整租，把房屋从“待出租可预订”变为“完全出租”
                     boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
+                    if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
+                        House house = houseService.get(houseId);
+                        if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                            houseService.upDownHouse(houseId, UpEnum.DOWN.getValue());
+                        }
+                    }
                     return doProcessAllRoomsAfterLockHouse(isLock, houseId, rentContract);
                 } else {
                     boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
+                    //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
+                    Room room = roomService.get(roomId);
+                    if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                        roomService.upDownRoom(roomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(roomId).getHouse().getId()).getBuilding().getType());
+                    }
                     return doProcessHouseStatusAfterLockRoom(isLock, roomId, rentContract);
                 }
             }
