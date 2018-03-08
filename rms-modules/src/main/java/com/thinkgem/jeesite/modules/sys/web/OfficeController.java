@@ -158,9 +158,10 @@ public class OfficeController extends BaseController {
     List<Office> list = officeService.findList(isAll);
     for (int i = 0; i < list.size(); i++) {
       Office e = list.get(i);
-      if ((StringUtils.isBlank(extId) || (extId != null && !extId.equals(e.getId()) && e.getParentIds().indexOf("," + extId + ",") == -1))
-          && (type == null || (type != null && (type.equals("1") ? type.equals(e.getType()) : true))) && (grade == null || (grade != null && Integer.parseInt(e.getGrade()) <= grade.intValue()))
-          && Global.YES.equals(e.getUseable())) {
+      if (        (StringUtils.isBlank(extId) || (extId != null && !extId.equals(e.getId()) && e.getParentIds().indexOf("," + extId + ",") == -1))
+              &&  (type == null || (type != null && (type.equals("1") ? type.equals(e.getType()) : true)))
+              &&  (grade == null || (grade != null && Integer.parseInt(e.getGrade()) <= grade.intValue()))
+              &&  Global.YES.equals(e.getUseable())) {
         Map<String, Object> map = Maps.newHashMap();
         map.put("id", e.getId());
         map.put("pId", e.getParentId());
