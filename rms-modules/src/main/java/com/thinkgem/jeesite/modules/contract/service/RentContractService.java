@@ -316,7 +316,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     }
 
     /**
-     * 房源状态变更，如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态
+     * 房源状态变更，如果选择的房源发生变化，需要把以前的房源状态回滚，改变后选的房源状态。
      */
     private int doProcessHouseRoomStatusChanged(RentContract originalRentContract, RentContract rentContract, String curHouseId, String curRoomId) {
         String originalHouseId = originalRentContract.getHouse().getId();
@@ -344,7 +344,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             boolean isLock = roomService.isLockSingleRoom4NewSign(curRoomId);
             if (isLock) {  //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
                 Room room = roomService.get(curRoomId);
+                logger.info("room's alipayStatus is:{},up status is:{}", room.getAlipayStatus(), room.getUp());
                 if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                    logger.info("begin down room from alipay!");
                     roomService.upDownRoom(curRoomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(curRoomId).getHouse().getId()).getBuilding().getType());
                 }
             }
@@ -353,7 +355,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             boolean isLock = houseService.isLockWholeHouse4NewSign(curHouseId);
             if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
                 House house = houseService.get(curHouseId);
+                logger.info("house's alipayStatus is:{},up status is:{}", house.getAlipayStatus(), house.getUp());
                 if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                    logger.info("begin down house from alipay!");
                     houseService.upDownHouse(curHouseId, UpEnum.DOWN.getValue());
                 }
             }
@@ -376,7 +380,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                     boolean isLock = houseService.isLockWholeHouse4NewSign(houseId);
                     if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
                         House house = houseService.get(houseId);
+                        logger.info("house's alipayStatus is:{},up status is:{}", house.getAlipayStatus(), house.getUp());
                         if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                            logger.info("begin down house from alipay!");
                             houseService.upDownHouse(houseId, UpEnum.DOWN.getValue());
                         }
                     }
@@ -385,7 +391,9 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                     boolean isLock = roomService.isLockSingleRoom4NewSign(roomId);// 合租，把房间从“待出租可预订”变为“已出租”
                     //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
                     Room room = roomService.get(roomId);
+                    logger.info("room's alipayStatus is:{},up status is:{}", room.getAlipayStatus(), room.getUp());
                     if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                        logger.info("begin down room from alipay!");
                         roomService.upDownRoom(roomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(roomId).getHouse().getId()).getBuilding().getType());
                     }
                     return doProcessHouseStatusAfterLockRoom(isLock, roomId, rentContract);
