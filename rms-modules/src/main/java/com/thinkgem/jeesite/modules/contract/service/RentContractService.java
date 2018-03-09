@@ -345,7 +345,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             if (isLock) {  //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
                 Room room = roomService.get(curRoomId);
                 logger.info("room's alipayStatus is:{},up status is:{}", room.getAlipayStatus(), room.getUp());
-                if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                if (Integer.valueOf(AlipayHousingSyncStatus.SUCCESS.getValue()) == room.getAlipayStatus() && UpEnum.UP.getValue() == room.getUp()) {
                     logger.info("begin down room from alipay!");
                     roomService.upDownRoom(curRoomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(curRoomId).getHouse().getId()).getBuilding().getType());
                 }
@@ -356,7 +356,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
                 House house = houseService.get(curHouseId);
                 logger.info("house's alipayStatus is:{},up status is:{}", house.getAlipayStatus(), house.getUp());
-                if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                if (Integer.valueOf(AlipayHousingSyncStatus.SUCCESS.getValue()) == house.getAlipayStatus() && UpEnum.UP.getValue() == house.getUp()) {
                     logger.info("begin down house from alipay!");
                     houseService.upDownHouse(curHouseId, UpEnum.DOWN.getValue());
                 }
@@ -381,7 +381,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                     if (isLock) { //如该整租房源在支付宝客户端处于上架状态，则从支付宝进行下架
                         House house = houseService.get(houseId);
                         logger.info("house's alipayStatus is:{},up status is:{}", house.getAlipayStatus(), house.getUp());
-                        if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(house.getAlipayStatus()) && UpEnum.UP.getValue() == house.getUp()) {
+                        if (Integer.valueOf(AlipayHousingSyncStatus.SUCCESS.getValue()) == house.getAlipayStatus() && UpEnum.UP.getValue() == house.getUp()) {
                             logger.info("begin down house from alipay!");
                             houseService.upDownHouse(houseId, UpEnum.DOWN.getValue());
                         }
@@ -392,7 +392,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                     //如该合租单间在支付宝客户端处于上架状态，则从支付宝进行下架
                     Room room = roomService.get(roomId);
                     logger.info("room's alipayStatus is:{},up status is:{}", room.getAlipayStatus(), room.getUp());
-                    if (AlipayHousingSyncStatus.SUCCESS.getValue().equals(room.getAlipayStatus()) && UpEnum.UP.getValue() == room.getUp()) {
+                    if (Integer.valueOf(AlipayHousingSyncStatus.SUCCESS.getValue()) == room.getAlipayStatus() && UpEnum.UP.getValue() == room.getUp()) {
                         logger.info("begin down room from alipay!");
                         roomService.upDownRoom(roomId, UpEnum.DOWN.getValue(), houseService.get(roomService.get(roomId).getHouse().getId()).getBuilding().getType());
                     }
