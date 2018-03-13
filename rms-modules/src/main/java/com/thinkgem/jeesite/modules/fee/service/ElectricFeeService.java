@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.fee.service;
 
 import com.thinkgem.jeesite.common.config.Global;
@@ -83,7 +80,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
      *
      * @param beginDate 开始日期 格式：2015-11-01
      * @param endDate   结束日期 格式：2015-11-21
-     * @return Map<String       ,       String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
+     * @return Map<String               ,               String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
      */
     public Map<Integer, String> getMeterFee(String rentContractId, String beginDate, String endDate) {
         Map<Integer, String> resultMap = new HashMap<Integer, String>();

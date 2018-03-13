@@ -12,6 +12,7 @@ import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.common.entity.Attachment;
 import com.thinkgem.jeesite.modules.common.service.AttachmentService;
 import com.thinkgem.jeesite.modules.contract.enums.FileType;
+import com.thinkgem.jeesite.modules.contract.enums.RentModelTypeEnum;
 import com.thinkgem.jeesite.modules.inventory.dao.HouseDao;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
@@ -457,6 +458,19 @@ public class HouseService extends CrudService<HouseDao, House> {
         } catch (AlipayApiException e) {
             logger.error("up down house error {}", houseId, e);
             return false;
+        }
+    }
+
+    /**
+     * 把房源状态从“已预定”取消为“待出租可预订”
+     */
+    public void cancelDepositHouseAndRoomDepositState(String rentMode, String houseId, String roomId) {
+        if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rentMode)) {
+            House house = super.get(houseId);
+            releaseWholeHouse(house);
+        } else {
+            Room room = roomService.get(roomId);
+            releaseSingleRoom(room);
         }
     }
 }

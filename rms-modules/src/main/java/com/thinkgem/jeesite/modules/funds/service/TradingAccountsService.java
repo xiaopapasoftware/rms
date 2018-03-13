@@ -1,6 +1,3 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.funds.service;
 
 import java.io.BufferedReader;
@@ -252,13 +249,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             depositAgreement.preUpdate();
             if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
                 depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue());
-                if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(depositAgreement.getRentMode())) {
-                    House house = houseService.get(depositAgreement.getHouse().getId());
-                    houseService.releaseWholeHouse(house);
-                } else {
-                    Room room = roomService.get(depositAgreement.getRoom().getId());
-                    houseService.releaseSingleRoom(room);
-                }
+                houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(), depositAgreement.getRoom().getId());
             } else {
                 depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue());
             }
@@ -469,12 +460,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             }
             // 如果带有电费充值的款项
             if (isChoosedEleFlag) {
-                List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(elePaymentTransId);
-                ElectricFee upFee = upFees.get(0);
-                upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
-                upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
-                upFee.preUpdate();
-                electricFeeDao.update(upFee);
+                processElectricFeeState(elePaymentTransId);
             }
         } else if (TradeTypeEnum.NORMAL_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.OVERDUE_RETURN_RENT.getValue().equals(tradeType)
                 || TradeTypeEnum.ADVANCE_RETURN_RENT.getValue().equals(tradeType) || TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {
@@ -512,12 +498,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
                     }
                 }
                 for (String eleTransId : eleTransIds) {
-                    List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
-                    ElectricFee upFee = upFees.get(0);
-                    upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
-                    upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
-                    upFee.preUpdate();
-                    electricFeeDao.update(upFee);
+                    processElectricFeeState(eleTransId);
                 }
             }
         } else if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(tradeType)) {
@@ -694,4 +675,14 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     public List<TradingAccounts> queryCostTradeAccountsByTradeId(String tradeId) {
         return tradingAccountsDao.queryCostTradeAccountsByTradeId(tradeId);
     }
+
+    private void processElectricFeeState(String eleTransId) {
+        List<ElectricFee> upFees = electricFeeDao.getElectricFeeByPaymentTransId(eleTransId);
+        ElectricFee upFee = upFees.get(0);
+        upFee.setChargeStatus(ElectricChargeStatusEnum.PROCESSING.getValue());
+        upFee.setSettleStatus(FeeSettlementStatusEnum.NOT_AUDITED.getValue());
+        upFee.preUpdate();
+        electricFeeDao.update(upFee);
+    }
+
 }
