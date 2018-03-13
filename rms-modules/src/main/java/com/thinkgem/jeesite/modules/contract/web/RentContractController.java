@@ -211,17 +211,19 @@ public class RentContractController extends CommonBusinessController {
         StringBuffer optionResultBuf = new StringBuffer();
         if (CollectionUtils.isNotEmpty(tenants)) {
             for (Tenant t : tenants) {
-                String companyName = "";
-                if (t.getCompany() != null && StringUtils.isNotEmpty(t.getCompany().getId())) {
-                    Company c = companyService.get(t.getCompany().getId());
-                    companyName = c.getCompanyName();
-                }
-                if (StringUtils.isNotEmpty(companyName)) {
-                    optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone()).append("-")
-                            .append(companyName).append("</option>");
-                } else {
-                    optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone())
-                            .append("</option>");
+                if (t != null) {
+                    String companyName = "";
+                    if (t.getCompany() != null && StringUtils.isNotEmpty(t.getCompany().getId())) {
+                        Company c = companyService.get(t.getCompany().getId());
+                        companyName = c.getCompanyName();
+                    }
+                    if (StringUtils.isNotEmpty(companyName)) {
+                        optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone()).append("-")
+                                .append(companyName).append("</option>");
+                    } else {
+                        optionResultBuf.append("<option selected value='").append(t.getId()).append("'>").append(t.getTenantName()).append("-").append(t.getIdNo()).append("-").append(t.getCellPhone())
+                                .append("</option>");
+                    }
                 }
             }
         }
