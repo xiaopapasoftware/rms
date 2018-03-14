@@ -848,7 +848,7 @@ public class AlipayController extends CommonBusinessController {
 
         model.setImages(imageUrls.toArray(new String[]{}));
 
-        model.setCheckin_time(DateUtils.formatDate(new Date()));
+        model.setCheckin_time(DateUtils.formatDate(DateUtils.dateAddDay(new Date(), 1)));
 
         model.setRoom_status(String.valueOf(UpEnum.UP.getValue()));
 
