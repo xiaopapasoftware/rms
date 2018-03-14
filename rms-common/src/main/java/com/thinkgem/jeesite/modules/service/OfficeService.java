@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * 机构Service
- * 
+ *
  * @author ThinkGem
  * @version 2014-05-16
  */
@@ -24,39 +24,39 @@ import java.util.List;
 public class OfficeService extends TreeService<OfficeDao, Office> {
 
     public List<Office> findAll() {
-	return UserUtils.getOfficeList();
+        return UserUtils.getOfficeList();
     }
 
     public List<Office> findList(Boolean isAll) {
-	if (isAll != null && isAll) {
-	    return UserUtils.getOfficeAllList();
-	} else {
-	    return UserUtils.getOfficeList();
-	}
+        if (isAll != null && isAll) {
+            return UserUtils.getOfficeAllList();
+        } else {
+            return UserUtils.getOfficeList();
+        }
     }
 
     @Transactional(readOnly = true)
-	@Override
+    @Override
     public List<Office> findList(Office office) {
-	if (office != null) {
-	    office.setParentIds(office.getParentIds() + "%");
-	    return dao.findByParentIdsLike(office);
-	}
-	return new ArrayList<Office>();
+        if (office != null) {
+            office.setParentIds(office.getParentIds() + "%");
+            return dao.findByParentIdsLike(office);
+        }
+        return new ArrayList<Office>();
     }
 
     @Transactional(readOnly = false)
-	@Override
+    @Override
     public void save(Office office) {
-	super.save(office);
-	UserUtils.removeCache(UserUtils.CACHE_OFFICE_LIST);
+        super.save(office);
+        UserUtils.removeCache(UserUtils.CACHE_OFFICE_LIST);
     }
 
     @Transactional(readOnly = false)
-	@Override
+    @Override
     public void delete(Office office) {
-	super.delete(office);
-	UserUtils.removeCache(UserUtils.CACHE_OFFICE_LIST);
+        super.delete(office);
+        UserUtils.removeCache(UserUtils.CACHE_OFFICE_LIST);
     }
 
 }

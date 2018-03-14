@@ -208,7 +208,6 @@ public class UserUtils {
      * @return
      */
     public static List<Office> getOfficeList() {
-        @SuppressWarnings("unchecked")
         List<Office> officeList = (List<Office>) getCache(CACHE_OFFICE_LIST);
         if (officeList == null) {
             User user = getUser();
