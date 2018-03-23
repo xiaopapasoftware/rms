@@ -113,8 +113,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
             audit.setObjectId(rentContractId);
             audit.setNextRole("");
             auditService.update(audit);
-            // 原出租合同的审核状态为：特殊退租内容待审核
-            if ("2".equals(actFlagFromView)) {
+            if ("2".equals(actFlagFromView)) {// 原出租合同的审核状态为：特殊退租内容待审核
                 Accounting accounting = new Accounting();
                 accounting.setRentContractId(rentContractId);
                 accounting.setAccountingType(AccountingTypeEnum.SPECIAL_RETURN_ACCOUNT.getValue());

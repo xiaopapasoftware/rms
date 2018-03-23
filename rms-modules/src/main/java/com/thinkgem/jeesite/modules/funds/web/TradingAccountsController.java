@@ -248,9 +248,8 @@ public class TradingAccountsController extends BaseController {
                     }
                 }
             }
-            List<Receipt> receiptList = new ArrayList<Receipt>();// 渲染到页面上的收据集合
+            List<Receipt> receiptList = new ArrayList<>();// 渲染到页面上的收据集合
             if (TradeTypeEnum.LEASE_CONTRACT_TRADE.getValue().equals(tradeType) || TradeTypeEnum.DEPOSIT_TO_BREAK.getValue().equals(tradeType)) {
-                // DONOTHING
             } else if (returnTransList.contains(tradeType)) {
                 if (amount > 0) {// 退租类交易类型，但是最终款项为应收款
                     Receipt receipt = new Receipt();
@@ -284,31 +283,11 @@ public class TradingAccountsController extends BaseController {
             if (StringUtils.isNotEmpty(tradeObjectId)) {
                 DepositAgreement da = depositAgreementService.get(tradeObjectId);
                 if (da != null) {// 定金协议承租人
-                    List<Tenant> tenants = depositAgreementService.findTenant(da);// 定金协议的承租人列表
-                    if (CollectionUtils.isNotEmpty(tenants) && tenants.get(0) != null) {
-                        tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-                        String tenantType = tenants.get(0).getTenantType();
-                        if (TenantTypeEnum.PERSONAL.getValue().equals(tenantType)) {
-                            tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
-                        }
-                        if (TenantTypeEnum.AGENCY.getValue().equals(tenantType)) {
-                            tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
-                        }
-                    }
+                    process(depositAgreementService.findTenant(da), tradingAccounts);
                 } else {
                     RentContract rc = rentContractService.get(tradeObjectId);
                     if (rc != null) {// 出租合同承租人
-                        List<Tenant> tenants = rentContractService.findTenant(rc);
-                        if (CollectionUtils.isNotEmpty(tenants) && tenants.get(0) != null) {
-                            tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
-                            String tenantType = tenants.get(0).getTenantType();
-                            if (TenantTypeEnum.PERSONAL.getValue().equals(tenantType)) {
-                                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
-                            }
-                            if (TenantTypeEnum.AGENCY.getValue().equals(tenantType)) {
-                                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
-                            }
-                        }
+                        process(rentContractService.findTenant(rc), tradingAccounts);
                     }
                 }
             }
@@ -323,7 +302,19 @@ public class TradingAccountsController extends BaseController {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    private void process(List<Tenant> tenants, TradingAccounts tradingAccounts) {
+        if (CollectionUtils.isNotEmpty(tenants) && tenants.get(0) != null) {
+            tradingAccounts.setPayeeName(tenants.get(0).getTenantName());
+            String tenantType = tenants.get(0).getTenantType();
+            if (TenantTypeEnum.PERSONAL.getValue().equals(tenantType)) {
+                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.PERSONAL.getValue());
+            }
+            if (TenantTypeEnum.AGENCY.getValue().equals(tenantType)) {
+                tradingAccounts.setPayeeType(MoneyReceivedTypeEnum.AGENCY.getValue());
+            }
+        }
+    }
+
     private boolean checkPaymentTransSignDateValid(String[] paymentTransIdArray, String paymentTransType) {
         String rentContractId = "";
         List<PaymentTrans> tempTrans = new ArrayList<PaymentTrans>();// 选中的指定款项类型的款项集合
@@ -361,7 +352,7 @@ public class TradingAccountsController extends BaseController {
     @RequestMapping(value = "edit")
     public String edit(TradingAccounts tradingAccounts, Model model) {
         tradingAccounts = tradingAccountsService.get(tradingAccounts.getId());
-        List<Receipt> receiptList = new ArrayList<Receipt>();
+        List<Receipt> receiptList;
         receiptList = tradingAccountsService.findReceiptList(tradingAccounts);
         tradingAccounts.setReceiptList(receiptList);
         model.addAttribute("tradingAccounts", tradingAccounts);
