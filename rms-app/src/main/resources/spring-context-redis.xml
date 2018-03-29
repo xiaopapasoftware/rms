@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- REDIS数据访问模型 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:jeesite.properties"/>
+
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig"/>
+        <constructor-arg index="1" value="${redis.host}"/>
+        <constructor-arg index="2" value="${redis.port}" type="int"/>
+    </bean>
+
+    <bean id="jedisConnFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:use-pool="${redis.pool.usePool}" p:hostName="${redis.host}" p:port="${redis.port}"
+          p:database="${redis.dbIndex:0}" p:poolConfig-ref="jedisPoolConfig"/>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${redis.pool.maxTotal}"/><!-- 最大分配的对象数 -->
+        <property name="maxIdle" value="${redis.pool.maxIdle}"/><!-- 最大能够保持idel状态的对象数  -->
+        <property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}"/>
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/><!-- 当调用borrow Object方法时，是否进行有效性检查 -->
+    </bean>
+
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connection-factory-ref="jedisConnFactory" p:keySerializer-ref="stringRedisSerializer"/>
+
+    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connection-factory-ref="jedisConnFactory"/>
+</beans>

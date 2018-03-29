@@ -67,6 +67,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <downloadSources>true</downloadSources>
         <javax.servlet.api.version>3.1.0</javax.servlet.api.version>
+        <spring.data.redis>2.0.5.RELEASE</spring.data.redis>
     </properties>
 
     <!-- 依赖项定义 -->
@@ -125,7 +126,6 @@
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
             <!-- spring orm -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -137,16 +137,13 @@
                 <artifactId>spring-jdbc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-
             <!-- bean validate -->
             <dependency>
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${validator.version}</version>
             </dependency>
-            
             <!-- SPRING end -->
-
             <!-- AOP begin -->
             <!--<dependency> <groupId>org.aspectj</groupId> <artifactId>aspectjrt</artifactId>
                 <version>1.7.4</version> </dependency> <dependency> <groupId>org.aspectj</groupId>
@@ -154,9 +151,7 @@
                 <dependency> <groupId>cglib</groupId> <artifactId>cglib</artifactId> <version>3.1</version>
                 </dependency> -->
             <!-- AOP end -->
-
             <!-- PERSISTENCE begin -->
-
             <!-- MyBatis -->
             <dependency>
                 <groupId>org.mybatis</groupId>
@@ -168,14 +163,12 @@
                 <artifactId>mybatis-spring</artifactId>
                 <version>${mybatis-spring.version}</version>
             </dependency>
-
             <!-- connection pool -->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${druid.version}</version>
             </dependency>
-
             <!-- jdbc driver -->
             <dependency>
                 <groupId>mysql</groupId>
@@ -188,7 +181,6 @@
                 </dependency> <dependency> <groupId>net.sourceforge.jtds</groupId> <artifactId>jtds</artifactId>
                 <version>${mssql.driver.version}</version> <scope>runtime</scope> </dependency> -->
             <!-- PERSISTENCE end -->
-
             <!-- WEB begin -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -238,7 +230,6 @@
                 <groupId>javax.servlet.jsp</groupId> <artifactId>jsp-api</artifactId> <version>2.2</version>
                 <scope>provided</scope> </dependency> -->
             <!-- WEB end -->
-
             <!-- CACHE begin -->
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
@@ -256,7 +247,6 @@
                 <version>2.5.1</version>
             </dependency>
             <!-- CACHE end -->
-
             <!-- SECURITY begin -->
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -290,7 +280,6 @@
                 <version>${shiro.version}</version>
             </dependency>
             <!-- SECURITY end -->
-
             <!-- Activiti -->
             <dependency>
                 <groupId>org.activiti</groupId>
@@ -317,18 +306,15 @@
                 <artifactId>activiti-diagram-rest</artifactId>
                 <version>${activiti.version}</version>
             </dependency>
-
             <!-- 支持activiti缓存 -->
             <!-- <dependency> <groupId>org.infinispan</groupId> <artifactId>infinispan-core</artifactId>
                 <version>5.1.7.Final</version> </dependency> -->
-
             <!-- LOGGING begin -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-
             <!-- common-logging 实际调用slf4j -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -341,32 +327,27 @@
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-access</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <!-- LOGGING end -->
-
             <!-- GENERAL UTILS begin -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -399,14 +380,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <!-- google java lib -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
-
             <!-- jackson json -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -428,28 +407,24 @@
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
             <!--fastjson json-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
             </dependency>
-
             <!-- xstream xml -->
             <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
                 <version>${xstream.version}</version>
             </dependency>
-
             <!-- pojo copy -->
             <dependency>
                 <groupId>net.sf.dozer</groupId>
                 <artifactId>dozer</artifactId>
                 <version>${dozer.version}</version>
             </dependency>
-
             <!-- freemarker engine -->
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -469,7 +444,6 @@
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
             </dependency>
-
             <!-- poi office -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
@@ -486,7 +460,6 @@
                 <artifactId>poi-ooxml-schemas</artifactId>
                 <version>${poi.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>net.sourceforge.jexcelapi</groupId>
                 <artifactId>jxl</artifactId>
@@ -502,25 +475,21 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
             <!-- image util -->
             <dependency>
                 <groupId>com.drewnoakes</groupId>
                 <artifactId>metadata-extractor</artifactId>
                 <version>2.6.2</version>
             </dependency>
-
             <!-- 条形码、二维码生成 -->
             <!--<dependency> <groupId>com.google.zxing</groupId> <artifactId>core</artifactId>
                 <version>2.2</version> </dependency> <dependency> <groupId>com.google.zxing</groupId>
                 <artifactId>javase</artifactId> <version>2.2</version> </dependency> -->
-
             <!-- 中文分词 -->
             <!--<dependency> <groupId>org.wltea</groupId> <artifactId>analyzer</artifactId>
                 <version>2012_u6</version> <scope>system</scope> <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/analyzer-2012_u6.jar</systemPath>
                 </dependency> -->
             <!-- GENERAL UTILS end -->
-
             <!-- CKFinder begin -->
             <dependency>
                 <groupId>net.coobird</groupId>
@@ -532,7 +501,6 @@
                 <artifactId>apache-ant-zip</artifactId>
                 <version>2.3</version>
             </dependency>
-
             <dependency>
                 <groupId>com.ckfinder</groupId>
                 <artifactId>ckfinder</artifactId>
@@ -566,7 +534,6 @@
                 <version>${spring.version}</version>
             </dependency>
             <!-- TEST end -->
-
             <!-- User Agent -->
             <dependency>
                 <groupId>bitwalker</groupId>
@@ -586,7 +553,6 @@
             <!-- 自定义jar依赖包 <dependency> <groupId>com.thinkgem.jeesite</groupId> <artifactId>test-core</artifactId>
                 <version>1.0</version> <scope>system</scope> <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/test-core-1.0.jar</systemPath>
                 </dependency> -->
-
             <!-- 使用 Jetty JSP引擎 <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-jsp</artifactId>
                 <version>${jetty.version}</version> <exclusions> <exclusion> <groupId>org.eclipse.jetty.orbit</groupId>
                 <artifactId>javax.servlet</artifactId> </exclusion> <exclusion> <groupId>org.eclipse.jetty.orbit</groupId>
@@ -607,17 +573,20 @@
                 <artifactId>quartz</artifactId>
                 <version>1.8.5</version>
             </dependency>
-
             <dependency>
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper</artifactId>
                 <version>3.7.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>${spring.data.redis}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-        <!-- TEST begin -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -626,45 +595,34 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
         </dependency>
-        <!-- TEST end -->
-
-        <!-- LOGGING begin -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-access</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
-
-        <!-- common-logging 实际调用slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
-        <!-- java.util.logging 实际调用slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
-        <!-- LOGGING end -->
     </dependencies>
 
     <build>
