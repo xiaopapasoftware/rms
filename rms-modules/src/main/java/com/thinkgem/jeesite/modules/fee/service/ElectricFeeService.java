@@ -1,19 +1,27 @@
 package com.thinkgem.jeesite.modules.fee.service;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
+import com.thinkgem.jeesite.common.utils.HttpConnectionUtils;
 import com.thinkgem.jeesite.common.utils.PropertiesLoader;
+import com.thinkgem.jeesite.common.utils.SignatureUtils;
 import com.thinkgem.jeesite.modules.contract.dao.RentContractDao;
 import com.thinkgem.jeesite.modules.contract.entity.RentContract;
 import com.thinkgem.jeesite.modules.contract.enums.*;
+import com.thinkgem.jeesite.modules.entity.RedisPreKeyConstant;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.TransferedElectricFeeTokenModel;
 import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.inventory.dao.RoomDao;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.service.RedisCacheService;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +50,8 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
     private RentContractDao rentContractDao;
     @Autowired
     private RoomDao roomDao;
+    @Autowired
+    private RedisCacheService redisCacheService;
 
     public ElectricFee get(String id) {
         return super.get(id);
@@ -80,7 +90,7 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
      *
      * @param beginDate 开始日期 格式：2015-11-01
      * @param endDate   结束日期 格式：2015-11-21
-     * @return Map<String               ,               String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
+     * @return Map<String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               String> 返回结果为：0=直接存放未经处理过的电表系统的返回值；1=个人住户使用掉的总电量（度）；2= 公共区域使用掉的总电量（度）； 3=该智能电表还剩余的总可用电量（度）；4=个人住户电量单价（元/度）；5=公共区域电量单价（元/度）；
      */
     public Map<Integer, String> getMeterFee(String rentContractId, String beginDate, String endDate) {
         Map<Integer, String> resultMap = new HashMap<Integer, String>();
@@ -98,7 +108,35 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
     public void getMeterFee(String meterNo, String beginDate, String endDate, Map<Integer, String> resultMap) {
         String result = "";// 电表系统返回值
         if (!StringUtils.isBlank(meterNo)) {
-            String meterurl = Global.getInstance().getConfig("meter.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
+            String redisTokenKey = redisCacheService.getString(RedisPreKeyConstant.TC_INTELLIGENT_METER_SYS_TOKEN);
+            if (StringUtils.isEmpty(redisTokenKey)) {//token无效
+                String meterTokenUrl = Global.getInstance().getConfig("meter.token.url");
+                TransferedElectricFeeTokenModel tokenModel = new TransferedElectricFeeTokenModel();
+                tokenModel.setPw(SignatureUtils.encodeByMD5(Global.getInstance().getConfig("meter.token.pwd")));
+                tokenModel.setUserName(Global.getInstance().getConfig("meter.token.userName"));
+                String requestResult = "";
+                try {
+                    logger.info("get meter token meterTokenUrl is {} , content is {} ", meterTokenUrl, JSON.toJSONString(tokenModel));
+                    requestResult = HttpConnectionUtils.openHttpsConnection(meterTokenUrl, JSON.toJSONString(tokenModel), "UTF-8", 600000, 600000);
+                    logger.info("get meter token result is {}", requestResult);
+                } catch (Exception e) {
+                    logger.error("request fail!", e);
+                }
+                if (StringUtils.isNotEmpty(requestResult)) {
+                    Map<String, String> tokenResult = JSON.parseObject(requestResult, Map.class);
+                    if ("1".equals(tokenResult.get("code"))) {
+                        String metertoken = tokenResult.get("data");
+
+                    }
+                }else{
+
+                }
+            } else {//token有效
+
+            }
+
+
+            String meterurl = Global.getInstance().getConfig("meter.remain.url") + "read_all_val.action?addr=" + meterNo + "&startDate=" + beginDate + "&endDate=" + endDate;
             try {
                 logger.info("get electric fee request is:{}", meterurl);
                 result = openHttpsConnection(meterurl, "UTF-8", 600000, 600000);
@@ -142,8 +180,8 @@ public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee>
     }
 
     private String openHttpsConnection(final String urlPath, String charset, int connectTimeout, int readTimeout) throws Exception {
-        HttpURLConnection conn = null;
-        URL url = null;
+        HttpURLConnection conn;
+        URL url;
         try {
             url = new URL(urlPath);
             conn = (HttpURLConnection) url.openConnection();

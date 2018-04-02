@@ -35,9 +35,5 @@
             <groupId>com.alipay.sdk</groupId>
             <artifactId>alipay.sdk</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-        </dependency>
     </dependencies>
 </project>
