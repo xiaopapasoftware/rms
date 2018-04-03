@@ -1,8 +1,6 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
@@ -11,8 +9,8 @@ import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
-import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,7 +51,7 @@ public class OwnerController extends BaseController {
         return entity;
     }
 
-    // @RequiresPermissions("person:owner:view")
+    @RequiresPermissions("person:owner:view")
     @RequestMapping(value = {"list"})
     public String listQuery(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
         Page<Owner> page = ownerService.findPage(new Page<Owner>(request, response), owner);
@@ -61,26 +59,27 @@ public class OwnerController extends BaseController {
         return "modules/person/ownerList";
     }
 
-    // @RequiresPermissions("person:owner:view")
+    @RequiresPermissions("person:owner:view")
     @RequestMapping(value = {""})
     public String listNoQuery(Owner owner, HttpServletRequest request, HttpServletResponse response, Model model) {
         return "modules/person/ownerList";
     }
 
-    // @RequiresPermissions("person:owner:view")
+    @RequiresPermissions("person:owner:view")
     @RequestMapping(value = "form")
     public String form(Owner owner, Model model) {
         model.addAttribute("owner", owner);
         return "modules/person/ownerForm";
     }
 
+    @RequiresPermissions("person:owner:edit")
     @RequestMapping(value = "add")
     public String add(Owner owner, Model model) {
         model.addAttribute("owner", owner);
         return "modules/person/ownerAdd";
     }
 
-    // @RequiresPermissions("person:owner:edit")
+    @RequiresPermissions("person:owner:edit")
     @RequestMapping(value = "save")
     public String save(Owner owner, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, owner)) {
@@ -106,6 +105,7 @@ public class OwnerController extends BaseController {
         }
     }
 
+    @RequiresPermissions("person:owner:edit")
     @RequestMapping(value = "ajaxSave")
     @ResponseBody
     public String ajaxSave(Owner owner, Model model, RedirectAttributes redirectAttributes) {
@@ -122,7 +122,7 @@ public class OwnerController extends BaseController {
         return jsonObject.toString();
     }
 
-    // @RequiresPermissions("person:owner:edit")
+    @RequiresPermissions("person:owner:edit")
     @RequestMapping(value = "delete")
     public String delete(Owner owner, RedirectAttributes redirectAttributes) {
         ownerService.delete(owner);
@@ -146,6 +146,7 @@ public class OwnerController extends BaseController {
         return "业主的身份证号码或者手机号码或座机号码已经存在，不能重复添加";
     }
 
+    @RequiresPermissions("person:owner:view")
     @RequestMapping(value = {"syncAjaxQuery"})
     @ResponseBody
     public String syncAjaxQuery(String q) {

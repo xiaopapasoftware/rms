@@ -1,4 +1,4 @@
-package com.tangchao.common.base;
+package com.tangchao.security.base;
 
 import lombok.Data;
 

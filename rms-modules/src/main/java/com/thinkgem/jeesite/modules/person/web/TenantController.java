@@ -1,8 +1,6 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.modules.person.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.mapper.JsonMapper;
@@ -24,8 +22,8 @@ import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.CompanyService;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.service.SystemService;
-import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -117,7 +115,7 @@ public class TenantController extends CommonBusinessController {
     }
 
 
-    // @RequiresPermissions("person:tenant:view")
+    @RequiresPermissions("person:tenant:view")
     @RequestMapping(value = {"list"})
     public String listQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
         buildTenant(tenant);
@@ -153,6 +151,7 @@ public class TenantController extends CommonBusinessController {
         }
     }
 
+    @RequiresPermissions("person:tenant:view")
     @RequestMapping(value = {""})
     public String listNoQuery(Tenant tenant, HttpServletRequest request, HttpServletResponse response, Model model) {
         model.addAttribute("listUser", systemService.findUser(new User()));
@@ -161,7 +160,7 @@ public class TenantController extends CommonBusinessController {
         return "modules/person/tenantList";
     }
 
-    // @RequiresPermissions("person:tenant:view")
+    @RequiresPermissions("person:tenant:view")
     @RequestMapping(value = "form")
     public String form(Tenant tenant, Model model) {
         model.addAttribute("tenant", tenant);
@@ -170,6 +169,7 @@ public class TenantController extends CommonBusinessController {
         return "modules/person/tenantForm";
     }
 
+    @RequiresPermissions("person:tenant:edit")
     @RequestMapping(value = "add")
     public String add(Tenant tenant, Model model) {
         model.addAttribute("tenant", tenant);
@@ -179,7 +179,7 @@ public class TenantController extends CommonBusinessController {
         return "modules/person/tenantAddDialog";
     }
 
-    // @RequiresPermissions("person:tenant:edit")
+    @RequiresPermissions("person:tenant:edit")
     @RequestMapping(value = "save")
     public String save(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, tenant)) {
@@ -207,6 +207,7 @@ public class TenantController extends CommonBusinessController {
         }
     }
 
+    @RequiresPermissions("person:tenant:edit")
     @RequestMapping(value = "ajaxSave")
     @ResponseBody
     public String ajaxSave(Tenant tenant, Model model, RedirectAttributes redirectAttributes) {
@@ -233,7 +234,7 @@ public class TenantController extends CommonBusinessController {
         return jsonObject.toString();
     }
 
-    // @RequiresPermissions("person:tenant:edit")
+    @RequiresPermissions("person:tenant:edit")
     @RequestMapping(value = "delete")
     public String delete(Tenant tenant, RedirectAttributes redirectAttributes) {
         ContractTenant ct = new ContractTenant();

@@ -1,10 +1,4 @@
-/**
- * Copyright &copy; 2012-2014 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- */
 package com.thinkgem.jeesite.common.web;
-
-import com.thinkgem.jeesite.common.utils.StringUtils;
-import org.activiti.engine.impl.util.json.JSONObject;
 
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
@@ -17,6 +11,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import javax.validation.Validator;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.Logger;
@@ -150,7 +145,6 @@ public abstract class BaseController {
 
     /**
      * 添加Flash消息
-     *
      */
     protected void addMessage(RedirectAttributes redirectAttributes, ViewMessageTypeEnum messageTypeEnum, String... messages) {
         StringBuilder sb = new StringBuilder();

@@ -1,4 +1,4 @@
-package com.tangchao.common.response;
+package com.tangchao.security.base;
 
 /**
  * @author wangganggang

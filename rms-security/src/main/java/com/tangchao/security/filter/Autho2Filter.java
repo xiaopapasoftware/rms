@@ -1,8 +1,8 @@
 package com.tangchao.security.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.tangchao.common.response.BaseResult;
-import com.tangchao.common.response.RespEnums;
+import com.tangchao.security.base.BaseResult;
+import com.tangchao.security.base.RespEnums;
 import com.tangchao.security.constants.Constants;
 import com.tangchao.security.token.Autho2Token;
 import org.apache.commons.lang3.StringUtils;

@@ -30,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 //@Service
-@Lazy(false)
+//@Lazy(false)
 public class QuartzJob {
   Logger log = LoggerFactory.getLogger(QuartzJob.class);
   @Autowired

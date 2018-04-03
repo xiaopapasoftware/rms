@@ -15,7 +15,6 @@
         <module>rms-job</module>
         <module>rms-app-task</module>
         <module>rms-security</module>
-        <module>rms-base</module>
         <module>rms-generator-code</module>
     </modules>
 
