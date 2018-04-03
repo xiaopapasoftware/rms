@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.inventory.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
@@ -14,7 +15,6 @@ import com.thinkgem.jeesite.modules.inventory.service.HouseOwnerService;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
-import org.activiti.engine.impl.util.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
