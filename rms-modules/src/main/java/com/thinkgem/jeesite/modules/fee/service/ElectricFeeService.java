@@ -28,10 +28,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @author huangsc
- * @version 2015-07-04
- */
 @Service
 @Transactional(readOnly = true)
 public class ElectricFeeService extends CrudService<ElectricFeeDao, ElectricFee> {
