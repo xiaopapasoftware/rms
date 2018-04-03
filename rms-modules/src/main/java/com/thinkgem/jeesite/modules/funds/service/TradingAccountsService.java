@@ -643,7 +643,7 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
     public String charge(String meterNo, String value) {
         String result = "";
         String meterurl = Global.getInstance().getConfig("meter.remain.url") + "pay.action?addr=" + meterNo + "&pay_value=" + value;
-        logger.info("the full meterURL is:{}", meterurl);
+        logger.info("electric charge full request meterURL is:{}", meterurl);
         BufferedReader read = null;
         try {
             URLConnection connection = new URL(meterurl).openConnection();
