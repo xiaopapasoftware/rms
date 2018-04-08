@@ -463,9 +463,9 @@ public class AlipayController extends CommonBusinessController {
         syncHousingImgModel.setFile_type("1");
         syncHousingImgModel.setIs_public(true);
         request.setBizContent(JSON.toJSONString(syncHousingImgModel));
-        logger.info("AlipayEcoRenthouseCommonImageUploadRequest file path is:{},fileType is:{},ispublic is{}",FILE_ACCESS_DOMAN + path,"1",true);
+        logger.info("AlipayEcoRenthouseCommonImageUploadRequest file path is:{},fileType is:{},ispublic is{}", FILE_ACCESS_DOMAN + path, "1", true);
         AlipayEcoRenthouseCommonImageUploadResponse response = alipayClient.execute(request);
-        logger.info("AlipayEcoRenthouseCommonImageUploadResponse is:{}", JSON.toJSONString(response));
+        logger.info("AlipayEcoRenthouseCommonImageUploadResponse url is:{}, code is {},message is{},subCode is {},subMessage is{}", response.getUrl(), response.getCode(), response.getMsg(), response.getSubCode(), response.getSubMsg());
         if (response.isSuccess()) {
             return response.getUrl();
         } else {
