@@ -51,12 +51,12 @@ public class ElectricityFeeTask {
 
     private final String INIT_SMS_RECORD = "00";
 
-    private final int size = 200;
+    private final int size = 1000;
 
     /**
      * 更新下剩余费用
      */
-    @Scheduled(cron = "0 0/30 7-23 * * ?")
+    @Scheduled(cron = "0 0/15 4-23 * * ?")
     public void updateRoom() {
         log.info("------ElectricityFeeTask updateRoom()开始 执行 ------");
         List<FeeReport> feeReportList = feeReportService.getFeeReportList(size);
