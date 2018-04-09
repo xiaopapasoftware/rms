@@ -73,9 +73,8 @@ public class ElectricityFeeTask {
             feeReportService.save(feeReport);
             return;
         }
-        // 无正确返回结果
-        if (StringUtils.isBlank(result) || ",,".equals(result)) {
-            // 更新下时间，表明更新过
+        // 无正确返回结果，更新下时间，表明更新过
+        if (StringUtils.isBlank(result) || ",,".equals(result) || ",".equals(result)) {
             feeReportService.save(feeReport);
             return;
         }
