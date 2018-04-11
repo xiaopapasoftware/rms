@@ -10,7 +10,9 @@ import com.thinkgem.jeesite.modules.contract.enums.PaymentTransTypeEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeDirectionEnum;
 import com.thinkgem.jeesite.modules.contract.enums.TradeTypeEnum;
 import com.thinkgem.jeesite.modules.fee.dao.ElectricFeeDao;
+import com.thinkgem.jeesite.modules.fee.dao.PostpaidFeeDao;
 import com.thinkgem.jeesite.modules.fee.entity.ElectricFee;
+import com.thinkgem.jeesite.modules.fee.entity.PostpaidFee;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTradeDao;
 import com.thinkgem.jeesite.modules.funds.dao.PaymentTransDao;
 import com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao;
@@ -37,6 +39,8 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     private PaymentTradeDao paymentTradeDao;
     @Autowired
     private ReceiptService receiptService;
+    @Autowired
+    private PostpaidFeeDao postpaidFeeDao;
     @Autowired
     private AttachmentService attachmentService;
     @Autowired
@@ -79,7 +83,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     }
 
     /**
-     * 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据
+     * 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据，电费充值，后付费电费缴纳等记录
      */
     @Transactional(readOnly = false)
     public void deletePaymentTransAndTradingAcctouns(String objectID) {
@@ -109,6 +113,11 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
         ele.preUpdate();
         ele.setRentContractId(objectID);
         electricFeeDao.delete(ele);
+        // 如果合同附带后付费缴费记录，需要一并删除
+        PostpaidFee postpaidFee = new PostpaidFee();
+        postpaidFee.preUpdate();
+        postpaidFee.setRentContractId(objectID);
+        postpaidFeeDao.delete(postpaidFee);
     }
 
     /**
@@ -181,7 +190,7 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
     @Transactional(readOnly = false)
     public void deletePaymentTransAndTradingAcctounsWithPostpaidFee(String postpaidFeeId) {
         // 根据后付费交易ID 查询账务交易集合
-        Set<String> tradingAccountsIdSet = new HashSet<String>();
+        Set<String> tradingAccountsIdSet = new HashSet<>();
         PaymentTrans delPaymentTrans = new PaymentTrans();
         delPaymentTrans.setPostpaidFeeId(postpaidFeeId);
         List<PaymentTrans> transList = super.findList(delPaymentTrans);
