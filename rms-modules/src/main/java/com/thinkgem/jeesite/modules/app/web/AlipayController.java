@@ -820,6 +820,11 @@ public class AlipayController extends CommonBusinessController {
             model.setParlor_count("1");
             model.setToilet_count("1");
             model.setFlat_area(room.getRoomSpace());
+            if (room != null) {
+                model.setNick_name(house.getHouseNo() + room.getRoomNo());
+            } else {
+                model.setNick_name(house.getHouseNo());
+            }
         } else {
             Integer decoraStrucRoomNum = house.getDecoraStrucRoomNum();
             model.setBedroom_count(decoraStrucRoomNum == null || decoraStrucRoomNum == 0 ? "0" : String.valueOf(decoraStrucRoomNum));
@@ -851,8 +856,6 @@ public class AlipayController extends CommonBusinessController {
         model.setCheckin_time(DateUtils.formatDate(DateUtils.dateAddDay(new Date(), 1)));
 
         model.setRoom_status(String.valueOf(UpEnum.UP.getValue()));
-
-        model.setNick_name(building.getNickName());
 
         model.setMax_amount(building.getMaxAmount());
 
