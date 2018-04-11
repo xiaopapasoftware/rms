@@ -56,6 +56,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">备用手机号：</label>
+			<div class="controls">
+				<form:input path="secondCellPhone" htmlEscape="false" maxlength="100" class="input-xlarge"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">座机号：</label>
 			<div class="controls">
 				<form:input path="deskPhone" htmlEscape="false" maxlength="100" class="input-xlarge"/>
