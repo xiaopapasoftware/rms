@@ -135,6 +135,7 @@ public class RentContractController extends CommonBusinessController {
     @RequestMapping(value = {"rentContractDialogList"})
     public String rentContractDialogList(RentContract rentContract, HttpServletRequest request, HttpServletResponse response, Model model) {
         rentContract.setContractStatus(ContractAuditStatusEnum.INVOICE_AUDITED_PASS.getValue());
+        rentContract.setContractBusiStatus(ContractBusiStatusEnum.VALID.getValue());
         initContractSearchConditions(rentContract, model, request, response, true);
         return "modules/contract/rentContractDialog";
     }

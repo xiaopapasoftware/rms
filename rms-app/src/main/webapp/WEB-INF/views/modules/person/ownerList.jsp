@@ -78,7 +78,7 @@
 					${owner.cellPhone}
 				</td>
 				<td>
-						${owner.secondCellPhone}
+					${owner.secondCellPhone}
 				</td>
 				<td>
 					${owner.deskPhone}
