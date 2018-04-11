@@ -1011,7 +1011,7 @@
         <div class="controls">
             <input name="createDate" id="createDate" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate"
-                   value="<fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd"/>"/>
+                   value="<fmt:formatDate value="${rentContract.createDate}" pattern="yyyy-MM-dd  HH:mm:ss"/>"/>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>
     </div>
@@ -1020,7 +1020,7 @@
         <div class="controls">
             <input name="updateDate" id="updateDate" type="text" readonly="true" maxlength="20"
                    class="input-medium Wdate"
-                   value="<fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd"/>"/>
+                   value="<fmt:formatDate value="${rentContract.updateDate}" pattern="yyyy-MM-dd  HH:mm:ss"/>"/>
             <span class="help-inline"><font color="red">*</font> </span>
         </div>
     </div>
