@@ -294,6 +294,9 @@ insert into sys_dict (id, value, label, type, description, sort, parent_id, crea
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('336','17','出租合同收据','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('337','18','定金协议其他附件','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('338','19','出租合同其他附件','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('340','20','托管合同','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('3412','21','电费充值收据','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
+insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('3413','22','公共事业费后付收据','attach_type','附件类型','1','0','1',now(),'1',now(),NULL,'0');
 
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('339','25','转租手续费（收）','payment_type','款项类型','26','0','1',now(),'1',now(),NULL,'0');
 insert into sys_dict (id, value, label, type, description, sort, parent_id, create_by, create_date, update_by, update_date, remarks, del_flag) values('341','26','预定违约退款（出）','payment_type','款项类型','27','0','1',now(),'1',now(),NULL,'0');

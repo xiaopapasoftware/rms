@@ -311,6 +311,26 @@
             </div>
         </div>
     </c:if>
+    <c:if test="${tradingAccounts.tradeDirection=='1' && tradingAccounts.tradeType == '11'}"><!-- 电费充值--入账 -->
+        <div class="control-group">
+            <label class="control-label">电费充值收据：</label>
+            <div class="controls">
+                <form:hidden id="electricChargeFile" path="electricChargeFile" htmlEscape="false" maxlength="4000"
+                             class="input-xlarge"/>
+                <sys:ckfinder input="electricChargeFile" type="files" uploadPath="/电费充值收据" selectMultiple="true"/>
+            </div>
+        </div>
+    </c:if>
+    <c:if test="${tradingAccounts.tradeDirection=='1' && tradingAccounts.tradeType == '12'}"><!-- 公共事业费后付--入账 -->
+        <div class="control-group">
+            <label class="control-label">公共事业费后付收据：</label>
+            <div class="controls">
+                <form:hidden id="commonPostFeeFile" path="commonPostFeeFile" htmlEscape="false" maxlength="4000"
+                             class="input-xlarge"/>
+                <sys:ckfinder input="commonPostFeeFile" type="files" uploadPath="/公共事业费后付收据" selectMultiple="true"/>
+            </div>
+        </div>
+    </c:if>
     <div class="control-group">
         <label class="control-label">备注信息：</label>
         <div class="controls">

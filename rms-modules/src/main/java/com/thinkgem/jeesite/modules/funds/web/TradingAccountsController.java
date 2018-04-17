@@ -88,6 +88,10 @@ public class TradingAccountsController extends BaseController {
         model.addAttribute("tradingAccounts", entity);
         if (TradeTypeEnum.DEPOSIT_AGREEMENT.getValue().equals(entity.getTradeType())) {
             return "modules/funds/viewReceiptAttachment";
+        } else if (TradeTypeEnum.ELECTRICITY_CHARGE.getValue().equals(entity.getTradeType())) {
+            return "modules/funds/viewElectricRechargeAttachment";
+        } else if (TradeTypeEnum.PUB_FEE_POSTPAID.getValue().equals(entity.getTradeType())) {
+            return "modules/funds/viewCommonFeePostAttachment";
         } else {
             return "modules/funds/viewRentAttachment";
         }

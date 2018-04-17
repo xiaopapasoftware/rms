@@ -570,6 +570,26 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             attachment.setAttachmentPath(tradingAccounts.getDepositReceiptFile());
             attachmentDao.insert(attachment);
         }
+
+        // 电费充值收据附件
+        if (!StringUtils.isBlank(tradingAccounts.getElectricChargeFile())) {
+            Attachment attachment = new Attachment();
+            attachment.preInsert();
+            attachment.setTradingAccountsId(id);
+            attachment.setAttachmentType(FileType.ELECTIRC_RECHARGE_RECEIPT_FILE.getValue());
+            attachment.setAttachmentPath(tradingAccounts.getElectricChargeFile());
+            attachmentDao.insert(attachment);
+        }
+
+        // 公共事业费后付收据附件
+        if (!StringUtils.isBlank(tradingAccounts.getCommonPostFeeFile())) {
+            Attachment attachment = new Attachment();
+            attachment.preInsert();
+            attachment.setTradingAccountsId(id);
+            attachment.setAttachmentType(FileType.COMMON_FEE_POST_RECEIPT_FILE.getValue());
+            attachment.setAttachmentPath(tradingAccounts.getCommonPostFeeFile());
+            attachmentDao.insert(attachment);
+        }
     }
 
     /**

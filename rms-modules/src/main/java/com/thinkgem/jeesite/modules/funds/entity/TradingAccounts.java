@@ -35,9 +35,11 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
     private String tradeObjectNo;// 交易对象编号
     private String transStatus;// 定金协议审核状态/出租合同审核状态/承租合同审核状态
     private String transBusiStatus;// 定金协议业务状态/出租合同业务状态
-    private List<Receipt> receiptList = new ArrayList<Receipt>();
+    private List<Receipt> receiptList = new ArrayList<>();
     private String rentContractReceiptFile;// 出租合同收据附件路径
     private String depositReceiptFile;// 定金协议收据附件路径
+    private String electricChargeFile;//电费充值收据附件路径
+    private String commonPostFeeFile;//公共事业费后付收据附件路径
     private String contractDataSource;// 出租合同的数据来源（管理系统/APP）
     private String agreementDataSource;// 定金协议的数据来源（管理系统/APP）
     private List<String> tradeTypeList;// SQL条件
@@ -199,6 +201,22 @@ public class TradingAccounts extends DataEntity<TradingAccounts> {
 
     public void setDepositReceiptFile(String depositReceiptFile) {
         this.depositReceiptFile = depositReceiptFile;
+    }
+
+    public String getElectricChargeFile() {
+        return electricChargeFile;
+    }
+
+    public void setElectricChargeFile(String electricChargeFile) {
+        this.electricChargeFile = electricChargeFile;
+    }
+
+    public String getCommonPostFeeFile() {
+        return commonPostFeeFile;
+    }
+
+    public void setCommonPostFeeFile(String commonPostFeeFile) {
+        this.commonPostFeeFile = commonPostFeeFile;
     }
 
     public String getContractDataSource() {
