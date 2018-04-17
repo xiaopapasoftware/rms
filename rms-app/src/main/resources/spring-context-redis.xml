@@ -8,16 +8,16 @@
 
     <context:property-placeholder ignore-unresolvable="true" location="classpath:jeesite.properties"/>
 
-    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+    <!--<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
         <constructor-arg index="0" ref="jedisPoolConfig"/>
         <constructor-arg index="1" value="${redis.host}"/>
         <constructor-arg index="2" value="${redis.port}" type="int"/>
-    </bean>
+    </bean>-->
 
-    <bean id="jedisConnFactory"
+    <!--<bean id="jedisConnFactory"
           class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:use-pool="${redis.pool.usePool}" p:hostName="${redis.host}" p:port="${redis.port}"
-          p:database="${redis.dbIndex:0}" p:poolConfig-ref="jedisPoolConfig"/>
+          p:database="${redis.dbIndex:0}" p:poolConfig-ref="jedisPoolConfig"/>-->
 
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxTotal" value="${redis.pool.maxTotal}"/><!-- 最大分配的对象数 -->
@@ -28,9 +28,9 @@
 
     <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
 
-    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
-          p:connection-factory-ref="jedisConnFactory" p:keySerializer-ref="stringRedisSerializer"/>
+    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connection-factory-ref="jedisConnFactory" p:keySerializer-ref="stringRedisSerializer"/>-->
 
-    <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-          p:connection-factory-ref="jedisConnFactory"/>
+    <!--<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connection-factory-ref="jedisConnFactory"/>-->
 </beans>
