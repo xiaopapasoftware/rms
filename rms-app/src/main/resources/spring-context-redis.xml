@@ -19,12 +19,12 @@
           p:use-pool="${redis.pool.usePool}" p:hostName="${redis.host}" p:port="${redis.port}"
           p:database="${redis.dbIndex:0}" p:poolConfig-ref="jedisPoolConfig"/>-->
 
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxTotal" value="${redis.pool.maxTotal}"/><!-- 最大分配的对象数 -->
-        <property name="maxIdle" value="${redis.pool.maxIdle}"/><!-- 最大能够保持idel状态的对象数  -->
-        <property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}"/>
-        <property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/><!-- 当调用borrow Object方法时，是否进行有效性检查 -->
-    </bean>
+    <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">-->
+    <!--<property name="maxTotal" value="${redis.pool.maxTotal}"/>--><!-- 最大分配的对象数 -->
+    <!--<property name="maxIdle" value="${redis.pool.maxIdle}"/>--><!-- 最大能够保持idel状态的对象数  -->
+    <!--<property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}"/>-->
+    <!--<property name="testOnBorrow" value="${redis.pool.testOnBorrow}"/>--><!-- 当调用borrow Object方法时，是否进行有效性检查 -->
+    <!--</bean>-->
 
     <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
 
