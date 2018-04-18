@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.thinkgem.jeesite.modules.funds.dao.TradingAccountsDao">
 
-	<sql id="tradingAccountsColumns">
+    <sql id="tradingAccountsColumns">
 		a.id AS "id",
 		a.trade_id AS "tradeId",
 		a.trade_type AS "tradeType",
@@ -19,6 +19,8 @@
 		a.del_flag AS "delFlag",
 		at3.attachment_path as "rentContractReceiptFile",
 		at2.attachment_path as "depositReceiptFile",
+		at4.attachment_path as "electricChargeFile",
+		at5.attachment_path as "commonPostFeeFile",
 		case 
 			 when a.trade_type=0 then tlc.contract_name
 			 when a.trade_type=1 or a.trade_type =2 then ta.agreement_name 
@@ -47,91 +49,94 @@
 		ta.data_source as "agreementDataSource"
 	</sql>
 
-	<sql id="tradingAccountsJoins">
-		left join t_deposit_agreement ta on a.trade_id=ta.id
-		left join t_rent_contract tc on a.trade_id=tc.id
-		left join t_lease_contract tlc on a.trade_id = tlc.id
-		left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
-		left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
-	</sql>
+    <sql id="tradingAccountsJoins">
+        left join t_deposit_agreement ta on a.trade_id=ta.id and ta.del_flag='0'
+        left join t_rent_contract tc on a.trade_id=tc.id and tc.del_flag='0'
+        left join t_lease_contract tlc on a.trade_id = tlc.id and tlc.del_flag='0'
+        left join t_attachment at2 on a.id=at2.trading_accounts_id and at2.attachment_type='15' and at2.del_flag='0'
+        left join t_attachment at3 on a.id=at3.trading_accounts_id and at3.attachment_type='17' and at3.del_flag='0'
+        left join t_attachment at4 on a.id=at4.trading_accounts_id and at4.attachment_type='21' and at4.del_flag='0'
+        left join t_attachment at5 on a.id=at5.trading_accounts_id and at5.attachment_type='22' and at5.del_flag='0'
+    </sql>
 
-	<select id="get" resultType="TradingAccounts">
-		SELECT
-		<include refid="tradingAccountsColumns" />
-		FROM t_trading_accounts a
-		<include refid="tradingAccountsJoins" />
-		WHERE a.id = #{id}
-	</select>
+    <select id="get" resultType="TradingAccounts">
+        SELECT
+        <include refid="tradingAccountsColumns"/>
+        FROM t_trading_accounts a
+        <include refid="tradingAccountsJoins"/>
+        WHERE a.id = #{id}
+    </select>
 
-	<select id="findList" resultType="TradingAccounts">
-		select t.* from(
-		SELECT  <include refid="tradingAccountsColumns" />
-		FROM 	t_trading_accounts a
-		<include refid="tradingAccountsJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="tradeId != null and tradeId != ''">
-				AND a.trade_id = #{tradeId}
-			</if>
-			<if test="tradeType != null and tradeType != ''">
-				AND a.trade_type = #{tradeType}
-			</if>
-			<if test="tradeDirection != null and tradeDirection != ''">
-				AND a.trade_direction = #{tradeDirection}
-			</if>
-			<if test="tradeStatus != null and tradeStatus != ''">
-				AND a.trade_status = #{tradeStatus}
-			</if>
-			<if test="tradeTypeList != null">
-			    and a.trade_type in 
-		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
-		             #{item}  
-		         </foreach>  
-      		</if>
-		</where>
-		) t left join t_property_project tp on t.property_project_id = tp.id
-		where t.tradeName is not null
-		<if test="tradeName != null and tradeName != ''">
-			AND t.tradeName like concat('%',#{tradeName},'%')
-		</if>
-		<if test="tradeObjectNo != null and tradeObjectNo != ''">
-			AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
-		</if>
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY t.updateDate DESC
-			</otherwise>
-		</choose>
-	</select>
+    <select id="findList" resultType="TradingAccounts">
+        select t.* from(
+        SELECT
+        <include refid="tradingAccountsColumns"/>
+        FROM t_trading_accounts a
+        <include refid="tradingAccountsJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="tradeId != null and tradeId != ''">
+                AND a.trade_id = #{tradeId}
+            </if>
+            <if test="tradeType != null and tradeType != ''">
+                AND a.trade_type = #{tradeType}
+            </if>
+            <if test="tradeDirection != null and tradeDirection != ''">
+                AND a.trade_direction = #{tradeDirection}
+            </if>
+            <if test="tradeStatus != null and tradeStatus != ''">
+                AND a.trade_status = #{tradeStatus}
+            </if>
+            <if test="tradeTypeList != null">
+                and a.trade_type in
+                <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ) t left join t_property_project tp on t.property_project_id = tp.id
+        where t.tradeName is not null
+        <if test="tradeName != null and tradeName != ''">
+            AND t.tradeName like concat('%',#{tradeName},'%')
+        </if>
+        <if test="tradeObjectNo != null and tradeObjectNo != ''">
+            AND t.tradeObjectNo like concat('%',#{tradeObjectNo},'%')
+        </if>
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY t.updateDate DESC
+            </otherwise>
+        </choose>
+    </select>
 
-	<select id="findAllList" resultType="TradingAccounts">
-		SELECT
-		<include refid="tradingAccountsColumns" />
-		FROM t_trading_accounts a
-		<include refid="tradingAccountsJoins" />
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-		</where>
+    <select id="findAllList" resultType="TradingAccounts">
+        SELECT
+        <include refid="tradingAccountsColumns"/>
+        FROM t_trading_accounts a
+        <include refid="tradingAccountsJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
 
-		<!-- 数据范围过滤 -->
-		${sqlMap.dsf}
+        <!-- 数据范围过滤 -->
+        ${sqlMap.dsf}
 
-		<choose>
-			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-			<otherwise>
-				ORDER BY a.update_date DESC
-			</otherwise>
-		</choose>
-	</select>
+        <choose>
+            <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+                ORDER BY ${page.orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.update_date DESC
+            </otherwise>
+        </choose>
+    </select>
 
-	<insert id="insert">
+    <insert id="insert">
 		INSERT INTO t_trading_accounts(
 		id,
 		trade_id,
@@ -165,7 +170,7 @@
 		)
 	</insert>
 
-	<update id="update">
+    <update id="update">
 		UPDATE t_trading_accounts SET
 		trade_id = #{tradeId},
 		trade_type = #{tradeType},
@@ -181,56 +186,56 @@
 		WHERE id = #{id}
 	</update>
 
-	<update id="delete">
-		UPDATE 		t_trading_accounts 
-		SET 		del_flag = #{DEL_FLAG_DELETE}, 
-					update_by = #{updateBy.id}, 
-					update_date = #{updateDate}
-		<where>
-			del_flag = #{DEL_FLAG_NORMAL}
-			<if test="id != null and id != ''">
-				and id = #{id}
-			</if>
-			<if test="tradeId != null and tradeId != ''">
-				and trade_id = #{tradeId}
-			</if>
-			<if test="tradeStatus != null and tradeStatus != ''">
-				and trade_status = #{tradeStatus}
-			</if>
-			<if test="tradeTypeList != null">
-			    and trade_type in 
-		         <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">  
-		             #{item}  
-		         </foreach>  
-      		</if>
-      		<if test="tradeIdList != null">
-			    and id in 
-		         <foreach item="item" index="index" collection="tradeIdList" open="(" separator="," close=")">  
-		             #{item}  
-		         </foreach>  
-      		</if>
-		</where>
-	</update>
+    <update id="delete">
+        UPDATE t_trading_accounts
+        SET del_flag = #{DEL_FLAG_DELETE},
+        update_by = #{updateBy.id},
+        update_date = #{updateDate}
+        <where>
+            del_flag = #{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="tradeId != null and tradeId != ''">
+                and trade_id = #{tradeId}
+            </if>
+            <if test="tradeStatus != null and tradeStatus != ''">
+                and trade_status = #{tradeStatus}
+            </if>
+            <if test="tradeTypeList != null">
+                and trade_type in
+                <foreach item="item" index="index" collection="tradeTypeList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="tradeIdList != null">
+                and id in
+                <foreach item="item" index="index" collection="tradeIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
 
-	<!--根据合同id查询新签合同的进账项 -->
-	<select id="queryIncomeTradeAccountsByTradeId" resultType="TradingAccounts">
-		SELECT t.*
-		FROM t_trading_accounts t
-		WHERE t.DEL_FLAG = '0'
-		AND t.trade_direction = '1'
-		AND t.trade_type IN ('3', '4')
-		AND t.trade_status = '1'
-		AND t.trade_id = #{tradeId}
-	</select>
+    <!--根据合同id查询新签合同的进账项 -->
+    <select id="queryIncomeTradeAccountsByTradeId" resultType="TradingAccounts">
+        SELECT t.*
+        FROM t_trading_accounts t
+        WHERE t.DEL_FLAG = '0'
+        AND t.trade_direction = '1'
+        AND t.trade_type IN ('3', '4')
+        AND t.trade_status = '1'
+        AND t.trade_id = #{tradeId}
+    </select>
 
-	<!--根据合同id查询新签合同的出账项 -->
-	<select id="queryCostTradeAccountsByTradeId" resultType="TradingAccounts">
-		SELECT t.*
-		FROM t_trading_accounts t
-		WHERE t.DEL_FLAG = '0'
-		AND t.trade_direction = '0'
-		AND t.trade_type IN ('6', '9')
-		AND t.trade_status = '1'
-		AND t.trade_id = #{tradeId}
-	</select>
+    <!--根据合同id查询新签合同的出账项 -->
+    <select id="queryCostTradeAccountsByTradeId" resultType="TradingAccounts">
+        SELECT t.*
+        FROM t_trading_accounts t
+        WHERE t.DEL_FLAG = '0'
+        AND t.trade_direction = '0'
+        AND t.trade_type IN ('6', '9')
+        AND t.trade_status = '1'
+        AND t.trade_id = #{tradeId}
+    </select>
 </mapper>
