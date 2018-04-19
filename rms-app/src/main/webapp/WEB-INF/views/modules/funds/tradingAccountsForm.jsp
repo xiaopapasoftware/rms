@@ -58,7 +58,9 @@
                     var repeatFlag = false;
                     var receiptNos = new Array();
                     $("input[id^='receiptList'][id$='_receiptNo']").each(function () {
-                        receiptNos.push($(this).val());
+                        if ($(this).val() != "" && $(this).val() != null && $(this).val() != undefined) {
+                            receiptNos.push($(this).val());
+                        }
                     });
                     var nary = receiptNos.sort();
                     for (var i = 0; i < nary.length - 1; i++) {
@@ -122,12 +124,17 @@
         function changeNeedReceiptFlag(obj) {
             var checkedFlag = $(obj).attr("checked");
             if (checkedFlag == "checked") {
-                $("#receiptDivBlockId").html($("#receiptFullContent").val());
-                $("#receiptDivBlockId").show();
+                $("input[id^='receiptList'][id$='_receiptNo']").each(function () {
+                    if (!$(this).hasClass("required")) {
+                        $(this).addClass("required");
+                    }
+                    $(this).after("<span class=\"help-inline\"><font color=\"red\">*</font></span>");
+                });
             } else {
-                $("#receiptFullContent").val($("#receiptDivBlockId").html());
-                $("#receiptDivBlockId").html("")
-                $("#receiptDivBlockId").hide();
+                $("input[id^='receiptList'][id$='_receiptNo']").each(function () {
+                    $(this).nextAll().remove();
+                    $(this).removeClass("required");
+                });
             }
         }
 
@@ -143,7 +150,6 @@
 <br/>
 <form:form id="inputForm" modelAttribute="tradingAccounts" action="${ctx}/funds/tradingAccounts/save" method="post"
            class="form-horizontal">
-    <input type="hidden" name="receiptFullContent" id="receiptFullContent"/>
     <form:hidden path="id"/>
     <form:hidden path="tradeId"/>
     <form:hidden path="transIds"/>
@@ -197,36 +203,35 @@
                            onclick="changeNeedReceiptFlag(this)"/>
         </div>
     </div>
-    <div id="receiptDivBlockId">
-        <div class="control-group">
-            <label class="control-label">收据信息：</label>
-            <div class="controls">
-                <table id="contentTable" class="table table-striped table-bordered table-condensed">
-                    <thead>
-                    <tr>
-                        <th class="hide"></th>
-                        <th>交易方式</th>
-                        <th>款项类型</th>
-                        <th>收据金额</th>
-                        <th>收据号码</th>
-                        <th>收据日期</th>
-                        <th>款项开始日期</th>
-                        <th>款项结束日期</th>
-                        <th>备注</th>
-                        <th width="10">&nbsp;</th>
-                    </tr>
-                    </thead>
-                    <tbody id="receiptList">
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                        <td colspan="6"><a href="javascript:"
-                                           onclick="addRow('#receiptList', receiptRowIdx, receiptTpl);receiptRowIdx = receiptRowIdx + 1;"
-                                           class="btn">新增</a></td>
-                    </tr>
-                    </tfoot>
-                </table>
-                <script type="text/template" id="receiptTpl">//<!--
+    <div class="control-group">
+        <label class="control-label">收据信息：</label>
+        <div class="controls">
+            <table id="contentTable" class="table table-striped table-bordered table-condensed">
+                <thead>
+                <tr>
+                    <th class="hide"></th>
+                    <th>交易方式</th>
+                    <th>款项类型</th>
+                    <th>收据金额</th>
+                    <th>收据号码</th>
+                    <th>收据日期</th>
+                    <th>款项开始日期</th>
+                    <th>款项结束日期</th>
+                    <th>备注</th>
+                    <th width="10">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody id="receiptList">
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="6"><a href="javascript:"
+                                       onclick="addRow('#receiptList', receiptRowIdx, receiptTpl);receiptRowIdx = receiptRowIdx + 1;"
+                                       class="btn">新增</a></td>
+                </tr>
+                </tfoot>
+            </table>
+            <script type="text/template" id="receiptTpl">//<!--
 						<tr id="receiptList{{idx}}">
 							<td class="hide">
 								<input id="receiptList{{idx}}_id" name="receiptList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
@@ -256,7 +261,7 @@
 							</td>
 							<td>
 								<input id="receiptList{{idx}}_receiptNo" name="receiptList[{{idx}}].receiptNo" type="text" value="{{row.receiptNo}}" maxlength="255" class="input-small required"/>
-								<span class="help-inline"><font color="red">*</font> </span>
+								<span class="help-inline"><font color="red">*</font></span>
 							</td>
 							<td>
 								<input id="receiptList{{idx}}_receiptDate" name="receiptList[{{idx}}].receiptDate" type="text" readonly="readonly" value="{{row.receiptDate}}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" class="input-medium Wdate required" style="width:100px;"/>
@@ -275,19 +280,18 @@
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#receiptList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
 							</td>
 						</tr>//-->
-                </script>
-                <script type="text/javascript">
-                    var receiptRowIdx = 0,
-                        receiptTpl = $("#receiptTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g, "");
-                    $(document).ready(function () {
-                        var data = ${fns:toJson(tradingAccounts.receiptList)};
-                        for (var i = 0; i < data.length; i++) {
-                            addRow('#receiptList', receiptRowIdx, receiptTpl, data[i]);
-                            receiptRowIdx = receiptRowIdx + 1;
-                        }
-                    });
-                </script>
-            </div>
+            </script>
+            <script type="text/javascript">
+                var receiptRowIdx = 0,
+                    receiptTpl = $("#receiptTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g, "");
+                $(document).ready(function () {
+                    var data = ${fns:toJson(tradingAccounts.receiptList)};
+                    for (var i = 0; i < data.length; i++) {
+                        addRow('#receiptList', receiptRowIdx, receiptTpl, data[i]);
+                        receiptRowIdx = receiptRowIdx + 1;
+                    }
+                });
+            </script>
         </div>
     </div>
     <!-- 新签合同/续签合同/提前退租/正常退租/逾期退租/特殊退租--入账 -->

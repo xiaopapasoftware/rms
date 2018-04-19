@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,6 @@ import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.BaseEntity;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.common.web.BaseController;
 import com.thinkgem.jeesite.modules.contract.entity.AuditHis;
 import com.thinkgem.jeesite.modules.contract.entity.DepositAgreement;
@@ -389,9 +389,11 @@ public class TradingAccountsController extends BaseController {
         // 校验收据编号重复
         if (null != tradingAccounts.getReceiptList()) {
             for (Receipt receipt : tradingAccounts.getReceiptList()) {
-                if (receiptService.checkReceiptNoIsRepeat(receipt.getReceiptNo())) {
-                    addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "收据编号:" + receipt.getReceiptNo() + "重复!");
-                    return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+                if (StringUtils.isNotEmpty(receipt.getReceiptNo())) {
+                    if (receiptService.checkReceiptNoIsRepeat(receipt.getReceiptNo())) {
+                        addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "收据编号:" + receipt.getReceiptNo() + "重复!");
+                        return "redirect:" + Global.getAdminPath() + "/funds/paymentTrans/?repage";
+                    }
                 }
             }
         }
