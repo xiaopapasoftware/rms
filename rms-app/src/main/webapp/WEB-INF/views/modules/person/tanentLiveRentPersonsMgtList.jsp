@@ -164,12 +164,12 @@
 			</li>
 			<li><label style="width:120px;">合同过期时间：</label>
 				<input name="expiredDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd、"/>"
+					value="<fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同签订时间：</label>
 				<input name="signDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
-					value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd、"/>"
+					value="<fmt:formatDate value="${rentContract.signDate}" pattern="yyyy-MM-dd"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});" style="width:196px;"/>
 			</li>
 			<li><label style="width:120px;">合同审核状态：</label>
