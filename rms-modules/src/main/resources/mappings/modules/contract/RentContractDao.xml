@@ -25,6 +25,7 @@
 		a.start_date AS "startDate",
 		a.expired_date AS "expiredDate",
 		a.sign_date AS "signDate",
+	    a.return_date AS "returnDate",
 		a.sign_type AS "signType",
 		a.has_tv AS "hasTv",
 		a.tv_fee AS "tvFee",
@@ -162,6 +163,9 @@
             <if test="signDate != null and signDate != ''">
                 AND a.sign_date = #{signDate}
             </if>
+            <if test="returnDate != null and returnDate != ''">
+                AND a.return_Date = #{returnDate}
+            </if>
             <if test="signType != null and signType != ''">
                 AND a.sign_type = #{signType}
             </if>
@@ -241,6 +245,9 @@
             </if>
             <if test="signDate != null and signDate != ''">
                 AND a.sign_date = #{signDate}
+            </if>
+            <if test="returnDate != null and returnDate != ''">
+                AND a.return_Date = #{returnDate}
             </if>
             <if test="signType != null and signType != ''">
                 AND a.sign_type = #{signType}
@@ -327,6 +334,7 @@
 		start_date,
 		expired_date,
 		sign_date,
+		return_Date,
 		sign_type,
 		has_tv,
 		tv_fee,
@@ -382,6 +390,7 @@
 		#{startDate},
 		#{expiredDate},
 		#{signDate},
+		#{returnDate},
 		#{signType},
 		#{hasTv},
 		#{tvFee},
@@ -440,6 +449,7 @@
         start_date = #{startDate},
         expired_date = #{expiredDate},
         sign_date = #{signDate},
+        return_Date = #{returnDate},
         sign_type = #{signType},
         has_tv = #{hasTv},
         tv_fee = #{tvFee},
@@ -518,6 +528,7 @@
 		a.start_date AS "startDate",
 		a.expired_date AS "expiredDate",
 		a.sign_date AS "signDate",
+		a.return_Date AS "returnDate",
 		a.sign_type AS "signType",
 		a.has_tv AS "hasTv",
 		a.tv_fee AS "tvFee",

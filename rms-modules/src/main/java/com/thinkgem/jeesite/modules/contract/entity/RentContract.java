@@ -48,6 +48,8 @@ public class RentContract extends DataEntity<RentContract> {
     private Date startDate; // 合同生效时间
     private Date expiredDate; // 合同过期时间
     private Date signDate; // 合同签订时间
+    private Date returnDate; // 实际退租时间
+    private String returnDateStr; // 接收页面传递的实际退租时间字符串
     private String signType; // 合同签订类型
     private String hasTv; // 是否开通有线电视
     private Double tvFee; // 有线电视每月费用
@@ -77,11 +79,11 @@ public class RentContract extends DataEntity<RentContract> {
     private String roomNo;// 房间编号
     private String validatorFlag;
     private Integer renewCount;// 续签次数
-    private List<Tenant> tenantList = new ArrayList<Tenant>();// 承租人
-    private List<Tenant> liveList = new ArrayList<Tenant>();// 入住人
+    private List<Tenant> tenantList = new ArrayList<>();// 承租人
+    private List<Tenant> liveList = new ArrayList<>();// 入住人
     private String chargeType;// 公用事业费付费方式
-    private List<Accounting> accountList = new ArrayList<Accounting>();
-    private List<Accounting> outAccountList = new ArrayList<Accounting>();
+    private List<Accounting> accountList = new ArrayList<>();
+    private List<Accounting> outAccountList = new ArrayList<>();
     private String tradeType;
     private String name;
     private String tenantName;// 租客姓名,用于查询条件
@@ -94,7 +96,6 @@ public class RentContract extends DataEntity<RentContract> {
     private String rentContractOtherFile;// 出租合同其他附件
     private Double depositAgreementAmount; // 定金协议转合同，从定金协议带过来的定金金额
     private String oriEndDate;// 为了实现续签合同的开始日期默认为原合同的结束日期，则把原合同的结束日期带到页面
-    private String returnDate;// 用户输入的特殊退租的指定的退租日期
     private String returnRemark;// 退租备注
     private String dataSource;
     private String updateUser;
@@ -636,12 +637,21 @@ public class RentContract extends DataEntity<RentContract> {
         this.depositAgreementAmount = depositAgreementAmount;
     }
 
-    public String getReturnDate() {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public Date getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(String returnDate) {
+    public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public String getReturnDateStr() {
+        return returnDateStr;
+    }
+
+    public void setReturnDateStr(String returnDateStr) {
+        this.returnDateStr = returnDateStr;
     }
 
     public String getOriEndDate() {

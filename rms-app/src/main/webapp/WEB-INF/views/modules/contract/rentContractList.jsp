@@ -114,8 +114,8 @@
             $.jBox.open("iframe:${ctx}/contract/leaseContract/auditHis?objectId=" + id, '审核记录', 650, 400, {buttons: {'关闭': true}});
         }
 
-        function specialReturn(id) {
-            confirmx("确认要特殊退租吗?", function () {
+        function processReturn(id, type) {
+            confirmx("确认要发起退租吗?", function () {
                 var curDate = new Date();
                 var year = curDate.getFullYear();
                 var month = curDate.getMonth() + 1;
@@ -127,18 +127,26 @@
                     day = "0" + "" + day;
                 }
                 var curDateStyle = year + "-" + month + "-" + day;
-
                 var html = '<label style="width:120px;">实际退房日期：</label>';
-                html += '<input name="returnDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"';
+                html += '<input name="returnDateStr" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"';
                 html += 'value="' + curDateStyle + '"';
                 html += 'onclick="WdatePicker({dateFmt:\'yyyy-MM-dd\',isShowClear:true});" style="width:196px;"/>';
-
                 var submit = function (v, h, f) {
-                    window.location.href = "${ctx}/contract/rentContract/specialReturnContract?id=" + id + "&returnDate=" + f.returnDate;
+                    if (type == 'special') {//特殊退租
+                        window.location.href = "${ctx}/contract/rentContract/specialReturnContract?id=" + id + "&returnDateStr=" + f.returnDateStr;
+                    }
+                    if (type == 'normal') {//正常退租
+                        window.location.href = "${ctx}/contract/rentContract/returnContract?id=" + id + "&returnDateStr=" + f.returnDateStr;
+                    }
+                    if (type == 'early') {//提前退租
+                        window.location.href = "${ctx}/contract/rentContract/earlyReturnContract?id=" + id + "&returnDateStr=" + f.returnDateStr;
+                    }
+                    if (type == 'late') {//逾期退租
+                        window.location.href = "${ctx}/contract/rentContract/lateReturnContract?id=" + id + "&returnDateStr=" + f.returnDateStr;
+                    }
                     return true;
                 };
-
-                $.jBox(html, {title: "选择退租日期", submit: submit});
+                $.jBox(html, {title: "选择实际退租日期", submit: submit});
             });
         }
 
@@ -391,12 +399,12 @@
                 </shiro:hasPermission>
                 <shiro:hasPermission name="contract:rentContract:return">
                     <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='0'}">
-                        <a href="${ctx}/contract/rentContract/returnContract?id=${rentContract.id}"
-                           onclick="return confirmx('确认要正常退租吗?', this.href)">正常退租</a>
-                        <a href="${ctx}/contract/rentContract/earlyReturnContract?id=${rentContract.id}"
-                           onclick="return confirmx('确认要提前退租吗,提前退租将删除未到账款项?', this.href)">提前退租</a>
-                        <a href="${ctx}/contract/rentContract/lateReturnContract?id=${rentContract.id}"
-                           onclick="return confirmx('确认要逾期退租吗?', this.href)">逾期退租</a>
+                        <a href="javascript:void(0);"
+                           onclick="javascript:processReturn('${rentContract.id}','normal');">正常退租</a>
+                        <a href="javascript:void(0);"
+                           onclick="javascript:processReturn('${rentContract.id}','early');">提前退租</a>
+                        <a href="javascript:void(0);"
+                           onclick="javascript:processReturn('${rentContract.id}','late');">逾期退租</a>
                     </c:if>
                     <c:if test="${rentContract.contractStatus=='6' && rentContract.contractBusiStatus=='1'}">
                         <a href="${ctx}/contract/rentContract/rollbackFromPreturnToNormal?id=${rentContract.id}"
@@ -417,7 +425,8 @@
                 </shiro:hasPermission>
                 <shiro:hasPermission name="contract:rentContract:specialreturn">
                     <c:if test="${rentContract.contractStatus=='6' && (rentContract.contractBusiStatus=='0'||rentContract.contractBusiStatus=='18')}">
-                        <a href="javascript:void(0);" onclick="javascript:specialReturn('${rentContract.id}');">特殊退租</a>
+                        <a href="javascript:void(0);"
+                           onclick="javascript:processReturn('${rentContract.id}','special');">特殊退租</a>
                     </c:if>
                 </shiro:hasPermission><br/>
                 <shiro:hasPermission name="contract:rentContract:change">

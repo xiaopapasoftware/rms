@@ -1,159 +1,161 @@
-<%@ page contentType="text/html;charset=UTF-8"%>
-<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <html>
 <head>
-<title>退租核算</title>
-<meta name="decorator" content="default" />
-<script type="text/javascript">
-		$(document).ready(function() {
-			$("[id$='_feeAmount']").keypress(function(event) {
-		        if (event.keyCode == 13) {
-		            event.preventDefault();
-		        }
-		    });
-		});
-		
-		function submitData() {
-			$("#inputForm").validate({
-				submitHandler: function(form){
-					loading('正在提交，请稍等...');
-					$("#btnSubmit").attr("disabled",true);
-					form.submit();
-				},
-				errorContainer: "#messageBox",
-				errorPlacement: function(error, element) {
-					$("#messageBox").text("输入有误，请先更正。");
-					if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
-						error.appendTo(element.parent().parent());
-					} else {
-						error.insertAfter(element);
-					}
-				}
-			});
-		}
+    <title>退租核算</title>
+    <meta name="decorator" content="default"/>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("[id$='_feeAmount']").keypress(function (event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                }
+            });
+        });
 
-		function addRow(list, idx, tpl, row){
-			$(list).append(Mustache.render(tpl, {
-				idx: idx, delBtn: true, row: row
-			}));
-			$(list+idx).find("select").each(function(){
-				$(this).val($(this).attr("data-value"));
-			});
-			$(list+idx).find("input[type='checkbox'], input[type='radio']").each(function(){
-				var ss = $(this).attr("data-value").split(',');
-				for (var i=0; i<ss.length; i++){
-					if($(this).val() == ss[i]){
-						$(this).attr("checked","checked");
-					}
-				}
-			});
-		}
-		function delRow(obj, prefix){
-			var id = $(prefix+"_id");
-			var delFlag = $(prefix+"_delFlag");
-			if (id.val() == ""){
-				$(obj).parent().parent().remove();
-			}else if(delFlag.val() == "0"){
-				delFlag.val("1");
-				$(obj).html("&divide;").attr("title", "撤销删除");
-				$(obj).parent().parent().addClass("error");
-			}else if(delFlag.val() == "1"){
-				delFlag.val("0");
-				$(obj).html("&times;").attr("title", "删除");
-				$(obj).parent().parent().removeClass("error");
-			}
-		}
-		
-		function calculateTotalAmt(){
-			//计算应收总金额
-			var inTotalAmt = new Number(0); 
-		    $("input[id^='accountList'][id$='_feeAmount']").each(
-			   function(index,domEle){
-				   if(!isNaN($(this).val())){
-					   var curAmt = parseFloat($(this).val());
-					   inTotalAmt = inTotalAmt + curAmt;
-				   }
-			   }
-		    );
-		   //计算应出总金额
-		   var outTotalAmt = new Number(0); 
-		   $("input[id^='outAccountList'][id$='_feeAmount']").each(
-			   function(index,domEle){
-				   if(!isNaN($(this).val())){
-					   var curAmt = parseFloat($(this).val());
-					   outTotalAmt = outTotalAmt + curAmt;
-				   }
-			   }
-		   );
-		   //计算合计金额
-		   var totalAmt = inTotalAmt - outTotalAmt;
-		   var totalAmt = totalAmt.toFixed(1);
-		   $("#totalRefundAmount").html(totalAmt);
-		}
-		
-	</script>
+        function submitData() {
+            $("#inputForm").validate({
+                submitHandler: function (form) {
+                    loading('正在提交，请稍等...');
+                    $("#btnSubmit").attr("disabled", true);
+                    form.submit();
+                },
+                errorContainer: "#messageBox",
+                errorPlacement: function (error, element) {
+                    $("#messageBox").text("输入有误，请先更正。");
+                    if (element.is(":checkbox") || element.is(":radio") || element.parent().is(".input-append")) {
+                        error.appendTo(element.parent().parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+        }
+
+        function addRow(list, idx, tpl, row) {
+            $(list).append(Mustache.render(tpl, {
+                idx: idx, delBtn: true, row: row
+            }));
+            $(list + idx).find("select").each(function () {
+                $(this).val($(this).attr("data-value"));
+            });
+            $(list + idx).find("input[type='checkbox'], input[type='radio']").each(function () {
+                var ss = $(this).attr("data-value").split(',');
+                for (var i = 0; i < ss.length; i++) {
+                    if ($(this).val() == ss[i]) {
+                        $(this).attr("checked", "checked");
+                    }
+                }
+            });
+        }
+
+        function delRow(obj, prefix) {
+            var id = $(prefix + "_id");
+            var delFlag = $(prefix + "_delFlag");
+            if (id.val() == "") {
+                $(obj).parent().parent().remove();
+            } else if (delFlag.val() == "0") {
+                delFlag.val("1");
+                $(obj).html("&divide;").attr("title", "撤销删除");
+                $(obj).parent().parent().addClass("error");
+            } else if (delFlag.val() == "1") {
+                delFlag.val("0");
+                $(obj).html("&times;").attr("title", "删除");
+                $(obj).parent().parent().removeClass("error");
+            }
+        }
+
+        function calculateTotalAmt() {
+            //计算应收总金额
+            var inTotalAmt = new Number(0);
+            $("input[id^='accountList'][id$='_feeAmount']").each(
+                function (index, domEle) {
+                    if (!isNaN($(this).val())) {
+                        var curAmt = parseFloat($(this).val());
+                        inTotalAmt = inTotalAmt + curAmt;
+                    }
+                }
+            );
+            //计算应出总金额
+            var outTotalAmt = new Number(0);
+            $("input[id^='outAccountList'][id$='_feeAmount']").each(
+                function (index, domEle) {
+                    if (!isNaN($(this).val())) {
+                        var curAmt = parseFloat($(this).val());
+                        outTotalAmt = outTotalAmt + curAmt;
+                    }
+                }
+            );
+            //计算合计金额
+            var totalAmt = inTotalAmt - outTotalAmt;
+            var totalAmt = totalAmt.toFixed(1);
+            $("#totalRefundAmount").html(totalAmt);
+        }
+
+    </script>
 </head>
 <body>
-	<ul class="nav nav-tabs">
-		<li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
-		<shiro:hasPermission name="contract:rentContract:edit">
-			<li><a href="${ctx}/contract/rentContract/form">出租合同添加</a></li>
-		</shiro:hasPermission>
-		<li class="active"><a href="javascript:void(0);">退租核算</a></li>
-	</ul>
-	<form:form id="inputForm" modelAttribute="rentContract"
-		action="${ctx}/contract/rentContract/returnCheck" method="post"
-		class="form-horizontal">
-		<form:hidden path="id" />
-		<form:hidden path="tradeType" />
-		<form:hidden path="returnDate" />
- 		<div class="control-group">
-			<label class="control-label">应收费用：</label>
-			<div class="controls">
-				<table id="contentTable"
-					class="table table-striped table-bordered table-condensed">
-					<thead>
-						<tr>
-							<th class="hide"></th>
-							<th>费用类型</th>
-							<th>费用金额</th>
-							<th width="10">&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody id="accountList">
-						<c:forEach items="${accountList}" var="outItem" varStatus="status">
-							<tr id="accountList${status.index}">
-								<td class="hide"><input id="accountList${status.index}_id"
-									name="accountList[${status.index}].id" type="hidden" /> <input
-									id="accountList${status.index}_delFlag"
-									name="accountList[${status.index}].delFlag" type="hidden"
-									value="0" /></td>
-								<td><select id="accountList${status.index}_feeType"
-									name="accountList[${status.index}].feeType" class="required"
-									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
-								</select> <span class="help-inline"><font color="red">*</font> </span></td>
-								<td><input id="accountList${status.index}_feeAmount"
-									name="accountList[${status.index}].feeAmount" type="text"
-									value="${outItem.feeAmount}" maxlength="255"
-									class="input-small required number"
-									onblur="calculateTotalAmt()" /> <span class="help-inline"><font
-										color="red">*</font> </span></td>
-								<td class="text-center" width="10">
-									<span class="close" onclick="delRow(this, '#accountList${status.index}')" title="删除">&times;</span>
-								</td>
-							</tr>
-						</c:forEach>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td colspan="4"><a href="javascript:"
-								onclick="addRow('#accountList', accountRowIdx, accountTpl);accountRowIdx = accountRowIdx + 1;"
-								class="btn">新增</a></td>
-						</tr>
-					</tfoot>
-				</table>
-				<script type="text/template" id="accountTpl">//<!--
+<ul class="nav nav-tabs">
+    <li><a href="${ctx}/contract/rentContract/">出租合同列表</a></li>
+    <shiro:hasPermission name="contract:rentContract:edit">
+        <li><a href="${ctx}/contract/rentContract/form">出租合同添加</a></li>
+    </shiro:hasPermission>
+    <li class="active"><a href="javascript:void(0);">退租核算</a></li>
+</ul>
+<form:form id="inputForm" modelAttribute="rentContract"
+           action="${ctx}/contract/rentContract/returnCheck" method="post"
+           class="form-horizontal">
+    <form:hidden path="id"/>
+    <form:hidden path="tradeType"/>
+    <form:hidden path="returnDateStr"/>
+    <div class="control-group">
+        <label class="control-label">应收费用：</label>
+        <div class="controls">
+            <table id="contentTable"
+                   class="table table-striped table-bordered table-condensed">
+                <thead>
+                <tr>
+                    <th class="hide"></th>
+                    <th>费用类型</th>
+                    <th>费用金额</th>
+                    <th width="10">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody id="accountList">
+                <c:forEach items="${accountList}" var="outItem" varStatus="status">
+                    <tr id="accountList${status.index}">
+                        <td class="hide"><input id="accountList${status.index}_id"
+                                                name="accountList[${status.index}].id" type="hidden"/> <input
+                                id="accountList${status.index}_delFlag"
+                                name="accountList[${status.index}].delFlag" type="hidden"
+                                value="0"/></td>
+                        <td><select id="accountList${status.index}_feeType"
+                                    name="accountList[${status.index}].feeType" class="required"
+                                    style="width: 220px;">
+                            <option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
+                        </select> <span class="help-inline"><font color="red">*</font> </span></td>
+                        <td><input id="accountList${status.index}_feeAmount"
+                                   name="accountList[${status.index}].feeAmount" type="text"
+                                   value="${outItem.feeAmount}" maxlength="255"
+                                   class="input-small required number"
+                                   onblur="calculateTotalAmt()"/> <span class="help-inline"><font
+                                color="red">*</font> </span></td>
+                        <td class="text-center" width="10">
+                            <span class="close" onclick="delRow(this, '#accountList${status.index}')"
+                                  title="删除">&times;</span>
+                        </td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="4"><a href="javascript:"
+                                       onclick="addRow('#accountList', accountRowIdx, accountTpl);accountRowIdx = accountRowIdx + 1;"
+                                       class="btn">新增</a></td>
+                </tr>
+                </tfoot>
+            </table>
+            <script type="text/template" id="accountTpl">//<!--
 						<tr id="accountList{{idx}}">
 							<td class="hide">
 								<input id="accountList{{idx}}_id" name="accountList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
@@ -176,67 +178,68 @@
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#accountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
 							</td>
 						</tr>//-->
-				</script>
-				<script type="text/javascript">
-					var accountRowIdx = ${accountSize}, accountTpl = $("#accountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
-					$(document).ready(function() {
-						var data = ${fns:toJson(rentContract.accountList)};
-						for (var i=0; i<data.length; i++){
-							addRow('#accountList', accountRowIdx, accountTpl, data[i]);
-							accountRowIdx = accountRowIdx + 1;
-						}
-					});
-				</script>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">应出费用：</label>
-			<div class="controls">
-				<table id="contentTable"
-					class="table table-striped table-bordered table-condensed">
-					<thead>
-						<tr>
-							<th class="hide"></th>
-							<th>费用类型</th>
-							<th>费用金额</th>
-							<th width="10">&nbsp;</th>
-						</tr>
-					</thead>
-					<tbody id="outAccountList">
-						<c:forEach items="${outAccountList}" var="outItem"
-							varStatus="status">
-							<tr id="outAccountList${status.index}">
-								<td class="hide"><input
-									id="outAccountList${status.index}_id"
-									name="outAccountList[${status.index}].id" type="hidden" /> <input
-									id="outAccountList${status.index}_delFlag"
-									name="outAccountList[${status.index}].delFlag" type="hidden"
-									value="0" /></td>
-								<td><select id="outAccountList${status.index}_feeType"
-									name="outAccountList[${status.index}].feeType" class="required"
-									style="width: 220px;">
-										<option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
-								</select> <span class="help-inline"><font color="red">*</font> </span></td>
-								<td><input id="outAccountList${status.index}_feeAmount"
-									name="outAccountList[${status.index}].feeAmount" type="text"
-									value="${outItem.feeAmount}" maxlength="255"
-									class="input-small required number" onblur="calculateTotalAmt()"/> <span
-									class="help-inline"><font color="red">*</font> </span></td>
-								<td class="text-center" width="10"><span class="close"
-									onclick="delRow(this, '#outAccountList${status.index}')"
-									title="删除">&times;</span></td>
-							</tr>
-						</c:forEach>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td colspan="4"><a href="javascript:"
-								onclick="addRow('#outAccountList', outAccountRowIdx, outAccountTpl);outAccountRowIdx = outAccountRowIdx + 1;"
-								class="btn">新增</a></td>
-						</tr>
-					</tfoot>
-				</table>
-				<script type="text/template" id="outAccountTpl">//<!--
+            </script>
+            <script type="text/javascript">
+                var accountRowIdx = ${accountSize},
+                    accountTpl = $("#accountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g, "");
+                $(document).ready(function () {
+                    var data = ${fns:toJson(rentContract.accountList)};
+                    for (var i = 0; i < data.length; i++) {
+                        addRow('#accountList', accountRowIdx, accountTpl, data[i]);
+                        accountRowIdx = accountRowIdx + 1;
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">应出费用：</label>
+        <div class="controls">
+            <table id="contentTable"
+                   class="table table-striped table-bordered table-condensed">
+                <thead>
+                <tr>
+                    <th class="hide"></th>
+                    <th>费用类型</th>
+                    <th>费用金额</th>
+                    <th width="10">&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody id="outAccountList">
+                <c:forEach items="${outAccountList}" var="outItem"
+                           varStatus="status">
+                    <tr id="outAccountList${status.index}">
+                        <td class="hide"><input
+                                id="outAccountList${status.index}_id"
+                                name="outAccountList[${status.index}].id" type="hidden"/> <input
+                                id="outAccountList${status.index}_delFlag"
+                                name="outAccountList[${status.index}].delFlag" type="hidden"
+                                value="0"/></td>
+                        <td><select id="outAccountList${status.index}_feeType"
+                                    name="outAccountList[${status.index}].feeType" class="required"
+                                    style="width: 220px;">
+                            <option value="${outItem.feeType}">${fns:getDictLabel(outItem.feeType, 'payment_type', '')}</option>
+                        </select> <span class="help-inline"><font color="red">*</font> </span></td>
+                        <td><input id="outAccountList${status.index}_feeAmount"
+                                   name="outAccountList[${status.index}].feeAmount" type="text"
+                                   value="${outItem.feeAmount}" maxlength="255"
+                                   class="input-small required number" onblur="calculateTotalAmt()"/> <span
+                                class="help-inline"><font color="red">*</font> </span></td>
+                        <td class="text-center" width="10"><span class="close"
+                                                                 onclick="delRow(this, '#outAccountList${status.index}')"
+                                                                 title="删除">&times;</span></td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="4"><a href="javascript:"
+                                       onclick="addRow('#outAccountList', outAccountRowIdx, outAccountTpl);outAccountRowIdx = outAccountRowIdx + 1;"
+                                       class="btn">新增</a></td>
+                </tr>
+                </tfoot>
+            </table>
+            <script type="text/template" id="outAccountTpl">//<!--
 						<tr id="outAccountList{{idx}}">
 							<td class="hide">
 								<input id="outAccountList{{idx}}_id" name="outAccountList[{{idx}}].id" type="hidden" value="{{row.id}}"/>
@@ -259,48 +262,49 @@
 								{{#delBtn}}<span class="close" onclick="delRow(this, '#outAccountList{{idx}}')" title="删除">&times;</span>{{/delBtn}}
 							</td>
 						</tr>//-->
-				</script>
-				<script type="text/javascript">
-					var outAccountRowIdx = ${outAccountSize}, outAccountTpl = $("#outAccountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g,"");
-					$(document).ready(function() {
-						var data = ${fns:toJson(rentContract.outAccountList)};
-						for (var i=0; i<data.length; i++){
-							addRow('#outAccountList', outAccountRowIdx, outAccountTpl, data[i]);
-							outAccountRowIdx = outAccountRowIdx + 1;
-						}
-					});
-				</script>
-			</div>
-		</div>
-		<div class="control-group">
-			<font color="red"> <label class="control-label">费用总计：</label>
-				<div id="totalRefundAmount" class="controls">${totalRefundAmount}元</div>
-			</font>
-		</div>
-		<div class="control-group">
-			<label class="control-label">备注：</label>
-			<div class="controls">
-			  <c:if test="${rentContract.tradeType=='6' || rentContract.tradeType=='9'}">
-				 应退房租=已缴房租总额-(月租金*12/365)*总入住天数=${totalFee}-(${rental}*12/365)*${dates}		  
-			  </c:if>
-			  <c:if test="${rentContract.tradeType=='8'}">
-				逾补房租=(月租金*12/365)*逾补天数=(${rental}*12/365)*${dates}		  
-			  </c:if>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">退租备注：</label>
-			<div class="controls">
-				<form:textarea path="returnRemark" htmlEscape="false" rows="4"
-					maxlength="255" class="input-xxlarge " />
-			</div>
-		</div>
-		<div class="form-actions">
-			<shiro:hasPermission name="contract:rentContract:edit">
-				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()" />&nbsp;
-			</shiro:hasPermission>
-			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)" />
-		</div>
-	</form:form>
+            </script>
+            <script type="text/javascript">
+                var outAccountRowIdx = ${outAccountSize},
+                    outAccountTpl = $("#outAccountTpl").html().replace(/(\/\/\<!\-\-)|(\/\/\-\->)/g, "");
+                $(document).ready(function () {
+                    var data = ${fns:toJson(rentContract.outAccountList)};
+                    for (var i = 0; i < data.length; i++) {
+                        addRow('#outAccountList', outAccountRowIdx, outAccountTpl, data[i]);
+                        outAccountRowIdx = outAccountRowIdx + 1;
+                    }
+                });
+            </script>
+        </div>
+    </div>
+    <div class="control-group">
+        <font color="red"> <label class="control-label">费用总计：</label>
+            <div id="totalRefundAmount" class="controls">${totalRefundAmount}元</div>
+        </font>
+    </div>
+    <div class="control-group">
+        <label class="control-label">备注：</label>
+        <div class="controls">
+            <c:if test="${rentContract.tradeType=='6' || rentContract.tradeType=='9'}">
+                应退房租=已缴房租总额-(月租金*12/365)*总入住天数=${totalFee}-(${rental}*12/365)*${dates}
+            </c:if>
+            <c:if test="${rentContract.tradeType=='8'}">
+                逾补房租=(月租金*12/365)*逾补天数=(${rental}*12/365)*${dates}
+            </c:if>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">退租备注：</label>
+        <div class="controls">
+            <form:textarea path="returnRemark" htmlEscape="false" rows="4"
+                           maxlength="255" class="input-xxlarge "/>
+        </div>
+    </div>
+    <div class="form-actions">
+        <shiro:hasPermission name="contract:rentContract:edit">
+            <input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存" onclick="submitData()"/>&nbsp;
+        </shiro:hasPermission>
+        <input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+    </div>
+</form:form>
 </body>
 </html>

@@ -5,7 +5,6 @@ import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.utils.DateUtils;
-import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.app.entity.Message;
 import com.thinkgem.jeesite.modules.app.service.MessageService;
 import com.thinkgem.jeesite.modules.common.enums.DataSourceEnum;
@@ -34,6 +33,7 @@ import com.thinkgem.jeesite.modules.report.service.FeeReportService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -348,8 +348,12 @@ public class RentContractController extends CommonBusinessController {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能正常退租!");
             return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
         }
+        String returnDateStr = rentContract.getReturnDateStr();
         rentContract = rentContractService.get(rentContract.getId());
         rentContract.setContractBusiStatus(ContractBusiStatusEnum.NORMAL_RETURN_ACCOUNT.getValue());
+        if (StringUtils.isNotEmpty(returnDateStr)) {
+            rentContract.setReturnDate(DateUtils.parseDate(returnDateStr));
+        }
         rentContractService.save(rentContract);
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "正常退租成功，接下来请进行正常退租核算！");
         feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
@@ -376,9 +380,13 @@ public class RentContractController extends CommonBusinessController {
     @RequestMapping(value = "earlyReturnContract")
     public String earlyReturnContract(RentContract rentContract, RedirectAttributes redirectAttributes) {
         String rentContractId = rentContract.getId();
+        String returnDateStr = rentContract.getReturnDateStr();
         paymentTransService.deleteNotSignPaymentTrans(rentContractId);
         rentContract = rentContractService.get(rentContractId);
         rentContract.setContractBusiStatus(ContractBusiStatusEnum.EARLY_RETURN_ACCOUNT.getValue());
+        if (StringUtils.isNotEmpty(returnDateStr)) {
+            rentContract.setReturnDate(DateUtils.parseDate(returnDateStr));
+        }
         rentContractService.save(rentContract);
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "提前退租成功，接下来请进行提前退租核算！");
         feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
@@ -410,7 +418,11 @@ public class RentContractController extends CommonBusinessController {
             addMessage(redirectAttributes, ViewMessageTypeEnum.ERROR, "有款项未到账,不能逾期退租!");
             return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
         }
+        String returnDateStr = rentContract.getReturnDateStr();
         rentContract = rentContractService.get(rentContract.getId());
+        if (StringUtils.isNotEmpty(returnDateStr)) {
+            rentContract.setReturnDate(DateUtils.parseDate(returnDateStr));
+        }
         rentContract.setContractBusiStatus(ContractBusiStatusEnum.LATE_RETURN_ACCOUNT.getValue());
         rentContractService.save(rentContract);
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "逾期退租成功，接下来请进行逾期退租核算！");
@@ -424,10 +436,10 @@ public class RentContractController extends CommonBusinessController {
     @RequiresPermissions("contract:rentContract:specialreturn")
     @RequestMapping(value = "specialReturnContract")
     public String specialReturnContract(RentContract rentContract, Model model, RedirectAttributes redirectAttributes) {
-        String returnDate = rentContract.getReturnDate();// 用户指定的特殊退租的退租日期
+        String returnDateStr = rentContract.getReturnDateStr();// 用户指定的实际退租日期
         String contractId = rentContract.getId();
         rentContract = rentContractService.get(contractId);
-        rentContract.setReturnDate(returnDate);
+        rentContract.setReturnDateStr(returnDateStr);
         rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
         List<Accounting> outAccountList = genOutAccountListBack(rentContract, false);// 应出核算项列表
         List<Accounting> inAccountList = genInAccountListBack(rentContract, false, false);// 应收核算项列表
@@ -544,11 +556,7 @@ public class RentContractController extends CommonBusinessController {
     @RequestMapping(value = "returnCheck")
     public String returnCheck(RentContract rentContract, RedirectAttributes redirectAttributes) {
         rentContractService.returnCheck(rentContract, rentContract.getTradeType());
-        if (StringUtils.isNotEmpty(rentContract.getReturnDate())) {
-            addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "特殊退租成功！");
-        } else {
-            addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "退租核算成功！");
-        }
+        addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "操作成功！");
         return "redirect:" + Global.getAdminPath() + "/contract/rentContract/?repage";
     }
 
@@ -586,8 +594,8 @@ public class RentContractController extends CommonBusinessController {
         outAccountings.add(accounting);
         // 应退房租(提前退租或特殊退租)
         Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
-        String returnDate = rentContract.getReturnDate();// 如果是特殊退租，用户指定的退租日期
-        if (isPre || (StringUtils.isNotEmpty(returnDate) && paidExpiredDate.after(DateUtils.parseDate(returnDate)))) {
+        String returnDateStr = rentContract.getReturnDateStr();// 如果是特殊退租，用户指定的退租日期
+        if (isPre || (StringUtils.isNotEmpty(returnDateStr) && paidExpiredDate.after(DateUtils.parseDate(returnDateStr)))) {
             Accounting preBackRentalAcc = new Accounting();
             preBackRentalAcc.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
             preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentContract.getRental()));
@@ -762,7 +770,7 @@ public class RentContractController extends CommonBusinessController {
     private Double commonCalculateBackAmount(RentContract rentContract, String paymentType, double monthFeeAmount) {
         Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
         Date endDate = new Date();
-        if (StringUtils.isNotEmpty(rentContract.getReturnDate())) {// 特殊退租时
+        if (StringUtils.isNotEmpty(rentContract.getReturnDateStr())) {// 特殊退租时
             endDate = DateUtils.parseDate(rentContract.getReturnDate());
         }
         double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数

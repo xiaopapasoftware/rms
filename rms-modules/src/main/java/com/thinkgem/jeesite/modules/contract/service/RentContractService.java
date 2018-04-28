@@ -210,12 +210,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     @Transactional(readOnly = false)
     public void returnCheck(RentContract rentContract, String tradeType) {
         String returnRemark = rentContract.getReturnRemark();
-        String returnDate = rentContract.getReturnDate();
+        String returnDateStr = rentContract.getReturnDateStr();
         List<Accounting> accountList = rentContract.getAccountList();
         List<Accounting> outAccountList = rentContract.getOutAccountList();
         rentContract = super.get(rentContract.getId());
-        if (StringUtils.isNotEmpty(returnDate)) {
-            rentContract.setReturnDate(returnDate);
+        if (StringUtils.isNotEmpty(returnDateStr)) {
+            rentContract.setReturnDateStr(returnDateStr);
+            rentContract.setReturnDate(DateUtils.parseDate(returnDateStr));
         }
         if (!TradeTypeEnum.SPECIAL_RETURN_RENT.getValue().equals(tradeType)) {// 特殊退租与其他退租类型不同，需要人工先进行审核
             rentContract.setContractBusiStatus(ContractBusiStatusEnum.ACCOUNT_DONE_TO_SIGN.getValue());
@@ -737,7 +738,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                         shareOverdueAmt(feeDate, rentContract.getExpiredDate(), feeAmt, rentContract, paymentTransId, feeDirection);
                     }
                 } else {
-                    feeDate = DateUtils.parseDate(rentContract.getReturnDate());
+                    feeDate = DateUtils.parseDate(rentContract.getReturnDateStr());
                 }
                 saveAccounting(feeDate, paymentTransId, tradeType, accounting, rentContract, feeDirection);
             }

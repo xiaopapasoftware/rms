@@ -140,6 +140,7 @@ CREATE TABLE T_RENT_CONTRACT
   START_DATE              DATE COMMENT '合同生效时间',
   EXPIRED_DATE            DATE COMMENT '合同过期时间',
   SIGN_DATE               DATE COMMENT '合同签订时间',
+  return_Date             DATE COMMENT '实际退租日期',
   SIGN_TYPE               VARCHAR(64) COMMENT '合同签订类型',
   HAS_TV                  VARCHAR(64) COMMENT '是否开通有线电视',
   TV_FEE                  FLOAT COMMENT '有线电视每月费用',
@@ -182,8 +183,8 @@ CREATE TABLE T_RENT_CONTRACT
   COMMENT '返租促销减免房租月数',
   derate_Rent_Flag        CHAR(1)     DEFAULT '0'
   COMMENT '是否房租全免',
-  lease_term_months       INT COMMENT '房源租赁周期（月）',
-  PRIMARY KEY (ID)
+  lease_term_months       INT COMMENT '房源租赁周期（月）'
+    PRIMARY KEY (ID)
 )
   COMMENT = '出租合同';
 CREATE INDEX USER_ID_IDX
