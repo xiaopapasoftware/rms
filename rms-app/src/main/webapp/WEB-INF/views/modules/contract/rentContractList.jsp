@@ -306,6 +306,7 @@
         <th>签订时间</th>
         <th>生效时间</th>
         <th>过期时间</th>
+        <th>实际退房日期</th>
         <th>租赁周期（月）</th>
         <th>审核状态</th>
         <th>业务状态</th>
@@ -351,6 +352,9 @@
             </td>
             <td>
                 <fmt:formatDate value="${rentContract.expiredDate}" pattern="yyyy-MM-dd"/>
+            </td>
+            <td>
+                <fmt:formatDate value="${rentContract.returnDate}" pattern="yyyy-MM-dd"/>
             </td>
             <td>
                     ${rentContract.leaseTermMonths}
