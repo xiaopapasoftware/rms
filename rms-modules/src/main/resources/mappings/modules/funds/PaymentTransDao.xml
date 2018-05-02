@@ -205,8 +205,7 @@
 		transfer_deposit_amount =
 		#{transferDepositAmount},
 		trans_status = #{transStatus},
-		update_by =
-		#{updateBy.id},
+		update_by = #{updateBy.id},
 		update_date = #{updateDate},
 		remarks = #{remarks}
 		WHERE

@@ -502,8 +502,8 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 Double rentalAmt = rentContract.getRental();
                 if (rentalAmt != null && rentalAmt > 0 && !AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getDerateRentFlag())) { // 不免房租
                     genContractRentalPayTrans(tradeType, id, rentContract, monthCountDiff, rentalAmt);//生成房租款项
-                    if (rentContract.getHasFree() != null && AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getHasFree())) {
-                        genFreePayTrans(id, rentContract.getFreeMonths());// 若有返租促销
+                    if (rentContract.getHasFree() != null && AwardRentAmtTypeEnum.Y.getValue().equals(rentContract.getHasFree())) {// 若有返租促销
+                        genFreePayTrans(id, rentContract.getFreeMonths());
                     }
                 }
                 genContractFeesPayTrans(tradeType, id, rentContract, monthCountDiff); // 生成合同期内所有的费用款项
@@ -665,10 +665,14 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         }
     }
 
+    //把新签合同/续签合同交易类型下所有未到账的房租类型的款项按照时间正序排列后，再依次把前N个月的款项到账，同时生成对应的促销赠送房租款项
     private void genFreePayTrans(String rentContractId, Integer freeMonths) {
+        float i = ((float) freeMonths) / 100;
+        int intNum = (int) i; //整数部分
+        float floatNum = Float.valueOf(String.format("%.2f", i - (int) i));//小数部分，保留两位
         List<PaymentTrans> transList = paymentTransService.queryNoSignPaymentsByTransId(rentContractId);
-        if (transList.size() >= freeMonths) {
-            transList.stream().limit(freeMonths).forEach(trans -> {
+        if (transList.size() >= intNum + (floatNum > 0 && floatNum < 1 ? 1 : 0)) {
+            transList.stream().limit(intNum).forEach(trans -> {
                 paymentTransService.freePaymentById(trans.getId());
                 PaymentTrans freeTrans = new PaymentTrans();
                 BeanUtils.copyProperties(trans, freeTrans);
@@ -680,6 +684,24 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 freeTrans.setId(null);
                 paymentTransService.save(freeTrans);
             });
+            if (floatNum > 0 && floatNum < 1) {//单独处理小数部分
+                PaymentTrans p = transList.get(intNum);//部分到账
+                double amt = Double.valueOf(String.format("%.2f", p.getTradeAmount() * floatNum));
+                p.setTransAmount(amt);
+                p.setLastAmount(Double.valueOf(String.format("%.2f", p.getTradeAmount() - amt)));
+                p.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
+                paymentTransService.save(p);
+                PaymentTrans freeTrans = new PaymentTrans();
+                BeanUtils.copyProperties(p, freeTrans);
+                freeTrans.setPaymentType(PaymentTransTypeEnum.AWARD_RENT_AMT.getValue());
+                freeTrans.setTradeDirection(TradeDirectionEnum.OUT.getValue());
+                freeTrans.setTradeAmount(amt);
+                freeTrans.setTransAmount(amt);
+                freeTrans.setLastAmount(0d);
+                freeTrans.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+                freeTrans.setId(null);
+                paymentTransService.save(freeTrans);
+            }
         }
     }
 

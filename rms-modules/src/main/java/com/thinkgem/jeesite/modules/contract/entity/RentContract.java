@@ -100,7 +100,7 @@ public class RentContract extends DataEntity<RentContract> {
     private String dataSource;
     private String updateUser;
     private String hasFree;  //是否返租促销
-    private Integer freeMonths; //返租促销减免的房租月数
+    private Integer freeMonths; //返租促销减免房租金额占月租的百分比（填写的数字为百分比系数，如要减免半个月房租则填50，减免一个月房租则填100，减免一个半月房租则填150，减免两个月房租则填200，以此类推...）
     private List<String> contractBusiStatusList;// 用于查询合同列表的状态集合，仅用于特定业务场景合同查询
     private String derateRentFlag;//是否房租全免 1-全免；0-不免
     private Integer leaseTermMonths;//房源租赁周期（月）
@@ -740,5 +740,13 @@ public class RentContract extends DataEntity<RentContract> {
 
     public void setRefContractName(String refContractName) {
         this.refContractName = refContractName;
+    }
+
+    public static void main(String[] args) {
+        float i = 50;
+        float a = i / 100;
+        System.out.println(a);
+        System.out.println((int) a);
+        System.out.println(String.format("%.2f", a - (int) a));
     }
 }

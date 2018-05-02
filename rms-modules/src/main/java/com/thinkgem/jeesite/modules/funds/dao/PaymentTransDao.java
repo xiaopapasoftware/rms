@@ -21,11 +21,6 @@ public interface PaymentTransDao extends CrudDao<PaymentTrans> {
 
     /**
      * 查询某个房屋下合同指定时间内进账款项
-     *
-     * @param startDate
-     * @param endDate
-     * @param transIdList
-     * @return
      */
     List<PaymentTrans> queryIncomePaymentByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transIdList") List<String> transIdList);
 
@@ -35,12 +30,12 @@ public interface PaymentTransDao extends CrudDao<PaymentTrans> {
     List<PaymentTrans> queryOutAwardRentsPaymentSByTransIdAndTime(@Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("transIdList") List<String> transIdList);
 
     /**
-     * 查询合同下未到账的款项
+     * 查询新签合同/续签合同交易类型下，未到账的房租类型款项
      */
     List<PaymentTrans> queryNoSignPaymentsByTransId(String transId);
 
     /**
-     * 促销优惠改变款项状态为完全到账
+     * 指定id的款项完全到账（金额、状态）
      */
     void freePaymentById(String id);
 

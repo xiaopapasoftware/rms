@@ -179,10 +179,8 @@ CREATE TABLE T_RENT_CONTRACT
   COMMENT '删除标记',
   HAS_FREE                CHAR(1)     DEFAULT '0'
   COMMENT '是否返租促销',
-  FREE_MONTHS             INT(11)     DEFAULT 0
-  COMMENT '返租促销减免房租月数',
-  derate_Rent_Flag        CHAR(1)     DEFAULT '0'
-  COMMENT '是否房租全免',
+  FREE_MONTHS             INT(11)     DEFAULT 0 COMMENT '返租促销减免房租金额占月租的百分比（填写的数字为百分比系数，如要减免半个月房租则填50，减免一个月房租则填100，减免一个半月房租则填150，减免两个月房租则填200，以此类推...）',
+  derate_Rent_Flag        CHAR(1)     DEFAULT '0'  COMMENT '是否房租全免',
   lease_term_months       INT COMMENT '房源租赁周期（月）'
     PRIMARY KEY (ID)
 )

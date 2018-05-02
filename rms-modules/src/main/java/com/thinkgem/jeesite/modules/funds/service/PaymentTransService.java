@@ -306,6 +306,9 @@ public class PaymentTransService extends CrudService<PaymentTransDao, PaymentTra
         return paymentTransDao.queryOutAwardRentsPaymentSByTransIdAndTime(startDate, endDate, transIdList);
     }
 
+    /**
+     * 查询新签合同/续签合同交易类型下未到账的房租类型款项
+     */
     public List<PaymentTrans> queryNoSignPaymentsByTransId(String transId) {
         return paymentTransDao.queryNoSignPaymentsByTransId(transId);
     }

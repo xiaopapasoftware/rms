@@ -109,12 +109,12 @@
                 submitHandler: function (form) {
                     var freeMonths = $('#freeMonths').val();
                     if ($("#hasFree").attr('checked') && (freeMonths == null || freeMonths == "" || freeMonths == undefined)) {
-                        top.$.jBox.tip('减免房租不可为空！', 'warning');
+                        top.$.jBox.tip('减免房租所占月租百分比不可为空！', 'warning');
                         return;
                     }
                     var number = parseFloat(freeMonths);
-                    if ($("#hasFree").attr('checked') && (number > 10 || number <= 0)) {
-                        top.$.jBox.tip('减免房租至少为1个月且不可超过10个月！', 'warning');
+                    if ($("#hasFree").attr('checked') && number <= 0) {
+                        top.$.jBox.tip('减免房租所占月租百分比不能为负数！', 'warning');
                         return;
                     }
                     var rental = $("#rental").val();
@@ -712,10 +712,10 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">返租促销减免房租月数：</label>
+        <label class="control-label">返租促销减免房租金额占月租的百分比（填写的数字为百分比系数，如要减免半个月房租则填50，减免一个月房租则填100，减免一个半月房租则填150，减免两个月房租则填200，以此类推）：</label>
         <div class="controls">
             <form:input type="number" placeholder="请填写正整数" id="freeMonths" path="freeMonths" htmlEscape="false"
-                        maxlength="2" class="input-xlarge  digits" disabled="true"/>
+                        maxlength="3" class="input-xlarge  digits" disabled="true"/><font color="red" size="6px">%</font>
         </div>
     </div>
     <div class="control-group">
