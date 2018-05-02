@@ -443,7 +443,7 @@ public class RentContractController extends CommonBusinessController {
         rentContract.setTradeType(TradeTypeEnum.SPECIAL_RETURN_RENT.getValue());
         List<Accounting> outAccountList = genOutAccountListBack(rentContract, false);// 应出核算项列表
         List<Accounting> inAccountList = genInAccountListBack(rentContract, false, false);// 应收核算项列表
-        model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), DateUtils.parseDate(rentContract.getReturnDate())));// 已住天数
+        model.addAttribute("dates", DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), DateUtils.parseDate(rentContract.getReturnDateStr())));// 已住天数
         model.addAttribute("totalFee", commonCalculateTotalAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue()));
         model.addAttribute("rental", rentContract.getRental());
         model.addAttribute("outAccountList", outAccountList);
@@ -771,7 +771,7 @@ public class RentContractController extends CommonBusinessController {
         Double totalAmount = commonCalculateTotalAmount(rentContract, paymentType);
         Date endDate = new Date();
         if (StringUtils.isNotEmpty(rentContract.getReturnDateStr())) {// 特殊退租时
-            endDate = DateUtils.parseDate(rentContract.getReturnDate());
+            endDate = DateUtils.parseDate(rentContract.getReturnDateStr());
         }
         double dates = DateUtils.getDistanceOfTwoDate(rentContract.getStartDate(), endDate);// 实际入住天数
         double dailyFee = monthFeeAmount * 12 / 365;// 平摊到每天的费用金额
