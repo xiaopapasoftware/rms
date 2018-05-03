@@ -669,7 +669,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     private void genFreePayTrans(String rentContractId, Integer freeMonths) {
         float i = ((float) freeMonths) / 100;
         int intNum = (int) i; //整数部分
-        float floatNum = Float.valueOf(String.format("%.2f", i - (int) i));//小数部分，保留两位
+        float floatNum = Float.valueOf(String.format("%.2f", i - intNum));//小数部分，保留两位
         List<PaymentTrans> transList = paymentTransService.queryNoSignPaymentsByTransId(rentContractId);
         if (transList.size() >= intNum + (floatNum > 0 && floatNum < 1 ? 1 : 0)) {
             transList.stream().limit(intNum).forEach(trans -> {
@@ -688,8 +688,13 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
                 PaymentTrans p = transList.get(intNum);//部分到账
                 double amt = Double.valueOf(String.format("%.2f", p.getTradeAmount() * floatNum));
                 p.setTransAmount(amt);
-                p.setLastAmount(Double.valueOf(String.format("%.2f", p.getTradeAmount() - amt)));
-                p.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
+                double lastAmt = Double.valueOf(String.format("%.2f", p.getTradeAmount() - amt));
+                p.setLastAmount(lastAmt);
+                if (lastAmt > 0 && lastAmt < p.getTradeAmount()) {
+                    p.setTransStatus(PaymentTransStatusEnum.PART_SIGN.getValue());
+                } else {
+                    p.setTransStatus(PaymentTransStatusEnum.WHOLE_SIGN.getValue());
+                }
                 paymentTransService.save(p);
                 PaymentTrans freeTrans = new PaymentTrans();
                 BeanUtils.copyProperties(p, freeTrans);
