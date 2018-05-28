@@ -32,6 +32,7 @@
         trc.meter_value,
         trc.coal_value,
         trc.remarks,
+        trc.create_date,
         <!--销售-->
         ifnull(tpner.PARTNER_NAME,ifnull(sell.name,'')) as sell_name,
         case trc.contract_source when 0 then '合作' when 1 then '本部' end contract_source,

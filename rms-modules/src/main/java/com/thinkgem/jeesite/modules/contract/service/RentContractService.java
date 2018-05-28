@@ -25,6 +25,8 @@ import com.thinkgem.jeesite.modules.funds.service.PaymentTransService;
 import com.thinkgem.jeesite.modules.funds.service.PaymenttransDtlService;
 import com.thinkgem.jeesite.modules.inventory.entity.House;
 import com.thinkgem.jeesite.modules.inventory.entity.Room;
+import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
+import com.thinkgem.jeesite.modules.inventory.enums.RoomStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.HouseService;
 import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.dao.TenantDao;
@@ -43,6 +45,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -909,5 +912,27 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
     public List<RentContract> getByRentContract(RentContract rentContract) {
         return dao.getByRentContract(rentContract);
     }
+
+    /**
+     * 根据合同ID修改房源状态 为可出租
+     * @param contractId
+     */
+    public void updateHouseRendStatusByContractId(String contractId){
+        RentContract rentContract = dao.get(contractId);
+        if(Objects.nonNull(rentContract)){
+            if(StringUtils.equals(RentModelTypeEnum.WHOLE_RENT.getValue(),rentContract.getRentMode())){
+                House house = new House();
+                house.setId(rentContract.getHouse().getHouseId());
+                house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
+                houseService.save(house);
+            }else{
+                Room room = new Room();
+                room.setId(rentContract.getRoom().getId());
+                room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
+                roomService.save(room);
+            }
+        }
+    }
+
 
 }
