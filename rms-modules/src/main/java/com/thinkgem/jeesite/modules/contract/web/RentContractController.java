@@ -1168,9 +1168,9 @@ public class RentContractController extends CommonBusinessController {
         paymentTransService.deletePaymentTransAndTradingAcctouns(rentContract.getId());
         postpaidFeeService.delRentContract(rentContract.getId());
         feeReportService.deleteFeeReportByRentContractId(rentContract.getId());
+        rentContractService.updateHouseRendStatusByContractId(rentContract.getId());
         rentContract.preUpdate();
         rentContractService.delete(rentContract);
-        rentContractService.updateHouseRendStatusByContractId(rentContract.getContractId());
         addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "删除成功！");
         return "redirect:" + Global.getAdminPath() + "/contract/rentContract/";
     }

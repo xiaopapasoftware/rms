@@ -921,13 +921,11 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         RentContract rentContract = dao.get(contractId);
         if(Objects.nonNull(rentContract)){
             if(StringUtils.equals(RentModelTypeEnum.WHOLE_RENT.getValue(),rentContract.getRentMode())){
-                House house = new House();
-                house.setId(rentContract.getHouse().getHouseId());
+                House house = houseService.get(rentContract.getHouse().getId());
                 house.setHouseStatus(HouseStatusEnum.RENT_FOR_RESERVE.getValue());
                 houseService.save(house);
             }else{
-                Room room = new Room();
-                room.setId(rentContract.getRoom().getId());
+                Room room = roomService.get(rentContract.getRoom().getId());
                 room.setRoomStatus(RoomStatusEnum.RENT_FOR_RESERVE.getValue());
                 roomService.save(room);
             }
