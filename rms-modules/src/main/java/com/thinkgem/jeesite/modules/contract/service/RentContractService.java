@@ -917,6 +917,7 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
      * 根据合同ID修改房源状态 为可出租
      * @param contractId
      */
+    @Transactional(readOnly = false)
     public void updateHouseRendStatusByContractId(String contractId){
         RentContract rentContract = dao.get(contractId);
         if(Objects.nonNull(rentContract)){
