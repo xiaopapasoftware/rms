@@ -7,6 +7,12 @@
     <script type="text/javascript">
         $(document).ready(function () {
             top.$.jBox.tip.mess = null;
+
+            $("#btnExport").click(function() {
+                $("#searchForm").attr("action", "${ctx}/inventory/house/exportHouse");
+                $("#searchForm").submit();
+                $("#searchForm").attr("action", "${ctx}/inventory/house/list");
+            });
         });
 
         function page(n, s) {
@@ -154,10 +160,9 @@
             </form:select>
         </li>
         <shiro:hasPermission name="inventory:house:view">
-            <li class="btns">
-                <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
-            <li class="clearfix">
-            </li>
+            <li class="btns"> <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+            <li class="btns"> <input id="btnExport" class="btn btn-primary" type="button" value="导出"/></li>
+            <li class="clearfix"> </li>
         </shiro:hasPermission>
     </ul>
 </form:form>

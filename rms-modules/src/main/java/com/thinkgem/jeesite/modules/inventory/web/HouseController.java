@@ -4,19 +4,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.thinkgem.jeesite.common.config.Global;
 import com.thinkgem.jeesite.common.enums.ViewMessageTypeEnum;
 import com.thinkgem.jeesite.common.persistence.Page;
+import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
+import com.thinkgem.jeesite.common.utils.excel.ExportExcel;
 import com.thinkgem.jeesite.modules.contract.web.CommonBusinessController;
-import com.thinkgem.jeesite.modules.inventory.entity.Building;
-import com.thinkgem.jeesite.modules.inventory.entity.House;
-import com.thinkgem.jeesite.modules.inventory.entity.HouseOwner;
-import com.thinkgem.jeesite.modules.inventory.entity.PropertyProject;
+import com.thinkgem.jeesite.modules.inventory.entity.*;
 import com.thinkgem.jeesite.modules.inventory.enums.HouseStatusEnum;
 import com.thinkgem.jeesite.modules.inventory.service.HouseOwnerService;
+import com.thinkgem.jeesite.modules.lease.condition.LeaseStatisticsCondition;
+import com.thinkgem.jeesite.modules.lease.entity.LeaseStatistics;
 import com.thinkgem.jeesite.modules.person.entity.Owner;
 import com.thinkgem.jeesite.modules.person.service.OwnerService;
 import com.thinkgem.jeesite.modules.utils.DictUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +31,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "${adminPath}/inventory/house")
@@ -107,6 +111,38 @@ public class HouseController extends CommonBusinessController {
         house.setBuilding(building);
         house.setChoose(building.getChoose());// 过滤不可用
         return houseService.findList(house);
+    }
+
+    @RequestMapping(value = "exportHouse")
+    public void exportHouse(Model model, House house, HttpServletResponse response) {
+        String fileName = "房屋导出报表" + DateUtils.formatDate(new Date());
+        List<House> houses = houseService.findList(house);
+
+        List<HouseVO> houseVOS = houses.stream().map(h->{
+            HouseVO houseVO = new HouseVO();
+            BeanUtils.copyProperties(h,houseVO);
+            houseVO.setProjectName(h.getPropertyProject().getProjectName());
+            houseVO.setBuildingName(h.getBuilding().getBuildingName());
+            houseVO.setIsFeature(DictUtils.getDictLabel(h.getIsFeature(),"yes_no",""));
+            houseVO.setBuildingType(DictUtils.getDictLabel(h.getBuilding().getType(),"building_type",""));
+            houseVO.setHouseStatus(DictUtils.getDictLabel(h.getHouseStatus(),"house_status",""));
+            houseVO.setOriStruName("" + h.getOriStrucRoomNum() + "房" + h.getOriStrucCusspacNum() + "厅" + h.getOriStrucWashroNum() + "卫");
+            houseVO.setDecoraStrucName("" + h.getDecoraStrucRoomNum() + " 房" + h.getDecoraStrucCusspacNum() + "厅" + h.getDecoraStrucWashroNum() + "卫");
+            houseVO.setAlipayName(StringUtils.equals("1","" + h.getAlipayStatus())?"已同步":"未同步");
+            if(StringUtils.equals("1","" + h.getAlipayStatus()) && StringUtils.equals("" + h.getUp(),"1")){
+                houseVO.setAlipayStatusName("已上架");
+            }else {
+                houseVO.setAlipayStatusName("未上架");
+            }
+
+            return houseVO;
+        }).collect(Collectors.toList());
+
+        try {
+            new ExportExcel(fileName, HouseVO.class).setDataList(houseVOS).write(response, fileName  + ".xlsx").dispose();
+        } catch (Exception e) {
+            addMessage(model, ViewMessageTypeEnum.ERROR, "导出房屋报表失败！失败信息：" + e.getMessage());
+        }
     }
 
     @RequiresPermissions("inventory:house:view")
