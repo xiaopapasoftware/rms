@@ -130,6 +130,7 @@
                 $("#${input}_upload_file").val("");
             },
             error: function (err) {
+                console.log(err);
                 alert(err);
             }
         });

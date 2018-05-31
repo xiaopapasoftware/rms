@@ -49,7 +49,6 @@ public class Receipt extends DataEntity<Receipt> {
     this.tradingAccounts = tradingAccounts;
   }
 
-  @Length(min = 1, max = 100, message = "收据号码长度必须介于 1 和 100 之间")
   public String getReceiptNo() {
     return receiptNo;
   }
