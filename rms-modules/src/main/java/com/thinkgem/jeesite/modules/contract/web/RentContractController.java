@@ -595,7 +595,7 @@ public class RentContractController extends CommonBusinessController {
         // 应退房租(提前退租或特殊退租)
         Date paidExpiredDate = paymentTransService.analysisMaxIncomedTransDate(rentContract);
         String returnDateStr = rentContract.getReturnDateStr();// 如果是特殊退租，用户指定的退租日期
-        if (isPre || (StringUtils.isNotEmpty(returnDateStr) && paidExpiredDate.after(DateUtils.parseDate(returnDateStr)))) {
+        if (isPre || (StringUtils.isNotEmpty(returnDateStr) && paidExpiredDate != null && paidExpiredDate.after(DateUtils.parseDate(returnDateStr)))) {
             Accounting preBackRentalAcc = new Accounting();
             preBackRentalAcc.setFeeType(PaymentTransTypeEnum.RETURN_RENT_AMOUNT.getValue());
             preBackRentalAcc.setFeeAmount(commonCalculateBackAmount(rentContract, PaymentTransTypeEnum.RENT_AMOUNT.getValue(), rentContract.getRental()));
