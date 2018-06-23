@@ -2,6 +2,7 @@ package com.thinkgem.jeesite.modules.contract.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.thinkgem.jeesite.modules.app.enums.AlipayHousingSyncStatus;
 import com.thinkgem.jeesite.modules.app.enums.UpEnum;
@@ -40,6 +41,8 @@ import com.thinkgem.jeesite.modules.inventory.service.RoomService;
 import com.thinkgem.jeesite.modules.person.entity.Tenant;
 import com.thinkgem.jeesite.modules.person.service.TenantService;
 import com.thinkgem.jeesite.modules.utils.UserUtils;
+
+import javax.swing.text.html.Option;
 
 /**
  * 定金协议Service
@@ -116,7 +119,7 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
             } else {
                 depositAgreement.setUpdateUser(UserUtils.getUser().getId());
             }
-            houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(), depositAgreement.getRoom().getId());
+            houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(), Optional.ofNullable(depositAgreement.getRoom()).orElse(new Room()).getId());
             paymentTransService.deletePaymentTransAndTradingAcctouns(depositAgreemId); // 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据
             depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue());
         }
