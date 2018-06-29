@@ -10,6 +10,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -249,7 +250,8 @@ public class TradingAccountsService extends CrudService<TradingAccountsDao, Trad
             depositAgreement.preUpdate();
             if (AuditStatusEnum.PASS.getValue().equals(auditStatus)) {
                 depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.BE_CONVERTED_BREAK.getValue());
-                houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(), depositAgreement.getRoom().getId());
+                houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(),
+                        Optional.ofNullable(depositAgreement.getRoom()).map(Room::getId).orElse(null));
             } else {
                 depositAgreement.setAgreementBusiStatus(AgreementBusiStatusEnum.CONVERTBREAK_AUDIT_REFUSE.getValue());
             }

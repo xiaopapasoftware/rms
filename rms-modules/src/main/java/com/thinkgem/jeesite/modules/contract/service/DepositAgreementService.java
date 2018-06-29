@@ -119,7 +119,8 @@ public class DepositAgreementService extends CrudService<DepositAgreementDao, De
             } else {
                 depositAgreement.setUpdateUser(UserUtils.getUser().getId());
             }
-            houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(), Optional.ofNullable(depositAgreement.getRoom()).orElse(new Room()).getId());
+            houseService.cancelDepositHouseAndRoomDepositState(depositAgreement.getRentMode(), depositAgreement.getHouse().getId(),
+                    Optional.ofNullable(depositAgreement.getRoom()).map(Room::getId).orElse(null));
             paymentTransService.deletePaymentTransAndTradingAcctouns(depositAgreemId); // 删除对象下所有的款项，账务，款项账务关联关系，以及相关收据
             depositAgreement.setAgreementStatus(AgreementAuditStatusEnum.CONTENT_AUDIT_REFUSE.getValue());
         }
