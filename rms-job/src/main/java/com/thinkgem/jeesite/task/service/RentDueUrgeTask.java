@@ -64,7 +64,7 @@ public class RentDueUrgeTask {
         final int[] count = {0};
         List<Map> reminderList = new ArrayList<>();
         maps.stream().forEach(map -> {
-            String expiredDate = MapUtils.getString(map, "expiredDate");
+            //String expiredDate = MapUtils.getString(map, "expiredDate");
             String prePayDate = MapUtils.getString(map, "prePayDate");
             String tenantName = MapUtils.getString(map, "tenantName");
             String cellPhone = MapUtils.getString(map, "cellPhone");
@@ -77,11 +77,11 @@ public class RentDueUrgeTask {
                 remindMap.put("cellphone", cellPhones[i]);
                 reminderList.add(remindMap);
                 String str = cellPhones[i];
-                logger.info(DateUtils.getDateTime() + "开始给" + str + "发送房租交费提醒短信！");
-                logger.info("需要发短信的合同为：" + maps.toString());
-                logger.info("发送短信内容为:" + String.format(sms_template, prePayDate));
+                //logger.info(DateUtils.getDateTime() + "开始给" + str + "发送房租交费提醒短信！");
+                //logger.info("需要发短信的合同为：" + maps.toString());
+                //logger.info("发送短信内容为:" + String.format(sms_template, prePayDate));
                 smsService.sendSms(str, String.format(sms_template, prePayDate));
-                logger.info(DateUtils.getDateTime() + "给" + str + "发送房租交费提醒短信结束！");
+//                logger.info(DateUtils.getDateTime() + "给" + str + "发送房租交费提醒短信结束！");
             }
         });
         logger.info(String.format("短信发送结束时间:%s;总共发送%d条,发送人信息为:%s", DateUtils.getDateTime(), count[0], JsonUtil.object2Json(reminderList)));

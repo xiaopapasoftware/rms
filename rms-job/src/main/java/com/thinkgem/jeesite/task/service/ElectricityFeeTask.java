@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.task.service;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -126,6 +127,7 @@ public class ElectricityFeeTask {
         List<String> phoneList = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
         String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
         String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，" + differentContent + ",请及时充值。如您已充值，请忽略此短信。";
+        log.info("feeReport:{},phoneList:{},content:{}", JSON.toJSONString(feeReport),JSON.toJSON(phoneList),content);
         if (CollectionUtils.isNotEmpty(phoneList)) {
             phoneList.forEach(phone -> smsService.sendSms(phone, content));
         }

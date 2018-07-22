@@ -18,20 +18,16 @@ import com.thinkgem.jeesite.common.utils.PropertiesLoader;
 
 @Service
 public class SmsService {
-
     Logger log = LoggerFactory.getLogger(SmsService.class);
 
     public String sendSms(String phones, String content) {
         try {
-            Global global = Global.getInstance();
-            String sms_url = global.getConfig("sms.url");
-            String account = global.getConfig("sms.account");
-            String password = global.getConfig("sms.password");
+
             DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpPost post = new HttpPost(sms_url);
+            HttpPost post = new HttpPost(Global.getConfig("sms.url"));
             JSONObject jsonParam = new JSONObject();
-            jsonParam.put("account", account);
-            jsonParam.put("password", md5(password));
+            jsonParam.put("account", Global.getConfig("sms.account"));
+            jsonParam.put("password", md5(Global.getConfig("sms.password")));
             jsonParam.put("msgid", UUID.randomUUID().toString().replaceAll("-", ""));
             jsonParam.put("phones", phones);
             jsonParam.put("content", content);
@@ -43,7 +39,7 @@ public class SmsService {
             post.setEntity(entity);
             HttpResponse result = httpClient.execute(post);
             String resData = EntityUtils.toString(result.getEntity(), "UTF-8");
-            log.info("resData:" + resData);
+            log.debug("resData:" + resData);
         } catch (Exception e) {
             log.error("send sms error:", e);
         }
