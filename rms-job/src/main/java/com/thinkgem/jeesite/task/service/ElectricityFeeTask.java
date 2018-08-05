@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.task.service;
 
+import com.alibaba.fastjson.JSON;
 import com.thinkgem.jeesite.common.utils.DateUtils;
 import com.thinkgem.jeesite.common.utils.StringUtils;
 import com.thinkgem.jeesite.modules.common.service.SmsService;
@@ -59,7 +60,16 @@ public class ElectricityFeeTask {
     public void updateRoom() {
         log.info("------ElectricityFeeTask updateRoom()开始 执行 ------");
         List<FeeReport> feeReportList = feeReportService.getFeeReportList(size);
-        feeReportList.forEach(this::updateFeeReport);
+//        feeReportList.forEach(this::updateFeeReport);
+        for (FeeReport feeReport : feeReportList) {
+            try {
+                updateFeeReport(feeReport);
+            } catch (Exception ex) {
+                log.info("feeReport:{}", JSON.toJSONString(feeReport));
+                ex.printStackTrace();
+                continue;
+            }
+        }
         log.info("------ElectricityFeeTask updateRoom()结束 执行 ------");
     }
 
@@ -125,7 +135,7 @@ public class ElectricityFeeTask {
         List<String> phoneList = rentContractService.getTenantPhoneByRoomId(feeReport.getRoomId());
         String dateTime = DateUtils.formatDateTime(feeReport.getFeeTime());
         String content = "电费提醒服务：至" + dateTime + "，你的电费余额为" + feeReport.getRemainFee() + "元，" + differentContent + ",请及时充值。如您已充值，请忽略此短信。";
-        log.info("feeReport:{},phoneList:{},content:{}", feeReport.toString(), phoneList.toString(), content);
+        log.info("feeReport:{},phoneList:{},content:{}", feeReport.toString(), phoneList, content);
         if (CollectionUtils.isNotEmpty(phoneList)) {
             phoneList.forEach(phone -> smsService.sendSms(phone, content));
         }
