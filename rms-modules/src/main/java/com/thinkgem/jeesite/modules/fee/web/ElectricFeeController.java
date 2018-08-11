@@ -176,14 +176,15 @@ public class ElectricFeeController extends BaseController {
     RentContract rc = rentContractService.get(rentContractId);
     if (RentModelTypeEnum.WHOLE_RENT.getValue().equals(rc.getRentMode())) {
       return setValues(model, rc, electricFee.getChargeAmount().intValue(), "整租不能充值电费！");
-    } else {
+    }
+    /*else {
       Room room = roomService.get(rc.getRoom().getId());
       if (room != null) {
         if (StringUtils.isEmpty(room.getMeterNo())) {
           return setValues(model, rc, electricFee.getChargeAmount().intValue(), "该房间的电表号还没有进行设置，请先设置电表号!");
         }
       }
-    }
+    }*/
     electricFeeService.save(electricFee);
     addMessage(redirectAttributes, ViewMessageTypeEnum.SUCCESS, "电费充值申请成功提交！请等待审核结果。");
     return "redirect:" + Global.getAdminPath() + "/fee/electricFee/?repage";
