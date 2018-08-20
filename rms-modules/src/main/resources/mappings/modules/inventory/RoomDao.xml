@@ -360,7 +360,7 @@
     <select id="getValidFeeRoomList" resultType="Room">
 		select id AS id,
 		METER_NO AS meterNo
-		from t_room where METER_NO != '' and DEL_FLAG = '0' and id not in (select ROOM_id from t_fee_report)
+		from t_room where METER_NO != '' and DEL_FLAG = '0' and id not in (select ROOM_id from t_fee_report WHERE DEL_FLAG = '0')
 	</select>
 
     <select id="getByNewId" resultType="Room" parameterType="java.lang.String">
