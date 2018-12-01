@@ -24,10 +24,10 @@
 	</sql>
 
     <sql id="buildingJoins">
-		left join t_property_project pp on pp.id = a.t_property_project_main_id
-		left join sys_user u1 on u1.id = a.create_by
-		left join sys_user u2 on u2.id = a.update_by
-		left join t_attachment atta on atta.building_id = a.id
+		left join t_property_project pp on pp.id = a.t_property_project_main_id and pp.del_flag=0
+		left join sys_user u1 on u1.id = a.create_by and u1.del_flag = 0
+		left join sys_user u2 on u2.id = a.update_by and u2.del_flag = 0
+		left join t_attachment atta on atta.building_id = a.id and atta.del_flag=0
 	</sql>
 
     <select id="get" resultType="Building">

@@ -42,7 +42,7 @@ public class MessageSupport {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put(KEY_STATUS, SUCCESS);
     map.put(KEY_DATA, object);
-    map.put(KEY_TOTAL_PAGE, page.getPages());
+    map.put(KEY_TOTAL_PAGE, page.getTotal());
     map.put(KEY_PAGE_SIZE, page.getPageSize());
     map.put(KEY_PAGE_NUM, page.getPageNum());
     return responseBody(map);
