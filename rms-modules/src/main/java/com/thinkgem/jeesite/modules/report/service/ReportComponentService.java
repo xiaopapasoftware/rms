@@ -54,7 +54,9 @@ public class ReportComponentService {
      * 填充合同日期
      **/
     public List<Map> fillTenantInfo(List<Map> maps) {
-        return maps.parallelStream().map(map -> {
+        return maps.parallelStream()
+                .filter(data->!MapUtils.getString(data,"project_name","").contains("建"))
+                .map(map -> {
             List<Map> tenants = queryTenant(map);
             final StringBuffer cellPhone = new StringBuffer();
             final StringBuffer tenantName = new StringBuffer();
