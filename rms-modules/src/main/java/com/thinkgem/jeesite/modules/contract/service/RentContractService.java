@@ -286,12 +286,22 @@ public class RentContractService extends CrudService<RentContractDao, RentContra
         // 出租合同的结束时间不能超过承租合同的结束时间
         LeaseContract leaseContract = new LeaseContract();
         leaseContract.setHouse(rentContract.getHouse());
-        List<LeaseContract> list = leaseContractService.findList(leaseContract);
+
+        /**
+         * 最长也只能签到2020年2月12日，那么问题来了，假设我今天签约，合同起止日期就是：2019年6月20日-2020年2月12日，系统只能出7个月的账单，其中2020年1月21日-2020年2月12日的账单因不满一个月，系统不能出账单。
+         * 鉴于此：我有俩方案，你评估一下哪种最经济快捷。
+         * 1.取消合同签约时与业主合同到期日期做比对限制，由线下人员把控风险；
+         * 2.系统增加不满一个月也能出账单的能力。
+         *
+         * 按 1 方案操作
+         */
+        /*List<LeaseContract> list = leaseContractService.findList(leaseContract);
         if (CollectionUtils.isNotEmpty(list)) {
             if (list.get(0).getExpiredDate().before(rentContract.getExpiredDate())) {
                 return -2;
             }
-        }
+        }*/
+
         String curHouseId = rentContract.getHouse().getId();
         String curRoomId = rentContract.getRoom() == null ? "" : rentContract.getRoom().getId();
         curRoomId = StringUtils.isBlank(curRoomId) ? "" : curRoomId;
