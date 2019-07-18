@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.modules.report.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.Criterion;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.Sort;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -54,9 +56,7 @@ public class ReportComponentService {
      * 填充合同日期
      **/
     public List<Map> fillTenantInfo(List<Map> maps) {
-        return maps.parallelStream()
-                .filter(data->!MapUtils.getString(data,"project_name","").contains("建"))
-                .map(map -> {
+        return Optional.ofNullable(maps).orElseGet(Lists::newArrayList).parallelStream().map(map -> {
             List<Map> tenants = queryTenant(map);
             final StringBuffer cellPhone = new StringBuffer();
             final StringBuffer tenantName = new StringBuffer();

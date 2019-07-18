@@ -1,5 +1,6 @@
 package com.thinkgem.jeesite.task.service;
 
+import com.google.common.collect.Lists;
 import com.thinkgem.jeesite.common.filter.search.MatchType;
 import com.thinkgem.jeesite.common.filter.search.PropertyFilter;
 import com.thinkgem.jeesite.common.filter.search.PropertyType;
@@ -20,10 +21,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 催缴房租定时任务
@@ -55,7 +54,10 @@ public class RentDueUrgeTask {
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
         List<PropertyFilter> propertyFilters = PropertyFilterBuilder.create().matchTye(MatchType.IN).propertyType(PropertyType.I).add("temp.free_day", "7,3").end();
         List<Map> reportEntities = rentDueUrgeReportService.queryRentDueUrge(propertyFilters, sorts);
-        reportEntities = reportComponentService.fillTenantInfo(reportEntities);
+        List<Map> filterData = Optional.ofNullable(reportEntities).orElseGet(Lists::newArrayList).parallelStream()
+                .filter(data->!MapUtils.getString(data,"project_name","").contains("建#")).collect(Collectors.toList());
+
+        reportEntities = reportComponentService.fillTenantInfo(filterData);
         sendMsg(reportEntities);
         logger.info("------RentDueUrgeTask reportCurrentTime()   结束------");
     }
