@@ -49,10 +49,38 @@
 	</select>
 	
 	<select id="findList" resultType="PropertyProject">
-		SELECT 
-			<include refid="propertyProjectColumns"/>
+		SELECT
+		a.id AS "id",
+		a.t_neighborhood_main_id AS "neighborhood.id",
+		a.t_management_company_main_id AS "managementCompany.id",
+		a.project_name AS "projectName",
+		a.PROJECT_SIMPLE_NAME AS "projectSimpleName",
+		a.project_addr AS "projectAddr",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		n.neighborhood_name AS "neighborhood.neighborhoodName",
+		c.company_name AS "managementCompany.companyName",
+		sa.id as "area.id",
+		sa.name as "area.name",
+		a.city_code as cityCode,
+		a.city_name as cityName,
+		a.district_code as districtCode,
+		a.district_name as districtName,
+		a.coordsys as coordsys,
+		a.comm_req_id as commReqId,
+		a.alipay_status as alipayStatus
 		FROM t_property_project a
-		<include refid="propertyProjectJoins"/>
+		LEFT JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
+		LEFT JOIN t_management_company c on c.id=a.t_management_company_main_id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_area sa ON a.area_id = sa.id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="neighborhood != null and neighborhood.id != null and neighborhood.id != ''">
@@ -110,10 +138,38 @@
 	</select>
 	
 	<select id="findAllList" resultType="PropertyProject">
-		SELECT 
-			<include refid="propertyProjectColumns"/>
+		SELECT
+		a.id AS "id",
+		a.t_neighborhood_main_id AS "neighborhood.id",
+		a.t_management_company_main_id AS "managementCompany.id",
+		a.project_name AS "projectName",
+		a.PROJECT_SIMPLE_NAME AS "projectSimpleName",
+		a.project_addr AS "projectAddr",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		n.neighborhood_name AS "neighborhood.neighborhoodName",
+		c.company_name AS "managementCompany.companyName",
+		sa.id as "area.id",
+		sa.name as "area.name",
+		a.city_code as cityCode,
+		a.city_name as cityName,
+		a.district_code as districtCode,
+		a.district_name as districtName,
+		a.coordsys as coordsys,
+		a.comm_req_id as commReqId,
+		a.alipay_status as alipayStatus
 		FROM t_property_project a
-		<include refid="propertyProjectJoins"/>
+		LEFT JOIN t_neighborhood n on n.id=a.t_neighborhood_main_id
+		LEFT JOIN t_management_company c on c.id=a.t_management_company_main_id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_area sa ON a.area_id = sa.id
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>

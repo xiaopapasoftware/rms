@@ -39,10 +39,28 @@
     </select>
 
     <select id="findList" resultType="Building">
-        SELECT
-        <include refid="buildingColumns"/>
-        FROM t_building a
-        <include refid="buildingJoins"/>
+		SELECT
+		a.id AS "id",
+		a.t_property_project_main_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
+		a.building_name AS "buildingName",
+		a.TOTAL_FLOOR_COUNT AS "totalFloorCount",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.nick_name AS nickName,
+		a.min_amount AS minAmount,
+		a.max_amount AS maxAmount,
+		a.type as type
+		FROM t_building a
+		left join t_property_project pp on pp.id = a.t_property_project_main_id and pp.del_flag=0
+		left join sys_user u1 on u1.id = a.create_by and u1.del_flag = 0
+		left join sys_user u2 on u2.id = a.update_by and u2.del_flag = 0
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
@@ -77,10 +95,28 @@
     </select>
 
     <select id="findAllList" resultType="Building">
-        SELECT
-        <include refid="buildingColumns"/>
-        FROM t_building a
-        <include refid="buildingJoins"/>
+		SELECT
+		a.id AS "id",
+		a.t_property_project_main_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
+		a.building_name AS "buildingName",
+		a.TOTAL_FLOOR_COUNT AS "totalFloorCount",
+		a.create_by AS "createBy.id",
+		u1.login_name AS "createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.nick_name AS nickName,
+		a.min_amount AS minAmount,
+		a.max_amount AS maxAmount,
+		a.type as type
+		FROM t_building a
+		left join t_property_project pp on pp.id = a.t_property_project_main_id and pp.del_flag=0
+		left join sys_user u1 on u1.id = a.create_by and u1.del_flag = 0
+		left join sys_user u2 on u2.id = a.update_by and u2.del_flag = 0
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>

@@ -70,9 +70,57 @@
 
     <select id="findList" resultType="Room">
         SELECT
-        <include refid="roomColumns"/>
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
+		a.building_id AS
+		"building.id",
+		tb.building_name AS "building.buildingName",
+		tb.type AS "building.type",
+		a.house_id
+		AS "house.id",
+		th.house_no AS "house.houseNo",
+		th.intent_mode AS "house.intentMode",
+		a.room_no AS "roomNo",
+		a.meter_no AS "meterNo",
+		a.room_space AS "roomSpace",
+		a.orientation AS
+		"orientation",
+		a.room_config AS "roomConfig",
+		a.room_status AS
+		"roomStatus",
+		a.create_by AS "createBy.id",
+		u1.login_name AS
+		"createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS
+		"updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS
+		"updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as
+		"shortLocation",
+		a.new_id as "newId",
+		a.sales_user as "salesUser.id",
+		u3.name as "salesUser.name",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up,
+		a.reservation_phone as reservationPhone,
+		a.fee_config_info as feeConfigInfo
         FROM t_room a
-        <include refid="roomJoins"/>
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by and u1.del_flag = '0'
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by and u2.del_flag = '0'
+		LEFT JOIN sys_user u3 ON u3.id = a.sales_user and u3.del_flag = '0'
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id and pp.del_flag = '0'
+		LEFT JOIN t_building tb on tb.id = a.building_id and tb.del_flag = '0'
+		LEFT JOIN t_house th on th.id = a.house_id  and th.del_flag = '0'
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="propertyProject != null and propertyProject.id != null and propertyProject.id != ''">
@@ -188,10 +236,58 @@
     </select>
 
     <select id="findAllList" resultType="Room">
-        SELECT
-        <include refid="roomColumns"/>
-        FROM t_room a
-        <include refid="roomJoins"/>
+		SELECT
+		a.id AS "id",
+		a.property_project_id AS "propertyProject.id",
+		pp.project_name AS "propertyProject.projectName",
+		a.building_id AS
+		"building.id",
+		tb.building_name AS "building.buildingName",
+		tb.type AS "building.type",
+		a.house_id
+		AS "house.id",
+		th.house_no AS "house.houseNo",
+		th.intent_mode AS "house.intentMode",
+		a.room_no AS "roomNo",
+		a.meter_no AS "meterNo",
+		a.room_space AS "roomSpace",
+		a.orientation AS
+		"orientation",
+		a.room_config AS "roomConfig",
+		a.room_status AS
+		"roomStatus",
+		a.create_by AS "createBy.id",
+		u1.login_name AS
+		"createBy.loginName",
+		a.create_date AS "createDate",
+		a.update_by AS
+		"updateBy.id",
+		u2.login_name AS "updateBy.loginName",
+		a.update_date AS
+		"updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.is_feature as "isFeature",
+		a.rental as "rental",
+		a.short_desc as "shortDesc",
+		a.short_location as
+		"shortLocation",
+		a.new_id as "newId",
+		a.sales_user as "salesUser.id",
+		u3.name as "salesUser.name",
+		a.rent_month_gap as rentMonthGap,
+		a.depos_month_count as deposMonthCount,
+		a.alipay_status as alipayStatus,
+		a.up as up,
+		a.reservation_phone as reservationPhone,
+		a.fee_config_info as feeConfigInfo
+		FROM t_room a
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by and u1.del_flag = '0'
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by and u2.del_flag = '0'
+		LEFT JOIN sys_user u3 ON u3.id = a.sales_user and u3.del_flag = '0'
+		LEFT JOIN t_property_project pp on pp.id = a.property_project_id and pp.del_flag = '0'
+		LEFT JOIN t_building tb on tb.id = a.building_id and tb.del_flag = '0'
+		LEFT JOIN t_house th on th.id = a.house_id  and th.del_flag = '0'
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>
