@@ -207,6 +207,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">房租</label>
+			<div class="controls">
+				<form:input path="houseRentAmt" htmlEscape="false" class="input-xlarge number"/>&nbsp;&nbsp;&nbsp;
+				从&nbsp;<input name="houseRentAmtStartDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+				value="<fmt:formatDate value="${postpaidFee.houseRentAmtStartDate}" pattern="yyyy-MM-dd"/>"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+				到&nbsp;<input name="houseRentAmtEndDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+				value="<fmt:formatDate value="${postpaidFee.houseRentAmtEndDate}" pattern="yyyy-MM-dd"/>"
+				onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">备注信息：</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>

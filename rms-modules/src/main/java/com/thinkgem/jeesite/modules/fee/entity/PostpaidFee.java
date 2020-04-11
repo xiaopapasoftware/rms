@@ -35,6 +35,11 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
   private Double serviceAmt;
   private Date serviceAmtStartDate;
   private Date serviceAmtEndDate;
+
+  private Double houseRentAmt;
+  private Date houseRentAmtStartDate;
+  private Date houseRentAmtEndDate;
+
   private String remarks;// 备注
   private Date startDate;// 专用来查询使用的选择的开始时间
   private Date endDate;// 专用来查询使用的选择的结束时间
@@ -282,4 +287,27 @@ public class PostpaidFee extends DataEntity<PostpaidFee> {
     this.contractCode = contractCode;
   }
 
+  public Double getHouseRentAmt() {
+    return houseRentAmt;
+  }
+
+  public void setHouseRentAmt(Double houseRentAmt) {
+    this.houseRentAmt = houseRentAmt;
+  }
+
+  public Date getHouseRentAmtStartDate() {
+    return houseRentAmtStartDate;
+  }
+
+  public void setHouseRentAmtStartDate(Date houseRentAmtStartDate) {
+    this.houseRentAmtStartDate = houseRentAmtStartDate;
+  }
+
+  public Date getHouseRentAmtEndDate() {
+    return houseRentAmtEndDate;
+  }
+
+  public void setHouseRentAmtEndDate(Date houseRentAmtEndDate) {
+    this.houseRentAmtEndDate = houseRentAmtEndDate;
+  }
 }
