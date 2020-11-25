@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
  * @author wangganggang
  * @date 2017/03/12
  */
-@Service
-@Lazy(false)
+//@Service
+//@Lazy(false)
 public class RentDueUrgeTask {
 
     private Logger logger = LoggerFactory.getLogger(RentDueUrgeTask.class);
@@ -47,8 +47,7 @@ public class RentDueUrgeTask {
 
     @Autowired
     private ReportComponentService reportComponentService;
-
-    @Scheduled(cron = "0 0 12 * * ?")
+//    @Scheduled(cron = "0 0 12 * * ?")
     public void reportCurrentTime() {
         logger.info("------RentDueUrgeTask reportCurrentTime()   开始 ------");
         List<Sort> sorts = SortBuilder.create().addAsc("trc.start_date").end();
